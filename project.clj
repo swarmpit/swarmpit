@@ -19,7 +19,7 @@
   :clean-targets ^{:protect false} ["resources/public/js/out"
                                     "resources/public/js/main.js"
                                     :target-path]
-  :source-paths ["src/clj", "src/cljs", "script"]
+  :source-paths ["src/clj", "script", "libs"]
   :cljsbuild {:builds [{:id           "dev"
                         :source-paths ["src/cljs"]
                         :figwheel     true
