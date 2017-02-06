@@ -1,4 +1,4 @@
-(defproject swarmory "0.1.0-SNAPSHOT"
+(defproject swarmpit "0.1.0-SNAPSHOT"
   :description "Docker swarm management UI"
   :url "http://example.com/FIXME"
   :license {:name "Eclipse Public License"
@@ -23,7 +23,7 @@
   :cljsbuild {:builds [{:id           "dev"
                         :source-paths ["src/cljs"]
                         :figwheel     true
-                        :compiler     {:main         "swarmory.app"
+                        :compiler     {:main         "swarmpit.app"
                                        :asset-path   "js/out"
                                        :foreign-libs [{:file     "libs/material-ui/material-ui.inc.js"
                                                        :file-min "libs/material-ui/material-ui.min.inc.js"

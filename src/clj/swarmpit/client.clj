@@ -1,4 +1,4 @@
-(ns swarmory.client
+(ns swarmpit.client
   (:require [org.httpkit.client :as http]
             [cheshire.core :refer [parse-string]]))
 
