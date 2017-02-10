@@ -9,6 +9,10 @@ body {
     margin: 0px;
 }
 
+.closed {
+    opacity: 0;
+}
+
 .layout {
     height: 100vh;
     overflow-x: hidden;
@@ -21,8 +25,8 @@ body {
 }
 
 .layout-opened {
-    width: calc(100vw - 256px);
-    margin-left: 256px;
+    width: calc(100vw - 200px);
+    margin-left: 200px;
 }
 
 header .appbar {
