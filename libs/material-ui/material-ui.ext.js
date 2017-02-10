@@ -6,7 +6,12 @@ var MaterialUI = {
         levenshteinDistanceFilter: {},
         fuzzyFilter: {}
     },
-    FontIcon: {}
+    FontIcon: {},
+    Drawer: {},
+    MenuItem: {},
+    AppBar: {},
+    IconButton: {},
+    SvgIcon: {}
 };
 
 var MaterialUIStyles = {

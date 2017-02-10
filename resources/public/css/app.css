@@ -1,0 +1,55 @@
+html > body {
+    /*font-family: 'Roboto', 'Helvetica', 'Arial', sans-serif !important;*/
+
+    font-family: "Open Sans", sans-serif !important;
+    font-size: 14px !important;
+}
+
+body {
+    margin: 0px;
+}
+
+.layout {
+    height: 100vh;
+    overflow-x: hidden;
+    overflow-y: auto;
+}
+
+.layout-closed {
+    width: calc(100vw - 70px);
+    margin-left: 70px;
+}
+
+.layout-opened {
+    width: calc(100vw - 256px);
+    margin-left: 256px;
+}
+
+header .appbar {
+    background-color: #437f9d !important;
+    box-shadow: none !important;
+}
+
+nav .drawer-container {
+    box-shadow: none !important;
+    border-right: 1px solid #e0e4e7;
+}
+
+nav .drawer-appbar {
+    background-color: #437f9d !important;
+    box-shadow: none !important;
+}
+
+nav .drawer-item {
+    padding-left: 5px !important;
+    font-weight: lighter !important;
+}
+
+nav .drawer-item-category {
+    cursor: default !important;
+}
+
+nav .drawer-item > div > div {
+    padding-left: 50px !important;
+}
+

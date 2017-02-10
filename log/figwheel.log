@@ -1,0 +1,1785 @@
+[0mCompiling "resources/public/js/main.js" from ["src/cljs"]...[0m
+[32mSuccessfully compiled "resources/public/js/main.js" in 0.518 seconds.[0m
+notifying browser that file changed:  resources/public/js/out/goog/deps.js
+notifying browser that file changed:  resources/public/js/out/cljs_deps.js
+notifying browser that file changed:  resources/public/js/out/swarmpit/component/appbar.js
+[0mCompiling "resources/public/js/main.js" from ["src/cljs"]...[0m
+[32mSuccessfully compiled "resources/public/js/main.js" in 1.616 seconds.[0m
+notifying browser that file changed:  resources/public/js/out/cljs_deps.js
+notifying browser that file changed:  resources/public/js/out/swarmpit/component/drawer.js
+[0mCompiling "resources/public/js/main.js" from ["src/cljs"]...[0m
+[32mSuccessfully compiled "resources/public/js/main.js" in 0.811 seconds.[0m
+notifying browser that file changed:  resources/public/js/out/swarmpit/component/appbar.js
+[0mCompiling "resources/public/js/main.js" from ["src/cljs"]...[0m
+[32mSuccessfully compiled "resources/public/js/main.js" in 0.551 seconds.[0m
+notifying browser that file changed:  resources/public/js/out/swarmpit/material.js
+[0mCompiling "resources/public/js/main.js" from ["src/cljs"]...[0m
+[32mSuccessfully compiled "resources/public/js/main.js" in 0.407 seconds.[0m
+notifying browser that file changed:  resources/public/js/out/swarmpit/component/appbar.js
+[0mCompiling "resources/public/js/main.js" from ["src/cljs"]...[0m
+[36m----  Compiler Warning on   src/cljs/swarmpit/component/appbar.cljs   line:7  column:1  ----[0m
+
+  [1mcount already refers to: cljs.core/count being replaced by: swarmpit.component.appbar/count[0m
+
+  [36m 3[0m  [36m            [rum.core :as rum]))[0m
+  [36m 4[0m  [36m[0m
+  [36m 5[0m  [36m(enable-console-print!)[0m
+  [36m 6[0m  [36m[0m
+  [33m 7[0m  [1m(defonce count (atom 0))[0m
+  [0m  [0m  [33m^--- count already refers to: cljs.core/count being replaced by: swarmpit.component.appbar/count[0m
+  [36m 8[0m  [36m[0m
+  [36m 9[0m  [36m(rum/defc appbar < rum/static [][0m
+  [36m10[0m  [36m  (material/theme[0m
+  [36m11[0m  [36m    (material/app-bar #js{:title              "Title"[0m
+  [36m12[0m  [36m                          :iconClassNameRight "muidocs-icon-navigation-expand-more"})))[0m
+
+[36m----  Compiler Warning : Please see src/cljs/swarmpit/component/appbar.cljs  ----[0m
+[32mSuccessfully compiled "resources/public/js/main.js" in 0.675 seconds.[0m
+notifying browser that file changed:  resources/public/js/out/swarmpit/component/appbar.js
+[0mCompiling "resources/public/js/main.js" from ["src/cljs"]...[0m
+[32mSuccessfully compiled "resources/public/js/main.js" in 0.649 seconds.[0m
+notifying browser that file changed:  resources/public/js/out/swarmpit/component/appbar.js
+[0mCompiling "resources/public/js/main.js" from ["src/cljs"]...[0m
+[36m----  Compiler Warning on   src/cljs/swarmpit/component/appbar.cljs   line:17  column:8  ----[0m
+
+  [1mNo such namespace: meterial, could not locate meterial.cljs, meterial.cljc, or Closure namespace ""[0m
+
+  [36m14[0m  [36m(rum/defc drawer < rum/reactive [][0m
+  [36m15[0m  [36m  (material/theme[0m
+  [36m16[0m  [36m    (material/drawer[0m
+  [33m17[0m  [1m      (meterial/menu-item ))))[0m
+  [0m  [0m  [33m       ^--- No such namespace: meterial, could not locate meterial.cljs, meterial.cljc, or Closure namespace ""[0m
+  [36m18[0m  [36m[0m
+  [36m19[0m  [36m(defn mount![0m
+  [36m20[0m  [36m  [][0m
+  [36m21[0m  [36m  (rum/mount (appbar) (.getElementById js/document "appbar")))[0m
+
+[36m----  Compiler Warning : Please see src/cljs/swarmpit/component/appbar.cljs  ----[0m
+[36m----  Compiler Warning on   src/cljs/swarmpit/component/appbar.cljs   line:17  column:8  ----[0m
+
+  [1mUse of undeclared Var meterial/menu-item[0m
+
+  [36m14[0m  [36m(rum/defc drawer < rum/reactive [][0m
+  [36m15[0m  [36m  (material/theme[0m
+  [36m16[0m  [36m    (material/drawer[0m
+  [33m17[0m  [1m      (meterial/menu-item ))))[0m
+  [0m  [0m  [33m       ^--- Use of undeclared Var meterial/menu-item[0m
+  [36m18[0m  [36m[0m
+  [36m19[0m  [36m(defn mount![0m
+  [36m20[0m  [36m  [][0m
+  [36m21[0m  [36m  (rum/mount (appbar) (.getElementById js/document "appbar")))[0m
+
+[36m----  Compiler Warning : Please see src/cljs/swarmpit/component/appbar.cljs  ----[0m
+[32mSuccessfully compiled "resources/public/js/main.js" in 0.727 seconds.[0m
+notifying browser that file changed:  resources/public/js/out/swarmpit/component/appbar.js
+[0mCompiling "resources/public/js/main.js" from ["src/cljs"]...[0m
+[36m----  Compiler Warning on   src/cljs/swarmpit/component/appbar.cljs   line:17  column:8  ----[0m
+
+  [1mNo such namespace: meterial, could not locate meterial.cljs, meterial.cljc, or Closure namespace ""[0m
+
+  [36m14[0m  [36m(rum/defc drawer < rum/reactive [][0m
+  [36m15[0m  [36m  (material/theme[0m
+  [36m16[0m  [36m    (material/drawer[0m
+  [33m17[0m  [1m      (meterial/menu-item "Menu Item")[0m
+  [0m  [0m  [33m       ^--- No such namespace: meterial, could not locate meterial.cljs, meterial.cljc, or Closure namespace ""[0m
+  [36m18[0m  [36m      )))[0m
+  [36m19[0m  [36m[0m
+  [36m20[0m  [36m(defn mount![0m
+  [36m21[0m  [36m  [][0m
+  [36m22[0m  [36m  (rum/mount (appbar) (.getElementById js/document "appbar")))[0m
+
+[36m----  Compiler Warning : Please see src/cljs/swarmpit/component/appbar.cljs  ----[0m
+[36m----  Compiler Warning on   src/cljs/swarmpit/component/appbar.cljs   line:17  column:8  ----[0m
+
+  [1mUse of undeclared Var meterial/menu-item[0m
+
+  [36m14[0m  [36m(rum/defc drawer < rum/reactive [][0m
+  [36m15[0m  [36m  (material/theme[0m
+  [36m16[0m  [36m    (material/drawer[0m
+  [33m17[0m  [1m      (meterial/menu-item "Menu Item")[0m
+  [0m  [0m  [33m       ^--- Use of undeclared Var meterial/menu-item[0m
+  [36m18[0m  [36m      )))[0m
+  [36m19[0m  [36m[0m
+  [36m20[0m  [36m(defn mount![0m
+  [36m21[0m  [36m  [][0m
+  [36m22[0m  [36m  (rum/mount (appbar) (.getElementById js/document "appbar")))[0m
+
+[36m----  Compiler Warning : Please see src/cljs/swarmpit/component/appbar.cljs  ----[0m
+[32mSuccessfully compiled "resources/public/js/main.js" in 0.814 seconds.[0m
+notifying browser that file changed:  resources/public/js/out/swarmpit/component/appbar.js
+[0mCompiling "resources/public/js/main.js" from ["src/cljs"]...[0m
+[36m----  Compiler Warning on   src/cljs/swarmpit/component/appbar.cljs   line:17  column:8  ----[0m
+
+  [1mNo such namespace: meterial, could not locate meterial.cljs, meterial.cljc, or Closure namespace ""[0m
+
+  [36m14[0m  [36m(rum/defc drawer < rum/reactive [][0m
+  [36m15[0m  [36m  (material/theme[0m
+  [36m16[0m  [36m    (material/drawer[0m
+  [33m17[0m  [1m      (meterial/menu-item "Menu Item")[0m
+  [0m  [0m  [33m       ^--- No such namespace: meterial, could not locate meterial.cljs, meterial.cljc, or Closure namespace ""[0m
+  [36m18[0m  [36m      )))[0m
+  [36m19[0m  [36m[0m
+  [36m20[0m  [36m(defn mount![0m
+  [36m21[0m  [36m  [][0m
+  [36m22[0m  [36m  (rum/mount (appbar) (.getElementById js/document "appbar")))[0m
+
+[36m----  Compiler Warning : Please see src/cljs/swarmpit/component/appbar.cljs  ----[0m
+[36m----  Compiler Warning on   src/cljs/swarmpit/component/appbar.cljs   line:17  column:8  ----[0m
+
+  [1mUse of undeclared Var meterial/menu-item[0m
+
+  [36m14[0m  [36m(rum/defc drawer < rum/reactive [][0m
+  [36m15[0m  [36m  (material/theme[0m
+  [36m16[0m  [36m    (material/drawer[0m
+  [33m17[0m  [1m      (meterial/menu-item "Menu Item")[0m
+  [0m  [0m  [33m       ^--- Use of undeclared Var meterial/menu-item[0m
+  [36m18[0m  [36m      )))[0m
+  [36m19[0m  [36m[0m
+  [36m20[0m  [36m(defn mount![0m
+  [36m21[0m  [36m  [][0m
+  [36m22[0m  [36m  (rum/mount (appbar) (.getElementById js/document "appbar")))[0m
+
+[36m----  Compiler Warning : Please see src/cljs/swarmpit/component/appbar.cljs  ----[0m
+[32mSuccessfully compiled "resources/public/js/main.js" in 0.549 seconds.[0m
+notifying browser that file changed:  resources/public/js/out/swarmpit/material.js
+[0mCompiling "resources/public/js/main.js" from ["src/cljs"]...[0m
+[32mSuccessfully compiled "resources/public/js/main.js" in 0.486 seconds.[0m
+notifying browser that file changed:  resources/public/js/out/swarmpit/component/appbar.js
+[0mCompiling "resources/public/js/main.js" from ["src/cljs"]...[0m
+[32mSuccessfully compiled "resources/public/js/main.js" in 0.375 seconds.[0m
+notifying browser that file changed:  resources/public/js/out/swarmpit/material.js
+[0mCompiling "resources/public/js/main.js" from ["src/cljs"]...[0m
+[32mSuccessfully compiled "resources/public/js/main.js" in 0.433 seconds.[0m
+notifying browser that file changed:  resources/public/js/out/swarmpit/component/appbar.js
+[0mCompiling "resources/public/js/main.js" from ["src/cljs"]...[0m
+[31mFailed to compile "resources/public/js/main.js" in 0.224 seconds.[0m
+[36m----  Could not Read  src/cljs/swarmpit/component/appbar.cljs   line:16  column:34  ----[0m
+
+  [1mMap literal must contain an even number of forms[0m
+
+  [36m14[0m  [36m(rum/defc drawer < rum/reactive [][0m
+  [36m15[0m  [36m  (material/theme[0m
+  [33m16[0m  [1m    (material/drawer #js {:open }[0m
+  [0m  [0m  [33m                                 ^--- Map literal must contain an even number of forms[0m
+  [36m17[0m  [36m      (material/menu-item "Menu Item 1")[0m
+  [36m18[0m  [36m      (material/menu-item "Menu Item 2"))))[0m
+
+[36m----  Reader Error : Please see src/cljs/swarmpit/component/appbar.cljs  ----[0m
+[0mCompiling "resources/public/js/main.js" from ["src/cljs"]...[0m
+[32mSuccessfully compiled "resources/public/js/main.js" in 0.311 seconds.[0m
+notifying browser that file changed:  resources/public/js/out/swarmpit/component/appbar.js
+[0mCompiling "resources/public/js/main.js" from ["src/cljs"]...[0m
+[32mSuccessfully compiled "resources/public/js/main.js" in 0.399 seconds.[0m
+notifying browser that file changed:  resources/public/js/out/swarmpit/component/appbar.js
+[0mCompiling "resources/public/js/main.js" from ["src/cljs"]...[0m
+[36m----  Compiler Warning on   src/cljs/swarmpit/component/appbar.cljs   line:12  column:47  ----[0m
+
+  [1mNo such namespace: router, could not locate router.cljs, router.cljc, or Closure namespace ""[0m
+
+  [36m 9[0m  [36m(rum/defc appbar < rum/static [][0m
+  [36m10[0m  [36m  (material/theme[0m
+  [36m11[0m  [36m    (material/app-bar #js{:title              "Title"[0m
+  [33m12[0m  [1m                          :onTouch (fn [url] (router/dispatch! url))[0m
+  [0m  [0m  [33m                                              ^--- No such namespace: router, could not locate router.cljs, router.cljc, or Closure namespace ""[0m
+  [36m13[0m  [36m                          :iconClassNameRight "muidocs-icon-navigation-expand-more"})))[0m
+  [36m14[0m  [36m[0m
+  [36m15[0m  [36m(rum/defc drawer < rum/reactive [][0m
+  [36m16[0m  [36m  (material/theme[0m
+  [36m17[0m  [36m    (material/drawer #js {:open (rum/react drawer-expanded)}[0m
+
+[36m----  Compiler Warning : Please see src/cljs/swarmpit/component/appbar.cljs  ----[0m
+[36m----  Compiler Warning on   src/cljs/swarmpit/component/appbar.cljs   line:12  column:47  ----[0m
+
+  [1mUse of undeclared Var router/dispatch![0m
+
+  [36m 9[0m  [36m(rum/defc appbar < rum/static [][0m
+  [36m10[0m  [36m  (material/theme[0m
+  [36m11[0m  [36m    (material/app-bar #js{:title              "Title"[0m
+  [33m12[0m  [1m                          :onTouch (fn [url] (router/dispatch! url))[0m
+  [0m  [0m  [33m                                              ^--- Use of undeclared Var router/dispatch![0m
+  [36m13[0m  [36m                          :iconClassNameRight "muidocs-icon-navigation-expand-more"})))[0m
+  [36m14[0m  [36m[0m
+  [36m15[0m  [36m(rum/defc drawer < rum/reactive [][0m
+  [36m16[0m  [36m  (material/theme[0m
+  [36m17[0m  [36m    (material/drawer #js {:open (rum/react drawer-expanded)}[0m
+
+[36m----  Compiler Warning : Please see src/cljs/swarmpit/component/appbar.cljs  ----[0m
+[32mSuccessfully compiled "resources/public/js/main.js" in 0.636 seconds.[0m
+notifying browser that file changed:  resources/public/js/out/swarmpit/component/appbar.js
+[0mCompiling "resources/public/js/main.js" from ["src/cljs"]...[0m
+[36m----  Compiler Warning on   src/cljs/swarmpit/component/appbar.cljs   line:12  column:55  ----[0m
+
+  [1mNo such namespace: router, could not locate router.cljs, router.cljc, or Closure namespace ""[0m
+
+  [36m 9[0m  [36m(rum/defc appbar < rum/static [][0m
+  [36m10[0m  [36m  (material/theme[0m
+  [36m11[0m  [36m    (material/app-bar #js{:title              "Title"[0m
+  [33m12[0m  [1m                          :onTitleTouchTap    (fn [] (router/dispatch! url))[0m
+  [0m  [0m  [33m                                                      ^--- No such namespace: router, could not locate router.cljs, router.cljc, or Closure namespace ""[0m
+  [36m13[0m  [36m                          :iconClassNameRight "muidocs-icon-navigation-expand-more"})))[0m
+  [36m14[0m  [36m[0m
+  [36m15[0m  [36m(rum/defc drawer < rum/reactive [][0m
+  [36m16[0m  [36m  (material/theme[0m
+  [36m17[0m  [36m    (material/drawer #js {:open (rum/react drawer-expanded)}[0m
+
+[36m----  Compiler Warning : Please see src/cljs/swarmpit/component/appbar.cljs  ----[0m
+[36m----  Compiler Warning on   src/cljs/swarmpit/component/appbar.cljs   line:12  column:55  ----[0m
+
+  [1mUse of undeclared Var router/dispatch![0m
+
+  [36m 9[0m  [36m(rum/defc appbar < rum/static [][0m
+  [36m10[0m  [36m  (material/theme[0m
+  [36m11[0m  [36m    (material/app-bar #js{:title              "Title"[0m
+  [33m12[0m  [1m                          :onTitleTouchTap    (fn [] (router/dispatch! url))[0m
+  [0m  [0m  [33m                                                      ^--- Use of undeclared Var router/dispatch![0m
+  [36m13[0m  [36m                          :iconClassNameRight "muidocs-icon-navigation-expand-more"})))[0m
+  [36m14[0m  [36m[0m
+  [36m15[0m  [36m(rum/defc drawer < rum/reactive [][0m
+  [36m16[0m  [36m  (material/theme[0m
+  [36m17[0m  [36m    (material/drawer #js {:open (rum/react drawer-expanded)}[0m
+
+[36m----  Compiler Warning : Please see src/cljs/swarmpit/component/appbar.cljs  ----[0m
+[36m----  Compiler Warning on   src/cljs/swarmpit/component/appbar.cljs   line:12  column:72  ----[0m
+
+  [1mUse of undeclared Var swarmpit.component.appbar/url[0m
+
+  [36m 9[0m  [36m(rum/defc appbar < rum/static [][0m
+  [36m10[0m  [36m  (material/theme[0m
+  [36m11[0m  [36m    (material/app-bar #js{:title              "Title"[0m
+  [33m12[0m  [1m                          :onTitleTouchTap    (fn [] (router/dispatch! url))[0m
+  [0m  [0m  [33m                                                                       ^--- Use of undeclared Var swarmpit.component.appbar/url[0m
+  [36m13[0m  [36m                          :iconClassNameRight "muidocs-icon-navigation-expand-more"})))[0m
+  [36m14[0m  [36m[0m
+  [36m15[0m  [36m(rum/defc drawer < rum/reactive [][0m
+  [36m16[0m  [36m  (material/theme[0m
+  [36m17[0m  [36m    (material/drawer #js {:open (rum/react drawer-expanded)}[0m
+
+[36m----  Compiler Warning : Please see src/cljs/swarmpit/component/appbar.cljs  ----[0m
+[32mSuccessfully compiled "resources/public/js/main.js" in 0.466 seconds.[0m
+notifying browser that file changed:  resources/public/js/out/swarmpit/component/appbar.js
+[0mCompiling "resources/public/js/main.js" from ["src/cljs"]...[0m
+[32mSuccessfully compiled "resources/public/js/main.js" in 0.464 seconds.[0m
+notifying browser that file changed:  resources/public/js/out/swarmpit/component/appbar.js
+[0mCompiling "resources/public/js/main.js" from ["src/cljs"]...[0m
+[32mSuccessfully compiled "resources/public/js/main.js" in 0.483 seconds.[0m
+notifying browser that file changed:  resources/public/js/out/swarmpit/component/appbar.js
+[0mCompiling "resources/public/js/main.js" from ["src/cljs"]...[0m
+[32mSuccessfully compiled "resources/public/js/main.js" in 0.478 seconds.[0m
+notifying browser that file changed:  resources/public/js/out/swarmpit/component/appbar.js
+[0mCompiling "resources/public/js/main.js" from ["src/cljs"]...[0m
+[32mSuccessfully compiled "resources/public/js/main.js" in 0.502 seconds.[0m
+notifying browser that file changed:  resources/public/js/out/swarmpit/component/appbar.js
+[0mCompiling "resources/public/js/main.js" from ["src/cljs"]...[0m
+[32mSuccessfully compiled "resources/public/js/main.js" in 0.366 seconds.[0m
+notifying browser that file changed:  resources/public/js/out/swarmpit/component/appbar.js
+[0mCompiling "resources/public/js/main.js" from ["src/cljs"]...[0m
+[31mFailed to compile "resources/public/js/main.js" in 0.766 seconds.[0m
+[36m----  Could not Read  src/cljs/swarmpit/component/appbar.cljs   line:15  column:85  ----[0m
+
+  [1mDuplicate key: :onTitleTouchTap[0m
+
+  [36m14[0m  [36m                          :onTitleTouchTap    (fn [] (swap! expanded true))[0m
+  [33m15[0m  [1m                          :iconClassNameRight "muidocs-icon-navigation-expand-more"})))[0m
+  [0m  [0m  [33m                                                                                    ^--- Duplicate key: :onTitleTouchTap[0m
+  [36m16[0m  [36m[0m
+  [36m17[0m  [36m(rum/defc drawer < rum/reactive [][0m
+  [36m18[0m  [36m  (material/theme[0m
+
+[36m----  Reader Error : Please see src/cljs/swarmpit/component/appbar.cljs  ----[0m
+[0mCompiling "resources/public/js/main.js" from ["src/cljs"]...[0m
+[32mSuccessfully compiled "resources/public/js/main.js" in 0.884 seconds.[0m
+notifying browser that file changed:  resources/public/js/out/swarmpit/component/appbar.js
+[0mCompiling "resources/public/js/main.js" from ["src/cljs"]...[0m
+[32mSuccessfully compiled "resources/public/js/main.js" in 0.34 seconds.[0m
+notifying browser that file changed:  resources/public/js/out/swarmpit/component/appbar.js
+[0mCompiling "resources/public/js/main.js" from ["src/cljs"]...[0m
+[32mSuccessfully compiled "resources/public/js/main.js" in 0.348 seconds.[0m
+notifying browser that file changed:  resources/public/js/out/swarmpit/component/appbar.js
+[0mCompiling "resources/public/js/main.js" from ["src/cljs"]...[0m
+[32mSuccessfully compiled "resources/public/js/main.js" in 0.458 seconds.[0m
+notifying browser that file changed:  resources/public/js/out/swarmpit/component/appbar.js
+[0mCompiling "resources/public/js/main.js" from ["src/cljs"]...[0m
+[32mSuccessfully compiled "resources/public/js/main.js" in 1.134 seconds.[0m
+notifying browser that file changed:  resources/public/js/out/swarmpit/component/appbar.js
+[0mCompiling "resources/public/js/main.js" from ["src/cljs"]...[0m
+[31mFailed to compile "resources/public/js/main.js" in 0.334 seconds.[0m
+[36m----  Could not Analyze  src/cljs/swarmpit/component/appbar.cljs   line:12  column:65  ----[0m
+
+  [1mUnknown dot form of (. nil log nil) with classification [:cljs.analyzer/error :cljs.analyzer/symbol ()][0m
+
+  [36m10[0m  [36m  (material/theme[0m
+  [36m11[0m  [36m    (material/app-bar #js{:title                    "Title"[0m
+  [33m12[0m  [1m                          :onLeftIconButtonTouchTap (fn [event] (.log ))[0m
+  [0m  [0m  [33m                                                                ^--- Unknown dot form of (. nil log nil) with classification [:cljs.analyzer/error :cljs.analyzer/symbol ()][0m
+  [36m13[0m  [36m                          :iconClassNameRight       "muidocs-icon-navigation-expand-more"})))[0m
+  [36m14[0m  [36m[0m
+  [36m15[0m  [36m(rum/defc drawer < rum/reactive [][0m
+
+[36m----  Analysis Error : Please see src/cljs/swarmpit/component/appbar.cljs  ----[0m
+[0mCompiling "resources/public/js/main.js" from ["src/cljs"]...[0m
+[32mSuccessfully compiled "resources/public/js/main.js" in 0.487 seconds.[0m
+notifying browser that file changed:  resources/public/js/out/swarmpit/component/appbar.js
+[0mCompiling "resources/public/js/main.js" from ["src/cljs"]...[0m
+[32mSuccessfully compiled "resources/public/js/main.js" in 0.295 seconds.[0m
+notifying browser that file changed:  resources/public/js/out/swarmpit/component/appbar.js
+[0mCompiling "resources/public/js/main.js" from ["src/cljs"]...[0m
+[32mSuccessfully compiled "resources/public/js/main.js" in 1.087 seconds.[0m
+notifying browser that file changed:  resources/public/js/out/goog/deps.js
+notifying browser that file changed:  resources/public/js/out/cljs_deps.js
+notifying browser that file changed:  resources/public/js/out/swarmpit/component/appbar.js
+[0mCompiling "resources/public/js/main.js" from ["src/cljs"]...[0m
+[32mSuccessfully compiled "resources/public/js/main.js" in 1.162 seconds.[0m
+notifying browser that file changed:  resources/public/js/out/swarmpit/component/appbar.js
+[0mCompiling "resources/public/js/main.js" from ["src/cljs"]...[0m
+[32mSuccessfully compiled "resources/public/js/main.js" in 1.073 seconds.[0m
+notifying browser that file changed:  resources/public/js/out/swarmpit/component/appbar.js
+[0mCompiling "resources/public/js/main.js" from ["src/cljs"]...[0m
+[32mSuccessfully compiled "resources/public/js/main.js" in 1.286 seconds.[0m
+notifying browser that file changed:  resources/public/js/out/swarmpit/component/appbar.js
+[0mCompiling "resources/public/js/main.js" from ["src/cljs"]...[0m
+[32mSuccessfully compiled "resources/public/js/main.js" in 0.437 seconds.[0m
+notifying browser that file changed:  resources/public/js/out/swarmpit/component/appbar.js
+[0mCompiling "resources/public/js/main.js" from ["src/cljs"]...[0m
+[32mSuccessfully compiled "resources/public/js/main.js" in 0.421 seconds.[0m
+notifying browser that file changed:  resources/public/js/out/swarmpit/component/appbar.js
+[0mCompiling "resources/public/js/main.js" from ["src/cljs"]...[0m
+[32mSuccessfully compiled "resources/public/js/main.js" in 0.456 seconds.[0m
+notifying browser that file changed:  resources/public/js/out/swarmpit/component/appbar.js
+[0mCompiling "resources/public/js/main.js" from ["src/cljs"]...[0m
+[32mSuccessfully compiled "resources/public/js/main.js" in 0.9 seconds.[0m
+notifying browser that file changed:  resources/public/js/out/swarmpit/component/appbar.js
+[0mCompiling "resources/public/js/main.js" from ["src/cljs"]...[0m
+[32mSuccessfully compiled "resources/public/js/main.js" in 1.035 seconds.[0m
+notifying browser that file changed:  resources/public/js/out/swarmpit/component/appbar.js
+[0mCompiling "resources/public/js/main.js" from ["src/cljs"]...[0m
+[32mSuccessfully compiled "resources/public/js/main.js" in 1.375 seconds.[0m
+notifying browser that file changed:  resources/public/js/out/swarmpit/component/appbar.js
+[0mCompiling "resources/public/js/main.js" from ["src/cljs"]...[0m
+[32mSuccessfully compiled "resources/public/js/main.js" in 1.282 seconds.[0m
+notifying browser that file changed:  resources/public/js/out/cljs_deps.js
+notifying browser that file changed:  resources/public/js/out/swarmpit/component/layout.js
+[0mCompiling "resources/public/js/main.js" from ["src/cljs"]...[0m
+[36m----  Compiler Warning on   src/cljs/swarmpit/component/layout.cljs   line:8  column:7  ----[0m
+
+  [1mUse of undeclared Var swarmpit.component.layout/mui-theme-provider[0m
+
+  [36m5[0m  [36m(rum/defc theme < rum/static [][0m
+  [36m6[0m  [36m  (let [default-theme (material/mui-theme material/light-theme)][0m
+  [36m7[0m  [36m    [:div[0m
+  [33m8[0m  [1m     (mui-theme-provider #js{:muiTheme default-theme} comp)]))[0m
+  [0m [0m  [33m      ^--- Use of undeclared Var swarmpit.component.layout/mui-theme-provider[0m
+
+[36m----  Compiler Warning : Please see src/cljs/swarmpit/component/layout.cljs  ----[0m
+[32mSuccessfully compiled "resources/public/js/main.js" in 0.999 seconds.[0m
+notifying browser that file changed:  resources/public/js/out/cljs_deps.js
+notifying browser that file changed:  resources/public/js/out/swarmpit/component/layout.js
+[0mCompiling "resources/public/js/main.js" from ["src/cljs"]...[0m
+[32mSuccessfully compiled "resources/public/js/main.js" in 0.65 seconds.[0m
+notifying browser that file changed:  resources/public/js/out/swarmpit/component/layout.js
+[0mCompiling "resources/public/js/main.js" from ["src/cljs"]...[0m
+[32mSuccessfully compiled "resources/public/js/main.js" in 0.363 seconds.[0m
+notifying browser that file changed:  resources/public/js/out/swarmpit/component/layout.js
+[0mCompiling "resources/public/js/main.js" from ["src/cljs"]...[0m
+[32mSuccessfully compiled "resources/public/js/main.js" in 0.425 seconds.[0m
+notifying browser that file changed:  resources/public/js/out/swarmpit/component/layout.js
+[0mCompiling "resources/public/js/main.js" from ["src/cljs"]...[0m
+[32mSuccessfully compiled "resources/public/js/main.js" in 0.39 seconds.[0m
+notifying browser that file changed:  resources/public/js/out/swarmpit/component/layout.js
+[0mCompiling "resources/public/js/main.js" from ["src/cljs"]...[0m
+[32mSuccessfully compiled "resources/public/js/main.js" in 0.383 seconds.[0m
+notifying browser that file changed:  resources/public/js/out/swarmpit/component/layout.js
+[0mCompiling "resources/public/js/main.js" from ["src/cljs"]...[0m
+[32mSuccessfully compiled "resources/public/js/main.js" in 0.393 seconds.[0m
+notifying browser that file changed:  resources/public/js/out/swarmpit/component/layout.js
+[0mCompiling "resources/public/js/main.js" from ["src/cljs"]...[0m
+[32mSuccessfully compiled "resources/public/js/main.js" in 0.236 seconds.[0m
+notifying browser that file changed:  resources/public/js/out/swarmpit/component/layout.js
+[0mCompiling "resources/public/js/main.js" from ["src/cljs"]...[0m
+[32mSuccessfully compiled "resources/public/js/main.js" in 0.406 seconds.[0m
+notifying browser that file changed:  resources/public/js/out/swarmpit/component/layout.js
+[0mCompiling "resources/public/js/main.js" from ["src/cljs"]...[0m
+[32mSuccessfully compiled "resources/public/js/main.js" in 0.304 seconds.[0m
+notifying browser that file changed:  resources/public/js/out/cljs_deps.js
+notifying browser that file changed:  resources/public/js/out/swarmpit/app.js
+[0mCompiling "resources/public/js/main.js" from ["src/cljs"]...[0m
+[32mSuccessfully compiled "resources/public/js/main.js" in 0.495 seconds.[0m
+notifying browser that file changed:  resources/public/js/out/goog/deps.js
+notifying browser that file changed:  resources/public/js/out/cljs_deps.js
+notifying browser that file changed:  resources/public/js/out/swarmpit/app.js
+[0mCompiling "resources/public/js/main.js" from ["src/cljs"]...[0m
+[32mSuccessfully compiled "resources/public/js/main.js" in 0.478 seconds.[0m
+notifying browser that file changed:  resources/public/js/out/cljs_deps.js
+notifying browser that file changed:  resources/public/js/out/swarmpit/component/appbar.js
+[0mCompiling "resources/public/js/main.js" from ["src/cljs"]...[0m
+[32mSuccessfully compiled "resources/public/js/main.js" in 1.194 seconds.[0m
+notifying browser that file changed:  resources/public/js/out/cljs_deps.js
+notifying browser that file changed:  resources/public/js/out/swarmpit/component/layout.js
+[0mCompiling "resources/public/js/main.js" from ["src/cljs"]...[0m
+[32mSuccessfully compiled "resources/public/js/main.js" in 0.852 seconds.[0m
+notifying browser that file changed:  resources/public/js/out/swarmpit/component/layout.js
+[0mCompiling "resources/public/js/main.js" from ["src/cljs"]...[0m
+[32mSuccessfully compiled "resources/public/js/main.js" in 0.895 seconds.[0m
+notifying browser that file changed:  resources/public/js/out/swarmpit/component/layout.js
+[0mCompiling "resources/public/js/main.js" from ["src/cljs"]...[0m
+[32mSuccessfully compiled "resources/public/js/main.js" in 0.642 seconds.[0m
+notifying browser that file changed:  resources/public/js/out/goog/deps.js
+notifying browser that file changed:  resources/public/js/out/cljs_deps.js
+notifying browser that file changed:  resources/public/js/out/swarmpit/app.js
+[0mCompiling "resources/public/js/main.js" from ["src/cljs"]...[0m
+[32mSuccessfully compiled "resources/public/js/main.js" in 0.827 seconds.[0m
+notifying browser that file changed:  resources/public/js/out/swarmpit/component/layout.js
+[0mCompiling "resources/public/js/main.js" from ["src/cljs"]...[0m
+[32mSuccessfully compiled "resources/public/js/main.js" in 0.531 seconds.[0m
+notifying browser that file changed:  resources/public/js/out/swarmpit/component/layout.js
+[0mCompiling "resources/public/js/main.js" from ["src/cljs"]...[0m
+[32mSuccessfully compiled "resources/public/js/main.js" in 0.95 seconds.[0m
+notifying browser that file changed:  resources/public/js/out/swarmpit/component/layout.js
+[0mCompiling "resources/public/js/main.js" from ["src/cljs"]...[0m
+[32mSuccessfully compiled "resources/public/js/main.js" in 0.384 seconds.[0m
+notifying browser that file changed:  resources/public/js/out/swarmpit/component/layout.js
+[0mCompiling "resources/public/js/main.js" from ["src/cljs"]...[0m
+[32mSuccessfully compiled "resources/public/js/main.js" in 0.302 seconds.[0m
+notifying browser that file changed:  resources/public/js/out/swarmpit/component/layout.js
+Notifying browser that CSS file changed: resources/public/css/app.css
+Notifying browser that CSS file changed: resources/public/css/app.css
+Notifying browser that CSS file changed: resources/public/css/app.css
+Notifying browser that CSS file changed: resources/public/css/app.css
+Notifying browser that CSS file changed: resources/public/css/app.css
+Notifying browser that CSS file changed: resources/public/css/app.css
+Notifying browser that CSS file changed: resources/public/css/app.css
+Notifying browser that CSS file changed: resources/public/css/app.css
+Notifying browser that CSS file changed: resources/public/css/app.css
+Notifying browser that CSS file changed: resources/public/css/app.css
+Notifying browser that CSS file changed: resources/public/css/app.css
+Notifying browser that CSS file changed: resources/public/css/app.css
+Notifying browser that CSS file changed: resources/public/css/app.css
+Notifying browser that CSS file changed: resources/public/css/app.css
+Notifying browser that CSS file changed: resources/public/css/app.css
+Notifying browser that CSS file changed: resources/public/css/app.css
+Notifying browser that CSS file changed: resources/public/css/app.css
+Notifying browser that CSS file changed: resources/public/css/app.css
+Notifying browser that CSS file changed: resources/public/css/app.css
+Notifying browser that CSS file changed: resources/public/css/app.css
+Notifying browser that CSS file changed: resources/public/css/app.css
+Notifying browser that CSS file changed: resources/public/css/app.css
+Notifying browser that CSS file changed: resources/public/css/app.css
+Notifying browser that CSS file changed: resources/public/css/app.css
+Notifying browser that CSS file changed: resources/public/css/app.css
+[0mCompiling "resources/public/js/main.js" from ["src/cljs"]...[0m
+[36m----  Compiler Warning on   src/cljs/swarmpit/component/layout.cljs   line:13  column:63  ----[0m
+
+  [1mWrong number of args (0) passed to cljs.core/set[0m
+
+  [36m 9[0m  [36m(rum/defc appbar < rum/static [][0m
+  [36m10[0m  [36m  (material/theme[0m
+  [36m11[0m  [36m    (material/app-bar #js{:title                    "Title"[0m
+  [36m12[0m  [36m                          :onLeftIconButtonTouchTap (fn [](do (reset! expanded true)[0m
+  [33m13[0m  [1m                                                              (set)))[0m
+  [0m  [0m  [33m                                                              ^--- Wrong number of args (0) passed to cljs.core/set[0m
+  [36m14[0m  [36m                          :iconClassNameRight       "muidocs-icon-navigation-expand-more"})))[0m
+  [36m15[0m  [36m[0m
+  [36m16[0m  [36m(rum/defc drawer < rum/reactive [][0m
+  [36m17[0m  [36m  (material/theme[0m
+  [36m18[0m  [36m    (material/drawer #js {:className "drawer"[0m
+
+[36m----  Compiler Warning : Please see src/cljs/swarmpit/component/layout.cljs  ----[0m
+[32mSuccessfully compiled "resources/public/js/main.js" in 1.715 seconds.[0m
+notifying browser that file changed:  resources/public/js/out/goog/deps.js
+notifying browser that file changed:  resources/public/js/out/cljs_deps.js
+notifying browser that file changed:  resources/public/js/out/swarmpit/component/layout.js
+[0mCompiling "resources/public/js/main.js" from ["src/cljs"]...[0m
+[36m----  Compiler Warning on   src/cljs/swarmpit/component/layout.cljs   line:13  column:82  ----[0m
+
+  [1mUse of undeclared Var swarmpit.component.layout/element[0m
+
+  [36m 9[0m  [36m(rum/defc appbar < rum/static [][0m
+  [36m10[0m  [36m  (material/theme[0m
+  [36m11[0m  [36m    (material/app-bar #js{:title                    "Title"[0m
+  [36m12[0m  [36m                          :onLeftIconButtonTouchTap (fn [](do (reset! expanded true)[0m
+  [33m13[0m  [1m                                                              (set! (.-className element) nameclass)))[0m
+  [0m  [0m  [33m                                                                                 ^--- Use of undeclared Var swarmpit.component.layout/element[0m
+  [36m14[0m  [36m                          :iconClassNameRight       "muidocs-icon-navigation-expand-more"})))[0m
+  [36m15[0m  [36m[0m
+  [36m16[0m  [36m(rum/defc drawer < rum/reactive [][0m
+  [36m17[0m  [36m  (material/theme[0m
+  [36m18[0m  [36m    (material/drawer #js {:className "drawer"[0m
+
+[36m----  Compiler Warning : Please see src/cljs/swarmpit/component/layout.cljs  ----[0m
+[36m----  Compiler Warning on   src/cljs/swarmpit/component/layout.cljs   line:13  column:91  ----[0m
+
+  [1mUse of undeclared Var swarmpit.component.layout/nameclass[0m
+
+  [36m 9[0m  [36m(rum/defc appbar < rum/static [][0m
+  [36m10[0m  [36m  (material/theme[0m
+  [36m11[0m  [36m    (material/app-bar #js{:title                    "Title"[0m
+  [36m12[0m  [36m                          :onLeftIconButtonTouchTap (fn [](do (reset! expanded true)[0m
+  [33m13[0m  [1m                                                              (set! (.-className element) nameclass)))[0m
+  [0m  [0m  [33m                                                                                          ^--- Use of undeclared Var swarmpit.component.layout/nameclass[0m
+  [36m14[0m  [36m                          :iconClassNameRight       "muidocs-icon-navigation-expand-more"})))[0m
+  [36m15[0m  [36m[0m
+  [36m16[0m  [36m(rum/defc drawer < rum/reactive [][0m
+  [36m17[0m  [36m  (material/theme[0m
+  [36m18[0m  [36m    (material/drawer #js {:className "drawer"[0m
+
+[36m----  Compiler Warning : Please see src/cljs/swarmpit/component/layout.cljs  ----[0m
+[32mSuccessfully compiled "resources/public/js/main.js" in 1.186 seconds.[0m
+notifying browser that file changed:  resources/public/js/out/swarmpit/component/layout.js
+[0mCompiling "resources/public/js/main.js" from ["src/cljs"]...[0m
+[32mSuccessfully compiled "resources/public/js/main.js" in 1.052 seconds.[0m
+notifying browser that file changed:  resources/public/js/out/swarmpit/component/layout.js
+[0mCompiling "resources/public/js/main.js" from ["src/cljs"]...[0m
+[36m----  Compiler Warning on   src/cljs/swarmpit/component/layout.cljs   line:13  column:82  ----[0m
+
+  [1mUse of undeclared Var swarmpit.component.layout/el[0m
+
+  [36m 9[0m  [36m(rum/defc appbar < rum/static [][0m
+  [36m10[0m  [36m  (material/theme[0m
+  [36m11[0m  [36m    (material/app-bar #js{:title                    "Title"[0m
+  [36m12[0m  [36m                          :onLeftIconButtonTouchTap (fn [](do (reset! expanded true)[0m
+  [33m13[0m  [1m                                                              (set! (.-innerHTML el) "Hi!")))[0m
+  [0m  [0m  [33m                                                                                 ^--- Use of undeclared Var swarmpit.component.layout/el[0m
+  [36m14[0m  [36m                          :iconClassNameRight       "muidocs-icon-navigation-expand-more"})))[0m
+  [36m15[0m  [36m[0m
+  [36m16[0m  [36m(rum/defc drawer < rum/reactive [][0m
+  [36m17[0m  [36m  (material/theme[0m
+  [36m18[0m  [36m    (material/drawer #js {:className "drawer"[0m
+
+[36m----  Compiler Warning : Please see src/cljs/swarmpit/component/layout.cljs  ----[0m
+[32mSuccessfully compiled "resources/public/js/main.js" in 1.173 seconds.[0m
+notifying browser that file changed:  resources/public/js/out/swarmpit/component/layout.js
+[0mCompiling "resources/public/js/main.js" from ["src/cljs"]...[0m
+[32mSuccessfully compiled "resources/public/js/main.js" in 1.166 seconds.[0m
+notifying browser that file changed:  resources/public/js/out/swarmpit/component/layout.js
+[0mCompiling "resources/public/js/main.js" from ["src/cljs"]...[0m
+[32mSuccessfully compiled "resources/public/js/main.js" in 0.412 seconds.[0m
+notifying browser that file changed:  resources/public/js/out/swarmpit/component/layout.js
+[0mCompiling "resources/public/js/main.js" from ["src/cljs"]...[0m
+[32mSuccessfully compiled "resources/public/js/main.js" in 0.426 seconds.[0m
+notifying browser that file changed:  resources/public/js/out/swarmpit/component/layout.js
+[0mCompiling "resources/public/js/main.js" from ["src/cljs"]...[0m
+[32mSuccessfully compiled "resources/public/js/main.js" in 0.472 seconds.[0m
+notifying browser that file changed:  resources/public/js/out/swarmpit/component/layout.js
+[0mCompiling "resources/public/js/main.js" from ["src/cljs"]...[0m
+[32mSuccessfully compiled "resources/public/js/main.js" in 0.465 seconds.[0m
+notifying browser that file changed:  resources/public/js/out/swarmpit/component/layout.js
+[0mCompiling "resources/public/js/main.js" from ["src/cljs"]...[0m
+[32mSuccessfully compiled "resources/public/js/main.js" in 0.346 seconds.[0m
+notifying browser that file changed:  resources/public/js/out/swarmpit/component/layout.js
+[0mCompiling "resources/public/js/main.js" from ["src/cljs"]...[0m
+[32mSuccessfully compiled "resources/public/js/main.js" in 0.554 seconds.[0m
+notifying browser that file changed:  resources/public/js/out/swarmpit/component/layout.js
+[0mCompiling "resources/public/js/main.js" from ["src/cljs"]...[0m
+[32mSuccessfully compiled "resources/public/js/main.js" in 0.721 seconds.[0m
+notifying browser that file changed:  resources/public/js/out/swarmpit/component/layout.js
+[0mCompiling "resources/public/js/main.js" from ["src/cljs"]...[0m
+[32mSuccessfully compiled "resources/public/js/main.js" in 0.609 seconds.[0m
+notifying browser that file changed:  resources/public/js/out/swarmpit/component/layout.js
+[0mCompiling "resources/public/js/main.js" from ["src/cljs"]...[0m
+[32mSuccessfully compiled "resources/public/js/main.js" in 1.594 seconds.[0m
+notifying browser that file changed:  resources/public/js/out/swarmpit/component/layout.js
+[0mCompiling "resources/public/js/main.js" from ["src/cljs"]...[0m
+[32mSuccessfully compiled "resources/public/js/main.js" in 0.991 seconds.[0m
+notifying browser that file changed:  resources/public/js/out/swarmpit/component/layout.js
+[0mCompiling "resources/public/js/main.js" from ["src/cljs"]...[0m
+[32mSuccessfully compiled "resources/public/js/main.js" in 0.667 seconds.[0m
+notifying browser that file changed:  resources/public/js/out/swarmpit/component/layout.js
+[0mCompiling "resources/public/js/main.js" from ["src/cljs"]...[0m
+[36m----  Compiler Warning on   src/cljs/swarmpit/component/layout.cljs   line:25  column:87  ----[0m
+
+  [1mUse of undeclared Var swarmpit.component.layout/expanded[0m
+
+  [36m21[0m  [36m        class (if (true? opened) "drawer-open" "drawer-closed")][0m
+  [36m22[0m  [36m    (material/theme[0m
+  [36m23[0m  [36m      (material/drawer #js {:className class[0m
+  [36m24[0m  [36m                            :open      opened}[0m
+  [33m25[0m  [1m                       (material/app-bar #js{:onLeftIconButtonTouchTap (fn [] (reset! expanded (not @expanded)))})[0m
+  [0m  [0m  [33m                                                                                      ^--- Use of undeclared Var swarmpit.component.layout/expanded[0m
+  [36m26[0m  [36m                       ;(material/menu-item "Menu Item 1")[0m
+  [36m27[0m  [36m                       ;(material/menu-item "Menu Item 2")[0m
+  [36m28[0m  [36m                       ))))[0m
+  [36m29[0m  [36m[0m
+  [36m30[0m  [36m(defn mount![0m
+
+[36m----  Compiler Warning : Please see src/cljs/swarmpit/component/layout.cljs  ----[0m
+[36m----  Compiler Warning on   src/cljs/swarmpit/component/layout.cljs   line:25  column:102  ----[0m
+
+  [1mUse of undeclared Var swarmpit.component.layout/expanded[0m
+
+  [36m21[0m  [36m        class (if (true? opened) "drawer-open" "drawer-closed")][0m
+  [36m22[0m  [36m    (material/theme[0m
+  [36m23[0m  [36m      (material/drawer #js {:className class[0m
+  [36m24[0m  [36m                            :open      opened}[0m
+  [33m25[0m  [1m                       (material/app-bar #js{:onLeftIconButtonTouchTap (fn [] (reset! expanded (not @expanded)))})[0m
+  [0m  [0m  [33m                                                                                                     ^--- Use of undeclared Var swarmpit.component.layout/expanded[0m
+  [36m26[0m  [36m                       ;(material/menu-item "Menu Item 1")[0m
+  [36m27[0m  [36m                       ;(material/menu-item "Menu Item 2")[0m
+  [36m28[0m  [36m                       ))))[0m
+  [36m29[0m  [36m[0m
+  [36m30[0m  [36m(defn mount![0m
+
+[36m----  Compiler Warning : Please see src/cljs/swarmpit/component/layout.cljs  ----[0m
+[32mSuccessfully compiled "resources/public/js/main.js" in 1.365 seconds.[0m
+notifying browser that file changed:  resources/public/js/out/goog/deps.js
+notifying browser that file changed:  resources/public/js/out/cljs_deps.js
+notifying browser that file changed:  resources/public/js/out/swarmpit/component/layout.js
+[0mCompiling "resources/public/js/main.js" from ["src/cljs"]...[0m
+[36m----  Compiler Warning on   src/cljs/swarmpit/component/layout.cljs   line:25  column:100  ----[0m
+
+  [1mUse of undeclared Var swarmpit.component.layout/expanded[0m
+
+  [36m21[0m  [36m        class (if (true? opened) "drawer-open" "drawer-closed")][0m
+  [36m22[0m  [36m    (material/theme[0m
+  [36m23[0m  [36m      (material/drawer #js {:className class[0m
+  [36m24[0m  [36m                            :open      opened}[0m
+  [33m25[0m  [1m                       (material/app-bar #js{:onLeftIconButtonTouchTap (fn [] (reset! opened (not @expanded)))})[0m
+  [0m  [0m  [33m                                                                                                   ^--- Use of undeclared Var swarmpit.component.layout/expanded[0m
+  [36m26[0m  [36m                       ;(material/menu-item "Menu Item 1")[0m
+  [36m27[0m  [36m                       ;(material/menu-item "Menu Item 2")[0m
+  [36m28[0m  [36m                       ))))[0m
+  [36m29[0m  [36m[0m
+  [36m30[0m  [36m(defn mount![0m
+
+[36m----  Compiler Warning : Please see src/cljs/swarmpit/component/layout.cljs  ----[0m
+[32mSuccessfully compiled "resources/public/js/main.js" in 0.596 seconds.[0m
+notifying browser that file changed:  resources/public/js/out/swarmpit/component/layout.js
+[0mCompiling "resources/public/js/main.js" from ["src/cljs"]...[0m
+[32mSuccessfully compiled "resources/public/js/main.js" in 0.463 seconds.[0m
+notifying browser that file changed:  resources/public/js/out/swarmpit/component/layout.js
+[0mCompiling "resources/public/js/main.js" from ["src/cljs"]...[0m
+[32mSuccessfully compiled "resources/public/js/main.js" in 0.455 seconds.[0m
+notifying browser that file changed:  resources/public/js/out/swarmpit/component/layout.js
+[0mCompiling "resources/public/js/main.js" from ["src/cljs"]...[0m
+[32mSuccessfully compiled "resources/public/js/main.js" in 0.793 seconds.[0m
+notifying browser that file changed:  resources/public/js/out/swarmpit/component/layout.js
+Notifying browser that CSS file changed: resources/public/css/app.css
+Notifying browser that CSS file changed: resources/public/css/app.css
+Notifying browser that CSS file changed: resources/public/css/app.css
+Notifying browser that CSS file changed: resources/public/css/app.css
+[0mCompiling "resources/public/js/main.js" from ["src/cljs"]...[0m
+[32mSuccessfully compiled "resources/public/js/main.js" in 0.701 seconds.[0m
+notifying browser that file changed:  resources/public/js/out/swarmpit/component/layout.js
+[0mCompiling "resources/public/js/main.js" from ["src/cljs"]...[0m
+[32mSuccessfully compiled "resources/public/js/main.js" in 1.105 seconds.[0m
+notifying browser that file changed:  resources/public/js/out/swarmpit/component/layout.js
+[0mCompiling "resources/public/js/main.js" from ["src/cljs"]...[0m
+[32mSuccessfully compiled "resources/public/js/main.js" in 1.047 seconds.[0m
+notifying browser that file changed:  resources/public/js/out/swarmpit/component/layout.js
+[0mCompiling "resources/public/js/main.js" from ["src/cljs"]...[0m
+[32mSuccessfully compiled "resources/public/js/main.js" in 1.588 seconds.[0m
+notifying browser that file changed:  resources/public/js/out/swarmpit/component/layout.js
+[0mCompiling "resources/public/js/main.js" from ["src/cljs"]...[0m
+[32mSuccessfully compiled "resources/public/js/main.js" in 1.514 seconds.[0m
+notifying browser that file changed:  resources/public/js/out/goog/deps.js
+notifying browser that file changed:  resources/public/js/out/cljs_deps.js
+notifying browser that file changed:  resources/public/js/out/swarmpit/component/layout.js
+[0mCompiling "resources/public/js/main.js" from ["src/cljs"]...[0m
+[36m----  Compiler Warning on   src/cljs/swarmpit/component/layout.cljs   line:26  column:45  ----[0m
+
+  [1mUse of undeclared Var swarmpit.component.layout/drawer-style[0m
+
+  [36m22[0m  [36m    class (if (true? opened) "drawer-open" "drawer-closed")][0m
+  [36m23[0m  [36m(material/theme[0m
+  [36m24[0m  [36m  (material/drawer #js {:className      class[0m
+  [36m25[0m  [36m                        :open           opened[0m
+  [33m26[0m  [1m                        :containerStyle drawer-style}[0m
+  [0m  [0m  [33m                                        ^--- Use of undeclared Var swarmpit.component.layout/drawer-style[0m
+  [36m27[0m  [36m                   (material/app-bar #js{:onLeftIconButtonTouchTap (fn [] (reset! opened? (not @opened?)))})[0m
+  [36m28[0m  [36m                   (material/menu-item "Menu Item 1")[0m
+  [36m29[0m  [36m                   (material/menu-item "Menu Item 2")[0m
+  [36m30[0m  [36m                   ))))[0m
+
+[36m----  Compiler Warning : Please see src/cljs/swarmpit/component/layout.cljs  ----[0m
+[32mSuccessfully compiled "resources/public/js/main.js" in 1.055 seconds.[0m
+notifying browser that file changed:  resources/public/js/out/swarmpit/component/layout.js
+[0mCompiling "resources/public/js/main.js" from ["src/cljs"]...[0m
+[36m----  Compiler Warning on   src/cljs/swarmpit/component/layout.cljs   line:29  column:45  ----[0m
+
+  [1mUse of undeclared Var swarmpit.component.layout/drawer-style[0m
+
+  [36m25[0m  [36m    class (if (true? opened) "drawer-open" "drawer-closed")][0m
+  [36m26[0m  [36m(material/theme[0m
+  [36m27[0m  [36m  (material/drawer #js {:className      class[0m
+  [36m28[0m  [36m                        :open           opened[0m
+  [33m29[0m  [1m                        :containerStyle drawer-style}[0m
+  [0m  [0m  [33m                                        ^--- Use of undeclared Var swarmpit.component.layout/drawer-style[0m
+  [36m30[0m  [36m                   (material/app-bar #js{:onLeftIconButtonTouchTap (fn [] (reset! opened? (not @opened?)))})[0m
+  [36m31[0m  [36m                   (material/menu-item "Menu Item 1")[0m
+  [36m32[0m  [36m                   (material/menu-item "Menu Item 2")[0m
+  [36m33[0m  [36m                   ))))[0m
+
+[36m----  Compiler Warning : Please see src/cljs/swarmpit/component/layout.cljs  ----[0m
+[32mSuccessfully compiled "resources/public/js/main.js" in 0.723 seconds.[0m
+notifying browser that file changed:  resources/public/js/out/swarmpit/component/layout.js
+[0mCompiling "resources/public/js/main.js" from ["src/cljs"]...[0m
+[36m----  Compiler Warning on   src/cljs/swarmpit/component/layout.cljs   line:29  column:45  ----[0m
+
+  [1mUse of undeclared Var swarmpit.component.layout/drawer-style[0m
+
+  [36m25[0m  [36m    class (if (true? opened) "drawer-open" "drawer-closed")][0m
+  [36m26[0m  [36m(material/theme[0m
+  [36m27[0m  [36m  (material/drawer #js {:className      class[0m
+  [36m28[0m  [36m                        :open           opened[0m
+  [33m29[0m  [1m                        :containerStyle drawer-style}[0m
+  [0m  [0m  [33m                                        ^--- Use of undeclared Var swarmpit.component.layout/drawer-style[0m
+  [36m30[0m  [36m                   (material/app-bar #js{:onLeftIconButtonTouchTap (fn [] (reset! opened? (not @opened?)))})[0m
+  [36m31[0m  [36m                   (material/menu-item "Menu Item 1")[0m
+  [36m32[0m  [36m                   (material/menu-item "Menu Item 2")[0m
+  [36m33[0m  [36m                   ))))[0m
+
+[36m----  Compiler Warning : Please see src/cljs/swarmpit/component/layout.cljs  ----[0m
+[32mSuccessfully compiled "resources/public/js/main.js" in 0.655 seconds.[0m
+notifying browser that file changed:  resources/public/js/out/swarmpit/component/layout.js
+[0mCompiling "resources/public/js/main.js" from ["src/cljs"]...[0m
+[36m----  Compiler Warning on   src/cljs/swarmpit/component/layout.cljs   line:28  column:45  ----[0m
+
+  [1mUse of undeclared Var swarmpit.component.layout/drawer-style[0m
+
+  [36m24[0m  [36m    class (if (true? opened) "drawer-open" "drawer-closed")][0m
+  [36m25[0m  [36m(material/theme[0m
+  [36m26[0m  [36m  (material/drawer #js {:className      class[0m
+  [36m27[0m  [36m                        :open           opened[0m
+  [33m28[0m  [1m                        :containerStyle drawer-style}[0m
+  [0m  [0m  [33m                                        ^--- Use of undeclared Var swarmpit.component.layout/drawer-style[0m
+  [36m29[0m  [36m                   (material/app-bar #js{:onLeftIconButtonTouchTap (fn [] (reset! opened? (not @opened?)))})[0m
+  [36m30[0m  [36m                   (material/menu-item "Menu Item 1")[0m
+  [36m31[0m  [36m                   (material/menu-item "Menu Item 2")[0m
+  [36m32[0m  [36m                   ))))[0m
+
+[36m----  Compiler Warning : Please see src/cljs/swarmpit/component/layout.cljs  ----[0m
+[32mSuccessfully compiled "resources/public/js/main.js" in 0.34 seconds.[0m
+notifying browser that file changed:  resources/public/js/out/swarmpit/component/layout.js
+[0mCompiling "resources/public/js/main.js" from ["src/cljs"]...[0m
+[36m----  Compiler Warning on   src/cljs/swarmpit/component/layout.cljs   line:28  column:45  ----[0m
+
+  [1mUse of undeclared Var swarmpit.component.layout/drawer-style[0m
+
+  [36m24[0m  [36m    class (if (true? opened) "drawer-open" "drawer-closed")][0m
+  [36m25[0m  [36m(material/theme[0m
+  [36m26[0m  [36m  (material/drawer #js {:className      class[0m
+  [36m27[0m  [36m                        :open           opened[0m
+  [33m28[0m  [1m                        :containerStyle drawer-style}[0m
+  [0m  [0m  [33m                                        ^--- Use of undeclared Var swarmpit.component.layout/drawer-style[0m
+  [36m29[0m  [36m                   (material/app-bar #js{:onLeftIconButtonTouchTap (fn [] (reset! opened? (not @opened?)))})[0m
+  [36m30[0m  [36m                   (material/menu-item "Menu Item 1")[0m
+  [36m31[0m  [36m                   (material/menu-item "Menu Item 2")[0m
+  [36m32[0m  [36m                   ))))[0m
+
+[36m----  Compiler Warning : Please see src/cljs/swarmpit/component/layout.cljs  ----[0m
+[32mSuccessfully compiled "resources/public/js/main.js" in 0.425 seconds.[0m
+notifying browser that file changed:  resources/public/js/out/swarmpit/component/layout.js
+[0mCompiling "resources/public/js/main.js" from ["src/cljs"]...[0m
+[32mSuccessfully compiled "resources/public/js/main.js" in 0.438 seconds.[0m
+notifying browser that file changed:  resources/public/js/out/swarmpit/component/layout.js
+Notifying browser that CSS file changed: resources/public/css/app.css
+Notifying browser that CSS file changed: resources/public/css/app.css
+Notifying browser that CSS file changed: resources/public/css/app.css
+[0mCompiling "resources/public/js/main.js" from ["src/cljs"]...[0m
+[31mFailed to compile "resources/public/js/main.js" in 0.726 seconds.[0m
+[36m----  Could not Read  src/cljs/swarmpit/component/layout.cljs   line:23  column:34  ----[0m
+
+  [1mMap literal must contain an even number of forms[0m
+
+  [36m21[0m  [36m  (material/theme[0m
+  [36m22[0m  [36m    (material/app-bar #js{:showMenuIconButton false[0m
+  [33m23[0m  [1m                          :style})))[0m
+  [0m  [0m  [33m                                 ^--- Map literal must contain an even number of forms[0m
+  [36m24[0m  [36m[0m
+  [36m25[0m  [36m(rum/defc drawer < rum/reactive [][0m
+  [36m26[0m  [36m  (let [opened (rum/react opened?)[0m
+
+[36m----  Reader Error : Please see src/cljs/swarmpit/component/layout.cljs  ----[0m
+[0mCompiling "resources/public/js/main.js" from ["src/cljs"]...[0m
+[32mSuccessfully compiled "resources/public/js/main.js" in 0.982 seconds.[0m
+notifying browser that file changed:  resources/public/js/out/swarmpit/component/layout.js
+[0mCompiling "resources/public/js/main.js" from ["src/cljs"]...[0m
+[32mSuccessfully compiled "resources/public/js/main.js" in 0.952 seconds.[0m
+notifying browser that file changed:  resources/public/js/out/swarmpit/component/layout.js
+[0mCompiling "resources/public/js/main.js" from ["src/cljs"]...[0m
+[32mSuccessfully compiled "resources/public/js/main.js" in 1.322 seconds.[0m
+notifying browser that file changed:  resources/public/js/out/swarmpit/component/layout.js
+[0mCompiling "resources/public/js/main.js" from ["src/cljs"]...[0m
+[32mSuccessfully compiled "resources/public/js/main.js" in 0.264 seconds.[0m
+notifying browser that file changed:  resources/public/js/out/swarmpit/component/layout.js
+[0mCompiling "resources/public/js/main.js" from ["src/cljs"]...[0m
+[32mSuccessfully compiled "resources/public/js/main.js" in 0.648 seconds.[0m
+notifying browser that file changed:  resources/public/js/out/swarmpit/component/layout.js
+[0mCompiling "resources/public/js/main.js" from ["src/cljs"]...[0m
+[32mSuccessfully compiled "resources/public/js/main.js" in 0.84 seconds.[0m
+notifying browser that file changed:  resources/public/js/out/swarmpit/component/layout.js
+Notifying browser that CSS file changed: resources/public/css/app.css
+[0mCompiling "resources/public/js/main.js" from ["src/cljs"]...[0m
+[32mSuccessfully compiled "resources/public/js/main.js" in 1.01 seconds.[0m
+notifying browser that file changed:  resources/public/js/out/swarmpit/component/layout.js
+Notifying browser that CSS file changed: resources/public/css/app.css
+Notifying browser that CSS file changed: resources/public/css/app.css
+Notifying browser that CSS file changed: resources/public/css/app.css
+Notifying browser that CSS file changed: resources/public/css/app.css
+Notifying browser that CSS file changed: resources/public/css/app.css
+Notifying browser that CSS file changed: resources/public/css/app.css
+Notifying browser that CSS file changed: resources/public/css/app.css
+Notifying browser that CSS file changed: resources/public/css/app.css
+Notifying browser that CSS file changed: resources/public/css/app.css
+[0mCompiling "resources/public/js/main.js" from ["src/cljs"]...[0m
+[36m----  Compiler Warning on   src/cljs/swarmpit/component/layout.cljs   line:16  column:2  ----[0m
+
+  [1mNo such namespace: run, could not locate run.cljs, run.cljc, or Closure namespace ""[0m
+
+  [36m12[0m  [36m(def drawer-style-opened #js{:width "256px"})[0m
+  [36m13[0m  [36m[0m
+  [36m14[0m  [36m(def appbar-style #js{:backgroundColor "#437f9d"})[0m
+  [36m15[0m  [36m[0m
+  [33m16[0m  [1m(run/defc layout < rum/reactive [][0m
+  [0m  [0m  [33m ^--- No such namespace: run, could not locate run.cljs, run.cljc, or Closure namespace ""[0m
+  [36m17[0m  [36m          )[0m
+  [36m18[0m  [36m[0m
+  [36m19[0m  [36m(rum/defc menu-icon < rum/static [][0m
+  [36m20[0m  [36m  (material/theme[0m
+  [36m21[0m  [36m    (material/font-icon #js{:className "material-icons"} "search")))[0m
+
+[36m----  Compiler Warning : Please see src/cljs/swarmpit/component/layout.cljs  ----[0m
+[36m----  Compiler Warning on   src/cljs/swarmpit/component/layout.cljs   line:16  column:2  ----[0m
+
+  [1mUse of undeclared Var run/defc[0m
+
+  [36m12[0m  [36m(def drawer-style-opened #js{:width "256px"})[0m
+  [36m13[0m  [36m[0m
+  [36m14[0m  [36m(def appbar-style #js{:backgroundColor "#437f9d"})[0m
+  [36m15[0m  [36m[0m
+  [33m16[0m  [1m(run/defc layout < rum/reactive [][0m
+  [0m  [0m  [33m ^--- Use of undeclared Var run/defc[0m
+  [36m17[0m  [36m          )[0m
+  [36m18[0m  [36m[0m
+  [36m19[0m  [36m(rum/defc menu-icon < rum/static [][0m
+  [36m20[0m  [36m  (material/theme[0m
+  [36m21[0m  [36m    (material/font-icon #js{:className "material-icons"} "search")))[0m
+
+[36m----  Compiler Warning : Please see src/cljs/swarmpit/component/layout.cljs  ----[0m
+[36m----  Compiler Warning on   src/cljs/swarmpit/component/layout.cljs   line:16  column:11  ----[0m
+
+  [1mUse of undeclared Var swarmpit.component.layout/layout[0m
+
+  [36m12[0m  [36m(def drawer-style-opened #js{:width "256px"})[0m
+  [36m13[0m  [36m[0m
+  [36m14[0m  [36m(def appbar-style #js{:backgroundColor "#437f9d"})[0m
+  [36m15[0m  [36m[0m
+  [33m16[0m  [1m(run/defc layout < rum/reactive [][0m
+  [0m  [0m  [33m          ^--- Use of undeclared Var swarmpit.component.layout/layout[0m
+  [36m17[0m  [36m          )[0m
+  [36m18[0m  [36m[0m
+  [36m19[0m  [36m(rum/defc menu-icon < rum/static [][0m
+  [36m20[0m  [36m  (material/theme[0m
+  [36m21[0m  [36m    (material/font-icon #js{:className "material-icons"} "search")))[0m
+
+[36m----  Compiler Warning : Please see src/cljs/swarmpit/component/layout.cljs  ----[0m
+[32mSuccessfully compiled "resources/public/js/main.js" in 1.103 seconds.[0m
+notifying browser that file changed:  resources/public/js/out/swarmpit/component/layout.js
+[0mCompiling "resources/public/js/main.js" from ["src/cljs"]...[0m
+[31mFailed to compile "resources/public/js/main.js" in 0.79 seconds.[0m
+[36m----  Could not Read  src/cljs/swarmpit/component/layout.cljs   line:17  column:29  ----[0m
+
+  [1mUnmatched delimiter )[0m
+
+  [36m16[0m  [36m(run/defc layout < rum/reactive [][0m
+  [33m17[0m  [1m          [:div#page-layout)[0m
+  [0m  [0m  [33m                            ^--- Unmatched delimiter )[0m
+  [36m18[0m  [36m[0m
+  [36m19[0m  [36m(rum/defc menu-icon < rum/static [][0m
+  [36m20[0m  [36m  (material/theme[0m
+
+[36m----  Reader Error : Please see src/cljs/swarmpit/component/layout.cljs  ----[0m
+[0mCompiling "resources/public/js/main.js" from ["src/cljs"]...[0m
+[32mSuccessfully compiled "resources/public/js/main.js" in 1.052 seconds.[0m
+notifying browser that file changed:  resources/public/js/out/swarmpit/component/layout.js
+[0mCompiling "resources/public/js/main.js" from ["src/cljs"]...[0m
+[32mSuccessfully compiled "resources/public/js/main.js" in 0.634 seconds.[0m
+notifying browser that file changed:  resources/public/js/out/swarmpit/component/layout.js
+[0mCompiling "resources/public/js/main.js" from ["src/cljs"]...[0m
+[36m----  Compiler Warning on   src/cljs/swarmpit/component/layout.cljs   line:18  column:14  ----[0m
+
+  [1mUse of undeclared Var swarmpit.component.layout/appbar[0m
+
+  [36m14[0m  [36m(def appbar-style #js{:backgroundColor "#437f9d"})[0m
+  [36m15[0m  [36m[0m
+  [36m16[0m  [36m(rum/defc layout < rum/reactive [][0m
+  [36m17[0m  [36m  [:div#page-layout.layout[0m
+  [33m18[0m  [1m   [:header (appbar)][0m
+  [0m  [0m  [33m             ^--- Use of undeclared Var swarmpit.component.layout/appbar[0m
+  [36m19[0m  [36m   [:nav (drawer)][0m
+  [36m20[0m  [36m   [:main [:div#page-content]]])[0m
+  [36m21[0m  [36m[0m
+  [36m22[0m  [36m(rum/defc menu-icon < rum/static [][0m
+  [36m23[0m  [36m  (material/theme[0m
+
+[36m----  Compiler Warning : Please see src/cljs/swarmpit/component/layout.cljs  ----[0m
+[36m----  Compiler Warning on   src/cljs/swarmpit/component/layout.cljs   line:19  column:11  ----[0m
+
+  [1mUse of undeclared Var swarmpit.component.layout/drawer[0m
+
+  [36m16[0m  [36m(rum/defc layout < rum/reactive [][0m
+  [36m17[0m  [36m  [:div#page-layout.layout[0m
+  [36m18[0m  [36m   [:header (appbar)][0m
+  [33m19[0m  [1m   [:nav (drawer)][0m
+  [0m  [0m  [33m          ^--- Use of undeclared Var swarmpit.component.layout/drawer[0m
+  [36m20[0m  [36m   [:main [:div#page-content]]])[0m
+  [36m21[0m  [36m[0m
+  [36m22[0m  [36m(rum/defc menu-icon < rum/static [][0m
+  [36m23[0m  [36m  (material/theme[0m
+  [36m24[0m  [36m    (material/font-icon #js{:className "material-icons"} "search")))[0m
+
+[36m----  Compiler Warning : Please see src/cljs/swarmpit/component/layout.cljs  ----[0m
+[32mSuccessfully compiled "resources/public/js/main.js" in 0.514 seconds.[0m
+notifying browser that file changed:  resources/public/js/out/swarmpit/component/layout.js
+[0mCompiling "resources/public/js/main.js" from ["src/cljs"]...[0m
+[32mSuccessfully compiled "resources/public/js/main.js" in 0.254 seconds.[0m
+notifying browser that file changed:  resources/public/js/out/swarmpit/component/layout.js
+[0mCompiling "resources/public/js/main.js" from ["src/cljs"]...[0m
+[32mSuccessfully compiled "resources/public/js/main.js" in 0.263 seconds.[0m
+notifying browser that file changed:  resources/public/js/out/swarmpit/component/layout.js
+[0mCompiling "resources/public/js/main.js" from ["src/cljs"]...[0m
+[36m----  Compiler Warning on   src/cljs/swarmpit/component/layout.cljs   line:47  column:1  ----[0m
+
+  [1mmount! at line 41 is being replaced[0m
+
+  [36m43[0m  [36m  (do[0m
+  [36m44[0m  [36m    (rum/mount (layout) (.getElementById js/document "page-appbar"))[0m
+  [36m45[0m  [36m    (rum/mount (drawer) (.getElementById js/document "page-drawer"))))[0m
+  [36m46[0m  [36m[0m
+  [33m47[0m  [1m(defn mount![0m
+  [0m  [0m  [33m^--- mount! at line 41 is being replaced[0m
+  [36m48[0m  [36m  [][0m
+  [36m49[0m  [36m  (do[0m
+  [36m50[0m  [36m    (rum/mount (appbar) (.getElementById js/document "page-appbar"))[0m
+  [36m51[0m  [36m    (rum/mount (drawer) (.getElementById js/document "page-drawer"))))[0m
+
+[36m----  Compiler Warning : Please see src/cljs/swarmpit/component/layout.cljs  ----[0m
+[32mSuccessfully compiled "resources/public/js/main.js" in 0.352 seconds.[0m
+notifying browser that file changed:  resources/public/js/out/swarmpit/component/layout.js
+[0mCompiling "resources/public/js/main.js" from ["src/cljs"]...[0m
+[36m----  Compiler Warning on   src/cljs/swarmpit/component/layout.cljs   line:45  column:1  ----[0m
+
+  [1mmount! at line 41 is being replaced[0m
+
+  [36m41[0m  [36m(defn mount![0m
+  [36m42[0m  [36m  [][0m
+  [36m43[0m  [36m  (rum/mount (layout) (.getElementById js/document "layout")))[0m
+  [36m44[0m  [36m[0m
+  [33m45[0m  [1m(defn mount![0m
+  [0m  [0m  [33m^--- mount! at line 41 is being replaced[0m
+  [36m46[0m  [36m  [][0m
+  [36m47[0m  [36m  (do[0m
+  [36m48[0m  [36m    (rum/mount (appbar) (.getElementById js/document "page-appbar"))[0m
+  [36m49[0m  [36m    (rum/mount (drawer) (.getElementById js/document "page-drawer"))))[0m
+
+[36m----  Compiler Warning : Please see src/cljs/swarmpit/component/layout.cljs  ----[0m
+[32mSuccessfully compiled "resources/public/js/main.js" in 0.533 seconds.[0m
+notifying browser that file changed:  resources/public/js/out/swarmpit/component/layout.js
+[0mCompiling "resources/public/js/main.js" from ["src/cljs"]...[0m
+[32mSuccessfully compiled "resources/public/js/main.js" in 0.299 seconds.[0m
+notifying browser that file changed:  resources/public/js/out/swarmpit/component/layout.js
+[0mCompiling "resources/public/js/main.js" from ["src/cljs"]...[0m
+[32mSuccessfully compiled "resources/public/js/main.js" in 0.228 seconds.[0m
+notifying browser that file changed:  resources/public/js/out/swarmpit/component/layout.js
+[0mCompiling "resources/public/js/main.js" from ["src/cljs"]...[0m
+[32mSuccessfully compiled "resources/public/js/main.js" in 0.411 seconds.[0m
+notifying browser that file changed:  resources/public/js/out/swarmpit/component/layout.js
+[0mCompiling "resources/public/js/main.js" from ["src/cljs"]...[0m
+[32mSuccessfully compiled "resources/public/js/main.js" in 0.341 seconds.[0m
+notifying browser that file changed:  resources/public/js/out/swarmpit/component/layout.js
+[0mCompiling "resources/public/js/main.js" from ["src/cljs"]...[0m
+[32mSuccessfully compiled "resources/public/js/main.js" in 0.603 seconds.[0m
+notifying browser that file changed:  resources/public/js/out/swarmpit/component/layout.js
+[0mCompiling "resources/public/js/main.js" from ["src/cljs"]...[0m
+[32mSuccessfully compiled "resources/public/js/main.js" in 0.237 seconds.[0m
+notifying browser that file changed:  resources/public/js/out/swarmpit/component/layout.js
+[0mCompiling "resources/public/js/main.js" from ["src/cljs"]...[0m
+[32mSuccessfully compiled "resources/public/js/main.js" in 0.298 seconds.[0m
+notifying browser that file changed:  resources/public/js/out/swarmpit/component/layout.js
+[0mCompiling "resources/public/js/main.js" from ["src/cljs"]...[0m
+[32mSuccessfully compiled "resources/public/js/main.js" in 0.493 seconds.[0m
+notifying browser that file changed:  resources/public/js/out/swarmpit/component/layout.js
+Notifying browser that CSS file changed: resources/public/css/app.css
+Notifying browser that CSS file changed: resources/public/css/app.css
+Notifying browser that CSS file changed: resources/public/css/app.css
+Notifying browser that CSS file changed: resources/public/css/app.css
+Notifying browser that CSS file changed: resources/public/css/app.css
+Notifying browser that CSS file changed: resources/public/css/app.css
+Notifying browser that CSS file changed: resources/public/css/app.css
+Notifying browser that CSS file changed: resources/public/css/app.css
+Notifying browser that CSS file changed: resources/public/css/app.css
+Notifying browser that CSS file changed: resources/public/css/app.css
+[0mCompiling "resources/public/js/main.js" from ["src/cljs"]...[0m
+[31mFailed to compile "resources/public/js/main.js" in 0.292 seconds.[0m
+[36m----  Could not Read  src/cljs/swarmpit/component/layout.cljs   line:37  column:17  ----[0m
+
+  [1mMap literal must contain an even number of forms[0m
+
+  [36m35[0m  [36m(rum/defc layout < rum/reactive [][0m
+  [36m36[0m  [36m  (let [opened (rum/react opened?)][0m
+  [33m37[0m  [1m    [:div {:cla}[0m
+  [0m  [0m  [33m                ^--- Map literal must contain an even number of forms[0m
+  [36m38[0m  [36m     [:header (appbar)][0m
+  [36m39[0m  [36m     [:nav (drawer)][0m
+  [36m40[0m  [36m     [:main [:div#content "trololo"]]]))[0m
+
+[36m----  Reader Error : Please see src/cljs/swarmpit/component/layout.cljs  ----[0m
+[0mCompiling "resources/public/js/main.js" from ["src/cljs"]...[0m
+[32mSuccessfully compiled "resources/public/js/main.js" in 0.466 seconds.[0m
+notifying browser that file changed:  resources/public/js/out/swarmpit/component/layout.js
+Notifying browser that CSS file changed: resources/public/css/app.css
+[0mCompiling "resources/public/js/main.js" from ["src/cljs"]...[0m
+[32mSuccessfully compiled "resources/public/js/main.js" in 0.579 seconds.[0m
+notifying browser that file changed:  resources/public/js/out/swarmpit/component/layout.js
+Notifying browser that CSS file changed: resources/public/css/app.css
+[0mCompiling "resources/public/js/main.js" from ["src/cljs"]...[0m
+[32mSuccessfully compiled "resources/public/js/main.js" in 0.263 seconds.[0m
+notifying browser that file changed:  resources/public/js/out/swarmpit/component/layout.js
+Notifying browser that CSS file changed: resources/public/css/app.css
+Notifying browser that CSS file changed: resources/public/css/app.css
+[0mCompiling "resources/public/js/main.js" from ["src/cljs"]...[0m
+[32mSuccessfully compiled "resources/public/js/main.js" in 1.105 seconds.[0m
+notifying browser that file changed:  resources/public/js/out/swarmpit/component/layout.js
+[0mCompiling "resources/public/js/main.js" from ["src/cljs"]...[0m
+[36m----  Compiler Warning on   src/cljs/swarmpit/component/layout.cljs   line:21  column:47  ----[0m
+
+  [1mUse of undeclared Var swarmpit.component.layout/appbar-style[0m
+
+  [36m18[0m  [36m(rum/defc appbar < rum/static [][0m
+  [36m19[0m  [36m  (material/theme[0m
+  [36m20[0m  [36m    (material/app-bar #js{:showMenuIconButton false[0m
+  [33m21[0m  [1m                          :style              appbar-style})))[0m
+  [0m  [0m  [33m                                              ^--- Use of undeclared Var swarmpit.component.layout/appbar-style[0m
+  [36m22[0m  [36m[0m
+  [36m23[0m  [36m(rum/defc drawer < rum/reactive [][0m
+  [36m24[0m  [36m  (let [opened (rum/react opened?)[0m
+  [36m25[0m  [36m        drawer-style (if (true? opened)[0m
+  [36m26[0m  [36m                       drawer-style-opened[0m
+
+[36m----  Compiler Warning : Please see src/cljs/swarmpit/component/layout.cljs  ----[0m
+[36m----  Compiler Warning on   src/cljs/swarmpit/component/layout.cljs   line:31  column:72  ----[0m
+
+  [1mUse of undeclared Var swarmpit.component.layout/appbar-style[0m
+
+  [36m27[0m  [36m                   drawer-style-closed)][0m
+  [36m28[0m  [36m(material/theme[0m
+  [36m29[0m  [36m  (material/drawer #js {:open           opened[0m
+  [36m30[0m  [36m                        :containerStyle drawer-style}[0m
+  [33m31[0m  [1m                   (material/app-bar #js{:style                    appbar-style[0m
+  [0m  [0m  [33m                                                                   ^--- Use of undeclared Var swarmpit.component.layout/appbar-style[0m
+  [36m32[0m  [36m                                         :onLeftIconButtonTouchTap (fn [] (reset! opened? (not @opened?)))})[0m
+  [36m33[0m  [36m                   (material/menu-item "Menu Item 1")[0m
+  [36m34[0m  [36m                   (material/menu-item "Menu Item 2")[0m
+  [36m35[0m  [36m                   ))))[0m
+
+[36m----  Compiler Warning : Please see src/cljs/swarmpit/component/layout.cljs  ----[0m
+[32mSuccessfully compiled "resources/public/js/main.js" in 0.884 seconds.[0m
+notifying browser that file changed:  resources/public/js/out/swarmpit/component/layout.js
+[0mCompiling "resources/public/js/main.js" from ["src/cljs"]...[0m
+[36m----  Compiler Warning on   src/cljs/swarmpit/component/layout.cljs   line:21  column:47  ----[0m
+
+  [1mUse of undeclared Var swarmpit.component.layout/appbar-style[0m
+
+  [36m18[0m  [36m(rum/defc appbar < rum/static [][0m
+  [36m19[0m  [36m  (material/theme[0m
+  [36m20[0m  [36m    (material/app-bar #js{:showMenuIconButton false[0m
+  [33m21[0m  [1m                          :style              appbar-style})))[0m
+  [0m  [0m  [33m                                              ^--- Use of undeclared Var swarmpit.component.layout/appbar-style[0m
+  [36m22[0m  [36m[0m
+  [36m23[0m  [36m(rum/defc drawer < rum/reactive [][0m
+  [36m24[0m  [36m  (let [opened (rum/react opened?)[0m
+  [36m25[0m  [36m        drawer-style (if (true? opened)[0m
+  [36m26[0m  [36m                       drawer-style-opened[0m
+
+[36m----  Compiler Warning : Please see src/cljs/swarmpit/component/layout.cljs  ----[0m
+[36m----  Compiler Warning on   src/cljs/swarmpit/component/layout.cljs   line:31  column:72  ----[0m
+
+  [1mUse of undeclared Var swarmpit.component.layout/appbar-style[0m
+
+  [36m27[0m  [36m                   drawer-style-closed)][0m
+  [36m28[0m  [36m(material/theme[0m
+  [36m29[0m  [36m  (material/drawer #js {:open           opened[0m
+  [36m30[0m  [36m                        :containerStyle drawer-style}[0m
+  [33m31[0m  [1m                   (material/app-bar #js{:style                    appbar-style[0m
+  [0m  [0m  [33m                                                                   ^--- Use of undeclared Var swarmpit.component.layout/appbar-style[0m
+  [36m32[0m  [36m                                         :onLeftIconButtonTouchTap (fn [] (reset! opened? (not @opened?)))})[0m
+  [36m33[0m  [36m                   (material/menu-item "Menu Item 1")[0m
+  [36m34[0m  [36m                   (material/menu-item "Menu Item 2")[0m
+  [36m35[0m  [36m                   ))))[0m
+
+[36m----  Compiler Warning : Please see src/cljs/swarmpit/component/layout.cljs  ----[0m
+[32mSuccessfully compiled "resources/public/js/main.js" in 0.334 seconds.[0m
+notifying browser that file changed:  resources/public/js/out/swarmpit/component/layout.js
+[0mCompiling "resources/public/js/main.js" from ["src/cljs"]...[0m
+[32mSuccessfully compiled "resources/public/js/main.js" in 0.339 seconds.[0m
+notifying browser that file changed:  resources/public/js/out/swarmpit/component/layout.js
+[0mCompiling "resources/public/js/main.js" from ["src/cljs"]...[0m
+[32mSuccessfully compiled "resources/public/js/main.js" in 0.404 seconds.[0m
+notifying browser that file changed:  resources/public/js/out/swarmpit/component/layout.js
+[0mCompiling "resources/public/js/main.js" from ["src/cljs"]...[0m
+[31mFailed to compile "resources/public/js/main.js" in 0.322 seconds.[0m
+[36m----  Could not Read  src/cljs/swarmpit/component/layout.cljs   line:18  column:35  ----[0m
+
+  [1mMap literal must contain an even number of forms[0m
+
+  [36m16[0m  [36m(def appbar-drawer-style #js{:backgroundColor "#fff"[0m
+  [36m17[0m  [36m                             :color           "#000"[0m
+  [33m18[0m  [1m                             :box})[0m
+  [0m  [0m  [33m                                  ^--- Map literal must contain an even number of forms[0m
+  [36m19[0m  [36m[0m
+  [36m20[0m  [36m(rum/defc appbar < rum/static [][0m
+  [36m21[0m  [36m  (material/theme[0m
+
+[36m----  Reader Error : Please see src/cljs/swarmpit/component/layout.cljs  ----[0m
+[0mCompiling "resources/public/js/main.js" from ["src/cljs"]...[0m
+[32mSuccessfully compiled "resources/public/js/main.js" in 0.289 seconds.[0m
+notifying browser that file changed:  resources/public/js/out/swarmpit/component/layout.js
+[0mCompiling "resources/public/js/main.js" from ["src/cljs"]...[0m
+[32mSuccessfully compiled "resources/public/js/main.js" in 0.377 seconds.[0m
+notifying browser that file changed:  resources/public/js/out/swarmpit/component/layout.js
+[0mCompiling "resources/public/js/main.js" from ["src/cljs"]...[0m
+[32mSuccessfully compiled "resources/public/js/main.js" in 0.361 seconds.[0m
+notifying browser that file changed:  resources/public/js/out/swarmpit/component/layout.js
+[0mCompiling "resources/public/js/main.js" from ["src/cljs"]...[0m
+[32mSuccessfully compiled "resources/public/js/main.js" in 0.414 seconds.[0m
+notifying browser that file changed:  resources/public/js/out/swarmpit/component/layout.js
+[0mCompiling "resources/public/js/main.js" from ["src/cljs"]...[0m
+[31mFailed to compile "resources/public/js/main.js" in 0.927 seconds.[0m
+[36m----  Could not Read  src/cljs/swarmpit/component/layout.cljs   line:39  column:119  ----[0m
+
+  [1mMap literal must contain an even number of forms[0m
+
+  [36m37[0m  [36m(material/app-bar #js{:style appbar-drawer-style[0m
+  [36m38[0m  [36m                      :iconStyleLeft[0m
+  [33m39[0m  [1m                             :onLeftIconButtonTouchTap (fn [] (reset! opened? (not @opened?)))})[0m
+  [0m  [0m  [33m                                                                                               ^--- Map literal must contain an even number of forms[0m
+  [36m40[0m  [36m(material/menu-item "Menu Item 1")[0m
+  [36m41[0m  [36m(material/menu-item "Menu Item 2")[0m
+  [36m42[0m  [36m))))[0m
+
+[36m----  Reader Error : Please see src/cljs/swarmpit/component/layout.cljs  ----[0m
+[0mCompiling "resources/public/js/main.js" from ["src/cljs"]...[0m
+[32mSuccessfully compiled "resources/public/js/main.js" in 0.588 seconds.[0m
+notifying browser that file changed:  resources/public/js/out/swarmpit/component/layout.js
+[0mCompiling "resources/public/js/main.js" from ["src/cljs"]...[0m
+[32mSuccessfully compiled "resources/public/js/main.js" in 0.287 seconds.[0m
+notifying browser that file changed:  resources/public/js/out/swarmpit/component/layout.js
+[0mCompiling "resources/public/js/main.js" from ["src/cljs"]...[0m
+[32mSuccessfully compiled "resources/public/js/main.js" in 0.341 seconds.[0m
+notifying browser that file changed:  resources/public/js/out/swarmpit/component/layout.js
+[0mCompiling "resources/public/js/main.js" from ["src/cljs"]...[0m
+[32mSuccessfully compiled "resources/public/js/main.js" in 0.245 seconds.[0m
+notifying browser that file changed:  resources/public/js/out/swarmpit/component/layout.js
+[0mCompiling "resources/public/js/main.js" from ["src/cljs"]...[0m
+[32mSuccessfully compiled "resources/public/js/main.js" in 0.285 seconds.[0m
+notifying browser that file changed:  resources/public/js/out/swarmpit/component/layout.js
+[0mCompiling "resources/public/js/main.js" from ["src/cljs"]...[0m
+[32mSuccessfully compiled "resources/public/js/main.js" in 0.561 seconds.[0m
+notifying browser that file changed:  resources/public/js/out/swarmpit/material.js
+[0mCompiling "resources/public/js/main.js" from ["src/cljs"]...[0m
+[32mSuccessfully compiled "resources/public/js/main.js" in 0.229 seconds.[0m
+notifying browser that file changed:  resources/public/js/out/swarmpit/component/layout.js
+[0mCompiling "resources/public/js/main.js" from ["src/cljs"]...[0m
+[32mSuccessfully compiled "resources/public/js/main.js" in 0.38 seconds.[0m
+notifying browser that file changed:  resources/public/js/out/swarmpit/component/layout.js
+[0mCompiling "resources/public/js/main.js" from ["src/cljs"]...[0m
+[32mSuccessfully compiled "resources/public/js/main.js" in 0.347 seconds.[0m
+notifying browser that file changed:  resources/public/js/out/swarmpit/component/layout.js
+[0mCompiling "resources/public/js/main.js" from ["src/cljs"]...[0m
+[32mSuccessfully compiled "resources/public/js/main.js" in 0.625 seconds.[0m
+notifying browser that file changed:  resources/public/js/out/swarmpit/component/layout.js
+[0mCompiling "resources/public/js/main.js" from ["src/cljs"]...[0m
+[32mSuccessfully compiled "resources/public/js/main.js" in 0.382 seconds.[0m
+notifying browser that file changed:  resources/public/js/out/swarmpit/component/layout.js
+[0mCompiling "resources/public/js/main.js" from ["src/cljs"]...[0m
+[32mSuccessfully compiled "resources/public/js/main.js" in 0.385 seconds.[0m
+notifying browser that file changed:  resources/public/js/out/swarmpit/component/layout.js
+[0mCompiling "resources/public/js/main.js" from ["src/cljs"]...[0m
+[32mSuccessfully compiled "resources/public/js/main.js" in 0.404 seconds.[0m
+notifying browser that file changed:  resources/public/js/out/swarmpit/component/layout.js
+[0mCompiling "resources/public/js/main.js" from ["src/cljs"]...[0m
+[32mSuccessfully compiled "resources/public/js/main.js" in 0.306 seconds.[0m
+notifying browser that file changed:  resources/public/js/out/swarmpit/component/layout.js
+[0mCompiling "resources/public/js/main.js" from ["src/cljs"]...[0m
+[32mSuccessfully compiled "resources/public/js/main.js" in 0.32 seconds.[0m
+notifying browser that file changed:  resources/public/js/out/swarmpit/component/layout.js
+[0mCompiling "resources/public/js/main.js" from ["src/cljs"]...[0m
+[32mSuccessfully compiled "resources/public/js/main.js" in 0.249 seconds.[0m
+notifying browser that file changed:  resources/public/js/out/swarmpit/component/layout.js
+[0mCompiling "resources/public/js/main.js" from ["src/cljs"]...[0m
+[32mSuccessfully compiled "resources/public/js/main.js" in 0.331 seconds.[0m
+notifying browser that file changed:  resources/public/js/out/swarmpit/component/layout.js
+[0mCompiling "resources/public/js/main.js" from ["src/cljs"]...[0m
+[32mSuccessfully compiled "resources/public/js/main.js" in 1.066 seconds.[0m
+notifying browser that file changed:  resources/public/js/out/swarmpit/component/layout.js
+Notifying browser that CSS file changed: resources/public/css/app.css
+[0mCompiling "resources/public/js/main.js" from ["src/cljs"]...[0m
+[36m----  Compiler Warning on   src/cljs/swarmpit/material.cljs   line:11  column:1  ----[0m
+
+  [1micon-button at line 9 is being replaced[0m
+
+  [36m 7[0m  [36m(def drawer (create-factory js/MaterialUI.Drawer))[0m
+  [36m 8[0m  [36m(def menu-item (create-factory js/MaterialUI.MenuItem))[0m
+  [36m 9[0m  [36m(def icon-button (create-factory js/MaterialUI.SvgIcon))[0m
+  [36m10[0m  [36m[0m
+  [33m11[0m  [1m(def icon-button (create-factory js/MaterialUI.IconButton))[0m
+  [0m  [0m  [33m^--- icon-button at line 9 is being replaced[0m
+  [36m12[0m  [36m[0m
+  [36m13[0m  [36m[0m
+  [36m14[0m  [36m[0m
+  [36m15[0m  [36m(def auto-complete (create-factory js/MaterialUI.AutoComplete))[0m
+  [36m16[0m  [36m(def font-icon (create-factory js/MaterialUI.FontIcon))[0m
+
+[36m----  Compiler Warning : Please see src/cljs/swarmpit/material.cljs  ----[0m
+[32mSuccessfully compiled "resources/public/js/main.js" in 1.24 seconds.[0m
+notifying browser that file changed:  resources/public/js/out/swarmpit/material.js
+[0mCompiling "resources/public/js/main.js" from ["src/cljs"]...[0m
+[32mSuccessfully compiled "resources/public/js/main.js" in 0.274 seconds.[0m
+notifying browser that file changed:  resources/public/js/out/swarmpit/material.js
+[0mCompiling "resources/public/js/main.js" from ["src/cljs"]...[0m
+[32mSuccessfully compiled "resources/public/js/main.js" in 0.335 seconds.[0m
+notifying browser that file changed:  resources/public/js/out/swarmpit/component/layout.js
+[0mCompiling "resources/public/js/main.js" from ["src/cljs"]...[0m
+[32mSuccessfully compiled "resources/public/js/main.js" in 0.492 seconds.[0m
+notifying browser that file changed:  resources/public/js/out/swarmpit/component/layout.js
+[0mCompiling "resources/public/js/main.js" from ["src/cljs"]...[0m
+[32mSuccessfully compiled "resources/public/js/main.js" in 0.227 seconds.[0m
+notifying browser that file changed:  resources/public/js/out/swarmpit/component/layout.js
+[0mCompiling "resources/public/js/main.js" from ["src/cljs"]...[0m
+[32mSuccessfully compiled "resources/public/js/main.js" in 0.305 seconds.[0m
+notifying browser that file changed:  resources/public/js/out/swarmpit/component/layout.js
+[0mCompiling "resources/public/js/main.js" from ["src/cljs"]...[0m
+[32mSuccessfully compiled "resources/public/js/main.js" in 0.315 seconds.[0m
+notifying browser that file changed:  resources/public/js/out/swarmpit/component/layout.js
+[0mCompiling "resources/public/js/main.js" from ["src/cljs"]...[0m
+[32mSuccessfully compiled "resources/public/js/main.js" in 0.314 seconds.[0m
+notifying browser that file changed:  resources/public/js/out/swarmpit/component/layout.js
+[0mCompiling "resources/public/js/main.js" from ["src/cljs"]...[0m
+[32mSuccessfully compiled "resources/public/js/main.js" in 0.459 seconds.[0m
+notifying browser that file changed:  resources/public/js/out/swarmpit/component/layout.js
+[0mCompiling "resources/public/js/main.js" from ["src/cljs"]...[0m
+[32mSuccessfully compiled "resources/public/js/main.js" in 1.62 seconds.[0m
+notifying browser that file changed:  resources/public/js/out/swarmpit/component/layout.js
+[0mCompiling "resources/public/js/main.js" from ["src/cljs"]...[0m
+[32mSuccessfully compiled "resources/public/js/main.js" in 1.165 seconds.[0m
+notifying browser that file changed:  resources/public/js/out/goog/deps.js
+notifying browser that file changed:  resources/public/js/out/cljs_deps.js
+notifying browser that file changed:  resources/public/js/out/swarmpit/component/layout.js
+[0mCompiling "resources/public/js/main.js" from ["src/cljs"]...[0m
+[32mSuccessfully compiled "resources/public/js/main.js" in 0.585 seconds.[0m
+notifying browser that file changed:  resources/public/js/out/swarmpit/component/layout.js
+[0mCompiling "resources/public/js/main.js" from ["src/cljs"]...[0m
+[32mSuccessfully compiled "resources/public/js/main.js" in 0.982 seconds.[0m
+notifying browser that file changed:  resources/public/js/out/swarmpit/component/layout.js
+[0mCompiling "resources/public/js/main.js" from ["src/cljs"]...[0m
+[32mSuccessfully compiled "resources/public/js/main.js" in 1.043 seconds.[0m
+notifying browser that file changed:  resources/public/js/out/swarmpit/component/layout.js
+[0mCompiling "resources/public/js/main.js" from ["src/cljs"]...[0m
+[32mSuccessfully compiled "resources/public/js/main.js" in 0.511 seconds.[0m
+notifying browser that file changed:  resources/public/js/out/swarmpit/component/layout.js
+[0mCompiling "resources/public/js/main.js" from ["src/cljs"]...[0m
+[32mSuccessfully compiled "resources/public/js/main.js" in 0.898 seconds.[0m
+notifying browser that file changed:  resources/public/js/out/swarmpit/component/layout.js
+[0mCompiling "resources/public/js/main.js" from ["src/cljs"]...[0m
+[32mSuccessfully compiled "resources/public/js/main.js" in 1.78 seconds.[0m
+notifying browser that file changed:  resources/public/js/out/swarmpit/component/layout.js
+[0mCompiling "resources/public/js/main.js" from ["src/cljs"]...[0m
+[32mSuccessfully compiled "resources/public/js/main.js" in 1.146 seconds.[0m
+notifying browser that file changed:  resources/public/js/out/goog/deps.js
+notifying browser that file changed:  resources/public/js/out/cljs_deps.js
+notifying browser that file changed:  resources/public/js/out/swarmpit/component/layout.js
+[0mCompiling "resources/public/js/main.js" from ["src/cljs"]...[0m
+[32mSuccessfully compiled "resources/public/js/main.js" in 1.68 seconds.[0m
+notifying browser that file changed:  resources/public/js/out/swarmpit/component/layout.js
+[0mCompiling "resources/public/js/main.js" from ["src/cljs"]...[0m
+[36m----  Compiler Warning on   src/cljs/swarmpit/component/layout.cljs   line:45  column:92  ----[0m
+
+  [1mUse of undeclared Var swarmpit.component.layout/html[0m
+
+  [36m41[0m  [36m(material/theme[0m
+  [36m42[0m  [36m  (material/drawer #js {:open           opened[0m
+  [36m43[0m  [36m                        :containerStyle drawer-style}[0m
+  [36m44[0m  [36m                   (material/app-bar #js{[0m
+  [33m45[0m  [1m                                         :iconElementLeft          (material/svg-icon (html [:path {:d "M10 20v-6h4v6h5v-8h3L12 3 2 12h3v8z"}]))[0m
+  [0m  [0m  [33m                                                                                       ^--- Use of undeclared Var swarmpit.component.layout/html[0m
+  [36m46[0m  [36m                                         :onLeftIconButtonTouchTap (fn [] (reset! opened? (not @opened?)))})[0m
+  [36m47[0m  [36m                   (material/menu-item "Menu Item 1")[0m
+  [36m48[0m  [36m                   (material/menu-item "Menu Item 2")[0m
+  [36m49[0m  [36m                   ))))[0m
+
+[36m----  Compiler Warning : Please see src/cljs/swarmpit/component/layout.cljs  ----[0m
+[32mSuccessfully compiled "resources/public/js/main.js" in 1.63 seconds.[0m
+notifying browser that file changed:  resources/public/js/out/swarmpit/component/layout.js
+[0mCompiling "resources/public/js/main.js" from ["src/cljs"]...[0m
+[32mSuccessfully compiled "resources/public/js/main.js" in 1.438 seconds.[0m
+notifying browser that file changed:  resources/public/js/out/cljs_deps.js
+notifying browser that file changed:  resources/public/js/out/swarmpit/component/layout.js
+[0mCompiling "resources/public/js/main.js" from ["src/cljs"]...[0m
+[32mSuccessfully compiled "resources/public/js/main.js" in 1.699 seconds.[0m
+notifying browser that file changed:  resources/public/js/out/swarmpit/component/layout.js
+[0mCompiling "resources/public/js/main.js" from ["src/cljs"]...[0m
+[31mFailed to compile "resources/public/js/main.js" in 0.667 seconds.[0m
+[36m----  Could not Read  src/cljs/swarmpit/material.cljs   line:28  column:22  ----[0m
+
+  [1mJavaScript literal must use map or vector notation[0m
+
+  [36m27[0m  [36m(defn svg [d props][0m
+  [33m28[0m  [1m  (svg-icon #js props (html [:path {:d d}])))[0m
+  [0m  [0m  [33m                     ^--- JavaScript literal must use map or vector notation[0m
+
+[36m----  Reader Error : Please see src/cljs/swarmpit/material.cljs  ----[0m
+[0mCompiling "resources/public/js/main.js" from ["src/cljs"]...[0m
+[31mFailed to compile "resources/public/js/main.js" in 0.664 seconds.[0m
+[36m----  Could not Read  src/cljs/swarmpit/material.cljs   line:28  column:22  ----[0m
+
+  [1mJavaScript literal must use map or vector notation[0m
+
+  [36m27[0m  [36m(defn svg [d props][0m
+  [33m28[0m  [1m  (svg-icon #js props (html [:path {:d d}])))[0m
+  [0m  [0m  [33m                     ^--- JavaScript literal must use map or vector notation[0m
+  [36m29[0m  [36m[0m
+  [36m30[0m  [36m(def home-icon[0m
+  [36m31[0m  [36m  (svg "M10 20v-6h4v6h5v-8h3L12 3 2 12h3v8z" {}))[0m
+
+[36m----  Reader Error : Please see src/cljs/swarmpit/material.cljs  ----[0m
+[0mCompiling "resources/public/js/main.js" from ["src/cljs"]...[0m
+[31mFailed to compile "resources/public/js/main.js" in 0.876 seconds.[0m
+[36m----  Could not Read  src/cljs/swarmpit/material.cljs   line:28  column:22  ----[0m
+
+  [1mJavaScript literal must use map or vector notation[0m
+
+  [36m27[0m  [36m(defn svg [d props][0m
+  [33m28[0m  [1m  (svg-icon #js props (html [:path {:d d}])))[0m
+  [0m  [0m  [33m                     ^--- JavaScript literal must use map or vector notation[0m
+  [36m29[0m  [36m[0m
+  [36m30[0m  [36m(def home-icon[0m
+  [36m31[0m  [36m  (svg "M10 20v-6h4v6h5v-8h3L12 3 2 12h3v8z" {}))[0m
+
+[36m----  Reader Error : Please see src/cljs/swarmpit/material.cljs  ----[0m
+[0mCompiling "resources/public/js/main.js" from ["src/cljs"]...[0m
+[31mFailed to compile "resources/public/js/main.js" in 1.055 seconds.[0m
+[36m----  Could not Read  src/cljs/swarmpit/material.cljs   line:28  column:22  ----[0m
+
+  [1mJavaScript literal must use map or vector notation[0m
+
+  [36m27[0m  [36m(defn svg [d props][0m
+  [33m28[0m  [1m  (svg-icon #js props (html [:path {:d d}])))[0m
+  [0m  [0m  [33m                     ^--- JavaScript literal must use map or vector notation[0m
+  [36m29[0m  [36m[0m
+  [36m30[0m  [36m(def home-icon[0m
+  [36m31[0m  [36m  (svg "M10 20v-6h4v6h5v-8h3L12 3 2 12h3v8z" {}))[0m
+
+[36m----  Reader Error : Please see src/cljs/swarmpit/material.cljs  ----[0m
+[0mCompiling "resources/public/js/main.js" from ["src/cljs"]...[0m
+[31mFailed to compile "resources/public/js/main.js" in 1.554 seconds.[0m
+[36m----  Could not Read  src/cljs/swarmpit/material.cljs   line:28  column:22  ----[0m
+
+  [1mJavaScript literal must use map or vector notation[0m
+
+  [36m27[0m  [36m(defn svg [d props][0m
+  [33m28[0m  [1m  (svg-icon #js props (html [:path {:d d}])))[0m
+  [0m  [0m  [33m                     ^--- JavaScript literal must use map or vector notation[0m
+  [36m29[0m  [36m[0m
+  [36m30[0m  [36m(def home-icon[0m
+  [36m31[0m  [36m  (svg "M10 20v-6h4v6h5v-8h3L12 3 2 12h3v8z" {}))[0m
+
+[36m----  Reader Error : Please see src/cljs/swarmpit/material.cljs  ----[0m
+[0mCompiling "resources/public/js/main.js" from ["src/cljs"]...[0m
+[32mSuccessfully compiled "resources/public/js/main.js" in 0.855 seconds.[0m
+notifying browser that file changed:  resources/public/js/out/cljs_deps.js
+notifying browser that file changed:  resources/public/js/out/swarmpit/material.js
+[0mCompiling "resources/public/js/main.js" from ["src/cljs"]...[0m
+[32mSuccessfully compiled "resources/public/js/main.js" in 1.198 seconds.[0m
+notifying browser that file changed:  resources/public/js/out/swarmpit/component/layout.js
+[0mCompiling "resources/public/js/main.js" from ["src/cljs"]...[0m
+[32mSuccessfully compiled "resources/public/js/main.js" in 1.481 seconds.[0m
+notifying browser that file changed:  resources/public/js/out/swarmpit/material.js
+[0mCompiling "resources/public/js/main.js" from ["src/cljs"]...[0m
+[32mSuccessfully compiled "resources/public/js/main.js" in 1.058 seconds.[0m
+notifying browser that file changed:  resources/public/js/out/swarmpit/material.js
+[0mCompiling "resources/public/js/main.js" from ["src/cljs"]...[0m
+[32mSuccessfully compiled "resources/public/js/main.js" in 0.918 seconds.[0m
+notifying browser that file changed:  resources/public/js/out/swarmpit/component/layout.js
+[0mCompiling "resources/public/js/main.js" from ["src/cljs"]...[0m
+[32mSuccessfully compiled "resources/public/js/main.js" in 0.74 seconds.[0m
+notifying browser that file changed:  resources/public/js/out/swarmpit/component/layout.js
+[0mCompiling "resources/public/js/main.js" from ["src/cljs"]...[0m
+[32mSuccessfully compiled "resources/public/js/main.js" in 0.509 seconds.[0m
+notifying browser that file changed:  resources/public/js/out/swarmpit/component/layout.js
+[0mCompiling "resources/public/js/main.js" from ["src/cljs"]...[0m
+[32mSuccessfully compiled "resources/public/js/main.js" in 0.949 seconds.[0m
+notifying browser that file changed:  resources/public/js/out/swarmpit/material.js
+[0mCompiling "resources/public/js/main.js" from ["src/cljs"]...[0m
+[32mSuccessfully compiled "resources/public/js/main.js" in 1.442 seconds.[0m
+notifying browser that file changed:  resources/public/js/out/swarmpit/material.js
+[0mCompiling "resources/public/js/main.js" from ["src/cljs"]...[0m
+[32mSuccessfully compiled "resources/public/js/main.js" in 0.56 seconds.[0m
+notifying browser that file changed:  resources/public/js/out/swarmpit/component/layout.js
+[0mCompiling "resources/public/js/main.js" from ["src/cljs"]...[0m
+[32mSuccessfully compiled "resources/public/js/main.js" in 1.174 seconds.[0m
+notifying browser that file changed:  resources/public/js/out/swarmpit/component/layout.js
+[0mCompiling "resources/public/js/main.js" from ["src/cljs"]...[0m
+[32mSuccessfully compiled "resources/public/js/main.js" in 1.426 seconds.[0m
+notifying browser that file changed:  resources/public/js/out/swarmpit/component/layout.js
+[0mCompiling "resources/public/js/main.js" from ["src/cljs"]...[0m
+[31mFailed to compile "resources/public/js/main.js" in 0.729 seconds.[0m
+[36m----  Could not Read  src/cljs/swarmpit/component/layout.cljs   line:50  column:64  ----[0m
+
+  [1mMap literal must contain an even number of forms[0m
+
+  [36m48[0m  [36m(material/drawer #js {:open opened[0m
+  [36m49[0m  [36m                      :style[0m
+  [33m50[0m  [1m                            :containerStyle drawer-style}[0m
+  [0m  [0m  [33m                                                         ^--- Map literal must contain an even number of forms[0m
+  [36m51[0m  [36m                 (material/app-bar #js{:style                    appbar-drawer-style[0m
+  [36m52[0m  [36m                                       :iconElementLeft          drawer-icon[0m
+  [36m53[0m  [36m                                       :onLeftIconButtonTouchTap (fn [] (reset! opened? (not @opened?)))})[0m
+
+[36m----  Reader Error : Please see src/cljs/swarmpit/component/layout.cljs  ----[0m
+[0mCompiling "resources/public/js/main.js" from ["src/cljs"]...[0m
+[31mFailed to compile "resources/public/js/main.js" in 0.754 seconds.[0m
+[36m----  Could not Read  src/cljs/swarmpit/component/layout.cljs   line:50  column:64  ----[0m
+
+  [1mMap literal must contain an even number of forms[0m
+
+  [36m48[0m  [36m(material/drawer #js {:open opened[0m
+  [36m49[0m  [36m                      :style[0m
+  [33m50[0m  [1m                            :containerStyle drawer-style}[0m
+  [0m  [0m  [33m                                                         ^--- Map literal must contain an even number of forms[0m
+  [36m51[0m  [36m                 (material/app-bar #js{:style                    appbar-drawer-style[0m
+  [36m52[0m  [36m                                       :iconElementLeft          drawer-icon[0m
+  [36m53[0m  [36m                                       :onLeftIconButtonTouchTap (fn [] (reset! opened? (not @opened?)))})[0m
+
+[36m----  Reader Error : Please see src/cljs/swarmpit/component/layout.cljs  ----[0m
+[0mCompiling "resources/public/js/main.js" from ["src/cljs"]...[0m
+[32mSuccessfully compiled "resources/public/js/main.js" in 0.378 seconds.[0m
+notifying browser that file changed:  resources/public/js/out/swarmpit/component/layout.js
+[0mCompiling "resources/public/js/main.js" from ["src/cljs"]...[0m
+[36m----  Compiler Warning on   src/cljs/swarmpit/component/layout.cljs   line:53  column:72  ----[0m
+
+  [1mUse of undeclared Var swarmpit.component.layout/appbar-drawer-style[0m
+
+  [36m49[0m  [36m(material/theme[0m
+  [36m50[0m  [36m  (material/drawer #js {:open           opened[0m
+  [36m51[0m  [36m                        :style          drawer-style[0m
+  [36m52[0m  [36m                        :containerStyle drawer-container-style}[0m
+  [33m53[0m  [1m                   (material/app-bar #js{:style                    appbar-drawer-style[0m
+  [0m  [0m  [33m                                                                   ^--- Use of undeclared Var swarmpit.component.layout/appbar-drawer-style[0m
+  [36m54[0m  [36m                                         :iconElementLeft          drawer-icon[0m
+  [36m55[0m  [36m                                         :onLeftIconButtonTouchTap (fn [] (reset! opened? (not @opened?)))})[0m
+  [36m56[0m  [36m                   (material/menu-item #js {} "Menu Item 1")[0m
+  [36m57[0m  [36m                   (material/menu-item #js {} "Menu Item 2")[0m
+  [36m58[0m  [36m                   ))))[0m
+
+[36m----  Compiler Warning : Please see src/cljs/swarmpit/component/layout.cljs  ----[0m
+[32mSuccessfully compiled "resources/public/js/main.js" in 0.786 seconds.[0m
+notifying browser that file changed:  resources/public/js/out/swarmpit/component/layout.js
+[0mCompiling "resources/public/js/main.js" from ["src/cljs"]...[0m
+[32mSuccessfully compiled "resources/public/js/main.js" in 0.517 seconds.[0m
+notifying browser that file changed:  resources/public/js/out/swarmpit/component/layout.js
+[0mCompiling "resources/public/js/main.js" from ["src/cljs"]...[0m
+[32mSuccessfully compiled "resources/public/js/main.js" in 0.356 seconds.[0m
+notifying browser that file changed:  resources/public/js/out/swarmpit/component/layout.js
+[0mCompiling "resources/public/js/main.js" from ["src/cljs"]...[0m
+[32mSuccessfully compiled "resources/public/js/main.js" in 0.34 seconds.[0m
+notifying browser that file changed:  resources/public/js/out/swarmpit/component/layout.js
+[0mCompiling "resources/public/js/main.js" from ["src/cljs"]...[0m
+[32mSuccessfully compiled "resources/public/js/main.js" in 0.4 seconds.[0m
+notifying browser that file changed:  resources/public/js/out/swarmpit/component/layout.js
+[0mCompiling "resources/public/js/main.js" from ["src/cljs"]...[0m
+[32mSuccessfully compiled "resources/public/js/main.js" in 0.647 seconds.[0m
+notifying browser that file changed:  resources/public/js/out/cljs_deps.js
+notifying browser that file changed:  resources/public/js/out/swarmpit/component/layout.js
+[0mCompiling "resources/public/js/main.js" from ["src/cljs"]...[0m
+[32mSuccessfully compiled "resources/public/js/main.js" in 0.757 seconds.[0m
+notifying browser that file changed:  resources/public/js/out/swarmpit/component/layout.js
+[0mCompiling "resources/public/js/main.js" from ["src/cljs"]...[0m
+[32mSuccessfully compiled "resources/public/js/main.js" in 0.455 seconds.[0m
+notifying browser that file changed:  resources/public/js/out/swarmpit/component/layout.js
+[0mCompiling "resources/public/js/main.js" from ["src/cljs"]...[0m
+[32mSuccessfully compiled "resources/public/js/main.js" in 0.307 seconds.[0m
+notifying browser that file changed:  resources/public/js/out/swarmpit/component/layout.js
+[0mCompiling "resources/public/js/main.js" from ["src/cljs"]...[0m
+[32mSuccessfully compiled "resources/public/js/main.js" in 0.637 seconds.[0m
+notifying browser that file changed:  resources/public/js/out/swarmpit/component/layout.js
+Notifying browser that CSS file changed: resources/public/css/app.css
+[0mCompiling "resources/public/js/main.js" from ["src/cljs"]...[0m
+[36m----  Compiler Warning on   src/cljs/swarmpit/component/layout.cljs   line:38  column:49  ----[0m
+
+  [1mUse of undeclared Var swarmpit.component.layout/drawer-container[0m
+
+  [36m34[0m  [36m                         (material/icon-button #js {} material/view-compact-icon)[0m
+  [36m35[0m  [36m                         (material/icon-button #js {} material/view-confy-icon))][0m
+  [36m36[0m  [36m(material/theme[0m
+  [36m37[0m  [36m  (material/drawer #js {:open               opened[0m
+  [33m38[0m  [1m                        :containerClassName drawer-container[0m
+  [0m  [0m  [33m                                            ^--- Use of undeclared Var swarmpit.component.layout/drawer-container[0m
+  [36m39[0m  [36m                        :containerStyle     drawer-container-style}[0m
+  [36m40[0m  [36m                   (material/app-bar #js{:style                    drawer-appbar-style[0m
+  [36m41[0m  [36m                                         :iconElementLeft          drawer-appbar-icon[0m
+  [36m42[0m  [36m                                         :onLeftIconButtonTouchTap (fn [] (reset! opened? (not @opened?)))})[0m
+  [36m43[0m  [36m                   (material/menu-item #js {} "Menu Item 1")[0m
+
+[36m----  Compiler Warning : Please see src/cljs/swarmpit/component/layout.cljs  ----[0m
+[32mSuccessfully compiled "resources/public/js/main.js" in 0.95 seconds.[0m
+notifying browser that file changed:  resources/public/js/out/swarmpit/component/layout.js
+Notifying browser that CSS file changed: resources/public/css/app.css
+Notifying browser that CSS file changed: resources/public/css/app.css
+[0mCompiling "resources/public/js/main.js" from ["src/cljs"]...[0m
+[32mSuccessfully compiled "resources/public/js/main.js" in 0.445 seconds.[0m
+notifying browser that file changed:  resources/public/js/out/swarmpit/component/layout.js
+[0mCompiling "resources/public/js/main.js" from ["src/cljs"]...[0m
+[32mSuccessfully compiled "resources/public/js/main.js" in 0.393 seconds.[0m
+notifying browser that file changed:  resources/public/js/out/swarmpit/component/layout.js
+[0mCompiling "resources/public/js/main.js" from ["src/cljs"]...[0m
+[32mSuccessfully compiled "resources/public/js/main.js" in 0.691 seconds.[0m
+notifying browser that file changed:  resources/public/js/out/swarmpit/component/layout.js
+Notifying browser that CSS file changed: resources/public/css/app.css
+Notifying browser that CSS file changed: resources/public/css/app.css
+Notifying browser that CSS file changed: resources/public/css/app.css
+Notifying browser that CSS file changed: resources/public/css/app.css
+Notifying browser that CSS file changed: resources/public/css/app.css
+[0mCompiling "resources/public/js/main.js" from ["src/cljs"]...[0m
+[32mSuccessfully compiled "resources/public/js/main.js" in 1.448 seconds.[0m
+notifying browser that file changed:  resources/public/js/out/goog/deps.js
+notifying browser that file changed:  resources/public/js/out/cljs_deps.js
+notifying browser that file changed:  resources/public/js/out/swarmpit/material.js
+[0mCompiling "resources/public/js/main.js" from ["src/cljs"]...[0m
+[32mSuccessfully compiled "resources/public/js/main.js" in 0.785 seconds.[0m
+notifying browser that file changed:  resources/public/js/out/swarmpit/component/layout.js
+[0mCompiling "resources/public/js/main.js" from ["src/cljs"]...[0m
+[32mSuccessfully compiled "resources/public/js/main.js" in 0.524 seconds.[0m
+notifying browser that file changed:  resources/public/js/out/swarmpit/component/layout.js
+[0mCompiling "resources/public/js/main.js" from ["src/cljs"]...[0m
+[32mSuccessfully compiled "resources/public/js/main.js" in 0.504 seconds.[0m
+notifying browser that file changed:  resources/public/js/out/swarmpit/component/layout.js
+[0mCompiling "resources/public/js/main.js" from ["src/cljs"]...[0m
+[32mSuccessfully compiled "resources/public/js/main.js" in 0.624 seconds.[0m
+notifying browser that file changed:  resources/public/js/out/swarmpit/component/layout.js
+[0mCompiling "resources/public/js/main.js" from ["src/cljs"]...[0m
+[32mSuccessfully compiled "resources/public/js/main.js" in 0.996 seconds.[0m
+[0mCompiling "resources/public/js/main.js" from ["src/cljs"]...[0m
+[31mFailed to compile "resources/public/js/main.js" in 1.0 seconds.[0m
+[36m----  Could not Read  src/cljs/swarmpit/component/layout.cljs   line:40  column:63  ----[0m
+
+  [1mMap literal must contain an even number of forms[0m
+
+  [36m38[0m  [36m                      :iconElementLeft          drawer-appbar-icon[0m
+  [36m39[0m  [36m                      :onLeftIconButtonTouchTap (fn [] (reset! opened? (not @opened?)))})[0m
+  [33m40[0m  [1m(material/menu-item #js {:primaryText } "Menu Item 1")[0m
+  [0m  [0m  [33m                                       ^--- Map literal must contain an even number of forms[0m
+  [36m41[0m  [36m(material/menu-item #js {} "Menu Item 2")[0m
+  [36m42[0m  [36m))))[0m
+
+[36m----  Reader Error : Please see src/cljs/swarmpit/component/layout.cljs  ----[0m
+[0mCompiling "resources/public/js/main.js" from ["src/cljs"]...[0m
+[32mSuccessfully compiled "resources/public/js/main.js" in 1.319 seconds.[0m
+notifying browser that file changed:  resources/public/js/out/swarmpit/component/layout.js
+[0mCompiling "resources/public/js/main.js" from ["src/cljs"]...[0m
+[32mSuccessfully compiled "resources/public/js/main.js" in 0.551 seconds.[0m
+notifying browser that file changed:  resources/public/js/out/swarmpit/component/layout.js
+[0mCompiling "resources/public/js/main.js" from ["src/cljs"]...[0m
+[32mSuccessfully compiled "resources/public/js/main.js" in 0.416 seconds.[0m
+notifying browser that file changed:  resources/public/js/out/swarmpit/component/layout.js
+[0mCompiling "resources/public/js/main.js" from ["src/cljs"]...[0m
+[32mSuccessfully compiled "resources/public/js/main.js" in 0.557 seconds.[0m
+notifying browser that file changed:  resources/public/js/out/swarmpit/component/layout.js
+[0mCompiling "resources/public/js/main.js" from ["src/cljs"]...[0m
+[36m----  Compiler Warning on   src/cljs/swarmpit/material.cljs   line:42  column:4  ----[0m
+
+  [1mUse of undeclared Var swarmpit.material/scg[0m
+
+  [36m38[0m  [36m(def view-compact-icon[0m
+  [36m39[0m  [36m  (svg "M3 9h4V5H3v4zm0 5h4v-4H3v4zm5 0h4v-4H8v4zm5 0h4v-4h-4v4zM8 9h4V5H8v4zm5-4v4h4V5h-4zm5 9h4v-4h-4v4zM3 19h4v-4H3v4zm5 0h4v-4H8v4zm5 0h4v-4h-4v4zm5 0h4v-4h-4v4zm0-14v4h4V5h-4z"))[0m
+  [36m40[0m  [36m[0m
+  [36m41[0m  [36m(def repository-icon[0m
+  [33m42[0m  [1m  (scg "M14 6H8v2h6V6zm4.006-4H5.994C4.894 2 4 2.89 4 3.99v16.02C4 21.102 4.894 22 5.994 22h12.012c1.1 0 1.994-.89 1.994-1.99V3.99C20 2.898 19.105 2 18.006 2zM18 20H6V4h12v16zm-5-10H8v2h5v-2z"))[0m
+  [0m  [0m  [33m   ^--- Use of undeclared Var swarmpit.material/scg[0m
+
+[36m----  Compiler Warning : Please see src/cljs/swarmpit/material.cljs  ----[0m
+[32mSuccessfully compiled "resources/public/js/main.js" in 0.424 seconds.[0m
+notifying browser that file changed:  resources/public/js/out/swarmpit/material.js
+[0mCompiling "resources/public/js/main.js" from ["src/cljs"]...[0m
+[32mSuccessfully compiled "resources/public/js/main.js" in 0.615 seconds.[0m
+notifying browser that file changed:  resources/public/js/out/swarmpit/material.js
+[0mCompiling "resources/public/js/main.js" from ["src/cljs"]...[0m
+[32mSuccessfully compiled "resources/public/js/main.js" in 0.75 seconds.[0m
+notifying browser that file changed:  resources/public/js/out/swarmpit/material.js
+[0mCompiling "resources/public/js/main.js" from ["src/cljs"]...[0m
+[32mSuccessfully compiled "resources/public/js/main.js" in 0.328 seconds.[0m
+notifying browser that file changed:  resources/public/js/out/swarmpit/material.js
+[0mCompiling "resources/public/js/main.js" from ["src/cljs"]...[0m
+[32mSuccessfully compiled "resources/public/js/main.js" in 0.488 seconds.[0m
+notifying browser that file changed:  resources/public/js/out/swarmpit/material.js
+[0mCompiling "resources/public/js/main.js" from ["src/cljs"]...[0m
+[32mSuccessfully compiled "resources/public/js/main.js" in 0.495 seconds.[0m
+notifying browser that file changed:  resources/public/js/out/swarmpit/component/layout.js
+[0mCompiling "resources/public/js/main.js" from ["src/cljs"]...[0m
+[32mSuccessfully compiled "resources/public/js/main.js" in 0.736 seconds.[0m
+notifying browser that file changed:  resources/public/js/out/swarmpit/component/layout.js
+[0mCompiling "resources/public/js/main.js" from ["src/cljs"]...[0m
+[32mSuccessfully compiled "resources/public/js/main.js" in 0.715 seconds.[0m
+notifying browser that file changed:  resources/public/js/out/swarmpit/component/layout.js
+[0mCompiling "resources/public/js/main.js" from ["src/cljs"]...[0m
+[32mSuccessfully compiled "resources/public/js/main.js" in 0.337 seconds.[0m
+notifying browser that file changed:  resources/public/js/out/swarmpit/component/layout.js
+[0mCompiling "resources/public/js/main.js" from ["src/cljs"]...[0m
+[32mSuccessfully compiled "resources/public/js/main.js" in 0.677 seconds.[0m
+notifying browser that file changed:  resources/public/js/out/swarmpit/component/layout.js
+[0mCompiling "resources/public/js/main.js" from ["src/cljs"]...[0m
+[32mSuccessfully compiled "resources/public/js/main.js" in 0.729 seconds.[0m
+notifying browser that file changed:  resources/public/js/out/swarmpit/component/layout.js
+[0mCompiling "resources/public/js/main.js" from ["src/cljs"]...[0m
+[32mSuccessfully compiled "resources/public/js/main.js" in 1.163 seconds.[0m
+notifying browser that file changed:  resources/public/js/out/swarmpit/component/layout.js
+[0mCompiling "resources/public/js/main.js" from ["src/cljs"]...[0m
+[32mSuccessfully compiled "resources/public/js/main.js" in 1.073 seconds.[0m
+notifying browser that file changed:  resources/public/js/out/swarmpit/component/layout.js
+[0mCompiling "resources/public/js/main.js" from ["src/cljs"]...[0m
+[32mSuccessfully compiled "resources/public/js/main.js" in 1.131 seconds.[0m
+notifying browser that file changed:  resources/public/js/out/swarmpit/component/layout.js
+[0mCompiling "resources/public/js/main.js" from ["src/cljs"]...[0m
+[32mSuccessfully compiled "resources/public/js/main.js" in 0.93 seconds.[0m
+notifying browser that file changed:  resources/public/js/out/goog/deps.js
+notifying browser that file changed:  resources/public/js/out/cljs_deps.js
+notifying browser that file changed:  resources/public/js/out/swarmpit/component/layout.js
+[0mCompiling "resources/public/js/main.js" from ["src/cljs"]...[0m
+[32mSuccessfully compiled "resources/public/js/main.js" in 0.533 seconds.[0m
+notifying browser that file changed:  resources/public/js/out/swarmpit/component/layout.js
+[0mCompiling "resources/public/js/main.js" from ["src/cljs"]...[0m
+[32mSuccessfully compiled "resources/public/js/main.js" in 0.587 seconds.[0m
+notifying browser that file changed:  resources/public/js/out/swarmpit/component/layout.js
+[0mCompiling "resources/public/js/main.js" from ["src/cljs"]...[0m
+[32mSuccessfully compiled "resources/public/js/main.js" in 0.485 seconds.[0m
+notifying browser that file changed:  resources/public/js/out/swarmpit/material.js
+[0mCompiling "resources/public/js/main.js" from ["src/cljs"]...[0m
+[32mSuccessfully compiled "resources/public/js/main.js" in 0.827 seconds.[0m
+notifying browser that file changed:  resources/public/js/out/goog/deps.js
+notifying browser that file changed:  resources/public/js/out/cljs_deps.js
+notifying browser that file changed:  resources/public/js/out/swarmpit/material.js
+[0mCompiling "resources/public/js/main.js" from ["src/cljs"]...[0m
+[32mSuccessfully compiled "resources/public/js/main.js" in 0.573 seconds.[0m
+notifying browser that file changed:  resources/public/js/out/swarmpit/material.js
+[0mCompiling "resources/public/js/main.js" from ["src/cljs"]...[0m
+[32mSuccessfully compiled "resources/public/js/main.js" in 0.866 seconds.[0m
+[0mCompiling "resources/public/js/main.js" from ["src/cljs"]...[0m
+[32mSuccessfully compiled "resources/public/js/main.js" in 1.306 seconds.[0m
+notifying browser that file changed:  resources/public/js/out/swarmpit/component/layout.js
+[0mCompiling "resources/public/js/main.js" from ["src/cljs"]...[0m
+[32mSuccessfully compiled "resources/public/js/main.js" in 1.108 seconds.[0m
+notifying browser that file changed:  resources/public/js/out/swarmpit/component/layout.js
+[0mCompiling "resources/public/js/main.js" from ["src/cljs"]...[0m
+[32mSuccessfully compiled "resources/public/js/main.js" in 0.651 seconds.[0m
+notifying browser that file changed:  resources/public/js/out/swarmpit/component/layout.js
+[0mCompiling "resources/public/js/main.js" from ["src/cljs"]...[0m
+[32mSuccessfully compiled "resources/public/js/main.js" in 0.381 seconds.[0m
+notifying browser that file changed:  resources/public/js/out/swarmpit/component/layout.js
+[0mCompiling "resources/public/js/main.js" from ["src/cljs"]...[0m
+[32mSuccessfully compiled "resources/public/js/main.js" in 0.393 seconds.[0m
+notifying browser that file changed:  resources/public/js/out/swarmpit/component/layout.js
+[0mCompiling "resources/public/js/main.js" from ["src/cljs"]...[0m
+[32mSuccessfully compiled "resources/public/js/main.js" in 0.33 seconds.[0m
+notifying browser that file changed:  resources/public/js/out/swarmpit/component/layout.js
+Notifying browser that CSS file changed: resources/public/css/app.css
+[0mCompiling "resources/public/js/main.js" from ["src/cljs"]...[0m
+[32mSuccessfully compiled "resources/public/js/main.js" in 0.381 seconds.[0m
+notifying browser that file changed:  resources/public/js/out/swarmpit/component/layout.js
+Notifying browser that CSS file changed: resources/public/css/app.css
+[0mCompiling "resources/public/js/main.js" from ["src/cljs"]...[0m
+[32mSuccessfully compiled "resources/public/js/main.js" in 0.436 seconds.[0m
+notifying browser that file changed:  resources/public/js/out/swarmpit/component/layout.js
+Notifying browser that CSS file changed: resources/public/css/app.css
+Notifying browser that CSS file changed: resources/public/css/app.css
+Notifying browser that CSS file changed: resources/public/css/app.css
+[0mCompiling "resources/public/js/main.js" from ["src/cljs"]...[0m
+[32mSuccessfully compiled "resources/public/js/main.js" in 1.201 seconds.[0m
+notifying browser that file changed:  resources/public/js/out/swarmpit/component/layout.js
+Notifying browser that CSS file changed: resources/public/css/app.css
+[0mCompiling "resources/public/js/main.js" from ["src/cljs"]...[0m
+[32mSuccessfully compiled "resources/public/js/main.js" in 0.665 seconds.[0m
+notifying browser that file changed:  resources/public/js/out/swarmpit/component/layout.js
+[0mCompiling "resources/public/js/main.js" from ["src/cljs"]...[0m
+[32mSuccessfully compiled "resources/public/js/main.js" in 0.323 seconds.[0m
+notifying browser that file changed:  resources/public/js/out/swarmpit/component/layout.js
+Notifying browser that CSS file changed: resources/public/css/app.css
+Notifying browser that CSS file changed: resources/public/css/app.css
+Notifying browser that CSS file changed: resources/public/css/app.css
+Notifying browser that CSS file changed: resources/public/css/app.css
+Notifying browser that CSS file changed: resources/public/css/app.css
+Notifying browser that CSS file changed: resources/public/css/app.css
+[0mCompiling "resources/public/js/main.js" from ["src/cljs"]...[0m
+[32mSuccessfully compiled "resources/public/js/main.js" in 1.002 seconds.[0m
+notifying browser that file changed:  resources/public/js/out/swarmpit/component/layout.js
+Notifying browser that CSS file changed: resources/public/css/app.css
+Notifying browser that CSS file changed: resources/public/css/app.css
+Notifying browser that CSS file changed: resources/public/css/app.css
+Notifying browser that CSS file changed: resources/public/css/app.css
+[0mCompiling "resources/public/js/main.js" from ["src/cljs"]...[0m
+[32mSuccessfully compiled "resources/public/js/main.js" in 1.024 seconds.[0m
+notifying browser that file changed:  resources/public/js/out/swarmpit/component/layout.js
+Notifying browser that CSS file changed: resources/public/css/app.css
+Notifying browser that CSS file changed: resources/public/css/app.css
+[0mCompiling "resources/public/js/main.js" from ["src/cljs"]...[0m
+[32mSuccessfully compiled "resources/public/js/main.js" in 1.25 seconds.[0m
+notifying browser that file changed:  resources/public/js/out/swarmpit/component/layout.js
+Notifying browser that CSS file changed: resources/public/css/app.css
+Notifying browser that CSS file changed: resources/public/css/app.css
+Notifying browser that CSS file changed: resources/public/css/app.css
+Notifying browser that CSS file changed: resources/public/css/app.css
+Notifying browser that CSS file changed: resources/public/css/app.css
+Notifying browser that CSS file changed: resources/public/css/app.css
+Notifying browser that CSS file changed: resources/public/css/app.css
+Notifying browser that CSS file changed: resources/public/css/app.css
+[0mCompiling "resources/public/js/main.js" from ["src/cljs"]...[0m
+[32mSuccessfully compiled "resources/public/js/main.js" in 1.054 seconds.[0m
+notifying browser that file changed:  resources/public/js/out/swarmpit/component/layout.js
+[0mCompiling "resources/public/js/main.js" from ["src/cljs"]...[0m
+[32mSuccessfully compiled "resources/public/js/main.js" in 1.158 seconds.[0m
+notifying browser that file changed:  resources/public/js/out/swarmpit/component/layout.js
+[0mCompiling "resources/public/js/main.js" from ["src/cljs"]...[0m
+[32mSuccessfully compiled "resources/public/js/main.js" in 1.013 seconds.[0m
+notifying browser that file changed:  resources/public/js/out/swarmpit/component/layout.js
+[0mCompiling "resources/public/js/main.js" from ["src/cljs"]...[0m
+[32mSuccessfully compiled "resources/public/js/main.js" in 0.724 seconds.[0m
+notifying browser that file changed:  resources/public/js/out/swarmpit/component/layout.js
+[0mCompiling "resources/public/js/main.js" from ["src/cljs"]...[0m
+[32mSuccessfully compiled "resources/public/js/main.js" in 0.54 seconds.[0m
+notifying browser that file changed:  resources/public/js/out/swarmpit/component/layout.js
+[0mCompiling "resources/public/js/main.js" from ["src/cljs"]...[0m
+[32mSuccessfully compiled "resources/public/js/main.js" in 0.711 seconds.[0m
+notifying browser that file changed:  resources/public/js/out/swarmpit/component/layout.js
+[0mCompiling "resources/public/js/main.js" from ["src/cljs"]...[0m
+[32mSuccessfully compiled "resources/public/js/main.js" in 0.638 seconds.[0m
+notifying browser that file changed:  resources/public/js/out/swarmpit/component/layout.js
+[0mCompiling "resources/public/js/main.js" from ["src/cljs"]...[0m
+[32mSuccessfully compiled "resources/public/js/main.js" in 1.06 seconds.[0m
+notifying browser that file changed:  resources/public/js/out/swarmpit/component/layout.js
+[0mCompiling "resources/public/js/main.js" from ["src/cljs"]...[0m
+[32mSuccessfully compiled "resources/public/js/main.js" in 0.96 seconds.[0m
+notifying browser that file changed:  resources/public/js/out/swarmpit/component/layout.js
+[0mCompiling "resources/public/js/main.js" from ["src/cljs"]...[0m
+[32mSuccessfully compiled "resources/public/js/main.js" in 0.544 seconds.[0m
+notifying browser that file changed:  resources/public/js/out/swarmpit/component/layout.js
+[0mCompiling "resources/public/js/main.js" from ["src/cljs"]...[0m
+[32mSuccessfully compiled "resources/public/js/main.js" in 0.499 seconds.[0m
+notifying browser that file changed:  resources/public/js/out/swarmpit/component/layout.js
+[0mCompiling "resources/public/js/main.js" from ["src/cljs"]...[0m
+[32mSuccessfully compiled "resources/public/js/main.js" in 0.46 seconds.[0m
+notifying browser that file changed:  resources/public/js/out/swarmpit/component/layout.js
+Notifying browser that CSS file changed: resources/public/css/app.css
+Notifying browser that CSS file changed: resources/public/css/app.css
+Notifying browser that CSS file changed: resources/public/css/app.css
+Notifying browser that CSS file changed: resources/public/css/app.css
+Notifying browser that CSS file changed: resources/public/css/app.css
+Notifying browser that CSS file changed: resources/public/css/app.css
+Notifying browser that CSS file changed: resources/public/css/app.css
+[0mCompiling "resources/public/js/main.js" from ["src/cljs"]...[0m
+[32mSuccessfully compiled "resources/public/js/main.js" in 0.955 seconds.[0m
+notifying browser that file changed:  resources/public/js/out/swarmpit/component/layout.js
+[0mCompiling "resources/public/js/main.js" from ["src/cljs"]...[0m
+[32mSuccessfully compiled "resources/public/js/main.js" in 1.332 seconds.[0m
+notifying browser that file changed:  resources/public/js/out/swarmpit/material.js
+[0mCompiling "resources/public/js/main.js" from ["src/cljs"]...[0m
+[32mSuccessfully compiled "resources/public/js/main.js" in 1.731 seconds.[0m
+notifying browser that file changed:  resources/public/js/out/swarmpit/component/layout.js
+[0mCompiling "resources/public/js/main.js" from ["src/cljs"]...[0m
+[32mSuccessfully compiled "resources/public/js/main.js" in 0.387 seconds.[0m
+notifying browser that file changed:  resources/public/js/out/swarmpit/component/layout.js
