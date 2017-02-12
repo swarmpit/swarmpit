@@ -20,9 +20,10 @@
 
 (rum/defc drawer-item < rum/static [name icon opened?]
   (let [text (if opened? name "")]
-    (material/menu-item #js {:className   "drawer-item"
-                             :primaryText text
-                             :leftIcon    icon})))
+    (material/menu-item #js {:className     "drawer-item"
+                             :innerDivStyle #js {:paddingLeft "50px"}
+                             :primaryText   text
+                             :leftIcon      icon})))
 
 (rum/defc drawer < rum/reactive []
   (let [opened (rum/react opened?)
@@ -46,4 +47,5 @@
                        (drawer-item "Services" material/services-icon opened)
                        (drawer-item "Containers" material/containers-icon opened)
                        (drawer-category "INFRASTRUCTURE" opened)
-                       (drawer-item "Nodes" material/nodes-icon opened)))))
+                       (drawer-item "Nodes" material/nodes-icon opened)
+                       (drawer-item "Networks" material/networks-icon opened)))))

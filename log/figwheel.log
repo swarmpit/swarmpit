@@ -2052,3 +2052,815 @@ notifying browser that file changed:  resources/public/js/out/swarmpit/component
 [32mSuccessfully compiled "resources/public/js/main.js" in 0.542 seconds.[0m
 notifying browser that file changed:  resources/public/js/out/swarmpit/component/menu.js
 Notifying browser that CSS file changed: resources/public/css/app.css
+[0mCompiling "resources/public/js/main.js" from ["src/cljs"]...[0m
+[32mSuccessfully compiled "resources/public/js/main.js" in 2.089 seconds.[0m
+notifying browser that file changed:  resources/public/js/out/swarmpit/component/menu.js
+[0mCompiling "resources/public/js/main.js" from ["src/cljs"]...[0m
+[32mSuccessfully compiled "resources/public/js/main.js" in 0.269 seconds.[0m
+notifying browser that file changed:  resources/public/js/out/swarmpit/component/menu.js
+[0mCompiling "resources/public/js/main.js" from ["src/cljs"]...[0m
+[32mSuccessfully compiled "resources/public/js/main.js" in 0.365 seconds.[0m
+notifying browser that file changed:  resources/public/js/out/swarmpit/component/menu.js
+Notifying browser that CSS file changed: resources/public/css/app.css
+[0mCompiling "resources/public/js/main.js" from ["src/cljs"]...[0m
+[31mFailed to compile "resources/public/js/main.js" in 0.622 seconds.[0m
+[36m----  Could not Read  src/cljs/swarmpit/component/menu.cljs   line:51  column:80  ----[0m
+
+  [1mUnmatched delimiter )[0m
+
+  [36m49[0m  [36m(drawer-category "INFRASTRUCTURE" opened)[0m
+  [36m50[0m  [36m(drawer-item "Nodes" material/nodes-icon opened)[0m
+  [33m51[0m  [1m(drawer-item "Networks" material/nodes-icon opened)))))))))[0m
+  [0m  [0m  [33m                                                        ^--- Unmatched delimiter )[0m
+
+[36m----  Reader Error : Please see src/cljs/swarmpit/component/menu.cljs  ----[0m
+[0mCompiling "resources/public/js/main.js" from ["src/cljs"]...[0m
+[32mSuccessfully compiled "resources/public/js/main.js" in 0.279 seconds.[0m
+notifying browser that file changed:  resources/public/js/out/swarmpit/component/menu.js
+[0mCompiling "resources/public/js/main.js" from ["src/cljs"]...[0m
+[32mSuccessfully compiled "resources/public/js/main.js" in 0.259 seconds.[0m
+notifying browser that file changed:  resources/public/js/out/swarmpit/component/menu.js
+[0mCompiling "resources/public/js/main.js" from ["src/cljs"]...[0m
+[32mSuccessfully compiled "resources/public/js/main.js" in 0.241 seconds.[0m
+notifying browser that file changed:  resources/public/js/out/swarmpit/component/menu.js
+[0mCompiling "resources/public/js/main.js" from ["src/cljs"]...[0m
+[32mSuccessfully compiled "resources/public/js/main.js" in 0.481 seconds.[0m
+notifying browser that file changed:  resources/public/js/out/swarmpit/material.js
+[0mCompiling "resources/public/js/main.js" from ["src/cljs"]...[0m
+[32mSuccessfully compiled "resources/public/js/main.js" in 0.253 seconds.[0m
+notifying browser that file changed:  resources/public/js/out/swarmpit/component/menu.js
+[0mCompiling "resources/public/js/main.js" from ["src/cljs"]...[0m
+[32mSuccessfully compiled "resources/public/js/main.js" in 0.815 seconds.[0m
+notifying browser that file changed:  resources/public/js/out/swarmpit/material.js
+[0mCompiling "resources/public/js/main.js" from ["src/cljs"]...[0m
+[32mSuccessfully compiled "resources/public/js/main.js" in 0.414 seconds.[0m
+notifying browser that file changed:  resources/public/js/out/swarmpit/component/menu.js
+[0mCompiling "resources/public/js/main.js" from ["src/cljs"]...[0m
+[32mSuccessfully compiled "resources/public/js/main.js" in 1.275 seconds.[0m
+notifying browser that file changed:  resources/public/js/out/swarmpit/material.js
+[0mCompiling "resources/public/js/main.js" from ["src/cljs"]...[0m
+[32mSuccessfully compiled "resources/public/js/main.js" in 0.443 seconds.[0m
+notifying browser that file changed:  resources/public/js/out/swarmpit/material.js
+[0mCompiling "resources/public/js/main.js" from ["src/cljs"]...[0m
+[32mSuccessfully compiled "resources/public/js/main.js" in 0.662 seconds.[0m
+notifying browser that file changed:  resources/public/js/out/swarmpit/material.js
+[0mCompiling "resources/public/js/main.js" from ["src/cljs"]...[0m
+[36m----  Compiler Warning on   src/cljs/swarmpit/component/menu.cljs   line:47  column:48  ----[0m
+
+  [1mUse of undeclared Var swarmpit.material/cubes-icon[0m
+
+  [36m43[0m  [36m(drawer-category "BUILD" opened)[0m
+  [36m44[0m  [36m(drawer-item "Repositories" material/repositories-icon opened)[0m
+  [36m45[0m  [36m(drawer-category "APPLICATIONS" opened)[0m
+  [36m46[0m  [36m(drawer-item "Stacks" material/stacks-icon opened)[0m
+  [33m47[0m  [1m(drawer-item "Services" material/cubes-icon opened)[0m
+  [0m  [0m  [33m                        ^--- Use of undeclared Var swarmpit.material/cubes-icon[0m
+  [36m48[0m  [36m(drawer-item "Containers" material/containers-icon opened)[0m
+  [36m49[0m  [36m(drawer-category "INFRASTRUCTURE" opened)[0m
+  [36m50[0m  [36m(drawer-item "Nodes" material/nodes-icon opened)[0m
+  [36m51[0m  [36m(drawer-item "Networks" material/networks-icon opened)))))[0m
+
+[36m----  Compiler Warning : Please see src/cljs/swarmpit/component/menu.cljs  ----[0m
+[32mSuccessfully compiled "resources/public/js/main.js" in 0.522 seconds.[0m
+notifying browser that file changed:  resources/public/js/out/swarmpit/material.js
+[0mCompiling "resources/public/js/main.js" from ["src/cljs"]...[0m
+[32mSuccessfully compiled "resources/public/js/main.js" in 0.271 seconds.[0m
+notifying browser that file changed:  resources/public/js/out/swarmpit/component/menu.js
+[0mCompiling "resources/public/js/main.js" from ["src/cljs"]...[0m
+[32mSuccessfully compiled "resources/public/js/main.js" in 1.111 seconds.[0m
+notifying browser that file changed:  resources/public/js/out/swarmpit/material.js
+[0mCompiling "resources/public/js/main.js" from ["src/cljs"]...[0m
+[32mSuccessfully compiled "resources/public/js/main.js" in 1.105 seconds.[0m
+notifying browser that file changed:  resources/public/js/out/swarmpit/material.js
+[0mCompiling "resources/public/js/main.js" from ["src/cljs"]...[0m
+[32mSuccessfully compiled "resources/public/js/main.js" in 0.641 seconds.[0m
+notifying browser that file changed:  resources/public/js/out/swarmpit/material.js
+[0mCompiling "resources/public/js/main.js" from ["src/cljs"]...[0m
+[32mSuccessfully compiled "resources/public/js/main.js" in 0.428 seconds.[0m
+notifying browser that file changed:  resources/public/js/out/swarmpit/material.js
+[0mCompiling "resources/public/js/main.js" from ["src/cljs"]...[0m
+[32mSuccessfully compiled "resources/public/js/main.js" in 0.518 seconds.[0m
+notifying browser that file changed:  resources/public/js/out/swarmpit/material.js
+[0mCompiling "resources/public/js/main.js" from ["src/cljs"]...[0m
+[32mSuccessfully compiled "resources/public/js/main.js" in 0.479 seconds.[0m
+notifying browser that file changed:  resources/public/js/out/swarmpit/material.js
+[0mCompiling "resources/public/js/main.js" from ["src/cljs"]...[0m
+[32mSuccessfully compiled "resources/public/js/main.js" in 0.585 seconds.[0m
+notifying browser that file changed:  resources/public/js/out/swarmpit/material.js
+[0mCompiling "resources/public/js/main.js" from ["src/cljs"]...[0m
+[32mSuccessfully compiled "resources/public/js/main.js" in 0.303 seconds.[0m
+notifying browser that file changed:  resources/public/js/out/swarmpit/material.js
+Notifying browser that CSS file changed: resources/public/css/app.css
+[0mCompiling "resources/public/js/main.js" from ["src/cljs"]...[0m
+[36m----  Compiler Warning on   src/cljs/swarmpit/material.cljs   line:13  column:1  ----[0m
+
+  [1mstepper already refers to: cljs.core/stepper being replaced by: swarmpit.material/stepper[0m
+
+  [36m 9[0m  [36m(def menu-item (create-factory js/MaterialUI.MenuItem))[0m
+  [36m10[0m  [36m(def svg-icon (create-factory js/MaterialUI.SvgIcon))[0m
+  [36m11[0m  [36m(def icon-button (create-factory js/MaterialUI.IconButton))[0m
+  [36m12[0m  [36m[0m
+  [33m13[0m  [1m(def stepper (create-factory js/MaterialUI.Stepper))[0m
+  [0m  [0m  [33m^--- stepper already refers to: cljs.core/stepper being replaced by: swarmpit.material/stepper[0m
+  [36m14[0m  [36m(def step-label (create-factory js/MaterialUI.StepLabel))[0m
+  [36m15[0m  [36m(def step-label (create-factory js/MaterialUI.StepLabel))[0m
+  [36m16[0m  [36m[0m
+  [36m17[0m  [36m(def auto-complete (create-factory js/MaterialUI.AutoComplete))[0m
+  [36m18[0m  [36m(def font-icon (create-factory js/MaterialUI.FontIcon))[0m
+
+[36m----  Compiler Warning : Please see src/cljs/swarmpit/material.cljs  ----[0m
+[36m----  Compiler Warning on   src/cljs/swarmpit/material.cljs   line:15  column:1  ----[0m
+
+  [1mstep-label at line 14 is being replaced[0m
+
+  [36m11[0m  [36m(def icon-button (create-factory js/MaterialUI.IconButton))[0m
+  [36m12[0m  [36m[0m
+  [36m13[0m  [36m(def stepper (create-factory js/MaterialUI.Stepper))[0m
+  [36m14[0m  [36m(def step-label (create-factory js/MaterialUI.StepLabel))[0m
+  [33m15[0m  [1m(def step-label (create-factory js/MaterialUI.StepLabel))[0m
+  [0m  [0m  [33m^--- step-label at line 14 is being replaced[0m
+  [36m16[0m  [36m[0m
+  [36m17[0m  [36m(def auto-complete (create-factory js/MaterialUI.AutoComplete))[0m
+  [36m18[0m  [36m(def font-icon (create-factory js/MaterialUI.FontIcon))[0m
+  [36m19[0m  [36m(def mui-theme-provider (create-factory js/MaterialUIStyles.MuiThemeProvider))[0m
+
+[36m----  Compiler Warning : Please see src/cljs/swarmpit/material.cljs  ----[0m
+[32mSuccessfully compiled "resources/public/js/main.js" in 1.179 seconds.[0m
+notifying browser that file changed:  resources/public/js/out/swarmpit/material.js
+[0mCompiling "resources/public/js/main.js" from ["src/cljs"]...[0m
+[36m----  Compiler Warning on   src/cljs/swarmpit/material.cljs   line:14  column:1  ----[0m
+
+  [1mstepper already refers to: cljs.core/stepper being replaced by: swarmpit.material/stepper[0m
+
+  [36m10[0m  [36m(def svg-icon (create-factory js/MaterialUI.SvgIcon))[0m
+  [36m11[0m  [36m(def icon-button (create-factory js/MaterialUI.IconButton))[0m
+  [36m12[0m  [36m[0m
+  [36m13[0m  [36m(def step (create-factory js/MaterialUI.Step))[0m
+  [33m14[0m  [1m(def stepper (create-factory js/MaterialUI.Stepper))[0m
+  [0m  [0m  [33m^--- stepper already refers to: cljs.core/stepper being replaced by: swarmpit.material/stepper[0m
+  [36m15[0m  [36m(def step-label (create-factory js/MaterialUI.StepLabel))[0m
+  [36m16[0m  [36m[0m
+  [36m17[0m  [36m(def auto-complete (create-factory js/MaterialUI.AutoComplete))[0m
+  [36m18[0m  [36m(def font-icon (create-factory js/MaterialUI.FontIcon))[0m
+  [36m19[0m  [36m(def mui-theme-provider (create-factory js/MaterialUIStyles.MuiThemeProvider))[0m
+
+[36m----  Compiler Warning : Please see src/cljs/swarmpit/material.cljs  ----[0m
+[32mSuccessfully compiled "resources/public/js/main.js" in 0.403 seconds.[0m
+notifying browser that file changed:  resources/public/js/out/swarmpit/material.js
+[0mCompiling "resources/public/js/main.js" from ["src/cljs"]...[0m
+[32mSuccessfully compiled "resources/public/js/main.js" in 0.356 seconds.[0m
+notifying browser that file changed:  resources/public/js/out/swarmpit/material.js
+[0mCompiling "resources/public/js/main.js" from ["src/cljs"]...[0m
+[32mSuccessfully compiled "resources/public/js/main.js" in 1.606 seconds.[0m
+notifying browser that file changed:  resources/public/js/out/cljs_deps.js
+notifying browser that file changed:  resources/public/js/out/swarmpit/component/service/create.js
+[0mCompiling "resources/public/js/main.js" from ["src/cljs"]...[0m
+[32mSuccessfully compiled "resources/public/js/main.js" in 0.295 seconds.[0m
+notifying browser that file changed:  resources/public/js/out/swarmpit/component/service/create.js
+[0mCompiling "resources/public/js/main.js" from ["src/cljs"]...[0m
+[32mSuccessfully compiled "resources/public/js/main.js" in 0.263 seconds.[0m
+notifying browser that file changed:  resources/public/js/out/cljs_deps.js
+notifying browser that file changed:  resources/public/js/out/swarmpit/component/service/create_form.js
+[0mCompiling "resources/public/js/main.js" from ["src/cljs"]...[0m
+[32mSuccessfully compiled "resources/public/js/main.js" in 0.336 seconds.[0m
+notifying browser that file changed:  resources/public/js/out/cljs_deps.js
+notifying browser that file changed:  resources/public/js/out/swarmpit/component/service/create_form.js
+[0mCompiling "resources/public/js/main.js" from ["src/cljs"]...[0m
+[36m----  Compiler Warning on   src/cljs/swarmpit/component/service/create_form.cljs   line:9  column:47  ----[0m
+
+  [1mUse of undeclared Var swarmpit.component.service.create-form/opened[0m
+
+  [36m 5[0m  [36m(enable-console-print!)[0m
+  [36m 6[0m  [36m[0m
+  [36m 7[0m  [36m(rum/defc form < rum/reactive [][0m
+  [36m 8[0m  [36m  (material/theme[0m
+  [33m 9[0m  [1m    (material/drawer #js {:open               opened[0m
+  [0m  [0m  [33m                                              ^--- Use of undeclared Var swarmpit.component.service.create-form/opened[0m
+  [36m10[0m  [36m                          :containerStyle     drawer-container-style[0m
+  [36m11[0m  [36m                          :containerClassName "drawer-container"})))[0m
+
+[36m----  Compiler Warning : Please see src/cljs/swarmpit/component/service/create_form.cljs  ----[0m
+[36m----  Compiler Warning on   src/cljs/swarmpit/component/service/create_form.cljs   line:10  column:47  ----[0m
+
+  [1mUse of undeclared Var swarmpit.component.service.create-form/drawer-container-style[0m
+
+  [36m 7[0m  [36m(rum/defc form < rum/reactive [][0m
+  [36m 8[0m  [36m  (material/theme[0m
+  [36m 9[0m  [36m    (material/drawer #js {:open               opened[0m
+  [33m10[0m  [1m                          :containerStyle     drawer-container-style[0m
+  [0m  [0m  [33m                                              ^--- Use of undeclared Var swarmpit.component.service.create-form/drawer-container-style[0m
+  [36m11[0m  [36m                          :containerClassName "drawer-container"})))[0m
+
+[36m----  Compiler Warning : Please see src/cljs/swarmpit/component/service/create_form.cljs  ----[0m
+[32mSuccessfully compiled "resources/public/js/main.js" in 0.339 seconds.[0m
+notifying browser that file changed:  resources/public/js/out/swarmpit/component/service/create_form.js
+[0mCompiling "resources/public/js/main.js" from ["src/cljs"]...[0m
+[36m----  Compiler Warning on   src/cljs/swarmpit/component/service/create_form.cljs   line:9  column:48  ----[0m
+
+  [1mUse of undeclared Var swarmpit.component.service.create-form/opened[0m
+
+  [36m 5[0m  [36m(enable-console-print!)[0m
+  [36m 6[0m  [36m[0m
+  [36m 7[0m  [36m(rum/defc form < rum/reactive [][0m
+  [36m 8[0m  [36m  (material/theme[0m
+  [33m 9[0m  [1m    (material/stepper #js {:open               opened[0m
+  [0m  [0m  [33m                                               ^--- Use of undeclared Var swarmpit.component.service.create-form/opened[0m
+  [36m10[0m  [36m                          :containerStyle     drawer-container-style[0m
+  [36m11[0m  [36m                          :containerClassName "drawer-container"})))[0m
+
+[36m----  Compiler Warning : Please see src/cljs/swarmpit/component/service/create_form.cljs  ----[0m
+[36m----  Compiler Warning on   src/cljs/swarmpit/component/service/create_form.cljs   line:10  column:47  ----[0m
+
+  [1mUse of undeclared Var swarmpit.component.service.create-form/drawer-container-style[0m
+
+  [36m 7[0m  [36m(rum/defc form < rum/reactive [][0m
+  [36m 8[0m  [36m  (material/theme[0m
+  [36m 9[0m  [36m    (material/stepper #js {:open               opened[0m
+  [33m10[0m  [1m                          :containerStyle     drawer-container-style[0m
+  [0m  [0m  [33m                                              ^--- Use of undeclared Var swarmpit.component.service.create-form/drawer-container-style[0m
+  [36m11[0m  [36m                          :containerClassName "drawer-container"})))[0m
+
+[36m----  Compiler Warning : Please see src/cljs/swarmpit/component/service/create_form.cljs  ----[0m
+[32mSuccessfully compiled "resources/public/js/main.js" in 0.291 seconds.[0m
+notifying browser that file changed:  resources/public/js/out/swarmpit/component/service/create_form.js
+[0mCompiling "resources/public/js/main.js" from ["src/cljs"]...[0m
+[36m----  Compiler Warning on   src/cljs/swarmpit/component/service/create_form.cljs   line:10  column:47  ----[0m
+
+  [1mUse of undeclared Var swarmpit.component.service.create-form/drawer-container-style[0m
+
+  [36m 7[0m  [36m(rum/defc form < rum/reactive [][0m
+  [36m 8[0m  [36m  (material/theme[0m
+  [36m 9[0m  [36m    (material/stepper #js {:activeStep               1[0m
+  [33m10[0m  [1m                          :containerStyle     drawer-container-style[0m
+  [0m  [0m  [33m                                              ^--- Use of undeclared Var swarmpit.component.service.create-form/drawer-container-style[0m
+  [36m11[0m  [36m                          :containerClassName "drawer-container"})))[0m
+
+[36m----  Compiler Warning : Please see src/cljs/swarmpit/component/service/create_form.cljs  ----[0m
+[32mSuccessfully compiled "resources/public/js/main.js" in 0.259 seconds.[0m
+notifying browser that file changed:  resources/public/js/out/swarmpit/component/service/create_form.js
+[0mCompiling "resources/public/js/main.js" from ["src/cljs"]...[0m
+[36m----  Compiler Warning on   src/cljs/swarmpit/component/service/create_form.cljs   line:10  column:48  ----[0m
+
+  [1mUse of undeclared Var swarmpit.component.service.create-form/drawer-container-style[0m
+
+  [36m 7[0m  [36m(rum/defc form < rum/reactive [][0m
+  [36m 8[0m  [36m  (material/theme[0m
+  [36m 9[0m  [36m    (material/stepper #js {:activeStep         1[0m
+  [33m10[0m  [1m                           :connector          drawer-container-style})))[0m
+  [0m  [0m  [33m                                               ^--- Use of undeclared Var swarmpit.component.service.create-form/drawer-container-style[0m
+
+[36m----  Compiler Warning : Please see src/cljs/swarmpit/component/service/create_form.cljs  ----[0m
+[32mSuccessfully compiled "resources/public/js/main.js" in 0.274 seconds.[0m
+notifying browser that file changed:  resources/public/js/out/swarmpit/component/service/create_form.js
+[0mCompiling "resources/public/js/main.js" from ["src/cljs"]...[0m
+[32mSuccessfully compiled "resources/public/js/main.js" in 0.333 seconds.[0m
+notifying browser that file changed:  resources/public/js/out/swarmpit/component/service/create_form.js
+[0mCompiling "resources/public/js/main.js" from ["src/cljs"]...[0m
+[32mSuccessfully compiled "resources/public/js/main.js" in 0.397 seconds.[0m
+notifying browser that file changed:  resources/public/js/out/swarmpit/component/service/create_form.js
+[0mCompiling "resources/public/js/main.js" from ["src/cljs"]...[0m
+[32mSuccessfully compiled "resources/public/js/main.js" in 0.379 seconds.[0m
+notifying browser that file changed:  resources/public/js/out/swarmpit/component/service/create_form.js
+[0mCompiling "resources/public/js/main.js" from ["src/cljs"]...[0m
+[32mSuccessfully compiled "resources/public/js/main.js" in 0.53 seconds.[0m
+notifying browser that file changed:  resources/public/js/out/swarmpit/component/service/create_form.js
+[0mCompiling "resources/public/js/main.js" from ["src/cljs"]...[0m
+[32mSuccessfully compiled "resources/public/js/main.js" in 0.321 seconds.[0m
+notifying browser that file changed:  resources/public/js/out/swarmpit/component/service/create_form.js
+[0mCompiling "resources/public/js/main.js" from ["src/cljs"]...[0m
+[32mSuccessfully compiled "resources/public/js/main.js" in 0.224 seconds.[0m
+notifying browser that file changed:  resources/public/js/out/swarmpit/component/service/create_form.js
+[0mCompiling "resources/public/js/main.js" from ["src/cljs"]...[0m
+[32mSuccessfully compiled "resources/public/js/main.js" in 0.213 seconds.[0m
+notifying browser that file changed:  resources/public/js/out/swarmpit/component/service/create_form.js
+[0mCompiling "resources/public/js/main.js" from ["src/cljs"]...[0m
+[32mSuccessfully compiled "resources/public/js/main.js" in 0.263 seconds.[0m
+notifying browser that file changed:  resources/public/js/out/swarmpit/component/service/create_form.js
+[0mCompiling "resources/public/js/main.js" from ["src/cljs"]...[0m
+[32mSuccessfully compiled "resources/public/js/main.js" in 0.411 seconds.[0m
+notifying browser that file changed:  resources/public/js/out/swarmpit/component/service/create_form.js
+Notifying browser that CSS file changed: resources/public/css/app.css
+Notifying browser that CSS file changed: resources/public/css/app.css
+Notifying browser that CSS file changed: resources/public/css/app.css
+Notifying browser that CSS file changed: resources/public/css/app.css
+[0mCompiling "resources/public/js/main.js" from ["src/cljs"]...[0m
+[32mSuccessfully compiled "resources/public/js/main.js" in 0.66 seconds.[0m
+notifying browser that file changed:  resources/public/js/out/swarmpit/material.js
+[0mCompiling "resources/public/js/main.js" from ["src/cljs"]...[0m
+[32mSuccessfully compiled "resources/public/js/main.js" in 0.4 seconds.[0m
+notifying browser that file changed:  resources/public/js/out/swarmpit/component/service/create_form.js
+[0mCompiling "resources/public/js/main.js" from ["src/cljs"]...[0m
+[32mSuccessfully compiled "resources/public/js/main.js" in 0.464 seconds.[0m
+notifying browser that file changed:  resources/public/js/out/swarmpit/component/service/create_form.js
+[0mCompiling "resources/public/js/main.js" from ["src/cljs"]...[0m
+[32mSuccessfully compiled "resources/public/js/main.js" in 0.319 seconds.[0m
+notifying browser that file changed:  resources/public/js/out/swarmpit/component/service/create_form.js
+[0mCompiling "resources/public/js/main.js" from ["src/cljs"]...[0m
+[32mSuccessfully compiled "resources/public/js/main.js" in 0.534 seconds.[0m
+notifying browser that file changed:  resources/public/js/out/cljs_deps.js
+notifying browser that file changed:  resources/public/js/out/swarmpit/app.js
+[0mCompiling "resources/public/js/main.js" from ["src/cljs"]...[0m
+[32mSuccessfully compiled "resources/public/js/main.js" in 0.339 seconds.[0m
+notifying browser that file changed:  resources/public/js/out/swarmpit/component/service/create_form.js
+[0mCompiling "resources/public/js/main.js" from ["src/cljs"]...[0m
+[32mSuccessfully compiled "resources/public/js/main.js" in 0.44 seconds.[0m
+notifying browser that file changed:  resources/public/js/out/swarmpit/component/service/create_form.js
+[0mCompiling "resources/public/js/main.js" from ["src/cljs"]...[0m
+[32mSuccessfully compiled "resources/public/js/main.js" in 0.893 seconds.[0m
+notifying browser that file changed:  resources/public/js/out/swarmpit/component/service/create_form.js
+[0mCompiling "resources/public/js/main.js" from ["src/cljs"]...[0m
+[32mSuccessfully compiled "resources/public/js/main.js" in 0.485 seconds.[0m
+notifying browser that file changed:  resources/public/js/out/swarmpit/component/service/create_form.js
+[0mCompiling "resources/public/js/main.js" from ["src/cljs"]...[0m
+[32mSuccessfully compiled "resources/public/js/main.js" in 0.512 seconds.[0m
+notifying browser that file changed:  resources/public/js/out/swarmpit/component/service/create_form.js
+[0mCompiling "resources/public/js/main.js" from ["src/cljs"]...[0m
+[36m----  Compiler Warning on   src/cljs/swarmpit/component/service/create_form.cljs   line:18  column:7  ----[0m
+
+  [1mUse of undeclared Var swarmpit.material/expand-transition[0m
+
+  [36m14[0m  [36m                                      (material/step-label #js {} "Create an ad group"))[0m
+  [36m15[0m  [36m                       (material/step #js {}[0m
+  [36m16[0m  [36m                                      (material/step-label #js {} "Create an ad"))))[0m
+  [36m17[0m  [36m   (material/theme[0m
+  [33m18[0m  [1m     (material/expand-transition #js {:loading "loading"[0m
+  [0m  [0m  [33m      ^--- Use of undeclared Var swarmpit.material/expand-transition[0m
+  [36m19[0m  [36m                                      :expand  true}))[0m
+  [36m20[0m  [36m   ])[0m
+  [36m21[0m  [36m[0m
+  [36m22[0m  [36m(defn mount![0m
+  [36m23[0m  [36m  [][0m
+
+[36m----  Compiler Warning : Please see src/cljs/swarmpit/component/service/create_form.cljs  ----[0m
+[36m----  Compiler Warning on   src/cljs/swarmpit/component/service/create_form.cljs   line:18  column:7  ----[0m
+
+  [1mUse of undeclared Var swarmpit.material/expand-transition[0m
+
+  [36m14[0m  [36m                                      (material/step-label #js {} "Create an ad group"))[0m
+  [36m15[0m  [36m                       (material/step #js {}[0m
+  [36m16[0m  [36m                                      (material/step-label #js {} "Create an ad"))))[0m
+  [36m17[0m  [36m   (material/theme[0m
+  [33m18[0m  [1m     (material/expand-transition #js {:loading "loading"[0m
+  [0m  [0m  [33m      ^--- Use of undeclared Var swarmpit.material/expand-transition[0m
+  [36m19[0m  [36m                                      :expand  true}))[0m
+  [36m20[0m  [36m   ])[0m
+  [36m21[0m  [36m[0m
+  [36m22[0m  [36m(defn mount![0m
+  [36m23[0m  [36m  [][0m
+
+[36m----  Compiler Warning : Please see src/cljs/swarmpit/component/service/create_form.cljs  ----[0m
+[32mSuccessfully compiled "resources/public/js/main.js" in 0.627 seconds.[0m
+notifying browser that file changed:  resources/public/js/out/swarmpit/material.js
+[0mCompiling "resources/public/js/main.js" from ["src/cljs"]...[0m
+[36m----  Compiler Warning on   src/cljs/swarmpit/component/service/create_form.cljs   line:18  column:7  ----[0m
+
+  [1mUse of undeclared Var swarmpit.material/expand-transition[0m
+
+  [36m14[0m  [36m                                      (material/step-label #js {} "Create an ad group"))[0m
+  [36m15[0m  [36m                       (material/step #js {}[0m
+  [36m16[0m  [36m                                      (material/step-label #js {} "Create an ad"))))[0m
+  [36m17[0m  [36m   (material/theme[0m
+  [33m18[0m  [1m     (material/expand-transition #js {:loading "loading"[0m
+  [0m  [0m  [33m      ^--- Use of undeclared Var swarmpit.material/expand-transition[0m
+  [36m19[0m  [36m                                      :expand  true}))[0m
+  [36m20[0m  [36m   ])[0m
+  [36m21[0m  [36m[0m
+  [36m22[0m  [36m<div style={{marginTop: 24, marginBottom: 12}}>[0m
+  [36m23[0m  [36m<FlatButton[0m
+
+[36m----  Compiler Warning : Please see src/cljs/swarmpit/component/service/create_form.cljs  ----[0m
+[36m----  Compiler Warning on   src/cljs/swarmpit/component/service/create_form.cljs   line:18  column:7  ----[0m
+
+  [1mUse of undeclared Var swarmpit.material/expand-transition[0m
+
+  [36m14[0m  [36m                                      (material/step-label #js {} "Create an ad group"))[0m
+  [36m15[0m  [36m                       (material/step #js {}[0m
+  [36m16[0m  [36m                                      (material/step-label #js {} "Create an ad"))))[0m
+  [36m17[0m  [36m   (material/theme[0m
+  [33m18[0m  [1m     (material/expand-transition #js {:loading "loading"[0m
+  [0m  [0m  [33m      ^--- Use of undeclared Var swarmpit.material/expand-transition[0m
+  [36m19[0m  [36m                                      :expand  true}))[0m
+  [36m20[0m  [36m   ])[0m
+  [36m21[0m  [36m[0m
+  [36m22[0m  [36m<div style={{marginTop: 24, marginBottom: 12}}>[0m
+  [36m23[0m  [36m<FlatButton[0m
+
+[36m----  Compiler Warning : Please see src/cljs/swarmpit/component/service/create_form.cljs  ----[0m
+[36m----  Compiler Warning on   src/cljs/swarmpit/component/service/create_form.cljs   line:22  column:1  ----[0m
+
+  [1mUse of undeclared Var swarmpit.component.service.create-form/<div[0m
+
+  [36m18[0m  [36m     (material/expand-transition #js {:loading "loading"[0m
+  [36m19[0m  [36m                                      :expand  true}))[0m
+  [36m20[0m  [36m   ])[0m
+  [36m21[0m  [36m[0m
+  [33m22[0m  [1m<div style={{marginTop: 24, marginBottom: 12}}>[0m
+  [0m  [0m  [33m^--- Use of undeclared Var swarmpit.component.service.create-form/<div[0m
+  [36m23[0m  [36m<FlatButton[0m
+  [36m24[0m  [36mlabel="Back"[0m
+  [36m25[0m  [36mdisabled={stepIndex === 0}[0m
+  [36m26[0m  [36monTouchTap={this.handlePrev}[0m
+  [36m27[0m  [36mstyle={{marginRight: 12}}[0m
+
+[36m----  Compiler Warning : Please see src/cljs/swarmpit/component/service/create_form.cljs  ----[0m
+[36m----  Compiler Warning on   src/cljs/swarmpit/component/service/create_form.cljs   line:22  column:6  ----[0m
+
+  [1mUse of undeclared Var swarmpit.component.service.create-form/style=[0m
+
+  [36m18[0m  [36m     (material/expand-transition #js {:loading "loading"[0m
+  [36m19[0m  [36m                                      :expand  true}))[0m
+  [36m20[0m  [36m   ])[0m
+  [36m21[0m  [36m[0m
+  [33m22[0m  [1m<div style={{marginTop: 24, marginBottom: 12}}>[0m
+  [0m  [0m  [33m     ^--- Use of undeclared Var swarmpit.component.service.create-form/style=[0m
+  [36m23[0m  [36m<FlatButton[0m
+  [36m24[0m  [36mlabel="Back"[0m
+  [36m25[0m  [36mdisabled={stepIndex === 0}[0m
+  [36m26[0m  [36monTouchTap={this.handlePrev}[0m
+  [36m27[0m  [36mstyle={{marginRight: 12}}[0m
+
+[36m----  Compiler Warning : Please see src/cljs/swarmpit/component/service/create_form.cljs  ----[0m
+[31mFailed to compile "resources/public/js/main.js" in 0.94 seconds.[0m
+[36m----  Could not Read  src/cljs/swarmpit/component/service/create_form.cljs   line:22  column:24  ----[0m
+
+  [1mInvalid token: marginTop:[0m
+
+  [36m20[0m  [36m   ])[0m
+  [36m21[0m  [36m[0m
+  [33m22[0m  [1m<div style={{marginTop: 24, marginBottom: 12}}>[0m
+  [0m  [0m  [33m                       ^--- Invalid token: marginTop:[0m
+  [36m23[0m  [36m<FlatButton[0m
+  [36m24[0m  [36mlabel="Back"[0m
+  [36m25[0m  [36mdisabled={stepIndex === 0}[0m
+
+[36m----  Reader Error : Please see src/cljs/swarmpit/component/service/create_form.cljs  ----[0m
+[0mCompiling "resources/public/js/main.js" from ["src/cljs"]...[0m
+[32mSuccessfully compiled "resources/public/js/main.js" in 0.607 seconds.[0m
+notifying browser that file changed:  resources/public/js/out/swarmpit/component/service/create_form.js
+[0mCompiling "resources/public/js/main.js" from ["src/cljs"]...[0m
+[36m----  Compiler Warning on   src/cljs/swarmpit/component/service/create_form.cljs   line:7  column:2  ----[0m
+
+  [1mNo such namespace: run, could not locate run.cljs, run.cljc, or Closure namespace ""[0m
+
+  [36m 3[0m  [36m            [rum.core :as rum]))[0m
+  [36m 4[0m  [36m[0m
+  [36m 5[0m  [36m(enable-console-print!)[0m
+  [36m 6[0m  [36m[0m
+  [33m 7[0m  [1m(run/defc first < rum/static [][0m
+  [0m  [0m  [33m ^--- No such namespace: run, could not locate run.cljs, run.cljc, or Closure namespace ""[0m
+  [36m 8[0m  [36m          [:p "For each ad campaign that you create, you can control how much you're willing to spend[0m
+  [36m 9[0m  [36m           on clicks and conversions, which networks and geographical locations you want\n your ads to[0m
+  [36m10[0m  [36m           show on, and more.\n"])[0m
+  [36m11[0m  [36m[0m
+  [36m12[0m  [36m(rum/defc form < rum/reactive [][0m
+
+[36m----  Compiler Warning : Please see src/cljs/swarmpit/component/service/create_form.cljs  ----[0m
+[36m----  Compiler Warning on   src/cljs/swarmpit/component/service/create_form.cljs   line:7  column:2  ----[0m
+
+  [1mUse of undeclared Var run/defc[0m
+
+  [36m 3[0m  [36m            [rum.core :as rum]))[0m
+  [36m 4[0m  [36m[0m
+  [36m 5[0m  [36m(enable-console-print!)[0m
+  [36m 6[0m  [36m[0m
+  [33m 7[0m  [1m(run/defc first < rum/static [][0m
+  [0m  [0m  [33m ^--- Use of undeclared Var run/defc[0m
+  [36m 8[0m  [36m          [:p "For each ad campaign that you create, you can control how much you're willing to spend[0m
+  [36m 9[0m  [36m           on clicks and conversions, which networks and geographical locations you want\n your ads to[0m
+  [36m10[0m  [36m           show on, and more.\n"])[0m
+  [36m11[0m  [36m[0m
+  [36m12[0m  [36m(rum/defc form < rum/reactive [][0m
+
+[36m----  Compiler Warning : Please see src/cljs/swarmpit/component/service/create_form.cljs  ----[0m
+[32mSuccessfully compiled "resources/public/js/main.js" in 0.686 seconds.[0m
+notifying browser that file changed:  resources/public/js/out/swarmpit/component/service/create_form.js
+[0mCompiling "resources/public/js/main.js" from ["src/cljs"]...[0m
+[36m----  Compiler Warning on   src/cljs/swarmpit/component/service/create_form.cljs   line:7  column:1  ----[0m
+
+  [1mfirst already refers to: cljs.core/first being replaced by: swarmpit.component.service.create-form/first[0m
+
+  [36m 3[0m  [36m            [rum.core :as rum]))[0m
+  [36m 4[0m  [36m[0m
+  [36m 5[0m  [36m(enable-console-print!)[0m
+  [36m 6[0m  [36m[0m
+  [33m 7[0m  [1m(rum/defc first < rum/static [][0m
+  [0m  [0m  [33m^--- first already refers to: cljs.core/first being replaced by: swarmpit.component.service.create-form/first[0m
+  [36m 8[0m  [36m          [:p "For each ad campaign that you create, you can control how much you're willing to spend[0m
+  [36m 9[0m  [36m           on clicks and conversions, which networks and geographical locations you want\n your ads to[0m
+  [36m10[0m  [36m           show on, and more.\n"])[0m
+  [36m11[0m  [36m[0m
+  [36m12[0m  [36m(rum/defc form < rum/reactive [][0m
+
+[36m----  Compiler Warning : Please see src/cljs/swarmpit/component/service/create_form.cljs  ----[0m
+[32mSuccessfully compiled "resources/public/js/main.js" in 0.376 seconds.[0m
+notifying browser that file changed:  resources/public/js/out/swarmpit/component/service/create_form.js
+[0mCompiling "resources/public/js/main.js" from ["src/cljs"]...[0m
+[36m----  Compiler Warning on   src/cljs/swarmpit/component/service/create_form.cljs   line:7  column:1  ----[0m
+
+  [1mfirst already refers to: cljs.core/first being replaced by: swarmpit.component.service.create-form/first[0m
+
+  [36m 3[0m  [36m            [rum.core :as rum]))[0m
+  [36m 4[0m  [36m[0m
+  [36m 5[0m  [36m(enable-console-print!)[0m
+  [36m 6[0m  [36m[0m
+  [33m 7[0m  [1m(rum/defc first < rum/static [][0m
+  [0m  [0m  [33m^--- first already refers to: cljs.core/first being replaced by: swarmpit.component.service.create-form/first[0m
+  [36m 8[0m  [36m  [:p "For each ad campaign that you create, you can control how much you're willing to spend[0m
+  [36m 9[0m  [36m           on clicks and conversions, which networks and geographical locations you want\n your ads to[0m
+  [36m10[0m  [36m           show on, and more.\n"])[0m
+  [36m11[0m  [36m[0m
+  [36m12[0m  [36m(rum/defc form < rum/reactive [][0m
+
+[36m----  Compiler Warning : Please see src/cljs/swarmpit/component/service/create_form.cljs  ----[0m
+[32mSuccessfully compiled "resources/public/js/main.js" in 0.943 seconds.[0m
+notifying browser that file changed:  resources/public/js/out/swarmpit/component/service/create_form.js
+[0mCompiling "resources/public/js/main.js" from ["src/cljs"]...[0m
+[32mSuccessfully compiled "resources/public/js/main.js" in 0.442 seconds.[0m
+notifying browser that file changed:  resources/public/js/out/swarmpit/component/service/create_form.js
+Notifying browser that CSS file changed: resources/public/css/app.css
+Notifying browser that CSS file changed: resources/public/css/app.css
+[0mCompiling "resources/public/js/main.js" from ["src/cljs"]...[0m
+[32mSuccessfully compiled "resources/public/js/main.js" in 0.303 seconds.[0m
+notifying browser that file changed:  resources/public/js/out/swarmpit/component/service/create_form.js
+Notifying browser that CSS file changed: resources/public/css/app.css
+[0mCompiling "resources/public/js/main.js" from ["src/cljs"]...[0m
+[32mSuccessfully compiled "resources/public/js/main.js" in 1.372 seconds.[0m
+notifying browser that file changed:  resources/public/js/out/swarmpit/component/service/create_form.js
+[0mCompiling "resources/public/js/main.js" from ["src/cljs"]...[0m
+[31mFailed to compile "resources/public/js/main.js" in 0.499 seconds.[0m
+[36m----  Could not Analyze  src/cljs/swarmpit/component/service/create_form.cljs   line:7  column:1  ----[0m
+
+  [1mclojure.lang.PersistentVector cannot be cast to clojure.lang.Named[0m
+
+  [36m5[0m  [36m(enable-console-print!)[0m
+  [36m6[0m  [36m[0m
+  [33m7[0m  [1m(def [:p "For each ad campaign that you create, you can control how much you're willing to spend[0m
+  [0m [0m  [33m^--- clojure.lang.PersistentVector cannot be cast to clojure.lang.Named[0m
+  [36m8[0m  [36m           on clicks and conversions, which networks and geographical locations you want\n your ads to[0m
+  [36m9[0m  [36m           show on, and more.\n"])[0m
+
+[36m----  Analysis Error : Please see src/cljs/swarmpit/component/service/create_form.cljs  ----[0m
+[0mCompiling "resources/public/js/main.js" from ["src/cljs"]...[0m
+[32mSuccessfully compiled "resources/public/js/main.js" in 0.33 seconds.[0m
+notifying browser that file changed:  resources/public/js/out/swarmpit/component/service/create_form.js
+[0mCompiling "resources/public/js/main.js" from ["src/cljs"]...[0m
+[32mSuccessfully compiled "resources/public/js/main.js" in 0.285 seconds.[0m
+notifying browser that file changed:  resources/public/js/out/swarmpit/component/service/create_form.js
+[0mCompiling "resources/public/js/main.js" from ["src/cljs"]...[0m
+[32mSuccessfully compiled "resources/public/js/main.js" in 0.293 seconds.[0m
+notifying browser that file changed:  resources/public/js/out/swarmpit/component/service/create_form.js
+[0mCompiling "resources/public/js/main.js" from ["src/cljs"]...[0m
+[32mSuccessfully compiled "resources/public/js/main.js" in 0.827 seconds.[0m
+notifying browser that file changed:  resources/public/js/out/swarmpit/component/service/create_form.js
+[0mCompiling "resources/public/js/main.js" from ["src/cljs"]...[0m
+[32mSuccessfully compiled "resources/public/js/main.js" in 0.403 seconds.[0m
+notifying browser that file changed:  resources/public/js/out/swarmpit/component/service/create_form.js
+Notifying browser that CSS file changed: resources/public/css/app.css
+Notifying browser that CSS file changed: resources/public/css/app.css
+Notifying browser that CSS file changed: resources/public/css/app.css
+Notifying browser that CSS file changed: resources/public/css/app.css
+Notifying browser that CSS file changed: resources/public/css/app.css
+[0mCompiling "resources/public/js/main.js" from ["src/cljs"]...[0m
+[32mSuccessfully compiled "resources/public/js/main.js" in 0.839 seconds.[0m
+notifying browser that file changed:  resources/public/js/out/swarmpit/material.js
+[0mCompiling "resources/public/js/main.js" from ["src/cljs"]...[0m
+[32mSuccessfully compiled "resources/public/js/main.js" in 0.434 seconds.[0m
+notifying browser that file changed:  resources/public/js/out/swarmpit/material.js
+[0mCompiling "resources/public/js/main.js" from ["src/cljs"]...[0m
+[32mSuccessfully compiled "resources/public/js/main.js" in 0.427 seconds.[0m
+notifying browser that file changed:  resources/public/js/out/swarmpit/material.js
+[0mCompiling "resources/public/js/main.js" from ["src/cljs"]...[0m
+[31mFailed to compile "resources/public/js/main.js" in 0.305 seconds.[0m
+[36m----  Could not Read  src/cljs/swarmpit/material.cljs   line:46  column:23  ----[0m
+
+  [1mJavaScript literal keys must be strings or unqualified keywords[0m
+
+  [36m44[0m  [36m                     :clockCircleColor fade(darkBlack, 0.07),[0m
+  [36m45[0m  [36m                     :shadowColor fullBlack,[0m
+  [33m46[0m  [1m                     }})[0m
+  [0m  [0m  [33m                      ^--- JavaScript literal keys must be strings or unqualified keywords[0m
+  [36m47[0m  [36m[0m
+  [36m48[0m  [36m(defn theme [comp][0m
+  [36m49[0m  [36m  (let [default-theme (mui-theme light-theme)][0m
+
+[36m----  Reader Error : Please see src/cljs/swarmpit/material.cljs  ----[0m
+[0mCompiling "resources/public/js/main.js" from ["src/cljs"]...[0m
+[31mFailed to compile "resources/public/js/main.js" in 0.409 seconds.[0m
+[36m----  Could not Read  src/cljs/swarmpit/material.cljs   line:45  column:45  ----[0m
+
+  [1mJavaScript literal keys must be strings or unqualified keywords[0m
+
+  [36m43[0m  [36m                     :pickerHeaderColor cyan500,[0m
+  [36m44[0m  [36m                     :clockCircleColor fade(darkBlack, 0.07),[0m
+  [33m45[0m  [1m                     :shadowColor fullBlack}})[0m
+  [0m  [0m  [33m                                            ^--- JavaScript literal keys must be strings or unqualified keywords[0m
+  [36m46[0m  [36m[0m
+  [36m47[0m  [36m(defn theme [comp][0m
+  [36m48[0m  [36m  (let [default-theme (mui-theme light-theme)][0m
+
+[36m----  Reader Error : Please see src/cljs/swarmpit/material.cljs  ----[0m
+[0mCompiling "resources/public/js/main.js" from ["src/cljs"]...[0m
+[31mFailed to compile "resources/public/js/main.js" in 0.29 seconds.[0m
+[36m----  Could not Read  src/cljs/swarmpit/material.cljs   line:45  column:45  ----[0m
+
+  [1mJavaScript literal keys must be strings or unqualified keywords[0m
+
+  [36m43[0m  [36m                     :pickerHeaderColor cyan500,[0m
+  [36m44[0m  [36m                     :clockCircleColor fade(darkBlack, 0.07),[0m
+  [33m45[0m  [1m                     :shadowColor fullBlack}})[0m
+  [0m  [0m  [33m                                            ^--- JavaScript literal keys must be strings or unqualified keywords[0m
+  [36m46[0m  [36m[0m
+  [36m47[0m  [36m(defn theme [comp][0m
+  [36m48[0m  [36m  (let [default-theme (mui-theme light-theme)][0m
+
+[36m----  Reader Error : Please see src/cljs/swarmpit/material.cljs  ----[0m
+[0mCompiling "resources/public/js/main.js" from ["src/cljs"]...[0m
+[31mFailed to compile "resources/public/js/main.js" in 0.833 seconds.[0m
+[36m----  Could not Read  src/cljs/swarmpit/material.cljs   line:45  column:45  ----[0m
+
+  [1mJavaScript literal keys must be strings or unqualified keywords[0m
+
+  [36m43[0m  [36m                     :pickerHeaderColor cyan500,[0m
+  [36m44[0m  [36m                     :clockCircleColor fade(darkBlack, 0.07),[0m
+  [33m45[0m  [1m                     :shadowColor fullBlack}})[0m
+  [0m  [0m  [33m                                            ^--- JavaScript literal keys must be strings or unqualified keywords[0m
+  [36m46[0m  [36m[0m
+  [36m47[0m  [36m(defn theme [comp][0m
+  [36m48[0m  [36m  (let [default-theme (mui-theme light-theme)][0m
+
+[36m----  Reader Error : Please see src/cljs/swarmpit/material.cljs  ----[0m
+[0mCompiling "resources/public/js/main.js" from ["src/cljs"]...[0m
+[31mFailed to compile "resources/public/js/main.js" in 0.297 seconds.[0m
+[36m----  Could not Read  src/cljs/swarmpit/material.cljs   line:45  column:45  ----[0m
+
+  [1mJavaScript literal keys must be strings or unqualified keywords[0m
+
+  [36m43[0m  [36m                     :pickerHeaderColor cyan500,[0m
+  [36m44[0m  [36m                     :clockCircleColor fade(darkBlack, 0.07),[0m
+  [33m45[0m  [1m                     :shadowColor fullBlack}})[0m
+  [0m  [0m  [33m                                            ^--- JavaScript literal keys must be strings or unqualified keywords[0m
+  [36m46[0m  [36m[0m
+  [36m47[0m  [36m(defn theme [comp][0m
+  [36m48[0m  [36m  (let [default-theme (mui-theme light-theme)][0m
+
+[36m----  Reader Error : Please see src/cljs/swarmpit/material.cljs  ----[0m
+[0mCompiling "resources/public/js/main.js" from ["src/cljs"]...[0m
+[31mFailed to compile "resources/public/js/main.js" in 0.323 seconds.[0m
+[36m----  Could not Read  src/cljs/swarmpit/material.cljs   line:45  column:45  ----[0m
+
+  [1mJavaScript literal keys must be strings or unqualified keywords[0m
+
+  [36m43[0m  [36m                     :pickerHeaderColor cyan500,[0m
+  [36m44[0m  [36m                     :clockCircleColor fade(darkBlack, 0.07),[0m
+  [33m45[0m  [1m                     :shadowColor fullBlack}})[0m
+  [0m  [0m  [33m                                            ^--- JavaScript literal keys must be strings or unqualified keywords[0m
+  [36m46[0m  [36m[0m
+  [36m47[0m  [36m(defn theme [comp][0m
+  [36m48[0m  [36m  (let [default-theme (mui-theme light-theme)][0m
+
+[36m----  Reader Error : Please see src/cljs/swarmpit/material.cljs  ----[0m
+[0mCompiling "resources/public/js/main.js" from ["src/cljs"]...[0m
+[31mFailed to compile "resources/public/js/main.js" in 0.253 seconds.[0m
+[36m----  Could not Read  src/cljs/swarmpit/material.cljs   line:45  column:45  ----[0m
+
+  [1mJavaScript literal keys must be strings or unqualified keywords[0m
+
+  [36m43[0m  [36m                     :pickerHeaderColor cyan500,[0m
+  [36m44[0m  [36m                     :clockCircleColor fade(darkBlack, 0.07),[0m
+  [33m45[0m  [1m                     :shadowColor fullBlack}})[0m
+  [0m  [0m  [33m                                            ^--- JavaScript literal keys must be strings or unqualified keywords[0m
+  [36m46[0m  [36m[0m
+  [36m47[0m  [36m(defn theme [comp][0m
+  [36m48[0m  [36m  (let [default-theme (mui-theme light-theme)][0m
+
+[36m----  Reader Error : Please see src/cljs/swarmpit/material.cljs  ----[0m
+[0mCompiling "resources/public/js/main.js" from ["src/cljs"]...[0m
+[31mFailed to compile "resources/public/js/main.js" in 0.311 seconds.[0m
+[36m----  Could not Read  src/cljs/swarmpit/material.cljs   line:45  column:45  ----[0m
+
+  [1mJavaScript literal keys must be strings or unqualified keywords[0m
+
+  [36m43[0m  [36m                     :pickerHeaderColor cyan500,[0m
+  [36m44[0m  [36m                     :clockCircleColor fade(darkBlack, 0.07),[0m
+  [33m45[0m  [1m                     :shadowColor fullBlack}})[0m
+  [0m  [0m  [33m                                            ^--- JavaScript literal keys must be strings or unqualified keywords[0m
+  [36m46[0m  [36m[0m
+  [36m47[0m  [36m(defn theme [comp][0m
+  [36m48[0m  [36m  (let [default-theme (mui-theme light-theme)][0m
+
+[36m----  Reader Error : Please see src/cljs/swarmpit/material.cljs  ----[0m
+[0mCompiling "resources/public/js/main.js" from ["src/cljs"]...[0m
+[31mFailed to compile "resources/public/js/main.js" in 0.25 seconds.[0m
+[36m----  Could not Read  src/cljs/swarmpit/material.cljs   line:45  column:45  ----[0m
+
+  [1mJavaScript literal keys must be strings or unqualified keywords[0m
+
+  [36m43[0m  [36m                     :pickerHeaderColor cyan500,[0m
+  [36m44[0m  [36m                     :clockCircleColor fade(darkBlack, 0.07),[0m
+  [33m45[0m  [1m                     :shadowColor fullBlack}})[0m
+  [0m  [0m  [33m                                            ^--- JavaScript literal keys must be strings or unqualified keywords[0m
+  [36m46[0m  [36m[0m
+  [36m47[0m  [36m(defn theme [comp][0m
+  [36m48[0m  [36m  (let [default-theme (mui-theme light-theme)][0m
+
+[36m----  Reader Error : Please see src/cljs/swarmpit/material.cljs  ----[0m
+[0mCompiling "resources/public/js/main.js" from ["src/cljs"]...[0m
+[31mFailed to compile "resources/public/js/main.js" in 0.32 seconds.[0m
+[36m----  Could not Read  src/cljs/swarmpit/material.cljs   line:40  column:42  ----[0m
+
+  [1mNo reader function for tag ffffff[0m
+
+  [36m38[0m  [36m:textColor "#757575"[0m
+  [36m39[0m  [36m:alternateTextColor "#3A3A3A",[0m
+  [33m40[0m  [1m:canvasColor #ffffff,[0m
+  [0m  [0m  [33m                    ^--- No reader function for tag ffffff[0m
+  [36m41[0m  [36m:borderColor grey300,[0m
+  [36m42[0m  [36m:disabledColor fade("rgba(0, 0, 0, 0.87)", 0.3),[0m
+  [36m43[0m  [36m:pickerHeaderColor cyan500,[0m
+
+[36m----  Reader Error : Please see src/cljs/swarmpit/material.cljs  ----[0m
+[0mCompiling "resources/public/js/main.js" from ["src/cljs"]...[0m
+[31mFailed to compile "resources/public/js/main.js" in 0.302 seconds.[0m
+[36m----  Could not Read  src/cljs/swarmpit/material.cljs   line:45  column:45  ----[0m
+
+  [1mJavaScript literal keys must be strings or unqualified keywords[0m
+
+  [36m43[0m  [36m                     :pickerHeaderColor cyan500,[0m
+  [36m44[0m  [36m                     :clockCircleColor fade(darkBlack, 0.07),[0m
+  [33m45[0m  [1m                     :shadowColor fullBlack}})[0m
+  [0m  [0m  [33m                                            ^--- JavaScript literal keys must be strings or unqualified keywords[0m
+  [36m46[0m  [36m[0m
+  [36m47[0m  [36m(defn theme [comp][0m
+  [36m48[0m  [36m  (let [default-theme (mui-theme light-theme)][0m
+
+[36m----  Reader Error : Please see src/cljs/swarmpit/material.cljs  ----[0m
+[0mCompiling "resources/public/js/main.js" from ["src/cljs"]...[0m
+[31mFailed to compile "resources/public/js/main.js" in 0.233 seconds.[0m
+[36m----  Could not Read  src/cljs/swarmpit/material.cljs   line:45  column:45  ----[0m
+
+  [1mJavaScript literal keys must be strings or unqualified keywords[0m
+
+  [36m43[0m  [36m                     :pickerHeaderColor "437f9d",[0m
+  [36m44[0m  [36m                     :clockCircleColor fade(darkBlack, 0.07),[0m
+  [33m45[0m  [1m                     :shadowColor fullBlack}})[0m
+  [0m  [0m  [33m                                            ^--- JavaScript literal keys must be strings or unqualified keywords[0m
+  [36m46[0m  [36m[0m
+  [36m47[0m  [36m(defn theme [comp][0m
+  [36m48[0m  [36m  (let [default-theme (mui-theme light-theme)][0m
+
+[36m----  Reader Error : Please see src/cljs/swarmpit/material.cljs  ----[0m
+[0mCompiling "resources/public/js/main.js" from ["src/cljs"]...[0m
+[31mFailed to compile "resources/public/js/main.js" in 0.356 seconds.[0m
+[36m----  Could not Read  src/cljs/swarmpit/material.cljs   line:45  column:52  ----[0m
+
+  [1mJavaScript literal keys must be strings or unqualified keywords[0m
+
+  [36m43[0m  [36m                                         :pickerHeaderColor "437f9d",[0m
+  [36m44[0m  [36m                                         :clockCircleColor fade (darkBlack, 0.07),[0m
+  [33m45[0m  [1m                     :shadowColor        "#000000"}})[0m
+  [0m  [0m  [33m                                                   ^--- JavaScript literal keys must be strings or unqualified keywords[0m
+  [36m46[0m  [36m[0m
+  [36m47[0m  [36m(defn theme [comp][0m
+  [36m48[0m  [36m  (let [default-theme (mui-theme light-theme)][0m
+
+[36m----  Reader Error : Please see src/cljs/swarmpit/material.cljs  ----[0m
+[0mCompiling "resources/public/js/main.js" from ["src/cljs"]...[0m
+[32mSuccessfully compiled "resources/public/js/main.js" in 0.443 seconds.[0m
+notifying browser that file changed:  resources/public/js/out/swarmpit/material.js
+[0mCompiling "resources/public/js/main.js" from ["src/cljs"]...[0m
+[32mSuccessfully compiled "resources/public/js/main.js" in 0.712 seconds.[0m
+notifying browser that file changed:  resources/public/js/out/swarmpit/material.js
+[0mCompiling "resources/public/js/main.js" from ["src/cljs"]...[0m
+[32mSuccessfully compiled "resources/public/js/main.js" in 0.296 seconds.[0m
+notifying browser that file changed:  resources/public/js/out/swarmpit/material.js
+[0mCompiling "resources/public/js/main.js" from ["src/cljs"]...[0m
+[32mSuccessfully compiled "resources/public/js/main.js" in 0.35 seconds.[0m
+notifying browser that file changed:  resources/public/js/out/swarmpit/material.js
+[0mCompiling "resources/public/js/main.js" from ["src/cljs"]...[0m
+[32mSuccessfully compiled "resources/public/js/main.js" in 0.502 seconds.[0m
+notifying browser that file changed:  resources/public/js/out/swarmpit/material.js
+[0mCompiling "resources/public/js/main.js" from ["src/cljs"]...[0m
+[32mSuccessfully compiled "resources/public/js/main.js" in 0.334 seconds.[0m
+notifying browser that file changed:  resources/public/js/out/swarmpit/material.js
+[0mCompiling "resources/public/js/main.js" from ["src/cljs"]...[0m
+[32mSuccessfully compiled "resources/public/js/main.js" in 0.551 seconds.[0m
+notifying browser that file changed:  resources/public/js/out/swarmpit/material.js
+[0mCompiling "resources/public/js/main.js" from ["src/cljs"]...[0m
+[32mSuccessfully compiled "resources/public/js/main.js" in 0.453 seconds.[0m
+notifying browser that file changed:  resources/public/js/out/swarmpit/material.js
+[0mCompiling "resources/public/js/main.js" from ["src/cljs"]...[0m
+[32mSuccessfully compiled "resources/public/js/main.js" in 0.323 seconds.[0m
+notifying browser that file changed:  resources/public/js/out/swarmpit/material.js
+[0mCompiling "resources/public/js/main.js" from ["src/cljs"]...[0m
+[32mSuccessfully compiled "resources/public/js/main.js" in 0.299 seconds.[0m
+notifying browser that file changed:  resources/public/js/out/swarmpit/material.js
+[0mCompiling "resources/public/js/main.js" from ["src/cljs"]...[0m
+[32mSuccessfully compiled "resources/public/js/main.js" in 0.277 seconds.[0m
+notifying browser that file changed:  resources/public/js/out/swarmpit/material.js
+Notifying browser that CSS file changed: resources/public/css/app.css
+Notifying browser that CSS file changed: resources/public/css/app.css
+Notifying browser that CSS file changed: resources/public/css/app.css
+Notifying browser that CSS file changed: resources/public/css/app.css
+Notifying browser that CSS file changed: resources/public/css/app.css
+Notifying browser that CSS file changed: resources/public/css/app.css
+Notifying browser that CSS file changed: resources/public/css/app.css
