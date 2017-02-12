@@ -9,16 +9,19 @@
            on clicks and conversions, which networks and geographical locations you want\n your ads to
            show on, and more.\n"])
 
+(defn step [name]
+  (material/step #js {}
+                 (material/step-label #js {} name)))
+
 (rum/defc form < rum/reactive []
   [:div.form
    (material/theme
      (material/stepper #js {:activeStep 1}
-                       (material/step #js {}
-                                      (material/step-label #js {} "Select campaign settings"))
-                       (material/step #js {}
-                                      (material/step-label #js {} "Create an ad group"))
-                       (material/step #js {}
-                                      (material/step-label #js {} "Create an ad"))))
+                       (step "General settings")
+                       (step "Container configuration")
+                       (step "Ports")
+                       (step "Environment variables")
+                       (step "Volumes")))
    (form-text)
    [:div.form-buttons
     (material/theme
@@ -26,7 +29,7 @@
                                  :disabled true
                                  :style    #js {:marginRight "12px"}}))
     (material/theme
-      (material/raised-button #js {:label   "Start"
+      (material/raised-button #js {:label   "Next"
                                    :primary true}))]])
 
 (defn mount!

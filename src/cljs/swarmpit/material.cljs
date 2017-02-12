@@ -30,7 +30,7 @@
   #js {:palette #js {:primary1Color      "#437f9d"
                      :primary2Color      "#3C728D"
                      :primary3Color      "#bdbdbd"
-                     :accent1Color       "#red"
+                     :accent1Color       "red"
                      :accent2Color       "#f5f5f5"
                      :accent3Color       "#9e9e9e"
                      :textColor          "#757575"

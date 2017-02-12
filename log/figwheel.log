@@ -2864,3 +2864,167 @@ Notifying browser that CSS file changed: resources/public/css/app.css
 Notifying browser that CSS file changed: resources/public/css/app.css
 Notifying browser that CSS file changed: resources/public/css/app.css
 Notifying browser that CSS file changed: resources/public/css/app.css
+[0mCompiling "resources/public/js/main.js" from ["src/cljs"]...[0m
+[32mSuccessfully compiled "resources/public/js/main.js" in 0.994 seconds.[0m
+notifying browser that file changed:  resources/public/js/out/swarmpit/component/service/create_form.js
+[0mCompiling "resources/public/js/main.js" from ["src/cljs"]...[0m
+[32mSuccessfully compiled "resources/public/js/main.js" in 0.31 seconds.[0m
+notifying browser that file changed:  resources/public/js/out/swarmpit/component/service/create_form.js
+[0mCompiling "resources/public/js/main.js" from ["src/cljs"]...[0m
+[32mSuccessfully compiled "resources/public/js/main.js" in 0.645 seconds.[0m
+notifying browser that file changed:  resources/public/js/out/swarmpit/component/service/create_form.js
+[0mCompiling "resources/public/js/main.js" from ["src/cljs"]...[0m
+[32mSuccessfully compiled "resources/public/js/main.js" in 0.466 seconds.[0m
+notifying browser that file changed:  resources/public/js/out/swarmpit/component/service/create_form.js
+[0mCompiling "resources/public/js/main.js" from ["src/cljs"]...[0m
+[32mSuccessfully compiled "resources/public/js/main.js" in 0.261 seconds.[0m
+notifying browser that file changed:  resources/public/js/out/swarmpit/component/service/create_form.js
+[0mCompiling "resources/public/js/main.js" from ["src/cljs"]...[0m
+[32mSuccessfully compiled "resources/public/js/main.js" in 0.334 seconds.[0m
+notifying browser that file changed:  resources/public/js/out/swarmpit/component/service/create_form.js
+[0mCompiling "resources/public/js/main.js" from ["src/cljs"]...[0m
+[32mSuccessfully compiled "resources/public/js/main.js" in 0.255 seconds.[0m
+notifying browser that file changed:  resources/public/js/out/swarmpit/component/service/create_form.js
+Notifying browser that CSS file changed: resources/public/css/app.css
+[0mCompiling "resources/public/js/main.js" from ["src/cljs"]...[0m
+[32mSuccessfully compiled "resources/public/js/main.js" in 1.32 seconds.[0m
+notifying browser that file changed:  resources/public/js/out/swarmpit/material.js
+[0mCompiling "resources/public/js/main.js" from ["src/cljs"]...[0m
+[32mSuccessfully compiled "resources/public/js/main.js" in 0.451 seconds.[0m
+notifying browser that file changed:  resources/public/js/out/swarmpit/material.js
+[0mCompiling "resources/public/js/main.js" from ["src/cljs"]...[0m
+[32mSuccessfully compiled "resources/public/js/main.js" in 0.38 seconds.[0m
+notifying browser that file changed:  resources/public/js/out/swarmpit/material.js
+[0mCompiling "resources/public/js/main.js" from ["src/cljs"]...[0m
+[32mSuccessfully compiled "resources/public/js/main.js" in 0.554 seconds.[0m
+notifying browser that file changed:  resources/public/js/out/swarmpit/material.js
+[0mCompiling "resources/public/js/main.js" from ["src/cljs"]...[0m
+[32mSuccessfully compiled "resources/public/js/main.js" in 0.29 seconds.[0m
+notifying browser that file changed:  resources/public/js/out/swarmpit/material.js
+[0mCompiling "resources/public/js/main.js" from ["src/cljs"]...[0m
+[32mSuccessfully compiled "resources/public/js/main.js" in 0.391 seconds.[0m
+notifying browser that file changed:  resources/public/js/out/swarmpit/material.js
+[0mCompiling "resources/public/js/main.js" from ["src/cljs"]...[0m
+[32mSuccessfully compiled "resources/public/js/main.js" in 0.516 seconds.[0m
+notifying browser that file changed:  resources/public/js/out/swarmpit/material.js
+[0mCompiling "resources/public/js/main.js" from ["src/cljs"]...[0m
+[32mSuccessfully compiled "resources/public/js/main.js" in 0.7 seconds.[0m
+notifying browser that file changed:  resources/public/js/out/swarmpit/material.js
+[0mCompiling "resources/public/js/main.js" from ["src/cljs"]...[0m
+[32mSuccessfully compiled "resources/public/js/main.js" in 0.281 seconds.[0m
+notifying browser that file changed:  resources/public/js/out/swarmpit/material.js
+[0mCompiling "resources/public/js/main.js" from ["src/cljs"]...[0m
+[32mSuccessfully compiled "resources/public/js/main.js" in 0.746 seconds.[0m
+notifying browser that file changed:  resources/public/js/out/swarmpit/material.js
+[0mCompiling "resources/public/js/main.js" from ["src/cljs"]...[0m
+[32mSuccessfully compiled "resources/public/js/main.js" in 0.425 seconds.[0m
+notifying browser that file changed:  resources/public/js/out/swarmpit/material.js
+[0mCompiling "resources/public/js/main.js" from ["src/cljs"]...[0m
+[32mSuccessfully compiled "resources/public/js/main.js" in 0.691 seconds.[0m
+notifying browser that file changed:  resources/public/js/out/swarmpit/component/service/create_form.js
+[0mCompiling "resources/public/js/main.js" from ["src/cljs"]...[0m
+[36m----  Compiler Warning on   src/cljs/swarmpit/component/service/create_form.cljs   line:21  column:24  ----[0m
+
+  [1mWrong number of args (1) passed to swarmpit.component.service.create-form/step[0m
+
+  [36m17[0m  [36m(rum/defc form < rum/reactive [][0m
+  [36m18[0m  [36m  [:div.form[0m
+  [36m19[0m  [36m   (material/theme[0m
+  [36m20[0m  [36m     (material/stepper #js {:activeStep 1}[0m
+  [33m21[0m  [1m                       (step "General settings")[0m
+  [0m  [0m  [33m                       ^--- Wrong number of args (1) passed to swarmpit.component.service.create-form/step[0m
+  [36m22[0m  [36m                       (step "Container configuration")[0m
+  [36m23[0m  [36m                       (step "Ports")[0m
+  [36m24[0m  [36m                       (step "Environment variables")[0m
+  [36m25[0m  [36m                       (step "Volumes")))[0m
+  [36m26[0m  [36m   (form-text)[0m
+
+[36m----  Compiler Warning : Please see src/cljs/swarmpit/component/service/create_form.cljs  ----[0m
+[36m----  Compiler Warning on   src/cljs/swarmpit/component/service/create_form.cljs   line:22  column:24  ----[0m
+
+  [1mWrong number of args (1) passed to swarmpit.component.service.create-form/step[0m
+
+  [36m18[0m  [36m[:div.form[0m
+  [36m19[0m  [36m (material/theme[0m
+  [36m20[0m  [36m   (material/stepper #js {:activeStep 1}[0m
+  [36m21[0m  [36m                     (step "General settings")[0m
+  [33m22[0m  [1m                     (step "Container configuration")[0m
+  [0m  [0m  [33m                     ^--- Wrong number of args (1) passed to swarmpit.component.service.create-form/step[0m
+  [36m23[0m  [36m                     (step "Ports")[0m
+  [36m24[0m  [36m                     (step "Environment variables")[0m
+  [36m25[0m  [36m                     (step "Volumes")))[0m
+  [36m26[0m  [36m (form-text)[0m
+  [36m27[0m  [36m [:div.form-buttons[0m
+
+[36m----  Compiler Warning : Please see src/cljs/swarmpit/component/service/create_form.cljs  ----[0m
+[36m----  Compiler Warning on   src/cljs/swarmpit/component/service/create_form.cljs   line:23  column:24  ----[0m
+
+  [1mWrong number of args (1) passed to swarmpit.component.service.create-form/step[0m
+
+  [36m19[0m  [36m(material/theme[0m
+  [36m20[0m  [36m  (material/stepper #js {:activeStep 1}[0m
+  [36m21[0m  [36m                    (step "General settings")[0m
+  [36m22[0m  [36m                    (step "Container configuration")[0m
+  [33m23[0m  [1m                    (step "Ports")[0m
+  [0m  [0m  [33m                    ^--- Wrong number of args (1) passed to swarmpit.component.service.create-form/step[0m
+  [36m24[0m  [36m                    (step "Environment variables")[0m
+  [36m25[0m  [36m                    (step "Volumes")))[0m
+  [36m26[0m  [36m(form-text)[0m
+  [36m27[0m  [36m[:div.form-buttons[0m
+  [36m28[0m  [36m (material/theme[0m
+
+[36m----  Compiler Warning : Please see src/cljs/swarmpit/component/service/create_form.cljs  ----[0m
+[36m----  Compiler Warning on   src/cljs/swarmpit/component/service/create_form.cljs   line:24  column:24  ----[0m
+
+  [1mWrong number of args (1) passed to swarmpit.component.service.create-form/step[0m
+
+  [36m20[0m  [36m  (material/stepper #js {:activeStep 1}[0m
+  [36m21[0m  [36m                    (step "General settings")[0m
+  [36m22[0m  [36m                    (step "Container configuration")[0m
+  [36m23[0m  [36m                    (step "Ports")[0m
+  [33m24[0m  [1m                    (step "Environment variables")[0m
+  [0m  [0m  [33m                    ^--- Wrong number of args (1) passed to swarmpit.component.service.create-form/step[0m
+  [36m25[0m  [36m                    (step "Volumes")))[0m
+  [36m26[0m  [36m(form-text)[0m
+  [36m27[0m  [36m[:div.form-buttons[0m
+  [36m28[0m  [36m (material/theme[0m
+  [36m29[0m  [36m   (material/flat-button #js {:label    "Back"[0m
+
+[36m----  Compiler Warning : Please see src/cljs/swarmpit/component/service/create_form.cljs  ----[0m
+[36m----  Compiler Warning on   src/cljs/swarmpit/component/service/create_form.cljs   line:25  column:24  ----[0m
+
+  [1mWrong number of args (1) passed to swarmpit.component.service.create-form/step[0m
+
+  [36m21[0m  [36m                    (step "General settings")[0m
+  [36m22[0m  [36m                    (step "Container configuration")[0m
+  [36m23[0m  [36m                    (step "Ports")[0m
+  [36m24[0m  [36m                    (step "Environment variables")[0m
+  [33m25[0m  [1m                    (step "Volumes")))[0m
+  [0m  [0m  [33m                    ^--- Wrong number of args (1) passed to swarmpit.component.service.create-form/step[0m
+  [36m26[0m  [36m(form-text)[0m
+  [36m27[0m  [36m[:div.form-buttons[0m
+  [36m28[0m  [36m (material/theme[0m
+  [36m29[0m  [36m   (material/flat-button #js {:label    "Back"[0m
+  [36m30[0m  [36m                              :disabled true[0m
+
+[36m----  Compiler Warning : Please see src/cljs/swarmpit/component/service/create_form.cljs  ----[0m
+[32mSuccessfully compiled "resources/public/js/main.js" in 0.651 seconds.[0m
+notifying browser that file changed:  resources/public/js/out/swarmpit/component/service/create_form.js
+[0mCompiling "resources/public/js/main.js" from ["src/cljs"]...[0m
+[32mSuccessfully compiled "resources/public/js/main.js" in 0.45 seconds.[0m
+notifying browser that file changed:  resources/public/js/out/swarmpit/component/service/create_form.js
+[0mCompiling "resources/public/js/main.js" from ["src/cljs"]...[0m
+[32mSuccessfully compiled "resources/public/js/main.js" in 0.405 seconds.[0m
+notifying browser that file changed:  resources/public/js/out/swarmpit/component/service/create_form.js
+[0mCompiling "resources/public/js/main.js" from ["src/cljs"]...[0m
+[32mSuccessfully compiled "resources/public/js/main.js" in 0.293 seconds.[0m
+notifying browser that file changed:  resources/public/js/out/swarmpit/component/service/create_form.js
+[0mCompiling "resources/public/js/main.js" from ["src/cljs"]...[0m
+[32mSuccessfully compiled "resources/public/js/main.js" in 1.013 seconds.[0m
+notifying browser that file changed:  resources/public/js/out/swarmpit/component/service/create_form.js
+[0mCompiling "resources/public/js/main.js" from ["src/cljs"]...[0m
+[32mSuccessfully compiled "resources/public/js/main.js" in 0.465 seconds.[0m
+notifying browser that file changed:  resources/public/js/out/swarmpit/component/service/create_form.js
+[0mCompiling "resources/public/js/main.js" from ["src/cljs"]...[0m
+[32mSuccessfully compiled "resources/public/js/main.js" in 0.919 seconds.[0m
+notifying browser that file changed:  resources/public/js/out/swarmpit/component/menu.js
