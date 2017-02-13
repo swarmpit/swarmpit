@@ -1,10 +1,10 @@
 (ns swarmpit.component.menu
-  (:require [swarmpit.material :as material]
+  (:require [swarmpit.material :as material :refer [svg]]
             [rum.core :as rum]))
 
 (enable-console-print!)
 
-(defonce opened? (atom false))
+(defonce opened? (atom true))
 
 (def drawer-container-closed-style #js{:width     "70px"
                                        :transform "translate(0px, 0px)"})
@@ -23,7 +23,7 @@
     (material/menu-item #js {:className     "drawer-item"
                              :innerDivStyle #js {:paddingLeft "50px"}
                              :primaryText   text
-                             :leftIcon      icon})))
+                             :leftIcon      (svg icon)})))
 
 (rum/defc drawer < rum/reactive []
   (let [opened (rum/react opened?)
@@ -31,8 +31,8 @@
                                  drawer-container-opened-style
                                  drawer-container-closed-style)
         drawer-appbar-icon (if (true? opened)
-                             (material/icon-button #js {} material/view-compact-icon)
-                             (material/icon-button #js {} material/view-confy-icon))]
+                             (material/icon-button #js {} (svg material/view-compact-icon))
+                             (material/icon-button #js {} (svg material/view-confy-icon)))]
     (material/theme
       (material/drawer #js {:open               opened
                             :containerStyle     drawer-container-style

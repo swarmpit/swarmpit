@@ -8,6 +8,10 @@ body {
     margin: 0px;
 }
 
+fieldset {
+    border: 1px solid #757575;
+}
+
 .closed {
     opacity: 0;
 }
@@ -30,6 +34,7 @@ body {
 
 header .appbar {
     box-shadow: none !important;
+    position: fixed !important;
 }
 
 nav .drawer-container {
@@ -51,13 +56,45 @@ nav .drawer-item-category {
     cursor: default !important;
 }
 
+main {
+    margin-top: 64px;
+}
+
 .form {
     width: 90%;
     margin: auto;
 }
 
+.form-row {
+    display: flex;
+    flex-flow: row wrap;
+    -ms-flex-wrap: nowrap;
+    flex-wrap: nowrap;
+    margin: 0 18px 18px 18px;
+}
+
+.form-row-label {
+    align-self: center;
+    width: 200px;
+}
+
+.form-row-field {
+    line-height: 24px;
+    width: 256px;
+    height: 48px;
+    position: relative;
+}
+
+.form-inline {
+    display: flex;
+}
+
+.form-inline div {
+    margin-right: 20px;
+}
+
 .form-buttons {
     margin-top: 24px;
-    display:flex;
+    display: flex;
 }
 
