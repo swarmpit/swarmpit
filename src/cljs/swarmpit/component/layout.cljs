@@ -6,8 +6,8 @@
 (enable-console-print!)
 
 (rum/defc layout < rum/reactive []
-  (let [opened (rum/react menu/opened?)
-        layout-class (if (true? opened)
+  (let [{:keys [opened]} (rum/react menu/state)
+        layout-class (if opened
                        "layout-opened"
                        "layout-closed")]
     [:div {:class ["layout" layout-class]}
