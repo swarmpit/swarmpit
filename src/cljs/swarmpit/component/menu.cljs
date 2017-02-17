@@ -13,7 +13,7 @@
 (def drawer-container-opened-style
   #js{:width "200px"})
 
-(defn- drawer-category [name opened?]
+(rum/defc drawer-category < rum/static [name opened?]
   (let [class (if opened? "drawer-item-category"
                           "drawer-item-category closed")]
     (material/menu-item
@@ -21,7 +21,7 @@
            :primaryText name
            :disabled    true})))
 
-(defn- drawer-item [name icon opened?]
+(rum/defc drawer-item < rum/static [name icon opened?]
   (let [text (if opened? name nil)]
     (material/menu-item
       #js {:className     "drawer-item"

@@ -73,11 +73,41 @@
     [:div
      (mui-theme-provider #js{:muiTheme default-theme} comp)]))
 
+(defn svg
+  ([props d] (svg-icon props (html [:path {:d d}])))
+  ([d] (svg-icon nil (html [:path {:d d}]))))
+
 (defn form-row [label comp]
   [:div.form-row
    [:span.form-row-label label]
    [:div.form-row-field (theme comp)]])
 
-(defn svg
-  ([props d] (svg-icon props (html [:path {:d d}])))
-  ([d] (svg-icon nil (html [:path {:d d}]))))
+(defn table-header-form [headers on-click-fn]
+  (table-header
+    #js {:displaySelectAll  false
+         :adjustForCheckbox false
+         :style             #js {:border "none"}}
+    (table-row
+      #js {:displayBorder false}
+      (for [header headers]
+        (table-header-column #js {:key header} header))
+      (table-header-column #js {:key "add-new"}
+                           (icon-button
+                             #js {:onClick on-click-fn}
+                             (svg
+                               #js {:hoverColor "#437f9d"}
+                               plus-icon))))))
+
+(defn table-row-form [index rows on-click-fn]
+  (table-row
+    #js {:key           index
+         :rowNumber     index
+         :displayBorder false}
+    (for [row rows] row)
+    (table-row-column
+      nil
+      (icon-button
+        #js {:onClick on-click-fn}
+        (svg
+          #js {:hoverColor "red"}
+          trash-icon)))))
