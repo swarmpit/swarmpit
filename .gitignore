@@ -2,6 +2,7 @@ resources/public/js/out
 resources/public/js/main.js
 /target
 /lib
+/log
 /classes
 /checkouts
 /out
