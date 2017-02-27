@@ -10,7 +10,7 @@
 (set! *unchecked-math* :warn-on-boxed)
 
 (def http-handler
-  (wrap-reload #'swarmpit.server/handler))
+  (wrap-reload #'swarmpit.server/app))
 
 (defn run []
   (figwheel/start-figwheel!))
