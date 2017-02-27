@@ -1,10 +1,11 @@
 (ns swarmpit.docker.client
   (:refer-clojure :exclude [get])
   (:require [clojure.java.shell :as shell]
+            [clojure.string :as string]
             [cheshire.core :refer [parse-string]]))
 
 (def ^:private api-version "v1.24")
-(def ^:private base-cmd ["curl" "-s" "--unix-socket" "/var/run/docker.sock"])
+(def ^:private base-cmd ["curl" "--unix-socket" "/var/run/docker.sock" "-w" "%{http_code}"])
 
 (defn- parse-headers
   "Parse headers map to curl vector cmd representation"
@@ -44,8 +45,15 @@
   (let [cmd (command method api headers payload)
         result (apply shell/sh cmd)]
     (if (= 0 (:exit result))
-      (parse-string (:out result) true)
-      (parse-string (:err result) true))))
+      (let [response (string/split (:out result) #"\n")
+            payload (parse-string (first response) true)
+            http-code (Integer. (second response))]
+        (if (> 400 http-code)
+          payload
+          (throw (ex-info "Docker engine error!"
+                          (assoc payload :code http-code)))))
+      (throw (ex-info "Docker client failure!"
+                      (parse-string (:err result) true))))))
 
 (defn get
   ([api] (execute "GET" api nil nil))
