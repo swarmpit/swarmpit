@@ -11,15 +11,17 @@
                  [cljsjs/material "1.3.0-0"]
                  [rum "0.10.7" :exclusions [cljsjs/react cljsjs/react-dom]]
                  [ring "1.5.1"]
-                 [compojure "1.5.2"]
+                 [ring/ring-json "0.4.0"]
+                 [bidi "2.0.16"]
                  [http-kit "2.2.0"]
+                 [cljs-ajax "0.5.8"]
                  [cheshire "5.6.3"]]
 
   :plugins [[lein-cljsbuild "1.1.4"]]
 
   :min-lein-version "2.6.1"
 
-  :source-paths ["src/clj" "src/cljc"]
+  :source-paths ["src/clj" "src/cljs" "src/cljc"]
 
   :test-paths ["test/clj" "test/cljc"]
 
