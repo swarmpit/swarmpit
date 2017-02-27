@@ -1,15 +1,35 @@
 (ns swarmpit.server
+  (:import (clojure.lang ExceptionInfo))
   (:use [org.httpkit.server :only [run-server]])
-  (:require [compojure.route :as route]
-            [compojure.handler :refer [site]]
-            [compojure.core :refer [defroutes GET POST]]))
+  (:require [swarmpit.handler :refer [handler]]
+            [ring.middleware.json :as ring-json]
+            [cheshire.core :refer [parse-string]]))
 
-(defroutes routes
-           (GET "/" [] "handling-page")
-           (route/not-found "<p>Page not found.</p>"))
+(defn wrap-client-exception
+  [handler]
+  (fn [request]
+    (try
+      (handler request)
+      (catch ExceptionInfo e
+        (let [response (ex-data e)]
+          {:status  (:code response)
+           :headers {"Content-Type" "application/json"}
+           :body    {:error (:message response)}})))))
 
-(def handler
-  (site routes))
+(defn wrap-fallback-exception
+  [handler]
+  (fn [request]
+    (try
+      (handler request)
+      (catch Exception e
+        {:status 500 :body e}))))
+
+(def app
+  (-> handler
+      wrap-client-exception
+      ring-json/wrap-json-response
+      ring-json/wrap-json-params
+      wrap-fallback-exception))
 
 (defn -main [& _]
-  (run-server handler {:port 8080}))
+  (run-server app {:port 8080}))

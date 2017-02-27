@@ -1,8 +1,8 @@
 (ns swarmpit.ui
-  (:require [swarmpit.component.layout :as layout]
-            [swarmpit.component.service.form-create :as form]))
+  (:require [swarmpit.controller :as controller]
+            [swarmpit.component.layout :as layout]))
 
 (.log js/console "Swarmpit ...")
 
 (layout/mount!)
-(form/mount!)
+(controller/start)
