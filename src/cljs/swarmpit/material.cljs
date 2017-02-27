@@ -89,8 +89,9 @@
          :style             #js {:border "none"}}
     (table-row
       #js {:displayBorder false}
-      (for [header headers]
-        (table-header-column #js {:key header} header))
+      (map (fn [header]
+             (table-header-column #js {:key header} header))
+           headers)
       (table-header-column #js {:key "add-new"}
                            (icon-button
                              #js {:onClick on-click-fn}
@@ -100,12 +101,12 @@
 
 (defn table-row-form [index rows on-click-fn]
   (table-row
-    #js {:key           index
+    #js {:key           (str "row" index)
          :rowNumber     index
          :displayBorder false}
-    (for [row rows] row)
+    (map (fn [row] row) rows)
     (table-row-column
-      nil
+      #js {:key (str "delete-row" index)}
       (icon-button
         #js {:onClick on-click-fn}
         (svg

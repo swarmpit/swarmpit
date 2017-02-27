@@ -21,12 +21,12 @@
       (br/set-location! router {:handler route}))))
 
 (defmethod dispatch :index [_]
-  (GET "/services")
-  (print "index")
-  (form/mount!))
+  (print "index"))
 
 (defmethod dispatch :services [_]
-  (print "services"))
+  (GET "/services" {:handler (fn [response]
+                               (do (print response)
+                                   (form/mount!)))}))
 
 (defmethod dispatch nil [_]
   (print "not-found"))

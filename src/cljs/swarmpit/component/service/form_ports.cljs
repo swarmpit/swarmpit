@@ -32,7 +32,7 @@
 
 (defn- form-container [value index]
   (material/table-row-column
-    nil
+    #js {:key (str "containerPort" index)}
     (material/text-field
       #js {:id       "containerPort"
            :value    value
@@ -40,7 +40,7 @@
 
 (defn- form-protocol [value index]
   (material/table-row-column
-    nil
+    #js {:key (str "protocol" index)}
     (material/select-field
       #js {:value      value
            :onChange   (fn [e i v] (update-item index :protocol v))
@@ -58,14 +58,14 @@
 
 (defn- form-published [value index]
   (material/table-row-column
-    nil
+    #js {:key (str "published" index)}
     (material/checkbox
       #js {:checked value
            :onCheck (fn [e v] (update-item index :published v))})))
 
 (defn- form-host [value index]
   (material/table-row-column
-    #js {:key index}
+    #js {:key (str "hostPort" index)}
     (material/text-field
       #js {:id       "hostPort"
            :value    value
@@ -82,16 +82,17 @@
           (material/table-header-form form-headers #(add-item))
           (material/table-body
             #js {:displayRowCheckbox false}
-            (for [index (range (count ports))]
-              (let [port (nth ports index)
-                    {:keys [containerPort
-                            protocol
-                            published
-                            hostPort]} port]
-                (material/table-row-form
-                  index
-                  [(form-container containerPort index)
-                   (form-protocol protocol index)
-                   (form-published published index)
-                   (form-host hostPort index)]
-                  (fn [] (remove-item index))))))))]]))
+            (map-indexed
+              (fn [index item]
+                (let [{:keys [containerPort
+                              protocol
+                              published
+                              hostPort]} item]
+                  (material/table-row-form
+                    index
+                    [(form-container containerPort index)
+                     (form-protocol protocol index)
+                     (form-published published index)
+                     (form-host hostPort index)]
+                    (fn [] (remove-item index)))))
+              ports))))]]))

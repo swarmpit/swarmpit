@@ -30,12 +30,13 @@
     (reset! step-index (inc index))))
 
 (defn- step-items []
-  (for [step steps]
-    (let [index (.indexOf steps step)]
+  (map-indexed
+    (fn [index item]
       (material/step
         #js {:key index}
         (material/step-button
-          #js {:onClick (fn [] (reset! step-index index))} step)))))
+          #js {:onClick (fn [] (reset! step-index index))} item)))
+    steps))
 
 (rum/defc form < rum/reactive []
   (let [index (rum/react step-index)]
@@ -43,8 +44,8 @@
      (material/theme
        (material/stepper
          #js {:activeStep index
-              :linear     false}
-         (step-items)))
+              :linear     false
+              :children   (clj->js (step-items))}))
      (form-item index)
      [:div.form-buttons
       (material/theme

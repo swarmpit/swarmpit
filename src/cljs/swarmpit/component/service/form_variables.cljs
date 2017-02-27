@@ -30,7 +30,7 @@
 
 (defn- form-name [value index]
   (material/table-row-column
-    #js {:key index}
+    #js {:key (str "name" index)}
     (material/text-field
       #js {:id       "name"
            :value    value
@@ -38,7 +38,7 @@
 
 (defn- form-value [value index]
   (material/table-row-column
-    #js {:key index}
+    #js {:key (str "value" index)}
     (material/text-field
       #js {:id       "value"
            :value    value
@@ -55,12 +55,13 @@
           (material/table-header-form form-headers #(add-item))
           (material/table-body
             #js {:displayRowCheckbox false}
-            (for [index (range (count variables))]
-              (let [variable (nth variables index)
-                    {:keys [name
-                            value]} variable]
-                (material/table-row-form
-                  index
-                  [(form-name name index)
-                   (form-value value index)]
-                  (fn [] (remove-item index))))))))]]))
+            (map-indexed
+              (fn [index item]
+                (let [{:keys [name
+                              value]} item]
+                  (material/table-row-form
+                    index
+                    [(form-name name index)
+                     (form-value value index)]
+                    (fn [] (remove-item index)))))
+              variables))))]]))
