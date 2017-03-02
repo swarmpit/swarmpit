@@ -15,12 +15,14 @@
 (def networks-icon "M22.875 18h-0.375v-4.875c0-1.448-1.178-2.625-2.625-2.625h-6.375v-3h0.375c0.619 0 1.125-0.506 1.125-1.125v-3.75c0-0.619-0.506-1.125-1.125-1.125h-3.75c-0.619 0-1.125 0.506-1.125 1.125v3.75c0 0.619 0.506 1.125 1.125 1.125h0.375v3h-6.375c-1.448 0-2.625 1.178-2.625 2.625v4.875h-0.375c-0.619 0-1.125 0.506-1.125 1.125v3.75c0 0.619 0.506 1.125 1.125 1.125h3.75c0.619 0 1.125-0.506 1.125-1.125v-3.75c0-0.619-0.506-1.125-1.125-1.125h-0.375v-4.5h6v4.5h-0.375c-0.619 0-1.125 0.506-1.125 1.125v3.75c0 0.619 0.506 1.125 1.125 1.125h3.75c0.619 0 1.125-0.506 1.125-1.125v-3.75c0-0.619-0.506-1.125-1.125-1.125h-0.375v-4.5h6v4.5h-0.375c-0.619 0-1.125 0.506-1.125 1.125v3.75c0 0.619 0.506 1.125 1.125 1.125h3.75c0.619 0 1.125-0.506 1.125-1.125v-3.75c0-0.619-0.506-1.125-1.125-1.125zM4.5 22.5h-3v-3h3v3zM13.5 22.5h-3v-3h3v3zM10.5 6v-3h3v3h-3zM22.5 22.5h-3v-3h3v3z")
 (def trash-icon "M6 19c0 1.1.9 2 2 2h8c1.1 0 2-.9 2-2V7H6v12zM19 4h-3.5l-1-1h-5l-1 1H5v2h14V4z")
 (def plus-icon "M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm5 11h-4v4h-2v-4H7v-2h4V7h2v4h4v2z")
-;(def plus-icon "M19 13h-6v6h-2v-6H5v-2h6V5h2v6h6v2z")
+(def pen-icon "M3 17.25V21h3.75L17.81 9.94l-3.75-3.75L3 17.25zM20.71 7.04c.39-.39.39-1.02 0-1.41l-2.34-2.34c-.39-.39-1.02-.39-1.41 0l-1.83 1.83 3.75 3.75 1.83-1.83z")
+(def plus2-icon "M19 13h-6v6h-2v-6H5v-2h6V5h2v6h6v2z")
 
 (def create-factory js/React.createFactory)
 
 (def app-bar (create-factory js/MaterialUI.AppBar))
 (def drawer (create-factory js/MaterialUI.Drawer))
+(def snackbar (create-factory js/MaterialUI.Snackbar))
 (def menu (create-factory js/MaterialUI.Menu))
 (def menu-item (create-factory js/MaterialUI.MenuItem))
 (def svg-icon (create-factory js/MaterialUI.SvgIcon))
@@ -82,6 +84,18 @@
    [:span.form-row-label label]
    [:div.form-row-field (theme comp)]])
 
+(defn table-header-list [headers]
+  (table-header
+    #js {:displaySelectAll  false
+         :adjustForCheckbox false
+         :style             #js {:border "none"}}
+    (table-row
+      #js {:displayBorder true}
+      (map-indexed
+        (fn [index header]
+          (table-header-column #js {:key (str "header" index)} header))
+        headers))))
+
 (defn table-header-form [headers on-click-fn]
   (table-header
     #js {:displaySelectAll  false
@@ -89,15 +103,17 @@
          :style             #js {:border "none"}}
     (table-row
       #js {:displayBorder false}
-      (map (fn [header]
-             (table-header-column #js {:key header} header))
-           headers)
-      (table-header-column #js {:key "add-new"}
-                           (icon-button
-                             #js {:onClick on-click-fn}
-                             (svg
-                               #js {:hoverColor "#437f9d"}
-                               plus-icon))))))
+      (map-indexed
+        (fn [index header]
+          (table-header-column #js {:key (str "header" index)} header))
+        headers)
+      (table-header-column
+        nil
+        (icon-button
+          #js {:onClick on-click-fn}
+          (svg
+            #js {:hoverColor "#437f9d"}
+            plus-icon))))))
 
 (defn table-row-form [index rows on-click-fn]
   (table-row

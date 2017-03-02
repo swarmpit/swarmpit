@@ -48,11 +48,11 @@
            :labelStyle #js {:lineHeight "45px"
                             :top        2}}
       (material/menu-item
-        #js {:key         "tcp"
+        #js {:key         (str "protocol-tcp" index)
              :value       "tcp"
              :primaryText "TCP"})
       (material/menu-item
-        #js {:key         "udp"
+        #js {:key         (str "protocol-udp" index)
              :value       "udp"
              :primaryText "UDP"}))))
 

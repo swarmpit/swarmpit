@@ -1,4 +1,4 @@
-(ns swarmpit.component.service.form-create
+(ns swarmpit.component.service.create
   (:require [swarmpit.material :as material]
             [swarmpit.component.service.form-settings :as settings]
             [swarmpit.component.service.form-ports :as ports]

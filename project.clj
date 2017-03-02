@@ -15,7 +15,8 @@
                  [bidi "2.0.16"]
                  [http-kit "2.2.0"]
                  [cljs-ajax "0.5.8"]
-                 [cheshire "5.6.3"]]
+                 [cheshire "5.6.3"]
+                 [com.cognitect/transit-cljs "0.8.239"]]
 
   :plugins [[lein-cljsbuild "1.1.4"]]
 

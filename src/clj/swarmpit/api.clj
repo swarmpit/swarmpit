@@ -3,5 +3,5 @@
             [swarmpit.registry.client :as rc]))
 
 (defn services
-  []
-  (dc/get "/services"))
+  ([] (dc/get "/services"))
+  ([id] (dc/get (str "/services/" id))))

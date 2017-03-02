@@ -60,16 +60,19 @@ main {
     margin-top: 64px;
 }
 
+.row, .form-row {
+    display: flex;
+    flex-flow: row wrap;
+    -ms-flex-wrap: nowrap;
+    flex-wrap: nowrap;
+}
+
 .form {
     width: 90%;
     margin: auto;
 }
 
 .form-row {
-    display: flex;
-    flex-flow: row wrap;
-    -ms-flex-wrap: nowrap;
-    flex-wrap: nowrap;
     margin: 0 18px 18px 18px;
 }
 
@@ -85,16 +88,34 @@ main {
     position: relative;
 }
 
-.form-inline {
-    display: flex;
-}
-
-.form-inline div {
-    margin-right: 20px;
-}
-
 .form-buttons {
     margin-top: 24px;
     display: flex;
+}
+
+.list {
+}
+
+.list-action {
+    padding-top: 12px;
+    display: inline-block;
+    position: relative;
+    width: 100%;
+    height: 48px;
+    background: rgb(245, 245, 245);
+}
+
+.list-action-left {
+    float: left;
+    padding-left: 24px;
+    display: inline-flex;
+    position: relative;
+}
+
+.list-action-right {
+    float: right;
+    padding-right: 24px;
+    display: inline-flex;
+    position: relative;
 }
 
