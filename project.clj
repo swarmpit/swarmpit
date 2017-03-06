@@ -47,6 +47,8 @@
                                                        :provides ["cljsjs.material-ui"]
                                                        :requires ["cljsjs.react" "cljsjs.react.dom"]}]
                                :externs              ["libs/material-ui/material-ui.ext.js"]
+                               ;:tooling-config       {:devtools/config {:features-to-install :all}}
+                               :preloads             [devtools.preload]
                                :asset-path           "js/out"
                                :output-to            "resources/public/js/main.js"
                                :output-dir           "resources/public/js/out"
@@ -75,7 +77,8 @@
              {:dependencies [[figwheel "0.5.9"]
                              [figwheel-sidecar "0.5.9"]
                              [com.cemerick/piggieback "0.2.1"]
-                             [org.clojure/tools.nrepl "0.2.12"]]
+                             [org.clojure/tools.nrepl "0.2.12"]
+                             [binaryage/devtools "0.9.2"]]
 
               :plugins      [[lein-figwheel "0.5.9"]
                              [lein-doo "0.1.6"]]
