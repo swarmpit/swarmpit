@@ -46,22 +46,19 @@
 
 (rum/defc form < rum/reactive []
   (let [variables (rum/react state)]
-    [:form
-     [:fieldset
-      [:legend "Environment variables"]
-      (material/theme
-        (material/table
-          #js {:selectable false}
-          (material/table-header-form form-headers #(add-item))
-          (material/table-body
-            #js {:displayRowCheckbox false}
-            (map-indexed
-              (fn [index item]
-                (let [{:keys [name
-                              value]} item]
-                  (material/table-row-form
-                    index
-                    [(form-name name index)
-                     (form-value value index)]
-                    (fn [] (remove-item index)))))
-              variables))))]]))
+    (material/theme
+      (material/table
+        #js {:selectable false}
+        (material/table-header-form form-headers #(add-item))
+        (material/table-body
+          #js {:displayRowCheckbox false}
+          (map-indexed
+            (fn [index item]
+              (let [{:keys [name
+                            value]} item]
+                (material/table-row-form
+                  index
+                  [(form-name name index)
+                   (form-value value index)]
+                  (fn [] (remove-item index)))))
+            variables))))))

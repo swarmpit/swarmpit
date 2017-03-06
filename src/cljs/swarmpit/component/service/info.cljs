@@ -5,7 +5,20 @@
 (enable-console-print!)
 
 (rum/defc form < rum/static [item]
-  (material/form-row "Test" "A"))
+  [:div
+   [:div.form-panel
+    [:div.form-panel-right
+     (material/theme
+       (material/raised-button
+         #js {:href  "/#/services/create"
+              :label "Edit"
+              :style #js {:marginRight "12px"}}))
+     (material/theme
+       (material/raised-button
+         #js {:href    "/#/services/create"
+              :label   "Update"
+              :primary true}))]]
+   [:div]])
 
 (defn mount!
   [item]

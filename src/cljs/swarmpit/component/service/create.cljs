@@ -35,31 +35,40 @@
       (material/step
         #js {:key index}
         (material/step-button
-          #js {:onClick (fn [] (reset! step-index index))} item)))
+          #js {:disableTouchRipple true
+               :style              #js {:backgroundColor "transparent"}
+               :onClick            (fn [] (reset! step-index index))} item)))
     steps))
 
 (rum/defc form < rum/reactive []
   (let [index (rum/react step-index)]
-    [:div.form
+    [:div
      (material/theme
        (material/stepper
          #js {:activeStep index
               :linear     false
+              :style      #js {:background "rgb(245, 245, 245)"
+                               :height     "60px"}
               :children   (clj->js (step-items))}))
      (form-item index)
-     [:div.form-buttons
-      (material/theme
-        (material/flat-button
-          #js {:label      "Previous"
-               :disabled   (= 0 index)
-               :onTouchTap (fn [] (step-previous index))
-               :style      #js {:marginRight "12px"}}))
-      (material/theme
-        (material/raised-button
-          #js {:label      "Next"
-               :disabled   (= (- (count steps) 1) index)
-               :onTouchTap (fn [] (step-next index))
-               :primary    true}))]]))
+     [:div.form-panel.form-buttons
+      [:div.form-panel-left
+       (material/theme
+         (material/raised-button
+           #js {:label      "Previous"
+                :disabled   (= 0 index)
+                :onTouchTap (fn [] (step-previous index))
+                :style      #js {:marginRight "12px"}}))
+       (material/theme
+         (material/raised-button
+           #js {:label      "Next"
+                :disabled   (= (- (count steps) 1) index)
+                :onTouchTap (fn [] (step-next index))}))]
+      [:div.form-panel-right
+       (material/theme
+         (material/raised-button
+           #js {:label   "Create"
+                :primary true}))]]]))
 
 (defn mount!
   []

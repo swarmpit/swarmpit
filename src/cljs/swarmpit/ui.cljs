@@ -3,7 +3,7 @@
             [swarmpit.component.layout :as layout]
             [swarmpit.component.info :as info]))
 
-(.log js/console "Swarmpit ...")
+(js/console.log "Swarmpit ...")
 
 (layout/mount!)
 (info/mount!)

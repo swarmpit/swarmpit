@@ -67,13 +67,8 @@ main {
     flex-wrap: nowrap;
 }
 
-.form {
-    width: 90%;
-    margin: auto;
-}
-
 .form-row {
-    margin: 0 18px 18px 18px;
+    margin: 0 24px 0px 24px;
 }
 
 .form-row-label {
@@ -89,14 +84,10 @@ main {
 }
 
 .form-buttons {
-    margin-top: 24px;
-    display: flex;
+    background: transparent !important;
 }
 
-.list {
-}
-
-.list-action {
+.form-panel {
     padding-top: 12px;
     display: inline-block;
     position: relative;
@@ -105,14 +96,14 @@ main {
     background: rgb(245, 245, 245);
 }
 
-.list-action-left {
+.form-panel-left {
     float: left;
     padding-left: 24px;
     display: inline-flex;
     position: relative;
 }
 
-.list-action-right {
+.form-panel-right {
     float: right;
     padding-right: 24px;
     display: inline-flex;

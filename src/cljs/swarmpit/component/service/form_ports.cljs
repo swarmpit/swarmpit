@@ -73,26 +73,23 @@
 
 (rum/defc form < rum/reactive []
   (let [ports (rum/react state)]
-    [:form
-     [:fieldset
-      [:legend "Ports"]
-      (material/theme
-        (material/table
-          #js {:selectable false}
-          (material/table-header-form form-headers #(add-item))
-          (material/table-body
-            #js {:displayRowCheckbox false}
-            (map-indexed
-              (fn [index item]
-                (let [{:keys [containerPort
-                              protocol
-                              published
-                              hostPort]} item]
-                  (material/table-row-form
-                    index
-                    [(form-container containerPort index)
-                     (form-protocol protocol index)
-                     (form-published published index)
-                     (form-host hostPort index)]
-                    (fn [] (remove-item index)))))
-              ports))))]]))
+    (material/theme
+      (material/table
+        #js {:selectable false}
+        (material/table-header-form form-headers #(add-item))
+        (material/table-body
+          #js {:displayRowCheckbox false}
+          (map-indexed
+            (fn [index item]
+              (let [{:keys [containerPort
+                            protocol
+                            published
+                            hostPort]} item]
+                (material/table-row-form
+                  index
+                  [(form-container containerPort index)
+                   (form-protocol protocol index)
+                   (form-published published index)
+                   (form-host hostPort index)]
+                  (fn [] (remove-item index)))))
+            ports))))))

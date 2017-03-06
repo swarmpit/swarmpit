@@ -1,6 +1,6 @@
 (ns swarmpit.component.service.list
   (:require [swarmpit.material :as material :refer [svg]]
-            [swarmpit.component.info :as info]
+            [swarmpit.router :as router]
             [clojure.string :as string]
             [rum.core :as rum]))
 
@@ -43,9 +43,9 @@
 (rum/defc service-list < rum/reactive [items]
   (let [{:keys [predicate]} (rum/react state)
         filtered-items (filter-items items predicate)]
-    [:div.list
-     [:div.list-action
-      [:div.list-action-left
+    [:div
+     [:div.form-panel
+      [:div.form-panel-left
        (material/theme
          (material/text-field
            #js {:hintText       "Filter by name"
@@ -53,7 +53,7 @@
                 :underlineStyle #js {:borderColor "rgba(0, 0, 0, 0.2)"}
                 :style          #js {:height     "44px"
                                      :lineHeight "15px"}}))]
-      [:div.list-action-right
+      [:div.form-panel-right
        (material/theme
          (material/raised-button
            #js {:href    "/#/services/create"
@@ -63,7 +63,9 @@
      (material/theme
        (material/table
          #js {:selectable  false
-              :onCellClick (fn [i] (print (get (nth filtered-items i) "ID")))}
+              :onCellClick (fn [i] (router/dispatch!
+                                     (str "/#/services/"
+                                          (get (nth filtered-items i) "ID"))))}
          (material/table-header-list service-list-headers)
          (material/table-body
            #js {:showRowHover       true

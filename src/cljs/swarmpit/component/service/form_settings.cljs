@@ -83,11 +83,9 @@
                 mode
                 replicas
                 autoredeploy]} (rum/react state)]
-    [:form
-     [:fieldset
-      [:legend "General settings"]
-      (form-image image)
-      (form-name serviceName)
-      (form-mode mode)
-      (if (= "replicated" mode) (form-replicas replicas))
-      (form-autoredeploy autoredeploy)]]))
+    [:div
+     (form-image image)
+     (form-name serviceName)
+     (form-mode mode)
+     (if (= "replicated" mode) (form-replicas replicas))
+     (form-autoredeploy autoredeploy)]))
