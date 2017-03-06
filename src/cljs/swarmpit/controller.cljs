@@ -18,11 +18,12 @@
   []
   (let [router (br/start-router! handler
                                  {:on-navigate
-                                  (fn [loc] (do (dispatch loc)
-                                                (reset! location loc)))})
+                                  (fn [loc]
+                                    (dispatch loc)
+                                    (reset! location loc))})
         route (:handler @location)]
     (if (some? route)
-      (br/set-location! router {:handler route}))))
+      (br/set-location! router @location))))
 
 (defmethod dispatch :index
   [_]
@@ -30,18 +31,21 @@
 
 (defmethod dispatch :service-list
   [_]
+  (print "list")
   (GET "/services"
        {:handler (fn [response]
                    (slist/mount! response))}))
 
 (defmethod dispatch :service-info
   [{:keys [route-params]}]
+  (print "info")
   (GET (str "/services/" (:id route-params))
        {:handler (fn [response]
                    (sinfo/mount! response))}))
 
 (defmethod dispatch :service-create
   [_]
+  (print "create")
   (screate/mount!))
 
 (defmethod dispatch nil
