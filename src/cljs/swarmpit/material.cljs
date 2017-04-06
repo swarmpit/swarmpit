@@ -79,10 +79,19 @@
   ([props d] (svg-icon props (html [:path {:d d}])))
   ([d] (svg-icon nil (html [:path {:d d}]))))
 
-(defn form-row [label comp]
-  [:div.form-row
+(defn form-edit-row [label comp]
+  [:div.form-edit-row
    [:span.form-row-label label]
    [:div.form-row-field (theme comp)]])
+
+(defn form-view-row [label value]
+  [:div.form-view-row
+   [:span.form-row-label label]
+   [:div.form-row-value value]])
+
+(defn form-view-section [label]
+  [:div.form-view-row
+   [:span.form-section-label label]])
 
 (defn table-header-list [headers]
   (table-header

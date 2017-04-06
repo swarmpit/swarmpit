@@ -2,6 +2,7 @@
   (:require [bidi.router :as br]
             [ajax.core :refer [GET POST]]
             [swarmpit.component.service.create :as screate]
+            [swarmpit.component.service.edit :as sedit]
             [swarmpit.component.service.info :as sinfo]
             [swarmpit.component.service.list :as slist]))
 
@@ -10,9 +11,10 @@
 (def location (atom nil))
 
 (def handler ["" {"/"         :index
-                  "/services" {""        :service-list
-                               "/create" :service-create
-                               ["/" :id] :service-info}}])
+                  "/services" {""                :service-list
+                               "/create"         :service-create
+                               ["/" :id]         :service-info
+                               ["/" :id "/edit"] :service-edit}}])
 
 (defn start
   []
@@ -47,6 +49,13 @@
   [_]
   (print "create")
   (screate/mount!))
+
+(defmethod dispatch :service-edit
+  [{:keys [route-params]}]
+  (print "edit")
+  (GET (str "/services/" (:id route-params))
+       {:handler (fn [response]
+                   (sedit/mount! response))}))
 
 (defmethod dispatch nil
   [_]

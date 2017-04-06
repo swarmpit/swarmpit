@@ -6,3 +6,4 @@
   (vec (concat
          (subvec coll 0 index)
          (subvec coll (inc index)))))
+

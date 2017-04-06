@@ -13,7 +13,7 @@
 
 (defmulti form-item identity)
 
-(defmethod form-item 0 [_] (settings/form))
+(defmethod form-item 0 [_] (settings/form false))
 
 (defmethod form-item 1 [_] (ports/form))
 
@@ -37,7 +37,8 @@
         (material/step-button
           #js {:disableTouchRipple true
                :style              #js {:backgroundColor "transparent"}
-               :onClick            (fn [] (reset! step-index index))} item)))
+               :onClick            (fn [] (reset! step-index index))}
+          item)))
     steps))
 
 (rum/defc form < rum/reactive []
