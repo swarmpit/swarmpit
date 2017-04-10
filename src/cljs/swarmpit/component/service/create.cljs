@@ -71,6 +71,29 @@
            #js {:label   "Create"
                 :primary true}))]]]))
 
+(defn- init-settings-state
+  []
+  (reset! settings/state {:image        nil
+                          :serviceName  ""
+                          :mode         "replicated"
+                          :replicas     1
+                          :autoredeploy false}))
+
+(defn- init-ports-state
+  []
+  (reset! ports/state []))
+
+(defn- init-variables-state
+  []
+  (reset! variables/state []))
+
+(defn- init-state
+  []
+  (init-settings-state)
+  (init-ports-state)
+  (init-variables-state))
+
 (defn mount!
   []
+  (init-state)
   (rum/mount (form) (.getElementById js/document "content")))

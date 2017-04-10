@@ -5,11 +5,7 @@
 
 (enable-console-print!)
 
-(defonce state (atom {:image        nil
-                      :serviceName  ""
-                      :mode         "replicated"
-                      :replicas     1
-                      :autoredeploy false}))
+(defonce state (atom {}))
 
 (defn- update-item
   "Update form item configuration"
