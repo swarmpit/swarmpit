@@ -20,7 +20,7 @@
                 :style   #js {:marginRight "12px"}}))
        (material/theme
          (material/raised-button
-           #js {:href  "/#/services/create"
+           #js {:href  (str "/#/services/" id)
                 :label "Back"}))]]
      [:div.form-view
       [:div.form-view-group

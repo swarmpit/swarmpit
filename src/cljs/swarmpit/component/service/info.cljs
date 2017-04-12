@@ -1,6 +1,9 @@
 (ns swarmpit.component.service.info
   (:require [swarmpit.material :as material]
-            [rum.core :as rum]))
+            [swarmpit.router :as router]
+            [swarmpit.component.message :as message]
+            [rum.core :as rum]
+            [ajax.core :refer [DELETE]]))
 
 (enable-console-print!)
 
@@ -78,8 +81,18 @@
                 :style   #js {:marginRight "12px"}}))
        (material/theme
          (material/raised-button
-           #js {:href  (str "/#/services/" id "/delete")
-                :label "Delete"}))]]
+           #js {:onTouchTap (fn []
+                              (DELETE (str "/services/" id)
+                                      {:handler
+                                       (fn [_]
+                                         (router/dispatch! "/#/services")
+                                         (message/mount!
+                                           (str "Service " id " has been removed.")))
+                                       :error-handler
+                                       (fn [{:keys [status status-text]}]
+                                         (message/mount!
+                                           (str "Service " id " removing failed. Reason: " status-text)))}))
+                :label      "Delete"}))]]
      [:div.form-view
       [:div.form-view-group
        (material/form-view-section "General settings")
