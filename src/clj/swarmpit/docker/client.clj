@@ -7,8 +7,8 @@
 (def ^:private api-version "v1.24")
 (def ^:private base-cmd ["curl" "--unix-socket" "/var/run/docker.sock" "-w" "%{http_code}"])
 
-(defn- parse-headers
-  "Parse headers map to curl vector cmd representation"
+(defn- map-headers
+  "Map request headers map to curl vector cmd representation"
   [headers]
   (->> headers
        (map #(str (name (key %)) ": " (val %)))
@@ -16,13 +16,13 @@
        (flatten)
        (into [])))
 
-(defn- parse-request
-  "Parse request to curl vector cmd representation"
-  [method api]
-  ["-X" method (str "http:/" api-version api)])
+(defn- map-uri
+  "Map request uri to curl vector cmd representation"
+  [method uri]
+  ["-X" method (str "http:/" api-version uri)])
 
-(defn- parse-payload
-  "Parse request payload to curl vector cmd representation"
+(defn- map-payload
+  "Map request payload to curl vector cmd representation"
   [json]
   (if (nil? json)
     []
@@ -30,24 +30,36 @@
 
 (defn- command
   "Build docker command"
-  [method api headers payload]
-  (let [pheaders (parse-headers headers)
-        pcommand (parse-request method api)
-        ppayload (parse-payload payload)]
+  [method uri headers payload]
+  (let [pheaders (map-headers headers)
+        pcommand (map-uri method uri)
+        ppayload (map-payload payload)]
     (-> base-cmd
         (into pheaders)
         (into ppayload)
         (into pcommand))))
 
+(defn- parse-payload
+  [response]
+  (if (= (count response) 1)
+    nil
+    (parse-string (first response) true)))
+
+(defn- parse-http-code
+  [response]
+  (if (= (count response) 1)
+    (Integer. (first response))
+    (Integer. (second response))))
+
 (defn- execute
   "Execute docker command and parse result"
-  [method api headers payload]
-  (let [cmd (command method api headers payload)
+  [method uri headers payload]
+  (let [cmd (command method uri headers payload)
         result (apply shell/sh cmd)]
     (if (= 0 (:exit result))
       (let [response (string/split (:out result) #"\n")
-            payload (parse-string (first response) true)
-            http-code (Integer. (second response))]
+            payload (parse-payload response)
+            http-code (parse-http-code response)]
         (if (> 400 http-code)
           payload
           (throw (ex-info "Docker engine error!"
@@ -56,17 +68,17 @@
                       (parse-string (:err result) true))))))
 
 (defn get
-  ([api] (execute "GET" api nil nil))
-  ([api headers] (execute "GET" api headers nil)))
+  ([uri] (execute "GET" uri nil nil))
+  ([uri headers] (execute "GET" uri headers nil)))
 
 (defn post
-  ([api payload] (execute "POST" api nil payload))
-  ([api headers payload] (execute "POST" api headers payload)))
+  ([uri payload] (execute "POST" uri nil payload))
+  ([uri headers payload] (execute "POST" uri headers payload)))
 
 (defn put
-  ([api payload] (execute "PUT" api nil payload))
-  ([api headers payload] (execute "PUT" api headers payload)))
+  ([uri payload] (execute "PUT" uri nil payload))
+  ([uri headers payload] (execute "PUT" uri headers payload)))
 
 (defn delete
-  ([api] (execute "DELETE" api nil nil))
-  ([api headers] (execute "DELETE" api headers nil)))
+  ([uri] (execute "DELETE" uri nil nil))
+  ([uri headers] (execute "DELETE" uri headers nil)))
