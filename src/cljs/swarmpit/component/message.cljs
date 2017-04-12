@@ -1,4 +1,4 @@
-(ns swarmpit.component.info
+(ns swarmpit.component.message
   (:require [swarmpit.material :as material]
             [rum.core :as rum]))
 
