@@ -1,6 +1,7 @@
 (ns swarmpit.handler
   (:require [bidi.ring :refer (make-handler)]
-            [swarmpit.api :as api]))
+            [swarmpit.api :as api]
+            [cheshire.core :refer [parse-string]]))
 
 (defn services
   [_]
@@ -11,8 +12,11 @@
   {:status 200 :body (api/services (:id route-params))})
 
 (defn service-create
-  [_]
-  {:status 201 :body "Index"})
+  [{:keys [params]}]
+  {:status 201 :body params
+           ;(parse-string params)
+   ;(keys req)
+   })
 
 (defn service-delete
   [{:keys [route-params]}]

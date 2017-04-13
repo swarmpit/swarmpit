@@ -9,3 +9,7 @@
 (defn remove-service
   [id]
   (dc/delete (str "/services/" id)))
+
+(defn add-service
+  [service]
+  (dc/post "/services" service))

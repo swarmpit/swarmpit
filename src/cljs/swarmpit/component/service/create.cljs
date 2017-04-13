@@ -1,9 +1,12 @@
 (ns swarmpit.component.service.create
   (:require [swarmpit.material :as material]
+            [swarmpit.router :as router]
             [swarmpit.component.service.form-settings :as settings]
             [swarmpit.component.service.form-ports :as ports]
             [swarmpit.component.service.form-variables :as variables]
-            [rum.core :as rum]))
+            [swarmpit.component.message :as message]
+            [rum.core :as rum]
+            [ajax.core :refer [POST]]))
 
 (enable-console-print!)
 
@@ -41,6 +44,12 @@
           item)))
     steps))
 
+(defn- state
+  []
+  (-> @settings/state
+      (assoc :ports @ports/state)
+      (assoc :variables @variables/state)))
+
 (rum/defc form < rum/reactive []
   (let [index (rum/react step-index)]
     [:div
@@ -68,8 +77,21 @@
       [:div.form-panel-right
        (material/theme
          (material/raised-button
-           #js {:label   "Create"
-                :primary true}))]]]))
+           #js {:label      "Create"
+                :primary    true
+                :onTouchTap (fn []
+                              (POST "/services"
+                                    {:format :json
+                                     :params (state)
+                                     :handler
+                                             (fn [response]
+                                               (router/dispatch! "/#/services")
+                                               (message/mount!
+                                                 (str "Service " (get "ID" response) " has been created.")))
+                                     :error-handler
+                                             (fn [{:keys [status status-text]}]
+                                               (message/mount!
+                                                 (str "Service creation failed. Reason: " status-text)))}))}))]]]))
 
 (defn- init-settings-state
   []
