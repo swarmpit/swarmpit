@@ -1,15 +1,18 @@
 (ns swarmpit.api
   (:require [swarmpit.docker.client :as dc]
-            [swarmpit.registry.client :as rc]))
+            [swarmpit.registry.client :as rc]
+            [swarmpit.domain :as dom]))
 
 (defn services
   ([] (dc/get "/services"))
-  ([id] (dc/get (str "/services/" id))))
+  ([service-id] (dc/get (str "/services/" service-id))))
 
-(defn remove-service
-  [id]
-  (dc/delete (str "/services/" id)))
+(defn delete-service
+  [service-id]
+  (dc/delete (str "/services/" service-id)))
 
-(defn add-service
+(defn create-service
   [service]
-  (dc/post "/services" service))
+  (dom/->service service)
+  ;(dc/post "/services" (dom/->service service))
+  )

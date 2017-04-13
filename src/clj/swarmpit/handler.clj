@@ -1,7 +1,7 @@
 (ns swarmpit.handler
-  (:require [bidi.ring :refer (make-handler)]
-            [swarmpit.api :as api]
-            [cheshire.core :refer [parse-string]]))
+  (:require [bidi.ring :refer [make-handler]]
+            [clojure.walk :as walk]
+            [swarmpit.api :as api]))
 
 (defn services
   [_]
@@ -13,18 +13,16 @@
 
 (defn service-create
   [{:keys [params]}]
-  {:status 201 :body params
-           ;(parse-string params)
-   ;(keys req)
-   })
+  (let [payload (walk/keywordize-keys params)]
+    {:status 201 :body (api/create-service payload)}))
 
 (defn service-delete
   [{:keys [route-params]}]
-  (api/remove-service (:id route-params))
+  (api/delete-service (:id route-params))
   {:status 200})
 
 (def handler
-  (make-handler ["/" {"services" {:get    {""        services
-                                           ["/" :id] service}
-                                  :post   service-create
-                                  :delete {["/" :id] service-delete}}}]))
+  (make-handler ["/" {"services"  {:get  services
+                                   :post service-create}
+                      "services/" {:get    {[:id] service}
+                                   :delete {[:id] service-delete}}}]))
