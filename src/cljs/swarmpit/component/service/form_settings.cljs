@@ -22,12 +22,12 @@
                           :fontSize "14px"}}
       (material/menu-item
         #js {:key         1
-             :value       "image1:latest"
-             :primaryText "image1:latest"})
+             :value       "nohaapav/napp:latest"
+             :primaryText "nohaapav/napp:latest"})
       (material/menu-item
         #js {:key         2
-             :value       "image1:latest"
-             :primaryText "image2:latest"}))))
+             :value       "nohaapav/app:latest"
+             :primaryText "nohaapav/app:latest"}))))
 
 (defn- form-name [value update-form?]
   (material/form-edit-row
@@ -59,7 +59,7 @@
 
 (defn- form-replicas [value update-form?]
   (material/form-edit-row
-    (str "SERVICE REPLICAS  " "(" value ")")
+    (str "REPLICAS  " "(" value ")")
     (material/slider #js {:min          1
                           :max          50
                           :step         1

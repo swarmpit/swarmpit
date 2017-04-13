@@ -7,7 +7,7 @@
 
 (defonce state (atom []))
 
-(def form-headers ["Container port" "Protocol" "Published" "Host port"])
+(def form-headers ["Container port" "Protocol" "Host port"])
 
 (defn- add-item
   "Create new form item"
@@ -15,7 +15,6 @@
   (swap! state
          (fn [p] (conj p {:containerPort ""
                           :protocol      "tcp"
-                          :published     false
                           :hostPort      ""}))))
 
 (defn- remove-item
@@ -56,13 +55,6 @@
              :value       "udp"
              :primaryText "UDP"}))))
 
-(defn- form-published [value index]
-  (material/table-row-column
-    #js {:key (str "published" index)}
-    (material/checkbox
-      #js {:checked value
-           :onCheck (fn [e v] (update-item index :published v))})))
-
 (defn- form-host [value index]
   (material/table-row-column
     #js {:key (str "hostPort" index)}
@@ -83,13 +75,11 @@
             (fn [index item]
               (let [{:keys [containerPort
                             protocol
-                            published
                             hostPort]} item]
                 (material/table-row-form
                   index
                   [(form-container containerPort index)
                    (form-protocol protocol index)
-                   (form-published published index)
                    (form-host hostPort index)]
                   (fn [] (remove-item index)))))
             ports))))))
