@@ -11,8 +11,8 @@
   [service]
   (->> (:ports service)
        (map (fn [p] {:Protocol      (:protocol p)
-                     :PublishedPort (:hostPort p)
-                     :TargetPort    (:containerPort p)}))
+                     :PublishedPort (Integer. (:hostPort p))
+                     :TargetPort    (Integer. (:containerPort p))}))
        (into [])))
 
 (defn ->service-variables
@@ -35,4 +35,4 @@
 
 (defn <-service
   "Map docker service domain to swarmpit service domain"
-  [])
+  [service])

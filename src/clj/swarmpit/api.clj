@@ -13,6 +13,4 @@
 
 (defn create-service
   [service]
-  (dom/->service service)
-  ;(dc/post "/services" (dom/->service service))
-  )
+  (dc/post "/services/create" (dom/->service service)))
