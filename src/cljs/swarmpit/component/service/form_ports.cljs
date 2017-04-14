@@ -34,6 +34,7 @@
     #js {:key (str "containerPort" index)}
     (material/text-field
       #js {:id       "containerPort"
+           :type     "number"
            :value    value
            :onChange (fn [e v] (update-item index :containerPort v))})))
 
@@ -60,6 +61,7 @@
     #js {:key (str "hostPort" index)}
     (material/text-field
       #js {:id       "hostPort"
+           :type     "number"
            :value    value
            :onChange (fn [e v] (update-item index :hostPort v))})))
 
