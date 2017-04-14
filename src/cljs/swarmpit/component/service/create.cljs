@@ -5,6 +5,7 @@
             [swarmpit.component.service.form-ports :as ports]
             [swarmpit.component.service.form-variables :as variables]
             [swarmpit.component.message :as message]
+            [swarmpit.component.progress :as progress]
             [rum.core :as rum]
             [ajax.core :refer [POST]]))
 
@@ -44,11 +45,26 @@
           item)))
     steps))
 
-(defn- state
+(defn- create-service-handler
   []
-  (-> @settings/state
-      (assoc :ports @ports/state)
-      (assoc :variables @variables/state)))
+  (POST "/services"
+        {:format  :json
+         :params  (-> @settings/state
+                      (assoc :ports @ports/state)
+                      (assoc :variables @variables/state))
+         :finally (progress/mount!)
+         :handler
+                  (fn [response]
+                    (let [id (get response "ID")]
+                      (progress/unmount!)
+                      (router/dispatch! (str "/#/services/" id))
+                      (message/mount!
+                        (str "Service " id " has been created."))))
+         :error-handler
+                  (fn [{:keys [status status-text]}]
+                    (progress/unmount!)
+                    (message/mount!
+                      (str "Service creation failed. Status: " status " Reason: " status-text)))}))
 
 (rum/defc form < rum/reactive []
   (let [index (rum/react step-index)]
@@ -79,19 +95,7 @@
          (material/raised-button
            #js {:label      "Create"
                 :primary    true
-                :onTouchTap (fn []
-                              (POST "/services"
-                                    {:format :json
-                                     :params (state)
-                                     :handler
-                                             (fn [response]
-                                               (router/dispatch! "/#/services")
-                                               (message/mount!
-                                                 (str "Service " (get "ID" response) " has been created.")))
-                                     :error-handler
-                                             (fn [{:keys [status status-text]}]
-                                               (message/mount!
-                                                 (str "Service creation failed. Reason: " status-text)))}))}))]]]))
+                :onTouchTap (create-service-handler)}))]]]))
 
 (defn- init-settings-state
   []
