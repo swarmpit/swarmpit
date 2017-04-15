@@ -9,7 +9,7 @@
 
 (defn service
   [{:keys [route-params]}]
-  {:status 200 :body (api/services (:id route-params))})
+  {:status 200 :body (api/service (:id route-params))})
 
 (defn service-create
   [{:keys [params]}]

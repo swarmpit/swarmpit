@@ -1,5 +1,6 @@
 (ns swarmpit.controller
   (:require [bidi.router :as br]
+            [clojure.walk :as walk]
             [ajax.core :refer [GET POST]]
             [swarmpit.component.service.create :as screate]
             [swarmpit.component.service.edit :as sedit]
@@ -33,17 +34,17 @@
 
 (defmethod dispatch :service-list
   [_]
-  (print "list")
   (GET "/services"
        {:handler (fn [response]
-                   (slist/mount! response))}))
+                   (let [res (walk/keywordize-keys response)]
+                     (slist/mount! res)))}))
 
 (defmethod dispatch :service-info
   [{:keys [route-params]}]
-  (print "info")
   (GET (str "/services/" (:id route-params))
        {:handler (fn [response]
-                   (sinfo/mount! response))}))
+                   (let [res (walk/keywordize-keys response)]
+                     (sinfo/mount! res)))}))
 
 (defmethod dispatch :service-create
   [_]
