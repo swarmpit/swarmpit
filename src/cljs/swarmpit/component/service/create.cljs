@@ -48,23 +48,21 @@
 (defn- create-service-handler
   []
   (POST "/services"
-        {:format  :json
-         :params  (-> @settings/state
-                      (assoc :ports @ports/state)
-                      (assoc :variables @variables/state))
-         :finally (progress/mount!)
-         :handler
-                  (fn [response]
-                    (let [id (get response "ID")]
-                      (progress/unmount!)
-                      (router/dispatch! (str "/#/services/" id))
-                      (message/mount!
-                        (str "Service " id " has been created."))))
-         :error-handler
-                  (fn [{:keys [status status-text]}]
-                    (progress/unmount!)
-                    (message/mount!
-                      (str "Service creation failed. Status: " status " Reason: " status-text)))}))
+        {:format        :json
+         :params        (-> @settings/state
+                            (assoc :ports @ports/state)
+                            (assoc :variables @variables/state))
+         :finally       (progress/mount!)
+         :handler       (fn [response]
+                          (let [id (get response "ID")
+                                message (str "Service " id " has been created.")]
+                            (progress/unmount!)
+                            (router/dispatch! (str "/#/services/" id))
+                            (message/mount! message)))
+         :error-handler (fn [{:keys [status status-text]}]
+                          (let [message (str "Service creation failed. Status: " status " Reason: " status-text)]
+                            (progress/unmount!)
+                            (message/mount! message)))}))
 
 (rum/defc form < rum/reactive []
   (let [index (rum/react step-index)]
@@ -95,7 +93,7 @@
          (material/raised-button
            #js {:label      "Create"
                 :primary    true
-                :onTouchTap (create-service-handler)}))]]]))
+                :onTouchTap create-service-handler}))]]]))
 
 (defn- init-settings-state
   []

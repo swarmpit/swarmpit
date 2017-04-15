@@ -13,36 +13,18 @@
 (defn- filter-items
   "Filter list items based on given predicate"
   [items predicate]
-  (let [name (fn [item] (get-in item ["Spec" "Name"]))]
-    (filter #(string/includes? (name %) predicate) items)))
+  (filter #(string/includes? (:serviceName %) predicate) items))
 
-(defn- service-name [spec index]
+(defn- service-list-item
+  [item key index]
   (material/table-row-column
-    #js {:key (str "serviceName" index)}
-    (get spec "Name")))
-
-(defn- service-mode [spec index]
-  (material/table-row-column
-    #js {:key (str "serviceMode" index)}
-    (let [node (get spec "Mode")
-          mode (first (keys node))]
-      mode)))
-
-(defn- service-replicas [spec index]
-  (material/table-row-column
-    #js {:key (str "serviceReplicas" index)}
-    (get-in spec ["Mode" "Replicated" "Replicas"])))
-
-(defn- service-image [spec index]
-  (material/table-row-column
-    #js {:key (str "serviceImage" index)}
-    (-> (get-in spec ["TaskTemplate" "ContainerSpec" "Image"])
-        (string/split #"\@")
-        (first))))
+    #js {:key (str (name key) index)}
+    (key item)))
 
 (rum/defc service-list < rum/reactive [items]
   (let [{:keys [predicate]} (rum/react state)
-        filtered-items (filter-items items predicate)]
+        filtered-items (filter-items items predicate)
+        service-id (fn [index] (:id (nth filtered-items index)))]
     [:div
      [:div.form-panel
       [:div.form-panel-left
@@ -59,28 +41,23 @@
            #js {:href    "/#/services/create"
                 :label   "Create"
                 :primary true}))]]
-
      (material/theme
        (material/table
          #js {:selectable  false
               :onCellClick (fn [i] (router/dispatch!
-                                     (str "/#/services/"
-                                          (get (nth filtered-items i) "ID"))))}
+                                     (str "/#/services/" (service-id i))))}
          (material/table-header-list service-list-headers)
          (material/table-body
            #js {:showRowHover       true
                 :displayRowCheckbox false}
            (map-indexed
              (fn [index item]
-               (let [spec (get item "Spec")]
-                 (material/table-row
-                   #js {:key       (str "row" index)
-                        :style     #js {:cursor "pointer"}
-                        :rowNumber index}
-                   (service-name spec index)
-                   (service-mode spec index)
-                   (service-replicas spec index)
-                   (service-image spec index))))
+               (material/table-row
+                 #js {:key       (str "row" index)
+                      :style     #js {:cursor "pointer"}
+                      :rowNumber index}
+                 (->> [:serviceName :mode :replicas :image]
+                      (map #(service-list-item item % index)))))
              filtered-items))))]))
 
 (defn mount!
