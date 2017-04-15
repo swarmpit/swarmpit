@@ -16,10 +16,10 @@
   (filter #(string/includes? (:serviceName %) predicate) items))
 
 (defn- service-list-item
-  [item key index]
+  [item index]
   (material/table-row-column
-    #js {:key (str (name key) index)}
-    (key item)))
+    #js {:key (str (name (key item)) index)}
+    (val item)))
 
 (rum/defc service-list < rum/reactive [items]
   (let [{:keys [predicate]} (rum/react state)
@@ -56,8 +56,8 @@
                  #js {:key       (str "row" index)
                       :style     #js {:cursor "pointer"}
                       :rowNumber index}
-                 (->> [:serviceName :mode :replicas :image]
-                      (map #(service-list-item item % index)))))
+                 (->> (select-keys item [:serviceName :mode :replicas :image])
+                      (map #(service-list-item % index)))))
              filtered-items))))]))
 
 (defn mount!
