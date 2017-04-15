@@ -8,30 +8,29 @@
 (enable-console-print!)
 
 (rum/defc form < rum/static [item]
-  (let [id (get item "ID")]
-    [:div
-     [:div.form-panel
-      [:div.form-panel-right
-       (material/theme
-         (material/raised-button
-           #js {:href    "/#/services/create"
-                :label   "Save"
-                :primary true
-                :style   #js {:marginRight "12px"}}))
-       (material/theme
-         (material/raised-button
-           #js {:href  (str "/#/services/" id)
-                :label "Back"}))]]
-     [:div.form-view
-      [:div.form-view-group
-       (material/form-view-section "General settings")
-       (settings/form true)]
-      [:div.form-view-group
-       (material/form-view-section "Ports")
-       (ports/form)]
-      [:div.form-view-group
-       (material/form-view-section "Environment variables")
-       (variables/form)]]]))
+  [:div
+   [:div.form-panel
+    [:div.form-panel-right
+     (material/theme
+       (material/raised-button
+         #js {:href    "/#/services/create"
+              :label   "Save"
+              :primary true
+              :style   #js {:marginRight "12px"}}))
+     (material/theme
+       (material/raised-button
+         #js {:href  (str "/#/services/" (:id item))
+              :label "Back"}))]]
+   [:div.form-view
+    [:div.form-view-group
+     (material/form-view-section "General settings")
+     (settings/form true)]
+    [:div.form-view-group
+     (material/form-view-section "Ports")
+     (ports/form)]
+    [:div.form-view-group
+     (material/form-view-section "Environment variables")
+     (variables/form)]]])
 
 (defn- init-state
   [item]
