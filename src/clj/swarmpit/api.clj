@@ -4,8 +4,15 @@
             [swarmpit.domain :as dom]))
 
 (defn services
-  ([] (dc/get "/services"))
-  ([service-id] (dc/get (str "/services/" service-id))))
+  []
+  (->> (dc/get "/services")
+       (dom/<-services)))
+
+(defn service
+  [service-id]
+  (->> (str "/services/" service-id)
+       (dc/get)
+       (dom/<-service)))
 
 (defn delete-service
   [service-id]
