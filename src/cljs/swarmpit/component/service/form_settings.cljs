@@ -57,7 +57,7 @@
              :label    "Global"
              :value    "global"}))))
 
-(defn- form-replicas [value update-form?]
+(defn- form-replicas [value]
   (material/form-edit-row
     (str "REPLICAS  " "(" value ")")
     (material/slider #js {:min          1
@@ -65,7 +65,6 @@
                           :step         1
                           :defaultValue 1
                           :value        value
-                          :disabled     update-form?
                           :onChange     (fn [e v] (update-item :replicas v))
                           :sliderStyle  #js {:marginTop "14px"}})))
 
@@ -87,5 +86,5 @@
      (form-image image)
      (form-name serviceName update-form?)
      (form-mode mode update-form?)
-     (if (= "replicated" mode) (form-replicas replicas update-form?))
+     (if (= "replicated" mode) (form-replicas replicas))
      (form-autoredeploy autoredeploy)]))
