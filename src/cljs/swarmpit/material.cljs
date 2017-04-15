@@ -167,9 +167,10 @@
           (map-indexed
             (fn [index item]
               (table-row
-                #js {:key       (str "row" index)
-                     :rowNumber index
-                     :style     table-el-height}
+                #js {:key           (str "row" index)
+                     :rowNumber     index
+                     :displayBorder false
+                     :style         table-el-height}
                 (->> (keys item)
                      (map #(table-row-column
                              #js {:key   (str (name %) index)
