@@ -56,7 +56,8 @@
   (print "edit")
   (GET (str "/services/" (:id route-params))
        {:handler (fn [response]
-                   (sedit/mount! response))}))
+                   (let [res (walk/keywordize-keys response)]
+                     (sedit/mount! res)))}))
 
 (defmethod dispatch nil
   [_]

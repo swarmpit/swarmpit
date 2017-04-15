@@ -33,37 +33,11 @@
        (material/form-view-section "Environment variables")
        (variables/form)]]]))
 
-(defn- init-settings-state
-  [item]
-  (let [service-image (get-in item ["Spec" "TaskTemplate" "ContainerSpec" "Image"])
-        service-name (get-in item ["Spec" "Name"])
-        service-mode (first (keys (get-in item ["Spec" "Mode"])))]
-    (reset! settings/state {:image        service-image
-                            :serviceName  service-name
-                            :mode         service-mode
-                            :replicas     1
-                            :autoredeploy false})))
-
-(defn- init-ports-state
-  [item]
-  (let [service-ports (get-in item ["Spec" "EndpointSpec" "Ports"])]
-    (reset! ports/state (->> service-ports
-                             (map (fn [item]
-                                    {:containerPort (get item "TargetPort")
-                                     :protocol      (get item "Protocol")
-                                     :published     false
-                                     :hostPort      (get item "PublishedPort")}))
-                             (into [])))))
-
-(defn- init-variables-state
-  []
-  (reset! variables/state []))
-
 (defn- init-state
   [item]
-  (init-settings-state item)
-  (init-ports-state item)
-  (init-variables-state))
+  (reset! settings/state (select-keys item [:image :serviceName :mode :replicas :autoredeploy]))
+  (reset! ports/state (:ports item))
+  (reset! variables/state (:variables item)))
 
 (defn mount!
   [item]

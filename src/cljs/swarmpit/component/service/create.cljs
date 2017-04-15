@@ -95,27 +95,15 @@
                 :primary    true
                 :onTouchTap create-service-handler}))]]]))
 
-(defn- init-settings-state
+(defn- init-state
   []
   (reset! settings/state {:image        nil
                           :serviceName  ""
                           :mode         "replicated"
                           :replicas     1
-                          :autoredeploy false}))
-
-(defn- init-ports-state
-  []
-  (reset! ports/state []))
-
-(defn- init-variables-state
-  []
+                          :autoredeploy false})
+  (reset! ports/state [])
   (reset! variables/state []))
-
-(defn- init-state
-  []
-  (init-settings-state)
-  (init-ports-state)
-  (init-variables-state))
 
 (defn mount!
   []
