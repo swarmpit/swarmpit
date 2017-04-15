@@ -140,3 +140,39 @@
         (svg
           #js {:hoverColor "red"}
           trash-icon)))))
+
+(defn form-list-view [headers items width]
+  (let [table-el-height #js {:height "20px"}]
+    (theme
+      (table
+        #js {:selectable false
+             :style      #js {:width width}}
+        (table-header
+          #js {:displaySelectAll  false
+               :adjustForCheckbox false
+               :style             #js {:border "none"}}
+          (table-row
+            #js {:displayBorder false
+                 :style         table-el-height}
+            (map-indexed
+              (fn [index header]
+                (table-header-column
+                  #js {:key   (str "header" index)
+                       :style table-el-height}
+                  header))
+              headers)))
+        (table-body
+          #js {:showRowHover       false
+               :displayRowCheckbox false}
+          (map-indexed
+            (fn [index item]
+              (table-row
+                #js {:key       (str "row" index)
+                     :rowNumber index
+                     :style     table-el-height}
+                (->> (keys item)
+                     (map #(table-row-column
+                             #js {:key   (str (name %) index)
+                                  :style table-el-height}
+                             (% item))))))
+            items))))))
