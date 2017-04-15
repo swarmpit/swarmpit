@@ -9,6 +9,17 @@
 
 (enable-console-print!)
 
+(defn- delete-service-handler
+  [service-id]
+  (DELETE (str "/services/" service-id)
+          {:handler       (fn [_]
+                            (let [message (str "Service " service-id " has been removed.")]
+                              (router/dispatch! "/#/services")
+                              (message/mount! message)))
+           :error-handler (fn [{:keys [status status-text]}]
+                            (let [message (str "Service " service-id " removing failed. Reason: " status-text)]
+                              (message/mount! message)))}))
+
 (rum/defc form < rum/static [item]
   (let [id (:id item)]
     [:div
@@ -22,17 +33,7 @@
                 :style   #js {:marginRight "12px"}}))
        (material/theme
          (material/raised-button
-           #js {:onTouchTap (fn []
-                              (DELETE (str "/services/" id)
-                                      {:handler
-                                       (fn [_]
-                                         (router/dispatch! "/#/services")
-                                         (message/mount!
-                                           (str "Service " id " has been removed.")))
-                                       :error-handler
-                                       (fn [{:keys [status status-text]}]
-                                         (message/mount!
-                                           (str "Service " id " removing failed. Reason: " status-text)))}))
+           #js {:onTouchTap delete-service-handler
                 :label      "Delete"}))]]
      [:div.form-view
       [:div.form-view-group
