@@ -68,23 +68,13 @@
                           :onChange     (fn [e v] (update-item :replicas v))
                           :sliderStyle  #js {:marginTop "14px"}})))
 
-(defn- form-autoredeploy [value]
-  (material/form-edit-row
-    "AUTOREDEPLOY"
-    (material/toogle
-      #js {:toggled  value
-           :onToggle (fn [e v] (update-item :autoredeploy v))
-           :style    #js {:marginTop "14px"}})))
-
 (rum/defc form < rum/reactive [update-form?]
   (let [{:keys [image
                 serviceName
                 mode
-                replicas
-                autoredeploy]} (rum/react state)]
+                replicas]} (rum/react state)]
     [:div.form-edit
      (form-image image)
      (form-name serviceName update-form?)
      (form-mode mode update-form?)
-     (if (= "replicated" mode) (form-replicas replicas))
-     (form-autoredeploy autoredeploy)]))
+     (if (= "replicated" mode) (form-replicas replicas))]))

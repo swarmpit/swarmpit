@@ -5,6 +5,7 @@
             [swarmpit.component.service.form-ports :as ports]
             [swarmpit.component.service.form-volumes :as volumes]
             [swarmpit.component.service.form-variables :as variables]
+            [swarmpit.component.service.form-deployment :as deployment]
             [swarmpit.component.message :as message]
             [swarmpit.component.progress :as progress]
             [rum.core :as rum]
@@ -14,7 +15,7 @@
 
 (defonce step-index (atom 0))
 
-(def steps ["General settings" "Ports" "Volumes" "Environment variables"])
+(def steps ["General settings" "Ports" "Volumes" "Environment variables" "Deployment"])
 
 (defmulti form-item identity)
 
@@ -25,6 +26,8 @@
 (defmethod form-item 2 [_] (volumes/form))
 
 (defmethod form-item 3 [_] (variables/form))
+
+(defmethod form-item 4 [_] (deployment/form))
 
 (defn- step-previous
   [index]
@@ -54,7 +57,9 @@
         {:format        :json
          :params        (-> @settings/state
                             (assoc :ports @ports/state)
-                            (assoc :variables @variables/state))
+                            (assoc :volumes @volumes/state)
+                            (assoc :variables @variables/state)
+                            (assoc :deployment @deployment/state))
          :finally       (progress/mount!)
          :handler       (fn [response]
                           (let [id (get response "ID")
@@ -100,14 +105,14 @@
 
 (defn- init-state
   []
-  (reset! settings/state {:image        nil
-                          :serviceName  ""
-                          :mode         "replicated"
-                          :replicas     1
-                          :autoredeploy false})
+  (reset! settings/state {:image       nil
+                          :serviceName ""
+                          :mode        "replicated"
+                          :replicas    1})
   (reset! ports/state [])
   (reset! volumes/state [])
-  (reset! variables/state []))
+  (reset! variables/state [])
+  (reset! deployment/state {:autoredeploy false}))
 
 (defn mount!
   []

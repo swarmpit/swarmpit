@@ -22,14 +22,26 @@
        (map (fn [p] (str (:name p) "=" (:value p))))
        (into [])))
 
+(defn ->service-volumes
+  [service]
+  (->> (:volumes service)
+       (map (fn [v] {:ReadOnly (:readOnly v)
+                     :Source   (:containerPath v)
+                     :Target   (:hostPath v)
+                     :Type     "volume"
+                     :VolumeOptions
+                               {:DriverConfig {}}}))
+       (into [])))
+
 (defn ->service
   "Map swarmpit service domain to docker service domain"
   [service]
   {:Name (:serviceName service)
    :TaskTemplate
          {:ContainerSpec
-          {:Image (:image service)
-           :Env   (->service-variables service)}}
+          {:Image  (:image service)
+           :Mounts (->service-volumes service)
+           :Env    (->service-variables service)}}
    :Mode (->service-mode service)
    :EndpointSpec
          {:Ports (->service-ports service)}})
@@ -40,6 +52,14 @@
        (map (fn [p] {:containerPort (:TargetPort p)
                      :protocol      (:Protocol p)
                      :hostPort      (:PublishedPort p)}))
+       (into [])))
+
+(defn <-service-volumes
+  [service]
+  (->> (get-in service [:Spec :TaskTemplate :ContainerSpec :Mounts])
+       (map (fn [v] {:containerPath (:Source v)
+                     :hostPath      (:Target v)
+                     :readOnly      (:ReadOnly v)}))
        (into [])))
 
 (defn <-service-variables
@@ -58,17 +78,18 @@
         image-info (str/split image #"@")
         image-name (first image-info)
         image-digest (second image-info)]
-    {:id           (get service :ID)
-     :createdAt    (get service :CreatedAt)
-     :updatedAt    (get service :UpdatedAt)
-     :image        image-name
-     :imageDigest  image-digest
-     :serviceName  (get-in service [:Spec :Name])
-     :mode         (str/lower-case (name (first (keys (get-in service [:Spec :Mode])))))
-     :replicas     (get-in service [:Spec :Mode :Replicated :Replicas])
-     :autoredeploy false
-     :ports        (<-service-ports service)
-     :variables    (<-service-variables service)}))
+    (array-map
+      :id (get service :ID)
+      :createdAt (get service :CreatedAt)
+      :updatedAt (get service :UpdatedAt)
+      :image image-name
+      :imageDigest image-digest
+      :serviceName (get-in service [:Spec :Name])
+      :mode (str/lower-case (name (first (keys (get-in service [:Spec :Mode])))))
+      :replicas (get-in service [:Spec :Mode :Replicated :Replicas])
+      :ports (<-service-ports service)
+      :volumes (<-service-volumes service)
+      :variables (<-service-variables service))))
 
 (defn <-services
   [services]
