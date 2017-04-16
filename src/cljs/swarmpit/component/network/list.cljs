@@ -8,7 +8,7 @@
 
 (defonce state (atom {:predicate ""}))
 
-(def service-list-headers ["Name" "Driver" "Internal"])
+(def network-list-headers ["Name" "Driver" "Internal"])
 
 (defn- filter-items
   "Filter list items based on given predicate"
@@ -49,7 +49,7 @@
          #js {:selectable  false
               :onCellClick (fn [i] (router/dispatch!
                                      (str "/#/networks/" (network-id i))))}
-         (material/table-header-list service-list-headers)
+         (material/table-header-list network-list-headers)
          (material/table-body
            #js {:showRowHover       true
                 :displayRowCheckbox false}

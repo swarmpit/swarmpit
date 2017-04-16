@@ -32,11 +32,20 @@
 (defn networks
   []
   (->> (dc/get "/networks")
-       (dom/<-networks)
-       (filter #(not (in? ["host" "null" "bridge"] (:driver %))))))
+       (dom/<-networks)))
 
 (defn network
   [network-id]
   (->> (str "/networks/" network-id)
        (dc/get)
        (dom/<-network)))
+
+(defn delete-network
+  [network-id]
+  (->> (str "/networks/" network-id)
+       (dc/delete)))
+
+(defn create-network
+  [network]
+  (->> (dom/->network network)
+       (dc/post "/networks/create")))

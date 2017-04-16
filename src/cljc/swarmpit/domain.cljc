@@ -101,6 +101,13 @@
 
 ;;; Network domain
 
+(defn ->network
+  "Map swarmpit network domain to docker network domain"
+  [network]
+  {:Name     (:name network)
+   :Driver   (:driver network)
+   :Internal (:internal network)})
+
 (defn <-network-configs
   [network]
   (->> (get-in network [:IPAM :Config])

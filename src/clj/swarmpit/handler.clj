@@ -33,6 +33,16 @@
   [{:keys [route-params]}]
   {:status 200 :body (api/network (:id route-params))})
 
+(defn network-create
+  [{:keys [params]}]
+  (let [payload (walk/keywordize-keys params)]
+    {:status 201 :body (api/create-network payload)}))
+
+(defn network-delete
+  [{:keys [route-params]}]
+  (api/delete-network (:id route-params))
+  {:status 200})
+
 ;;; Handler
 
 (def handler
@@ -40,5 +50,7 @@
                                    :post service-create}
                       "services/" {:get    {[:id] service}
                                    :delete {[:id] service-delete}}
-                      "networks"  {:get networks}
-                      "networks/" {:get {[:id] network}}}]))
+                      "networks"  {:get  networks
+                                   :post network-create}
+                      "networks/" {:get    {[:id] network}
+                                   :delete {[:id] network-delete}}}]))
