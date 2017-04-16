@@ -3,6 +3,8 @@
             [clojure.walk :as walk]
             [swarmpit.api :as api]))
 
+;;; Service handler
+
 (defn services
   [_]
   {:status 200 :body (api/services)})
@@ -21,8 +23,22 @@
   (api/delete-service (:id route-params))
   {:status 200})
 
+;;; Network handler
+
+(defn networks
+  [_]
+  {:status 200 :body (api/networks)})
+
+(defn network
+  [{:keys [route-params]}]
+  {:status 200 :body (api/network (:id route-params))})
+
+;;; Handler
+
 (def handler
   (make-handler ["/" {"services"  {:get  services
                                    :post service-create}
                       "services/" {:get    {[:id] service}
-                                   :delete {[:id] service-delete}}}]))
+                                   :delete {[:id] service-delete}}
+                      "networks"  {:get networks}
+                      "networks/" {:get {[:id] network}}}]))

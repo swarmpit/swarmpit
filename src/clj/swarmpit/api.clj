@@ -1,7 +1,10 @@
 (ns swarmpit.api
   (:require [swarmpit.docker.client :as dc]
             [swarmpit.registry.client :as rc]
-            [swarmpit.domain :as dom]))
+            [swarmpit.domain :as dom]
+            [swarmpit.utils :refer [in?]]))
+
+;;; Service API
 
 (defn services
   []
@@ -16,8 +19,24 @@
 
 (defn delete-service
   [service-id]
-  (dc/delete (str "/services/" service-id)))
+  (->> (str "/services/" service-id)
+       (dc/delete)))
 
 (defn create-service
   [service]
-  (dc/post "/services/create" (dom/->service service)))
+  (->> (dom/->service service)
+       (dc/post "/services/create")))
+
+;;; Network API
+
+(defn networks
+  []
+  (->> (dc/get "/networks")
+       (dom/<-networks)
+       (filter #(not (in? ["host" "null" "bridge"] (:driver %))))))
+
+(defn network
+  [network-id]
+  (->> (str "/networks/" network-id)
+       (dc/get)
+       (dom/<-network)))

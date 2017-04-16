@@ -1,6 +1,8 @@
 (ns swarmpit.domain
   (:require [clojure.string :as str]))
 
+;;; Service domain
+
 (defn ->service-mode
   [service]
   (if (= (:mode service) "global")
@@ -95,4 +97,33 @@
   [services]
   (->> services
        (map <-service)
+       (into [])))
+
+;;; Network domain
+
+(defn <-network-configs
+  [network]
+  (->> (get-in network [:IPAM :Config])
+       (map (fn [n] {:subnet  (:Subnet n)
+                     :range   (:IPRange n)
+                     :gateway (:Gateway n)}))
+       (into [])))
+
+(defn <-network
+  "Map docker network domain to swarmpit network domain"
+  [network]
+  (let [config (first (get-in network [:IPAM :Config]))]
+    (array-map
+      :id (get network :Id)
+      :name (get network :Name)
+      :created (get network :Created)
+      :driver (get network :Driver)
+      :internal (get network :Internal)
+      :subnet (:Subnet config)
+      :gateway (:Gateway config))))
+
+(defn <-networks
+  [networks]
+  (->> networks
+       (map <-network)
        (into [])))

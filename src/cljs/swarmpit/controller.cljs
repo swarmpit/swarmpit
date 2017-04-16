@@ -5,7 +5,8 @@
             [swarmpit.component.service.create :as screate]
             [swarmpit.component.service.edit :as sedit]
             [swarmpit.component.service.info :as sinfo]
-            [swarmpit.component.service.list :as slist]))
+            [swarmpit.component.service.list :as slist]
+            [swarmpit.component.network.list :as nlist]))
 
 (defmulti dispatch (fn [location] (:handler location)))
 
@@ -15,7 +16,10 @@
                   "/services" {""                :service-list
                                "/create"         :service-create
                                ["/" :id]         :service-info
-                               ["/" :id "/edit"] :service-edit}}])
+                               ["/" :id "/edit"] :service-edit}
+                  "/networks" {"" :network-list}}])
+
+;;; Router config
 
 (defn start
   []
@@ -28,9 +32,17 @@
     (if (some? route)
       (br/set-location! router @location))))
 
+;;; Default controller
+
 (defmethod dispatch :index
   [_]
   (print "index"))
+
+(defmethod dispatch nil
+  [_]
+  (print "not-found"))
+
+;;; Service controller
 
 (defmethod dispatch :service-list
   [_]
@@ -48,7 +60,6 @@
 
 (defmethod dispatch :service-create
   [_]
-  (print "create")
   (screate/mount!))
 
 (defmethod dispatch :service-edit
@@ -59,10 +70,13 @@
                    (let [res (walk/keywordize-keys response)]
                      (sedit/mount! res)))}))
 
-(defmethod dispatch nil
+;;; Network controller
+
+(defmethod dispatch :network-list
   [_]
-  (print "not-found"))
-
-
+  (GET "/networks"
+       {:handler (fn [response]
+                   (let [res (walk/keywordize-keys response)]
+                     (nlist/mount! res)))}))
 
 

@@ -2,7 +2,9 @@
   (:require [swarmpit.material :as material]
             [swarmpit.component.service.form-settings :as settings]
             [swarmpit.component.service.form-ports :as ports]
+            [swarmpit.component.service.form-volumes :as volumes]
             [swarmpit.component.service.form-variables :as variables]
+            [swarmpit.component.service.form-deployment :as deployment]
             [rum.core :as rum]))
 
 (enable-console-print!)
@@ -29,14 +31,22 @@
      (material/form-view-section "Ports")
      (ports/form)]
     [:div.form-view-group
+     (material/form-view-section "Volumes")
+     (volumes/form)]
+    [:div.form-view-group
      (material/form-view-section "Environment variables")
-     (variables/form)]]])
+     (variables/form)]
+    [:div.form-view-group
+     (material/form-view-section "Deployment")
+     (deployment/form)]]])
 
 (defn- init-state
   [item]
-  (reset! settings/state (select-keys item [:image :serviceName :mode :replicas :autoredeploy]))
+  (reset! settings/state (select-keys item [:image :serviceName :mode :replicas]))
   (reset! ports/state (:ports item))
-  (reset! variables/state (:variables item)))
+  (reset! volumes/state (:volumes item))
+  (reset! variables/state (:variables item))
+  (reset! deployment/state (:deployment item)))
 
 (defn mount!
   [item]

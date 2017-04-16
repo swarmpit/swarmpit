@@ -2,6 +2,7 @@
   (:require [swarmpit.material :as material]
             [swarmpit.router :as router]
             [swarmpit.component.service.form-ports :as ports]
+            [swarmpit.component.service.form-volumes :as volumes]
             [swarmpit.component.service.form-variables :as variables]
             [swarmpit.component.message :as message]
             [rum.core :as rum]
@@ -49,8 +50,11 @@
        (material/form-view-section "Ports")
        (material/form-list-view ports/form-headers (:ports item) "30%")]
       [:div.form-view-group
+       (material/form-view-section "Volumes")
+       (material/form-list-view volumes/form-headers (:volumes item) "100%")]
+      [:div.form-view-group
        (material/form-view-section "Environment variables")
-       (material/form-list-view variables/form-headers (:variables item) "50%")]]]))
+       (material/form-list-view variables/form-headers (:variables item) "60%")]]]))
 
 (defn mount!
   [item]
