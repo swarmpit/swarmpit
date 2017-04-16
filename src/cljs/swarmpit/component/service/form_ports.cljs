@@ -35,6 +35,7 @@
     (material/text-field
       #js {:id       "containerPort"
            :type     "number"
+           :style    #js {:width "100%"}
            :value    value
            :onChange (fn [e v] (update-item index :containerPort v))})))
 
@@ -62,6 +63,7 @@
     (material/text-field
       #js {:id       "hostPort"
            :type     "number"
+           :style    #js {:width "100%"}
            :value    value
            :onChange (fn [e v] (update-item index :hostPort v))})))
 

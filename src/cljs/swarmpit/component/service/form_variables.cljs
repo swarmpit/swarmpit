@@ -33,6 +33,7 @@
     #js {:key (str "name" index)}
     (material/text-field
       #js {:id       "name"
+           :style    #js {:width "100%"}
            :value    value
            :onChange (fn [e v] (update-item index :name v))})))
 
@@ -41,6 +42,7 @@
     #js {:key (str "value" index)}
     (material/text-field
       #js {:id       "value"
+           :style    #js {:width "100%"}
            :value    value
            :onChange (fn [e v] (update-item index :value v))})))
 

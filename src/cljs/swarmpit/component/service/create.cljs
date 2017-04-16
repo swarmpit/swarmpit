@@ -3,6 +3,7 @@
             [swarmpit.router :as router]
             [swarmpit.component.service.form-settings :as settings]
             [swarmpit.component.service.form-ports :as ports]
+            [swarmpit.component.service.form-volumes :as volumes]
             [swarmpit.component.service.form-variables :as variables]
             [swarmpit.component.message :as message]
             [swarmpit.component.progress :as progress]
@@ -13,7 +14,7 @@
 
 (defonce step-index (atom 0))
 
-(def steps ["General settings" "Ports" "Environment variables"])
+(def steps ["General settings" "Ports" "Volumes" "Environment variables"])
 
 (defmulti form-item identity)
 
@@ -21,7 +22,9 @@
 
 (defmethod form-item 1 [_] (ports/form))
 
-(defmethod form-item 2 [_] (variables/form))
+(defmethod form-item 2 [_] (volumes/form))
+
+(defmethod form-item 3 [_] (variables/form))
 
 (defn- step-previous
   [index]
@@ -103,6 +106,7 @@
                           :replicas     1
                           :autoredeploy false})
   (reset! ports/state [])
+  (reset! volumes/state [])
   (reset! variables/state []))
 
 (defn mount!
