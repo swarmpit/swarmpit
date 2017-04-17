@@ -1,5 +1,5 @@
 (ns swarmpit.material
-  (:refer-clojure :exclude [stepper])
+  (:refer-clojure :exclude [stepper list])
   (:require [cljsjs.react]
             [cljsjs.material-ui]
             [sablono.core :refer-macros [html]]))
@@ -19,12 +19,16 @@
 (def plus2-icon "M19 13h-6v6h-2v-6H5v-2h6V5h2v6h6v2z")
 
 (def create-factory js/React.createFactory)
+(def make-selectable js/MaterialUI.makeSelectable)
 
 (def app-bar (create-factory js/MaterialUI.AppBar))
 (def drawer (create-factory js/MaterialUI.Drawer))
 (def snackbar (create-factory js/MaterialUI.Snackbar))
 (def menu (create-factory js/MaterialUI.Menu))
 (def menu-item (create-factory js/MaterialUI.MenuItem))
+(def list (create-factory js/MaterialUI.List))
+(def selectable-list (create-factory (make-selectable js/MaterialUI.List)))
+(def list-item (create-factory js/MaterialUI.ListItem))
 (def svg-icon (create-factory js/MaterialUI.SvgIcon))
 (def font-icon (create-factory js/MaterialUI.FontIcon))
 (def icon-button (create-factory js/MaterialUI.IconButton))

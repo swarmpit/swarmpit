@@ -68,7 +68,8 @@ var MaterialUI = {
         levenshteinDistanceFilter: {},
         fuzzyFilter: {}
     },
-    AppBar: {}
+    AppBar: {},
+    makeSelectable : function() {}
 };
 
 var MaterialUIStyles = {
