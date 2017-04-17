@@ -1,6 +1,7 @@
 (ns swarmpit.controller
   (:require [bidi.router :as br]
             [clojure.walk :as walk]
+            [clojure.string :as str]
             [ajax.core :refer [GET POST]]
             [swarmpit.component.service.create :as screate]
             [swarmpit.component.service.edit :as sedit]
@@ -12,7 +13,20 @@
 
 (defmulti dispatch (fn [location] (:handler location)))
 
-(def location (atom nil))
+(defonce location (atom nil))
+
+(defonce domain (atom nil))
+
+(defn- select-domain
+  [location]
+  (let [route (name (:handler location))
+        route-domain (first (str/split route #"-"))]
+    (case route-domain
+      "service" "Services"
+      "network" "Networks"
+      "Home")))
+
+;;; Routing handler config
 
 (def handler ["" {"/"         :index
                   "/services" {""                :service-list
@@ -31,7 +45,8 @@
                                  {:on-navigate
                                   (fn [loc]
                                     (dispatch loc)
-                                    (reset! location loc))})
+                                    (reset! location loc)
+                                    (reset! domain (select-domain loc)))})
         route (:handler @location)]
     (if (some? route)
       (br/set-location! router @location))))

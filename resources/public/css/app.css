@@ -40,6 +40,7 @@ header .appbar {
 nav .drawer-container {
     box-shadow: none !important;
     border-right: 1px solid #e0e4e7;
+    overflow: hidden !important;
 }
 
 nav .drawer-appbar {
