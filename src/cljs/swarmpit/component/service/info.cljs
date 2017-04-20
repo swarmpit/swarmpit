@@ -34,7 +34,7 @@
                 :style   #js {:marginRight "12px"}}))
        (material/theme
          (material/raised-button
-           #js {:onTouchTap delete-service-handler
+           #js {:onTouchTap #(delete-service-handler id)
                 :label      "Delete"}))]]
      [:div.form-view
       [:div.form-view-group

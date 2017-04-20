@@ -82,6 +82,7 @@
         image-digest (second image-info)]
     (array-map
       :id (get service :ID)
+      :version (get-in service [:Version :Index])
       :createdAt (get service :CreatedAt)
       :updatedAt (get service :UpdatedAt)
       :image image-name

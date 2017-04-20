@@ -18,6 +18,12 @@
   (let [payload (walk/keywordize-keys params)]
     {:status 201 :body (api/create-service payload)}))
 
+(defn service-update
+  [{:keys [route-params params]}]
+  (let [payload (walk/keywordize-keys params)]
+    (api/update-service (:id route-params) payload)
+    {:status 200}))
+
 (defn service-delete
   [{:keys [route-params]}]
   (api/delete-service (:id route-params))
@@ -49,7 +55,8 @@
   (make-handler ["/" {"services"  {:get  services
                                    :post service-create}
                       "services/" {:get    {[:id] service}
-                                   :delete {[:id] service-delete}}
+                                   :delete {[:id] service-delete}
+                                   :post   {[:id] service-update}}
                       "networks"  {:get  networks
                                    :post network-create}
                       "networks/" {:get    {[:id] network}

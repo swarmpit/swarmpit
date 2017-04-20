@@ -27,6 +27,11 @@
   (->> (dom/->service service)
        (dc/post "/services/create")))
 
+(defn update-service
+  [service-id service]
+  (->> (dom/->service service)
+       (dc/post (str "/services/" service-id "/update?version=" (:version service)))))
+
 ;;; Network API
 
 (defn networks
