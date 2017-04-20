@@ -1,5 +1,5 @@
 (ns swarmpit.component.network.list
-  (:require [swarmpit.material :as material :refer [svg]]
+  (:require [swarmpit.material :as material]
             [swarmpit.router :as router]
             [clojure.string :as string]
             [rum.core :as rum]))

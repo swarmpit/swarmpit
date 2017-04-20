@@ -49,6 +49,16 @@
   (api/delete-network (:id route-params))
   {:status 200})
 
+;;; Node handler
+
+(defn nodes
+  [_]
+  {:status 200 :body (api/nodes)})
+
+(defn node
+  [{:keys [route-params]}]
+  {:status 200 :body (api/node (:id route-params))})
+
 ;;; Handler
 
 (def handler
@@ -60,4 +70,6 @@
                       "networks"  {:get  networks
                                    :post network-create}
                       "networks/" {:get    {[:id] network}
-                                   :delete {[:id] network-delete}}}]))
+                                   :delete {[:id] network-delete}}
+                      "nodes"     {:get nodes}
+                      "nodes/"    {:get {[:id] node}}}]))

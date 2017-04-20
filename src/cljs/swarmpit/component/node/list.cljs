@@ -1,4 +1,4 @@
-(ns swarmpit.component.service.list
+(ns swarmpit.component.node.list
   (:require [swarmpit.material :as material]
             [swarmpit.router :as router]
             [clojure.string :as string]
@@ -8,23 +8,26 @@
 
 (defonce state (atom {:predicate ""}))
 
-(def service-list-headers ["Name" "Mode" "Replicas" "Image"])
+(def node-list-headers ["Name" "Status" "Availability" "Leader"])
 
 (defn- filter-items
   "Filter list items based on given predicate"
   [items predicate]
-  (filter #(string/includes? (:serviceName %) predicate) items))
+  (filter #(string/includes? (:name %) predicate) items))
 
-(defn- service-list-item
+(defn- node-list-item
   [item index]
   (material/table-row-column
     #js {:key (str (name (key item)) index)}
-    (val item)))
+    (case (val item)
+      true "yes"
+      false "no"
+      (val item))))
 
-(rum/defc service-list < rum/reactive [items]
+(rum/defc node-list < rum/reactive [items]
   (let [{:keys [predicate]} (rum/react state)
         filtered-items (filter-items items predicate)
-        service-id (fn [index] (:id (nth filtered-items index)))]
+        node-id (fn [index] (:id (nth filtered-items index)))]
     [:div
      [:div.form-panel
       [:div.form-panel-left
@@ -34,19 +37,13 @@
                 :onChange       (fn [e v] (swap! state assoc :predicate v))
                 :underlineStyle #js {:borderColor "rgba(0, 0, 0, 0.2)"}
                 :style          #js {:height     "44px"
-                                     :lineHeight "15px"}}))]
-      [:div.form-panel-right
-       (material/theme
-         (material/raised-button
-           #js {:href    "/#/services/create"
-                :label   "Create"
-                :primary true}))]]
+                                     :lineHeight "15px"}}))]]
      (material/theme
        (material/table
          #js {:selectable  false
               :onCellClick (fn [i] (router/dispatch!
-                                     (str "/#/services/" (service-id i))))}
-         (material/table-header-list service-list-headers)
+                                     (str "/#/nodes/" (node-id i))))}
+         (material/table-header-list node-list-headers)
          (material/table-body
            #js {:showRowHover       true
                 :displayRowCheckbox false}
@@ -56,10 +53,10 @@
                  #js {:key       (str "row" index)
                       :style     #js {:cursor "pointer"}
                       :rowNumber index}
-                 (->> (select-keys item [:serviceName :mode :replicas :image])
-                      (map #(service-list-item % index)))))
+                 (->> (select-keys item [:name :status :availability :leader])
+                      (map #(node-list-item % index)))))
              filtered-items))))]))
 
 (defn mount!
   [items]
-  (rum/mount (service-list items) (.getElementById js/document "content")))
+  (rum/mount (node-list items) (.getElementById js/document "content")))

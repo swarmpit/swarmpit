@@ -9,7 +9,9 @@
             [swarmpit.component.service.list :as slist]
             [swarmpit.component.network.create :as ncreate]
             [swarmpit.component.network.info :as ninfo]
-            [swarmpit.component.network.list :as nlist]))
+            [swarmpit.component.network.list :as nlist]
+            [swarmpit.component.node.list :as ndlist]
+            [swarmpit.component.node.info :as ndinfo]))
 
 (defmulti dispatch (fn [location] (:handler location)))
 
@@ -35,7 +37,9 @@
                                ["/" :id "/edit"] :service-edit}
                   "/networks" {""        :network-list
                                "/create" :network-create
-                               ["/" :id] :network-info}}])
+                               ["/" :id] :network-info}
+                  "/nodes"    {""        :node-list
+                               ["/" :id] :node-info}}])
 
 ;;; Router config
 
@@ -108,3 +112,19 @@
 (defmethod dispatch :network-create
   [_]
   (ncreate/mount!))
+
+;;; Network controller
+
+(defmethod dispatch :node-list
+  [_]
+  (GET "/nodes"
+       {:handler (fn [response]
+                   (let [res (walk/keywordize-keys response)]
+                     (ndlist/mount! res)))}))
+
+(defmethod dispatch :node-info
+  [{:keys [route-params]}]
+  (GET (str "/nodes/" (:id route-params))
+       {:handler (fn [response]
+                   (let [res (walk/keywordize-keys response)]
+                     (ndinfo/mount! res)))}))

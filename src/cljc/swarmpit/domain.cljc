@@ -139,3 +139,22 @@
   (->> networks
        (map <-network)
        (into [])))
+
+;;; Node domain
+
+(defn <-node
+  "Map docker node domain to swarmpit node domain"
+  [node]
+  (array-map
+    :id (get node :ID)
+    :name (get-in node [:Description :Hostname])
+    :role (get-in node [:Spec :Role])
+    :availability (get-in node [:Spec :Availability])
+    :status (get-in node [:Status :State])
+    :leader (get-in node [:ManagerStatus :Leader])))
+
+(defn <-nodes
+  [nodes]
+  (->> nodes
+       (map <-node)
+       (into [])))

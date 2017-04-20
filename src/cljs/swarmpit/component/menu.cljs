@@ -57,7 +57,7 @@
                        (drawer-category "BUILD" opened)
                        (drawer-item "Repositories" material/repositories-icon opened)
                        (drawer-category "APPLICATIONS" opened)
-                       (drawer-item "Stacks" material/stacks-icon opened)
+                       ;(drawer-item "Stacks" material/stacks-icon opened)
                        (drawer-item "Services" material/services-icon opened)
                        (drawer-item "Containers" material/containers-icon opened)
                        (drawer-category "INFRASTRUCTURE" opened)

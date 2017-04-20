@@ -54,3 +54,16 @@
   [network]
   (->> (dom/->network network)
        (dc/post "/networks/create")))
+
+;;; Node API
+
+(defn nodes
+  []
+  (->> (dc/get "/nodes")
+       (dom/<-nodes)))
+
+(defn node
+  [node-id]
+  (->> (str "/nodes/" node-id)
+       (dc/get)
+       (dom/<-node)))
