@@ -13,14 +13,18 @@
 (defn ->service-ports
   [service]
   (->> (:ports service)
+       (filter #(and (> (:hostPort %) 0)
+                     (> (:containerPort %) 0)))
        (map (fn [p] {:Protocol      (:protocol p)
-                     :PublishedPort (Integer. (:hostPort p))
-                     :TargetPort    (Integer. (:containerPort p))}))
+                     :PublishedPort (:hostPort p)
+                     :TargetPort    (:containerPort p)}))
        (into [])))
 
 (defn ->service-variables
   [service]
   (->> (:variables service)
+       (filter #(not (and (str/blank? (:name %))
+                          (str/blank? (:value %)))))
        (map (fn [p] (str (:name p) "=" (:value p))))
        (into [])))
 

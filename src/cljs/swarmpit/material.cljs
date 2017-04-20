@@ -86,20 +86,6 @@
   ([props d] (svg-icon props (html [:path {:d d}])))
   ([d] (svg-icon nil (html [:path {:d d}]))))
 
-(defn form-edit-row [label comp]
-  [:div.form-edit-row
-   [:span.form-row-label label]
-   [:div.form-row-field (theme comp)]])
-
-(defn form-view-row [label value]
-  [:div.form-view-row
-   [:span.form-row-label label]
-   [:div.form-row-value value]])
-
-(defn form-view-section [label]
-  [:div.form-view-row
-   [:span.form-section-label label]])
-
 (defn table-header-list [headers]
   (table-header
     #js {:displaySelectAll  false
@@ -145,7 +131,21 @@
           #js {:hoverColor "red"}
           trash-icon)))))
 
-(defn form-list-view [headers items width]
+(defn form-edit-row [label comp]
+  [:div.form-edit-row
+   [:span.form-row-label label]
+   [:div.form-row-field (theme comp)]])
+
+(defn form-view-row [label value]
+  [:div.form-view-row
+   [:span.form-row-label label]
+   [:div.form-row-value value]])
+
+(defn form-view-section [label]
+  [:div.form-view-row
+   [:span.form-section-label label]])
+
+(defn form-view-list [headers items width]
   (let [table-el-height #js {:height "20px"}]
     (theme
       (table

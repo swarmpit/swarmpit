@@ -1,33 +1,21 @@
 (ns swarmpit.component.service.form-ports
   (:require [swarmpit.material :as material :refer [svg]]
-            [swarmpit.utils :refer [remove-el]]
+            [swarmpit.utils :as util]
             [rum.core :as rum]))
 
 (enable-console-print!)
 
 (defonce state (atom []))
 
+(def state-item {:containerPort 0
+                 :protocol      "tcp"
+                 :hostPort      0})
+
 (def form-headers ["Container port" "Protocol" "Host port"])
 
-(defn- add-item
-  "Create new form item"
-  []
-  (swap! state
-         (fn [p] (conj p {:containerPort ""
-                          :protocol      "tcp"
-                          :hostPort      ""}))))
-
-(defn- remove-item
-  "Remove form item"
-  [index]
-  (swap! state
-         (fn [p] (remove-el p index))))
-
-(defn- update-item
-  "Update form item configuration"
-  [index k v]
-  (swap! state
-         (fn [p] (assoc-in p [index k] v))))
+(defn- format-port-value
+  [value]
+  (if (= 0 value) "" value))
 
 (defn- form-container [value index]
   (material/table-row-column
@@ -36,15 +24,15 @@
       #js {:id       "containerPort"
            :type     "number"
            :style    #js {:width "100%"}
-           :value    value
-           :onChange (fn [e v] (update-item index :containerPort v))})))
+           :value    (format-port-value value)
+           :onChange (fn [e v] (util/update-item state index :containerPort (js/parseInt v)))})))
 
 (defn- form-protocol [value index]
   (material/table-row-column
     #js {:key (str "protocol" index)}
     (material/select-field
       #js {:value      value
-           :onChange   (fn [e i v] (update-item index :protocol v))
+           :onChange   (fn [e i v] (util/update-item state index :protocol v))
            :style      #js {:display "inherit"}
            :labelStyle #js {:lineHeight "45px"
                             :top        2}}
@@ -64,15 +52,15 @@
       #js {:id       "hostPort"
            :type     "number"
            :style    #js {:width "100%"}
-           :value    value
-           :onChange (fn [e v] (update-item index :hostPort v))})))
+           :value    (format-port-value value)
+           :onChange (fn [e v] (util/update-item state index :hostPort (js/parseInt v)))})))
 
 (rum/defc form < rum/reactive []
   (let [ports (rum/react state)]
     (material/theme
       (material/table
         #js {:selectable false}
-        (material/table-header-form form-headers #(add-item))
+        (material/table-header-form form-headers #(util/add-item state state-item))
         (material/table-body
           #js {:displayRowCheckbox false}
           (map-indexed
@@ -85,5 +73,5 @@
                   [(form-container containerPort index)
                    (form-protocol protocol index)
                    (form-host hostPort index)]
-                  (fn [] (remove-item index)))))
+                  #(util/remove-item state index))))
             ports))))))
