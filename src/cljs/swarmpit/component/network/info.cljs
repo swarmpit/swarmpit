@@ -28,7 +28,7 @@
               :label      "Delete"}))]]
    [:div.form-view
     [:div.form-view-group
-     (material/form-view-section "Network settings")
+     (material/form-view-section "General settings")
      (material/form-view-row "ID" (:id item))
      (material/form-view-row "NAME" (:name item))
      (material/form-view-row "CREATED" (:created item))
@@ -36,6 +36,7 @@
      (material/form-view-row "INTERNAL" (if (:internal item)
                                           "yes"
                                           "no"))
+     (material/form-view-section "IP address management")
      (material/form-view-row "SUBNET" (:subnet item))
      (material/form-view-row "GATEWAY" (:gateway item))]]])
 

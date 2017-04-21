@@ -53,6 +53,12 @@ nav .drawer-item {
     color: rgb(117, 117, 117) !important;
 }
 
+nav .drawer-item-selected {
+    padding-left: 5px !important;
+    font-weight: normal !important;
+    color: #437f9d !important;
+}
+
 nav .drawer-item-category {
     cursor: default !important;
 }

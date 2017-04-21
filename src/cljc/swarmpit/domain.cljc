@@ -150,11 +150,38 @@
     :name (get-in node [:Description :Hostname])
     :role (get-in node [:Spec :Role])
     :availability (get-in node [:Spec :Availability])
-    :status (get-in node [:Status :State])
+    :state (get-in node [:Status :State])
     :leader (get-in node [:ManagerStatus :Leader])))
 
 (defn <-nodes
   [nodes]
   (->> nodes
        (map <-node)
+       (into [])))
+
+;;; Task domain
+
+(defn <-task
+  "Map docker task domain to swarmpit task domain"
+  [task]
+  (let [image (get-in task [:Spec :ContainerSpec :Image])
+        image-info (str/split image #"@")
+        image-name (first image-info)
+        image-digest (second image-info)]
+    (array-map
+      :id (get task :ID)
+      :version (get-in task [:Version :Index])
+      :createdAt (get task :CreatedAt)
+      :updatedAt (get task :UpdatedAt)
+      :image image-name
+      :imageDigest image-digest
+      :state (get-in task [:Status :State])
+      :desiredState (get task :DesiredState)
+      :serviceId (get task :ServiceID)
+      :nodeId (get task :NodeID))))
+
+(defn <-tasks
+  [tasks]
+  (->> tasks
+       (map <-task)
        (into [])))

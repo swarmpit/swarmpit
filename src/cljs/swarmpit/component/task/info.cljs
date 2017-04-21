@@ -1,4 +1,4 @@
-(ns swarmpit.component.node.info
+(ns swarmpit.component.task.info
   (:require [swarmpit.material :as material]
             [rum.core :as rum]))
 
@@ -11,13 +11,13 @@
     [:div.form-view-group
      (material/form-view-section "General settings")
      (material/form-view-row "ID" (:id item))
-     (material/form-view-row "NAME" (:name item))
-     (material/form-view-row "AVAILABILITY" (:availability item))
+     (material/form-view-row "CREATED" (:createdAt item))
+     (material/form-view-row "LAST UPDATE" (:updatedAt item))
+     (material/form-view-row "IMAGE" (:image item))
+     (material/form-view-row "IMAGE DIGEST" (:imageDigest item))
      (material/form-view-section "Status")
      (material/form-view-row "STATE" (:state item))
-     (material/form-view-row "LEADER" (if (:leader item)
-                                        "yes"
-                                        "no"))]]])
+     (material/form-view-row "DESIRED STATE" (:desiredState item))]]])
 
 (defn mount!
   [item]

@@ -11,7 +11,9 @@
             [swarmpit.component.network.info :as ninfo]
             [swarmpit.component.network.list :as nlist]
             [swarmpit.component.node.list :as ndlist]
-            [swarmpit.component.node.info :as ndinfo]))
+            [swarmpit.component.node.info :as ndinfo]
+            [swarmpit.component.task.list :as tlist]
+            [swarmpit.component.task.info :as tinfo]))
 
 (defmulti dispatch (fn [location] (:handler location)))
 
@@ -25,7 +27,9 @@
         route-domain (first (str/split route #"-"))]
     (case route-domain
       "service" "Services"
+      "task" "Tasks"
       "network" "Networks"
+      "node" "Nodes"
       "Home")))
 
 ;;; Routing handler config
@@ -39,7 +43,9 @@
                                "/create" :network-create
                                ["/" :id] :network-info}
                   "/nodes"    {""        :node-list
-                               ["/" :id] :node-info}}])
+                               ["/" :id] :node-info}
+                  "/tasks"    {""        :task-list
+                               ["/" :id] :task-info}}])
 
 ;;; Router config
 
@@ -128,3 +134,19 @@
        {:handler (fn [response]
                    (let [res (walk/keywordize-keys response)]
                      (ndinfo/mount! res)))}))
+
+;;; Task controller
+
+(defmethod dispatch :task-list
+  [_]
+  (GET "/tasks"
+       {:handler (fn [response]
+                   (let [res (walk/keywordize-keys response)]
+                     (tlist/mount! res)))}))
+
+(defmethod dispatch :task-info
+  [{:keys [route-params]}]
+  (GET (str "/tasks/" (:id route-params))
+       {:handler (fn [response]
+                   (let [res (walk/keywordize-keys response)]
+                     (tinfo/mount! res)))}))

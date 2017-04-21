@@ -67,3 +67,16 @@
   (->> (str "/nodes/" node-id)
        (dc/get)
        (dom/<-node)))
+
+;;; Task API
+
+(defn tasks
+  []
+  (->> (dc/get "/tasks")
+       (dom/<-tasks)))
+
+(defn task
+  [task-id]
+  (->> (str "/tasks/" task-id)
+       (dc/get)
+       (dom/<-task)))
