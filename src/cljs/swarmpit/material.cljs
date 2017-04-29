@@ -17,10 +17,12 @@
 (def plus-icon "M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm5 11h-4v4h-2v-4H7v-2h4V7h2v4h4v2z")
 (def pen-icon "M3 17.25V21h3.75L17.81 9.94l-3.75-3.75L3 17.25zM20.71 7.04c.39-.39.39-1.02 0-1.41l-2.34-2.34c-.39-.39-1.02-.39-1.41 0l-1.83 1.83 3.75 3.75 1.83-1.83z")
 (def plus2-icon "M19 13h-6v6h-2v-6H5v-2h6V5h2v6h6v2z")
+(def expand-icon "M16.59 8.59L12 13.17 7.41 8.59 6 10l6 6 6-6z")
 
 (def create-factory js/React.createFactory)
 (def make-selectable js/MaterialUI.makeSelectable)
 
+(def avatar (create-factory js/MaterialUI.Avatar))
 (def app-bar (create-factory js/MaterialUI.AppBar))
 (def drawer (create-factory js/MaterialUI.Drawer))
 (def snackbar (create-factory js/MaterialUI.Snackbar))
@@ -32,6 +34,7 @@
 (def svg-icon (create-factory js/MaterialUI.SvgIcon))
 (def font-icon (create-factory js/MaterialUI.FontIcon))
 (def icon-button (create-factory js/MaterialUI.IconButton))
+(def icon-menu (create-factory js/MaterialUI.IconMenu))
 (def flat-button (create-factory js/MaterialUI.FlatButton))
 (def raised-button (create-factory js/MaterialUI.RaisedButton))
 (def toogle (create-factory js/MaterialUI.Toggle))

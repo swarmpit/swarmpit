@@ -163,13 +163,16 @@
 
 (defn <-task
   "Map docker task domain to swarmpit task domain"
-  [task]
+  [task services nodes]
   (let [image (get-in task [:Spec :ContainerSpec :Image])
         image-info (str/split image #"@")
         image-name (first image-info)
-        image-digest (second image-info)]
+        image-digest (second image-info)
+        service (get services (:ServiceID task))
+        node (get nodes (:NodeID task))]
     (array-map
       :id (get task :ID)
+      :name (str service "." (get task :Slot))
       :version (get-in task [:Version :Index])
       :createdAt (get task :CreatedAt)
       :updatedAt (get task :UpdatedAt)
@@ -177,11 +180,11 @@
       :imageDigest image-digest
       :state (get-in task [:Status :State])
       :desiredState (get task :DesiredState)
-      :serviceId (get task :ServiceID)
-      :nodeId (get task :NodeID))))
+      :service service
+      :node node)))
 
 (defn <-tasks
-  [tasks]
+  [tasks services nodes]
   (->> tasks
-       (map <-task)
+       (map #(<-task % services nodes))
        (into [])))

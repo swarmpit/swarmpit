@@ -138,3 +138,12 @@ main {
     position: relative;
 }
 
+.user-bar {
+    display: flex;
+    align-items: center;
+    color: #fff;
+}
+
+.user-avatar {
+    margin-right: 10px;
+}

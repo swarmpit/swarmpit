@@ -1,4 +1,4 @@
-(ns swarmpit.component.task.list
+(ns swarmpit.component.repository.list
   (:require [swarmpit.material :as material]
             [swarmpit.router :as router]
             [clojure.string :as string]
