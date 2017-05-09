@@ -22,6 +22,7 @@
 (def create-factory js/React.createFactory)
 (def make-selectable js/MaterialUI.makeSelectable)
 
+(def paper (create-factory js/MaterialUI.Paper))
 (def avatar (create-factory js/MaterialUI.Avatar))
 (def app-bar (create-factory js/MaterialUI.AppBar))
 (def drawer (create-factory js/MaterialUI.Drawer))
