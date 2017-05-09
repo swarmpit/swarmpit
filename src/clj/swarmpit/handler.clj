@@ -3,6 +3,12 @@
             [clojure.walk :as walk]
             [swarmpit.api :as api]))
 
+;;; Login handler
+
+(defn login
+  [{:keys [headers]}]
+  {:status 200 :body (api/login (get headers "authorization"))})
+
 ;;; Service handler
 
 (defn services
@@ -89,7 +95,8 @@
 ;;; Handler
 
 (def handler
-  (make-handler ["/" {"services"     {:get  services
+  (make-handler ["/" {"login"        {:post login}
+                      "services"     {:get  services
                                       :post service-create}
                       "services/"    {:get    {[:id] service}
                                       :delete {[:id] service-delete}

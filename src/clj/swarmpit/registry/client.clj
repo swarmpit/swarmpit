@@ -9,7 +9,6 @@
 (def ^:private base-url
   (str "https://" base-domain "/" api-version))
 
-
 (defn- basic-header [user password]
   (let [credentials (str user ":" password)
         credentials-bytes (.getBytes credentials)

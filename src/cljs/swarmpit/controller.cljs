@@ -3,6 +3,7 @@
             [clojure.walk :as walk]
             [clojure.string :as str]
             [ajax.core :refer [GET POST]]
+            [swarmpit.component.user.login :as ulogin]
             [swarmpit.component.service.create :as screate]
             [swarmpit.component.service.edit :as sedit]
             [swarmpit.component.service.info :as sinfo]
@@ -21,6 +22,8 @@
 
 (defonce domain (atom nil))
 
+(defonce token (atom nil))
+
 (defn- select-domain
   [location]
   (let [route (name (:handler location))
@@ -35,6 +38,7 @@
 ;;; Routing handler config
 
 (def handler ["" {"/"         :index
+                  "/login"    :login
                   "/services" {""                :service-list
                                "/create"         :service-create
                                ["/" :id]         :service-info
@@ -54,6 +58,7 @@
   (let [router (br/start-router! handler
                                  {:on-navigate
                                   (fn [loc]
+                                    ;(if (= @token :ID))
                                     (dispatch loc)
                                     (reset! location loc)
                                     (reset! domain (select-domain loc)))})
@@ -70,6 +75,10 @@
 (defmethod dispatch nil
   [_]
   (print "not-found"))
+
+(defmethod dispatch :login
+  [_]
+  (ulogin/mount!))
 
 ;;; Service controller
 

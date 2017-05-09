@@ -1,5 +1,10 @@
 (ns swarmpit.utils)
 
+(defn uuid
+  "Generate uuid"
+  []
+  (str (java.util.UUID/randomUUID)))
+
 (defn remove-el
   "Remove element in vector on given index"
   [vector index]

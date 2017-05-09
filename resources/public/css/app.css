@@ -138,6 +138,28 @@ main {
     position: relative;
 }
 
+.login {
+    align-self: center;
+    width: 400px;
+    background-color: #fdfdfd;
+    text-align: center;
+    margin: auto;
+    border: 1px solid rgb(127, 127, 127);
+    padding-top: 30px;
+    padding-bottom: 30px;
+}
+
+.login-back {
+    display: flex;
+    justify-content: center;
+    background: rgb(224, 224, 224);
+    height: 100vh;
+}
+
+.login-btn {
+    margin-top: 30px;
+}
+
 .user-bar {
     display: flex;
     align-items: center;

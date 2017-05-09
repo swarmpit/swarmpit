@@ -1,9 +1,23 @@
 (ns swarmpit.api
-  (:require [swarmpit.docker.client :as dc]
+  (:require [digest :as d]
+            [swarmpit.docker.client :as dc]
             [swarmpit.registry.client :as rc]
             [swarmpit.couchdb.client :as cc]
             [swarmpit.domain :as dom]
             [swarmpit.utils :refer [in?]]))
+
+;;; Login API
+
+(defn login
+  [token]
+  (->> (dc/get "/services")
+       (dom/<-services)))
+
+;;; Database API
+
+(defn create-database
+  []
+  (cc/put "/swarmpit"))
 
 ;;; Service API
 
@@ -108,10 +122,20 @@
 
 ;;; User API
 
+(defn create-user
+  [user]
+  (let [passwd (d/digest "sha-256" (:password user))]
+    (->> (assoc user :password passwd
+                     :type "user"
+                     :role "admin")
+         (cc/post "/swarmpit"))))
+
+;;; Registry API
+
 (defn registry
   [registry-id]
-  (cc/load-record registry-id))
+  ())
 
 (defn create-registry
   [registry]
-  (cc/save-record registry))
+  ())
