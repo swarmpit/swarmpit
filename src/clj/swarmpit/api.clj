@@ -1,17 +1,12 @@
 (ns swarmpit.api
+  (:import java.util.Base64)
   (:require [digest :as d]
+            [clojure.string :as str]
             [swarmpit.docker.client :as dc]
+            [swarmpit.docker.domain :as dd]
             [swarmpit.registry.client :as rc]
             [swarmpit.couchdb.client :as cc]
-            [swarmpit.domain :as dom]
             [swarmpit.utils :refer [in?]]))
-
-;;; Login API
-
-(defn login
-  [token]
-  (->> (dc/get "/services")
-       (dom/<-services)))
 
 ;;; Database API
 
@@ -19,12 +14,44 @@
   []
   (cc/put "/swarmpit"))
 
+;;; User API
+
+(defn create-user
+  [user]
+  (let [passwd (d/digest "sha-256" (:password user))]
+    (->> (assoc user :password passwd
+                     :type "user"
+                     :role "admin")
+         (cc/post "/swarmpit"))))
+
+(defn user-by-email
+  [email]
+  (->> {:selector {:type  {"$eq" "user"}
+                   :email {"$eq" email}}}
+       (cc/post "/swarmpit/_find")
+       :docs
+       (first)))
+
+(defn user-by-token
+  [token]
+  (let [token-value (second (str/split token #" "))
+        token-decoded (String. (.decode (Base64/getDecoder) token-value))
+        token-credentials (str/split token-decoded #":")
+        email (first token-credentials)
+        password (second token-credentials)]
+    (->> {:selector {:type     {"$eq" "user"}
+                     :email    {"$eq" email}
+                     :password {"$eq" (d/digest "sha-256" password)}}}
+         (cc/post "/swarmpit/_find")
+         :docs
+         (first))))
+
 ;;; Service API
 
 (defn services
   []
   (->> (dc/get "/services")
-       (dom/<-services)))
+       (dd/<-services)))
 
 (defn services-name
   []
@@ -36,7 +63,7 @@
   [service-id]
   (->> (str "/services/" service-id)
        (dc/get)
-       (dom/<-service)))
+       (dd/<-service)))
 
 (defn delete-service
   [service-id]
@@ -45,12 +72,12 @@
 
 (defn create-service
   [service]
-  (->> (dom/->service service)
+  (->> (dd/->service service)
        (dc/post "/services/create")))
 
 (defn update-service
   [service-id service]
-  (->> (dom/->service service)
+  (->> (dd/->service service)
        (dc/post (str "/services/" service-id "/update?version=" (:version service)))))
 
 ;;; Network API
@@ -58,13 +85,13 @@
 (defn networks
   []
   (->> (dc/get "/networks")
-       (dom/<-networks)))
+       (dd/<-networks)))
 
 (defn network
   [network-id]
   (->> (str "/networks/" network-id)
        (dc/get)
-       (dom/<-network)))
+       (dd/<-network)))
 
 (defn delete-network
   [network-id]
@@ -73,7 +100,7 @@
 
 (defn create-network
   [network]
-  (->> (dom/->network network)
+  (->> (dd/->network network)
        (dc/post "/networks/create")))
 
 ;;; Node API
@@ -81,13 +108,13 @@
 (defn nodes
   []
   (->> (dc/get "/nodes")
-       (dom/<-nodes)))
+       (dd/<-nodes)))
 
 (defn node
   [node-id]
   (->> (str "/nodes/" node-id)
        (dc/get)
-       (dom/<-node)))
+       (dd/<-node)))
 
 (defn nodes-name
   []
@@ -102,7 +129,7 @@
   (let [services (services-name)
         nodes (nodes-name)]
     (-> (dc/get "/tasks")
-        (dom/<-tasks services nodes))))
+        (dd/<-tasks services nodes))))
 
 (defn task
   [task-id]
@@ -110,7 +137,7 @@
         nodes (nodes-name)]
     (-> (str "/tasks/" task-id)
         (dc/get)
-        (dom/<-task services nodes))))
+        (dd/<-task services nodes))))
 
 ;;; Registry API
 
@@ -119,16 +146,6 @@
   (->> (rc/headers "25a0e035-d147-4401-a4e8-5792ef0ec8fe" "feflryjn3olmvkdb")
        (rc/get "/_catalog")
        :repositories))
-
-;;; User API
-
-(defn create-user
-  [user]
-  (let [passwd (d/digest "sha-256" (:password user))]
-    (->> (assoc user :password passwd
-                     :type "user"
-                     :role "admin")
-         (cc/post "/swarmpit"))))
 
 ;;; Registry API
 

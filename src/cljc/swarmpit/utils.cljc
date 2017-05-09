@@ -1,6 +1,6 @@
 (ns swarmpit.utils)
 
-(defn uuid
+(defn generate-uuid
   "Generate uuid"
   []
   (str (java.util.UUID/randomUUID)))

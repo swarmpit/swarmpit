@@ -3,7 +3,7 @@
   (:use [org.httpkit.server :only [run-server]])
   (:require [ring.middleware.json :as ring-json]
             [cheshire.core :refer [parse-string]]
-            [swarmpit.handler :refer [handler]]
+            [swarmpit.handler :refer [handler json-error]]
             [swarmpit.utils :refer [in?]]))
 
 (def unsecure ["/login"])
@@ -13,12 +13,6 @@
   (let [uri (:uri request)]
     (not (in? unsecure uri))))
 
-(defn- json-response
-  [status response]
-  {:status  status
-   :headers {"Content-Type" "application/json"}
-   :body    {:error response}})
-
 (defn wrap-client-exception
   [handler]
   (fn [request]
@@ -26,8 +20,8 @@
       (handler request)
       (catch ExceptionInfo e
         (let [response (ex-data e)]
-          (json-response (:code response)
-                         (:message response)))))))
+          (json-error (:code response)
+                      (:message response)))))))
 
 (defn wrap-fallback-exception
   [handler]
@@ -46,8 +40,8 @@
         (if (some? token)
           (if true
             (handler request)
-            (json-response 401 "Invalid token"))
-          (json-response 400 "Missing token")))
+            (json-error 401 "Invalid token"))
+          (json-error 400 "Missing token")))
       (handler request))))
 
 (def app
