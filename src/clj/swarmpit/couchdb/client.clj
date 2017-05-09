@@ -1,22 +1,39 @@
 (ns swarmpit.couchdb.client
-  (:require [com.ashafa.clutch :as clutch]))
+  (:refer-clojure :exclude [get])
+  (:require [org.httpkit.client :as http]
+            [cheshire.core :refer [parse-string generate-string]]))
 
-(defn open-connection []
-  (let [conn (doto
-               (clutch/couch "swarmpit")
-               (clutch/create!))]
-    conn))
+(def ^:private base-domain "localhost")
+(def ^:private base-port 5984)
+(def ^:private base-url
+  (str "http://" base-domain ":" base-port))
 
-(def db-connection (delay (open-connection)))
+(def headers
+  {"Accept"       "application/json"
+   "Content-Type" "application/json"
+   "Host"         "localhost:5984"})
 
-(defn db [] @db-connection)
+(defn execute
+  [call-fx]
+  (let [{:keys [body error]} call-fx]
+    (if error
+      (throw (ex-info "Failed connect to clutchdb!" {:error error}))
+      (parse-string body true))))
 
-(defn load-record
-  [id]
-  {:body (get-in (db) [id])})
+(defn get
+  [api]
+  (let [options {:headers headers}]
+    (execute @(http/get api options))))
 
-(defn save-record
-  [data]
-  (let [id (get-in data ["_id"])]
-    (clutch/assoc! (db) id data)
-    {:body (get-in (db) [id])}))
+(defn put
+  [api]
+  (let [url (str base-url api)
+        options {:headers headers}]
+    (execute @(http/put url options))))
+
+(defn post
+  [api request]
+  (let [url (str base-url api)
+        options {:headers headers
+                 :body    (generate-string request)}]
+    (execute @(http/post url options))))

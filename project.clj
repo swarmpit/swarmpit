@@ -14,9 +14,11 @@
                  [ring/ring-json "0.4.0"]
                  [bidi "2.0.16"]
                  [http-kit "2.2.0"]
+                 [clj-jwt "0.0.12"]
                  [cljs-ajax "0.5.8"]
                  [cheshire "5.6.3"]
-                 [com.ashafa/clutch "0.4.0"]
+                 [digest "1.4.5"]
+                 [com.cemerick/friend "0.2.3"]
                  [com.cognitect/transit-cljs "0.8.239"]]
 
   :plugins [[lein-cljsbuild "1.1.4"]]
@@ -48,7 +50,6 @@
                                                        :provides ["cljsjs.material-ui"]
                                                        :requires ["cljsjs.react" "cljsjs.react.dom"]}]
                                :externs              ["libs/material-ui/material-ui.ext.js"]
-                               ;:tooling-config       {:devtools/config {:features-to-install :all}}
                                :preloads             [devtools.preload]
                                :asset-path           "js/out"
                                :output-to            "resources/public/js/main.js"
