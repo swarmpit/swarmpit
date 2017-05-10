@@ -21,12 +21,12 @@
   [{:keys [headers]}]
   (let [token (get headers "authorization")]
     (if (nil? token)
-      (json-error 400 "Authorization header missing")
-      (let [user (api/user-by-token token)]
+      (json-error 400 "Missing token")
+      (let [user (->> (token/decode-basic token)
+                      (api/user-by-credentials))]
         (if (nil? user)
-          (json-error 400 "User or password wrong")
-          (json-ok 200 {:token (str "Bearer " (->> (token/claim user)
-                                                   (token/generate-token)))}))))))
+          (json-error 401 "Invalid credentials")
+          (json-ok 200 {:token (token/generate-jwt user)}))))))
 
 ;;; Service handler
 

@@ -1,0 +1,76 @@
+(ns swarmpit.token
+  #?(:clj
+     (:import java.util.Base64))
+  (:require
+    #?@(:clj  [[clojure.string :as str]
+               [swarmpit.utils :refer [generate-uuid]]
+               [clj-jwt.core :refer :all]
+               [clj-jwt.key :refer [private-key public-key]]
+               [clj-time.core :refer [now plus days]]]
+        :cljs [[clojure.string :as str]
+               [goog.crypt.base64 :as b64]])))
+
+(defn- token-value
+  [token]
+  (second (str/split token #" ")))
+
+(defn- credentials
+  [user password]
+  (str user ":" password))
+
+(defn- bearer
+  [token]
+  (str "Bearer " token))
+
+(defn- basic
+  [token]
+  (str "Basic " token))
+
+#?(:clj
+   (defn claim
+     [user]
+     {:iss "swarmpit"
+      :exp (plus (now) (days 1))
+      :iat (now)
+      :usr (:email user)
+      :jti (generate-uuid)}))
+
+#?(:clj
+   (defn generate-jwt
+     [user]
+     (let [jwt (-> (claim user) jwt (sign :HS256 "secret") to-str)]
+       (bearer jwt))))
+
+#?(:clj
+   (defn verify-jwt
+     [token]
+     (-> (token-value token) str->jwt (verify "secret"))))
+
+#?(:clj
+   (defn decode-jwt
+     [token]
+     (-> token str->jwt :claims)))
+
+#?(:clj
+   (defn generate-basic
+     [user password]
+     (let [credentials (credentials user password)
+           credentials-bytes (.getBytes credentials)
+           credentials-encoded (.encodeToString (Base64/getEncoder) credentials-bytes)]
+       (basic credentials-encoded))))
+
+#?(:cljs
+   (defn generate-basic
+     [user password]
+     (let [credentials (credentials user password)
+           credentials-encoded (b64/encodeString credentials)]
+       (basic credentials-encoded))))
+
+#?(:clj
+   (defn decode-basic
+     [token]
+     (let [decoded (String. (.decode (Base64/getDecoder)
+                                     (token-value token)))
+           credentials (str/split decoded #":")]
+       {:user     (first credentials)
+        :password (second credentials)})))

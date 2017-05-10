@@ -1,5 +1,4 @@
 (ns swarmpit.api
-  (:import java.util.Base64)
   (:require [digest :as d]
             [clojure.string :as str]
             [swarmpit.docker.client :as dc]
@@ -32,19 +31,14 @@
        :docs
        (first)))
 
-(defn user-by-token
-  [token]
-  (let [token-value (second (str/split token #" "))
-        token-decoded (String. (.decode (Base64/getDecoder) token-value))
-        token-credentials (str/split token-decoded #":")
-        email (first token-credentials)
-        password (second token-credentials)]
-    (->> {:selector {:type     {"$eq" "user"}
-                     :email    {"$eq" email}
-                     :password {"$eq" (d/digest "sha-256" password)}}}
-         (cc/post "/swarmpit/_find")
-         :docs
-         (first))))
+(defn user-by-credentials
+  [credentails]
+  (->> {:selector {:type     {"$eq" "user"}
+                   :email    {"$eq" (:user credentails)}
+                   :password {"$eq" (d/digest "sha-256" (:password credentails))}}}
+       (cc/post "/swarmpit/_find")
+       :docs
+       (first)))
 
 ;;; Service API
 
