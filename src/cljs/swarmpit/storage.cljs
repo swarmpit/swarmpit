@@ -1,16 +1,19 @@
-(ns swarmpit.storage)
+(ns swarmpit.storage
+  (:refer-clojure :exclude [get remove]))
 
-(defn set-item!
-  "Set `key' in browser's localStorage to `val`."
+(def storage (.-localStorage js/window))
+
+(defn add
+  "Add entry into browser's localStorage."
   [key val]
-  (.setItem (.-localStorage js/window) key val))
+  (.setItem storage key val))
 
-(defn get-item
-  "Returns value of `key' from browser's localStorage."
+(defn get
+  "Get value from browser's localStorage by given `key'"
   [key]
-  (.getItem (.-localStorage js/window) key))
+  (.getItem storage key))
 
-(defn remove-item!
-  "Remove the browser's localStorage value for the given `key`"
+(defn remove
+  "Remove value from browser's localStorage by given `key`"
   [key]
-  (.removeItem (.-localStorage js/window) key))
+  (.removeItem storage key))
