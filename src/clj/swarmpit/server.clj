@@ -1,8 +1,7 @@
 (ns swarmpit.server
   (:import (clojure.lang ExceptionInfo))
   (:use [org.httpkit.server :only [run-server]])
-  (:require [clojure.string :as str]
-            [ring.middleware.json :as ring-json]
+  (:require [ring.middleware.json :as ring-json]
             [cheshire.core :refer [parse-string]]
             [swarmpit.handler :refer [handler json-error]]
             [swarmpit.utils :refer [in?]]

@@ -1,6 +1,5 @@
 (ns swarmpit.api
   (:require [digest :as d]
-            [clojure.string :as str]
             [swarmpit.docker.client :as dc]
             [swarmpit.docker.domain :as dd]
             [swarmpit.registry.client :as rc]
