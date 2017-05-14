@@ -6,7 +6,7 @@
 
 (enable-console-print!)
 
-(def cursor [:menu :domain])
+(def cursor [:menu])
 
 (rum/defc appbar < rum/reactive []
   (let [{:keys [domain]} (state/react cursor)]

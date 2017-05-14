@@ -1,12 +1,13 @@
 (ns swarmpit.component.layout
   (:require [rum.core :as rum]
+            [swarmpit.component.state :as state]
             [swarmpit.component.menu :as menu]
             [swarmpit.component.header :as header]))
 
 (enable-console-print!)
 
 (rum/defc layout < rum/reactive []
-  (let [{:keys [opened]} (rum/react menu/state)
+  (let [{:keys [opened]} (state/react menu/cursor)
         layout-class (if opened
                        "layout-opened"
                        "layout-closed")]

@@ -1,8 +1,8 @@
 (ns swarmpit.component.user.login
-  (:require [swarmpit.material :as material]
+  (:require [swarmpit.uri :refer [dispatch!]]
+            [swarmpit.material :as material]
             [swarmpit.storage :as storage]
             [swarmpit.token :as token]
-            [swarmpit.router :as router]
             [rum.core :as rum]
             [ajax.core :as ajax]))
 
@@ -46,7 +46,7 @@
               :handler       (fn [response]
                                (let [token (get response "token")]
                                  (storage/add "token" token)
-                                 (router/dispatch! "/")))
+                                 (dispatch! "/")))
               :error-handler (fn [{:keys [response]}]
                                (let [error (get response "error")]
                                  (update-item :message error)))}))

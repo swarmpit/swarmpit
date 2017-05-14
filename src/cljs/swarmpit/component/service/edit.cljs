@@ -1,6 +1,6 @@
 (ns swarmpit.component.service.edit
-  (:require [swarmpit.material :as material]
-            [swarmpit.router :as router]
+  (:require [swarmpit.uri :refer [dispatch!]]
+            [swarmpit.material :as material]
             [swarmpit.component.state :as state]
             [swarmpit.component.service.form-settings :as settings]
             [swarmpit.component.service.form-ports :as ports]
@@ -32,7 +32,7 @@
                 :handler       (fn [_]
                                  (let [message (str "Service " service-id " has been updated.")]
                                    (progress/unmount!)
-                                   (router/dispatch! (str "/#/services/" service-id))
+                                   (dispatch! (str "/#/services/" service-id))
                                    (message/mount! message)))
                 :error-handler (fn [{:keys [status status-text]}]
                                  (let [message (str "Service update failed. Status: " status " Reason: " status-text)]

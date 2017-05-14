@@ -1,7 +1,7 @@
 (ns swarmpit.component.service.list
-  (:require [swarmpit.component.state :as state]
+  (:require [swarmpit.uri :refer [dispatch!]]
+            [swarmpit.component.state :as state]
             [swarmpit.material :as material]
-            [swarmpit.router :as router]
             [clojure.string :as string]
             [rum.core :as rum]))
 
@@ -46,7 +46,7 @@
      (material/theme
        (material/table
          #js {:selectable  false
-              :onCellClick (fn [i] (router/dispatch!
+              :onCellClick (fn [i] (dispatch!
                                      (str "/#/services/" (service-id i))))}
          (material/table-header-list service-list-headers)
          (material/table-body

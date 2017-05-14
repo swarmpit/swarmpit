@@ -1,6 +1,6 @@
 (ns swarmpit.component.network.info
-  (:require [swarmpit.material :as material]
-            [swarmpit.router :as router]
+  (:require [swarmpit.uri :refer [dispatch!]]
+            [swarmpit.material :as material]
             [swarmpit.component.message :as message]
             [rum.core :as rum]
             [ajax.core :as ajax]))
@@ -12,7 +12,7 @@
   (ajax/DELETE (str "/networks/" network-id)
                {:handler       (fn [_]
                                  (let [message (str "Network " network-id " has been removed.")]
-                                   (router/dispatch! "/#/networks")
+                                   (dispatch! "/#/networks")
                                    (message/mount! message)))
                 :error-handler (fn [{:keys [status status-text]}]
                                  (let [message (str "Network " network-id " removing failed. Reason: " status-text)]

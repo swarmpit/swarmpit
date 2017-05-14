@@ -1,6 +1,6 @@
 (ns swarmpit.ui
-  (:require [swarmpit.controller :as controller]))
+  (:require [swarmpit.router :as router]))
 
 (js/console.log "Swarmpit ...")
 
-(controller/start)
+(router/start)

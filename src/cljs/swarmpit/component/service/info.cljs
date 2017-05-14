@@ -1,6 +1,6 @@
 (ns swarmpit.component.service.info
-  (:require [swarmpit.material :as material]
-            [swarmpit.router :as router]
+  (:require [swarmpit.uri :refer [dispatch!]]
+            [swarmpit.material :as material]
             [swarmpit.component.service.form-ports :as ports]
             [swarmpit.component.service.form-volumes :as volumes]
             [swarmpit.component.service.form-variables :as variables]
@@ -15,7 +15,7 @@
   (ajax/DELETE (str "/services/" service-id)
                {:handler       (fn [_]
                                  (let [message (str "Service " service-id " has been removed.")]
-                                   (router/dispatch! "/#/services")
+                                   (dispatch! "/#/services")
                                    (message/mount! message)))
                 :error-handler (fn [{:keys [status status-text]}]
                                  (let [message (str "Service " service-id " removing failed. Reason: " status-text)]

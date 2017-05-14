@@ -1,7 +1,7 @@
 (ns swarmpit.component.node.list
-  (:require [swarmpit.component.state :as state]
+  (:require [swarmpit.uri :refer [dispatch!]]
+            [swarmpit.component.state :as state]
             [swarmpit.material :as material]
-            [swarmpit.router :as router]
             [clojure.string :as string]
             [rum.core :as rum]))
 
@@ -43,7 +43,7 @@
      (material/theme
        (material/table
          #js {:selectable  false
-              :onCellClick (fn [i] (router/dispatch!
+              :onCellClick (fn [i] (dispatch!
                                      (str "/#/nodes/" (node-id i))))}
          (material/table-header-list node-list-headers)
          (material/table-body

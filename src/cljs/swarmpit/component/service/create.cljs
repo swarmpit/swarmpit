@@ -1,6 +1,6 @@
 (ns swarmpit.component.service.create
-  (:require [swarmpit.material :as material]
-            [swarmpit.router :as router]
+  (:require [swarmpit.uri :refer [dispatch!]]
+            [swarmpit.material :as material]
             [swarmpit.component.state :as state]
             [swarmpit.component.service.form-settings :as settings]
             [swarmpit.component.service.form-ports :as ports]
@@ -71,7 +71,7 @@
                                  (let [id (get response "ID")
                                        message (str "Service " id " has been created.")]
                                    (progress/unmount!)
-                                   (router/dispatch! (str "/#/services/" id))
+                                   (dispatch! (str "/#/services/" id))
                                    (message/mount! message)))
                 :error-handler (fn [{:keys [status status-text]}]
                                  (let [message (str "Service creation failed. Status: " status " Reason: " status-text)]
@@ -111,10 +111,10 @@
 
 (defn- init-state
   []
-  (state/set-value {:image nil
-              :serviceName ""
-              :mode        "replicated"
-              :replicas    1} settings/cursor)
+  (state/set-value {:image       nil
+                    :serviceName ""
+                    :mode        "replicated"
+                    :replicas    1} settings/cursor)
   (state/set-value [] ports/cursor)
   (state/set-value [] volumes/cursor)
   (state/set-value [] variables/cursor)

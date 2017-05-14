@@ -1,6 +1,6 @@
 (ns swarmpit.component.network.create
-  (:require [swarmpit.material :as material]
-            [swarmpit.router :as router]
+  (:require [swarmpit.uri :refer [dispatch!]]
+            [swarmpit.material :as material]
             [swarmpit.component.state :as state]
             [swarmpit.component.message :as message]
             [swarmpit.component.progress :as progress]
@@ -10,11 +10,6 @@
 (enable-console-print!)
 
 (def cursor [:form :network :create])
-
-(defn- update-item
-  "Update form item configuration"
-  [k v]
-  (swap! state assoc k v))
 
 (defn- form-name [value]
   (material/form-edit-row
@@ -57,7 +52,7 @@
                                (let [id (get response "Id")
                                      message (str "Network " id " has been created.")]
                                  (progress/unmount!)
-                                 (router/dispatch! (str "/#/networks/" id))
+                                 (dispatch! (str "/#/networks/" id))
                                  (message/mount! message)))
               :error-handler (fn [{:keys [status status-text]}]
                                (let [message (str "Network creation failed. Status: " status " Reason: " status-text)]

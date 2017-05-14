@@ -1,12 +1,8 @@
 (ns swarmpit.controller
-  (:require [bidi.router :as br]
-            [clojure.walk :as walk]
-            [clojure.string :as str]
+  (:require [clojure.walk :as walk]
             [ajax.core :as ajax]
-            [swarmpit.router :as router]
+            [swarmpit.uri :refer [dispatch!]]
             [swarmpit.storage :as storage]
-            [swarmpit.component.header :as header]
-            [swarmpit.component.menu :as menu]
             [swarmpit.component.layout :as layout]
             [swarmpit.component.user.login :as ulogin]
             [swarmpit.component.service.create :as screate]
@@ -23,74 +19,6 @@
 
 (defmulti dispatch (fn [location] (:handler location)))
 
-(defonce location (atom nil))
-
-(def resource
-  {:index          "Home"
-   :login          ""
-   :service-list   "Services"
-   :service-create "Services"
-   :service-info   "Services"
-   :service-edit   "Services"
-   :network-list   "Networks"
-   :network-create "Networks"
-   :network-info   "Networks"
-   :node-list      "Nodes"
-   :node-info      "Nodes"
-   :task-list      "Tasks"
-   :task-info      "Tasks"})
-
-(def handler ["" {"/"         :index
-                  "/login"    :login
-                  "/services" {""                :service-list
-                               "/create"         :service-create
-                               ["/" :id]         :service-info
-                               ["/" :id "/edit"] :service-edit}
-                  "/networks" {""        :network-list
-                               "/create" :network-create
-                               ["/" :id] :network-info}
-                  "/nodes"    {""        :node-list
-                               ["/" :id] :node-info}
-                  "/tasks"    {""        :task-list
-                               ["/" :id] :task-info}}])
-
-;;; Router config
-
-(defn- route
-  "Route to given `loc`"
-  [loc]
-  (dispatch loc)
-  (reset! location loc))
-
-(defn- route-to-loc
-  "Route to given `loc` and setup domain"
-  [loc]
-  (let [domain (get resource loc)]
-    (route loc)
-    (swap! menu/state assoc :domain domain)
-    (swap! header/state assoc :domain domain)))
-
-(defn- route-to-login
-  "Route to login page"
-  []
-  (let [login {:handler :login}]
-    (route login)))
-
-(defn- navigate
-  [loc]
-  (if (nil? (storage/get "token"))
-    (route-to-login)
-    (route-to-loc loc)))
-
-(defn start
-  []
-  (let [router (br/start-router! handler {:on-navigate navigate})
-        route (:handler @location)]
-    (if (some? route)
-      (br/set-location! router @location))))
-
-;;;
-
 (defn GET
   [api resp-fx]
   (ajax/GET api
@@ -101,8 +29,8 @@
                                 (-> resp resp-fx)))
              :error-handler (fn [{:keys [status]}]
                               (if (= status 401)
-                                (router/dispatch! "/#/login")
-                                (router/dispatch! "/#/login")))}))
+                                (dispatch! "/#/login")
+                                (dispatch! "/#/login")))}))
 
 ;;; Default controller
 
