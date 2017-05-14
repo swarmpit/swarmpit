@@ -1,11 +1,11 @@
 (ns swarmpit.component.service.form-variables
-  (:require [swarmpit.material :as material :refer [svg]]
-            [swarmpit.utils :as util]
+  (:require [swarmpit.component.state :as state]
+            [swarmpit.material :as material]
             [rum.core :as rum]))
 
 (enable-console-print!)
 
-(defonce state (atom []))
+(def cursor [:form :service :variables])
 
 (def state-item {:name  ""
                  :value ""})
@@ -19,7 +19,8 @@
       #js {:id       "name"
            :style    #js {:width "100%"}
            :value    value
-           :onChange (fn [e v] (util/update-item state index :name v))})))
+           :onChange (fn [e v]
+                       (state/update-item index :name v cursor))})))
 
 (defn- form-value [value index]
   (material/table-row-column
@@ -28,14 +29,15 @@
       #js {:id       "value"
            :style    #js {:width "100%"}
            :value    value
-           :onChange (fn [e v] (util/update-item state index :value v))})))
+           :onChange (fn [e v]
+                       (state/update-item index :value v cursor))})))
 
 (rum/defc form < rum/reactive []
-  (let [variables (rum/react state)]
+  (let [variables (state/react cursor)]
     (material/theme
       (material/table
         #js {:selectable false}
-        (material/table-header-form form-headers #(util/add-item state state-item))
+        (material/table-header-form form-headers #(state/add-item state-item cursor))
         (material/table-body
           #js {:displayRowCheckbox false}
           (map-indexed
@@ -46,5 +48,5 @@
                   index
                   [(form-name name index)
                    (form-value value index)]
-                  #(util/remove-item state index))))
+                  #(state/remove-item index cursor))))
             variables))))))

@@ -1,15 +1,15 @@
 (ns swarmpit.component.network.create
-  (:require [swarmpit.utils :refer [remove-el]]
-            [swarmpit.material :as material]
+  (:require [swarmpit.material :as material]
             [swarmpit.router :as router]
+            [swarmpit.component.state :as state]
             [swarmpit.component.message :as message]
             [swarmpit.component.progress :as progress]
-            [rum.core :as rum]))
+            [rum.core :as rum]
+            [ajax.core :as ajax]))
 
 (enable-console-print!)
 
-(defonce state (atom {:name   ""
-                      :driver nil}))
+(def cursor [:form :network :create])
 
 (defn- update-item
   "Update form item configuration"
@@ -22,14 +22,16 @@
     (material/text-field
       #js {:id       "serviceName"
            :value    value
-           :onChange (fn [e v] (update-item :name v))})))
+           :onChange (fn [e v]
+                       (state/update-value :name v cursor))})))
 
 (defn- form-driver [value]
   (material/form-edit-row
     "DRIVER"
     (material/select-field
       #js {:value    value
-           :onChange (fn [e i v] (update-item :driver v))
+           :onChange (fn [e i v]
+                       (state/update-value :driver v cursor))
            :style    #js {:display  "inherit"
                           :fontSize "14px"}}
       (material/menu-item
@@ -47,24 +49,24 @@
 
 (defn- create-network-handler
   []
-  (POST "/networks"
-        {:format        :json
-         :params        state
-         :finally       (progress/mount!)
-         :handler       (fn [response]
-                          (let [id (get response "Id")
-                                message (str "Network " id " has been created.")]
-                            (progress/unmount!)
-                            (router/dispatch! (str "/#/networks/" id))
-                            (message/mount! message)))
-         :error-handler (fn [{:keys [status status-text]}]
-                          (let [message (str "Network creation failed. Status: " status " Reason: " status-text)]
-                            (progress/unmount!)
-                            (message/mount! message)))}))
+  (ajax/POST "/networks"
+             {:format        :json
+              :params        (state/get-value cursor)
+              :finally       (progress/mount!)
+              :handler       (fn [response]
+                               (let [id (get response "Id")
+                                     message (str "Network " id " has been created.")]
+                                 (progress/unmount!)
+                                 (router/dispatch! (str "/#/networks/" id))
+                                 (message/mount! message)))
+              :error-handler (fn [{:keys [status status-text]}]
+                               (let [message (str "Network creation failed. Status: " status " Reason: " status-text)]
+                                 (progress/unmount!)
+                                 (message/mount! message)))}))
 
 (rum/defc form < rum/reactive []
   (let [{:keys [name
-                driver]} (rum/react state)]
+                driver]} (state/react cursor)]
     [:div
      [:div.form-panel
       [:div.form-panel-right

@@ -6,20 +6,20 @@
             [swarmpit.component.service.form-variables :as variables]
             [swarmpit.component.message :as message]
             [rum.core :as rum]
-            [ajax.core :refer [DELETE]]))
+            [ajax.core :as ajax]))
 
 (enable-console-print!)
 
 (defn- delete-service-handler
   [service-id]
-  (DELETE (str "/services/" service-id)
-          {:handler       (fn [_]
-                            (let [message (str "Service " service-id " has been removed.")]
-                              (router/dispatch! "/#/services")
-                              (message/mount! message)))
-           :error-handler (fn [{:keys [status status-text]}]
-                            (let [message (str "Service " service-id " removing failed. Reason: " status-text)]
-                              (message/mount! message)))}))
+  (ajax/DELETE (str "/services/" service-id)
+               {:handler       (fn [_]
+                                 (let [message (str "Service " service-id " has been removed.")]
+                                   (router/dispatch! "/#/services")
+                                   (message/mount! message)))
+                :error-handler (fn [{:keys [status status-text]}]
+                                 (let [message (str "Service " service-id " removing failed. Reason: " status-text)]
+                                   (message/mount! message)))}))
 
 (rum/defc form < rum/static [item]
   (let [id (:id item)]

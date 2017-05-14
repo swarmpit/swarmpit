@@ -1,26 +1,21 @@
 (ns swarmpit.component.service.form-deployment
-  (:require [swarmpit.material :as material :refer [svg]]
-            [swarmpit.utils :refer [remove-el]]
+  (:require [swarmpit.component.state :as state]
+            [swarmpit.material :as material]
             [rum.core :as rum]))
 
 (enable-console-print!)
 
-(defonce state (atom {}))
-
-(defn- update-item
-  "Update form item configuration"
-  [k v]
-  (swap! state assoc k v))
+(def cursor [:form :service :deployment])
 
 (defn- form-autoredeploy [value]
   (material/form-edit-row
     "AUTOREDEPLOY"
     (material/toogle
       #js {:toggled  value
-           :onToggle (fn [e v] (update-item :autoredeploy v))
+           :onToggle (fn [e v] (state/update-value :autoredeploy v cursor))
            :style    #js {:marginTop "14px"}})))
 
 (rum/defc form < rum/reactive []
-  (let [{:keys [autoredeploy]} (rum/react state)]
+  (let [{:keys [autoredeploy]} (state/react cursor)]
     [:div.form-edit
      (form-autoredeploy autoredeploy)]))

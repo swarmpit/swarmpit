@@ -1,6 +1,7 @@
 (ns swarmpit.component.service.edit
   (:require [swarmpit.material :as material]
             [swarmpit.router :as router]
+            [swarmpit.component.state :as state]
             [swarmpit.component.service.form-settings :as settings]
             [swarmpit.component.service.form-ports :as ports]
             [swarmpit.component.service.form-volumes :as volumes]
@@ -9,29 +10,34 @@
             [swarmpit.component.message :as message]
             [swarmpit.component.progress :as progress]
             [rum.core :as rum]
-            [ajax.core :refer [POST]]))
+            [ajax.core :as ajax]))
 
 (enable-console-print!)
 
 (defn- update-service-handler
   [service-id]
-  (POST (str "/services/" service-id)
-        {:format        :json
-         :params        (-> @settings/state
-                            (assoc :ports @ports/state)
-                            (assoc :volumes @volumes/state)
-                            (assoc :variables @variables/state)
-                            (assoc :deployment @deployment/state))
-         :finally       (progress/mount!)
-         :handler       (fn [_]
-                          (let [message (str "Service " service-id " has been updated.")]
-                            (progress/unmount!)
-                            (router/dispatch! (str "/#/services/" service-id))
-                            (message/mount! message)))
-         :error-handler (fn [{:keys [status status-text]}]
-                          (let [message (str "Service update failed. Status: " status " Reason: " status-text)]
-                            (progress/unmount!)
-                            (message/mount! message)))}))
+  (let [settings (state/get-value settings/cursor)
+        ports (state/get-value ports/cursor)
+        volumes (state/get-value volumes/cursor)
+        variables (state/get-value variables/cursor)
+        deployment (state/get-value deployment/cursor)]
+    (ajax/POST (str "/services/" service-id)
+               {:format        :json
+                :params        (-> settings
+                                   (assoc :ports ports)
+                                   (assoc :volumes volumes)
+                                   (assoc :variables variables)
+                                   (assoc :deployment deployment))
+                :finally       (progress/mount!)
+                :handler       (fn [_]
+                                 (let [message (str "Service " service-id " has been updated.")]
+                                   (progress/unmount!)
+                                   (router/dispatch! (str "/#/services/" service-id))
+                                   (message/mount! message)))
+                :error-handler (fn [{:keys [status status-text]}]
+                                 (let [message (str "Service update failed. Status: " status " Reason: " status-text)]
+                                   (progress/unmount!)
+                                   (message/mount! message)))})))
 
 (rum/defc form < rum/static [item]
   (let [id (:id item)]
@@ -67,11 +73,11 @@
 
 (defn- init-state
   [item]
-  (reset! settings/state (select-keys item [:image :version :serviceName :mode :replicas]))
-  (reset! ports/state (:ports item))
-  (reset! volumes/state (:volumes item))
-  (reset! variables/state (:variables item))
-  (reset! deployment/state (:deployment item)))
+  (state/set-value (select-keys item [:image :version :serviceName :mode :replicas]) settings/cursor)
+  (state/set-value (:ports item) ports/cursor)
+  (state/set-value (:volumes item) volumes/cursor)
+  (state/set-value (:variables item) variables/cursor)
+  (state/set-value (:deployment item) deployment/cursor))
 
 (defn mount!
   [item]

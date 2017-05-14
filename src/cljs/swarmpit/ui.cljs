@@ -1,9 +1,6 @@
 (ns swarmpit.ui
-  (:require [swarmpit.controller :as controller]
-            [swarmpit.component.layout :as layout]))
+  (:require [swarmpit.controller :as controller]))
 
 (js/console.log "Swarmpit ...")
-
-(layout/mount!)
 
 (controller/start)

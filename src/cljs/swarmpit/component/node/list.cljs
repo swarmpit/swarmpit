@@ -1,12 +1,13 @@
 (ns swarmpit.component.node.list
-  (:require [swarmpit.material :as material]
+  (:require [swarmpit.component.state :as state]
+            [swarmpit.material :as material]
             [swarmpit.router :as router]
             [clojure.string :as string]
             [rum.core :as rum]))
 
 (enable-console-print!)
 
-(defonce state (atom {:predicate ""}))
+(def cursor [:form :node :list])
 
 (def node-list-headers ["Name" "Status" "Availability" "Leader"])
 
@@ -25,7 +26,7 @@
       (val item))))
 
 (rum/defc node-list < rum/reactive [items]
-  (let [{:keys [predicate]} (rum/react state)
+  (let [{:keys [predicate]} (state/react cursor)
         filtered-items (filter-items items predicate)
         node-id (fn [index] (:id (nth filtered-items index)))]
     [:div
@@ -34,7 +35,8 @@
        (material/theme
          (material/text-field
            #js {:hintText       "Filter by name"
-                :onChange       (fn [e v] (swap! state assoc :predicate v))
+                :onChange       (fn [e v]
+                                  (state/update-value :predicate v cursor))
                 :underlineStyle #js {:borderColor "rgba(0, 0, 0, 0.2)"}
                 :style          #js {:height     "44px"
                                      :lineHeight "15px"}}))]]

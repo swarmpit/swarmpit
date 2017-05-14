@@ -4,15 +4,14 @@
   (:require [ring.middleware.json :as ring-json]
             [cheshire.core :refer [parse-string]]
             [swarmpit.handler :refer [handler json-error]]
-            [swarmpit.utils :refer [in?]]
             [swarmpit.token :as token]))
 
-(def unsecure ["/login"])
+(def unsecure #{"/login"})
 
 (defn- secure?
   [request]
   (let [uri (:uri request)]
-    (not (in? unsecure uri))))
+    (not (contains? unsecure uri))))
 
 (defn wrap-client-exception
   [handler]

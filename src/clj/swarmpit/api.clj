@@ -3,8 +3,7 @@
             [swarmpit.docker.client :as dc]
             [swarmpit.docker.domain :as dd]
             [swarmpit.registry.client :as rc]
-            [swarmpit.couchdb.client :as cc]
-            [swarmpit.utils :refer [in?]]))
+            [swarmpit.couchdb.client :as cc]))
 
 ;;; Database API
 

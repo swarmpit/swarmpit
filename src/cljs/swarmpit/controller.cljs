@@ -2,7 +2,12 @@
   (:require [bidi.router :as br]
             [clojure.walk :as walk]
             [clojure.string :as str]
-            [ajax.core :refer [GET POST]]
+            [ajax.core :as ajax]
+            [swarmpit.router :as router]
+            [swarmpit.storage :as storage]
+            [swarmpit.component.header :as header]
+            [swarmpit.component.menu :as menu]
+            [swarmpit.component.layout :as layout]
             [swarmpit.component.user.login :as ulogin]
             [swarmpit.component.service.create :as screate]
             [swarmpit.component.service.edit :as sedit]
@@ -20,22 +25,20 @@
 
 (defonce location (atom nil))
 
-(defonce domain (atom nil))
-
-(defonce token (atom nil))
-
-(defn- select-domain
-  [location]
-  (let [route (name (:handler location))
-        route-domain (first (str/split route #"-"))]
-    (case route-domain
-      "service" "Services"
-      "task" "Tasks"
-      "network" "Networks"
-      "node" "Nodes"
-      "Home")))
-
-;;; Routing handler config
+(def resource
+  {:index          "Home"
+   :login          ""
+   :service-list   "Services"
+   :service-create "Services"
+   :service-info   "Services"
+   :service-edit   "Services"
+   :network-list   "Networks"
+   :network-create "Networks"
+   :network-info   "Networks"
+   :node-list      "Nodes"
+   :node-info      "Nodes"
+   :task-list      "Tasks"
+   :task-info      "Tasks"})
 
 (def handler ["" {"/"         :index
                   "/login"    :login
@@ -53,24 +56,63 @@
 
 ;;; Router config
 
+(defn- route
+  "Route to given `loc`"
+  [loc]
+  (dispatch loc)
+  (reset! location loc))
+
+(defn- route-to-loc
+  "Route to given `loc` and setup domain"
+  [loc]
+  (let [domain (get resource loc)]
+    (route loc)
+    (swap! menu/state assoc :domain domain)
+    (swap! header/state assoc :domain domain)))
+
+(defn- route-to-login
+  "Route to login page"
+  []
+  (let [login {:handler :login}]
+    (route login)))
+
+(defn- navigate
+  [loc]
+  (if (nil? (storage/get "token"))
+    (route-to-login)
+    (route-to-loc loc)))
+
 (defn start
   []
-  (let [router (br/start-router! handler
-                                 {:on-navigate
-                                  (fn [loc]
-                                    ;(if (= @token :ID))
-                                    (dispatch loc)
-                                    (reset! location loc)
-                                    (reset! domain (select-domain loc)))})
+  (let [router (br/start-router! handler {:on-navigate navigate})
         route (:handler @location)]
     (if (some? route)
       (br/set-location! router @location))))
+
+;;;
+
+(defn GET
+  [api resp-fx]
+  (ajax/GET api
+            {:headers       {"Authorization" (storage/get "token")}
+             :handler       (fn [response]
+                              (let [resp (walk/keywordize-keys response)]
+                                (layout/mount!)
+                                (-> resp resp-fx)))
+             :error-handler (fn [{:keys [status]}]
+                              (if (= status 401)
+                                (router/dispatch! "/#/login")
+                                (router/dispatch! "/#/login")))}))
 
 ;;; Default controller
 
 (defmethod dispatch :index
   [_]
   (print "index"))
+
+(defmethod dispatch :error
+  [_]
+  (print "ups something went wrong"))
 
 (defmethod dispatch nil
   [_]
@@ -85,16 +127,14 @@
 (defmethod dispatch :service-list
   [_]
   (GET "/services"
-       {:handler (fn [response]
-                   (let [res (walk/keywordize-keys response)]
-                     (slist/mount! res)))}))
+       (fn [response]
+         (slist/mount! response))))
 
 (defmethod dispatch :service-info
   [{:keys [route-params]}]
   (GET (str "/services/" (:id route-params))
-       {:handler (fn [response]
-                   (let [res (walk/keywordize-keys response)]
-                     (sinfo/mount! res)))}))
+       (fn [response]
+         (sinfo/mount! response))))
 
 (defmethod dispatch :service-create
   [_]
@@ -102,27 +142,23 @@
 
 (defmethod dispatch :service-edit
   [{:keys [route-params]}]
-  (print "edit")
   (GET (str "/services/" (:id route-params))
-       {:handler (fn [response]
-                   (let [res (walk/keywordize-keys response)]
-                     (sedit/mount! res)))}))
+       (fn [response]
+         (sedit/mount! response))))
 
 ;;; Network controller
 
 (defmethod dispatch :network-list
   [_]
   (GET "/networks"
-       {:handler (fn [response]
-                   (let [res (walk/keywordize-keys response)]
-                     (nlist/mount! res)))}))
+       (fn [response]
+         (nlist/mount! response))))
 
 (defmethod dispatch :network-info
   [{:keys [route-params]}]
   (GET (str "/networks/" (:id route-params))
-       {:handler (fn [response]
-                   (let [res (walk/keywordize-keys response)]
-                     (ninfo/mount! res)))}))
+       (fn [response]
+         (ninfo/mount! response))))
 
 (defmethod dispatch :network-create
   [_]
@@ -133,29 +169,25 @@
 (defmethod dispatch :node-list
   [_]
   (GET "/nodes"
-       {:handler (fn [response]
-                   (let [res (walk/keywordize-keys response)]
-                     (ndlist/mount! res)))}))
+       (fn [response]
+         (ndlist/mount! response))))
 
 (defmethod dispatch :node-info
   [{:keys [route-params]}]
   (GET (str "/nodes/" (:id route-params))
-       {:handler (fn [response]
-                   (let [res (walk/keywordize-keys response)]
-                     (ndinfo/mount! res)))}))
+       (fn [response]
+         (ndinfo/mount! response))))
 
 ;;; Task controller
 
 (defmethod dispatch :task-list
   [_]
   (GET "/tasks"
-       {:handler (fn [response]
-                   (let [res (walk/keywordize-keys response)]
-                     (tlist/mount! res)))}))
+       (fn [response]
+         (tlist/mount! response))))
 
 (defmethod dispatch :task-info
   [{:keys [route-params]}]
   (GET (str "/tasks/" (:id route-params))
-       {:handler (fn [response]
-                   (let [res (walk/keywordize-keys response)]
-                     (tinfo/mount! res)))}))
+       (fn [response]
+         (tinfo/mount! response))))

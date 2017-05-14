@@ -1,9 +1,14 @@
 (ns swarmpit.component.user.login
-  (:require [swarmpit.material :as material :refer [svg]]
-            [rum.core :as rum]))
+  (:require [swarmpit.material :as material]
+            [swarmpit.storage :as storage]
+            [swarmpit.token :as token]
+            [swarmpit.router :as router]
+            [rum.core :as rum]
+            [ajax.core :as ajax]))
 
 (defonce state (atom {:email    ""
-                      :password ""}))
+                      :password ""
+                      :message  ""}))
 
 (defn- update-item
   "Update form item configuration"
@@ -27,21 +32,40 @@
            :value             value
            :onChange          (fn [e v] (update-item :password v))})))
 
-(defn- form-button []
-  (material/theme
-    (material/raised-button
-      #js {:className "login-btn"
-           :label     "Login"
-           :primary   true})))
+(defn- login-headers
+  []
+  (let [token (token/generate-basic (:email @state)
+                                    (:password @state))]
+    {"Authorization" token}))
+
+(defn- login-handler
+  []
+  (ajax/POST "/login"
+             {:format        :json
+              :headers       (login-headers)
+              :handler       (fn [response]
+                               (let [token (get response "token")]
+                                 (storage/add "token" token)
+                                 (router/dispatch! "/")))
+              :error-handler (fn [{:keys [response]}]
+                               (let [error (get response "error")]
+                                 (update-item :message error)))}))
 
 (rum/defc form < rum/reactive []
   (let [{:keys [email
-                password]} (rum/react state)]
+                password
+                message]} (rum/react state)]
     [:div.login-back
      [:div.login
+      [:div.message message]
       (form-email email)
       (form-password password)
-      (form-button)]]))
+      (material/theme
+        (material/raised-button
+          #js {:className  "login-btn"
+               :label      "Login"
+               :primary    true
+               :onTouchTap login-handler}))]]))
 
 (defn mount!
   []

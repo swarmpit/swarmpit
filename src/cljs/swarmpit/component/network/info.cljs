@@ -3,20 +3,20 @@
             [swarmpit.router :as router]
             [swarmpit.component.message :as message]
             [rum.core :as rum]
-            [ajax.core :refer [DELETE]]))
+            [ajax.core :as ajax]))
 
 (enable-console-print!)
 
 (defn- delete-network-handler
   [network-id]
-  (DELETE (str "/networks/" network-id)
-          {:handler       (fn [_]
-                            (let [message (str "Network " network-id " has been removed.")]
-                              (router/dispatch! "/#/networks")
-                              (message/mount! message)))
-           :error-handler (fn [{:keys [status status-text]}]
-                            (let [message (str "Network " network-id " removing failed. Reason: " status-text)]
-                              (message/mount! message)))}))
+  (ajax/DELETE (str "/networks/" network-id)
+               {:handler       (fn [_]
+                                 (let [message (str "Network " network-id " has been removed.")]
+                                   (router/dispatch! "/#/networks")
+                                   (message/mount! message)))
+                :error-handler (fn [{:keys [status status-text]}]
+                                 (let [message (str "Network " network-id " removing failed. Reason: " status-text)]
+                                   (message/mount! message)))}))
 
 (rum/defc form < rum/static [item]
   [:div

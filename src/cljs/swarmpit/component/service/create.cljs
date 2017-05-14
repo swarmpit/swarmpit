@@ -1,6 +1,7 @@
 (ns swarmpit.component.service.create
   (:require [swarmpit.material :as material]
             [swarmpit.router :as router]
+            [swarmpit.component.state :as state]
             [swarmpit.component.service.form-settings :as settings]
             [swarmpit.component.service.form-ports :as ports]
             [swarmpit.component.service.form-volumes :as volumes]
@@ -9,7 +10,7 @@
             [swarmpit.component.message :as message]
             [swarmpit.component.progress :as progress]
             [rum.core :as rum]
-            [ajax.core :refer [POST]]))
+            [ajax.core :as ajax]))
 
 (enable-console-print!)
 
@@ -53,24 +54,29 @@
 
 (defn- create-service-handler
   []
-  (POST "/services"
-        {:format        :json
-         :params        (-> @settings/state
-                            (assoc :ports @ports/state)
-                            (assoc :volumes @volumes/state)
-                            (assoc :variables @variables/state)
-                            (assoc :deployment @deployment/state))
-         :finally       (progress/mount!)
-         :handler       (fn [response]
-                          (let [id (get response "ID")
-                                message (str "Service " id " has been created.")]
-                            (progress/unmount!)
-                            (router/dispatch! (str "/#/services/" id))
-                            (message/mount! message)))
-         :error-handler (fn [{:keys [status status-text]}]
-                          (let [message (str "Service creation failed. Status: " status " Reason: " status-text)]
-                            (progress/unmount!)
-                            (message/mount! message)))}))
+  (let [settings (state/get-value settings/cursor)
+        ports (state/get-value ports/cursor)
+        volumes (state/get-value volumes/cursor)
+        variables (state/get-value variables/cursor)
+        deployment (state/get-value deployment/cursor)]
+    (ajax/POST "/services"
+               {:format        :json
+                :params        (-> settings
+                                   (assoc :ports ports)
+                                   (assoc :volumes volumes)
+                                   (assoc :variables variables)
+                                   (assoc :deployment deployment))
+                :finally       (progress/mount!)
+                :handler       (fn [response]
+                                 (let [id (get response "ID")
+                                       message (str "Service " id " has been created.")]
+                                   (progress/unmount!)
+                                   (router/dispatch! (str "/#/services/" id))
+                                   (message/mount! message)))
+                :error-handler (fn [{:keys [status status-text]}]
+                                 (let [message (str "Service creation failed. Status: " status " Reason: " status-text)]
+                                   (progress/unmount!)
+                                   (message/mount! message)))})))
 
 (rum/defc form < rum/reactive []
   (let [index (rum/react step-index)]
@@ -105,14 +111,14 @@
 
 (defn- init-state
   []
-  (reset! settings/state {:image       nil
-                          :serviceName ""
-                          :mode        "replicated"
-                          :replicas    1})
-  (reset! ports/state [])
-  (reset! volumes/state [])
-  (reset! variables/state [])
-  (reset! deployment/state {:autoredeploy false}))
+  (state/set-value {:image nil
+              :serviceName ""
+              :mode        "replicated"
+              :replicas    1} settings/cursor)
+  (state/set-value [] ports/cursor)
+  (state/set-value [] volumes/cursor)
+  (state/set-value [] variables/cursor)
+  (state/set-value {:autoredeploy false} deployment/cursor))
 
 (defn mount!
   []

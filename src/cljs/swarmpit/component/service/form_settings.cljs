@@ -1,23 +1,19 @@
 (ns swarmpit.component.service.form-settings
-  (:require [swarmpit.material :as material :refer [svg]]
-            [swarmpit.utils :refer [remove-el]]
+  (:require [swarmpit.component.state :as state]
+            [swarmpit.material :as material]
             [rum.core :as rum]))
 
 (enable-console-print!)
 
-(defonce state (atom {}))
-
-(defn- update-item
-  "Update form item configuration"
-  [k v]
-  (swap! state assoc k v))
+(def cursor [:form :service :settings])
 
 (defn- form-image [value]
   (material/form-edit-row
     "IMAGE"
     (material/select-field
       #js {:value    value
-           :onChange (fn [e i v] (update-item :image v))
+           :onChange (fn [e i v]
+                       (state/update-value :image v cursor))
            :style    #js {:display  "inherit"
                           :fontSize "14px"}}
       (material/menu-item
@@ -36,7 +32,8 @@
       #js {:id       "serviceName"
            :disabled update-form?
            :value    value
-           :onChange (fn [e v] (update-item :serviceName v))})))
+           :onChange (fn [e v]
+                       (state/update-value :serviceName v cursor))})))
 
 (defn- form-mode [value update-form?]
   (material/form-edit-row
@@ -44,7 +41,8 @@
     (material/radio-button-group
       #js {:name          "mode"
            :valueSelected value
-           :onChange      (fn [e v] (update-item :mode v))
+           :onChange      (fn [e v]
+                            (state/update-value :mode v cursor))
            :style         #js {:display   "flex"
                                :marginTop "14px"}}
       (material/radio-button
@@ -65,14 +63,15 @@
                           :step         1
                           :defaultValue 1
                           :value        value
-                          :onChange     (fn [e v] (update-item :replicas v))
+                          :onChange     (fn [e v]
+                                          (state/update-value :replicas v cursor))
                           :sliderStyle  #js {:marginTop "14px"}})))
 
 (rum/defc form < rum/reactive [update-form?]
   (let [{:keys [image
                 serviceName
                 mode
-                replicas]} (rum/react state)]
+                replicas]} (state/react cursor)]
     [:div.form-edit
      (form-image image)
      (form-name serviceName update-form?)

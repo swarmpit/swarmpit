@@ -1,11 +1,11 @@
 (ns swarmpit.component.service.form-volumes
-  (:require [swarmpit.material :as material :refer [svg]]
-            [swarmpit.utils :as util]
+  (:require [swarmpit.component.state :as state]
+            [swarmpit.material :as material]
             [rum.core :as rum]))
 
 (enable-console-print!)
 
-(defonce state (atom []))
+(def cursor [:form :service :volumes])
 
 (def state-item {:containerPath ""
                  :hostPath      ""
@@ -20,7 +20,8 @@
       #js {:id       "containerPath"
            :style    #js {:width "100%"}
            :value    value
-           :onChange (fn [e v] (util/update-item state index :containerPath v))})))
+           :onChange (fn [e v]
+                       (state/update-item index :containerPath v cursor))})))
 
 (defn- form-host [value index]
   (material/table-row-column
@@ -29,21 +30,23 @@
       #js {:id       "hostPath"
            :style    #js {:width "100%"}
            :value    value
-           :onChange (fn [e v] (util/update-item state index :hostPath v))})))
+           :onChange (fn [e v]
+                       (state/update-item index :hostPath v cursor))})))
 
 (defn- form-readonly [value index]
   (material/table-row-column
     #js {:key (str "readOnly" index)}
     (material/checkbox
       #js {:checked value
-           :onCheck (fn [e v] (util/update-item state index :readOnly v))})))
+           :onCheck (fn [e v]
+                      (state/update-item index :readOnly v cursor))})))
 
 (rum/defc form < rum/reactive []
-  (let [volumes (rum/react state)]
+  (let [volumes (state/react cursor)]
     (material/theme
       (material/table
         #js {:selectable false}
-        (material/table-header-form form-headers #(util/add-item state state-item))
+        (material/table-header-form form-headers #(state/add-item state-item cursor))
         (material/table-body
           #js {:displayRowCheckbox false}
           (map-indexed
@@ -56,5 +59,5 @@
                   [(form-container containerPath index)
                    (form-host hostPath index)
                    (form-readonly readOnly index)]
-                  #(util/remove-item state index))))
+                  #(state/remove-item index cursor))))
             volumes))))))

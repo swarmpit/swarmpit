@@ -1,12 +1,12 @@
 (ns swarmpit.component.menu
   (:require [swarmpit.material :as material :refer [svg]]
-            [swarmpit.controller :as ctrl]
-            [rum.core :as rum]
-            [clojure.string :as string]))
+            [swarmpit.component.state :as state]
+            [clojure.string :as string]
+            [rum.core :as rum]))
 
 (enable-console-print!)
 
-(defonce state (atom {:opened true}))
+(def cursor [:menu])
 
 (def drawer-container-closed-style
   #js{:width     "70px"
@@ -40,8 +40,7 @@
            :leftIcon      licon})))
 
 (rum/defc drawer < rum/reactive []
-  (let [{:keys [opened]} (rum/react state)
-        domain (rum/react ctrl/domain)
+  (let [{:keys [opened domain]} (state/react cursor)
         drawer-container-style (if opened
                                  drawer-container-opened-style
                                  drawer-container-closed-style)
@@ -56,7 +55,8 @@
         (material/app-bar
           #js{:className                "drawer-appbar"
               :iconElementLeft          drawer-appbar-icon
-              :onLeftIconButtonTouchTap (fn [] (swap! state assoc :opened (not opened)))})
+              :onLeftIconButtonTouchTap (fn []
+                                          (state/update-value :opened (not opened) cursor))})
         (material/menu #js {:style #js {:height   "100%"
                                         :overflow "auto"}}
                        (drawer-category "BUILD" opened)

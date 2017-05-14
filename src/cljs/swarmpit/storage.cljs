@@ -9,7 +9,7 @@
   (.setItem storage key val))
 
 (defn get
-  "Get value from browser's localStorage by given `key'"
+  "Get value from browser's localStorage by given `key`"
   [key]
   (.getItem storage key))
 
