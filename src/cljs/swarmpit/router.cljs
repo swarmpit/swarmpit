@@ -2,7 +2,8 @@
   (:require [bidi.router :as br]
             [swarmpit.storage :as storage]
             [swarmpit.controller :as ctrl]
-            [swarmpit.component.state :as state]))
+            [swarmpit.component.state :as state]
+            [swarmpit.component.layout :as layout]))
 
 (defonce location (atom nil))
 
@@ -47,8 +48,9 @@
   "Route to given `loc` and update state domain"
   [loc]
   (let [domain (get resource (:handler loc))]
-    (route loc)
-    (state/update-value :domain domain [:menu])))
+    (state/update-value :domain domain [:menu])
+    (layout/mount!)
+    (route loc)))
 
 (defn- route-to-login
   "Route to login page"

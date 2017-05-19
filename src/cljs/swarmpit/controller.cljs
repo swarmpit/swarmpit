@@ -3,7 +3,6 @@
             [ajax.core :as ajax]
             [swarmpit.uri :refer [dispatch!]]
             [swarmpit.storage :as storage]
-            [swarmpit.component.layout :as layout]
             [swarmpit.component.user.login :as ulogin]
             [swarmpit.component.service.create :as screate]
             [swarmpit.component.service.edit :as sedit]
@@ -17,22 +16,19 @@
             [swarmpit.component.task.list :as tlist]
             [swarmpit.component.task.info :as tinfo]))
 
-(defmulti dispatch (fn [location] (:handler location)))
-
-(defn GET
-  [api resp-fx]
+(defn- fetch
+  [api api-resp-fx]
   (ajax/GET api
             {:headers       {"Authorization" (storage/get "token")}
              :handler       (fn [response]
                               (let [resp (walk/keywordize-keys response)]
-                                (layout/mount!)
-                                (-> resp resp-fx)))
+                                (-> resp api-resp-fx)))
              :error-handler (fn [{:keys [status]}]
                               (if (= status 401)
                                 (dispatch! "/#/login")
                                 (dispatch! "/#/login")))}))
 
-;;; Default controller
+(defmulti dispatch (fn [location] (:handler location)))
 
 (defmethod dispatch :index
   [_]
@@ -54,15 +50,15 @@
 
 (defmethod dispatch :service-list
   [_]
-  (GET "/services"
-       (fn [response]
-         (slist/mount! response))))
+  (fetch "/services"
+         (fn [response]
+           (slist/mount! response))))
 
 (defmethod dispatch :service-info
   [{:keys [route-params]}]
-  (GET (str "/services/" (:id route-params))
-       (fn [response]
-         (sinfo/mount! response))))
+  (fetch (str "/services/" (:id route-params))
+         (fn [response]
+           (sinfo/mount! response))))
 
 (defmethod dispatch :service-create
   [_]
@@ -70,23 +66,23 @@
 
 (defmethod dispatch :service-edit
   [{:keys [route-params]}]
-  (GET (str "/services/" (:id route-params))
-       (fn [response]
-         (sedit/mount! response))))
+  (fetch (str "/services/" (:id route-params))
+         (fn [response]
+           (sedit/mount! response))))
 
 ;;; Network controller
 
 (defmethod dispatch :network-list
   [_]
-  (GET "/networks"
-       (fn [response]
-         (nlist/mount! response))))
+  (fetch "/networks"
+         (fn [response]
+           (nlist/mount! response))))
 
 (defmethod dispatch :network-info
   [{:keys [route-params]}]
-  (GET (str "/networks/" (:id route-params))
-       (fn [response]
-         (ninfo/mount! response))))
+  (fetch (str "/networks/" (:id route-params))
+         (fn [response]
+           (ninfo/mount! response))))
 
 (defmethod dispatch :network-create
   [_]
@@ -96,26 +92,26 @@
 
 (defmethod dispatch :node-list
   [_]
-  (GET "/nodes"
-       (fn [response]
-         (ndlist/mount! response))))
+  (fetch "/nodes"
+         (fn [response]
+           (ndlist/mount! response))))
 
 (defmethod dispatch :node-info
   [{:keys [route-params]}]
-  (GET (str "/nodes/" (:id route-params))
-       (fn [response]
-         (ndinfo/mount! response))))
+  (fetch (str "/nodes/" (:id route-params))
+         (fn [response]
+           (ndinfo/mount! response))))
 
 ;;; Task controller
 
 (defmethod dispatch :task-list
   [_]
-  (GET "/tasks"
-       (fn [response]
-         (tlist/mount! response))))
+  (fetch "/tasks"
+         (fn [response]
+           (tlist/mount! response))))
 
 (defmethod dispatch :task-info
   [{:keys [route-params]}]
-  (GET (str "/tasks/" (:id route-params))
-       (fn [response]
-         (tinfo/mount! response))))
+  (fetch (str "/tasks/" (:id route-params))
+         (fn [response]
+           (tinfo/mount! response))))
