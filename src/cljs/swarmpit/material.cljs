@@ -20,7 +20,6 @@
 (def expand-icon "M16.59 8.59L12 13.17 7.41 8.59 6 10l6 6 6-6z")
 
 (def create-factory js/React.createFactory)
-(def make-selectable js/MaterialUI.makeSelectable)
 
 (def paper (create-factory js/MaterialUI.Paper))
 (def avatar (create-factory js/MaterialUI.Avatar))
@@ -30,7 +29,6 @@
 (def menu (create-factory js/MaterialUI.Menu))
 (def menu-item (create-factory js/MaterialUI.MenuItem))
 (def list (create-factory js/MaterialUI.List))
-(def selectable-list (create-factory (make-selectable js/MaterialUI.List)))
 (def list-item (create-factory js/MaterialUI.ListItem))
 (def svg-icon (create-factory js/MaterialUI.SvgIcon))
 (def font-icon (create-factory js/MaterialUI.FontIcon))
