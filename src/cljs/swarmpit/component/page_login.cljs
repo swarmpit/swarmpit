@@ -1,4 +1,4 @@
-(ns swarmpit.component.user.login
+(ns swarmpit.component.page-login
   (:require [swarmpit.uri :refer [dispatch!]]
             [swarmpit.material :as material]
             [swarmpit.storage :as storage]

@@ -49,7 +49,8 @@
   [loc]
   (let [domain (get resource (:handler loc))]
     (state/update-value :domain domain [:menu])
-    (layout/mount!)
+    (if (some? domain)
+      (layout/mount!))
     (route loc)))
 
 (defn- route-to-login

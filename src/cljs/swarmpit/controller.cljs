@@ -3,7 +3,8 @@
             [ajax.core :as ajax]
             [swarmpit.uri :refer [dispatch!]]
             [swarmpit.storage :as storage]
-            [swarmpit.component.user.login :as ulogin]
+            [swarmpit.component.page-login :as page-login]
+            [swarmpit.component.page-404 :as page-404]
             [swarmpit.component.service.create :as screate]
             [swarmpit.component.service.edit :as sedit]
             [swarmpit.component.service.info :as sinfo]
@@ -40,11 +41,11 @@
 
 (defmethod dispatch nil
   [_]
-  (print "not-found"))
+  (page-404/mount!))
 
 (defmethod dispatch :login
   [_]
-  (ulogin/mount!))
+  (page-login/mount!))
 
 ;;; Service controller
 
