@@ -1,6 +1,6 @@
 (ns swarmpit.component.service.edit
-  (:require [swarmpit.uri :refer [dispatch!]]
-            [swarmpit.material :as material]
+  (:require [material.component :as comp]
+            [swarmpit.uri :refer [dispatch!]]
             [swarmpit.component.state :as state]
             [swarmpit.component.service.form-settings :as settings]
             [swarmpit.component.service.form-ports :as ports]
@@ -44,31 +44,31 @@
     [:div
      [:div.form-panel
       [:div.form-panel-right
-       (material/theme
-         (material/raised-button
-           #js {:onTouchTap #(update-service-handler id)
-                :label      "Save"
-                :primary    true
-                :style      #js {:marginRight "12px"}}))
-       (material/theme
-         (material/raised-button
-           #js {:href  (str "/#/services/" id)
-                :label "Back"}))]]
+       (comp/mui
+         (comp/raised-button
+           {:onTouchTap #(update-service-handler id)
+            :label      "Save"
+            :primary    true
+            :style      {:marginRight "12px"}}))
+       (comp/mui
+         (comp/raised-button
+           {:href  (str "/#/services/" id)
+            :label "Back"}))]]
      [:div.form-view
       [:div.form-view-group
-       (material/form-view-section "General settings")
+       (comp/form-view-section "General settings")
        (settings/form true)]
       [:div.form-view-group
-       (material/form-view-section "Ports")
+       (comp/form-view-section "Ports")
        (ports/form)]
       [:div.form-view-group
-       (material/form-view-section "Volumes")
+       (comp/form-view-section "Volumes")
        (volumes/form)]
       [:div.form-view-group
-       (material/form-view-section "Environment variables")
+       (comp/form-view-section "Environment variables")
        (variables/form)]
       [:div.form-view-group
-       (material/form-view-section "Deployment")
+       (comp/form-view-section "Deployment")
        (deployment/form)]]]))
 
 (defn- init-state

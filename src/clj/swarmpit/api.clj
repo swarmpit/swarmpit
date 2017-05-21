@@ -139,12 +139,14 @@
        (rc/get "/_catalog")
        :repositories))
 
-;;; Registry API
+;;; Repository API
 
-(defn registry
-  [registry-id]
-  ())
+(defn repositories
+  []
+  (->> {:selector {:type {"$eq" "repository"}}}
+       (cc/post "/swarmpit/_find")
+       :docs))
 
-(defn create-registry
-  [registry]
+(defn create-repository
+  [repository]
   ())

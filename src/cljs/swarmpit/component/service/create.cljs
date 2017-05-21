@@ -1,6 +1,6 @@
 (ns swarmpit.component.service.create
-  (:require [swarmpit.uri :refer [dispatch!]]
-            [swarmpit.material :as material]
+  (:require [material.component :as comp]
+            [swarmpit.uri :refer [dispatch!]]
             [swarmpit.component.state :as state]
             [swarmpit.component.service.form-settings :as settings]
             [swarmpit.component.service.form-ports :as ports]
@@ -43,12 +43,12 @@
 (defn- step-items []
   (map-indexed
     (fn [index item]
-      (material/step
-        #js {:key index}
-        (material/step-button
-          #js {:disableTouchRipple true
-               :style              #js {:backgroundColor "transparent"}
-               :onClick            (fn [] (reset! step-index index))}
+      (comp/step
+        {:key index}
+        (comp/step-button
+          {:disableTouchRipple true
+           :style              {:backgroundColor "transparent"}
+           :onClick            (fn [] (reset! step-index index))}
           item)))
     steps))
 
@@ -81,33 +81,33 @@
 (rum/defc form < rum/reactive []
   (let [index (rum/react step-index)]
     [:div
-     (material/theme
-       (material/stepper
-         #js {:activeStep index
-              :linear     false
-              :style      #js {:background "rgb(245, 245, 245)"
-                               :height     "60px"}
-              :children   (clj->js (step-items))}))
+     (comp/mui
+       (comp/stepper
+         {:activeStep index
+          :linear     false
+          :style      {:background "rgb(245, 245, 245)"
+                       :height     "60px"}
+          :children   (clj->js (step-items))}))
      (form-item index)
      [:div.form-panel.form-buttons
       [:div.form-panel-left
-       (material/theme
-         (material/raised-button
-           #js {:label      "Previous"
-                :disabled   (= 0 index)
-                :onTouchTap (fn [] (step-previous index))
-                :style      #js {:marginRight "12px"}}))
-       (material/theme
-         (material/raised-button
-           #js {:label      "Next"
-                :disabled   (= (- (count steps) 1) index)
-                :onTouchTap (fn [] (step-next index))}))]
+       (comp/mui
+         (comp/raised-button
+           {:label      "Previous"
+            :disabled   (= 0 index)
+            :onTouchTap (fn [] (step-previous index))
+            :style      {:marginRight "12px"}}))
+       (comp/mui
+         (comp/raised-button
+           {:label      "Next"
+            :disabled   (= (- (count steps) 1) index)
+            :onTouchTap (fn [] (step-next index))}))]
       [:div.form-panel-right
-       (material/theme
-         (material/raised-button
-           #js {:label      "Create"
-                :primary    true
-                :onTouchTap create-service-handler}))]]]))
+       (comp/mui
+         (comp/raised-button
+           {:label      "Create"
+            :primary    true
+            :onTouchTap create-service-handler}))]]]))
 
 (defn- init-state
   []

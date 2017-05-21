@@ -1,6 +1,6 @@
 (ns swarmpit.component.network.create
-  (:require [swarmpit.uri :refer [dispatch!]]
-            [swarmpit.material :as material]
+  (:require [material.component :as comp]
+            [swarmpit.uri :refer [dispatch!]]
             [swarmpit.component.state :as state]
             [swarmpit.component.message :as message]
             [swarmpit.component.progress :as progress]
@@ -12,35 +12,35 @@
 (def cursor [:form :network :create])
 
 (defn- form-name [value]
-  (material/form-edit-row
+  (comp/form-edit-row
     "NAME"
-    (material/text-field
-      #js {:id       "serviceName"
-           :value    value
-           :onChange (fn [e v]
-                       (state/update-value :name v cursor))})))
+    (comp/text-field
+      {:id       "serviceName"
+       :value    value
+       :onChange (fn [e v]
+                   (state/update-value :name v cursor))})))
 
 (defn- form-driver [value]
-  (material/form-edit-row
+  (comp/form-edit-row
     "DRIVER"
-    (material/select-field
-      #js {:value    value
-           :onChange (fn [e i v]
-                       (state/update-value :driver v cursor))
-           :style    #js {:display  "inherit"
-                          :fontSize "14px"}}
-      (material/menu-item
-        #js {:key         1
-             :value       "overlay"
-             :primaryText "overlay"})
-      (material/menu-item
-        #js {:key         2
-             :value       "host"
-             :primaryText "host"})
-      (material/menu-item
-        #js {:key         3
-             :value       "bridge"
-             :primaryText "bridge"}))))
+    (comp/select-field
+      {:value    value
+       :onChange (fn [e i v]
+                   (state/update-value :driver v cursor))
+       :style    #js {:display  "inherit"
+                      :fontSize "14px"}}
+      (comp/menu-item
+        {:key         1
+         :value       "overlay"
+         :primaryText "overlay"})
+      (comp/menu-item
+        {:key         2
+         :value       "host"
+         :primaryText "host"})
+      (comp/menu-item
+        {:key         3
+         :value       "bridge"
+         :primaryText "bridge"}))))
 
 (defn- create-network-handler
   []
@@ -65,11 +65,11 @@
     [:div
      [:div.form-panel
       [:div.form-panel-right
-       (material/theme
-         (material/raised-button
-           #js {:label      "Create"
-                :primary    true
-                :onTouchTap create-network-handler}))]]
+       (comp/mui
+         (comp/raised-button
+           {:label      "Create"
+            :primary    true
+            :onTouchTap create-network-handler}))]]
      [:div.form-edit
       (form-name name)
       (form-driver driver)]]))

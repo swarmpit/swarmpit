@@ -1,5 +1,5 @@
 (ns swarmpit.component.task.info
-  (:require [swarmpit.material :as material]
+  (:require [material.component :as comp]
             [rum.core :as rum]))
 
 (enable-console-print!)
@@ -9,15 +9,15 @@
    [:div.form-panel]
    [:div.form-view
     [:div.form-view-group
-     (material/form-view-section "General settings")
-     (material/form-view-row "ID" (:id item))
-     (material/form-view-row "CREATED" (:createdAt item))
-     (material/form-view-row "LAST UPDATE" (:updatedAt item))
-     (material/form-view-row "IMAGE" (:image item))
-     (material/form-view-row "IMAGE DIGEST" (:imageDigest item))
-     (material/form-view-section "Status")
-     (material/form-view-row "STATE" (:state item))
-     (material/form-view-row "DESIRED STATE" (:desiredState item))]]])
+     (comp/form-view-section "General settings")
+     (comp/form-view-row "ID" (:id item))
+     (comp/form-view-row "CREATED" (:createdAt item))
+     (comp/form-view-row "LAST UPDATE" (:updatedAt item))
+     (comp/form-view-row "IMAGE" (:image item))
+     (comp/form-view-row "IMAGE DIGEST" (:imageDigest item))
+     (comp/form-view-section "Status")
+     (comp/form-view-row "STATE" (:state item))
+     (comp/form-view-row "DESIRED STATE" (:desiredState item))]]])
 
 (defn mount!
   [item]

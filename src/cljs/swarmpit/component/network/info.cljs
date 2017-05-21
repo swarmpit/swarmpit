@@ -1,6 +1,6 @@
 (ns swarmpit.component.network.info
-  (:require [swarmpit.uri :refer [dispatch!]]
-            [swarmpit.material :as material]
+  (:require [material.component :as comp]
+            [swarmpit.uri :refer [dispatch!]]
             [swarmpit.component.message :as message]
             [rum.core :as rum]
             [ajax.core :as ajax]))
@@ -22,23 +22,23 @@
   [:div
    [:div.form-panel
     [:div.form-panel-right
-     (material/theme
-       (material/raised-button
-         #js {:onTouchTap delete-network-handler
-              :label      "Delete"}))]]
+     (comp/mui
+       (comp/raised-button
+         {:onTouchTap delete-network-handler
+          :label      "Delete"}))]]
    [:div.form-view
     [:div.form-view-group
-     (material/form-view-section "General settings")
-     (material/form-view-row "ID" (:id item))
-     (material/form-view-row "NAME" (:name item))
-     (material/form-view-row "CREATED" (:created item))
-     (material/form-view-row "DRIVER" (:driver item))
-     (material/form-view-row "INTERNAL" (if (:internal item)
+     (comp/form-view-section "General settings")
+     (comp/form-view-row "ID" (:id item))
+     (comp/form-view-row "NAME" (:name item))
+     (comp/form-view-row "CREATED" (:created item))
+     (comp/form-view-row "DRIVER" (:driver item))
+     (comp/form-view-row "INTERNAL" (if (:internal item)
                                           "yes"
                                           "no"))
-     (material/form-view-section "IP address management")
-     (material/form-view-row "SUBNET" (:subnet item))
-     (material/form-view-row "GATEWAY" (:gateway item))]]])
+     (comp/form-view-section "IP address management")
+     (comp/form-view-row "SUBNET" (:subnet item))
+     (comp/form-view-row "GATEWAY" (:gateway item))]]])
 
 (defn mount!
   [item]

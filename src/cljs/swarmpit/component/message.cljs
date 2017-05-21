@@ -1,15 +1,15 @@
 (ns swarmpit.component.message
-  (:require [swarmpit.material :as material]
+  (:require [material.component :as comp]
             [rum.core :as rum]))
 
 (enable-console-print!)
 
 (rum/defc message < rum/static [text]
-  (material/theme
-    (material/snackbar
-      #js {:open             true
-           :message          text
-           :autoHideDuration 4000})))
+  (comp/mui
+    (comp/snackbar
+      {:open             true
+       :message          text
+       :autoHideDuration 4000})))
 
 (defn mount!
   [text]

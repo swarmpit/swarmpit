@@ -1,5 +1,6 @@
 (ns swarmpit.component.header
-  (:require [swarmpit.material :as material :refer [svg]]
+  (:require [material.component :as comp]
+            [material.icon :as icon]
             [swarmpit.component.state :as state]
             [rum.core :as rum]))
 
@@ -8,18 +9,24 @@
 (def cursor [:menu])
 
 (defn- avatar []
-  (material/avatar #js{:className "user-avatar"
-                       :src       "https://www.gravatar.com/avatar/6e6fd910c0594f4f2b448e3530eb5abd"}))
+  (comp/avatar
+    {:className "user-avatar"
+     :src       "https://www.gravatar.com/avatar/6e6fd910c0594f4f2b448e3530eb5abd"}))
+
+(defn- menu-button []
+  (comp/icon-button
+    nil
+    (comp/svg
+      {:color "#fff"}
+      icon/expand)))
 
 (defn- menu []
-  (material/icon-menu #js{:iconButtonElement
-                          (material/icon-button
-                            nil
-                            (svg #js {:color "#fff"} material/expand-icon))}
-                      (material/menu-item
-                        #js {:primaryText "Settings"})
-                      (material/menu-item
-                        #js {:primaryText "Log out"})))
+  (comp/icon-menu
+    {:iconButtonElement (menu-button)}
+    (comp/menu-item
+      {:primaryText "Settings"})
+    (comp/menu-item
+      {:primaryText "Log out"})))
 
 (rum/defc userbar < rum/static []
   [:div.user-bar
@@ -29,16 +36,14 @@
 
 (rum/defc appbar < rum/reactive []
   (let [{:keys [domain]} (state/react cursor)]
-    (material/theme
-      (material/app-bar #js{:title              domain
-                            :titleStyle         #js {:fontSize   "20px"
-                                                     :fontWeight 200}
-                            :style              #js {:position "fixed"
-                                                     :top      0}
-                            ;:iconElementLeft    (material/icon-button nil (svg material/services-icon))
-                            ;:iconStyleLeft      #js {:paddingLeft "5px"}
-                            :iconElementRight   (userbar)
-                            :iconStyleRight     #js {:position "fixed"
-                                                     :right    20}
-                            ;:className          "appbar"
-                            :showMenuIconButton false}))))
+    (comp/mui
+      (comp/app-bar
+        {:title              domain
+         :titleStyle         {:fontSize   "20px"
+                              :fontWeight 200}
+         :style              {:position "fixed"
+                              :top      0}
+         :iconElementRight   (userbar)
+         :iconStyleRight     {:position "fixed"
+                              :right    20}
+         :showMenuIconButton false}))))

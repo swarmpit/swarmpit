@@ -1,6 +1,6 @@
 (ns swarmpit.component.page-login
-  (:require [swarmpit.uri :refer [dispatch!]]
-            [swarmpit.material :as material]
+  (:require [material.component :as comp]
+            [swarmpit.uri :refer [dispatch!]]
             [swarmpit.storage :as storage]
             [swarmpit.token :as token]
             [rum.core :as rum]
@@ -16,21 +16,21 @@
   (swap! state assoc k v))
 
 (defn- form-email [value]
-  (material/theme
-    (material/text-field
-      #js {:id                "loginEmail"
-           :floatingLabelText "Email"
-           :value             value
-           :onChange          (fn [e v] (update-item :email v))})))
+  (comp/mui
+    (comp/text-field
+      {:id                "loginEmail"
+       :floatingLabelText "Email"
+       :value             value
+       :onChange          (fn [e v] (update-item :email v))})))
 
 (defn- form-password [value]
-  (material/theme
-    (material/text-field
-      #js {:id                "loginPassword"
-           :floatingLabelText "Password"
-           :type              "password"
-           :value             value
-           :onChange          (fn [e v] (update-item :password v))})))
+  (comp/mui
+    (comp/text-field
+      {:id                "loginPassword"
+       :floatingLabelText "Password"
+       :type              "password"
+       :value             value
+       :onChange          (fn [e v] (update-item :password v))})))
 
 (defn- login-headers
   []
@@ -60,12 +60,12 @@
       [:div.message message]
       (form-email email)
       (form-password password)
-      (material/theme
-        (material/raised-button
-          #js {:className  "login-btn"
-               :label      "Login"
-               :primary    true
-               :onTouchTap login-handler}))]]))
+      (comp/mui
+        (comp/raised-button
+          {:className  "login-btn"
+           :label      "Login"
+           :primary    true
+           :onTouchTap login-handler}))]]))
 
 (defn mount!
   []

@@ -1,6 +1,6 @@
 (ns swarmpit.component.service.form-ports
-  (:require [swarmpit.component.state :as state]
-            [swarmpit.material :as material]
+  (:require [material.component :as comp]
+            [swarmpit.component.state :as state]
             [rum.core :as rum]))
 
 (enable-console-print!)
@@ -18,60 +18,60 @@
   (if (= 0 value) "" value))
 
 (defn- form-container [value index]
-  (material/table-row-column
-    #js {:key (str "containerPort" index)}
-    (material/text-field
-      #js {:id       "containerPort"
-           :type     "number"
-           :style    #js {:width "100%"}
-           :value    (format-port-value value)
-           :onChange (fn [e v]
-                       (state/update-item index :containerPort (js/parseInt v) cursor))})))
+  (comp/table-row-column
+    {:key (str "containerPort" index)}
+    (comp/text-field
+      {:id       "containerPort"
+       :type     "number"
+       :style    {:width "100%"}
+       :value    (format-port-value value)
+       :onChange (fn [e v]
+                   (state/update-item index :containerPort (js/parseInt v) cursor))})))
 
 (defn- form-protocol [value index]
-  (material/table-row-column
-    #js {:key (str "protocol" index)}
-    (material/select-field
-      #js {:value      value
-           :onChange   (fn [e i v]
-                         (state/update-item index :protocol v cursor))
-           :style      #js {:display "inherit"}
-           :labelStyle #js {:lineHeight "45px"
-                            :top        2}}
-      (material/menu-item
-        #js {:key         (str "protocol-tcp" index)
-             :value       "tcp"
-             :primaryText "TCP"})
-      (material/menu-item
-        #js {:key         (str "protocol-udp" index)
-             :value       "udp"
-             :primaryText "UDP"}))))
+  (comp/table-row-column
+    {:key (str "protocol" index)}
+    (comp/select-field
+      {:value      value
+       :onChange   (fn [e i v]
+                     (state/update-item index :protocol v cursor))
+       :style      {:display "inherit"}
+       :labelStyle {:lineHeight "45px"
+                    :top        2}}
+      (comp/menu-item
+        {:key         (str "protocol-tcp" index)
+         :value       "tcp"
+         :primaryText "TCP"})
+      (comp/menu-item
+        {:key         (str "protocol-udp" index)
+         :value       "udp"
+         :primaryText "UDP"}))))
 
 (defn- form-host [value index]
-  (material/table-row-column
-    #js {:key (str "hostPort" index)}
-    (material/text-field
-      #js {:id       "hostPort"
-           :type     "number"
-           :style    #js {:width "100%"}
-           :value    (format-port-value value)
-           :onChange (fn [e v]
-                       (state/update-item index :hostPort (js/parseInt v) cursor))})))
+  (comp/table-row-column
+    {:key (str "hostPort" index)}
+    (comp/text-field
+      {:id       "hostPort"
+       :type     "number"
+       :style    {:width "100%"}
+       :value    (format-port-value value)
+       :onChange (fn [e v]
+                   (state/update-item index :hostPort (js/parseInt v) cursor))})))
 
 (rum/defc form < rum/reactive []
   (let [ports (state/react cursor)]
-    (material/theme
-      (material/table
-        #js {:selectable false}
-        (material/table-header-form form-headers #(state/add-item state-item cursor))
-        (material/table-body
-          #js {:displayRowCheckbox false}
+    (comp/mui
+      (comp/table
+        {:selectable false}
+        (comp/table-header-form form-headers #(state/add-item state-item cursor))
+        (comp/table-body
+          {:displayRowCheckbox false}
           (map-indexed
             (fn [index item]
               (let [{:keys [containerPort
                             protocol
                             hostPort]} item]
-                (material/table-row-form
+                (comp/table-row-form
                   index
                   [(form-container containerPort index)
                    (form-protocol protocol index)

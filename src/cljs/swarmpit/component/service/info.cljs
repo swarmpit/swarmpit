@@ -1,6 +1,6 @@
 (ns swarmpit.component.service.info
-  (:require [swarmpit.uri :refer [dispatch!]]
-            [swarmpit.material :as material]
+  (:require [material.component :as comp]
+            [swarmpit.uri :refer [dispatch!]]
             [swarmpit.component.service.form-ports :as ports]
             [swarmpit.component.service.form-volumes :as volumes]
             [swarmpit.component.service.form-variables :as variables]
@@ -26,35 +26,35 @@
     [:div
      [:div.form-panel
       [:div.form-panel-right
-       (material/theme
-         (material/raised-button
-           #js {:href    (str "/#/services/" id "/edit")
-                :label   "Edit"
-                :primary true
-                :style   #js {:marginRight "12px"}}))
-       (material/theme
-         (material/raised-button
-           #js {:onTouchTap #(delete-service-handler id)
-                :label      "Delete"}))]]
+       (comp/mui
+         (comp/raised-button
+           {:href    (str "/#/services/" id "/edit")
+            :label   "Edit"
+            :primary true
+            :style   {:marginRight "12px"}}))
+       (comp/mui
+         (comp/raised-button
+           {:onTouchTap #(delete-service-handler id)
+            :label      "Delete"}))]]
      [:div.form-view
       [:div.form-view-group
-       (material/form-view-section "General settings")
-       (material/form-view-row "ID" id)
-       (material/form-view-row "SERVICE NAME" (:serviceName item))
-       (material/form-view-row "CREATED" (:createdAt item))
-       (material/form-view-row "LAST UPDATE" (:updatedAt item))
-       (material/form-view-row "IMAGE" (:image item))
-       (material/form-view-row "IMAGE DIGEST" (:imageDigest item))
-       (material/form-view-row "MODE" (:mode item))]
+       (comp/form-view-section "General settings")
+       (comp/form-view-row "ID" id)
+       (comp/form-view-row "SERVICE NAME" (:serviceName item))
+       (comp/form-view-row "CREATED" (:createdAt item))
+       (comp/form-view-row "LAST UPDATE" (:updatedAt item))
+       (comp/form-view-row "IMAGE" (:image item))
+       (comp/form-view-row "IMAGE DIGEST" (:imageDigest item))
+       (comp/form-view-row "MODE" (:mode item))]
       [:div.form-view-group
-       (material/form-view-section "Ports")
-       (material/form-view-list ports/form-headers (:ports item) "30%")]
+       (comp/form-view-section "Ports")
+       (comp/form-view-list ports/form-headers (:ports item) "30%")]
       [:div.form-view-group
-       (material/form-view-section "Volumes")
-       (material/form-view-list volumes/form-headers (:volumes item) "100%")]
+       (comp/form-view-section "Volumes")
+       (comp/form-view-list volumes/form-headers (:volumes item) "100%")]
       [:div.form-view-group
-       (material/form-view-section "Environment variables")
-       (material/form-view-list variables/form-headers (:variables item) "60%")]]]))
+       (comp/form-view-section "Environment variables")
+       (comp/form-view-list variables/form-headers (:variables item) "60%")]]]))
 
 (defn mount!
   [item]

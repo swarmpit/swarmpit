@@ -108,39 +108,31 @@
 
 (defn repositories
   [_]
-  (let [registries (api/registries)]
-    (json-ok 200 registries)))
+  (let [repositories (api/repositories)]
+    (json-ok 200 repositories)))
 
-;;; Registry handler
-
-(defn registry
-  [{:keys [route-params]}]
-  (let [registry (api/registry (:id route-params))]
-    (json-ok 200 registry)))
-
-(defn registry-create
+(defn repository-create
   [{:keys [params]}]
   (let [payload (walk/keywordize-keys params)
-        response (api/create-registry payload)]
+        response (api/create-repository payload)]
     (json-ok 201 response)))
 
 ;;; Handler
 
 (def handler
-  (make-handler ["/" {"login"        {:post login}
-                      "services"     {:get  services
-                                      :post service-create}
-                      "services/"    {:get    {[:id] service}
-                                      :delete {[:id] service-delete}
-                                      :post   {[:id] service-update}}
-                      "networks"     {:get  networks
-                                      :post network-create}
-                      "networks/"    {:get    {[:id] network}
-                                      :delete {[:id] network-delete}}
-                      "nodes"        {:get nodes}
-                      "nodes/"       {:get {[:id] node}}
-                      "tasks"        {:get tasks}
-                      "tasks/"       {:get {[:id] task}}
-                      "repositories" {:get repositories}
-                      "registry"     {:post registry-create}
-                      "registry/"    {:get {[:id] registry}}}]))
+  (make-handler ["/" {"login"      {:post login}
+                      "services"   {:get  services
+                                    :post service-create}
+                      "services/"  {:get    {[:id] service}
+                                    :delete {[:id] service-delete}
+                                    :post   {[:id] service-update}}
+                      "networks"   {:get  networks
+                                    :post network-create}
+                      "networks/"  {:get    {[:id] network}
+                                    :delete {[:id] network-delete}}
+                      "nodes"      {:get nodes}
+                      "nodes/"     {:get {[:id] node}}
+                      "tasks"      {:get tasks}
+                      "tasks/"     {:get {[:id] task}}
+                      "repository" {:get  repositories
+                                    :post repository-create}}]))

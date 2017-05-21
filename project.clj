@@ -44,7 +44,7 @@
               [{:id           "app"
                 :source-paths ["src/cljs" "src/cljc"]
                 :figwheel     true
-                :compiler     {:main                 swarmpit.ui
+                :compiler     {:main                 swarmpit.app
                                :preloads             [devtools.preload]
                                :asset-path           "js/out"
                                :output-to            "resources/public/js/main.js"
@@ -54,7 +54,7 @@
                {:id           "min"
                 :source-paths ["src/cljs" "src/cljc"]
                 :jar          true
-                :compiler     {:main                 swarmpit.ui
+                :compiler     {:main                 swarmpit.app
                                :foreign-libs         [{:file     "libs/material-ui/material-ui.inc.js"
                                                        :provides ["cljsjs.material-ui"]
                                                        :requires ["cljsjs.react" "cljsjs.react.dom"]}]
