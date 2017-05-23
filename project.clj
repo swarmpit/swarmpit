@@ -3,7 +3,6 @@
   :url "http://example.com/FIXME"
   :license {:name "Eclipse Public License"
             :url  "http://www.eclipse.org/legal/epl-v10.html"}
-
   :dependencies [[org.clojure/clojure "1.9.0-alpha16"]
                  [org.clojure/clojurescript "1.9.542"]
                  [cljsjs/react "15.4.2-2"]
@@ -20,27 +19,17 @@
                  [digest "1.4.5"]
                  [com.cemerick/friend "0.2.3"]
                  [com.cognitect/transit-cljs "0.8.239"]]
-
   :plugins [[lein-cljsbuild "1.1.4"]]
-
   :min-lein-version "2.6.1"
-
   :source-paths ["src/clj" "src/cljs" "src/cljc"]
-
   :test-paths ["test/clj" "test/cljc"]
-
   :clean-targets ^{:protect false} ["resources/public/js/out"
                                     "resources/public/js/main.js"
                                     :target-path]
-
   :uberjar-name "swarmpit.jar"
-
   :main swarmpit.server
-
   :repl-options {:init-ns user}
-
-  :cljsbuild {
-              :builds
+  :cljsbuild {:builds
               [{:id           "app"
                 :source-paths ["src/cljs" "src/cljc"]
                 :figwheel     true
@@ -50,7 +39,6 @@
                                :output-to            "resources/public/js/main.js"
                                :output-dir           "resources/public/js/out"
                                :source-map-timestamp true}}
-
                {:id           "min"
                 :source-paths ["src/cljs" "src/cljc"]
                 :jar          true
@@ -64,24 +52,19 @@
                                :source-map-timestamp true
                                :optimizations        :advanced
                                :pretty-print         false}}]}
-
   :figwheel {:css-dirs       ["resources/public/css"]
              :ring-handler   user/http-handler
              :server-logfile "log/figwheel.log"}
-
   :profiles {:dev
              {:dependencies [[figwheel "0.5.10"]
                              [figwheel-sidecar "0.5.10"]
                              [com.cemerick/piggieback "0.2.1"]
                              [org.clojure/tools.nrepl "0.2.12"]
                              [binaryage/devtools "0.9.2"]]
-
               :plugins      [[lein-figwheel "0.5.10"]
                              [lein-doo "0.1.6"]]
-
               :source-paths ["dev"]
               :repl-options {:nrepl-middleware [cemerick.piggieback/wrap-cljs-repl]}}
-
              :uberjar
              {:source-paths ^:replace ["src/clj" "src/cljc"]
               :prep-tasks   ["compile" ["cljsbuild" "once" "min"]]

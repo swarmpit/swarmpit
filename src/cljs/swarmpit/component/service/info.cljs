@@ -30,31 +30,31 @@
          (comp/raised-button
            {:href    (str "/#/services/" id "/edit")
             :label   "Edit"
-            :primary true
-            :style   {:marginRight "12px"}}))
+            :primary true}))
+       [:span.form-panel-delimiter]
        (comp/mui
          (comp/raised-button
            {:onTouchTap #(delete-service-handler id)
             :label      "Delete"}))]]
      [:div.form-view
       [:div.form-view-group
-       (comp/form-view-section "General settings")
-       (comp/form-view-row "ID" id)
-       (comp/form-view-row "SERVICE NAME" (:serviceName item))
-       (comp/form-view-row "CREATED" (:createdAt item))
-       (comp/form-view-row "LAST UPDATE" (:updatedAt item))
-       (comp/form-view-row "IMAGE" (:image item))
-       (comp/form-view-row "IMAGE DIGEST" (:imageDigest item))
-       (comp/form-view-row "MODE" (:mode item))]
+       (comp/info-section "General settings")
+       (comp/info-item "ID" id)
+       (comp/info-item "SERVICE NAME" (:serviceName item))
+       (comp/info-item "CREATED" (:createdAt item))
+       (comp/info-item "LAST UPDATE" (:updatedAt item))
+       (comp/info-item "IMAGE" (:image item))
+       (comp/info-item "IMAGE DIGEST" (:imageDigest item))
+       (comp/info-item "MODE" (:mode item))]
       [:div.form-view-group
-       (comp/form-view-section "Ports")
-       (comp/form-view-list ports/form-headers (:ports item) "30%")]
+       (comp/info-section "Ports")
+       (comp/info-table ports/headers (:ports item) "30%")]
       [:div.form-view-group
-       (comp/form-view-section "Volumes")
-       (comp/form-view-list volumes/form-headers (:volumes item) "100%")]
+       (comp/info-section "Volumes")
+       (comp/info-table volumes/headers (:volumes item) "100%")]
       [:div.form-view-group
-       (comp/form-view-section "Environment variables")
-       (comp/form-view-list variables/form-headers (:variables item) "60%")]]]))
+       (comp/info-section "Environment variables")
+       (comp/info-table variables/headers (:variables item) "60%")]]]))
 
 (defn mount!
   [item]

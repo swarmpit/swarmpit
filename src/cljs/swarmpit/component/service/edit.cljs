@@ -48,27 +48,27 @@
          (comp/raised-button
            {:onTouchTap #(update-service-handler id)
             :label      "Save"
-            :primary    true
-            :style      {:marginRight "12px"}}))
+            :primary    true}))
+       [:span.form-panel-delimiter]
        (comp/mui
          (comp/raised-button
            {:href  (str "/#/services/" id)
             :label "Back"}))]]
      [:div.form-view
       [:div.form-view-group
-       (comp/form-view-section "General settings")
+       (comp/info-section "General settings")
        (settings/form true)]
       [:div.form-view-group
-       (comp/form-view-section "Ports")
+       (comp/info-section "Ports")
        (ports/form)]
       [:div.form-view-group
-       (comp/form-view-section "Volumes")
+       (comp/info-section "Volumes")
        (volumes/form)]
       [:div.form-view-group
-       (comp/form-view-section "Environment variables")
+       (comp/info-section "Environment variables")
        (variables/form)]
       [:div.form-view-group
-       (comp/form-view-section "Deployment")
+       (comp/info-section "Deployment")
        (deployment/form)]]]))
 
 (defn- init-state

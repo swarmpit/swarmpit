@@ -7,46 +7,40 @@
 
 (def cursor [:form :service :variables])
 
-(def state-item {:name  ""
-                 :value ""})
-
-(def form-headers ["Name" "Value"])
+(def headers ["Name" "Value"])
 
 (defn- form-name [value index]
   (comp/table-row-column
-    {:key (str "name" index)}
+    {:key (str "vn-" index)}
     (comp/text-field
       {:id       "name"
        :style    {:width "100%"}
        :value    value
-       :onChange (fn [e v]
+       :onChange (fn [_ v]
                    (state/update-item index :name v cursor))})))
 
 (defn- form-value [value index]
   (comp/table-row-column
-    {:key (str "value" index)}
+    {:key (str "vv-" index)}
     (comp/text-field
       {:id       "value"
        :style    {:width "100%"}
        :value    value
-       :onChange (fn [e v]
+       :onChange (fn [_ v]
                    (state/update-item index :value v cursor))})))
+
+(defn- render-variables
+  [item index]
+  (let [{:keys [name
+                value]} item]
+    [(form-name name index)
+     (form-value value index)]))
 
 (rum/defc form < rum/reactive []
   (let [variables (state/react cursor)]
-    (comp/mui
-      (comp/table
-        {:selectable false}
-        (comp/table-header-form form-headers #(state/add-item state-item cursor))
-        (comp/table-body
-          {:displayRowCheckbox false}
-          (map-indexed
-            (fn [index item]
-              (let [{:keys [name
-                            value]} item]
-                (comp/table-row-form
-                  index
-                  [(form-name name index)
-                   (form-value value index)]
-                  #(state/remove-item index cursor))))
-            variables))))))
+    (comp/form-table headers
+                     variables
+                     render-variables
+                     (fn [] (state/add-item {:name  ""
+                                             :value ""} cursor))
+                     (fn [index] (state/remove-item index cursor)))))

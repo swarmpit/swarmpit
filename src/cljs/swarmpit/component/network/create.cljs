@@ -11,34 +11,37 @@
 
 (def cursor [:form :network :create])
 
+(def form-driver-style
+  {:display  "inherit"
+   :fontSize "14px"})
+
 (defn- form-name [value]
-  (comp/form-edit-row
+  (comp/form-item
     "NAME"
     (comp/text-field
       {:id       "serviceName"
        :value    value
-       :onChange (fn [e v]
+       :onChange (fn [_ v]
                    (state/update-value :name v cursor))})))
 
 (defn- form-driver [value]
-  (comp/form-edit-row
+  (comp/form-item
     "DRIVER"
     (comp/select-field
       {:value    value
-       :onChange (fn [e i v]
-                   (state/update-value :driver v cursor))
-       :style    #js {:display  "inherit"
-                      :fontSize "14px"}}
+       :style    form-driver-style
+       :onChange (fn [_ _ v]
+                   (state/update-value :driver v cursor))}
       (comp/menu-item
-        {:key         1
+        {:key         "fdi1"
          :value       "overlay"
          :primaryText "overlay"})
       (comp/menu-item
-        {:key         2
+        {:key         "fdi2"
          :value       "host"
          :primaryText "host"})
       (comp/menu-item
-        {:key         3
+        {:key         "fdi3"
          :value       "bridge"
          :primaryText "bridge"}))))
 

@@ -11,53 +11,51 @@
                  :hostPath      ""
                  :readOnly      false})
 
-(def form-headers ["Container path" "Host path" "Read only"])
+(def headers ["Container path" "Host path" "Read only"])
 
 (defn- form-container [value index]
   (comp/table-row-column
-    {:key (str "containerPath" index)}
+    {:key (str "vcp-" index)}
     (comp/text-field
       {:id       "containerPath"
        :style    {:width "100%"}
        :value    value
-       :onChange (fn [e v]
+       :onChange (fn [_ v]
                    (state/update-item index :containerPath v cursor))})))
 
 (defn- form-host [value index]
   (comp/table-row-column
-    {:key (str "hostPath" index)}
+    {:key (str "vhp-" index)}
     (comp/text-field
       {:id       "hostPath"
        :style    {:width "100%"}
        :value    value
-       :onChange (fn [e v]
+       :onChange (fn [_ v]
                    (state/update-item index :hostPath v cursor))})))
 
 (defn- form-readonly [value index]
   (comp/table-row-column
-    {:key (str "readOnly" index)}
+    {:key (str "vro-" index)}
     (comp/checkbox
       {:checked value
-       :onCheck (fn [e v]
+       :onCheck (fn [_ v]
                   (state/update-item index :readOnly v cursor))})))
+
+(defn- render-volumes
+  [item index]
+  (let [{:keys [containerPath
+                hostPath
+                readOnly]} item]
+    [(form-container containerPath index)
+     (form-host hostPath index)
+     (form-readonly readOnly index)]))
 
 (rum/defc form < rum/reactive []
   (let [volumes (state/react cursor)]
-    (comp/mui
-      (comp/table
-        {:selectable false}
-        (comp/table-header-form form-headers #(state/add-item state-item cursor))
-        (comp/table-body
-          {:displayRowCheckbox false}
-          (map-indexed
-            (fn [index item]
-              (let [{:keys [containerPath
-                            hostPath
-                            readOnly]} item]
-                (comp/table-row-form
-                  index
-                  [(form-container containerPath index)
-                   (form-host hostPath index)
-                   (form-readonly readOnly index)]
-                  #(state/remove-item index cursor))))
-            volumes))))))
+    (comp/form-table headers
+                     volumes
+                     render-volumes
+                     (fn [] (state/add-item {:containerPath ""
+                                             :hostPath      ""
+                                             :readOnly      false} cursor))
+                     (fn [index] (state/remove-item index cursor)))))

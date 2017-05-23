@@ -5,16 +5,18 @@ html > body {
 }
 
 body {
-    margin: 0px;
+    margin: 0;
 }
 
 fieldset {
     border: 1px solid #757575;
 }
 
-.closed {
-    opacity: 0;
+main {
+    margin-top: 64px;
 }
+
+/* Main layout */
 
 .layout {
     height: 100vh;
@@ -32,41 +34,6 @@ fieldset {
     margin-left: 200px;
 }
 
-header .appbar {
-    box-shadow: none !important;
-    position: fixed !important;
-}
-
-nav .drawer-container {
-    box-shadow: none !important;
-    border-right: 1px solid #e0e4e7;
-    overflow: hidden !important;
-}
-
-nav .drawer-appbar {
-    box-shadow: none !important;
-}
-
-nav .drawer-item {
-    padding-left: 5px !important;
-    font-weight: lighter !important;
-    color: rgb(117, 117, 117) !important;
-}
-
-nav .drawer-item-selected {
-    padding-left: 5px !important;
-    font-weight: normal !important;
-    color: #437f9d !important;
-}
-
-nav .drawer-item-category {
-    cursor: default !important;
-}
-
-main {
-    margin-top: 64px;
-}
-
 .row, .form-edit-row, .form-view-row {
     display: flex;
     flex-flow: row wrap;
@@ -74,12 +41,14 @@ main {
     flex-wrap: nowrap;
 }
 
+/* Form layout */
+
 .form-edit {
     margin-top: 10px;
 }
 
 .form-edit-row {
-    margin: 0 24px 0px 24px;
+    margin: 0 24px 0 24px;
 }
 
 .form-view {
@@ -124,6 +93,10 @@ main {
     background: rgb(245, 245, 245);
 }
 
+.form-panel-delimiter {
+    width: 14px;
+}
+
 .form-panel-left {
     float: left;
     padding-left: 24px;
@@ -137,6 +110,8 @@ main {
     display: inline-flex;
     position: relative;
 }
+
+/* Login form */
 
 .login {
     align-self: center;

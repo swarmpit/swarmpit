@@ -40,14 +40,22 @@
   (if (> (count steps) index)
     (reset! step-index (inc index))))
 
+(def step-style
+  {:backgroundColor "transparent"})
+
+(def stepper-style
+  {:background "rgb(245, 245, 245)"
+   :height     "60px"})
+
 (defn- step-items []
   (map-indexed
     (fn [index item]
       (comp/step
-        {:key index}
+        {:key (str "step-" index)}
         (comp/step-button
-          {:disableTouchRipple true
-           :style              {:backgroundColor "transparent"}
+          {:key                (str "step-btn-" index)
+           :disableTouchRipple true
+           :style              step-style
            :onClick            (fn [] (reset! step-index index))}
           item)))
     steps))
@@ -85,8 +93,7 @@
        (comp/stepper
          {:activeStep index
           :linear     false
-          :style      {:background "rgb(245, 245, 245)"
-                       :height     "60px"}
+          :style      stepper-style
           :children   (clj->js (step-items))}))
      (form-item index)
      [:div.form-panel.form-buttons
@@ -95,8 +102,8 @@
          (comp/raised-button
            {:label      "Previous"
             :disabled   (= 0 index)
-            :onTouchTap (fn [] (step-previous index))
-            :style      {:marginRight "12px"}}))
+            :onTouchTap (fn [] (step-previous index))}))
+       [:span.form-panel-delimiter]
        (comp/mui
          (comp/raised-button
            {:label      "Next"

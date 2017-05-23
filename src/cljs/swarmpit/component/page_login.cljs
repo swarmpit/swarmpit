@@ -10,6 +10,9 @@
                       :password ""
                       :message  ""}))
 
+(def login-button-style
+  {:marginTop "30px"})
+
 (defn- update-item
   "Update form item configuration"
   [k v]
@@ -62,7 +65,7 @@
       (form-password password)
       (comp/mui
         (comp/raised-button
-          {:className  "login-btn"
+          {:style      login-button-style
            :label      "Login"
            :primary    true
            :onTouchTap login-handler}))]]))

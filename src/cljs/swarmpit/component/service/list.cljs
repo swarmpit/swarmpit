@@ -9,18 +9,16 @@
 
 (def cursor [:form :service :list])
 
-(def service-list-headers ["Name" "Mode" "Replicas" "Image"])
+(def headers ["Name" "Mode" "Replicas" "Image"])
 
 (defn- filter-items
   "Filter list items based on given predicate"
   [items predicate]
   (filter #(string/includes? (:serviceName %) predicate) items))
 
-(defn- service-list-item
-  [item index]
-  (comp/table-row-column
-    {:key (str (name (key item)) index)}
-    (val item)))
+(defn- render-item
+  [item]
+  (val item))
 
 (rum/defc service-list < rum/reactive [items]
   (let [{:keys [predicate]} (state/react cursor)
@@ -48,19 +46,10 @@
          {:selectable  false
           :onCellClick (fn [i] (dispatch!
                                  (str "/#/services/" (service-id i))))}
-         (comp/table-header-list service-list-headers)
-         (comp/table-body
-           {:showRowHover       true
-            :displayRowCheckbox false}
-           (map-indexed
-             (fn [index item]
-               (comp/table-row
-                 {:key       (str "row" index)
-                  :style     {:cursor "pointer"}
-                  :rowNumber index}
-                 (->> (select-keys item [:serviceName :mode :replicas :image])
-                      (map #(service-list-item % index)))))
-             filtered-items))))]))
+         (comp/list-table-header headers)
+         (comp/list-table-body filtered-items
+                               render-item
+                               [:serviceName :mode :replicas :image])))]))
 
 (defn mount!
   [items]

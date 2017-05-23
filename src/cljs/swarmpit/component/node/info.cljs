@@ -9,13 +9,13 @@
    [:div.form-panel]
    [:div.form-view
     [:div.form-view-group
-     (comp/form-view-section "General settings")
-     (comp/form-view-row "ID" (:id item))
-     (comp/form-view-row "NAME" (:name item))
-     (comp/form-view-row "AVAILABILITY" (:availability item))
-     (comp/form-view-section "Status")
-     (comp/form-view-row "STATE" (:state item))
-     (comp/form-view-row "LEADER" (if (:leader item)
+     (comp/info-section "General settings")
+     (comp/info-item "ID" (:id item))
+     (comp/info-item "NAME" (:name item))
+     (comp/info-item "AVAILABILITY" (:availability item))
+     (comp/info-section "Status")
+     (comp/info-item "STATE" (:state item))
+     (comp/info-item "LEADER" (if (:leader item)
                                     "yes"
                                     "no"))]]])
 

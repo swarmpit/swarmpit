@@ -9,21 +9,19 @@
 
 (def cursor [:form :node :list])
 
-(def node-list-headers ["Name" "Status" "Availability" "Leader"])
+(def headers ["Name" "Status" "Availability" "Leader"])
 
 (defn- filter-items
   "Filter list items based on given predicate"
   [items predicate]
   (filter #(string/includes? (:name %) predicate) items))
 
-(defn- node-list-item
-  [item index]
-  (comp/table-row-column
-    {:key (str (name (key item)) index)}
-    (case (val item)
-      true "yes"
-      false "no"
-      (val item))))
+(defn- render-item
+  [item]
+  (case (val item)
+    true "yes"
+    false "no"
+    (val item)))
 
 (rum/defc node-list < rum/reactive [items]
   (let [{:keys [predicate]} (state/react cursor)
@@ -45,19 +43,10 @@
          {:selectable  false
           :onCellClick (fn [i] (dispatch!
                                  (str "/#/nodes/" (node-id i))))}
-         (comp/table-header-list node-list-headers)
-         (comp/table-body
-           {:showRowHover       true
-            :displayRowCheckbox false}
-           (map-indexed
-             (fn [index item]
-               (comp/table-row
-                 {:key       (str "row" index)
-                  :style     {:cursor "pointer"}
-                  :rowNumber index}
-                 (->> (select-keys item [:name :state :availability :leader])
-                      (map #(node-list-item % index)))))
-             filtered-items))))]))
+         (comp/list-table-header headers)
+         (comp/list-table-body filtered-items
+                               render-item
+                               [:name :state :availability :leader])))]))
 
 (defn mount!
   [items]

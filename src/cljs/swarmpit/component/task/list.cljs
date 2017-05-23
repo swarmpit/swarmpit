@@ -9,22 +9,16 @@
 
 (def cursor [:form :task :list])
 
-(def task-list-headers ["Name" "Service" "Image" "Node" "State"])
+(def headers ["Name" "Service" "Image" "Node" "State"])
 
 (defn- filter-items
   "Filter list items based on given predicate"
   [items predicate]
   (filter #(string/includes? (:service %) predicate) items))
 
-(defn- task-list-item
-  [item index]
-  (comp/table-row-column
-    {:key (str (name (key item)) index)}
-    ;(case (key item)
-    ;  :serviceId (get services (keyword (val item)))
-    ;  :nodeId (get nodes (keyword (val item)))
-    ;  (val item))
-    (val item)))
+(defn- render-item
+  [item]
+  (val item))
 
 (rum/defc task-list < rum/reactive [items]
   (let [{:keys [predicate]} (state/react cursor)
@@ -46,19 +40,10 @@
          {:selectable  false
           :onCellClick (fn [i] (dispatch!
                                  (str "/#/tasks/" (task-id i))))}
-         (comp/table-header-list task-list-headers)
-         (comp/table-body
-           {:showRowHover       true
-            :displayRowCheckbox false}
-           (map-indexed
-             (fn [index item]
-               (comp/table-row
-                 {:key       (str "row" index)
-                  :style     {:cursor "pointer"}
-                  :rowNumber index}
-                 (->> (select-keys item [:name :service :image :node :state])
-                      (map #(task-list-item % index)))))
-             filtered-items))))]))
+         (comp/list-table-header headers)
+         (comp/list-table-body filtered-items
+                               render-item
+                               [:name :service :image :node :state])))]))
 
 (defn mount!
   [items]

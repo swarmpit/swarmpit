@@ -8,42 +8,59 @@
 
 (def cursor [:menu])
 
-(defn- avatar []
-  (comp/avatar
-    {:className "user-avatar"
-     :src       "https://www.gravatar.com/avatar/6e6fd910c0594f4f2b448e3530eb5abd"}))
+(def user-avatar-style
+  {:marginRight "10px"
+   :border      "1px solid #fff"})
 
-(defn- menu-button []
+(def appbar-style
+  {:position  "fixed"
+   :boxShadow "none"
+   :top       0})
+
+(def appbar-title-style
+  {:fontSize   "20px"
+   :fontWeight 200})
+
+(def appbar-icon-style
+  {:position "fixed"
+   :right    20})
+
+(defn- user-avatar []
+  (comp/avatar
+    {:style user-avatar-style
+     :src   "https://www.gravatar.com/avatar/6e6fd910c0594f4f2b448e3530eb5abd"}))
+
+(defn- user-menu-button []
   (comp/icon-button
     nil
     (comp/svg
-      {:color "#fff"}
+      {:key   "user-menu-button-icon"
+       :color "#fff"}
       icon/expand)))
 
-(defn- menu []
+(defn- user-menu []
   (comp/icon-menu
-    {:iconButtonElement (menu-button)}
+    {:iconButtonElement (user-menu-button)}
     (comp/menu-item
-      {:primaryText "Settings"})
+      {:key         "user-menu-settings"
+       :primaryText "Settings"})
     (comp/menu-item
-      {:primaryText "Log out"})))
+      {:key         "user-menu-logout"
+       :primaryText "Log out"})))
 
 (rum/defc userbar < rum/static []
   [:div.user-bar
-   (avatar)
+   (user-avatar)
    [:span "admin"]
-   (menu)])
+   (user-menu)])
 
 (rum/defc appbar < rum/reactive []
   (let [{:keys [domain]} (state/react cursor)]
     (comp/mui
       (comp/app-bar
         {:title              domain
-         :titleStyle         {:fontSize   "20px"
-                              :fontWeight 200}
-         :style              {:position "fixed"
-                              :top      0}
+         :titleStyle         appbar-title-style
+         :style              appbar-style
          :iconElementRight   (userbar)
-         :iconStyleRight     {:position "fixed"
-                              :right    20}
+         :iconStyleRight     appbar-icon-style
          :showMenuIconButton false}))))

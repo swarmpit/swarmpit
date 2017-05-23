@@ -7,13 +7,17 @@
 
 (def cursor [:form :service :deployment])
 
+(def form-autoredeploy-style
+  {:marginTop "14px"})
+
 (defn- form-autoredeploy [value]
-  (comp/form-edit-row
+  (comp/form-item
     "AUTOREDEPLOY"
     (comp/toogle
       {:toggled  value
-       :onToggle (fn [e v] (state/update-value :autoredeploy v cursor))
-       :style    {:marginTop "14px"}})))
+       :style    form-autoredeploy-style
+       :onToggle (fn [_ v]
+                   (state/update-value :autoredeploy v cursor))})))
 
 (rum/defc form < rum/reactive []
   (let [{:keys [autoredeploy]} (state/react cursor)]

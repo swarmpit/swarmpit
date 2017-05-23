@@ -7,15 +7,28 @@
 
 (def cursor [:form :service :settings])
 
+(def form-image-style
+  {:display  "inherit"
+   :fontSize "14px"})
+
+(def form-mode-style
+  {:display   "flex"
+   :marginTop "14px"})
+
+(def form-mode-replicated-style
+  {:width "170px"})
+
+(def form-replicas-slider-style
+  {:marginTop "14px"})
+
 (defn- form-image [value]
-  (comp/form-edit-row
+  (comp/form-item
     "IMAGE"
     (comp/select-field
       {:value    value
-       :onChange (fn [e i v]
-                   (state/update-value :image v cursor))
-       :style    {:display  "inherit"
-                  :fontSize "14px"}}
+       :style    form-image-style
+       :onChange (fn [_ _ v]
+                   (state/update-value :image v cursor))}
       (comp/menu-item
         {:key         1
          :value       "nohaapav/napp:latest"
@@ -26,37 +39,38 @@
          :primaryText "nohaapav/app:latest"}))))
 
 (defn- form-name [value update-form?]
-  (comp/form-edit-row
+  (comp/form-item
     "SERVICE NAME"
     (comp/text-field
       {:id       "serviceName"
        :disabled update-form?
        :value    value
-       :onChange (fn [e v]
+       :onChange (fn [_ v]
                    (state/update-value :serviceName v cursor))})))
 
 (defn- form-mode [value update-form?]
-  (comp/form-edit-row
+  (comp/form-item
     "MODE"
     (comp/radio-button-group
       {:name          "mode"
+       :style         form-mode-style
        :valueSelected value
-       :onChange      (fn [e v]
-                        (state/update-value :mode v cursor))
-       :style         {:display   "flex"
-                       :marginTop "14px"}}
+       :onChange      (fn [_ v]
+                        (state/update-value :mode v cursor))}
       (comp/radio-button
-        {:disabled update-form?
+        {:key      "mrbr"
+         :disabled update-form?
          :label    "Replicated"
          :value    "replicated"
-         :style    {:width "170px"}})
+         :style    form-mode-replicated-style})
       (comp/radio-button
-        {:disabled update-form?
+        {:key      "mrbg"
+         :disabled update-form?
          :label    "Global"
          :value    "global"}))))
 
 (defn- form-replicas [value]
-  (comp/form-edit-row
+  (comp/form-item
     (str "REPLICAS  " "(" value ")")
     (comp/slider
       {:min          1
@@ -64,9 +78,9 @@
        :step         1
        :defaultValue 1
        :value        value
-       :onChange     (fn [e v]
-                       (state/update-value :replicas v cursor))
-       :sliderStyle  {:marginTop "14px"}})))
+       :sliderStyle  form-replicas-slider-style
+       :onChange     (fn [_ v]
+                       (state/update-value :replicas v cursor))})))
 
 (rum/defc form < rum/reactive [update-form?]
   (let [{:keys [image
@@ -77,4 +91,5 @@
      (form-image image)
      (form-name serviceName update-form?)
      (form-mode mode update-form?)
-     (if (= "replicated" mode) (form-replicas replicas))]))
+     (if (= "replicated" mode)
+       (form-replicas replicas))]))
