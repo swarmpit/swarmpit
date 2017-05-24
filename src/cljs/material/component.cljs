@@ -2,7 +2,8 @@
   (:refer-clojure :exclude [stepper])
   (:require [material.factory :as factory]
             [material.icon :as icon]
-            [sablono.core :refer-macros [html]]))
+            [sablono.core :refer-macros [html]]
+            [swarmpit.uri :refer [dispatch!]]))
 
 ;;; Theme components
 
@@ -149,6 +150,17 @@
 
 ;;; Composite components
 
+(defn panel-text-field
+  [props]
+  (mui
+    (text-field
+      (merge props
+             {:underlineStyle {:borderColor "rgba(0, 0, 0, 0.2)"}
+              :style          {:height     "44px"
+                               :lineHeight "15px"}}))))
+
+;; Form component layout
+
 (defn form-comp [label comp]
   [:div.form-edit-row
    [:span.form-row-label label]
@@ -183,7 +195,7 @@
         headers))))
 
 (defn list-table-body
-  [items render-fn render-keys]
+  [items render-item-fn render-items-key]
   (table-body
     {:key                "tb"
      :showRowHover       true
@@ -194,11 +206,25 @@
           {:key       (str "tr-" (:id item))
            :style     {:cursor "pointer"}
            :rowNumber index}
-          (->> (select-keys item render-keys)
+          (->> (select-keys item render-items-key)
                (map #(table-row-column
                        {:key (str "trc-" (:id item))}
-                       (render-fn %))))))
+                       (render-item-fn %))))))
       items)))
+
+(defn list-table
+  [headers items render-item-fn render-items-key url]
+  (let [item-id (fn [index] (:id (nth items index)))]
+    (mui
+      (table
+        {:key         "tbl"
+         :selectable  false
+         :onCellClick (fn [i] (dispatch!
+                                (str url (item-id i))))}
+        (list-table-header headers)
+        (list-table-body items
+                         render-item-fn
+                         render-items-key)))))
 
 ;; Form table component
 

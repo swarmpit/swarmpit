@@ -1,6 +1,5 @@
 (ns swarmpit.component.service.list
   (:require [material.component :as comp]
-            [swarmpit.uri :refer [dispatch!]]
             [swarmpit.component.state :as state]
             [clojure.string :as string]
             [rum.core :as rum]))
@@ -22,34 +21,25 @@
 
 (rum/defc service-list < rum/reactive [items]
   (let [{:keys [predicate]} (state/react cursor)
-        filtered-items (filter-items items predicate)
-        service-id (fn [index] (:id (nth filtered-items index)))]
+        filtered-items (filter-items items predicate)]
     [:div
      [:div.form-panel
       [:div.form-panel-left
-       (comp/mui
-         (comp/text-field
-           {:hintText       "Filter by name"
-            :onChange       (fn [e v]
-                              (state/update-value :predicate v cursor))
-            :underlineStyle {:borderColor "rgba(0, 0, 0, 0.2)"}
-            :style          {:height     "44px"
-                             :lineHeight "15px"}}))]
+       (comp/panel-text-field
+         {:hintText "Filter by name"
+          :onChange (fn [_ v]
+                      (state/update-value :predicate v cursor))})]
       [:div.form-panel-right
        (comp/mui
          (comp/raised-button
            {:href    "/#/services/create"
             :label   "Create"
             :primary true}))]]
-     (comp/mui
-       (comp/table
-         {:selectable  false
-          :onCellClick (fn [i] (dispatch!
-                                 (str "/#/services/" (service-id i))))}
-         (comp/list-table-header headers)
-         (comp/list-table-body filtered-items
-                               render-item
-                               [:serviceName :mode :replicas :image])))]))
+     (comp/list-table headers
+                      filtered-items
+                      render-item
+                      [:serviceName :mode :replicas :image]
+                      "/#/services/")]))
 
 (defn mount!
   [items]

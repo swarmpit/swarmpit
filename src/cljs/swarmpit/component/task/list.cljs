@@ -1,6 +1,5 @@
 (ns swarmpit.component.task.list
   (:require [material.component :as comp]
-            [swarmpit.uri :refer [dispatch!]]
             [swarmpit.component.state :as state]
             [clojure.string :as string]
             [rum.core :as rum]))
@@ -22,28 +21,19 @@
 
 (rum/defc task-list < rum/reactive [items]
   (let [{:keys [predicate]} (state/react cursor)
-        filtered-items (filter-items items predicate)
-        task-id (fn [index] (:id (nth filtered-items index)))]
+        filtered-items (filter-items items predicate)]
     [:div
      [:div.form-panel
       [:div.form-panel-left
-       (comp/mui
-         (comp/text-field
-           {:hintText       "Filter by service name"
-            :onChange       (fn [e v]
-                              (state/update-value :predicate v cursor))
-            :underlineStyle {:borderColor "rgba(0, 0, 0, 0.2)"}
-            :style          {:height     "44px"
-                             :lineHeight "15px"}}))]]
-     (comp/mui
-       (comp/table
-         {:selectable  false
-          :onCellClick (fn [i] (dispatch!
-                                 (str "/#/tasks/" (task-id i))))}
-         (comp/list-table-header headers)
-         (comp/list-table-body filtered-items
-                               render-item
-                               [:name :service :image :node :state])))]))
+       (comp/panel-text-field
+         {:hintText "Filter by service name"
+          :onChange (fn [_ v]
+                      (state/update-value :predicate v cursor))})]]
+     (comp/list-table headers
+                      filtered-items
+                      render-item
+                      [:name :service :image :node :state]
+                      "/#/tasks/")]))
 
 (defn mount!
   [items]
