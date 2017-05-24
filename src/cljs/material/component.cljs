@@ -88,6 +88,9 @@
   ([props] (factory/raised-button (clj->js props)))
   ([] (factory/raised-button nil)))
 
+(defn chip
+  [props & childs] (factory/chip (clj->js props) childs))
+
 (defn menu
   [props & childs]
   (factory/menu (clj->js props) childs))
@@ -159,6 +162,11 @@
               :style          {:height     "44px"
                                :lineHeight "15px"}}))))
 
+(defn panel-comp [label comp]
+  [:div.form-panel-item
+   [:div.form-panel-item-field (mui comp)]
+   [:span.form-panel-item-label label]])
+
 ;; Form component layout
 
 (defn form-comp [label comp]
@@ -213,14 +221,16 @@
       items)))
 
 (defn list-table
-  [headers items render-item-fn render-items-key url]
+  [headers items render-item-fn render-items-key url cells-click-skip]
   (let [item-id (fn [index] (:id (nth items index)))]
     (mui
       (table
         {:key         "tbl"
          :selectable  false
-         :onCellClick (fn [i] (dispatch!
-                                (str url (item-id i))))}
+         :onCellClick (fn [i c]
+                        (if (not (contains? cells-click-skip c))
+                          (dispatch!
+                            (str url (item-id i)))))}
         (list-table-header headers)
         (list-table-body items
                          render-item-fn
@@ -317,9 +327,10 @@
            :style         item-el-style}
           (->> (keys item)
                (map #(table-row-column
-                       {:key   (str "trc-" (:id %))
-                        :style item-el-style}
-                       (% item))))))
+                       {:children (% item)
+                        :key      (str "trc-" index "-" %)
+                        :style    item-el-style} nil
+                       )))))
       items)))
 
 (defn info-table [headers items width]

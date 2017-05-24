@@ -1,8 +1,10 @@
 (ns swarmpit.component.service.list
   (:require [material.component :as comp]
+            [material.icon :as icon]
             [swarmpit.component.state :as state]
             [clojure.string :as string]
-            [rum.core :as rum]))
+            [rum.core :as rum]
+            [sablono.core :refer-macros [html]]))
 
 (enable-console-print!)
 
@@ -39,7 +41,8 @@
                       filtered-items
                       render-item
                       [:serviceName :mode :replicas :image]
-                      "/#/services/")]))
+                      "/#/services/"
+                      nil)]))
 
 (defn mount!
   [items]

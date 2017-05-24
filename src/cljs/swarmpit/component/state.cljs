@@ -15,7 +15,8 @@
                                  :variables  []
                                  :volumes    []
                                  :list       {:predicate ""}}
-                       :task    {:list {:predicate ""}}}}))
+                       :task    {:list {:filter {:name    ""
+                                                 :running true}}}}}))
 
 (defn react
   [cursor]

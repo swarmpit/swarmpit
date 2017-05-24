@@ -9,6 +9,7 @@
 
 (def paper (create-factory js/MaterialUI.Paper))
 (def avatar (create-factory js/MaterialUI.Avatar))
+(def chip (create-factory js/MaterialUI.Chip))
 (def app-bar (create-factory js/MaterialUI.AppBar))
 (def drawer (create-factory js/MaterialUI.Drawer))
 (def snackbar (create-factory js/MaterialUI.Snackbar))

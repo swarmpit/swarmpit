@@ -36,6 +36,7 @@ main {
 
 /* Form layout */
 
+.form-panel-item,
 .form-edit-row,
 .form-view-row {
     display: flex;
@@ -106,6 +107,10 @@ main {
     width: 14px;
 }
 
+.form-panel-space {
+    width: 30px;
+}
+
 .form-panel-left,
 .form-panel-right {
     display: inline-flex;
@@ -120,6 +125,18 @@ main {
 .form-panel-right {
     float: right;
     padding-right: 24px;
+}
+
+.form-panel-item {
+    margin: 12px 0 10px 0;
+}
+
+.form-panel-item-label {
+    margin-top: 2px;
+}
+
+.form-panel-item-field {
+    width: 30px;
 }
 
 /* Page layout (404/Login) */
@@ -148,4 +165,30 @@ main {
     display: flex;
     align-items: center;
     color: #fff;
+}
+
+/* Labels */
+
+.label {
+    display: inline;
+    padding: .2em .6em .3em;
+    color: #fff;
+    border-radius: .25em;
+}
+
+.label-failed {
+    background-color: #d9534f;
+}
+
+.label-running {
+    background-color: #509E50;
+}
+
+.label-shutdown {
+    background-color: #757474;
+}
+
+.label-leader,
+.label-created {
+    background-color: #437f9d;
 }

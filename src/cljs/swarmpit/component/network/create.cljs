@@ -16,7 +16,7 @@
    :fontSize "14px"})
 
 (defn- form-name [value]
-  (comp/form-item
+  (comp/form-comp
     "NAME"
     (comp/text-field
       {:id       "serviceName"
@@ -25,7 +25,7 @@
                    (state/update-value :name v cursor))})))
 
 (defn- form-driver [value]
-  (comp/form-item
+  (comp/form-comp
     "DRIVER"
     (comp/select-field
       {:value    value

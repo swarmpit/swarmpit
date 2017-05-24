@@ -2,13 +2,14 @@
   (:require [material.component :as comp]
             [swarmpit.component.state :as state]
             [clojure.string :as string]
-            [rum.core :as rum]))
+            [rum.core :as rum]
+            [sablono.core :refer-macros [html]]))
 
 (enable-console-print!)
 
 (def cursor [:form :node :list])
 
-(def headers ["Name" "Status" "Availability" "Leader"])
+(def headers ["Name" "Status" "Availability" ""])
 
 (defn- filter-items
   "Filter list items based on given predicate"
@@ -17,9 +18,9 @@
 
 (defn- render-item
   [item]
-  (case (val item)
-    true "yes"
-    false "no"
+  (if (and (= :leader (key item))
+           (val item))
+    (html [:span.label.label-leader "Leader"])
     (val item)))
 
 (rum/defc node-list < rum/reactive [items]
@@ -36,7 +37,8 @@
                       filtered-items
                       render-item
                       [:name :state :availability :leader]
-                      "/#/nodes/")]))
+                      "/#/nodes/"
+                      nil)]))
 
 (defn mount!
   [items]

@@ -42,7 +42,8 @@
                       filtered-items
                       render-item
                       [:name :driver :internal]
-                      "/#/networks/")]))
+                      "/#/networks/"
+                      nil)]))
 
 (defn mount!
   [items]
