@@ -149,7 +149,21 @@
 
 ;;; Composite components
 
-;; List component
+(defn form-comp [label comp]
+  [:div.form-edit-row
+   [:span.form-row-label label]
+   [:div.form-row-field (mui comp)]])
+
+(defn form-item [label value]
+  [:div.form-view-row
+   [:span.form-row-label label]
+   [:div.form-row-value value]])
+
+(defn form-section [label]
+  [:div.form-view-row
+   [:span.form-row-section label]])
+
+;; List table component
 
 (defn list-table-header
   [headers]
@@ -186,12 +200,7 @@
                        (render-fn %))))))
       items)))
 
-;; Form component
-
-(defn form-item [label comp]
-  [:div.form-edit-row
-   [:span.form-row-label label]
-   [:div.form-row-field (mui comp)]])
+;; Form table component
 
 (defn form-table-header
   [headers add-item-fn]
@@ -248,16 +257,7 @@
       (form-table-header headers add-item-fn)
       (form-table-body items render-items-fn remove-item-fn))))
 
-;; Info component
-
-(defn info-item [label value]
-  [:div.form-view-row
-   [:span.form-row-label label]
-   [:div.form-row-value value]])
-
-(defn info-section [label]
-  [:div.form-view-row
-   [:span.form-section-label label]])
+;; Info table component
 
 (defn info-table-header [headers header-el-style]
   (table-header

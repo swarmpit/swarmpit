@@ -96,7 +96,7 @@
           :style      stepper-style
           :children   (clj->js (step-items))}))
      (form-item index)
-     [:div.form-panel.form-buttons
+     [:div.form-panel.form-panel-buttons
       [:div.form-panel-left
        (comp/mui
          (comp/raised-button

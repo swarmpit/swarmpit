@@ -9,15 +9,15 @@
    [:div.form-panel]
    [:div.form-view
     [:div.form-view-group
-     (comp/info-section "General settings")
-     (comp/info-item "ID" (:id item))
-     (comp/info-item "CREATED" (:createdAt item))
-     (comp/info-item "LAST UPDATE" (:updatedAt item))
-     (comp/info-item "IMAGE" (:image item))
-     (comp/info-item "IMAGE DIGEST" (:imageDigest item))
-     (comp/info-section "Status")
-     (comp/info-item "STATE" (:state item))
-     (comp/info-item "DESIRED STATE" (:desiredState item))]]])
+     (comp/form-section "General settings")
+     (comp/form-item "ID" (:id item))
+     (comp/form-item "CREATED" (:createdAt item))
+     (comp/form-item "LAST UPDATE" (:updatedAt item))
+     (comp/form-item "IMAGE" (:image item))
+     (comp/form-item "IMAGE DIGEST" (:imageDigest item))
+     (comp/form-section "Status")
+     (comp/form-item "STATE" (:state item))
+     (comp/form-item "DESIRED STATE" (:desiredState item))]]])
 
 (defn mount!
   [item]

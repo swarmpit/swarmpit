@@ -58,9 +58,9 @@
   (let [{:keys [email
                 password
                 message]} (rum/react state)]
-    [:div.login-back
-     [:div.login
-      [:div.message message]
+    [:div.page-back
+     [:div.page
+      [:div message]
       (form-email email)
       (form-password password)
       (comp/mui

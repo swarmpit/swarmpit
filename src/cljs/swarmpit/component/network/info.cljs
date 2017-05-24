@@ -28,17 +28,17 @@
           :label      "Delete"}))]]
    [:div.form-view
     [:div.form-view-group
-     (comp/info-section "General settings")
-     (comp/info-item "ID" (:id item))
-     (comp/info-item "NAME" (:name item))
-     (comp/info-item "CREATED" (:created item))
-     (comp/info-item "DRIVER" (:driver item))
-     (comp/info-item "INTERNAL" (if (:internal item)
+     (comp/form-section "General settings")
+     (comp/form-item "ID" (:id item))
+     (comp/form-item "NAME" (:name item))
+     (comp/form-item "CREATED" (:created item))
+     (comp/form-item "DRIVER" (:driver item))
+     (comp/form-item "INTERNAL" (if (:internal item)
                                           "yes"
                                           "no"))
-     (comp/info-section "IP address management")
-     (comp/info-item "SUBNET" (:subnet item))
-     (comp/info-item "GATEWAY" (:gateway item))]]])
+     (comp/form-section "IP address management")
+     (comp/form-item "SUBNET" (:subnet item))
+     (comp/form-item "GATEWAY" (:gateway item))]]])
 
 (defn mount!
   [item]

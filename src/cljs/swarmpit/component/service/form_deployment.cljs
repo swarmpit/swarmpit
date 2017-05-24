@@ -11,7 +11,7 @@
   {:marginTop "14px"})
 
 (defn- form-autoredeploy [value]
-  (comp/form-item
+  (comp/form-comp
     "AUTOREDEPLOY"
     (comp/toogle
       {:toggled  value

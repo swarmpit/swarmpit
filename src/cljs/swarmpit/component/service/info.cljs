@@ -38,22 +38,22 @@
             :label      "Delete"}))]]
      [:div.form-view
       [:div.form-view-group
-       (comp/info-section "General settings")
-       (comp/info-item "ID" id)
-       (comp/info-item "SERVICE NAME" (:serviceName item))
-       (comp/info-item "CREATED" (:createdAt item))
-       (comp/info-item "LAST UPDATE" (:updatedAt item))
-       (comp/info-item "IMAGE" (:image item))
-       (comp/info-item "IMAGE DIGEST" (:imageDigest item))
-       (comp/info-item "MODE" (:mode item))]
+       (comp/form-section "General settings")
+       (comp/form-item "ID" id)
+       (comp/form-item "SERVICE NAME" (:serviceName item))
+       (comp/form-item "CREATED" (:createdAt item))
+       (comp/form-item "LAST UPDATE" (:updatedAt item))
+       (comp/form-item "IMAGE" (:image item))
+       (comp/form-item "IMAGE DIGEST" (:imageDigest item))
+       (comp/form-item "MODE" (:mode item))]
       [:div.form-view-group
-       (comp/info-section "Ports")
+       (comp/form-section "Ports")
        (comp/info-table ports/headers (:ports item) "30%")]
       [:div.form-view-group
-       (comp/info-section "Volumes")
+       (comp/form-section "Volumes")
        (comp/info-table volumes/headers (:volumes item) "100%")]
       [:div.form-view-group
-       (comp/info-section "Environment variables")
+       (comp/form-section "Environment variables")
        (comp/info-table variables/headers (:variables item) "60%")]]]))
 
 (defn mount!

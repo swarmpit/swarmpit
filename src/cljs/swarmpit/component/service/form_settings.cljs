@@ -22,7 +22,7 @@
   {:marginTop "14px"})
 
 (defn- form-image [value]
-  (comp/form-item
+  (comp/form-comp
     "IMAGE"
     (comp/select-field
       {:value    value
@@ -39,7 +39,7 @@
          :primaryText "nohaapav/app:latest"}))))
 
 (defn- form-name [value update-form?]
-  (comp/form-item
+  (comp/form-comp
     "SERVICE NAME"
     (comp/text-field
       {:id       "serviceName"
@@ -49,7 +49,7 @@
                    (state/update-value :serviceName v cursor))})))
 
 (defn- form-mode [value update-form?]
-  (comp/form-item
+  (comp/form-comp
     "MODE"
     (comp/radio-button-group
       {:name          "mode"
@@ -70,7 +70,7 @@
          :value    "global"}))))
 
 (defn- form-replicas [value]
-  (comp/form-item
+  (comp/form-comp
     (str "REPLICAS  " "(" value ")")
     (comp/slider
       {:min          1

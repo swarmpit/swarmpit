@@ -56,19 +56,19 @@
             :label "Back"}))]]
      [:div.form-view
       [:div.form-view-group
-       (comp/info-section "General settings")
+       (comp/form-section "General settings")
        (settings/form true)]
       [:div.form-view-group
-       (comp/info-section "Ports")
+       (comp/form-section "Ports")
        (ports/form)]
       [:div.form-view-group
-       (comp/info-section "Volumes")
+       (comp/form-section "Volumes")
        (volumes/form)]
       [:div.form-view-group
-       (comp/info-section "Environment variables")
+       (comp/form-section "Environment variables")
        (variables/form)]
       [:div.form-view-group
-       (comp/info-section "Deployment")
+       (comp/form-section "Deployment")
        (deployment/form)]]]))
 
 (defn- init-state

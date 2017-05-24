@@ -2,8 +2,8 @@
   (:require [rum.core :as rum]))
 
 (rum/defc not-found < rum/static []
-  [:div.login-back
-   [:div.login
+  [:div.page-back
+   [:div.page
     [:span
      [:h1 "404"]
      [:p "What you are looking for, "]

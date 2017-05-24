@@ -34,14 +34,17 @@ main {
     margin-left: 200px;
 }
 
-.row, .form-edit-row, .form-view-row {
+/* Form layout */
+
+.form-edit-row,
+.form-view-row {
     display: flex;
     flex-flow: row wrap;
     -ms-flex-wrap: nowrap;
     flex-wrap: nowrap;
 }
 
-/* Form layout */
+/* Form edit layout */
 
 .form-edit {
     margin-top: 10px;
@@ -51,24 +54,28 @@ main {
     margin: 0 24px 0 24px;
 }
 
+/* Form view layout */
+
 .form-view {
     margin-top: 20px;
-}
-
-.form-view-group {
-    margin-bottom: 20px;
 }
 
 .form-view-row {
     margin: 10px 24px 10px 24px;
 }
 
+.form-view-group {
+    margin-bottom: 20px;
+}
+
+/* Form row entries */
+
 .form-row-label {
     align-self: center;
     width: 200px;
 }
 
-.form-section-label {
+.form-row-section {
     font-size: 20px;
     color: rgba(0, 0, 0, 0.298039);
 }
@@ -80,9 +87,7 @@ main {
     position: relative;
 }
 
-.form-buttons {
-    background: transparent !important;
-}
+/* Form panel */
 
 .form-panel {
     padding-top: 12px;
@@ -93,27 +98,33 @@ main {
     background: rgb(245, 245, 245);
 }
 
+.form-panel-buttons {
+    background: transparent !important;
+}
+
 .form-panel-delimiter {
     width: 14px;
+}
+
+.form-panel-left,
+.form-panel-right {
+    display: inline-flex;
+    position: relative;
 }
 
 .form-panel-left {
     float: left;
     padding-left: 24px;
-    display: inline-flex;
-    position: relative;
 }
 
 .form-panel-right {
     float: right;
     padding-right: 24px;
-    display: inline-flex;
-    position: relative;
 }
 
-/* Login form */
+/* Page layout (404/Login) */
 
-.login {
+.page {
     align-self: center;
     width: 400px;
     background-color: #fdfdfd;
@@ -124,23 +135,17 @@ main {
     padding-bottom: 30px;
 }
 
-.login-back {
+.page-back {
     display: flex;
     justify-content: center;
     background: rgb(224, 224, 224);
     height: 100vh;
 }
 
-.login-btn {
-    margin-top: 30px;
-}
+/* User bar layout */
 
 .user-bar {
     display: flex;
     align-items: center;
     color: #fff;
-}
-
-.user-avatar {
-    margin-right: 10px;
 }
