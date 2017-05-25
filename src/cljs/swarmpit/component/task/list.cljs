@@ -2,8 +2,7 @@
   (:require [material.component :as comp]
             [swarmpit.component.state :as state]
             [clojure.string :as string]
-            [rum.core :as rum]
-            [sablono.core :refer-macros [html]]))
+            [rum.core :as rum]))
 
 (enable-console-print!)
 
@@ -22,12 +21,13 @@
 
 (defn- render-item
   [item]
-  (if (= :state (key item))
-    (case (val item)
-      "running" (html [:span.label.label-running (val item)])
-      "shutdown" (html [:span.label.label-shutdown (val item)])
-      "failed" (html [:span.label.label-failed (val item)]))
-    (val item)))
+  (let [value (val item)]
+    (if (= :state (key item))
+      (case value
+        "running" (comp/label-green value)
+        "shutdown" (comp/label-grey value)
+        "failed" (comp/label-red value))
+      (val item))))
 
 (rum/defc task-list < rum/reactive [items]
   (let [{:keys [serviceName running]} (state/react cursor)
@@ -50,9 +50,14 @@
                       filtered-items
                       render-item
                       [[:taskName] [:serviceName] [:image] [:node :nodeName] [:state]]
-                      "/#/tasks/"
-                      nil)]))
+                      "/#/tasks/")]))
+
+(defn- init-state
+  []
+  (state/set-value {:serviceName ""
+                    :running     true} cursor))
 
 (defn mount!
   [items]
+  (init-state)
   (rum/mount (task-list items) (.getElementById js/document "content")))

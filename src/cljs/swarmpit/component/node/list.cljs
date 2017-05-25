@@ -2,8 +2,7 @@
   (:require [material.component :as comp]
             [swarmpit.component.state :as state]
             [clojure.string :as string]
-            [rum.core :as rum]
-            [sablono.core :refer-macros [html]]))
+            [rum.core :as rum]))
 
 (enable-console-print!)
 
@@ -20,7 +19,7 @@
   [item]
   (if (and (= :leader (key item))
            (val item))
-    (html [:span.label.label-leader "Leader"])
+    (comp/label-blue "Leader")
     (val item)))
 
 (rum/defc node-list < rum/reactive [items]
@@ -37,9 +36,13 @@
                       filtered-items
                       render-item
                       [[:nodeName] [:state] [:availability] [:leader]]
-                      "/#/nodes/"
-                      nil)]))
+                      "/#/nodes/")]))
+
+(defn- init-state
+  []
+  (state/set-value {:nodeName ""} cursor))
 
 (defn mount!
   [items]
+  (init-state)
   (rum/mount (node-list items) (.getElementById js/document "content")))

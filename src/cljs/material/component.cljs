@@ -168,6 +168,28 @@
    [:div.form-panel-item-field (mui comp)]
    [:span.form-panel-item-label label]])
 
+;; Labels
+
+(defn label-red
+  [text]
+  (html [:span.label.label-red text]))
+
+(defn label-yellow
+  [text]
+  (html [:span.label.label-yellow text]))
+
+(defn label-green
+  [text]
+  (html [:span.label.label-green text]))
+
+(defn label-blue
+  [text]
+  (html [:span.label.label-blue text]))
+
+(defn label-grey
+  [text]
+  (html [:span.label.label-grey text]))
+
 ;; Form component layout
 
 (defn form-comp [label comp]
@@ -222,16 +244,15 @@
       items)))
 
 (defn list-table
-  [headers items render-item-fn render-items-key url cells-click-skip]
+  [headers items render-item-fn render-items-key url]
   (let [item-id (fn [index] (:id (nth items index)))]
     (mui
       (table
         {:key         "tbl"
          :selectable  false
-         :onCellClick (fn [i c]
-                        (if (not (contains? cells-click-skip c))
-                          (dispatch!
-                            (str url (item-id i)))))}
+         :onCellClick (fn [i]
+                        (dispatch!
+                          (str url (item-id i))))}
         (list-table-header headers)
         (list-table-body items
                          render-item-fn

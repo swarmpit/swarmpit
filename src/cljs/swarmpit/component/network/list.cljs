@@ -42,9 +42,13 @@
                       filtered-items
                       render-item
                       [[:networkName] [:driver] [:internal]]
-                      "/#/networks/"
-                      nil)]))
+                      "/#/networks/")]))
+
+(defn- init-state
+  []
+  (state/set-value {:networkName ""} cursor))
 
 (defn mount!
   [items]
+  (init-state)
   (rum/mount (network-list items) (.getElementById js/document "content")))

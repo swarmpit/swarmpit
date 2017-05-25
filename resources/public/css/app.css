@@ -176,19 +176,22 @@ main {
     border-radius: .25em;
 }
 
-.label-failed {
+.label-red {
     background-color: #d9534f;
 }
 
-.label-running {
+.label-green {
     background-color: #509E50;
 }
 
-.label-shutdown {
+.label-yellow {
+    background-color: #9e931b;
+}
+
+.label-grey {
     background-color: #757474;
 }
 
-.label-leader,
-.label-created {
+.label-blue {
     background-color: #437f9d;
 }

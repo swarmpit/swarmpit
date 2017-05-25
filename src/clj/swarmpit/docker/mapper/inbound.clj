@@ -79,17 +79,38 @@
                  :value (second variable)})))
        (into [])))
 
+(defn ->service-replicas-state
+  [replicas replicas-running service-mode]
+  (if (= service-mode "replicated")
+    (str replicas-running " / " replicas)
+    (str replicas-running " / " replicas-running)))
+
+(defn ->service-state
+  [replicas replicas-running service-mode]
+  (case service-mode
+    "replicated" (if (zero? replicas-running)
+                   "not running"
+                   (if (= replicas-running replicas)
+                     "running"
+                     "partly running"))
+    "global" (if (zero? replicas-running)
+               "not running"
+               "running")))
+
 (defn ->service
   [service tasks nodes]
   (let [service-mode (str/lower-case (name (first (keys (get-in service [:Spec :Mode])))))
         service-name (get-in service [:Spec :Name])
         service-id (get service :ID)
+        service-tasks (-> (filter #(= (:ServiceID %) service-id) tasks)
+                          (->tasks nodes service-name service-mode))
+        replicas (get-in service [:Spec :Mode :Replicated :Replicas])
+        replicas-running (-> (filter #(= (:state %) "running") service-tasks)
+                             (count))
         image (get-in service [:Spec :TaskTemplate :ContainerSpec :Image])
         image-info (str/split image #"@")
         image-name (first image-info)
-        image-digest (second image-info)
-        tasks (filter #(= (:ServiceID %)
-                          service-id) tasks)]
+        image-digest (second image-info)]
     (array-map
       :id service-id
       :version (get-in service [:Version :Index])
@@ -99,11 +120,13 @@
       :imageDigest image-digest
       :serviceName service-name
       :mode service-mode
-      :replicas (get-in service [:Spec :Mode :Replicated :Replicas])
+      :replicas replicas
+      :replicasState (->service-replicas-state replicas replicas-running service-mode)
+      :state (->service-state replicas replicas-running service-mode)
       :ports (->service-ports service)
       :volumes (->service-volumes service)
       :variables (->service-variables service)
-      :tasks (->tasks tasks nodes service-name service-mode))))
+      :tasks service-tasks)))
 
 (defn ->services
   [services tasks nodes]

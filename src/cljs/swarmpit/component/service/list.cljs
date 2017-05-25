@@ -9,7 +9,7 @@
 
 (def cursor [:form :service :list :filter])
 
-(def headers ["Name" "Mode" "Replicas" "Image"])
+(def headers ["Name" "Image" "Mode" "Replicas" ""])
 
 (defn- filter-items
   "Filter list items based on given predicate"
@@ -18,7 +18,14 @@
 
 (defn- render-item
   [item]
-  (val item))
+  (let [value (val item)]
+    (case (key item)
+      :state (case value
+               "running" (comp/label-green value)
+               "not running" (comp/label-grey value)
+               "partial running" (comp/label-yellow value))
+      :replicasState (comp/chip nil value)
+      value)))
 
 (rum/defc service-list < rum/reactive [items]
   (let [{:keys [serviceName]} (state/react cursor)
@@ -39,10 +46,14 @@
      (comp/list-table headers
                       filtered-items
                       render-item
-                      [[:serviceName] [:mode] [:replicas] [:image]]
-                      "/#/services/"
-                      nil)]))
+                      [[:serviceName] [:image] [:mode] [:replicasState] [:state]]
+                      "/#/services/")]))
+
+(defn- init-state
+  []
+  (state/set-value {:serviceName ""} cursor))
 
 (defn mount!
   [items]
+  (init-state)
   (rum/mount (service-list items) (.getElementById js/document "content")))
