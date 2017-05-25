@@ -1,4 +1,5 @@
-(ns material.icon)
+(ns material.icon
+  (:refer-clojure :exclude [remove]))
 
 (def home "M10 20v-6h4v6h5v-8h3L12 3 2 12h3v8z")
 (def view-confy "M3 19h6v-7H3v7zm7 0h12v-7H10v7zM3 5v6h19V5H3z")
