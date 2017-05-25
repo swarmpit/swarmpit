@@ -45,12 +45,6 @@
   (->> (dc/get "/services")
        (dd/<-services)))
 
-(defn services-name
-  []
-  (->> (services)
-       (map (fn [s] [(:id s) (:serviceName s)]))
-       (into (sorted-map))))
-
 (defn service
   [service-id]
   (->> (str "/services/" service-id)
@@ -108,28 +102,18 @@
        (dc/get)
        (dd/<-node)))
 
-(defn nodes-name
-  []
-  (->> (nodes)
-       (map (fn [n] [(:id n) (:name n)]))
-       (into (sorted-map))))
-
 ;;; Task API
 
 (defn tasks
   []
-  (let [services (services-name)
-        nodes (nodes-name)]
-    (-> (dc/get "/tasks")
-        (dd/<-tasks services nodes))))
+  (-> (dc/get "/tasks")
+      (dd/<-tasks (services) (nodes))))
 
 (defn task
   [task-id]
-  (let [services (services-name)
-        nodes (nodes-name)]
-    (-> (str "/tasks/" task-id)
-        (dc/get)
-        (dd/<-task services nodes))))
+  (-> (str "/tasks/" task-id)
+      (dc/get)
+      (dd/<-task (services) (nodes))))
 
 ;;; Registry API
 

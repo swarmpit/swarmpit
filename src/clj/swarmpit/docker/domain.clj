@@ -1,5 +1,6 @@
 (ns swarmpit.docker.domain
-  (:require [clojure.string :as str]))
+  (:require [clojure.string :as str]
+            [swarmpit.docker.filter :as filter]))
 
 ;;; Service domain
 
@@ -168,11 +169,13 @@
         image-info (str/split image #"@")
         image-name (first image-info)
         image-digest (second image-info)
-        service (get services (:ServiceID task))
-        node (get nodes (:NodeID task))]
+        service (filter/by-id services (:ServiceID task))
+        service-name (:serviceName service)
+        node (filter/by-id nodes (:NodeID task))
+        node-name (:name node)]
     (array-map
       :id (get task :ID)
-      :name (str service "." (get task :Slot))
+      :name (str service-name "." (get task :Slot))
       :version (get-in task [:Version :Index])
       :createdAt (get task :CreatedAt)
       :updatedAt (get task :UpdatedAt)
@@ -180,8 +183,8 @@
       :imageDigest image-digest
       :state (get-in task [:Status :State])
       :desiredState (get task :DesiredState)
-      :service service
-      :node node)))
+      :service service-name
+      :node node-name)))
 
 (defn <-tasks
   [tasks services nodes]
