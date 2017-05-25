@@ -2,13 +2,14 @@
   (:refer-clojure :exclude [get])
   (:require [clojure.java.shell :as shell]
             [clojure.string :as string]
+            [ring.util.codec :refer [form-encode]]
             [cheshire.core :refer [parse-string generate-string]]))
 
 (def ^:private api-version "v1.24")
 (def ^:private base-cmd ["curl" "--unix-socket" "/var/run/docker.sock" "-w" "%{http_code}"])
 
 (defn- map-headers
-  "Map request headers map to curl vector cmd representation"
+  "Map request `headers` map to curl vector cmd representation"
   [headers]
   (->> headers
        (map #(str (name (key %)) ": " (val %)))
@@ -16,23 +17,33 @@
        (flatten)
        (into [])))
 
+(defn- map-params
+  "Map request query `params` to curl vector cmd representation"
+  [params]
+  (if (some? params)
+    (str "?" (form-encode params))
+    ""))
+
 (defn- map-uri
-  "Map request uri to curl vector cmd representation"
-  [method uri]
-  ["-X" method (str "http:/" api-version uri)])
+  "Map request `method`, `uri` & query `params` to curl vector cmd representation"
+  [method uri params]
+  (let [params (if (some? params)
+                 (str "?" (form-encode params))
+                 "")]
+    ["-X" method (str "http:/" api-version uri (map-params params))]))
 
 (defn- map-payload
-  "Map request payload to curl vector cmd representation"
-  [json]
-  (if (nil? json)
+  "Map request `payload` to curl vector cmd representation"
+  [payload]
+  (if (nil? payload)
     []
-    ["-d" (generate-string json {:pretty true})]))
+    ["-d" (generate-string payload {:pretty true})]))
 
 (defn- command
   "Build docker command"
-  [method uri headers payload]
+  [method uri params headers payload]
   (let [pheaders (map-headers headers)
-        pcommand (map-uri method uri)
+        pcommand (map-uri method uri params)
         ppayload (map-payload payload)]
     (-> base-cmd
         (into pheaders)
@@ -55,8 +66,8 @@
 
 (defn- execute
   "Execute docker command and parse result"
-  [method uri headers payload]
-  (let [cmd (command method uri headers payload)
+  [method uri params headers payload]
+  (let [cmd (command method uri params headers payload)
         cmd-result (apply shell/sh cmd)]
     (if (= 0 (:exit cmd-result))
       (let [response (string/split (:out cmd-result) #"\n")
@@ -70,17 +81,18 @@
                       (parse-string (:err cmd-result) true))))))
 
 (defn get
-  ([uri] (execute "GET" uri nil nil))
-  ([uri headers] (execute "GET" uri headers nil)))
+  ([uri] (execute "GET" uri nil nil nil))
+  ([uri params] (execute "GET" uri params nil nil))
+  ([uri params headers] (execute "GET" uri params headers nil)))
 
 (defn post
-  ([uri payload] (execute "POST" uri nil payload))
-  ([uri headers payload] (execute "POST" uri headers payload)))
+  ([uri payload] (execute "POST" uri nil nil payload))
+  ([uri payload headers] (execute "POST" uri nil headers payload)))
 
 (defn put
-  ([uri payload] (execute "PUT" uri nil payload))
-  ([uri headers payload] (execute "PUT" uri headers payload)))
+  ([uri payload] (execute "PUT" uri nil nil payload))
+  ([uri payload headers] (execute "PUT" uri nil headers payload)))
 
 (defn delete
-  ([uri] (execute "DELETE" uri nil nil))
-  ([uri headers] (execute "DELETE" uri headers nil)))
+  ([uri] (execute "DELETE" uri nil nil nil))
+  ([uri headers] (execute "DELETE" uri nil headers nil)))
