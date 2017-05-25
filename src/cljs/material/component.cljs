@@ -3,7 +3,8 @@
   (:require [material.factory :as factory]
             [material.icon :as icon]
             [sablono.core :refer-macros [html]]
-            [swarmpit.uri :refer [dispatch!]]))
+            [swarmpit.uri :refer [dispatch!]]
+            [swarmpit.utils :refer [select-keys*]]))
 
 ;;; Theme components
 
@@ -214,7 +215,7 @@
           {:key       (str "tr-" (:id item))
            :style     {:cursor "pointer"}
            :rowNumber index}
-          (->> (select-keys item render-items-key)
+          (->> (select-keys* item render-items-key)
                (map #(table-row-column
                        {:key (str "trc-" (:id item))}
                        (render-item-fn %))))))
@@ -327,10 +328,8 @@
            :style         item-el-style}
           (->> (keys item)
                (map #(table-row-column
-                       {:children (% item)
-                        :key      (str "trc-" index "-" %)
-                        :style    item-el-style} nil
-                       )))))
+                       {:key   (str "trc-" index "-" %)
+                        :style item-el-style} (% item))))))
       items)))
 
 (defn info-table [headers items width]

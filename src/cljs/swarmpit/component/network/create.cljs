@@ -19,10 +19,10 @@
   (comp/form-comp
     "NAME"
     (comp/text-field
-      {:id       "serviceName"
+      {:id       "networkName"
        :value    value
        :onChange (fn [_ v]
-                   (state/update-value :name v cursor))})))
+                   (state/update-value :networkName v cursor))})))
 
 (defn- form-driver [value]
   (comp/form-comp

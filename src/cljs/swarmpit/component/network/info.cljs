@@ -30,12 +30,12 @@
     [:div.form-view-group
      (comp/form-section "General settings")
      (comp/form-item "ID" (:id item))
-     (comp/form-item "NAME" (:name item))
+     (comp/form-item "NAME" (:networkName item))
      (comp/form-item "CREATED" (:created item))
      (comp/form-item "DRIVER" (:driver item))
      (comp/form-item "INTERNAL" (if (:internal item)
-                                          "yes"
-                                          "no"))
+                                  "yes"
+                                  "no"))
      (comp/form-section "IP address management")
      (comp/form-item "SUBNET" (:subnet item))
      (comp/form-item "GATEWAY" (:gateway item))]]])

@@ -1,6 +1,5 @@
 (ns swarmpit.component.service.list
   (:require [material.component :as comp]
-            [material.icon :as icon]
             [swarmpit.component.state :as state]
             [clojure.string :as string]
             [rum.core :as rum]
@@ -8,7 +7,7 @@
 
 (enable-console-print!)
 
-(def cursor [:form :service :list])
+(def cursor [:form :service :list :filter])
 
 (def headers ["Name" "Mode" "Replicas" "Image"])
 
@@ -22,15 +21,15 @@
   (val item))
 
 (rum/defc service-list < rum/reactive [items]
-  (let [{:keys [predicate]} (state/react cursor)
-        filtered-items (filter-items items predicate)]
+  (let [{:keys [serviceName]} (state/react cursor)
+        filtered-items (filter-items items serviceName)]
     [:div
      [:div.form-panel
       [:div.form-panel-left
        (comp/panel-text-field
          {:hintText "Filter by name"
           :onChange (fn [_ v]
-                      (state/update-value :predicate v cursor))})]
+                      (state/update-value :serviceName v cursor))})]
       [:div.form-panel-right
        (comp/mui
          (comp/raised-button
@@ -40,7 +39,7 @@
      (comp/list-table headers
                       filtered-items
                       render-item
-                      [:serviceName :mode :replicas :image]
+                      [[:serviceName] [:mode] [:replicas] [:image]]
                       "/#/services/"
                       nil)]))
 

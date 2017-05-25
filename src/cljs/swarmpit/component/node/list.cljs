@@ -7,14 +7,14 @@
 
 (enable-console-print!)
 
-(def cursor [:form :node :list])
+(def cursor [:form :node :list :filter])
 
 (def headers ["Name" "Status" "Availability" ""])
 
 (defn- filter-items
   "Filter list items based on given predicate"
   [items predicate]
-  (filter #(string/includes? (:name %) predicate) items))
+  (filter #(string/includes? (:nodeName %) predicate) items))
 
 (defn- render-item
   [item]
@@ -24,19 +24,19 @@
     (val item)))
 
 (rum/defc node-list < rum/reactive [items]
-  (let [{:keys [predicate]} (state/react cursor)
-        filtered-items (filter-items items predicate)]
+  (let [{:keys [nodeName]} (state/react cursor)
+        filtered-items (filter-items items nodeName)]
     [:div
      [:div.form-panel
       [:div.form-panel-left
        (comp/panel-text-field
          {:hintText "Filter by name"
           :onChange (fn [_ v]
-                      (state/update-value :predicate v cursor))})]]
+                      (state/update-value :nodeName v cursor))})]]
      (comp/list-table headers
                       filtered-items
                       render-item
-                      [:name :state :availability :leader]
+                      [[:nodeName] [:state] [:availability] [:leader]]
                       "/#/nodes/"
                       nil)]))
 

@@ -16,9 +16,9 @@
   [items name running?]
   (let [is-running (fn [item] (= "running" (:state item)))]
     (if running?
-      (filter #(and (string/includes? (:service %) name)
+      (filter #(and (string/includes? (:serviceName %) name)
                     (is-running %)) items)
-      (filter #(string/includes? (:service %) name) items))))
+      (filter #(string/includes? (:serviceName %) name) items))))
 
 (defn- render-item
   [item]
@@ -30,15 +30,15 @@
     (val item)))
 
 (rum/defc task-list < rum/reactive [items]
-  (let [{:keys [name running]} (state/react cursor)
-        filtered-items (filter-items items name running)]
+  (let [{:keys [serviceName running]} (state/react cursor)
+        filtered-items (filter-items items serviceName running)]
     [:div
      [:div.form-panel
       [:div.form-panel-left
        (comp/panel-text-field
          {:hintText "Filter by service name"
           :onChange (fn [_ v]
-                      (state/update-value :name v cursor))})
+                      (state/update-value :serviceName v cursor))})
        [:span.form-panel-space]
        (comp/panel-comp
          "Show all tasks"
@@ -49,7 +49,7 @@
      (comp/list-table headers
                       filtered-items
                       render-item
-                      [:name :service :image :node :state]
+                      [[:taskName] [:serviceName] [:image] [:node :nodeName] [:state]]
                       "/#/tasks/"
                       nil)]))
 

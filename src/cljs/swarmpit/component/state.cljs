@@ -7,16 +7,16 @@
                        :domain ""}
                 :form {:network {:create {:name   ""
                                           :driver nil}
-                                 :list   {:predicate ""}}
-                       :node    {:list {:predicate ""}}
+                                 :list   {:filter {:networkName ""}}}
+                       :node    {:list {:filter {:nodeName ""}}}
                        :service {:settings   {}
                                  :deployment {}
                                  :ports      []
                                  :variables  []
                                  :volumes    []
-                                 :list       {:predicate ""}}
-                       :task    {:list {:filter {:name    ""
-                                                 :running true}}}}}))
+                                 :list       {:filter {:serviceName ""}}}
+                       :task    {:list {:filter {:serviceName ""
+                                                 :running     true}}}}}))
 
 (defn react
   [cursor]

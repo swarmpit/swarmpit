@@ -11,6 +11,7 @@
     [:div.form-view-group
      (comp/form-section "General settings")
      (comp/form-item "ID" (:id item))
+     (comp/form-item "NAME" (:taskName item))
      (comp/form-item "CREATED" (:createdAt item))
      (comp/form-item "LAST UPDATE" (:updatedAt item))
      (comp/form-item "IMAGE" (:image item))

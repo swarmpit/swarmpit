@@ -6,14 +6,14 @@
 
 (enable-console-print!)
 
-(def cursor [:form :network :list])
+(def cursor [:form :network :list :filter])
 
 (def headers ["Name" "Driver" "Internal"])
 
 (defn- filter-items
   "Filter list items based on given predicate"
   [items predicate]
-  (filter #(string/includes? (:name %) predicate) items))
+  (filter #(string/includes? (:networkName %) predicate) items))
 
 (defn- render-item
   [item]
@@ -23,15 +23,15 @@
     (val item)))
 
 (rum/defc network-list < rum/reactive [items]
-  (let [{:keys [predicate]} (state/react cursor)
-        filtered-items (filter-items items predicate)]
+  (let [{:keys [networkName]} (state/react cursor)
+        filtered-items (filter-items items networkName)]
     [:div
      [:div.form-panel
       [:div.form-panel-left
        (comp/panel-text-field
          {:hintText "Filter by name"
           :onChange (fn [_ v]
-                      (state/update-value :predicate v cursor))})]
+                      (state/update-value :networkName v cursor))})]
       [:div.form-panel-right
        (comp/mui
          (comp/raised-button
@@ -41,7 +41,7 @@
      (comp/list-table headers
                       filtered-items
                       render-item
-                      [:name :driver :internal]
+                      [[:networkName] [:driver] [:internal]]
                       "/#/networks/"
                       nil)]))
 
