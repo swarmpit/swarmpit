@@ -172,10 +172,15 @@
         service (filter/by-id services (:ServiceID task))
         service-name (:serviceName service)
         node (filter/by-id nodes (:NodeID task))
-        node-name (:name node)]
-    (array-map
-      :id (get task :ID)
-      :name (str service-name "." (get task :Slot))
+        node-name (:name node)
+        slot (get task :Slot)
+        id (get task :ID)
+        name (if (= "replicated" (:mode service))
+               (str service-name "." slot "." id)
+               (str service-name "." id))]
+    (sorted-map
+      :id id
+      :name name
       :version (get-in task [:Version :Index])
       :createdAt (get task :CreatedAt)
       :updatedAt (get task :UpdatedAt)
