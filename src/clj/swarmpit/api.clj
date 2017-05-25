@@ -1,7 +1,8 @@
 (ns swarmpit.api
   (:require [digest :as d]
             [swarmpit.docker.client :as dc]
-            [swarmpit.docker.domain :as dd]
+            [swarmpit.docker.mapper.inbound :as dmi]
+            [swarmpit.docker.mapper.outbound :as dmo]
             [swarmpit.registry.client :as rc]
             [swarmpit.couchdb.client :as cc]))
 
@@ -42,78 +43,81 @@
 
 (defn services
   []
-  (->> (dc/get "/services")
-       (dd/<-services)))
+  (dmi/->services (dc/get "/services")
+                  (dc/get "/tasks")
+                  (dc/get "/nodes")))
 
 (defn service
   [service-id]
-  (->> (str "/services/" service-id)
-       (dc/get)
-       (dd/<-service)))
+  (dmi/->service (-> (str "/services/" service-id)
+                     (dc/get))
+                 (dc/get "/tasks")
+                 (dc/get "/nodes")))
 
 (defn delete-service
   [service-id]
-  (->> (str "/services/" service-id)
-       (dc/delete)))
+  (-> (str "/services/" service-id)
+      (dc/delete)))
 
 (defn create-service
   [service]
-  (->> (dd/->service service)
+  (->> (dmo/->service service)
        (dc/post "/services/create")))
 
 (defn update-service
   [service-id service]
-  (->> (dd/->service service)
+  (->> (dmo/->service service)
        (dc/post (str "/services/" service-id "/update?version=" (:version service)))))
 
 ;;; Network API
 
 (defn networks
   []
-  (->> (dc/get "/networks")
-       (dd/<-networks)))
+  (-> (dc/get "/networks")
+      (dmi/->networks)))
 
 (defn network
   [network-id]
-  (->> (str "/networks/" network-id)
-       (dc/get)
-       (dd/<-network)))
+  (-> (str "/networks/" network-id)
+      (dc/get)
+      (dmi/->network)))
 
 (defn delete-network
   [network-id]
-  (->> (str "/networks/" network-id)
-       (dc/delete)))
+  (-> (str "/networks/" network-id)
+      (dc/delete)))
 
 (defn create-network
   [network]
-  (->> (dd/->network network)
+  (->> (dmo/->network network)
        (dc/post "/networks/create")))
 
 ;;; Node API
 
 (defn nodes
   []
-  (->> (dc/get "/nodes")
-       (dd/<-nodes)))
+  (-> (dc/get "/nodes")
+      (dmi/->nodes)))
 
 (defn node
   [node-id]
-  (->> (str "/nodes/" node-id)
-       (dc/get)
-       (dd/<-node)))
+  (-> (str "/nodes/" node-id)
+      (dc/get)
+      (dmi/->node)))
 
 ;;; Task API
 
 (defn tasks
   []
-  (-> (dc/get "/tasks")
-      (dd/<-tasks (services) (nodes))))
+  (->> (services)
+       (map #(:tasks %))
+       (flatten)))
 
 (defn task
   [task-id]
-  (-> (str "/tasks/" task-id)
-      (dc/get)
-      (dd/<-task (services) (nodes))))
+  (->> (tasks)
+       (filter #(= (:id %) task-id))
+       (first)))
 
 ;;; Registry API
 
