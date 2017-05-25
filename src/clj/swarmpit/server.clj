@@ -29,7 +29,8 @@
     (try
       (handler request)
       (catch Exception e
-        {:status 500 :body e}))))
+        {:status 500
+         :body   (Throwable->map e)}))))
 
 (defn wrap-auth-exception
   [handler]
@@ -39,10 +40,9 @@
             token (get headers "authorization")]
         (if (some? token)
           (try
-            (if (token/verify-jwt token)
-              (handler request)
-              (json-error 401 "Expired token"))
-            (catch Exception _
+            (token/verify-jwt token)
+            (handler request)
+            (catch ExceptionInfo _
               (json-error 401 "Invalid token")))
           (json-error 400 "Missing token")))
       (handler request))))

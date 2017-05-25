@@ -4,8 +4,7 @@
   (:require
     #?@(:clj  [[clojure.string :as str]
                [swarmpit.utils :refer [generate-uuid]]
-               [clj-jwt.core :refer :all]
-               [clj-jwt.key :refer [private-key public-key]]
+               [buddy.sign.jwt :as jwt]
                [clj-time.core :refer [now plus days]]]
         :cljs [[clojure.string :as str]
                [goog.crypt.base64 :as b64]])))
@@ -38,18 +37,14 @@
 #?(:clj
    (defn generate-jwt
      [user]
-     (let [jwt (-> (claim user) jwt (sign :HS256 "secret") to-str)]
+     (let [jwt (jwt/sign (claim user) "secret")]
        (bearer jwt))))
 
 #?(:clj
    (defn verify-jwt
      [token]
-     (-> (token-value token) str->jwt (verify "secret"))))
-
-#?(:clj
-   (defn decode-jwt
-     [token]
-     (-> token str->jwt :claims)))
+     (-> (token-value token)
+         (jwt/unsign "secret"))))
 
 #?(:clj
    (defn generate-basic
