@@ -1,12 +1,17 @@
 (ns swarmpit.component.task.info
   (:require [material.component :as comp]
+            [material.icon :as icon]
             [rum.core :as rum]))
 
 (enable-console-print!)
 
 (rum/defc form < rum/static [item]
   [:div
-   [:div.form-panel]
+   [:div.form-panel
+    [:div.form-panel-left
+     (comp/panel-info icon/tasks
+                      (:taskName item)
+                      (comp/label-info (:state item)))]]
    [:div.form-view
     [:div.form-view-group
      (comp/form-section "General settings")

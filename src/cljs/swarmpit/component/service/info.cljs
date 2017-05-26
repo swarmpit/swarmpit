@@ -1,5 +1,6 @@
 (ns swarmpit.component.service.info
   (:require [material.component :as comp]
+            [material.icon :as icon]
             [swarmpit.uri :refer [dispatch!]]
             [swarmpit.component.service.form-ports :as ports]
             [swarmpit.component.service.form-volumes :as volumes]
@@ -22,10 +23,18 @@
                                  (let [message (str "Service " service-id " removing failed. Reason: " status-text)]
                                    (message/mount! message)))}))
 
+(defn form-panel-label [item]
+  (str (:state item) "  " (get-in item [:status :info])))
+
 (rum/defc form < rum/static [item]
   (let [id (:id item)]
     [:div
      [:div.form-panel
+      [:div.form-panel-left
+       (comp/panel-info icon/services
+                        (:serviceName item)
+                        (comp/label-info
+                          (form-panel-label item)))]
       [:div.form-panel-right
        (comp/mui
          (comp/raised-button
@@ -59,7 +68,7 @@
       [:div.form-view-group
        (comp/form-section "Tasks")
        (comp/list-table tasks/headers
-                        (:tasks item)
+                        (filter #(not (= "shutdown" (:state %))) (:tasks item))
                         tasks/render-item
                         tasks/render-item-keys
                         "/#/tasks/")]]]))

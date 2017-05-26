@@ -10,6 +10,12 @@
 
 (def headers ["Name" "Service" "Image" "Node" "Status"])
 
+(defn form-state [value]
+  (case value
+    "running" (comp/label-green value)
+    "shutdown" (comp/label-grey value)
+    "failed" (comp/label-red value)))
+
 (defn- filter-items
   "Filter list `items` based on service `name` & `running?` flag"
   [items name running?]
@@ -26,10 +32,7 @@
   [item]
   (let [value (val item)]
     (if (= :state (key item))
-      (case value
-        "running" (comp/label-green value)
-        "shutdown" (comp/label-grey value)
-        "failed" (comp/label-red value))
+      (form-state value)
       (val item))))
 
 (rum/defc task-list < rum/reactive [items]

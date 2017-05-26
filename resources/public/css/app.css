@@ -36,6 +36,7 @@ main {
 
 /* Form layout */
 
+.form-panel-info,
 .form-panel-item,
 .form-edit-row,
 .form-view-row {
@@ -127,6 +128,21 @@ main {
     padding-right: 24px;
 }
 
+.form-panel-info-icon {
+    margin-top: 7px;
+    margin-right: 10px;
+}
+
+.form-panel-info-text {
+    font-size: 20px;
+    margin-top: 5px;
+    margin-right: 10px;
+}
+
+.form-panel-info-label {
+    margin-top: 9px;
+}
+
 .form-panel-item {
     margin: 12px 0 10px 0;
 }
@@ -194,4 +210,13 @@ main {
 
 .label-blue {
     background-color: #437f9d;
+}
+
+.label-info {
+    display: inline;
+    padding: .2em .6em .3em;
+    color: rgb(117, 117, 117);
+    background-color: #fff;
+    border: 1px solid rgb(224, 228, 231);
+    border-radius: .25em;
 }

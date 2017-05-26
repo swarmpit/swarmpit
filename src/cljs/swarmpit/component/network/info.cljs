@@ -1,5 +1,6 @@
 (ns swarmpit.component.network.info
   (:require [material.component :as comp]
+            [material.icon :as icon]
             [swarmpit.uri :refer [dispatch!]]
             [swarmpit.component.message :as message]
             [rum.core :as rum]
@@ -21,6 +22,9 @@
 (rum/defc form < rum/static [item]
   [:div
    [:div.form-panel
+    [:div.form-panel-left
+     (comp/panel-info icon/networks
+                      (:networkName item))]
     [:div.form-panel-right
      (comp/mui
        (comp/raised-button

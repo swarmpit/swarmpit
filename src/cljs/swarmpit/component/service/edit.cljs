@@ -1,5 +1,6 @@
 (ns swarmpit.component.service.edit
   (:require [material.component :as comp]
+            [material.icon :as icon]
             [swarmpit.uri :refer [dispatch!]]
             [swarmpit.component.state :as state]
             [swarmpit.component.service.form-settings :as settings]
@@ -43,6 +44,9 @@
   (let [id (:id item)]
     [:div
      [:div.form-panel
+      [:div.form-panel-left
+       (comp/panel-info icon/services
+                        (:serviceName item))]
       [:div.form-panel-right
        (comp/mui
          (comp/raised-button

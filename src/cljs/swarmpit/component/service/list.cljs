@@ -11,29 +11,35 @@
 
 (def headers ["Name" "Image" "Mode" "Replicas" "Status" "Updates"])
 
-(def list-replicas-style
+(def form-replicas-style
   {:backgroundColor "rgb(245, 245, 245)"
    :border          "1px solid rgb(224, 228, 231)"})
 
-(def list-replicas-label-style
+(def form-replicas-label-style
   {:fontSize "13px"})
 
-(def list-updates-style
+(def form-updates-style
   {:display  "inline-block"
    :position "relative"})
 
-(defn list-replicas [value]
-  (comp/chip {:style      list-replicas-style
-              :labelStyle list-replicas-label-style} value))
+(defn form-replicas [value]
+  (comp/chip {:style      form-replicas-style
+              :labelStyle form-replicas-label-style} value))
 
-(defn list-updates [value]
+(defn form-updates [value]
   (let [status (if value "loading" "ready")]
     (comp/refresh-indicator
       {:size   30
        :left   8
        :top    0
        :status status
-       :style  list-updates-style})))
+       :style  form-updates-style})))
+
+(defn form-state [value]
+  (case value
+    "running" (comp/label-green value)
+    "not running" (comp/label-grey value)
+    "partial running" (comp/label-yellow value)))
 
 (defn- filter-items
   "Filter list `items` based on `name` & `cranky?` flag"
@@ -53,12 +59,9 @@
   [item]
   (let [value (val item)]
     (case (key item)
-      :state (case value
-               "running" (comp/label-green value)
-               "not running" (comp/label-grey value)
-               "partial running" (comp/label-yellow value))
-      :info (list-replicas value)
-      :update (list-updates value)
+      :state (form-state value)
+      :info (form-replicas value)
+      :update (form-updates value)
       value)))
 
 (rum/defc service-list < rum/reactive [items]

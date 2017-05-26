@@ -172,6 +172,19 @@
    [:div.form-panel-item-field (mui comp)]
    [:span.form-panel-item-label label]])
 
+(defn panel-info
+  ([icon text]
+   [:div.form-panel-info
+    [:span.form-panel-info-icon
+     (mui (svg icon))]
+    [:span.form-panel-info-text text]])
+  ([icon text state]
+   [:div.form-panel-info
+    [:span.form-panel-info-icon
+     (mui (svg icon))]
+    [:span.form-panel-info-text text]
+    [:span.form-panel-info-label state]]))
+
 ;; Labels
 
 (defn label-red
@@ -193,6 +206,10 @@
 (defn label-grey
   [text]
   (html [:span.label.label-grey text]))
+
+(defn label-info
+  [text]
+  (html [:span.label.label-info text]))
 
 ;; Form component layout
 
