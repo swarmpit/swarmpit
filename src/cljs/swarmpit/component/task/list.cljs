@@ -11,7 +11,7 @@
 (def headers ["Name" "Service" "Image" "Node" "Status"])
 
 (defn- filter-items
-  "Filter list `items` based on `name` & `running?` flag"
+  "Filter list `items` based on service `name` & `running?` flag"
   [items name running?]
   (let [is-running (fn [item] (= "running" (:state item)))]
     (if running?

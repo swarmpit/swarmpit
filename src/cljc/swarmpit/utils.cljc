@@ -9,7 +9,7 @@
      (str (UUID/randomUUID))))
 
 (defn remove-el
-  "Remove element in vector on given index"
+  "Remove element in `vector` on given `index`"
   [vector index]
   (vec (concat
          (subvec vector 0 index)

@@ -91,11 +91,15 @@
   (-> (filter #(= (get-in % [:Status :State]) "running") service-tasks)
       (count)))
 
-(defn ->service-replicas-state
+(defn ->service-info-status
   [service-replicas service-replicas-running service-mode]
   (if (= service-mode "replicated")
     (str service-replicas-running " / " service-replicas)
     (str service-replicas-running " / " service-replicas-running)))
+
+(defn ->service-update-status
+  [service]
+  (= "updating" (get-in service [:UpdateStatus :State])))
 
 (defn ->service-state
   [service-replicas service-replicas-running service-mode]
@@ -132,8 +136,8 @@
       :mode service-mode
       :replicas replicas
       :state (->service-state replicas replicas-running service-mode)
-      :status {:info   (->service-replicas-state replicas replicas-running service-mode)
-               :update (some? (get-in service [:UpdateStatus :State]))}
+      :status {:info   (->service-info-status replicas replicas-running service-mode)
+               :update (->service-update-status service)}
       :ports (->service-ports service)
       :volumes (->service-volumes service)
       :variables (->service-variables service)
