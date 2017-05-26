@@ -4,6 +4,7 @@
             [swarmpit.component.service.form-ports :as ports]
             [swarmpit.component.service.form-volumes :as volumes]
             [swarmpit.component.service.form-variables :as variables]
+            [swarmpit.component.task.list :as tasks]
             [swarmpit.component.message :as message]
             [rum.core :as rum]
             [ajax.core :as ajax]))
@@ -54,7 +55,14 @@
        (comp/info-table volumes/headers (:volumes item) "100%")]
       [:div.form-view-group
        (comp/form-section "Environment variables")
-       (comp/info-table variables/headers (:variables item) "60%")]]]))
+       (comp/info-table variables/headers (:variables item) "60%")]
+      [:div.form-view-group
+       (comp/form-section "Tasks")
+       (comp/list-table tasks/headers
+                        (:tasks item)
+                        tasks/render-item
+                        tasks/render-item-keys
+                        "/#/tasks/")]]]))
 
 (defn mount!
   [item]

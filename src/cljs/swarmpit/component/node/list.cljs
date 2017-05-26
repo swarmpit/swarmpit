@@ -15,6 +15,9 @@
   [items predicate]
   (filter #(string/includes? (:nodeName %) predicate) items))
 
+(def render-item-keys
+  [[:nodeName] [:availability] [:state] [:leader]])
+
 (defn- render-item
   [item]
   (let [value (val item)]
@@ -37,7 +40,7 @@
      (comp/list-table headers
                       filtered-items
                       render-item
-                      [[:nodeName] [:availability] [:state] [:leader]]
+                      render-item-keys
                       "/#/nodes/")]))
 
 (defn- init-state

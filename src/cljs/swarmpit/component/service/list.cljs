@@ -46,6 +46,9 @@
                          (not (is-updating %)))) items)
       (filter #(string/includes? (:serviceName %) name) items))))
 
+(def render-item-keys
+  [[:serviceName] [:image] [:mode] [:status :info] [:state] [:status :update]])
+
 (defn- render-item
   [item]
   (let [value (val item)]
@@ -84,7 +87,7 @@
      (comp/list-table headers
                       filtered-items
                       render-item
-                      [[:serviceName] [:image] [:mode] [:status :info] [:state] [:status :update]]
+                      render-item-keys
                       "/#/services/")]))
 
 (defn- init-state

@@ -15,6 +15,9 @@
   [items predicate]
   (filter #(string/includes? (:networkName %) predicate) items))
 
+(def render-item-keys
+  [[:networkName] [:driver] [:internal]])
+
 (defn- render-item
   [item]
   (let [value (val item)]
@@ -42,7 +45,7 @@
      (comp/list-table headers
                       filtered-items
                       render-item
-                      [[:networkName] [:driver] [:internal]]
+                      render-item-keys
                       "/#/networks/")]))
 
 (defn- init-state

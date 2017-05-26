@@ -19,6 +19,9 @@
                     (is-running %)) items)
       (filter #(string/includes? (:serviceName %) name) items))))
 
+(def render-item-keys
+  [[:taskName] [:serviceName] [:image] [:node :nodeName] [:state]])
+
 (defn- render-item
   [item]
   (let [value (val item)]
@@ -49,7 +52,7 @@
      (comp/list-table headers
                       filtered-items
                       render-item
-                      [[:taskName] [:serviceName] [:image] [:node :nodeName] [:state]]
+                      render-item-keys
                       "/#/tasks/")]))
 
 (defn- init-state
