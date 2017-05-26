@@ -8,7 +8,7 @@
 
 (def cursor [:form :task :list :filter])
 
-(def headers ["Name" "Service" "Image" "Node" ""])
+(def headers ["Name" "Service" "Image" "Node" "Status"])
 
 (defn- filter-items
   "Filter list `items` based on `name` & `running?` flag"

@@ -8,7 +8,7 @@
 
 (def cursor [:form :network :list :filter])
 
-(def headers ["Name" "Driver" "Internal"])
+(def headers ["Name" "Driver" ""])
 
 (defn- filter-items
   "Filter list items based on given predicate"
@@ -17,10 +17,11 @@
 
 (defn- render-item
   [item]
-  (case (val item)
-    true "yes"
-    false "no"
-    (val item)))
+  (let [value (val item)]
+    (case (key item)
+      :internal (if value
+                  (comp/label-blue "internal"))
+      value)))
 
 (rum/defc network-list < rum/reactive [items]
   (let [{:keys [networkName]} (state/react cursor)

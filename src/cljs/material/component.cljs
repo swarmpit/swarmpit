@@ -69,6 +69,10 @@
   ([props] (factory/circular-progress (clj->js props)))
   ([] (factory/circular-progress nil)))
 
+(defn refresh-indicator
+  ([props] (factory/refresh-indicator (clj->js props)))
+  ([] (factory/refresh-indicator nil)))
+
 (defn text-field
   ([props] (factory/text-field (clj->js props)))
   ([] (factory/text-field nil)))

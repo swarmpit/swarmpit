@@ -8,7 +8,7 @@
 
 (def cursor [:form :node :list :filter])
 
-(def headers ["Name" "Status" "Availability" ""])
+(def headers ["Name" "Availability" "Status" ""])
 
 (defn- filter-items
   "Filter list items based on given predicate"
@@ -17,10 +17,12 @@
 
 (defn- render-item
   [item]
-  (if (and (= :leader (key item))
-           (val item))
-    (comp/label-blue "Leader")
-    (val item)))
+  (let [value (val item)]
+    (case (key item)
+      :state (comp/label-green value)
+      :leader (if (val item)
+                (comp/label-blue "Leader"))
+      value)))
 
 (rum/defc node-list < rum/reactive [items]
   (let [{:keys [nodeName]} (state/react cursor)
@@ -35,7 +37,7 @@
      (comp/list-table headers
                       filtered-items
                       render-item
-                      [[:nodeName] [:state] [:availability] [:leader]]
+                      [[:nodeName] [:availability] [:state] [:leader]]
                       "/#/nodes/")]))
 
 (defn- init-state

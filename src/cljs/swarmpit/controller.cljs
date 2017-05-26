@@ -5,6 +5,7 @@
             [swarmpit.storage :as storage]
             [swarmpit.component.page-login :as page-login]
             [swarmpit.component.page-404 :as page-404]
+            [swarmpit.component.page-error :as page-error]
             [swarmpit.component.service.create :as screate]
             [swarmpit.component.service.edit :as sedit]
             [swarmpit.component.service.info :as sinfo]
@@ -27,7 +28,7 @@
              :error-handler (fn [{:keys [status]}]
                               (if (= status 401)
                                 (dispatch! "/#/login")
-                                (dispatch! "/#/login")))}))
+                                (dispatch! "/#/error")))}))
 
 (defmulti dispatch (fn [location] (:handler location)))
 
@@ -37,7 +38,7 @@
 
 (defmethod dispatch :error
   [_]
-  (print "ups something went wrong"))
+  (page-error/mount!))
 
 (defmethod dispatch nil
   [_]

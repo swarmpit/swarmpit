@@ -6,8 +6,7 @@
    [:div.page
     [:span
      [:h1 "404"]
-     [:p "What you are looking for, "]
-     [:p "I do not have."]]]])
+     [:p "What you are looking for, I do not have."]]]])
 
 (defn mount!
   []

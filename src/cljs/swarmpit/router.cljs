@@ -24,6 +24,7 @@
 
 (def handler ["" {"/"         :index
                   "/login"    :login
+                  "/error"    :error
                   "/services" {""                :service-list
                                "/create"         :service-create
                                ["/" :id]         :service-info
