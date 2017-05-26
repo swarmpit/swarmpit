@@ -16,10 +16,9 @@
 (defn- form-container [value index]
   (comp/table-row-column
     {:key (str "pc-" index)}
-    (comp/text-field
+    (comp/form-list-textfield
       {:id       "containerPort"
        :type     "number"
-       :style    {:width "100%"}
        :value    (format-port-value value)
        :onChange (fn [_ v]
                    (state/update-item index :containerPort (js/parseInt v) cursor))})))
@@ -27,13 +26,10 @@
 (defn- form-protocol [value index]
   (comp/table-row-column
     {:key (str "pp-" index)}
-    (comp/select-field
+    (comp/form-list-selectfield
       {:value      value
        :onChange   (fn [_ _ v]
-                     (state/update-item index :protocol v cursor))
-       :style      {:display "inherit"}
-       :labelStyle {:lineHeight "45px"
-                    :top        2}}
+                     (state/update-item index :protocol v cursor))}
       (comp/menu-item
         {:key         (str "ptcp-" index)
          :value       "tcp"
@@ -46,10 +42,9 @@
 (defn- form-host [value index]
   (comp/table-row-column
     {:key (str "ph-" index)}
-    (comp/text-field
+    (comp/form-list-textfield
       {:id       "hostPort"
        :type     "number"
-       :style    {:width "100%"}
        :value    (format-port-value value)
        :onChange (fn [_ v]
                    (state/update-item index :hostPort (js/parseInt v) cursor))})))

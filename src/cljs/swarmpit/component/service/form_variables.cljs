@@ -12,9 +12,8 @@
 (defn- form-name [value index]
   (comp/table-row-column
     {:key (str "vn-" index)}
-    (comp/text-field
+    (comp/form-list-textfield
       {:id       "name"
-       :style    {:width "100%"}
        :value    value
        :onChange (fn [_ v]
                    (state/update-item index :name v cursor))})))
@@ -22,9 +21,8 @@
 (defn- form-value [value index]
   (comp/table-row-column
     {:key (str "vv-" index)}
-    (comp/text-field
+    (comp/form-list-textfield
       {:id       "value"
-       :style    {:width "100%"}
        :value    value
        :onChange (fn [_ v]
                    (state/update-item index :value v cursor))})))

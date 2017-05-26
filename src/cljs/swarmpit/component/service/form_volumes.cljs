@@ -16,9 +16,8 @@
 (defn- form-container [value index]
   (comp/table-row-column
     {:key (str "vcp-" index)}
-    (comp/text-field
+    (comp/form-list-textfield
       {:id       "containerPath"
-       :style    {:width "100%"}
        :value    value
        :onChange (fn [_ v]
                    (state/update-item index :containerPath v cursor))})))
@@ -26,9 +25,8 @@
 (defn- form-host [value index]
   (comp/table-row-column
     {:key (str "vhp-" index)}
-    (comp/text-field
+    (comp/form-list-textfield
       {:id       "hostPath"
-       :style    {:width "100%"}
        :value    value
        :onChange (fn [_ v]
                    (state/update-item index :hostPath v cursor))})))

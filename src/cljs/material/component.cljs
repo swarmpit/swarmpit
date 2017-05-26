@@ -158,6 +158,8 @@
 
 ;;; Composite components
 
+;; Panel elements
+
 (defn panel-text-field
   [props]
   (mui
@@ -184,6 +186,22 @@
      (mui (svg icon))]
     [:span.form-panel-info-text text]
     [:span.form-panel-info-label state]]))
+
+;; Form list elements
+
+(defn form-list-textfield
+  [props]
+  (text-field
+    (merge props
+           {:style {:width "100%"}})))
+
+(defn form-list-selectfield
+  [props & childs]
+  (select-field
+    (merge props
+           {:style      {:top 5}
+            :labelStyle {:lineHeight "45px"
+                         :top        2}}) childs))
 
 ;; Labels
 
