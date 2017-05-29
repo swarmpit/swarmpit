@@ -6,7 +6,7 @@
 
 (enable-console-print!)
 
-(def cursor [:form :network :list :filter])
+(def cursor [:page :network :list :filter])
 
 (def headers ["Name" "Driver" ""])
 

@@ -5,9 +5,6 @@
             [swarmpit.token :as token]))
 
 (def ^:private api-version "v2")
-(def ^:private base-domain "swarmhub-csincz.azurecr.io")
-(def ^:private base-url
-  (str "https://" base-domain "/" api-version))
 
 (defn headers
   [user password]
@@ -22,7 +19,7 @@
       (parse-string body true))))
 
 (defn get
-  [api headers]
-  (let [url (str base-url api)
+  [url api headers]
+  (let [url (str url "/" api-version api)
         options {:headers headers}]
     (execute @(http/get url options))))

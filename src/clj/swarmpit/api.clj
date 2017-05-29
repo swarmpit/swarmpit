@@ -136,5 +136,5 @@
 (defn repository
   [registry]
   (->> (rc/headers (:user registry) (:password registry))
-       (rc/get "/_catalog")
+       (rc/get (:url registry) "/_catalog")
        :repositories))

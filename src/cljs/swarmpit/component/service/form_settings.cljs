@@ -5,7 +5,7 @@
 
 (enable-console-print!)
 
-(def cursor [:form :service :form :settings])
+(def cursor [:page :service :form :settings])
 
 (def form-image-style
   {:display  "inherit"

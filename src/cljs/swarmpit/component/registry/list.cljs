@@ -4,7 +4,7 @@
             [clojure.string :as string]
             [rum.core :as rum]))
 
-(def cursor [:form :registry :list :filter])
+(def cursor [:page :registry :list :filter])
 
 (def headers ["Name" "Url" "User" "Password"])
 

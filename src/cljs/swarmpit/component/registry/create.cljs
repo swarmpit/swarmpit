@@ -9,7 +9,7 @@
 
 (enable-console-print!)
 
-(def cursor [:form :registry :create])
+(def cursor [:page :registry :form])
 
 (defn- form-name [value]
   (comp/form-comp
@@ -60,6 +60,7 @@
                                  (dispatch! (str "/#/networks/" id))
                                  (message/mount! message)))
               :error-handler (fn [{:keys [status status-text]}]
+                               (print "d")
                                (let [message (str "Registry creation failed. Status: " status " Reason: " status-text)]
                                  (progress/unmount!)
                                  (message/mount! message)))}))

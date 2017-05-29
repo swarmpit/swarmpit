@@ -9,7 +9,7 @@
 
 (enable-console-print!)
 
-(def cursor [:form :network :form])
+(def cursor [:page :network :form])
 
 (def form-driver-style
   {:display  "inherit"
@@ -79,8 +79,8 @@
 
 (defn- init-state
   []
-  (state/set-value {:name   ""
-                    :driver nil} cursor))
+  (state/set-value {:networkName ""
+                    :driver      nil} cursor))
 
 (defn mount!
   []

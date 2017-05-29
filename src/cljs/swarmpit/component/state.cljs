@@ -5,7 +5,7 @@
 (defonce state
          (atom {:menu {:opened true
                        :domain ""}
-                :form {:network  {:list {:filter nil}
+                :page {:network  {:list {:filter nil}
                                   :form {}}
                        :node     {:list {:filter nil}}
                        :service  {:list {:filter nil}

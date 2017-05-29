@@ -6,7 +6,7 @@
 
 (enable-console-print!)
 
-(def cursor [:form :node :list :filter])
+(def cursor [:page :node :list :filter])
 
 (def headers ["Name" "Availability" "Status" ""])
 

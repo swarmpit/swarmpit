@@ -6,7 +6,7 @@
 
 (enable-console-print!)
 
-(def cursor [:form :service :list :filter])
+(def cursor [:page :service :list :filter])
 
 (def headers ["Name" "Image" "Mode" "Replicas" "Status" "Updates"])
 
