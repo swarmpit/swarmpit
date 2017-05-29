@@ -6,29 +6,17 @@
             [swarmpit.registry.client :as rc]
             [swarmpit.couchdb.client :as cc]))
 
-;;; Database API
-
 (defn create-database
   []
   (cc/put "/swarmpit"))
 
 ;;; User API
 
-(defn create-user
-  [user]
-  (let [passwd (d/digest "sha-256" (:password user))]
-    (->> (assoc user :password passwd
-                     :type "user"
-                     :role "admin")
-         (cc/post "/swarmpit"))))
-
-(defn user-by-email
-  [email]
-  (->> {:selector {:type  {"$eq" "user"}
-                   :email {"$eq" email}}}
+(defn users
+  []
+  (->> {:selector {:type {"$eq" "user"}}}
        (cc/post "/swarmpit/_find")
-       :docs
-       (first)))
+       :docs))
 
 (defn user-by-credentials
   [credentails]
@@ -38,6 +26,13 @@
        (cc/post "/swarmpit/_find")
        :docs
        (first)))
+
+(defn create-user
+  [user]
+  (let [passwd (d/digest "sha-256" (:password user))]
+    (->> (assoc user :password passwd
+                     :type "user")
+         (cc/post "/swarmpit"))))
 
 ;;; Service API
 
@@ -123,18 +118,23 @@
 
 (defn registries
   []
-  (->> (rc/headers "25a0e035-d147-4401-a4e8-5792ef0ec8fe" "feflryjn3olmvkdb")
-       (rc/get "/_catalog")
-       :repositories))
+  (->> {:selector {:type {"$eq" "registry"}}}
+       (cc/post "/swarmpit/_find")
+       :docs))
+
+(defn create-registry
+  [registry]
+  (->> (assoc registry :type "registry")
+       (cc/post "/swarmpit")))
 
 ;;; Repository API
 
 (defn repositories
   []
-  (->> {:selector {:type {"$eq" "repository"}}}
-       (cc/post "/swarmpit/_find")
-       :docs))
-
-(defn create-repository
-  [repository]
   ())
+
+(defn repository
+  [registry]
+  (->> (rc/headers (:user registry) (:password registry))
+       (rc/get "/_catalog")
+       :repositories))

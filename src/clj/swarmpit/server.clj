@@ -6,12 +6,25 @@
             [swarmpit.handler :refer [handler json-error]]
             [swarmpit.token :as token]))
 
-(def unsecure #{"/login"})
+(def unsecure-api #{{:request-method :post
+                     :uri            "/login"}})
 
-(defn- secure?
+(def admin-api #{{:request-method :get
+                  :uri            "/users"}})
+
+(defn- secure-api?
   [request]
-  (let [uri (:uri request)]
-    (not (contains? unsecure uri))))
+  (let [api (select-keys request [:request-method :uri])]
+    (not (contains? unsecure-api api))))
+
+(defn- admin-api?
+  [request]
+  (let [api (select-keys request [:request-method :uri])]
+    (contains? admin-api api)))
+
+(defn- admin-access?
+  [claims]
+  (= "admin" (get-in claims [:usr :role])))
 
 (defn wrap-client-exception
   [handler]
@@ -35,13 +48,17 @@
 (defn wrap-auth-exception
   [handler]
   (fn [request]
-    (if (secure? request)
+    (if (secure-api? request)
       (let [headers (:headers request)
             token (get headers "authorization")]
         (if (some? token)
           (try
-            (token/verify-jwt token)
-            (handler request)
+            (let [claims (token/verify-jwt token)]
+              (if (admin-api? request)
+                (if (admin-access? claims)
+                  (handler request)
+                  (json-error 401 "Unauthorized access"))
+                (handler request)))
             (catch ExceptionInfo _
               (json-error 401 "Invalid token")))
           (json-error 400 "Missing token")))

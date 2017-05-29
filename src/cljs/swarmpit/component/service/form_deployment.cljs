@@ -5,7 +5,7 @@
 
 (enable-console-print!)
 
-(def cursor [:form :service :deployment])
+(def cursor [:form :service :form :deployment])
 
 (def form-autoredeploy-style
   {:marginTop "14px"})

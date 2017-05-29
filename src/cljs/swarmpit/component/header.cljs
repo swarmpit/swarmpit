@@ -1,6 +1,8 @@
 (ns swarmpit.component.header
   (:require [material.component :as comp]
             [material.icon :as icon]
+            [swarmpit.uri :refer [dispatch!]]
+            [swarmpit.storage :as storage]
             [swarmpit.component.state :as state]
             [rum.core :as rum]))
 
@@ -46,6 +48,9 @@
        :primaryText "Settings"})
     (comp/menu-item
       {:key         "user-menu-logout"
+       :onTouchTap  (fn []
+                      (storage/remove "token")
+                      (dispatch! "/#/login"))
        :primaryText "Log out"})))
 
 (rum/defc userbar < rum/static []

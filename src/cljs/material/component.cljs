@@ -1,5 +1,5 @@
 (ns material.component
-  (:refer-clojure :exclude [stepper])
+  (:refer-clojure :exclude [stepper list])
   (:require [material.factory :as factory]
             [material.icon :as icon]
             [sablono.core :refer-macros [html]]
@@ -93,8 +93,16 @@
   ([props] (factory/raised-button (clj->js props)))
   ([] (factory/raised-button nil)))
 
+(defn list-item
+  ([props] (factory/list-item (clj->js props)))
+  ([] (factory/list-item nil)))
+
 (defn chip
   [props & childs] (factory/chip (clj->js props) childs))
+
+(defn list
+  [props & childs]
+  (factory/list (clj->js props) childs))
 
 (defn menu
   [props & childs]

@@ -16,7 +16,9 @@
             [swarmpit.component.node.list :as ndlist]
             [swarmpit.component.node.info :as ndinfo]
             [swarmpit.component.task.list :as tlist]
-            [swarmpit.component.task.info :as tinfo]))
+            [swarmpit.component.task.info :as tinfo]
+            [swarmpit.component.registry.list :as rlist]
+            [swarmpit.component.registry.create :as rcreate]))
 
 (defn- fetch
   [api api-resp-fx]
@@ -117,3 +119,23 @@
   (fetch (str "/tasks/" (:id route-params))
          (fn [response]
            (tinfo/mount! response))))
+
+;;; User controller
+
+(defmethod dispatch :user-list
+  [_]
+  (fetch "/users"
+         (fn [response]
+           (tlist/mount! response))))
+
+;;; Registry controller
+
+(defmethod dispatch :registry-list
+  [_]
+  (fetch "/registries"
+         (fn [response]
+           (rlist/mount! response))))
+
+(defmethod dispatch :registry-create
+  [_]
+  (rcreate/mount!))

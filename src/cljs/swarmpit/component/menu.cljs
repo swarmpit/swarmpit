@@ -67,7 +67,10 @@
    {:name "Nodes"
     :icon icon/nodes}
    {:name "Networks"
-    :icon icon/networks}])
+    :icon icon/networks}
+   {:name "SETTINGS"}
+   {:name "Registries"
+    :icon icon/registries}])
 
 (def menu-style
   {:height   "100%"

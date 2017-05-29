@@ -2,8 +2,7 @@
   (:require [material.component :as comp]
             [swarmpit.component.state :as state]
             [clojure.string :as string]
-            [rum.core :as rum]
-            [sablono.core :refer-macros [html]]))
+            [rum.core :as rum]))
 
 (enable-console-print!)
 

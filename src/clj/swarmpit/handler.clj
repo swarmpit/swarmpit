@@ -28,23 +28,44 @@
           (json-error 401 "Invalid credentials")
           (json-ok 200 {:token (token/generate-jwt user)}))))))
 
+;;; User handler
+
+(defn users
+  [_]
+  (->> (api/users)
+       (json-ok 200)))
+
+;;; Registry handler
+
+(defn registries
+  [_]
+  (->> (api/registries)
+       (json-ok 200)))
+
+(defn registry-create
+  [{:keys [params]}]
+  (let [payload (walk/keywordize-keys params)]
+    (api/repository payload)
+    (->> (api/create-registry payload)
+         (json-ok 201))))
+
 ;;; Service handler
 
 (defn services
   [_]
-  (let [services (api/services)]
-    (json-ok 200 services)))
+  (->> (api/services)
+       (json-ok 200)))
 
 (defn service
   [{:keys [route-params]}]
-  (let [service (api/service (:id route-params))]
-    (json-ok 200 service)))
+  (->> (api/service (:id route-params))
+       (json-ok 200)))
 
 (defn service-create
   [{:keys [params]}]
-  (let [payload (walk/keywordize-keys params)
-        response (api/create-service payload)]
-    (json-ok 201 response)))
+  (let [payload (walk/keywordize-keys params)]
+    (->> (api/create-service payload)
+         (json-ok 201))))
 
 (defn service-update
   [{:keys [route-params params]}]
@@ -61,19 +82,19 @@
 
 (defn networks
   [_]
-  (let [networks (api/networks)]
-    (json-ok 200 networks)))
+  (->> (api/networks)
+       (json-ok 200)))
 
 (defn network
   [{:keys [route-params]}]
-  (let [network (api/network (:id route-params))]
-    (json-ok 200 network)))
+  (->> (api/network (:id route-params))
+       (json-ok 200)))
 
 (defn network-create
   [{:keys [params]}]
-  (let [payload (walk/keywordize-keys params)
-        response (api/create-network payload)]
-    (json-ok 201 response)))
+  (let [payload (walk/keywordize-keys params)]
+    (->> (api/create-network payload)
+         (json-ok 201))))
 
 (defn network-delete
   [{:keys [route-params]}]
@@ -84,43 +105,40 @@
 
 (defn nodes
   [_]
-  (let [nodes (api/nodes)]
-    (json-ok 200 nodes)))
+  (->> (api/nodes)
+       (json-ok 200)))
 
 (defn node
   [{:keys [route-params]}]
-  (let [node (api/node (:id route-params))]
-    (json-ok 200 node)))
+  (->> (api/node (:id route-params))
+       (json-ok 200)))
 
 ;;; Task handler
 
 (defn tasks
   [_]
-  (let [tasks (api/tasks)]
-    (json-ok 200 tasks)))
+  (->> (api/tasks)
+       (json-ok 200)))
 
 (defn task
   [{:keys [route-params]}]
-  (let [task (api/task (:id route-params))]
-    (json-ok 200 task)))
+  (->> (api/task (:id route-params))
+       (json-ok 200)))
 
 ;;; Repository handler
 
 (defn repositories
   [_]
-  (let [repositories (api/repositories)]
-    (json-ok 200 repositories)))
-
-(defn repository-create
-  [{:keys [params]}]
-  (let [payload (walk/keywordize-keys params)
-        response (api/create-repository payload)]
-    (json-ok 201 response)))
+  (->> (api/repositories)
+       (json-ok 200)))
 
 ;;; Handler
 
 (def handler
   (make-handler ["/" {"login"      {:post login}
+                      "users"      {:get users}
+                      "registries" {:get  registries
+                                    :post registry-create}
                       "services"   {:get  services
                                     :post service-create}
                       "services/"  {:get    {[:id] service}
@@ -134,5 +152,4 @@
                       "nodes/"     {:get {[:id] node}}
                       "tasks"      {:get tasks}
                       "tasks/"     {:get {[:id] task}}
-                      "repository" {:get  repositories
-                                    :post repository-create}}]))
+                      "repository" {:get repositories}}]))

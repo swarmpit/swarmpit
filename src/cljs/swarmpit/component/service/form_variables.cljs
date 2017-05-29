@@ -5,7 +5,7 @@
 
 (enable-console-print!)
 
-(def cursor [:form :service :variables])
+(def cursor [:form :service :form :variables])
 
 (def headers ["Name" "Value"])
 

@@ -1,4 +1,4 @@
-(ns swarmpit.component.network.create
+(ns swarmpit.component.registry.create
   (:require [material.component :as comp]
             [swarmpit.uri :refer [dispatch!]]
             [swarmpit.component.state :as state]
@@ -9,62 +9,66 @@
 
 (enable-console-print!)
 
-(def cursor [:form :network :form])
-
-(def form-driver-style
-  {:display  "inherit"
-   :fontSize "14px"})
+(def cursor [:form :registry :create])
 
 (defn- form-name [value]
   (comp/form-comp
     "NAME"
     (comp/text-field
-      {:id       "networkName"
+      {:id       "name"
        :value    value
        :onChange (fn [_ v]
-                   (state/update-value :networkName v cursor))})))
+                   (state/update-value :name v cursor))})))
 
-(defn- form-driver [value]
+(defn- form-url [value]
   (comp/form-comp
-    "DRIVER"
-    (comp/select-field
-      {:value    value
-       :style    form-driver-style
-       :onChange (fn [_ _ v]
-                   (state/update-value :driver v cursor))}
-      (comp/menu-item
-        {:key         "fdi1"
-         :value       "overlay"
-         :primaryText "overlay"})
-      (comp/menu-item
-        {:key         "fdi2"
-         :value       "host"
-         :primaryText "host"})
-      (comp/menu-item
-        {:key         "fdi3"
-         :value       "bridge"
-         :primaryText "bridge"}))))
+    "URL"
+    (comp/text-field
+      {:id       "url"
+       :value    value
+       :onChange (fn [_ v]
+                   (state/update-value :url v cursor))})))
 
-(defn- create-network-handler
+(defn- form-user [value]
+  (comp/form-comp
+    "USER"
+    (comp/text-field
+      {:id       "user"
+       :value    value
+       :onChange (fn [_ v]
+                   (state/update-value :user v cursor))})))
+
+(defn- form-password [value]
+  (comp/form-comp
+    "PASSWORD"
+    (comp/text-field
+      {:id       "password"
+       :value    value
+       :onChange (fn [_ v]
+                   (state/update-value :password v cursor))})))
+
+(defn- create-registry-handler
   []
-  (ajax/POST "/networks"
+  (ajax/POST "/registries"
              {:format        :json
               :params        (state/get-value cursor)
               :finally       (progress/mount!)
               :handler       (fn [response]
                                (let [id (get response "Id")
-                                     message (str "Network " id " has been created.")]
+                                     message (str "Registry " id " has been created.")]
                                  (progress/unmount!)
                                  (dispatch! (str "/#/networks/" id))
                                  (message/mount! message)))
               :error-handler (fn [{:keys [status status-text]}]
-                               (let [message (str "Network creation failed. Status: " status " Reason: " status-text)]
+                               (let [message (str "Registry creation failed. Status: " status " Reason: " status-text)]
                                  (progress/unmount!)
                                  (message/mount! message)))}))
 
 (rum/defc form < rum/reactive []
   (let [{:keys [name
-                driver]} (state/react cursor)]
+                url
+                user
+                password]} (state/react cursor)]
     [:div
      [:div.form-panel
       [:div.form-panel-right
@@ -72,15 +76,19 @@
          (comp/raised-button
            {:label      "Create"
             :primary    true
-            :onTouchTap create-network-handler}))]]
+            :onTouchTap create-registry-handler}))]]
      [:div.form-edit
       (form-name name)
-      (form-driver driver)]]))
+      (form-url url)
+      (form-user user)
+      (form-password password)]]))
 
 (defn- init-state
   []
-  (state/set-value {:name   ""
-                    :driver nil} cursor))
+  (state/set-value {:name     ""
+                    :url      ""
+                    :user     ""
+                    :password ""} cursor))
 
 (defn mount!
   []

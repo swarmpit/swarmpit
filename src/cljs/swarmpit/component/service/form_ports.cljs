@@ -5,7 +5,7 @@
 
 (enable-console-print!)
 
-(def cursor [:form :service :ports])
+(def cursor [:form :service :form :ports])
 
 (def headers ["Container port" "Protocol" "Host port"])
 
@@ -27,9 +27,9 @@
   (comp/table-row-column
     {:key (str "pp-" index)}
     (comp/form-list-selectfield
-      {:value      value
-       :onChange   (fn [_ _ v]
-                     (state/update-item index :protocol v cursor))}
+      {:value    value
+       :onChange (fn [_ _ v]
+                   (state/update-item index :protocol v cursor))}
       (comp/menu-item
         {:key         (str "ptcp-" index)
          :value       "tcp"

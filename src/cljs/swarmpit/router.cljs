@@ -20,22 +20,25 @@
    :node-list      "Nodes"
    :node-info      "Nodes"
    :task-list      "Tasks"
-   :task-info      "Tasks"})
+   :task-info      "Tasks"
+   :registry-list  "Registries"})
 
-(def handler ["" {"/"         :index
-                  "/login"    :login
-                  "/error"    :error
-                  "/services" {""                :service-list
-                               "/create"         :service-create
-                               ["/" :id]         :service-info
-                               ["/" :id "/edit"] :service-edit}
-                  "/networks" {""        :network-list
-                               "/create" :network-create
-                               ["/" :id] :network-info}
-                  "/nodes"    {""        :node-list
-                               ["/" :id] :node-info}
-                  "/tasks"    {""        :task-list
-                               ["/" :id] :task-info}}])
+(def handler ["" {"/"           :index
+                  "/login"      :login
+                  "/error"      :error
+                  "/services"   {""                :service-list
+                                 "/create"         :service-create
+                                 ["/" :id]         :service-info
+                                 ["/" :id "/edit"] :service-edit}
+                  "/networks"   {""        :network-list
+                                 "/create" :network-create
+                                 ["/" :id] :network-info}
+                  "/nodes"      {""        :node-list
+                                 ["/" :id] :node-info}
+                  "/tasks"      {""        :task-list
+                                 ["/" :id] :task-info}
+                  "/registries" {""        :registry-list
+                                 "/create" :registry-create}}])
 
 ;;; Router config
 

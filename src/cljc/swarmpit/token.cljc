@@ -31,7 +31,7 @@
      {:iss "swarmpit"
       :exp (plus (now) (days 1))
       :iat (now)
-      :usr (:email user)
+      :usr (select-keys user [:email :role])
       :jti (generate-uuid)}))
 
 #?(:clj

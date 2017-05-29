@@ -1,7 +1,7 @@
 (ns swarmpit.component.page-error
   (:require [rum.core :as rum]))
 
-(rum/defc not-found < rum/static []
+(rum/defc error < rum/static []
   [:div.page-back
    [:div.page
     [:span
@@ -10,4 +10,4 @@
 
 (defn mount!
   []
-  (rum/mount (not-found) (.getElementById js/document "layout")))
+  (rum/mount (error) (.getElementById js/document "layout")))
