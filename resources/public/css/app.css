@@ -221,21 +221,3 @@ main {
     border: 1px solid rgb(224, 228, 231);
     border-radius: .25em;
 }
-
-/* Select field test */
-
-.mdl-menu-filter {
-    height: 34px !important;
-    background-color: #fff !important;
-    border: 1px solid rgba(0, 0, 0, 0.3);
-}
-
-.mdl-menu-filter div {
-    top: -1px;
-    padding-left: 5px;
-    color: rgb(117, 117, 117) !important;
-}
-
-.mdl-menu-filter hr {
-    border-bottom: none !important;
-}

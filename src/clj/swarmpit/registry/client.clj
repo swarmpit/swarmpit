@@ -28,17 +28,9 @@
                       :body   {:error (:errors response)}})))))))
 
 (defn get
-  [scheme url api headers]
-  (let [url (str scheme "://" url "/" api-version api)
+  [registry api]
+  (let [url (str (:scheme registry) "://" (:url registry) "/" api-version api)
         options {:timeout 5000
-                 :headers headers}]
+                 :headers (headers (:user registry)
+                                   (:password registry))}]
     (execute @(http/get url options))))
-
-(defn gett
-  [scheme url api headers]
-  (let [options {:timeout 5000
-                 :headers headers}
-        {:keys [status body error]} @(http/get url options)]
-    (if error
-      (print (:cause (Throwable->map error)))
-      (print "success"))))

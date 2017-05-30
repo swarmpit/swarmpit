@@ -45,9 +45,10 @@
 (defn registry-create
   [{:keys [params]}]
   (let [payload (walk/keywordize-keys params)]
-    (api/repositories-by-registry payload)
-    (->> (api/create-registry payload)
-         (json-ok 201))))
+    (if (api/valid-registry? payload)
+      (->> (api/create-registry payload)
+           (json-ok 201))
+      (json-error 400 "Invalid registry credentials"))))
 
 ;;; Service handler
 

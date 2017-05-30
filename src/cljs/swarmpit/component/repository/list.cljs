@@ -34,7 +34,7 @@
        [:span.form-panel-space]
        (comp/panel-select-field
          ""
-         {}
+         {:value "host"}
          (comp/menu-item
            {:key         "fdi1"
             :value       "overlay"

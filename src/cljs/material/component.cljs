@@ -194,8 +194,14 @@
     (mui
       (select-field
         (merge props
-               {:value     "host"
-                :className "mdl-menu-filter"})
+               {:style          {:height          "34px"
+                                 :backgroundColor "#fff"
+                                 :border          "1px solid rgba(0, 0, 0, 0.3)"}
+                :labelStyle     {:top         -5
+                                 :paddingLeft "5px"
+                                 :color       "rgb(117, 117, 117)"}
+                :iconStyle      {:top -2}
+                :underlineStyle {:borderBottom "none"}})
         childs))]])
 
 (defn panel-info

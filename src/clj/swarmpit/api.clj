@@ -124,6 +124,13 @@
        (cc/post "/swarmpit/_find")
        :docs))
 
+(defn valid-registry?
+  [registry]
+  (try
+    (some? (rc/get registry "/"))
+    (catch Exception _
+      false)))
+
 (defn create-registry
   [registry]
   (->> (assoc registry :type "registry")
@@ -133,8 +140,7 @@
 
 (defn repositories-by-registry
   [registry]
-  (->> (rc/headers (:user registry) (:password registry))
-       (rc/get (:scheme registry) (:url registry) "/_catalog")
+  (->> (rc/get registry "/_catalog")
        :repositories))
 
 (defn repositories
