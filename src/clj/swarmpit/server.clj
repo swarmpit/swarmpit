@@ -4,7 +4,8 @@
   (:require [ring.middleware.json :as ring-json]
             [cheshire.core :refer [parse-string]]
             [swarmpit.handler :refer [handler json-error]]
-            [swarmpit.token :as token]))
+            [swarmpit.token :as token]
+            [swarmpit.agent :as agent]))
 
 (def unsecure-api #{{:request-method :post
                      :uri            "/login"}})
@@ -32,9 +33,7 @@
     (try
       (handler request)
       (catch ExceptionInfo e
-        (let [response (ex-data e)]
-          (json-error (:code response)
-                      (:message response)))))))
+        (ex-data e)))))
 
 (defn wrap-fallback-exception
   [handler]
@@ -52,15 +51,15 @@
       (let [headers (:headers request)
             token (get headers "authorization")]
         (if (some? token)
-          (try
-            (let [claims (token/verify-jwt token)]
-              (if (admin-api? request)
-                (if (admin-access? claims)
-                  (handler request)
-                  (json-error 401 "Unauthorized access"))
-                (handler request)))
-            (catch ExceptionInfo _
-              (json-error 401 "Invalid token")))
+          (let [claims (try
+                         (token/verify-jwt token)
+                         (catch ExceptionInfo _
+                           (json-error 401 "Invalid token")))]
+            (if (admin-api? request)
+              (if (admin-access? claims)
+                (handler request)
+                (json-error 401 "Unauthorized access"))
+              (handler request)))
           (json-error 400 "Missing token")))
       (handler request))))
 
@@ -71,6 +70,11 @@
       ring-json/wrap-json-response
       ring-json/wrap-json-params
       wrap-fallback-exception))
+
+(defn on-startup
+  []
+  (agent/start-repository-agent))
+
 
 (defn -main [& _]
   (run-server app {:port 8080}))

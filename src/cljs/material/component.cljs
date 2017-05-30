@@ -177,10 +177,26 @@
               :style          {:height     "44px"
                                :lineHeight "15px"}}))))
 
-(defn panel-comp [label comp]
+(defn panel-checkbox
+  [props]
+  (mui
+    (checkbox
+      (merge props
+             {:style      {:width     "200px"
+                           :marginTop "12px"}
+              :labelStyle {:left -10}}))))
+
+(defn panel-select-field
+  [label props & childs]
   [:div.form-panel-item
-   [:div.form-panel-item-field (mui comp)]
-   [:span.form-panel-item-label label]])
+   [:span.form-panel-item-sf-label label]
+   [:div.form-panel-item-sf-field
+    (mui
+      (select-field
+        (merge props
+               {:value     "host"
+                :className "mdl-menu-filter"})
+        childs))]])
 
 (defn panel-info
   ([icon text]

@@ -17,8 +17,9 @@
             [swarmpit.component.node.info :as ndinfo]
             [swarmpit.component.task.list :as tlist]
             [swarmpit.component.task.info :as tinfo]
-            [swarmpit.component.registry.list :as rlist]
-            [swarmpit.component.registry.create :as rcreate]))
+            [swarmpit.component.registry.list :as reglist]
+            [swarmpit.component.registry.create :as regcreate]
+            [swarmpit.component.repository.list :as replist]))
 
 (defn- fetch
   [api api-resp-fx]
@@ -49,6 +50,14 @@
 (defmethod dispatch :login
   [_]
   (page-login/mount!))
+
+;;; Repository controller
+
+(defmethod dispatch :repository-list
+  [_]
+  (fetch "/repositories"
+         (fn [response]
+           (replist/mount! response))))
 
 ;;; Service controller
 
@@ -134,8 +143,8 @@
   [_]
   (fetch "/registries"
          (fn [response]
-           (rlist/mount! response))))
+           (reglist/mount! response))))
 
 (defmethod dispatch :registry-create
   [_]
-  (rcreate/mount!))
+  (regcreate/mount!))

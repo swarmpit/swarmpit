@@ -1,5 +1,7 @@
 (ns swarmpit.api
   (:require [digest :as d]
+            [clojure.core.memoize :as memo]
+            [swarmpit.utils :as u]
             [swarmpit.docker.client :as dc]
             [swarmpit.docker.mapper.inbound :as dmi]
             [swarmpit.docker.mapper.outbound :as dmo]
@@ -129,12 +131,20 @@
 
 ;;; Repository API
 
-(defn repositories
-  []
-  ())
-
-(defn repository
+(defn repositories-by-registry
   [registry]
   (->> (rc/headers (:user registry) (:password registry))
-       (rc/get (:url registry) "/_catalog")
+       (rc/get (:scheme registry) (:url registry) "/_catalog")
        :repositories))
+
+(defn repositories
+  []
+  (->> (registries)
+       (map #(->> (repositories-by-registry %)
+                  (map (fn [repo] (into {:id          (hash (str repo (:url %)))
+                                         :name        repo
+                                         :registry    (:name %)
+                                         :registryUrl (:url %)})))))
+       (flatten)))
+
+(def cached-repositories (memo/memo repositories))

@@ -4,7 +4,7 @@
 
 (enable-console-print!)
 
-(rum/defc message < rum/static [text]
+(rum/defc message < rum/reactive [text]
   (comp/mui
     (comp/snackbar
       {:open             true

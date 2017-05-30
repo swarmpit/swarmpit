@@ -1,12 +1,12 @@
-(ns swarmpit.component.registry.list
+(ns swarmpit.component.repository.list
   (:require [material.component :as comp]
             [swarmpit.component.state :as state]
             [clojure.string :as string]
             [rum.core :as rum]))
 
-(def cursor [:page :registry :list :filter])
+(def cursor [:page :repository :list :filter])
 
-(def headers ["Name" "Url" "User" "Password"])
+(def headers ["Name" "Registry" "Registry Url"])
 
 (defn- filter-items
   "Filter list items based on given predicate"
@@ -14,14 +14,14 @@
   (filter #(string/includes? (:name %) predicate) items))
 
 (def render-item-keys
-  [[:name] [:url] [:user] [:password]])
+  [[:name] [:registry] [:registryUrl]])
 
 (defn- render-item
   [item]
   (let [value (val item)]
     value))
 
-(rum/defc registry-list < rum/reactive [items]
+(rum/defc repository-list < rum/reactive [items]
   (let [{:keys [name]} (state/react cursor)
         filtered-items (filter-items items name)]
     [:div
@@ -30,18 +30,24 @@
        (comp/panel-text-field
          {:hintText "Filter by name"
           :onChange (fn [_ v]
-                      (state/update-value :name v cursor))})]
-      [:div.form-panel-right
-       (comp/mui
-         (comp/raised-button
-           {:href    "/#/registries/create"
-            :label   "Create"
-            :primary true}))]]
+                      (state/update-value :name v cursor))})
+       [:span.form-panel-space]
+       (comp/panel-select-field
+         ""
+         {}
+         (comp/menu-item
+           {:key         "fdi1"
+            :value       "overlay"
+            :primaryText "overlay"})
+         (comp/menu-item
+           {:key         "fdi2"
+            :value       "host"
+            :primaryText "host"}))]]
      (comp/list-table headers
                       filtered-items
                       render-item
                       render-item-keys
-                      "/#/registries/")]))
+                      "/#/repositories/")]))
 
 (defn- init-state
   []
@@ -50,4 +56,4 @@
 (defn mount!
   [items]
   (init-state)
-  (rum/mount (registry-list items) (.getElementById js/document "content")))
+  (rum/mount (repository-list items) (.getElementById js/document "content")))

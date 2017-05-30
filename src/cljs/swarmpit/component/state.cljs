@@ -5,18 +5,19 @@
 (defonce state
          (atom {:menu {:opened true
                        :domain ""}
-                :page {:network  {:list {:filter nil}
-                                  :form {}}
-                       :node     {:list {:filter nil}}
-                       :service  {:list {:filter nil}
-                                  :form {:settings   {}
-                                         :deployment {}
-                                         :ports      []
-                                         :variables  []
-                                         :volumes    []}}
-                       :task     {:list {:filter nil}}
-                       :registry {:list {:filter nil}
-                                  :form {}}}}))
+                :page {:network    {:list {:filter {}}
+                                    :form {}}
+                       :node       {:list {:filter {}}}
+                       :service    {:list {:filter {}}
+                                    :form {:settings   {}
+                                           :deployment {}
+                                           :ports      []
+                                           :variables  []
+                                           :volumes    []}}
+                       :task       {:list {:filter {}}}
+                       :registry   {:list {:filter {}}
+                                    :form {}}
+                       :repository {:list {:filter {}}}}}))
 
 (defn react
   [cursor]

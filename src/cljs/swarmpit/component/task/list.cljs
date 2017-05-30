@@ -46,12 +46,11 @@
           :onChange (fn [_ v]
                       (state/update-value :serviceName v cursor))})
        [:span.form-panel-space]
-       (comp/panel-comp
-         "Show all tasks"
-         (comp/checkbox
-           {:checked (false? running)
-            :onCheck (fn [_ v]
-                       (state/update-value :running (false? v) cursor))}))]]
+       (comp/panel-checkbox
+         {:checked (false? running)
+          :label   "Show all tasks"
+          :onCheck (fn [_ v]
+                     (state/update-value :running (false? v) cursor))})]]
      (comp/list-table headers
                       filtered-items
                       render-item

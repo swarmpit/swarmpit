@@ -15,10 +15,19 @@
 
 (defn execute
   [call-fx]
-  (let [{:keys [body error]} call-fx]
+  (let [{:keys [status body error]} call-fx]
     (if error
-      (throw (ex-info "Failed connect to clutchdb!" {:error error}))
-      (parse-string body true))))
+      (throw
+        (ex-info "Clutch DB client failure!"
+                 {:status 500
+                  :body   {:error (:cause (Throwable->map error))}}))
+      (let [response (parse-string body true)]
+        (if (> 400 status)
+          response
+          (throw
+            (ex-info "Clutch DB error!"
+                     {:status status
+                      :body   {:error body}})))))))
 
 (defn get
   [api]

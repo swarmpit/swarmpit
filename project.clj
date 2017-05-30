@@ -5,6 +5,8 @@
             :url  "http://www.eclipse.org/legal/epl-v10.html"}
   :dependencies [[org.clojure/clojure "1.9.0-alpha16"]
                  [org.clojure/clojurescript "1.9.542"]
+                 [org.clojure/core.memoize "0.5.8"]
+                 [org.clojure/core.async "0.3.443"]
                  [cljsjs/react "15.4.2-2"]
                  [cljsjs/react-dom "15.4.2-2"]
                  [cljsjs/material-ui "0.18.1-0"]
@@ -12,6 +14,7 @@
                  [ring "1.5.1"]
                  [ring/ring-json "0.4.0"]
                  [buddy/buddy-sign "1.4.0"]
+                 [jarohen/chime "0.2.1"]
                  [bidi "2.0.16"]
                  [http-kit "2.2.0"]
                  [cljs-ajax "0.5.8"]

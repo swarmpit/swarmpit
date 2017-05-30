@@ -76,9 +76,11 @@
         (if (> 400 response-code)
           response-body
           (throw (ex-info "Docker engine error!"
-                          (assoc response-body :code response-code)))))
+                          {:status response-code
+                           :body   {:error response-body}}))))
       (throw (ex-info "Docker client failure!"
-                      (parse-string (:err cmd-result) true))))))
+                      {:status 500
+                       :body   {:error (parse-string (:err cmd-result) true)}})))))
 
 (defn get
   ([uri] (execute "GET" uri nil nil nil))

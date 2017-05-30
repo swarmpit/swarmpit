@@ -74,12 +74,11 @@
           :onChange (fn [_ v]
                       (state/update-value :serviceName v cursor))})
        [:span.form-panel-space]
-       (comp/panel-comp
-         "Show cranky services"
-         (comp/checkbox
-           {:checked cranky
-            :onCheck (fn [_ v]
-                       (state/update-value :cranky v cursor))}))]
+       (comp/panel-checkbox
+         {:checked cranky
+          :label   "Show cranky services"
+          :onCheck (fn [_ v]
+                     (state/update-value :cranky v cursor))})]
       [:div.form-panel-right
        (comp/mui
          (comp/raised-button

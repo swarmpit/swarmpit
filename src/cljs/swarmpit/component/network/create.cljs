@@ -1,6 +1,7 @@
 (ns swarmpit.component.network.create
   (:require [material.component :as comp]
             [swarmpit.uri :refer [dispatch!]]
+            [swarmpit.storage :as storage]
             [swarmpit.component.state :as state]
             [swarmpit.component.message :as message]
             [swarmpit.component.progress :as progress]
@@ -49,6 +50,7 @@
   []
   (ajax/POST "/networks"
              {:format        :json
+              :headers       {"Authorization" (storage/get "token")}
               :params        (state/get-value cursor)
               :finally       (progress/mount!)
               :handler       (fn [response]
@@ -57,8 +59,9 @@
                                  (progress/unmount!)
                                  (dispatch! (str "/#/networks/" id))
                                  (message/mount! message)))
-              :error-handler (fn [{:keys [status status-text]}]
-                               (let [message (str "Network creation failed. Status: " status " Reason: " status-text)]
+              :error-handler (fn [{:keys [status response]}]
+                               (let [error (get response "error")
+                                     message (str "Network creation failed. Status: " status " Reason: " error)]
                                  (progress/unmount!)
                                  (message/mount! message)))}))
 

@@ -13,6 +13,7 @@
   (wrap-reload #'swarmpit.server/app))
 
 (defn run []
-  (figwheel/start-figwheel!))
+  (figwheel/start-figwheel!)
+  (swarmpit.server/on-startup))
 
 (def browser-repl figwheel/cljs-repl)

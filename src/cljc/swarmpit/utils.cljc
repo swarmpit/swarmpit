@@ -4,7 +4,7 @@
 
 #?(:clj
    (defn generate-uuid
-     "Generate uuid"
+     "Generate cuuid"
      []
      (str (UUID/randomUUID))))
 

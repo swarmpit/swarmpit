@@ -1,6 +1,7 @@
 (ns swarmpit.component.registry.create
   (:require [material.component :as comp]
             [swarmpit.uri :refer [dispatch!]]
+            [swarmpit.storage :as storage]
             [swarmpit.component.state :as state]
             [swarmpit.component.message :as message]
             [swarmpit.component.progress :as progress]
@@ -19,6 +20,22 @@
        :value    value
        :onChange (fn [_ v]
                    (state/update-value :name v cursor))})))
+
+(defn- form-scheme [value]
+  (comp/form-comp
+    "SCHEME"
+    (comp/select-field
+      {:value    value
+       :onChange (fn [_ _ v]
+                   (state/update-value :scheme v cursor))}
+      (comp/menu-item
+        {:key         "fshttp"
+         :value       "http"
+         :primaryText "HTTP"})
+      (comp/menu-item
+        {:key         "fshttps"
+         :value       "https"
+         :primaryText "HTTPS"}))))
 
 (defn- form-url [value]
   (comp/form-comp
@@ -51,22 +68,25 @@
   []
   (ajax/POST "/registries"
              {:format        :json
+              :headers       {"Authorization" (storage/get "token")}
               :params        (state/get-value cursor)
               :finally       (progress/mount!)
               :handler       (fn [response]
                                (let [id (get response "Id")
                                      message (str "Registry " id " has been created.")]
                                  (progress/unmount!)
-                                 (dispatch! (str "/#/networks/" id))
+                                 (dispatch! (str "/#/registries/" id))
                                  (message/mount! message)))
-              :error-handler (fn [{:keys [status status-text]}]
-                               (print "d")
-                               (let [message (str "Registry creation failed. Status: " status " Reason: " status-text)]
+              :error-handler (fn [{:keys [status response]}]
+                               (let [error (get response "error")
+                                     message (str "Registry creation failed. Status: " status " Reason: " error)]
+                                 (print message)
                                  (progress/unmount!)
                                  (message/mount! message)))}))
 
 (rum/defc form < rum/reactive []
   (let [{:keys [name
+                scheme
                 url
                 user
                 password]} (state/react cursor)]
@@ -80,6 +100,7 @@
             :onTouchTap create-registry-handler}))]]
      [:div.form-edit
       (form-name name)
+      (form-scheme scheme)
       (form-url url)
       (form-user user)
       (form-password password)]]))
@@ -87,6 +108,7 @@
 (defn- init-state
   []
   (state/set-value {:name     ""
+                    :scheme   "http"
                     :url      ""
                     :user     ""
                     :password ""} cursor))

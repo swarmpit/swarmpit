@@ -2,6 +2,7 @@
   (:require [material.component :as comp]
             [material.icon :as icon]
             [swarmpit.uri :refer [dispatch!]]
+            [swarmpit.storage :as storage]
             [swarmpit.component.state :as state]
             [swarmpit.component.service.form-settings :as settings]
             [swarmpit.component.service.form-ports :as ports]
@@ -24,6 +25,7 @@
         deployment (state/get-value deployment/cursor)]
     (ajax/POST (str "/services/" service-id)
                {:format        :json
+                :headers       {"Authorization" (storage/get "token")}
                 :params        (-> settings
                                    (assoc :ports ports)
                                    (assoc :volumes volumes)
@@ -35,8 +37,9 @@
                                    (progress/unmount!)
                                    (dispatch! (str "/#/services/" service-id))
                                    (message/mount! message)))
-                :error-handler (fn [{:keys [status status-text]}]
-                                 (let [message (str "Service update failed. Status: " status " Reason: " status-text)]
+                :error-handler (fn [{:keys [status response]}]
+                                 (let [error (get response "error")
+                                       message (str "Service update failed. Status: " status " Reason: " error)]
                                    (progress/unmount!)
                                    (message/mount! message)))})))
 

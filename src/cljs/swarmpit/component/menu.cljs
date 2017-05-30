@@ -56,8 +56,6 @@
   [{:name "BUILD"}
    {:name "Repositories"
     :icon icon/repositories}
-   {:name "Images"
-    :icon icon/images}
    {:name "APPLICATIONS"}
    {:name "Services"
     :icon icon/services}
@@ -70,7 +68,9 @@
     :icon icon/networks}
    {:name "SETTINGS"}
    {:name "Registries"
-    :icon icon/registries}])
+    :icon icon/registries}
+   {:name "Users"
+    :icon icon/users}])
 
 (def menu-style
   {:height   "100%"
