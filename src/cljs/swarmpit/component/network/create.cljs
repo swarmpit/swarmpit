@@ -1,6 +1,6 @@
 (ns swarmpit.component.network.create
   (:require [material.component :as comp]
-            [swarmpit.uri :refer [dispatch!]]
+            [swarmpit.url :refer [dispatch!]]
             [swarmpit.storage :as storage]
             [swarmpit.component.state :as state]
             [swarmpit.component.message :as message]
@@ -11,10 +11,6 @@
 (enable-console-print!)
 
 (def cursor [:page :network :form])
-
-(def form-driver-style
-  {:display  "inherit"
-   :fontSize "14px"})
 
 (defn- form-name [value]
   (comp/form-comp
@@ -30,7 +26,6 @@
     "DRIVER"
     (comp/select-field
       {:value    value
-       :style    form-driver-style
        :onChange (fn [_ _ v]
                    (state/update-value :driver v cursor))}
       (comp/menu-item

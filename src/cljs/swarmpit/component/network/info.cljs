@@ -1,7 +1,7 @@
 (ns swarmpit.component.network.info
   (:require [material.component :as comp]
             [material.icon :as icon]
-            [swarmpit.uri :refer [dispatch!]]
+            [swarmpit.url :refer [dispatch!]]
             [swarmpit.component.message :as message]
             [rum.core :as rum]
             [ajax.core :as ajax]))

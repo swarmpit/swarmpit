@@ -1,7 +1,7 @@
 (ns swarmpit.component.service.edit
   (:require [material.component :as comp]
             [material.icon :as icon]
-            [swarmpit.uri :refer [dispatch!]]
+            [swarmpit.url :refer [dispatch!]]
             [swarmpit.storage :as storage]
             [swarmpit.component.state :as state]
             [swarmpit.component.service.form-settings :as settings]

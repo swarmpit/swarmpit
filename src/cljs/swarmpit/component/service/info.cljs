@@ -1,7 +1,7 @@
 (ns swarmpit.component.service.info
   (:require [material.component :as comp]
             [material.icon :as icon]
-            [swarmpit.uri :refer [dispatch!]]
+            [swarmpit.url :refer [dispatch!]]
             [swarmpit.component.service.form-ports :as ports]
             [swarmpit.component.service.form-volumes :as volumes]
             [swarmpit.component.service.form-variables :as variables]

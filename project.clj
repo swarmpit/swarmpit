@@ -14,7 +14,6 @@
                  [ring "1.5.1"]
                  [ring/ring-json "0.4.0"]
                  [buddy/buddy-sign "1.4.0"]
-                 [jarohen/chime "0.2.1"]
                  [bidi "2.0.16"]
                  [http-kit "2.2.0"]
                  [cljs-ajax "0.5.8"]

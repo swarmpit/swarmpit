@@ -82,19 +82,85 @@
                       {:status 500
                        :body   {:error (parse-string (:err cmd-result) true)}})))))
 
-(defn get
+(defn- get
   ([uri] (execute "GET" uri nil nil nil))
   ([uri params] (execute "GET" uri params nil nil))
   ([uri params headers] (execute "GET" uri params headers nil)))
 
-(defn post
+(defn- post
   ([uri payload] (execute "POST" uri nil nil payload))
   ([uri payload headers] (execute "POST" uri nil headers payload)))
 
-(defn put
+(defn- put
   ([uri payload] (execute "PUT" uri nil nil payload))
   ([uri payload headers] (execute "PUT" uri nil headers payload)))
 
-(defn delete
+(defn- delete
   ([uri] (execute "DELETE" uri nil nil nil))
   ([uri headers] (execute "DELETE" uri nil headers nil)))
+
+;; Service
+
+(defn services
+  []
+  (get "/services"))
+
+(defn service
+  [id]
+  (-> (str "/services/" id)
+      (get)))
+
+(defn delete-service
+  [id]
+  (-> (str "/services/" id)
+      (delete)))
+
+(defn create-service
+  [service]
+  (post "/services/create" service))
+
+(defn update-service
+  [id service]
+  (post (str "/services/" id "/update?version=" (:version service)) service))
+
+;; Task
+
+(defn tasks
+  []
+  (get "/tasks"))
+
+(defn task
+  [id]
+  (-> (str "/tasks/" id)
+      (get)))
+
+;; Network
+
+(defn networks
+  []
+  (get "/networks"))
+
+(defn network
+  [id]
+  (-> (str "/networks/" id)
+      (get)))
+
+(defn delete-network
+  [id]
+  (-> (str "/networks/" id)
+      (delete)))
+
+(defn create-network
+  [network]
+  (post "/networks/create" network))
+
+;; Node
+
+(defn nodes
+  []
+  (get "/nodes"))
+
+(defn node
+  [id]
+  (-> (str "/nodes/" id)
+      (get)))

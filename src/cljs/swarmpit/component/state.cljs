@@ -15,9 +15,11 @@
                                            :variables  []
                                            :volumes    []}}
                        :task       {:list {:filter {}}}
-                       :registry   {:list {:filter {}}
-                                    :form {}}
-                       :repository {:list {:filter {}}}}}))
+                       :registry   {:list   {:filter {}}
+                                    :form   {}
+                                    :wizard {}}
+                       :repository {:list {:v1 {:data {}}
+                                           :v2 {:data {}}}}}}))
 
 (defn react
   [cursor]

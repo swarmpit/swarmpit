@@ -22,21 +22,34 @@
   {:marginTop "14px"})
 
 (defn- form-image [value]
+  (comp/form-item "IMAGE" value)
+
+  ;(comp/form-comp
+  ;  "IMAGE"
+  ;  (comp/select-field
+  ;    {:value    value
+  ;     :style    form-image-style
+  ;     :onChange (fn [_ _ v]
+  ;                 (state/update-value :image v cursor))}
+  ;    (comp/menu-item
+  ;      {:key         1
+  ;       :value       "nohaapav/napp:latest"
+  ;       :primaryText "nohaapav/napp:latest"})
+  ;    (comp/menu-item
+  ;      {:key         2
+  ;       :value       "nohaapav/app:latest"
+  ;       :primaryText "nohaapav/app:latest"})))
+  )
+
+(defn- form-testc []
   (comp/form-comp
-    "IMAGE"
-    (comp/select-field
-      {:value    value
-       :style    form-image-style
-       :onChange (fn [_ _ v]
-                   (state/update-value :image v cursor))}
+    "IMAGE TAG"
+    (comp/select-field-border
+      {:value "rrr"}
       (comp/menu-item
-        {:key         1
-         :value       "nohaapav/napp:latest"
-         :primaryText "nohaapav/napp:latest"})
-      (comp/menu-item
-        {:key         2
-         :value       "nohaapav/app:latest"
-         :primaryText "nohaapav/app:latest"}))))
+        {:key         "rrr"
+         :value       "rrr"
+         :primaryText "rrr"}))))
 
 (defn- form-name [value update-form?]
   (comp/form-comp
@@ -87,8 +100,9 @@
                 serviceName
                 mode
                 replicas]} (state/react cursor)]
-    [:div.form-edit
+    [:div.form-view
      (form-image image)
+     (form-testc)
      (form-name serviceName update-form?)
      (form-mode mode update-form?)
      (if (= "replicated" mode)

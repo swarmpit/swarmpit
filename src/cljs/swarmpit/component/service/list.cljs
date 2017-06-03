@@ -38,7 +38,7 @@
   (case value
     "running" (comp/label-green value)
     "not running" (comp/label-grey value)
-    "partial running" (comp/label-yellow value)))
+    "partly running" (comp/label-yellow value)))
 
 (defn- filter-items
   "Filter list `items` based on `name` & `cranky?` flag"
@@ -82,7 +82,7 @@
       [:div.form-panel-right
        (comp/mui
          (comp/raised-button
-           {:href    "/#/services/create"
+           {:href    "/#/services/create/wizard/registry"
             :label   "Create"
             :primary true}))]]
      (comp/list-table headers

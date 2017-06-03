@@ -7,6 +7,11 @@
 
 ;;; Components
 
+(def card (create-factory js/MaterialUI.Card))
+(def card-header (create-factory js/MaterialUI.CardHeader))
+(def card-actions (create-factory js/MaterialUI.CardActions))
+(def card-title (create-factory js/MaterialUI.CardTitle))
+(def card-text (create-factory js/MaterialUI.CardText))
 (def paper (create-factory js/MaterialUI.Paper))
 (def avatar (create-factory js/MaterialUI.Avatar))
 (def chip (create-factory js/MaterialUI.Chip))
@@ -34,6 +39,7 @@
 (def table-body (create-factory js/MaterialUI.TableBody))
 (def table-row (create-factory js/MaterialUI.TableRow))
 (def table-row-column (create-factory js/MaterialUI.TableRowColumn))
+(def table-footer (create-factory js/MaterialUI.TableFooter))
 (def step (create-factory js/MaterialUI.Step))
 (def stepper (create-factory js/MaterialUI.Stepper))
 (def step-label (create-factory js/MaterialUI.StepLabel))

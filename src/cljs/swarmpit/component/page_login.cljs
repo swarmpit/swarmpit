@@ -1,6 +1,6 @@
 (ns swarmpit.component.page-login
   (:require [material.component :as comp]
-            [swarmpit.uri :refer [dispatch!]]
+            [swarmpit.url :refer [dispatch!]]
             [swarmpit.storage :as storage]
             [swarmpit.token :as token]
             [rum.core :as rum]

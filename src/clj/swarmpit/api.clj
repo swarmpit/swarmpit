@@ -1,105 +1,94 @@
 (ns swarmpit.api
-  (:require [digest :as d]
-            [clojure.core.memoize :as memo]
+  (:require [clojure.core.memoize :as memo]
+            [clojure.string :as string]
             [swarmpit.utils :as u]
             [swarmpit.docker.client :as dc]
             [swarmpit.docker.mapper.inbound :as dmi]
             [swarmpit.docker.mapper.outbound :as dmo]
             [swarmpit.registry.client :as rc]
-            [swarmpit.couchdb.client :as cc]))
+            [swarmpit.registry.mapper.inbound :as rci]
+            [swarmpit.couchdb.client :as cc]
+            [swarmpit.couchdb.mapper.outbound :as cmo]))
 
 (defn create-database
   []
-  (cc/put "/swarmpit"))
+  (cc/create-database))
 
 ;;; User API
 
 (defn users
   []
-  (->> {:selector {:type {"$eq" "user"}}}
-       (cc/post "/swarmpit/_find")
-       :docs))
+  (cc/users))
 
 (defn user-by-credentials
   [credentails]
-  (->> {:selector {:type     {"$eq" "user"}
-                   :email    {"$eq" (:user credentails)}
-                   :password {"$eq" (d/digest "sha-256" (:password credentails))}}}
-       (cc/post "/swarmpit/_find")
-       :docs
-       (first)))
+  (cc/user-by-credentials (:user credentails)
+                          (cmo/->password (:password credentails))))
 
 (defn create-user
   [user]
-  (let [passwd (d/digest "sha-256" (:password user))]
-    (->> (assoc user :password passwd
-                     :type "user")
-         (cc/post "/swarmpit"))))
+  (->> (cmo/->user user)
+       (cc/create-user)))
 
 ;;; Service API
 
 (defn services
   []
-  (dmi/->services (dc/get "/services")
-                  (dc/get "/tasks")
-                  (dc/get "/nodes")))
+  (dmi/->services (dc/services)
+                  (dc/tasks)
+                  (dc/nodes)))
 
 (defn service
   [service-id]
-  (dmi/->service (-> (str "/services/" service-id)
-                     (dc/get))
-                 (dc/get "/tasks")
-                 (dc/get "/nodes")))
+  (dmi/->service (dc/service service-id)
+                 (dc/tasks)
+                 (dc/nodes)))
 
 (defn delete-service
   [service-id]
-  (-> (str "/services/" service-id)
-      (dc/delete)))
+  (dc/delete-service service-id))
 
 (defn create-service
   [service]
   (->> (dmo/->service service)
-       (dc/post "/services/create")))
+       (dc/create-service)))
 
 (defn update-service
   [service-id service]
   (->> (dmo/->service service)
-       (dc/post (str "/services/" service-id "/update?version=" (:version service)))))
+       (dc/update-service service-id)))
 
 ;;; Network API
 
 (defn networks
   []
-  (-> (dc/get "/networks")
+  (-> (dc/networks)
       (dmi/->networks)))
 
 (defn network
   [network-id]
-  (-> (str "/networks/" network-id)
-      (dc/get)
+  (-> (dc/network network-id)
       (dmi/->network)))
 
 (defn delete-network
   [network-id]
-  (-> (str "/networks/" network-id)
-      (dc/delete)))
+  (dc/delete-network network-id))
 
 (defn create-network
   [network]
   (->> (dmo/->network network)
-       (dc/post "/networks/create")))
+       (dc/create-network)))
 
 ;;; Node API
 
 (defn nodes
   []
-  (-> (dc/get "/nodes")
+  (-> (dc/nodes)
       (dmi/->nodes)))
 
 (defn node
   [node-id]
-  (-> (str "/nodes/" node-id)
-      (dc/get)
+  (-> (dc/node node-id)
       (dmi/->node)))
 
 ;;; Task API
@@ -120,37 +109,59 @@
 
 (defn registries
   []
-  (->> {:selector {:type {"$eq" "registry"}}}
-       (cc/post "/swarmpit/_find")
-       :docs))
+  (cc/registries))
+
+(defn registries-sum
+  []
+  (->> (registries)
+       (map #(select-keys % [:name :version]))))
+
+(defn registry-by-name
+  [registry-name]
+  (cc/registry-by-name registry-name))
+
+(defn create-registry
+  [registry]
+  (->> (cmo/->registry registry)
+       (cc/create-registry)))
+
+(defn v1-registry?
+  [registry]
+  (= "v1" (:version registry)))
 
 (defn valid-registry?
   [registry]
   (try
-    (some? (rc/get registry "/"))
+    (some? (if (v1-registry? registry)
+             (rc/v1-info registry)
+             (rc/v2-info registry)))
     (catch Exception _
       false)))
 
-(defn create-registry
-  [registry]
-  (->> (assoc registry :type "registry")
-       (cc/post "/swarmpit")))
-
 ;;; Repository API
 
-(defn repositories-by-registry
-  [registry]
-  (->> (rc/get registry "/_catalog")
-       :repositories))
+(defn v1-repositories
+  [registry-name repository-query repository-page]
+  (let [registry (registry-by-name registry-name)]
+    (->> (rc/v1-repositories registry repository-query repository-page)
+         (rci/->v1-repositories))))
 
-(defn repositories
-  []
-  (->> (registries)
-       (map #(->> (repositories-by-registry %)
-                  (map (fn [repo] (into {:id          (hash (str repo (:url %)))
-                                         :name        repo
-                                         :registry    (:name %)
-                                         :registryUrl (:url %)})))))
-       (flatten)))
+(defn v2-repositories
+  [registry-name repository-query]
+  (let [registry (registry-by-name registry-name)]
+    (->> (rc/v2-repositories registry)
+         (filter #(string/includes? % repository-query))
+         (rci/->v2-repositories))))
 
-(def cached-repositories (memo/memo repositories))
+(defn v1-tags
+  [registry-name repository-name]
+  (let [registry (registry-by-name registry-name)]
+    (->> (rc/v1-tags registry repository-name)
+         (map :name)
+         (into []))))
+
+(defn v2-tags
+  [registry-name repository-name]
+  (let [registry (registry-by-name registry-name)]
+    (->> (rc/v2-tags registry repository-name)
+         :tags)))

@@ -4,14 +4,13 @@
             [cheshire.core :refer [parse-string]]
             [swarmpit.token :as token]))
 
-(def ^:private api-version "v2")
+(defn- build-url
+  [registry api]
+  (str (:scheme registry) "://"
+       (:url registry) "/"
+       (:version registry) api))
 
-(defn headers
-  [user password]
-  (let [token (token/generate-basic user password)]
-    {"Authorization" token}))
-
-(defn execute
+(defn- execute
   [call-fx]
   (let [{:keys [status body error]} call-fx]
     (if error
@@ -27,10 +26,52 @@
                      {:status status
                       :body   {:error (:errors response)}})))))))
 
-(defn get
-  [registry api]
-  (let [url (str (:scheme registry) "://" (:url registry) "/" api-version api)
-        options {:timeout 5000
-                 :headers (headers (:user registry)
-                                   (:password registry))}]
+(defn- headers
+  [registry]
+  (let [headers {}]
+    (if (:isPrivate registry)
+      (assoc headers "Authorization" (token/generate-basic (:user registry)
+                                                           (:password registry)))
+      headers)))
+
+(defn- get
+  [registry api headers params]
+  (let [url (build-url registry api)
+        options {:timeout      5000
+                 :headers      headers
+                 :query-params params}]
     (execute @(http/get url options))))
+
+(defn v1-repositories
+  [registry query page]
+  (let [params {:q    query
+                :page page
+                :n    25}
+        headers (headers registry)]
+    (get registry "/search" headers params)))
+
+(defn v2-repositories
+  [registry]
+  (let [headers (headers registry)]
+    (->> (get registry "/_catalog" headers nil)
+         :repositories)))
+
+(defn v1-info
+  [registry]
+  (let [headers (headers registry)]
+    (get registry "/_ping" headers nil)))
+
+(defn v2-info
+  [registry]
+  (let [headers (headers registry)]
+    (get registry "/" headers {})))
+
+(defn v1-tags
+  [registry repository-name]
+  (let [headers (headers registry)]
+    (get registry (str "/repositories/" repository-name "/tags") headers {})))
+
+(defn v2-tags
+  [registry repository-name]
+  (let [headers (headers registry)]
+    (get registry (str "/" repository-name "/tags/list") headers {})))

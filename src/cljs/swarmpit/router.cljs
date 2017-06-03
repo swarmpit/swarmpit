@@ -22,26 +22,27 @@
    :task-list       "Tasks"
    :task-info       "Tasks"
    :registry-list   "Registries"
-   :registry-create "Registries"
-   :repository-list "Repositories"})
+   :registry-create "Registries"})
 
-(def handler ["" {"/"             :index
-                  "/login"        :login
-                  "/error"        :error
-                  "/repositories" {"" :repository-list}
-                  "/services"     {""                :service-list
-                                   "/create"         :service-create
-                                   ["/" :id]         :service-info
-                                   ["/" :id "/edit"] :service-edit}
-                  "/networks"     {""        :network-list
-                                   "/create" :network-create
-                                   ["/" :id] :network-info}
-                  "/nodes"        {""        :node-list
-                                   ["/" :id] :node-info}
-                  "/tasks"        {""        :task-list
-                                   ["/" :id] :task-info}
-                  "/registries"   {""        :registry-list
-                                   "/create" :registry-create}}])
+(def handler ["" {"/"           :index
+                  "/login"      :login
+                  "/error"      :error
+                  "/services"   {""                :service-list
+                                 "/create/wizard"  {"/registry" {""                     :registry-wizard
+                                                                 ["/v1/" :name "/repo"] :repository-v1-list
+                                                                 ["/v2/" :name "/repo"] :repository-v2-list}
+                                                    "/config"   :service-create}
+                                 ["/" :id]         :service-info
+                                 ["/" :id "/edit"] :service-edit}
+                  "/networks"   {""        :network-list
+                                 "/create" :network-create
+                                 ["/" :id] :network-info}
+                  "/nodes"      {""        :node-list
+                                 ["/" :id] :node-info}
+                  "/tasks"      {""        :task-list
+                                 ["/" :id] :task-info}
+                  "/registries" {""        :registry-list
+                                 "/create" :registry-create}}])
 
 ;;; Router config
 

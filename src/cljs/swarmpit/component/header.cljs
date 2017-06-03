@@ -1,7 +1,7 @@
 (ns swarmpit.component.header
   (:require [material.component :as comp]
             [material.icon :as icon]
-            [swarmpit.uri :refer [dispatch!]]
+            [swarmpit.url :refer [dispatch!]]
             [swarmpit.storage :as storage]
             [swarmpit.component.state :as state]
             [rum.core :as rum]))

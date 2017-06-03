@@ -1,6 +1,6 @@
 (ns swarmpit.component.service.create
   (:require [material.component :as comp]
-            [swarmpit.uri :refer [dispatch!]]
+            [swarmpit.url :refer [dispatch!]]
             [swarmpit.storage :as storage]
             [swarmpit.component.state :as state]
             [swarmpit.component.service.form-settings :as settings]
@@ -69,8 +69,7 @@
         variables (state/get-value variables/cursor)
         deployment (state/get-value deployment/cursor)]
     (ajax/POST "/services"
-               {:format        :json
-                :headers       {"Authorization" (storage/get "token")}
+               {:headers       {"Authorization" (storage/get "token")}
                 :params        (-> settings
                                    (assoc :ports ports)
                                    (assoc :volumes volumes)
@@ -120,8 +119,9 @@
             :onTouchTap create-service-handler}))]]]))
 
 (defn- init-state
-  []
-  (state/set-value {:image       nil
+  [params]
+  (state/set-value {:image       (:repository params)
+                    :imageTag    ""
                     :serviceName ""
                     :mode        "replicated"
                     :replicas    1} settings/cursor)
@@ -131,6 +131,6 @@
   (state/set-value {:autoredeploy false} deployment/cursor))
 
 (defn mount!
-  []
-  (init-state)
+  [params]
+  (init-state params)
   (rum/mount (form) (.getElementById js/document "content")))

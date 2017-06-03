@@ -3,7 +3,7 @@
   (:require [material.factory :as factory]
             [material.icon :as icon]
             [sablono.core :refer-macros [html]]
-            [swarmpit.uri :refer [dispatch!]]
+            [swarmpit.url :refer [dispatch!]]
             [swarmpit.utils :refer [select-keys*]]))
 
 ;;; Theme components
@@ -97,8 +97,25 @@
   ([props] (factory/list-item (clj->js props)))
   ([] (factory/list-item nil)))
 
+(defn card-header
+  ([props] (factory/card-header (clj->js props)))
+  ([] (factory/card-header nil)))
+
+(defn card-title
+  ([props] (factory/card-title (clj->js props)))
+  ([] (factory/card-title nil)))
+
 (defn chip
   [props & childs] (factory/chip (clj->js props) childs))
+
+(defn card
+  [props & childs] (factory/card (clj->js props) childs))
+
+(defn card-actions
+  [props & childs] (factory/card-actions (clj->js props) childs))
+
+(defn card-text
+  [props & childs] (factory/card-text (clj->js props) childs))
 
 (defn list
   [props & childs]
@@ -153,8 +170,12 @@
   (factory/table-row (clj->js props) childs))
 
 (defn table-row-column
-  [props comp]
-  (factory/table-row-column (clj->js props) comp))
+  ([props comp] (factory/table-row-column (clj->js props) comp))
+  ([props] (factory/table-row-column (clj->js props))))
+
+(defn table-footer
+  [props & childs]
+  (factory/table-footer (clj->js props) childs))
 
 (defn radio-button-group
   [props & childs]
@@ -203,6 +224,20 @@
                 :iconStyle      {:top -2}
                 :underlineStyle {:borderBottom "none"}})
         childs))]])
+
+(defn select-field-border
+  [props & childs]
+  (select-field
+    (merge props
+           {:style          {:height          "34px"
+                             :backgroundColor "#fff"
+                             :border          "1px solid rgba(0, 0, 0, 0.3)"}
+            :labelStyle     {:top         -5
+                             :paddingLeft "5px"
+                             :color       "rgb(117, 117, 117)"}
+            :iconStyle      {:top -2}
+            :underlineStyle {:borderBottom "none"}})
+    childs))
 
 (defn panel-info
   ([icon text]
@@ -311,6 +346,34 @@
                        {:key (str "trc-" (:id item))}
                        (render-item-fn %))))))
       items)))
+
+(defn list-table-paging
+  [offset total limit on-prev-fn on-next-fn]
+  (table-footer
+    {:key "tf"}
+    (table-row
+      {:key "tfr"}
+      (table-row-column
+        {:key      "tfrcbtn"
+         :style    {:float "right"}
+         :children [(icon-button
+                      {:key      "tfrcibprev"
+                       :disabled (= offset 0)
+                       :onClick  #(on-prev-fn)}
+                      (svg icon/left))
+                    (icon-button
+                      {:key      "tfrcibnext"
+                       :disabled (< total
+                                    (+ offset limit))
+                       :onClick  #(on-next-fn)}
+                      (svg icon/right))]})
+      (table-row-column
+        {:key   "tfrcinf"
+         :style {:float      "right"
+                 :paddingTop 16
+                 :height     16}}
+        (str (min (+ offset 1) total) " - "
+             (min (+ offset limit) total) " of " total)))))
 
 (defn list-table
   [headers items render-item-fn render-items-key url]

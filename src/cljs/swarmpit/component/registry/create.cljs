@@ -1,6 +1,6 @@
 (ns swarmpit.component.registry.create
   (:require [material.component :as comp]
-            [swarmpit.uri :refer [dispatch!]]
+            [swarmpit.url :refer [dispatch!]]
             [swarmpit.storage :as storage]
             [swarmpit.component.state :as state]
             [swarmpit.component.message :as message]
@@ -12,6 +12,9 @@
 
 (def cursor [:page :registry :form])
 
+(def form-private-style
+  {:marginTop "14px"})
+
 (defn- form-name [value]
   (comp/form-comp
     "NAME"
@@ -20,6 +23,22 @@
        :value    value
        :onChange (fn [_ v]
                    (state/update-value :name v cursor))})))
+
+(defn- form-version [value]
+  (comp/form-comp
+    "VERSION"
+    (comp/select-field
+      {:value    value
+       :onChange (fn [_ _ v]
+                   (state/update-value :version v cursor))}
+      (comp/menu-item
+        {:key         "fv1"
+         :value       "v1"
+         :primaryText "v1"})
+      (comp/menu-item
+        {:key         "fv2"
+         :value       "v2"
+         :primaryText "v2"}))))
 
 (defn- form-scheme [value]
   (comp/form-comp
@@ -42,9 +61,19 @@
     "URL"
     (comp/text-field
       {:id       "url"
+       :hintText "e.g. registry.hub.docker.com"
        :value    value
        :onChange (fn [_ v]
                    (state/update-value :url v cursor))})))
+
+(defn- form-private [value]
+  (comp/form-comp
+    "IS PRIVATE"
+    (comp/checkbox
+      {:checked value
+       :style   form-private-style
+       :onCheck (fn [_ v]
+                  (state/update-value :isPrivate v cursor))})))
 
 (defn- form-user [value]
   (comp/form-comp
@@ -75,7 +104,7 @@
                                (let [id (get response "Id")
                                      message (str "Registry " id " has been created.")]
                                  (progress/unmount!)
-                                 (dispatch! (str "/#/registries/" id))
+                                 (dispatch! (str "/#/registries"))
                                  (message/mount! message)))
               :error-handler (fn [{:keys [status response]}]
                                (let [error (get response "error")
@@ -86,8 +115,10 @@
 
 (rum/defc form < rum/reactive []
   (let [{:keys [name
+                version
                 scheme
                 url
+                isPrivate
                 user
                 password]} (state/react cursor)]
     [:div
@@ -100,18 +131,22 @@
             :onTouchTap create-registry-handler}))]]
      [:div.form-edit
       (form-name name)
+      (form-version version)
       (form-scheme scheme)
       (form-url url)
+      (form-private isPrivate)
       (form-user user)
       (form-password password)]]))
 
 (defn- init-state
   []
-  (state/set-value {:name     ""
-                    :scheme   "http"
-                    :url      ""
-                    :user     ""
-                    :password ""} cursor))
+  (state/set-value {:name      ""
+                    :version   "v2"
+                    :scheme    "http"
+                    :url       ""
+                    :isPrivate false
+                    :user      ""
+                    :password  ""} cursor))
 
 (defn mount!
   []

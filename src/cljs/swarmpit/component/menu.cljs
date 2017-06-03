@@ -53,10 +53,7 @@
          {:opacity 0}))
 
 (def menu
-  [{:name "BUILD"}
-   {:name "Repositories"
-    :icon icon/repositories}
-   {:name "APPLICATIONS"}
+  [{:name "APPLICATIONS"}
    {:name "Services"
     :icon icon/services}
    {:name "Tasks"
