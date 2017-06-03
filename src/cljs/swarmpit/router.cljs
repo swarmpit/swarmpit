@@ -28,10 +28,10 @@
                   "/login"      :login
                   "/error"      :error
                   "/services"   {""                :service-list
-                                 "/create/wizard"  {"/registry" {""                     :registry-wizard
-                                                                 ["/v1/" :name "/repo"] :repository-v1-list
-                                                                 ["/v2/" :name "/repo"] :repository-v2-list}
-                                                    "/config"   :service-create}
+                                 "/create/wizard"  {"/registry"                       :registry-wizard
+                                                    ["/v1/registries/" :name "/repo"] :repository-v1-list
+                                                    ["/v2/registries/" :name "/repo"] :repository-v2-list
+                                                    "/config"                         :service-create}
                                  ["/" :id]         :service-info
                                  ["/" :id "/edit"] :service-edit}
                   "/networks"   {""        :network-list

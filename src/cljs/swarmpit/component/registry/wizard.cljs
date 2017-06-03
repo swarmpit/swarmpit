@@ -34,7 +34,7 @@
        (comp/mui
          (comp/raised-button
            {:label   "NEXT"
-            :href    (str "/#/services/create/wizard/registry/" (version name items) "/" name "/repo")
+            :href    (str "/#/services/create/wizard/" (version name items) "/registries/" name "/repo")
             :primary true}))]]
      [:div.form-edit
       (form-registry name items)]]))

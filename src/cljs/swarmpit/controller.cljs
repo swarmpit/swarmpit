@@ -20,8 +20,8 @@
             [swarmpit.component.registry.list :as reglist]
             [swarmpit.component.registry.create :as regcreate]
             [swarmpit.component.registry.wizard :as regwizard]
-            [swarmpit.component.repository.v1-list :as r1list]
-            [swarmpit.component.repository.v2-list :as r2list]))
+            [swarmpit.component.repository.v1.list :as r1list]
+            [swarmpit.component.repository.v2.list :as r2list]))
 
 (defn- fetch
   [api api-resp-fx]

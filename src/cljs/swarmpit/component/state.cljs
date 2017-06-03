@@ -18,8 +18,7 @@
                        :registry   {:list   {:filter {}}
                                     :form   {}
                                     :wizard {}}
-                       :repository {:list {:v1 {:data {}}
-                                           :v2 {:data {}}}}}}))
+                       :repository {:list {:data {}}}}}))
 
 (defn react
   [cursor]

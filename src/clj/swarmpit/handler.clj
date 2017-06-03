@@ -157,17 +157,23 @@
 
 (defn v1-repository-tags
   [{:keys [route-params query-string]}]
-  (let [query (query-params query-string)]
-    (->> (api/v1-tags (:registryName route-params)
-                      (:repositoryName query))
-         (json-ok 200))))
+  (let [query (query-params query-string)
+        repository (:repositoryName query)]
+    (if (nil? repository)
+      (json-error 400 "Param repositoryName missing")
+      (->> (api/v1-tags (:registryName route-params)
+                        repository)
+           (json-ok 200)))))
 
 (defn v2-repository-tags
   [{:keys [route-params query-string]}]
-  (let [query (query-params query-string)]
-    (->> (api/v2-tags (:registryName route-params)
-                      (:repositoryName query))
-         (json-ok 200))))
+  (let [query (query-params query-string)
+        repository (:repositoryName query)]
+    (if (nil? repository)
+      (json-error 400 "Param repositoryName missing")
+      (->> (api/v2-tags (:registryName route-params)
+                        repository)
+           (json-ok 200)))))
 
 ;;; Handler
 

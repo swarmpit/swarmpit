@@ -19,6 +19,7 @@
                  [cljs-ajax "0.5.8"]
                  [cheshire "5.6.3"]
                  [digest "1.4.5"]
+                 [com.cemerick/url "0.1.1"]
                  [com.cemerick/friend "0.2.3"]
                  [com.cognitect/transit-cljs "0.8.239"]]
   :plugins [[lein-cljsbuild "1.1.4"]]

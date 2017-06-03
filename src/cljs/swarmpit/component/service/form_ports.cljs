@@ -11,7 +11,7 @@
 
 (defn- format-port-value
   [value]
-  (if (= 0 value) "" value))
+  (if (zero? value) "" value))
 
 (defn- form-container [value index]
   (comp/table-row-column

@@ -7,10 +7,6 @@
 
 (def cursor [:page :service :form :settings])
 
-(def form-image-style
-  {:display  "inherit"
-   :fontSize "14px"})
-
 (def form-mode-style
   {:display   "flex"
    :marginTop "14px"})
@@ -22,29 +18,12 @@
   {:marginTop "14px"})
 
 (defn- form-image [value]
-  (comp/form-item "IMAGE" value)
-
-  ;(comp/form-comp
-  ;  "IMAGE"
-  ;  (comp/select-field
-  ;    {:value    value
-  ;     :style    form-image-style
-  ;     :onChange (fn [_ _ v]
-  ;                 (state/update-value :image v cursor))}
-  ;    (comp/menu-item
-  ;      {:key         1
-  ;       :value       "nohaapav/napp:latest"
-  ;       :primaryText "nohaapav/napp:latest"})
-  ;    (comp/menu-item
-  ;      {:key         2
-  ;       :value       "nohaapav/app:latest"
-  ;       :primaryText "nohaapav/app:latest"})))
-  )
+  (comp/form-item "IMAGE" value))
 
 (defn- form-testc []
   (comp/form-comp
     "IMAGE TAG"
-    (comp/select-field-border
+    (comp/select-field
       {:value "rrr"}
       (comp/menu-item
         {:key         "rrr"

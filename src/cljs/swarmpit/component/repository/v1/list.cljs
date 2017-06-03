@@ -1,13 +1,14 @@
-(ns swarmpit.component.repository.v1-list
+(ns swarmpit.component.repository.v1.list
   (:require [material.component :as comp]
             [clojure.walk :as walk]
+            [cemerick.url :refer [map->query]]
             [swarmpit.url :refer [dispatch!]]
             [swarmpit.storage :as storage]
             [swarmpit.component.state :as state]
             [rum.core :as rum]
             [ajax.core :as ajax]))
 
-(def cursor [:page :repository :list :v1 :data])
+(def cursor [:page :repository :list :data])
 
 (def headers ["Name" "Description"])
 
@@ -21,10 +22,9 @@
 
 (defn- repository-handler
   [name query page]
-  (ajax/GET "v1/repositories"
+  (ajax/GET (str "v1/registries/" name "/repo")
             {:headers {"Authorization" (storage/get "token")}
-             :params  {:registryName    name
-                       :repositoryQuery query
+             :params  {:repositoryQuery query
                        :repositoryPage  page}
              :handler (fn [response]
                         (let [res (walk/keywordize-keys response)]
@@ -47,8 +47,8 @@
           :selectable  false
           :onCellClick (fn [i]
                          (dispatch! (str "/#/services/create/wizard/config?"
-                                         "repository=" (repository i)
-                                         "&registry=" registry-name)))}
+                                         (map->query {:repository (repository i)
+                                                      :registry   registry-name}))))}
          (comp/list-table-header headers)
          (comp/list-table-body results
                                render-item
@@ -60,6 +60,11 @@
                                    #(repository-handler registry-name query (- (js/parseInt page) 1))
                                    #(repository-handler registry-name query (+ (js/parseInt page) 1))))))]))
 
+(defn- init-state
+  []
+  (state/set-value {} cursor))
+
 (defn mount!
   [registry-name]
+  (init-state)
   (rum/mount (repository-list registry-name) (.getElementById js/document "content")))

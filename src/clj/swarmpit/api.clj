@@ -150,7 +150,7 @@
   [registry-name repository-query]
   (let [registry (registry-by-name registry-name)]
     (->> (rc/v2-repositories registry)
-         (filter #(string/includes? % repository-query))
+         (filter #(string/includes? % (or repository-query "")))
          (rci/->v2-repositories))))
 
 (defn v1-tags
