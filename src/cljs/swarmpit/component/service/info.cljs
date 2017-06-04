@@ -55,8 +55,8 @@
        (comp/form-item "SERVICE NAME" (:serviceName item))
        (comp/form-item "CREATED" (:createdAt item))
        (comp/form-item "LAST UPDATE" (:updatedAt item))
-       (comp/form-item "IMAGE" (:image item))
-       (comp/form-item "IMAGE DIGEST" (:imageDigest item))
+       (comp/form-item "IMAGE" (get-in item [:repository :image]))
+       (comp/form-item "IMAGE DIGEST" (get-in item [:repository :imageDigest]))
        (comp/form-item "MODE" (:mode item))]
       [:div.form-view-group
        (comp/form-section "Ports")

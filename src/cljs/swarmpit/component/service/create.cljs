@@ -121,8 +121,7 @@
     [:div
      [:div.form-panel
       [:div.form-panel-left
-       (comp/panel-info icon/create
-                        "Step 3")]
+       (comp/panel-info icon/create "Step 3")]
       [:div.form-panel-right
        (comp/mui
          (comp/raised-button
@@ -140,9 +139,9 @@
 (defn- init-state
   [registry registry-version repository]
   (settings/image-tags-handler registry registry-version repository)
-  (state/set-value {:imageName   repository
-                    :imageTag    ""
-                    :tags        []
+  (state/set-value {:repository  {:imageName repository
+                                  :imageTag  ""
+                                  :tagList   []}
                     :serviceName ""
                     :mode        "replicated"
                     :replicas    1} settings/cursor)

@@ -117,7 +117,7 @@
            :style                    drawer-style
            :iconElementLeft          drawer-icon
            :onLeftIconButtonTouchTap (fn []
-                                       (state/update-value :opened (not opened) cursor))})
+                                       (state/update-value [:opened] (not opened) cursor))})
         (comp/menu
           {:key   "menu"
            :style menu-style}

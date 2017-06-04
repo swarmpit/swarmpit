@@ -17,7 +17,7 @@
       {:toggled  value
        :style    form-autoredeploy-style
        :onToggle (fn [_ v]
-                   (state/update-value :autoredeploy v cursor))})))
+                   (state/update-value [:autoredeploy] v cursor))})))
 
 (rum/defc form < rum/reactive []
   (let [{:keys [autoredeploy]} (state/react cursor)]

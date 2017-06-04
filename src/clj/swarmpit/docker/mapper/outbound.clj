@@ -40,7 +40,9 @@
 
 (defn ->service-image
   [service]
-  (str (:imageName service) ":" (:imageTag service)))
+  (let [image (get-in service [:repository :imageName])
+        tag (get-in service [:repository :imageTag])]
+    (str image ":" tag)))
 
 (defn ->service
   [service]

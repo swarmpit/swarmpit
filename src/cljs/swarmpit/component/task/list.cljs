@@ -34,7 +34,7 @@
       (filter #(string/includes? (:serviceName %) name) items))))
 
 (def render-item-keys
-  [[:taskName] [:serviceName] [:image] [:node :nodeName] [:state]])
+  [[:taskName] [:serviceName] [:repository :image] [:node :nodeName] [:state]])
 
 (defn- render-item
   [item]
@@ -52,13 +52,13 @@
        (comp/panel-text-field
          {:hintText "Filter by service name"
           :onChange (fn [_ v]
-                      (state/update-value :serviceName v cursor))})
+                      (state/update-value [:serviceName] v cursor))})
        [:span.form-panel-space]
        (comp/panel-checkbox
          {:checked (false? running)
           :label   "Show all tasks"
           :onCheck (fn [_ v]
-                     (state/update-value :running (false? v) cursor))})]]
+                     (state/update-value [:running] (false? v) cursor))})]]
      (comp/list-table headers
                       filtered-items
                       render-item

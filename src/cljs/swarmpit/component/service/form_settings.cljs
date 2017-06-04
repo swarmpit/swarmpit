@@ -32,12 +32,12 @@
        :inputStyle    form-image-style
        :value         value})))
 
-(defn- form-image-tag-ac [tags]
+(defn- form-image-tag-ac [tagList]
   (comp/form-comp
     "IMAGE TAG"
     (comp/autocomplete {:id            "imageTag"
-                        :onUpdateInput (fn [v] (state/update-value :imageTag v cursor))
-                        :dataSource    tags})))
+                        :onUpdateInput (fn [v] (state/update-value [:repository :imageTag] v cursor))
+                        :dataSource    tagList})))
 
 (defn- form-image-tag [value]
   "Temporary solution. Will be fixed with persistence. There is no way to get tags without context during update"
@@ -47,7 +47,7 @@
       {:id       "imageTag"
        :value    value
        :onChange (fn [_ v]
-                   (state/update-value :imageTag v cursor))})))
+                   (state/update-value [:repository :imageTag] v cursor))})))
 
 (defn- form-name [value update-form?]
   (comp/form-comp
@@ -57,7 +57,7 @@
        :disabled update-form?
        :value    value
        :onChange (fn [_ v]
-                   (state/update-value :serviceName v cursor))})))
+                   (state/update-value [:serviceName] v cursor))})))
 
 (defn- form-mode [value update-form?]
   (comp/form-comp
@@ -67,7 +67,7 @@
        :style         form-mode-style
        :valueSelected value
        :onChange      (fn [_ v]
-                        (state/update-value :mode v cursor))}
+                        (state/update-value [:mode] v cursor))}
       (comp/radio-button
         {:key      "mrbr"
          :disabled update-form?
@@ -91,7 +91,7 @@
        :value        value
        :sliderStyle  form-replicas-slider-style
        :onChange     (fn [_ v]
-                       (state/update-value :replicas v cursor))})))
+                       (state/update-value [:replicas] v cursor))})))
 
 (defn image-tags-handler
   [registry registry-version repository]
@@ -99,20 +99,18 @@
             {:headers {"Authorization" (storage/get "token")}
              :params  {:repositoryName repository}
              :handler (fn [response]
-                        (state/update-value :tags response cursor))}))
+                        (state/update-value [:repository :tagList] response cursor))}))
 
 (rum/defc form < rum/reactive [update-form?]
-  (let [{:keys [imageName
-                imageTag
+  (let [{:keys [repository
                 serviceName
                 mode
-                replicas
-                tags]} (state/react cursor)]
+                replicas]} (state/react cursor)]
     [:div.form-edit
-     (form-image imageName)
+     (form-image (:imageName repository))
      (if update-form?
-       (form-image-tag imageTag)
-       (form-image-tag-ac tags))
+       (form-image-tag (:imageTag repository))
+       (form-image-tag-ac (:tagList repository)))
      (form-name serviceName update-form?)
      (form-mode mode update-form?)
      (if (= "replicated" mode)

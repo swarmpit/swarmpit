@@ -19,7 +19,7 @@
     (comp/select-field
       {:value    value
        :onChange (fn [_ _ v]
-                   (state/update-value :name v cursor))}
+                   (state/update-value [:name] v cursor))}
       (->> items
            (map #(comp/menu-item
                    {:key         (:name %)
@@ -31,8 +31,7 @@
     [:div
      [:div.form-panel
       [:div.form-panel-left
-       (comp/panel-info icon/create
-                        "Step 1")]
+       (comp/panel-info icon/create "Step 1")]
       [:div.form-panel-right
        (comp/mui
          (comp/raised-button

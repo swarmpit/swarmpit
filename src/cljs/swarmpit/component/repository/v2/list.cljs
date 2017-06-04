@@ -44,8 +44,7 @@
     [:div
      [:div.form-panel
       [:div.form-panel-left
-       (comp/panel-info icon/create
-                        "Step 2")]]
+       (comp/panel-info icon/create "Step 2")]]
      (form-repository registry-name)
      (comp/mui
        (comp/table

@@ -36,7 +36,7 @@
        (comp/panel-text-field
          {:hintText "Filter by name"
           :onChange (fn [_ v]
-                      (state/update-value :nodeName v cursor))})]]
+                      (state/update-value [:nodeName] v cursor))})]]
      (comp/list-table headers
                       filtered-items
                       render-item

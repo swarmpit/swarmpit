@@ -48,8 +48,8 @@
       :version (get-in task [:Version :Index])
       :createdAt (date (get task :CreatedAt))
       :updatedAt (date (get task :UpdatedAt))
-      :image image-name
-      :imageDigest image-digest
+      :repository {:image       image-name
+                   :imageDigest image-digest}
       :state (get-in task [:Status :State])
       :status {:error (get-in task [:Status :Err])}
       :desiredState (get task :DesiredState)
@@ -132,10 +132,10 @@
       :version (get-in service [:Version :Index])
       :createdAt (date (get service :CreatedAt))
       :updatedAt (date (get service :UpdatedAt))
-      :image image-name
-      :imageDigest image-digest
-      :imageName (first image-segments)
-      :imageTag (second image-segments)
+      :repository {:image       image-name
+                   :imageDigest image-digest
+                   :imageName   (first image-segments)
+                   :imageTag    (second image-segments)}
       :serviceName service-name
       :mode service-mode
       :replicas replicas

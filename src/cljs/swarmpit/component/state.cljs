@@ -36,10 +36,10 @@
   (swap! state assoc-in cursor value))
 
 (defn update-value
-  "Update value `v` corresponding to key `k` on given `cursor`"
-  [k v cursor]
+  "Update value `v` corresponding to key path `p` on given `cursor`"
+  [p v cursor]
   (swap! state update-in cursor
-         (fn [map] (assoc map k v))))
+         (fn [map] (assoc-in map p v))))
 
 (defn add-item
   "Add `item` to vector on given `cursor`"

@@ -80,7 +80,7 @@
 
 (defn- init-state
   [item]
-  (state/set-value (select-keys item [:imageName :imageTag :version :serviceName :mode :replicas]) settings/cursor)
+  (state/set-value (select-keys item [:repository :version :serviceName :mode :replicas]) settings/cursor)
   (state/set-value (:ports item) ports/cursor)
   (state/set-value (:volumes item) volumes/cursor)
   (state/set-value (:variables item) variables/cursor)

@@ -35,7 +35,7 @@
        (comp/panel-text-field
          {:hintText "Filter by name"
           :onChange (fn [_ v]
-                      (state/update-value :networkName v cursor))})]
+                      (state/update-value [:networkName] v cursor))})]
       [:div.form-panel-right
        (comp/mui
          (comp/raised-button

@@ -44,7 +44,7 @@
       (filter #(string/includes? (:serviceName %) name) items))))
 
 (def render-item-keys
-  [[:serviceName] [:image] [:mode] [:status :info] [:state] [:status :update]])
+  [[:serviceName] [:repository :image] [:mode] [:status :info] [:state] [:status :update]])
 
 (defn- render-item
   [item]
@@ -64,13 +64,13 @@
        (comp/panel-text-field
          {:hintText "Filter by name"
           :onChange (fn [_ v]
-                      (state/update-value :serviceName v cursor))})
+                      (state/update-value [:serviceName] v cursor))})
        [:span.form-panel-space]
        (comp/panel-checkbox
          {:checked cranky
           :label   "Show cranky services"
           :onCheck (fn [_ v]
-                     (state/update-value :cranky v cursor))})]
+                     (state/update-value [:cranky] v cursor))})]
       [:div.form-panel-right
        (comp/mui
          (comp/raised-button

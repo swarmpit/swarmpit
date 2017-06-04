@@ -19,7 +19,7 @@
       {:id       "networkName"
        :value    value
        :onChange (fn [_ v]
-                   (state/update-value :networkName v cursor))})))
+                   (state/update-value [:networkName] v cursor))})))
 
 (defn- form-driver [value]
   (comp/form-comp
@@ -27,7 +27,7 @@
     (comp/select-field
       {:value    value
        :onChange (fn [_ _ v]
-                   (state/update-value :driver v cursor))}
+                   (state/update-value [:driver] v cursor))}
       (comp/menu-item
         {:key         "fdi1"
          :value       "overlay"

@@ -22,7 +22,7 @@
       {:id       "name"
        :value    value
        :onChange (fn [_ v]
-                   (state/update-value :name v cursor))})))
+                   (state/update-value [:name] v cursor))})))
 
 (defn- form-version [value]
   (comp/form-comp
@@ -30,7 +30,7 @@
     (comp/select-field
       {:value    value
        :onChange (fn [_ _ v]
-                   (state/update-value :version v cursor))}
+                   (state/update-value [:version] v cursor))}
       (comp/menu-item
         {:key         "fv1"
          :value       "v1"
@@ -46,7 +46,7 @@
     (comp/select-field
       {:value    value
        :onChange (fn [_ _ v]
-                   (state/update-value :scheme v cursor))}
+                   (state/update-value [:scheme] v cursor))}
       (comp/menu-item
         {:key         "fshttp"
          :value       "http"
@@ -64,7 +64,7 @@
        :hintText "e.g. registry.hub.docker.com"
        :value    value
        :onChange (fn [_ v]
-                   (state/update-value :url v cursor))})))
+                   (state/update-value [:url] v cursor))})))
 
 (defn- form-private [value]
   (comp/form-comp
@@ -73,7 +73,7 @@
       {:checked value
        :style   form-private-style
        :onCheck (fn [_ v]
-                  (state/update-value :isPrivate v cursor))})))
+                  (state/update-value [:isPrivate] v cursor))})))
 
 (defn- form-user [value]
   (comp/form-comp
@@ -82,7 +82,7 @@
       {:id       "user"
        :value    value
        :onChange (fn [_ v]
-                   (state/update-value :user v cursor))})))
+                   (state/update-value [:user] v cursor))})))
 
 (defn- form-password [value]
   (comp/form-comp
@@ -91,7 +91,7 @@
       {:id       "password"
        :value    value
        :onChange (fn [_ v]
-                   (state/update-value :password v cursor))})))
+                   (state/update-value [:password] v cursor))})))
 
 (defn- create-registry-handler
   []

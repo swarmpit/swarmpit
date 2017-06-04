@@ -66,7 +66,7 @@
   "Route to given `loc` and update state domain"
   [loc]
   (let [domain (get location-domains (:handler loc))]
-    (state/update-value :domain domain [:menu])
+    (state/update-value [:domain] domain [:menu])
     (if (is-layout? loc)
       (layout/mount!))
     (route loc)))
