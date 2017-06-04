@@ -1,5 +1,6 @@
 (ns swarmpit.component.repository.v2.list
-  (:require [material.component :as comp]
+  (:require [material.icon :as icon]
+            [material.component :as comp]
             [cemerick.url :refer [map->query]]
             [swarmpit.url :refer [dispatch!]]
             [swarmpit.storage :as storage]
@@ -29,24 +30,32 @@
                         (let [res (walk/keywordize-keys response)]
                           (state/set-value res cursor)))}))
 
+(defn- form-repository [registry-name]
+  (comp/form-comp
+    "REPOSITORY"
+    (comp/text-field
+      {:hintText "Find repository"
+       :onChange (fn [_ v]
+                   (repository-handler registry-name v))})))
+
 (rum/defc repository-list < rum/reactive [registry-name]
   (let [items (state/react cursor)
         repository (fn [index] (:name (nth items index)))]
     [:div
      [:div.form-panel
       [:div.form-panel-left
-       (comp/panel-text-field
-         {:hintText "Search in registry"
-          :onChange (fn [_ v]
-                      (repository-handler registry-name v))})]]
+       (comp/panel-info icon/create
+                        "Step 2")]]
+     (form-repository registry-name)
      (comp/mui
        (comp/table
          {:key         "tbl"
           :selectable  false
           :onCellClick (fn [i]
                          (dispatch! (str "/#/services/create/wizard/config?"
-                                         (map->query {:repository (repository i)
-                                                      :registry   registry-name}))))}
+                                         (map->query {:repository      (repository i)
+                                                      :registry        registry-name
+                                                      :registryVersion "v2"}))))}
          (comp/list-table-header headers)
          (comp/list-table-body items
                                render-item

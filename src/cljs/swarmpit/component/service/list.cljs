@@ -17,22 +17,14 @@
 (def form-replicas-label-style
   {:fontSize "13px"})
 
-(def form-updates-style
-  {:display  "inline-block"
-   :position "relative"})
-
 (defn form-replicas [value]
   (comp/chip {:style      form-replicas-style
               :labelStyle form-replicas-label-style} value))
 
 (defn form-updates [value]
   (let [status (if value "loading" "ready")]
-    (comp/refresh-indicator
-      {:size   30
-       :left   8
-       :top    0
-       :status status
-       :style  form-updates-style})))
+    (comp/loader
+      {:status status})))
 
 (defn form-state [value]
   (case value

@@ -1,7 +1,8 @@
 (ns swarmpit.controller
-  (:require [clojure.walk :as walk]
-            [ajax.core :as ajax]
-            [swarmpit.url :refer [dispatch! query-params]]
+  (:require [ajax.core :as ajax]
+            [clojure.walk :refer [keywordize-keys]]
+            [swarmpit.url :refer [dispatch! query-string]]
+            [cemerick.url :refer [query->map]]
             [swarmpit.storage :as storage]
             [swarmpit.component.page-login :as page-login]
             [swarmpit.component.page-404 :as page-404]
@@ -28,7 +29,7 @@
   (ajax/GET api
             {:headers       {"Authorization" (storage/get "token")}
              :handler       (fn [response]
-                              (let [resp (walk/keywordize-keys response)]
+                              (let [resp (keywordize-keys response)]
                                 (-> resp api-resp-fx)))
              :error-handler (fn [{:keys [status]}]
                               (if (= status 401)
@@ -69,7 +70,10 @@
 
 (defmethod dispatch :service-create
   [_]
-  (screate/mount! (query-params)))
+  (let [params (keywordize-keys (query->map (query-string)))]
+    (screate/mount! (:registry params)
+                    (:registryVersion params)
+                    (:repository params))))
 
 (defmethod dispatch :service-edit
   [{:keys [route-params]}]

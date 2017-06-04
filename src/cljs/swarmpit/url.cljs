@@ -19,11 +19,3 @@
   []
   (->> (split (url) #"\?")
        (second)))
-
-(defn query-params
-  "Parse URL parameters into a hashmap"
-  []
-  (->> (split (query-string) #"&")
-       (map #(split % #"="))
-       (map (fn [[k v]] [(keyword k) v]))
-       (into {})))

@@ -1,5 +1,6 @@
 (ns swarmpit.component.service.create
-  (:require [material.component :as comp]
+  (:require [material.icon :as icon]
+            [material.component :as comp]
             [swarmpit.url :refer [dispatch!]]
             [swarmpit.storage :as storage]
             [swarmpit.component.state :as state]
@@ -45,8 +46,27 @@
   {:backgroundColor "transparent"})
 
 (def stepper-style
-  {:background "rgb(245, 245, 245)"
-   :height     "60px"})
+  {:height "60px"})
+
+(def form-previous-button-style
+  {:margin "10px"})
+
+(def form-next-button-style
+  {:marginBottom "10px"})
+
+(defn- form-previous-button [index]
+  (comp/raised-button
+    {:label      "Previous"
+     :style      form-previous-button-style
+     :disabled   (= 0 index)
+     :onTouchTap (fn [] (step-previous index))}))
+
+(defn- form-next-button [index]
+  (comp/raised-button
+    {:label      "Next"
+     :style      form-next-button-style
+     :disabled   (= (- (count steps) 1) index)
+     :onTouchTap (fn [] (step-next index))}))
 
 (defn- step-items []
   (map-indexed
@@ -58,7 +78,12 @@
            :disableTouchRipple true
            :style              step-style
            :onClick            (fn [] (reset! step-index index))}
-          item)))
+          item)
+        (comp/step-content
+          {}
+          (form-item index)
+          (form-previous-button index)
+          (form-next-button index))))
     steps))
 
 (defn- create-service-handler
@@ -91,37 +116,30 @@
 (rum/defc form < rum/reactive []
   (let [index (rum/react step-index)]
     [:div
-     (comp/mui
-       (comp/stepper
-         {:activeStep index
-          :linear     false
-          :style      stepper-style
-          :children   (clj->js (step-items))}))
-     (form-item index)
-     [:div.form-panel.form-panel-buttons
+     [:div.form-panel
       [:div.form-panel-left
-       (comp/mui
-         (comp/raised-button
-           {:label      "Previous"
-            :disabled   (= 0 index)
-            :onTouchTap (fn [] (step-previous index))}))
-       [:span.form-panel-delimiter]
-       (comp/mui
-         (comp/raised-button
-           {:label      "Next"
-            :disabled   (= (- (count steps) 1) index)
-            :onTouchTap (fn [] (step-next index))}))]
+       (comp/panel-info icon/create
+                        "Step 3")]
       [:div.form-panel-right
        (comp/mui
          (comp/raised-button
            {:label      "Create"
             :primary    true
-            :onTouchTap create-service-handler}))]]]))
+            :onTouchTap create-service-handler}))]]
+     (comp/mui
+       (comp/stepper
+         {:activeStep  index
+          :linear      false
+          :style       stepper-style
+          :orientation "vertical"
+          :children    (clj->js (step-items))}))]))
 
 (defn- init-state
-  [params]
-  (state/set-value {:image       (:repository params)
-                    :imageTag    ""
+  [registry registry-version repository]
+  (settings/image-tags-handler registry registry-version repository)
+  (state/set-value {:image       repository
+                    :imageTag    nil
+                    :tags        []
                     :serviceName ""
                     :mode        "replicated"
                     :replicas    1} settings/cursor)
@@ -131,6 +149,6 @@
   (state/set-value {:autoredeploy false} deployment/cursor))
 
 (defn mount!
-  [params]
-  (init-state params)
+  [registry registry-version repository]
+  (init-state registry registry-version repository)
   (rum/mount (form) (.getElementById js/document "content")))

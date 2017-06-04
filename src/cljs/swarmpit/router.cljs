@@ -8,21 +8,23 @@
 (defonce location (atom nil))
 
 (def resource
-  {:index           "Home"
-   :login           ""
-   :service-list    "Services"
-   :service-create  "Services"
-   :service-info    "Services"
-   :service-edit    "Services"
-   :network-list    "Networks"
-   :network-create  "Networks"
-   :network-info    "Networks"
-   :node-list       "Nodes"
-   :node-info       "Nodes"
-   :task-list       "Tasks"
-   :task-info       "Tasks"
-   :registry-list   "Registries"
-   :registry-create "Registries"})
+  {:index              "Home"
+   :service-list       "Services"
+   :service-create     "Services / Wizard"
+   :service-info       "Services"
+   :service-edit       "Services"
+   :network-list       "Networks"
+   :network-create     "Networks"
+   :network-info       "Networks"
+   :node-list          "Nodes"
+   :node-info          "Nodes"
+   :task-list          "Tasks"
+   :task-info          "Tasks"
+   :registry-list      "Registries"
+   :registry-create    "Registries / Create"
+   :registry-wizard    "Services / Wizard"
+   :repository-v1-list "Services / Wizard"
+   :repository-v2-list "Services / Wizard"})
 
 (def routes ["" {"/"           :index
                  "/login"      :login

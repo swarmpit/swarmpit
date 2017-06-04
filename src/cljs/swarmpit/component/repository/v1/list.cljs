@@ -1,5 +1,6 @@
 (ns swarmpit.component.repository.v1.list
-  (:require [material.component :as comp]
+  (:require [material.icon :as icon]
+            [material.component :as comp]
             [clojure.walk :as walk]
             [cemerick.url :refer [map->query]]
             [swarmpit.url :refer [dispatch!]]
@@ -30,6 +31,14 @@
                         (let [res (walk/keywordize-keys response)]
                           (state/set-value res cursor)))}))
 
+(defn- form-repository [registry-name]
+  (comp/form-comp
+    "REPOSITORY"
+    (comp/text-field
+      {:hintText "Find repository"
+       :onChange (fn [_ v]
+                   (repository-handler registry-name v 1))})))
+
 (rum/defc repository-list < rum/reactive [registry-name]
   (let [{:keys [results page limit total query]} (state/react cursor)
         offset (* limit (- page 1))
@@ -37,18 +46,18 @@
     [:div
      [:div.form-panel
       [:div.form-panel-left
-       (comp/panel-text-field
-         {:hintText "Search in registry"
-          :onChange (fn [_ v]
-                      (repository-handler registry-name v 1))})]]
+       (comp/panel-info icon/create
+                        "Step 2")]]
+     (form-repository registry-name)
      (comp/mui
        (comp/table
          {:key         "tbl"
           :selectable  false
           :onCellClick (fn [i]
                          (dispatch! (str "/#/services/create/wizard/config?"
-                                         (map->query {:repository (repository i)
-                                                      :registry   registry-name}))))}
+                                         (map->query {:repository      (repository i)
+                                                      :registry        registry-name
+                                                      :registryVersion "v1"}))))}
          (comp/list-table-header headers)
          (comp/list-table-body results
                                render-item

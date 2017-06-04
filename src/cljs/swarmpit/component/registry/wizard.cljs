@@ -1,5 +1,6 @@
 (ns swarmpit.component.registry.wizard
-  (:require [material.component :as comp]
+  (:require [material.icon :as icon]
+            [material.component :as comp]
             [swarmpit.component.state :as state]
             [rum.core :as rum]))
 
@@ -29,7 +30,9 @@
   (let [{:keys [name]} (state/react cursor)]
     [:div
      [:div.form-panel
-      [:div.form-panel-left]
+      [:div.form-panel-left
+       (comp/panel-info icon/create
+                        "Step 1")]
       [:div.form-panel-right
        (comp/mui
          (comp/raised-button

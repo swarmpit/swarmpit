@@ -1,7 +1,9 @@
 (ns swarmpit.component.service.form-settings
   (:require [material.component :as comp]
+            [swarmpit.storage :as storage]
             [swarmpit.component.state :as state]
-            [rum.core :as rum]))
+            [rum.core :as rum]
+            [ajax.core :as ajax]))
 
 (enable-console-print!)
 
@@ -17,18 +19,25 @@
 (def form-replicas-slider-style
   {:marginTop "14px"})
 
-(defn- form-image [value]
-  (comp/form-item "IMAGE" value))
+(def form-image-style
+  {:color "rgb(117, 117, 117)"})
 
-(defn- form-testc []
+(defn- form-image [value]
+  (comp/form-comp
+    "IMAGE"
+    (comp/text-field
+      {:id            "image"
+       :disabled      true
+       :underlineShow false
+       :inputStyle    form-image-style
+       :value         value})))
+
+(defn- form-image-tags [tags]
   (comp/form-comp
     "IMAGE TAG"
-    (comp/select-field
-      {:value "rrr"}
-      (comp/menu-item
-        {:key         "rrr"
-         :value       "rrr"
-         :primaryText "rrr"}))))
+    (comp/autocomplete {:id            "imageTag"
+                        :onUpdateInput (fn [v] (state/update-value :imageTag v cursor))
+                        :dataSource    tags})))
 
 (defn- form-name [value update-form?]
   (comp/form-comp
@@ -74,14 +83,23 @@
        :onChange     (fn [_ v]
                        (state/update-value :replicas v cursor))})))
 
+(defn image-tags-handler
+  [registry registry-version repository]
+  (ajax/GET (str registry-version "/registries/" registry "/repo/tags")
+            {:headers {"Authorization" (storage/get "token")}
+             :params  {:repositoryName repository}
+             :handler (fn [response]
+                        (state/update-value :tags response cursor))}))
+
 (rum/defc form < rum/reactive [update-form?]
   (let [{:keys [image
                 serviceName
                 mode
-                replicas]} (state/react cursor)]
-    [:div.form-view
+                replicas
+                tags]} (state/react cursor)]
+    [:div.form-edit
      (form-image image)
-     (form-testc)
+     (form-image-tags tags)
      (form-name serviceName update-form?)
      (form-mode mode update-form?)
      (if (= "replicated" mode)

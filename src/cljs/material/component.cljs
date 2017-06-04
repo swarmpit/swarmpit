@@ -41,6 +41,10 @@
 
 ;;; Single components
 
+(defn auto-complete
+  ([props] (factory/auto-complete (clj->js props)))
+  ([] (factory/auto-complete nil)))
+
 (defn avatar
   ([props] (factory/avatar (clj->js props)))
   ([] (factory/avatar nil)))
@@ -149,6 +153,10 @@
   [props & childs]
   (factory/step-button (clj->js props) childs))
 
+(defn step-content
+  [props & childs]
+  (factory/step-content (clj->js props) childs))
+
 (defn table
   [props & childs]
   (factory/table (clj->js props) childs))
@@ -187,6 +195,21 @@
 
 ;;; Composite components
 
+(defn loader [props]
+  (refresh-indicator
+    (merge props
+           {:size  30
+            :left  8
+            :top   0
+            :style {:display  "inline-block"
+                    :position "relative"}})))
+
+(defn autocomplete [props]
+  (auto-complete
+    (merge props
+           {:listStyle {:overflow  "scroll"
+                        :maxHeight "230px"}})))
+
 ;; Panel elements
 
 (defn panel-text-field
@@ -206,38 +229,6 @@
              {:style      {:width     "200px"
                            :marginTop "12px"}
               :labelStyle {:left -10}}))))
-
-(defn panel-select-field
-  [label props & childs]
-  [:div.form-panel-item
-   [:span.form-panel-item-sf-label label]
-   [:div.form-panel-item-sf-field
-    (mui
-      (select-field
-        (merge props
-               {:style          {:height          "34px"
-                                 :backgroundColor "#fff"
-                                 :border          "1px solid rgba(0, 0, 0, 0.3)"}
-                :labelStyle     {:top         -5
-                                 :paddingLeft "5px"
-                                 :color       "rgb(117, 117, 117)"}
-                :iconStyle      {:top -2}
-                :underlineStyle {:borderBottom "none"}})
-        childs))]])
-
-(defn select-field-border
-  [props & childs]
-  (select-field
-    (merge props
-           {:style          {:height          "34px"
-                             :backgroundColor "#fff"
-                             :border          "1px solid rgba(0, 0, 0, 0.3)"}
-            :labelStyle     {:top         -5
-                             :paddingLeft "5px"
-                             :color       "rgb(117, 117, 117)"}
-            :iconStyle      {:top -2}
-            :underlineStyle {:borderBottom "none"}})
-    childs))
 
 (defn panel-info
   ([icon text]

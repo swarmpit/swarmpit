@@ -44,6 +44,7 @@
 (def stepper (create-factory js/MaterialUI.Stepper))
 (def step-label (create-factory js/MaterialUI.StepLabel))
 (def step-button (create-factory js/MaterialUI.StepButton))
+(def step-content (create-factory js/MaterialUI.StepContent))
 (def select-field (create-factory js/MaterialUI.SelectField))
 (def text-field (create-factory js/MaterialUI.TextField))
 (def slider (create-factory js/MaterialUI.Slider))
@@ -56,3 +57,4 @@
 
 (def mui-theme js/MaterialUIStyles.getMuiTheme)
 (def fade js/MaterialUIUtils.colorManipulator.fade)
+(def auto-complete-filter js/MaterialUI.AutoComplete.caseInsensitiveFilter)
