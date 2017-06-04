@@ -27,10 +27,7 @@
 (defn- map-uri
   "Map request `method`, `uri` & query `params` to curl vector cmd representation"
   [method uri params]
-  (let [params (if (some? params)
-                 (str "?" (form-encode params))
-                 "")]
-    ["-X" method (str "http:/" api-version uri (map-params params))]))
+  ["-X" method (str "http:/" api-version uri (map-params params))])
 
 (defn- map-payload
   "Map request `payload` to curl vector cmd representation"
@@ -89,7 +86,7 @@
 
 (defn- post
   ([uri payload] (execute "POST" uri nil nil payload))
-  ([uri payload headers] (execute "POST" uri nil headers payload)))
+  ([uri params payload] (execute "POST" uri params nil payload)))
 
 (defn- put
   ([uri payload] (execute "PUT" uri nil nil payload))
@@ -120,8 +117,9 @@
   (post "/services/create" service))
 
 (defn update-service
-  [id service]
-  (post (str "/services/" id "/update?version=" (:version service)) service))
+  [id version service]
+  (let [uri (str "/services/" id "/update")]
+    (post uri {:version version} service)))
 
 ;; Task
 
