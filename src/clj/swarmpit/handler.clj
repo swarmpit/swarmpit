@@ -1,6 +1,5 @@
 (ns swarmpit.handler
-  (:require [bidi.ring :refer [make-handler]]
-            [ring.util.codec :refer [form-decode]]
+  (:require [cemerick.url :refer [query->map]]
             [clojure.walk :refer [keywordize-keys]]
             [swarmpit.api :as api]
             [swarmpit.token :as token]))
@@ -15,12 +14,6 @@
   ([] {:status 200})
   ([status response] {:status status
                       :body   response}))
-
-(defn query-params
-  [query-string]
-  (if (some? query-string)
-    (keywordize-keys (form-decode query-string))
-    {}))
 
 ;;; Login handler
 
@@ -142,7 +135,7 @@
 
 (defn v1-repositories
   [{:keys [route-params query-string]}]
-  (let [query (query-params query-string)]
+  (let [query (keywordize-keys (query->map query-string))]
     (->> (api/v1-repositories (:registryName route-params)
                               (:repositoryQuery query)
                               (:repositoryPage query))
@@ -150,14 +143,14 @@
 
 (defn v2-repositories
   [{:keys [route-params query-string]}]
-  (let [query (query-params query-string)]
+  (let [query (keywordize-keys (query->map query-string))]
     (->> (api/v2-repositories (:registryName route-params)
                               (:repositoryQuery query))
          (json-ok 200))))
 
 (defn v1-repository-tags
   [{:keys [route-params query-string]}]
-  (let [query (query-params query-string)
+  (let [query (keywordize-keys (query->map query-string))
         repository (:repositoryName query)]
     (if (nil? repository)
       (json-error 400 "Param repositoryName missing")
@@ -167,37 +160,10 @@
 
 (defn v2-repository-tags
   [{:keys [route-params query-string]}]
-  (let [query (query-params query-string)
+  (let [query (keywordize-keys (query->map query-string))
         repository (:repositoryName query)]
     (if (nil? repository)
       (json-error 400 "Param repositoryName missing")
       (->> (api/v2-tags (:registryName route-params)
                         repository)
            (json-ok 200)))))
-
-;;; Handler
-
-(def handler
-  (make-handler
-    ["/" {"login"          {:post login}
-          "users"          {:get users}
-          "registries"     {:get  registries
-                            :post registry-create}
-          "registries/"    {:get {"sum" registries-sum}}
-          "services"       {:get  services
-                            :post service-create}
-          "services/"      {:get    {[:id] service}
-                            :delete {[:id] service-delete}
-                            :post   {[:id] service-update}}
-          "networks"       {:get  networks
-                            :post network-create}
-          "networks/"      {:get    {[:id] network}
-                            :delete {[:id] network-delete}}
-          "nodes"          {:get nodes}
-          "nodes/"         {:get {[:id] node}}
-          "tasks"          {:get tasks}
-          "tasks/"         {:get {[:id] task}}
-          "v1/registries/" {:get {[:registryName "/repo"] {""      v1-repositories
-                                                           "/tags" v1-repository-tags}}}
-          "v2/registries/" {:get {[:registryName "/repo"] {""      v2-repositories
-                                                           "/tags" v2-repository-tags}}}}]))

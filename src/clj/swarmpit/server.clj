@@ -3,15 +3,37 @@
   (:use [org.httpkit.server :only [run-server]])
   (:require [ring.middleware.json :as ring-json]
             [cheshire.core :refer [parse-string]]
-            [swarmpit.handler :refer [handler json-error]]
-            [swarmpit.token :as token]
-            [swarmpit.agent :as agent]))
+            [bidi.ring :refer [make-handler]]
+            [clojure.string :refer [starts-with?]]
+            [swarmpit.handler :as handler :refer [json-error]]
+            [swarmpit.token :as token]))
+
+(def routes
+  ["/" {"login"          {:post handler/login}
+        "registries/"    {:get {"sum" handler/registries-sum}}
+        "services"       {:get  handler/services
+                          :post handler/service-create}
+        "services/"      {:get    {[:id] handler/service}
+                          :delete {[:id] handler/service-delete}
+                          :post   {[:id] handler/service-update}}
+        "networks"       {:get  handler/networks
+                          :post handler/network-create}
+        "networks/"      {:get    {[:id] handler/network}
+                          :delete {[:id] handler/network-delete}}
+        "nodes"          {:get handler/nodes}
+        "nodes/"         {:get {[:id] handler/node}}
+        "tasks"          {:get handler/tasks}
+        "tasks/"         {:get {[:id] handler/task}}
+        "v1/registries/" {:get {[:registryName "/repo"] {""      handler/v1-repositories
+                                                         "/tags" handler/v1-repository-tags}}}
+        "v2/registries/" {:get {[:registryName "/repo"] {""      handler/v2-repositories
+                                                         "/tags" handler/v2-repository-tags}}}}
+   "/admin/" {"users"      {:get handler/users}
+              "registries" {:get  handler/registries
+                            :post handler/registry-create}}])
 
 (def unsecure-api #{{:request-method :post
                      :uri            "/login"}})
-
-(def admin-api #{{:request-method :get
-                  :uri            "/users"}})
 
 (defn- secure-api?
   [request]
@@ -20,8 +42,7 @@
 
 (defn- admin-api?
   [request]
-  (let [api (select-keys request [:request-method :uri])]
-    (contains? admin-api api)))
+  (starts-with? (:uri request) "/admin/"))
 
 (defn- admin-access?
   [claims]
@@ -64,17 +85,12 @@
       (handler request))))
 
 (def app
-  (-> handler
+  (-> (make-handler routes)
       wrap-auth-exception
       wrap-client-exception
       ring-json/wrap-json-response
       ring-json/wrap-json-params
       wrap-fallback-exception))
-
-(defn on-startup
-  []
-  (agent/start-repository-agent))
-
 
 (defn -main [& _]
   (run-server app {:port 8080}))

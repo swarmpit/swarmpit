@@ -24,25 +24,25 @@
    :registry-list   "Registries"
    :registry-create "Registries"})
 
-(def handler ["" {"/"           :index
-                  "/login"      :login
-                  "/error"      :error
-                  "/services"   {""                :service-list
-                                 "/create/wizard"  {"/registry"                       :registry-wizard
-                                                    ["/v1/registries/" :name "/repo"] :repository-v1-list
-                                                    ["/v2/registries/" :name "/repo"] :repository-v2-list
-                                                    "/config"                         :service-create}
-                                 ["/" :id]         :service-info
-                                 ["/" :id "/edit"] :service-edit}
-                  "/networks"   {""        :network-list
-                                 "/create" :network-create
-                                 ["/" :id] :network-info}
-                  "/nodes"      {""        :node-list
-                                 ["/" :id] :node-info}
-                  "/tasks"      {""        :task-list
-                                 ["/" :id] :task-info}
-                  "/registries" {""        :registry-list
-                                 "/create" :registry-create}}])
+(def routes ["" {"/"           :index
+                 "/login"      :login
+                 "/error"      :error
+                 "/services"   {""                :service-list
+                                "/create/wizard"  {"/registry"                       :registry-wizard
+                                                   ["/v1/registries/" :name "/repo"] :repository-v1-list
+                                                   ["/v2/registries/" :name "/repo"] :repository-v2-list
+                                                   "/config"                         :service-create}
+                                ["/" :id]         :service-info
+                                ["/" :id "/edit"] :service-edit}
+                 "/networks"   {""        :network-list
+                                "/create" :network-create
+                                ["/" :id] :network-info}
+                 "/nodes"      {""        :node-list
+                                ["/" :id] :node-info}
+                 "/tasks"      {""        :task-list
+                                ["/" :id] :task-info}
+                 "/registries" {""        :registry-list
+                                "/create" :registry-create}}])
 
 ;;; Router config
 
@@ -75,7 +75,7 @@
 
 (defn start
   []
-  (let [router (br/start-router! handler {:on-navigate navigate})
+  (let [router (br/start-router! routes {:on-navigate navigate})
         route (:handler @location)]
     (if (some? route)
       (br/set-location! router @location))))

@@ -306,6 +306,10 @@
    [:span.form-row-label label]
    [:div.form-row-value value]])
 
+(defn form-value [value]
+  [:div.form-view-row
+   [:div.form-row-value value]])
+
 (defn form-section [label]
   [:div.form-view-row
    [:span.form-row-section label]])
