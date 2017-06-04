@@ -51,6 +51,7 @@
       :image image-name
       :imageDigest image-digest
       :state (get-in task [:Status :State])
+      :status {:error (get-in task [:Status :Err])}
       :desiredState (get task :DesiredState)
       :serviceName service-name
       :node (->task-node task nodes))))

@@ -12,8 +12,14 @@
 
 (defn form-state [value]
   (case value
+    "preparing" (comp/label-yellow value)
+    "starting" (comp/label-yellow value)
+    "new" (comp/label-blue value)
+    "ready" (comp/label-blue value)
+    "assigned" (comp/label-blue value)
     "running" (comp/label-green value)
     "shutdown" (comp/label-grey value)
+    "rejected" (comp/label-red value)
     "failed" (comp/label-red value)))
 
 (defn- filter-items
