@@ -8,6 +8,7 @@
             [swarmpit.registry.client :as rc]
             [swarmpit.registry.mapper.inbound :as rci]
             [swarmpit.couchdb.client :as cc]
+            [swarmpit.couchdb.mapper.inbound :as cmi]
             [swarmpit.couchdb.mapper.outbound :as cmo]))
 
 (defn create-database
@@ -55,8 +56,9 @@
 
 (defn update-service
   [service-id service]
-  (->> (dmo/->service service)
-       (dc/update-service service-id)))
+  (let [service-version (:version service)]
+    (->> (dmo/->service service)
+         (dc/update-service service-id service-version))))
 
 ;;; Network API
 
@@ -109,7 +111,8 @@
 
 (defn registries
   []
-  (cc/registries))
+  (->> (cc/registries)
+       (cmi/->registries)))
 
 (defn registries-sum
   []

@@ -125,7 +125,8 @@
         image (get-in service [:Spec :TaskTemplate :ContainerSpec :Image])
         image-info (str/split image #"@")
         image-name (first image-info)
-        image-digest (second image-info)]
+        image-digest (second image-info)
+        image-segments (str/split image-name #":")]
     (array-map
       :id service-id
       :version (get-in service [:Version :Index])
@@ -133,6 +134,8 @@
       :updatedAt (date (get service :UpdatedAt))
       :image image-name
       :imageDigest image-digest
+      :imageName (first image-segments)
+      :imageTag (second image-segments)
       :serviceName service-name
       :mode service-mode
       :replicas replicas

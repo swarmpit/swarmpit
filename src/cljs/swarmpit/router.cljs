@@ -7,7 +7,7 @@
 
 (defonce location (atom nil))
 
-(def resource
+(def location-domains
   {:index              "Home"
    :service-list       "Services"
    :service-create     "Services / Wizard"
@@ -25,6 +25,9 @@
    :registry-wizard    "Services / Wizard"
    :repository-v1-list "Services / Wizard"
    :repository-v2-list "Services / Wizard"})
+
+(def location-page
+  #{:login nil})
 
 (def routes ["" {"/"           :index
                  "/login"      :login
@@ -48,6 +51,11 @@
 
 ;;; Router config
 
+(defn- is-layout?
+  "Check whether `loc` belong to layout. Not single page!"
+  [loc]
+  (not (contains? location-page loc)))
+
 (defn- route
   "Route to given `loc`"
   [loc]
@@ -57,9 +65,9 @@
 (defn- route-to-loc
   "Route to given `loc` and update state domain"
   [loc]
-  (let [domain (get resource (:handler loc))]
+  (let [domain (get location-domains (:handler loc))]
     (state/update-value :domain domain [:menu])
-    (if (some? domain)
+    (if (is-layout? loc)
       (layout/mount!))
     (route loc)))
 

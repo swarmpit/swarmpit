@@ -32,12 +32,22 @@
        :inputStyle    form-image-style
        :value         value})))
 
-(defn- form-image-tags [tags]
+(defn- form-image-tag-ac [tags]
   (comp/form-comp
     "IMAGE TAG"
     (comp/autocomplete {:id            "imageTag"
                         :onUpdateInput (fn [v] (state/update-value :imageTag v cursor))
                         :dataSource    tags})))
+
+(defn- form-image-tag [value]
+  "Temporary solution. Will be fixed with persistence. There is no way to get tags without context during update"
+  (comp/form-comp
+    "IMAGE TAG"
+    (comp/text-field
+      {:id       "imageTag"
+       :value    value
+       :onChange (fn [_ v]
+                   (state/update-value :imageTag v cursor))})))
 
 (defn- form-name [value update-form?]
   (comp/form-comp
@@ -92,14 +102,17 @@
                         (state/update-value :tags response cursor))}))
 
 (rum/defc form < rum/reactive [update-form?]
-  (let [{:keys [image
+  (let [{:keys [imageName
+                imageTag
                 serviceName
                 mode
                 replicas
                 tags]} (state/react cursor)]
     [:div.form-edit
-     (form-image image)
-     (form-image-tags tags)
+     (form-image imageName)
+     (if update-form?
+       (form-image-tag imageTag)
+       (form-image-tag-ac tags))
      (form-name serviceName update-form?)
      (form-mode mode update-form?)
      (if (= "replicated" mode)

@@ -38,7 +38,7 @@
                                    (dispatch! (str "/#/services/" service-id))
                                    (message/mount! message)))
                 :error-handler (fn [{:keys [status response]}]
-                                 (let [error (get response "error")
+                                 (let [error (get-in response ["error" "message"])
                                        message (str "Service update failed. Status: " status " Reason: " error)]
                                    (progress/unmount!)
                                    (message/mount! message)))})))
@@ -80,7 +80,7 @@
 
 (defn- init-state
   [item]
-  (state/set-value (select-keys item [:image :version :serviceName :mode :replicas]) settings/cursor)
+  (state/set-value (select-keys item [:imageName :imageTag :version :serviceName :mode :replicas]) settings/cursor)
   (state/set-value (:ports item) ports/cursor)
   (state/set-value (:volumes item) volumes/cursor)
   (state/set-value (:variables item) variables/cursor)

@@ -38,12 +38,16 @@
                                {:DriverConfig {}}}))
        (into [])))
 
+(defn ->service-image
+  [service]
+  (str (:imageName service) ":" (:imageTag service)))
+
 (defn ->service
   [service]
   {:Name (:serviceName service)
    :TaskTemplate
          {:ContainerSpec
-          {:Image  (:image service)
+          {:Image  (->service-image service)
            :Mounts (->service-volumes service)
            :Env    (->service-variables service)}}
    :Mode (->service-mode service)

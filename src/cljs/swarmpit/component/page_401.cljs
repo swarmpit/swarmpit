@@ -6,7 +6,8 @@
    [:div.page
     [:span
      [:h1 "401"]
-     [:p "You are not authotized for selected action"]]]])
+     [:p "You are not authotized for selected action"]
+     [:p "Go to login " [:a {:href "/#/login"} "page"]]]]])
 
 (defn mount!
   []

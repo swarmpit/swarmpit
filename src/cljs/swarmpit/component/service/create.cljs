@@ -57,6 +57,7 @@
 (defn- form-previous-button [index]
   (comp/raised-button
     {:label      "Previous"
+     :key        "fpb"
      :style      form-previous-button-style
      :disabled   (= 0 index)
      :onTouchTap (fn [] (step-previous index))}))
@@ -64,6 +65,7 @@
 (defn- form-next-button [index]
   (comp/raised-button
     {:label      "Next"
+     :key        "fnb"
      :style      form-next-button-style
      :disabled   (= (- (count steps) 1) index)
      :onTouchTap (fn [] (step-next index))}))
@@ -80,7 +82,7 @@
            :onClick            (fn [] (reset! step-index index))}
           item)
         (comp/step-content
-          {}
+          {:key "step-context"}
           (form-item index)
           (form-previous-button index)
           (form-next-button index))))
@@ -94,7 +96,8 @@
         variables (state/get-value variables/cursor)
         deployment (state/get-value deployment/cursor)]
     (ajax/POST "/services"
-               {:headers       {"Authorization" (storage/get "token")}
+               {:format        :json
+                :headers       {"Authorization" (storage/get "token")}
                 :params        (-> settings
                                    (assoc :ports ports)
                                    (assoc :volumes volumes)
@@ -137,8 +140,8 @@
 (defn- init-state
   [registry registry-version repository]
   (settings/image-tags-handler registry registry-version repository)
-  (state/set-value {:image       repository
-                    :imageTag    nil
+  (state/set-value {:imageName   repository
+                    :imageTag    ""
                     :tags        []
                     :serviceName ""
                     :mode        "replicated"

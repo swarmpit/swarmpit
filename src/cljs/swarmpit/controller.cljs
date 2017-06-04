@@ -5,6 +5,7 @@
             [cemerick.url :refer [query->map]]
             [swarmpit.storage :as storage]
             [swarmpit.component.page-login :as page-login]
+            [swarmpit.component.page-401 :as page-401]
             [swarmpit.component.page-404 :as page-404]
             [swarmpit.component.page-error :as page-error]
             [swarmpit.component.service.create :as screate]
@@ -33,18 +34,14 @@
                                 (-> resp api-resp-fx)))
              :error-handler (fn [{:keys [status]}]
                               (if (= status 401)
-                                (dispatch! "/#/login")
-                                (dispatch! "/#/error")))}))
+                                (page-401/mount!)
+                                (page-error/mount!)))}))
 
 (defmulti dispatch (fn [location] (:handler location)))
 
 (defmethod dispatch :index
   [_]
-  (print "index"))
-
-(defmethod dispatch :error
-  [_]
-  (page-error/mount!))
+  (print "TO-DO"))
 
 (defmethod dispatch nil
   [_]
@@ -141,7 +138,7 @@
 
 (defmethod dispatch :user-list
   [_]
-  (fetch "/users"
+  (fetch "/admin/users"
          (fn [response]
            (tlist/mount! response))))
 
@@ -149,7 +146,7 @@
 
 (defmethod dispatch :registry-list
   [_]
-  (fetch "/registries"
+  (fetch "/admin/registries"
          (fn [response]
            (reglist/mount! response))))
 

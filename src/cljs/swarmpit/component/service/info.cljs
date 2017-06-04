@@ -2,6 +2,7 @@
   (:require [material.component :as comp]
             [material.icon :as icon]
             [swarmpit.url :refer [dispatch!]]
+            [swarmpit.storage :as storage]
             [swarmpit.component.service.form-ports :as ports]
             [swarmpit.component.service.form-volumes :as volumes]
             [swarmpit.component.service.form-variables :as variables]
@@ -15,7 +16,8 @@
 (defn- delete-service-handler
   [service-id]
   (ajax/DELETE (str "/services/" service-id)
-               {:handler       (fn [_]
+               {:headers       {"Authorization" (storage/get "token")}
+                :handler       (fn [_]
                                  (let [message (str "Service " service-id " has been removed.")]
                                    (dispatch! "/#/services")
                                    (message/mount! message)))
