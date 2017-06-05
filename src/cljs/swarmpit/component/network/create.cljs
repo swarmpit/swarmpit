@@ -12,6 +12,9 @@
 
 (def cursor [:page :network :form])
 
+(def form-internal-style
+  {:marginTop "14px"})
+
 (defn- form-name [value]
   (comp/form-comp
     "NAME"
@@ -41,6 +44,15 @@
          :value       "bridge"
          :primaryText "bridge"}))))
 
+(defn- form-internal [value]
+  (comp/form-comp
+    "IS PRIVATE"
+    (comp/checkbox
+      {:checked value
+       :style   form-internal-style
+       :onCheck (fn [_ v]
+                  (state/update-value [:internal] v cursor))})))
+
 (defn- create-network-handler
   []
   (ajax/POST "/networks"
@@ -62,7 +74,8 @@
 
 (rum/defc form < rum/reactive []
   (let [{:keys [name
-                driver]} (state/react cursor)]
+                driver
+                internal]} (state/react cursor)]
     [:div
      [:div.form-panel
       [:div.form-panel-right
@@ -73,12 +86,14 @@
             :onTouchTap create-network-handler}))]]
      [:div.form-edit
       (form-name name)
-      (form-driver driver)]]))
+      (form-driver driver)
+      (form-internal internal)]]))
 
 (defn- init-state
   []
   (state/set-value {:networkName ""
-                    :driver      nil} cursor))
+                    :driver      "overlay"
+                    :internal    false} cursor))
 
 (defn mount!
   []
