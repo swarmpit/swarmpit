@@ -6,7 +6,7 @@
             [rum.core :as rum]
             [ajax.core :as ajax]))
 
-(defonce state (atom {:email    ""
+(defonce state (atom {:username ""
                       :password ""
                       :message  ""}))
 
@@ -18,13 +18,13 @@
   [k v]
   (swap! state assoc k v))
 
-(defn- form-email [value]
+(defn- form-username [value]
   (comp/mui
     (comp/text-field
-      {:id                "loginEmail"
-       :floatingLabelText "Email"
+      {:id                "loginUsername"
+       :floatingLabelText "Username"
        :value             value
-       :onChange          (fn [e v] (update-item :email v))})))
+       :onChange          (fn [_ v] (update-item :username v))})))
 
 (defn- form-password [value]
   (comp/mui
@@ -33,11 +33,11 @@
        :floatingLabelText "Password"
        :type              "password"
        :value             value
-       :onChange          (fn [e v] (update-item :password v))})))
+       :onChange          (fn [_ v] (update-item :password v))})))
 
 (defn- login-headers
   []
-  (let [token (token/generate-basic (:email @state)
+  (let [token (token/generate-basic (:username @state)
                                     (:password @state))]
     {"Authorization" token}))
 
@@ -55,13 +55,13 @@
                                  (update-item :message error)))}))
 
 (rum/defc form < rum/reactive []
-  (let [{:keys [email
+  (let [{:keys [username
                 password
                 message]} (rum/react state)]
     [:div.page-back
      [:div.page
       [:div message]
-      (form-email email)
+      (form-username username)
       (form-password password)
       (comp/mui
         (comp/raised-button

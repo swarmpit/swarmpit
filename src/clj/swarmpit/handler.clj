@@ -12,6 +12,8 @@
 
 (defn json-ok
   ([] {:status 200})
+  ([response] {:status 200
+               :body   response})
   ([status response] {:status status
                       :body   response}))
 
@@ -33,39 +35,47 @@
 (defn users
   [_]
   (->> (api/users)
-       (json-ok 200)))
+       (json-ok)))
+
+(defn user-create
+  [{:keys [params]}]
+  (let [payload (keywordize-keys params)]
+    (if (some? (api/create-registry payload))
+      (json-ok 201)
+      (json-error 400 "User already exist"))))
 
 ;;; Registry handler
 
 (defn registries
   [_]
   (->> (api/registries)
-       (json-ok 200)))
+       (json-ok)))
 
 (defn registries-sum
   [_]
   (->> (api/registries-sum)
-       (json-ok 200)))
+       (json-ok)))
 
 (defn registry-create
   [{:keys [params]}]
   (let [payload (keywordize-keys params)]
     (if (api/valid-registry? payload)
-      (->> (api/create-registry payload)
-           (json-ok 201))
-      (json-error 400 "Invalid registry credentials"))))
+      (if (some? (api/create-registry payload))
+        (json-ok 201)
+        (json-error 400 "Registry already exist"))
+      (json-error 400 "Registry credentials does not match any known registry"))))
 
 ;;; Service handler
 
 (defn services
   [_]
   (->> (api/services)
-       (json-ok 200)))
+       (json-ok)))
 
 (defn service
   [{:keys [route-params]}]
   (->> (api/service (:id route-params))
-       (json-ok 200)))
+       (json-ok)))
 
 (defn service-create
   [{:keys [params]}]
@@ -89,12 +99,12 @@
 (defn networks
   [_]
   (->> (api/networks)
-       (json-ok 200)))
+       (json-ok)))
 
 (defn network
   [{:keys [route-params]}]
   (->> (api/network (:id route-params))
-       (json-ok 200)))
+       (json-ok)))
 
 (defn network-create
   [{:keys [params]}]
@@ -112,24 +122,24 @@
 (defn nodes
   [_]
   (->> (api/nodes)
-       (json-ok 200)))
+       (json-ok)))
 
 (defn node
   [{:keys [route-params]}]
   (->> (api/node (:id route-params))
-       (json-ok 200)))
+       (json-ok)))
 
 ;;; Task handler
 
 (defn tasks
   [_]
   (->> (api/tasks)
-       (json-ok 200)))
+       (json-ok)))
 
 (defn task
   [{:keys [route-params]}]
   (->> (api/task (:id route-params))
-       (json-ok 200)))
+       (json-ok)))
 
 ;;; Repository handler
 
@@ -139,31 +149,31 @@
     (->> (api/v1-repositories (:registryName route-params)
                               (:repositoryQuery query)
                               (:repositoryPage query))
-         (json-ok 200))))
+         (json-ok))))
 
 (defn v2-repositories
   [{:keys [route-params query-string]}]
   (let [query (keywordize-keys (query->map query-string))]
     (->> (api/v2-repositories (:registryName route-params)
                               (:repositoryQuery query))
-         (json-ok 200))))
+         (json-ok))))
 
 (defn v1-repository-tags
   [{:keys [route-params query-string]}]
   (let [query (keywordize-keys (query->map query-string))
         repository (:repositoryName query)]
     (if (nil? repository)
-      (json-error 400 "Param repositoryName missing")
+      (json-error 400 "Parameter repositoryName missing")
       (->> (api/v1-tags (:registryName route-params)
                         repository)
-           (json-ok 200)))))
+           (json-ok)))))
 
 (defn v2-repository-tags
   [{:keys [route-params query-string]}]
   (let [query (keywordize-keys (query->map query-string))
         repository (:repositoryName query)]
     (if (nil? repository)
-      (json-error 400 "Param repositoryName missing")
+      (json-error 400 "Parameter repositoryName missing")
       (->> (api/v2-tags (:registryName route-params)
                         repository)
-           (json-ok 200)))))
+           (json-ok)))))

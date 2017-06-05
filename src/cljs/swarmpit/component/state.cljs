@@ -18,6 +18,7 @@
                        :registry   {:list   {:filter {}}
                                     :form   {}
                                     :wizard {}}
+                       :user       {:list {:filter {}}}
                        :repository {:list {:data {}}}}}))
 
 (defn react

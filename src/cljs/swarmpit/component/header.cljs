@@ -45,7 +45,7 @@
     {:iconButtonElement (user-menu-button)}
     (comp/menu-item
       {:key         "user-menu-settings"
-       :primaryText "Settings"})
+       :primaryText "Change password"})
     (comp/menu-item
       {:key         "user-menu-logout"
        :onTouchTap  (fn []

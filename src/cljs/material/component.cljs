@@ -53,10 +53,6 @@
   ([props] (factory/snackbar (clj->js props)))
   ([] (factory/snackbar nil)))
 
-(defn stepper
-  ([props] (factory/stepper (clj->js props)))
-  ([] (factory/stepper nil)))
-
 (defn toogle
   ([props] (factory/toogle (clj->js props)))
   ([] (factory/toogle nil)))
@@ -120,6 +116,10 @@
 
 (defn card-text
   [props & childs] (factory/card-text (clj->js props) childs))
+
+(defn stepper
+  [props & childs]
+  (factory/stepper(clj->js props) childs))
 
 (defn list
   [props & childs]

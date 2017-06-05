@@ -30,7 +30,8 @@
                                                          "/tags" handler/v2-repository-tags}}}
         "admin/"         {:get  {"users"      {"" handler/users}
                                  "registries" {"" handler/registries}}
-                          :post {"registries" {"" handler/registry-create}}}}])
+                          :post {"users"      {"" handler/user-create}
+                                 "registries" {"" handler/registry-create}}}}])
 
 (def unsecure-api #{{:request-method :post
                      :uri            "/login"}})

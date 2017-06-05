@@ -19,6 +19,7 @@
             [swarmpit.component.node.info :as ndinfo]
             [swarmpit.component.task.list :as tlist]
             [swarmpit.component.task.info :as tinfo]
+            [swarmpit.component.user.list :as ulist]
             [swarmpit.component.registry.list :as reglist]
             [swarmpit.component.registry.create :as regcreate]
             [swarmpit.component.registry.wizard :as regwizard]
@@ -140,7 +141,7 @@
   [_]
   (fetch "/admin/users"
          (fn [response]
-           (tlist/mount! response))))
+           (ulist/mount! response))))
 
 ;;; Registry controller
 

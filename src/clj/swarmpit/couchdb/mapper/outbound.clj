@@ -8,10 +8,12 @@
 (defn ->user
   [user]
   (assoc user :password (->password (:password user))
-              :type "user"))
+              :type "user"
+              :id (hash (:username user))))
 
 (defn ->registry
   [registry]
-  (assoc registry :type "registry"))
+  (assoc registry :type "registry"
+                  :id (hash (:name registry))))
 
 

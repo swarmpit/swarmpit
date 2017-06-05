@@ -67,5 +67,5 @@
      (let [decoded (String. (.decode (Base64/getDecoder)
                                      (token-value token)))
            credentials (str/split decoded #":")]
-       {:user     (first credentials)
+       {:username (first credentials)
         :password (second credentials)})))

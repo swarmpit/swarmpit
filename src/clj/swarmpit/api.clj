@@ -8,12 +8,14 @@
             [swarmpit.registry.client :as rc]
             [swarmpit.registry.mapper.inbound :as rci]
             [swarmpit.couchdb.client :as cc]
-            [swarmpit.couchdb.mapper.inbound :as cmi]
             [swarmpit.couchdb.mapper.outbound :as cmo]))
 
 (defn create-database
   []
-  (cc/create-database))
+  (try
+    (cc/create-database)
+    (catch Exception ex
+      (get-in (ex-data ex) [:body :error]))))
 
 ;;; User API
 
@@ -23,13 +25,22 @@
 
 (defn user-by-credentials
   [credentails]
-  (cc/user-by-credentials (:user credentails)
+  (cc/user-by-credentials (:username credentails)
                           (cmo/->password (:password credentails))))
+
+(defn user-by-username
+  [username]
+  (cc/user-by-username username))
+
+(defn user-exist?
+  [user]
+  (some? (user-by-username (:username user))))
 
 (defn create-user
   [user]
-  (->> (cmo/->user user)
-       (cc/create-user)))
+  (if (not (user-exist? user))
+    (->> (cmo/->user user)
+         (cc/create-user))))
 
 ;;; Service API
 
@@ -111,8 +122,7 @@
 
 (defn registries
   []
-  (->> (cc/registries)
-       (cmi/->registries)))
+  (cc/registries))
 
 (defn registries-sum
   []
@@ -123,10 +133,15 @@
   [registry-name]
   (cc/registry-by-name registry-name))
 
+(defn registry-exist?
+  [registry]
+  (some? (registry-by-name (:name registry))))
+
 (defn create-registry
   [registry]
-  (->> (cmo/->registry registry)
-       (cc/create-registry)))
+  (if (not (registry-exist? registry))
+    (->> (cmo/->registry registry)
+         (cc/create-registry))))
 
 (defn v1-registry?
   [registry]

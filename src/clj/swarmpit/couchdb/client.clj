@@ -27,12 +27,13 @@
           (throw
             (ex-info "Clutch DB error!"
                      {:status status
-                      :body   {:error body}})))))))
+                      :body   {:error response}})))))))
 
 (defn- get
   [api]
-  (let [options {:headers headers}]
-    (execute @(http/get api options))))
+  (let [url (str base-url api)
+        options {:headers headers}]
+    (execute @(http/get url options))))
 
 (defn- put
   [api]
@@ -82,10 +83,18 @@
        :docs))
 
 (defn user-by-credentials
-  [user password]
+  [username password]
   (->> {:selector {:type     {"$eq" "user"}
-                   :email    {"$eq" user}
+                   :username {"$eq" username}
                    :password {"$eq" password}}}
+       (post "/swarmpit/_find")
+       :docs
+       (first)))
+
+(defn user-by-username
+  [username]
+  (->> {:selector {:type     {"$eq" "user"}
+                   :username {"$eq" username}}}
        (post "/swarmpit/_find")
        :docs
        (first)))

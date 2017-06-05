@@ -14,12 +14,13 @@
    :service-info       "Services"
    :service-edit       "Services"
    :network-list       "Networks"
-   :network-create     "Networks"
+   :network-create     "Networks / Wizard"
    :network-info       "Networks"
    :node-list          "Nodes"
    :node-info          "Nodes"
    :task-list          "Tasks"
    :task-info          "Tasks"
+   :user-list          "Users"
    :registry-list      "Registries"
    :registry-create    "Registries / Create"
    :registry-wizard    "Services / Wizard"
@@ -47,7 +48,8 @@
                  "/tasks"      {""        :task-list
                                 ["/" :id] :task-info}
                  "/registries" {""        :registry-list
-                                "/create" :registry-create}}])
+                                "/create" :registry-create}
+                 "/users"      {"" :user-list}}])
 
 ;;; Router config
 

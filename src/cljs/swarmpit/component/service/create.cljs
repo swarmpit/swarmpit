@@ -82,7 +82,7 @@
            :onClick            (fn [] (reset! step-index index))}
           item)
         (comp/step-content
-          {:key "step-context"}
+          {:key (str "step-context-" index)}
           (form-item index)
           (form-previous-button index)
           (form-next-button index))))
@@ -133,8 +133,8 @@
          {:activeStep  index
           :linear      false
           :style       stepper-style
-          :orientation "vertical"
-          :children    (clj->js (step-items))}))]))
+          :orientation "vertical"}
+         (step-items)))]))
 
 (defn- init-state
   [registry registry-version repository]
