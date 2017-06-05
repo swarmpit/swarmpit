@@ -137,24 +137,20 @@
   [registry]
   (some? (registry-by-name (:name registry))))
 
+(defn registry-valid?
+  [registry]
+  (some?
+    (try
+      (case (:version registry)
+        "v1" (rc/v1-info registry)
+        "v2" (rc/v2-info registry))
+      (catch Exception _))))
+
 (defn create-registry
   [registry]
   (if (not (registry-exist? registry))
     (->> (cmo/->registry registry)
          (cc/create-registry))))
-
-(defn v1-registry?
-  [registry]
-  (= "v1" (:version registry)))
-
-(defn valid-registry?
-  [registry]
-  (try
-    (some? (if (v1-registry? registry)
-             (rc/v1-info registry)
-             (rc/v2-info registry)))
-    (catch Exception _
-      false)))
 
 ;;; Repository API
 

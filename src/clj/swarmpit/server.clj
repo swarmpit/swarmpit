@@ -5,33 +5,33 @@
             [cheshire.core :refer [parse-string]]
             [bidi.ring :refer [make-handler]]
             [clojure.string :refer [starts-with?]]
-            [swarmpit.handler :as handler :refer [json-error]]
+            [swarmpit.handler :refer :all]
             [swarmpit.token :as token]))
 
 (def routes
-  ["/" {"login"          {:post handler/login}
-        "registries/"    {:get {"sum" handler/registries-sum}}
-        "services"       {:get  handler/services
-                          :post handler/service-create}
-        "services/"      {:get    {[:id] handler/service}
-                          :delete {[:id] handler/service-delete}
-                          :post   {[:id] handler/service-update}}
-        "networks"       {:get  handler/networks
-                          :post handler/network-create}
-        "networks/"      {:get    {[:id] handler/network}
-                          :delete {[:id] handler/network-delete}}
-        "nodes"          {:get handler/nodes}
-        "nodes/"         {:get {[:id] handler/node}}
-        "tasks"          {:get handler/tasks}
-        "tasks/"         {:get {[:id] handler/task}}
-        "v1/registries/" {:get {[:registryName "/repo"] {""      handler/v1-repositories
-                                                         "/tags" handler/v1-repository-tags}}}
-        "v2/registries/" {:get {[:registryName "/repo"] {""      handler/v2-repositories
-                                                         "/tags" handler/v2-repository-tags}}}
-        "admin/"         {:get  {"users"      {"" handler/users}
-                                 "registries" {"" handler/registries}}
-                          :post {"users"      {"" handler/user-create}
-                                 "registries" {"" handler/registry-create}}}}])
+  ["/" {"login"          {:post login}
+        "registries/"    {:get {"sum" registries-sum}}
+        "services"       {:get  services
+                          :post service-create}
+        "services/"      {:get    {[:id] service}
+                          :delete {[:id] service-delete}
+                          :post   {[:id] service-update}}
+        "networks"       {:get  networks
+                          :post network-create}
+        "networks/"      {:get    {[:id] network}
+                          :delete {[:id] network-delete}}
+        "nodes"          {:get nodes}
+        "nodes/"         {:get {[:id] node}}
+        "tasks"          {:get tasks}
+        "tasks/"         {:get {[:id] task}}
+        "v1/registries/" {:get {[:registryName "/repo"] {""      v1-repositories
+                                                         "/tags" v1-repository-tags}}}
+        "v2/registries/" {:get {[:registryName "/repo"] {""      v2-repositories
+                                                         "/tags" v2-repository-tags}}}
+        "admin/"         {:get  {"users"      {"" users}
+                                 "registries" {"" registries}}
+                          :post {"users"      {"" user-create}
+                                 "registries" {"" registry-create}}}}])
 
 (def unsecure-api #{{:request-method :post
                      :uri            "/login"}})
@@ -76,13 +76,13 @@
           (let [claims (try
                          (token/verify-jwt token)
                          (catch ExceptionInfo _
-                           (json-error 401 "Invalid token")))]
+                           (resp-unauthorized "Invalid token")))]
             (if (admin-api? request)
               (if (admin-access? claims)
                 (handler request)
-                (json-error 401 "Unauthorized access"))
+                (resp-unauthorized "Unauthorized access"))
               (handler request)))
-          (json-error 400 "Missing token")))
+          (resp-error 400 "Missing token")))
       (handler request))))
 
 (def app

@@ -4,18 +4,25 @@
             [swarmpit.api :as api]
             [swarmpit.token :as token]))
 
-(defn json-error
+(defn resp-error
   [status response]
-  {:status  status
-   :headers {"Content-Type" "application/json"}
-   :body    {:error response}})
+  {:status status
+   :body   {:error response}})
 
-(defn json-ok
+(defn resp-unauthorized
+  [response]
+  {:status 401
+   :body   {:error response}})
+
+(defn resp-ok
   ([] {:status 200})
   ([response] {:status 200
-               :body   response})
-  ([status response] {:status status
-                      :body   response}))
+               :body   response}))
+
+(defn resp-created
+  ([] {:status 201})
+  ([response] {:status 201
+               :body   response}))
 
 ;;; Login handler
 
@@ -23,123 +30,123 @@
   [{:keys [headers]}]
   (let [token (get headers "authorization")]
     (if (nil? token)
-      (json-error 400 "Missing token")
+      (resp-error 400 "Missing token")
       (let [user (->> (token/decode-basic token)
                       (api/user-by-credentials))]
         (if (nil? user)
-          (json-error 401 "Invalid credentials")
-          (json-ok 200 {:token (token/generate-jwt user)}))))))
+          (resp-unauthorized "Invalid credentials")
+          (resp-ok {:token (token/generate-jwt user)}))))))
 
 ;;; User handler
 
 (defn users
   [_]
   (->> (api/users)
-       (json-ok)))
+       (resp-ok)))
 
 (defn user-create
   [{:keys [params]}]
   (let [payload (keywordize-keys params)]
     (if (some? (api/create-registry payload))
-      (json-ok 201)
-      (json-error 400 "User already exist"))))
+      (resp-created)
+      (resp-error 400 "User already exist"))))
 
 ;;; Registry handler
 
 (defn registries
   [_]
   (->> (api/registries)
-       (json-ok)))
+       (resp-ok)))
 
 (defn registries-sum
   [_]
   (->> (api/registries-sum)
-       (json-ok)))
+       (resp-ok)))
 
 (defn registry-create
   [{:keys [params]}]
   (let [payload (keywordize-keys params)]
-    (if (api/valid-registry? payload)
+    (if (api/registry-valid? payload)
       (if (some? (api/create-registry payload))
-        (json-ok 201)
-        (json-error 400 "Registry already exist"))
-      (json-error 400 "Registry credentials does not match any known registry"))))
+        (resp-created)
+        (resp-error 400 "Registry already exist"))
+      (resp-error 400 "Registry credentials does not match any known registry"))))
 
 ;;; Service handler
 
 (defn services
   [_]
   (->> (api/services)
-       (json-ok)))
+       (resp-ok)))
 
 (defn service
   [{:keys [route-params]}]
   (->> (api/service (:id route-params))
-       (json-ok)))
+       (resp-ok)))
 
 (defn service-create
   [{:keys [params]}]
   (let [payload (keywordize-keys params)]
     (->> (api/create-service payload)
-         (json-ok 201))))
+         (resp-created))))
 
 (defn service-update
   [{:keys [route-params params]}]
   (let [payload (keywordize-keys params)]
     (api/update-service (:id route-params) payload)
-    (json-ok)))
+    (resp-ok)))
 
 (defn service-delete
   [{:keys [route-params]}]
   (api/delete-service (:id route-params))
-  (json-ok))
+  (resp-ok))
 
 ;;; Network handler
 
 (defn networks
   [_]
   (->> (api/networks)
-       (json-ok)))
+       (resp-ok)))
 
 (defn network
   [{:keys [route-params]}]
   (->> (api/network (:id route-params))
-       (json-ok)))
+       (resp-ok)))
 
 (defn network-create
   [{:keys [params]}]
   (let [payload (keywordize-keys params)]
     (->> (api/create-network payload)
-         (json-ok 201))))
+         (resp-created))))
 
 (defn network-delete
   [{:keys [route-params]}]
   (api/delete-network (:id route-params))
-  (json-ok))
+  (resp-ok))
 
 ;;; Node handler
 
 (defn nodes
   [_]
   (->> (api/nodes)
-       (json-ok)))
+       (resp-ok)))
 
 (defn node
   [{:keys [route-params]}]
   (->> (api/node (:id route-params))
-       (json-ok)))
+       (resp-ok)))
 
 ;;; Task handler
 
 (defn tasks
   [_]
   (->> (api/tasks)
-       (json-ok)))
+       (resp-ok)))
 
 (defn task
   [{:keys [route-params]}]
   (->> (api/task (:id route-params))
-       (json-ok)))
+       (resp-ok)))
 
 ;;; Repository handler
 
@@ -149,31 +156,31 @@
     (->> (api/v1-repositories (:registryName route-params)
                               (:repositoryQuery query)
                               (:repositoryPage query))
-         (json-ok))))
+         (resp-ok))))
 
 (defn v2-repositories
   [{:keys [route-params query-string]}]
   (let [query (keywordize-keys (query->map query-string))]
     (->> (api/v2-repositories (:registryName route-params)
                               (:repositoryQuery query))
-         (json-ok))))
+         (resp-ok))))
 
 (defn v1-repository-tags
   [{:keys [route-params query-string]}]
   (let [query (keywordize-keys (query->map query-string))
         repository (:repositoryName query)]
     (if (nil? repository)
-      (json-error 400 "Parameter repositoryName missing")
+      (resp-error 400 "Parameter repositoryName missing")
       (->> (api/v1-tags (:registryName route-params)
                         repository)
-           (json-ok)))))
+           (resp-ok)))))
 
 (defn v2-repository-tags
   [{:keys [route-params query-string]}]
   (let [query (keywordize-keys (query->map query-string))
         repository (:repositoryName query)]
     (if (nil? repository)
-      (json-error 400 "Parameter repositoryName missing")
+      (resp-error 400 "Parameter repositoryName missing")
       (->> (api/v2-tags (:registryName route-params)
                         repository)
-           (json-ok)))))
+           (resp-ok)))))
