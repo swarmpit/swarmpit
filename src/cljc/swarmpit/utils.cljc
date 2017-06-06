@@ -3,7 +3,7 @@
      (:import java.util.UUID)))
 
 #?(:clj
-   (defn generate-uuid
+   (defn uuid
      "Generate cuuid"
      []
      (str (UUID/randomUUID))))

@@ -129,6 +129,10 @@
   (->> (registries)
        (map #(select-keys % [:name :version]))))
 
+(defn registry
+  [registry-id]
+  (cc/registry registry-id))
+
 (defn registry-by-name
   [registry-name]
   (cc/registry-by-name registry-name))

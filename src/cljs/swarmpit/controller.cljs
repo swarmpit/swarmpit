@@ -20,6 +20,7 @@
             [swarmpit.component.task.list :as tlist]
             [swarmpit.component.task.info :as tinfo]
             [swarmpit.component.user.list :as ulist]
+            [swarmpit.component.registry.info :as reginfo]
             [swarmpit.component.registry.list :as reglist]
             [swarmpit.component.registry.create :as regcreate]
             [swarmpit.component.registry.wizard :as regwizard]
@@ -150,6 +151,12 @@
   (fetch "/admin/registries"
          (fn [response]
            (reglist/mount! response))))
+
+(defmethod dispatch :registry-info
+  [{:keys [route-params]}]
+  (fetch (str "/admin/registries/" (:id route-params))
+         (fn [response]
+           (reginfo/mount! response))))
 
 (defmethod dispatch :registry-create
   [_]

@@ -3,7 +3,7 @@
      (:import java.util.Base64))
   (:require
     #?@(:clj  [[clojure.string :as str]
-               [swarmpit.utils :refer [generate-uuid]]
+               [swarmpit.utils :refer [uuid]]
                [buddy.sign.jwt :as jwt]
                [clj-time.core :refer [now plus days]]]
         :cljs [[clojure.string :as str]
@@ -14,8 +14,8 @@
   (second (str/split token #" ")))
 
 (defn- credentials
-  [user password]
-  (str user ":" password))
+  [username password]
+  (str username ":" password))
 
 (defn- bearer
   [token]
@@ -31,8 +31,8 @@
      {:iss "swarmpit"
       :exp (plus (now) (days 1))
       :iat (now)
-      :usr (select-keys user [:email :role])
-      :jti (generate-uuid)}))
+      :usr (select-keys user [:username :email :role])
+      :jti (uuid)}))
 
 #?(:clj
    (defn generate-jwt
@@ -48,16 +48,16 @@
 
 #?(:clj
    (defn generate-basic
-     [user password]
-     (let [credentials (credentials user password)
+     [username password]
+     (let [credentials (credentials username password)
            credentials-bytes (.getBytes credentials)
            credentials-encoded (.encodeToString (Base64/getEncoder) credentials-bytes)]
        (basic credentials-encoded))))
 
 #?(:cljs
    (defn generate-basic
-     [user password]
-     (let [credentials (credentials user password)
+     [username password]
+     (let [credentials (credentials username password)
            credentials-encoded (b64/encodeString credentials)]
        (basic credentials-encoded))))
 

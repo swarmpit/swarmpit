@@ -75,27 +75,29 @@
        :onCheck (fn [_ v]
                   (state/update-value [:isPrivate] v cursor))})))
 
-(defn- form-user [value]
+(defn- form-username [value]
   (comp/form-comp
-    "USER"
+    "USERNAME"
     (comp/text-field
-      {:id       "user"
+      {:id       "username"
+       :key      "username"
        :value    value
        :onChange (fn [_ v]
-                   (state/update-value [:user] v cursor))})))
+                   (state/update-value [:username] v cursor))})))
 
 (defn- form-password [value]
   (comp/form-comp
     "PASSWORD"
     (comp/text-field
       {:id       "password"
+       :key      "password"
        :value    value
        :onChange (fn [_ v]
                    (state/update-value [:password] v cursor))})))
 
 (defn- create-registry-handler
   []
-  (ajax/POST "/registries"
+  (ajax/POST "/admin/registries"
              {:format        :json
               :headers       {"Authorization" (storage/get "token")}
               :params        (state/get-value cursor)
@@ -111,7 +113,7 @@
                                      message (str "Registry creation failed. Status: " status " Reason: " error)]
                                  (print message)
                                  (progress/unmount!)
-                                 (message/mount! message)))}))
+                                 (message/mount! error)))}))
 
 (rum/defc form < rum/reactive []
   (let [{:keys [name
@@ -119,7 +121,7 @@
                 scheme
                 url
                 isPrivate
-                user
+                username
                 password]} (state/react cursor)]
     [:div
      [:div.form-panel
@@ -135,17 +137,19 @@
       (form-scheme scheme)
       (form-url url)
       (form-private isPrivate)
-      (form-user user)
-      (form-password password)]]))
+      (if isPrivate
+        [:div
+         (form-username username)
+         (form-password password)])]]))
 
 (defn- init-state
   []
   (state/set-value {:name      ""
                     :version   "v2"
-                    :scheme    "http"
+                    :scheme    "https"
                     :url       ""
                     :isPrivate false
-                    :user      ""
+                    :username  ""
                     :password  ""} cursor))
 
 (defn mount!

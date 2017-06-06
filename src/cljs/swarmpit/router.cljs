@@ -21,6 +21,7 @@
    :task-list          "Tasks"
    :task-info          "Tasks"
    :user-list          "Users"
+   :registry-info      "Registries"
    :registry-list      "Registries"
    :registry-create    "Registries / Create"
    :registry-wizard    "Services / Wizard"
@@ -48,7 +49,8 @@
                  "/tasks"      {""        :task-list
                                 ["/" :id] :task-info}
                  "/registries" {""        :registry-list
-                                "/create" :registry-create}
+                                "/create" :registry-create
+                                ["/" :id] :registry-info}
                  "/users"      {"" :user-list}}])
 
 ;;; Router config

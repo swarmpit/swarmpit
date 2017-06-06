@@ -1,5 +1,5 @@
 (ns swarmpit.couchdb.client
-  (:refer-clojure :exclude [get])
+  (:refer-clojure :exclude [get find])
   (:require [org.httpkit.client :as http]
             [cheshire.core :refer [parse-string generate-string]]))
 
@@ -48,6 +48,19 @@
                  :body    (generate-string request)}]
     (execute @(http/post url options))))
 
+(defn- find
+  [query type]
+  (->> {:selector (merge query {:type {"$eq" type}})}
+       (post "/swarmpit/_find")
+       :docs
+       (first)))
+
+(defn- find-all
+  [type]
+  (->> {:selector {:type {"$eq" type}}}
+       (post "/swarmpit/_find")
+       :docs))
+
 ;; Database
 
 (defn create-database
@@ -58,17 +71,15 @@
 
 (defn registries
   []
-  (->> {:selector {:type {"$eq" "registry"}}}
-       (post "/swarmpit/_find")
-       :docs))
+  (find-all "registry"))
+
+(defn registry
+  [id]
+  (find {:id {"$eq" id}} "registry"))
 
 (defn registry-by-name
   [name]
-  (->> {:selector {:type {"$eq" "registry"}
-                   :name {"$eq" name}}}
-       (post "/swarmpit/_find")
-       :docs
-       (first)))
+  (find {:name {"$eq" name}} "registry"))
 
 (defn create-registry
   [registry]
@@ -78,26 +89,20 @@
 
 (defn users
   []
-  (->> {:selector {:type {"$eq" "user"}}}
-       (post "/swarmpit/_find")
-       :docs))
+  (find-all "user"))
+
+(defn user
+  [id]
+  (find {:id {"$eq" id}} "user"))
 
 (defn user-by-credentials
   [username password]
-  (->> {:selector {:type     {"$eq" "user"}
-                   :username {"$eq" username}
-                   :password {"$eq" password}}}
-       (post "/swarmpit/_find")
-       :docs
-       (first)))
+  (find {:username {"$eq" username}
+         :password {"$eq" password}} "user"))
 
 (defn user-by-username
   [username]
-  (->> {:selector {:type     {"$eq" "user"}
-                   :username {"$eq" username}}}
-       (post "/swarmpit/_find")
-       :docs
-       (first)))
+  (find {:username {"$eq" username}} "user"))
 
 (defn create-user
   [user]

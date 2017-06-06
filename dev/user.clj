@@ -29,9 +29,14 @@
 (defn- on-startup
   []
   (print (:out (sh "sh" "dev/script/init-db.sh")))
-  (println (str "Swarmpit DB schema status: " (api/create-database)))
-  (println (str "Swarmpit DEV user status: " (or (init-user) "Admin user already exist")))
-  (println (str "Swarmpit DEV registry status: " (or (init-registry) "Dockerhub registry already exist"))))
+  (println (str "Swarmpit DB schema status: " (or (:reason (api/create-database))
+                                                  "Database has been created.")))
+  (println (str "Swarmpit DEV user status: " (if (some? (init-user))
+                                               "Admin user has been created."
+                                               "Admin user already exist.")))
+  (println (str "Swarmpit DEV registry status: " (if (some? (init-registry))
+                                                   "Dockerhub registry has been created."
+                                                   "Dockerhub registry already exist."))))
 
 (def http-handler
   (wrap-reload #'swarmpit.server/app))

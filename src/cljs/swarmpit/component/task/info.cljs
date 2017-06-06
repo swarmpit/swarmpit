@@ -10,7 +10,7 @@
     [:div
      [:div.form-panel
       [:div.form-panel-left
-       (comp/panel-info icon/tasks
+       (comp/panel-info icon/info
                         (:taskName item)
                         (comp/label-info (:state item)))]]
      [:div.form-view

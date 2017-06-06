@@ -9,7 +9,7 @@
   [:div
    [:div.form-panel
     [:div.form-panel-left
-     (comp/panel-info icon/nodes
+     (comp/panel-info icon/info
                       (:nodeName item)
                       (comp/label-info (:state item)))]]
    [:div.form-view

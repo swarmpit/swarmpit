@@ -58,6 +58,11 @@
   (->> (api/registries)
        (resp-ok)))
 
+(defn registry
+  [{:keys [route-params]}]
+  (->> (api/registry (:id route-params))
+       (resp-ok)))
+
 (defn registries-sum
   [_]
   (->> (api/registries-sum)

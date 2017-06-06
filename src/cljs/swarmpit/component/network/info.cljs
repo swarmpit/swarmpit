@@ -23,7 +23,7 @@
   [:div
    [:div.form-panel
     [:div.form-panel-left
-     (comp/panel-info icon/networks
+     (comp/panel-info icon/info
                       (:networkName item))]
     [:div.form-panel-right
      (comp/mui

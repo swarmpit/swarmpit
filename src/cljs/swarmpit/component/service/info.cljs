@@ -33,7 +33,7 @@
     [:div
      [:div.form-panel
       [:div.form-panel-left
-       (comp/panel-info icon/services
+       (comp/panel-info icon/info
                         (:serviceName item)
                         (comp/label-info
                           (form-panel-label item)))]

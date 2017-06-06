@@ -1,5 +1,6 @@
 (ns swarmpit.couchdb.mapper.outbound
-  (:require [digest :as d]))
+  (:require [digest :as d]
+            [swarmpit.utils :refer [uuid]]))
 
 (defn ->password
   [password]
@@ -9,11 +10,11 @@
   [user]
   (assoc user :password (->password (:password user))
               :type "user"
-              :id (hash (:username user))))
+              :id (uuid)))
 
 (defn ->registry
   [registry]
   (assoc registry :type "registry"
-                  :id (hash (:name registry))))
+                  :id (uuid)))
 
 

@@ -28,10 +28,11 @@
                                                          "/tags" v1-repository-tags}}}
         "v2/registries/" {:get {[:registryName "/repo"] {""      v2-repositories
                                                          "/tags" v2-repository-tags}}}
-        "admin/"         {:get  {"users"      {"" users}
-                                 "registries" {"" registries}}
-                          :post {"users"      {"" user-create}
-                                 "registries" {"" registry-create}}}}])
+        "admin/"         {"users"       {:get  users
+                                         :post user-create}
+                          "registries"  {:get  registries
+                                         :post registry-create}
+                          "registries/" {:get {[:id] registry}}}}])
 
 (def unsecure-api #{{:request-method :post
                      :uri            "/login"}})

@@ -31,7 +31,7 @@
     [:div
      [:div.form-panel
       [:div.form-panel-left
-       (comp/panel-info icon/create "Step 1")]
+       (comp/panel-info icon/wizard "Step 1")]
       [:div.form-panel-right
        (comp/mui
          (comp/raised-button
