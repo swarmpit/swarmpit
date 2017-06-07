@@ -6,7 +6,7 @@
 /checkouts/
 /classes/
 /lib/
-/log/
+log
 /out/
 /resources/public/js/**
 /target/
