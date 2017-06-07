@@ -8,7 +8,8 @@
             [swarmpit.component.page-401 :as page-401]
             [swarmpit.component.page-404 :as page-404]
             [swarmpit.component.page-error :as page-error]
-            [swarmpit.component.service.create :as screate]
+            [swarmpit.component.service.create-config :as screatec]
+            [swarmpit.component.service.create-image :as screatei]
             [swarmpit.component.service.edit :as sedit]
             [swarmpit.component.service.info :as sinfo]
             [swarmpit.component.service.list :as slist]
@@ -24,10 +25,7 @@
             [swarmpit.component.user.create :as ucreate]
             [swarmpit.component.registry.info :as reginfo]
             [swarmpit.component.registry.list :as reglist]
-            [swarmpit.component.registry.create :as regcreate]
-            [swarmpit.component.registry.wizard :as regwizard]
-            [swarmpit.component.repository.v1.list :as r1list]
-            [swarmpit.component.repository.v2.list :as r2list]))
+            [swarmpit.component.registry.create :as regcreate]))
 
 (defn- fetch
   [api api-resp-fx]
@@ -69,28 +67,24 @@
          (fn [response]
            (sinfo/mount! response))))
 
-(defmethod dispatch :service-create
+(defmethod dispatch :service-create-image
+  [_]
+  (fetch "/registries/sum"
+         (fn [response]
+           (screatei/mount! response))))
+
+(defmethod dispatch :service-create-config
   [_]
   (let [params (keywordize-keys (query->map (query-string)))]
-    (screate/mount! (:registry params)
-                    (:registryVersion params)
-                    (:repository params))))
+    (screatec/mount! (:registry params)
+                     (:registryVersion params)
+                     (:repository params))))
 
 (defmethod dispatch :service-edit
   [{:keys [route-params]}]
   (fetch (str "/services/" (:id route-params))
          (fn [response]
            (sedit/mount! response))))
-
-;;; Repository controller
-
-(defmethod dispatch :repository-v1-list
-  [{:keys [route-params]}]
-  (r1list/mount! (:name route-params)))
-
-(defmethod dispatch :repository-v2-list
-  [{:keys [route-params]}]
-  (r2list/mount! (:name route-params)))
 
 ;;; Network controller
 
@@ -173,9 +167,3 @@
 (defmethod dispatch :registry-create
   [_]
   (regcreate/mount!))
-
-(defmethod dispatch :registry-wizard
-  [_]
-  (fetch "/registries/sum"
-         (fn [response]
-           (regwizard/mount! response))))

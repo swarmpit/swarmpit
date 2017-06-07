@@ -9,7 +9,7 @@
   [:div
    [:div.form-panel
     [:div.form-panel-left
-     (comp/panel-info icon/info
+     (comp/panel-info icon/registries
                       (:name item))]]
    [:div.form-view
     [:div.form-view-group

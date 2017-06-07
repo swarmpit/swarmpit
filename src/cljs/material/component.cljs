@@ -119,7 +119,7 @@
 
 (defn stepper
   [props & childs]
-  (factory/stepper(clj->js props) childs))
+  (factory/stepper (clj->js props) childs))
 
 (defn list
   [props & childs]

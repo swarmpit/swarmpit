@@ -1,5 +1,6 @@
 (ns swarmpit.component.network.create
   (:require [material.component :as comp]
+            [material.icon :as icon]
             [swarmpit.url :refer [dispatch!]]
             [swarmpit.storage :as storage]
             [swarmpit.component.state :as state]
@@ -78,6 +79,8 @@
                 internal]} (state/react cursor)]
     [:div
      [:div.form-panel
+      [:div.form-panel-left
+       (comp/panel-info icon/networks "New network")]
       [:div.form-panel-right
        (comp/mui
          (comp/raised-button

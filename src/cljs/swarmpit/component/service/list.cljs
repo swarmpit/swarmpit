@@ -74,7 +74,7 @@
       [:div.form-panel-right
        (comp/mui
          (comp/raised-button
-           {:href    "/#/services/create/wizard/registry"
+           {:href    "/#/services/create/wizard/image"
             :label   "Create"
             :primary true}))]]
      (comp/list-table headers

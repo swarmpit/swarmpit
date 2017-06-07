@@ -9,7 +9,8 @@
                                     :form {}}
                        :node       {:list {:filter {}}}
                        :service    {:list   {:filter {}}
-                                    :wizard {:settings   {}
+                                    :wizard {:image      {}
+                                             :settings   {}
                                              :deployment {}
                                              :ports      []
                                              :variables  []

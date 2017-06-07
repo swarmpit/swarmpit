@@ -1,5 +1,6 @@
 (ns swarmpit.component.user.create
   (:require [material.component :as comp]
+            [material.icon :as icon]
             [swarmpit.url :refer [dispatch!]]
             [swarmpit.storage :as storage]
             [swarmpit.component.state :as state]
@@ -66,7 +67,7 @@
                                (let [id (get response "id")
                                      message (str "User " id " has been created.")]
                                  (progress/unmount!)
-                                 (dispatch! (str "/#/admin/users/" id))
+                                 (dispatch! (str "/#/users/" id))
                                  (message/mount! message)))
               :error-handler (fn [{:keys [status response]}]
                                (let [error (get response "error")
@@ -82,6 +83,8 @@
                 email]} (state/react cursor)]
     [:div
      [:div.form-panel
+      [:div.form-panel-left
+       (comp/panel-info icon/users "New user")]
       [:div.form-panel-right
        (comp/mui
          (comp/raised-button

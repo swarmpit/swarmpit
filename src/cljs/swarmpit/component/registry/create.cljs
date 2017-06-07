@@ -1,5 +1,6 @@
 (ns swarmpit.component.registry.create
   (:require [material.component :as comp]
+            [material.icon :as icon]
             [swarmpit.url :refer [dispatch!]]
             [swarmpit.storage :as storage]
             [swarmpit.component.state :as state]
@@ -106,7 +107,7 @@
                                (let [id (get response "id")
                                      message (str "Registry " id " has been created.")]
                                  (progress/unmount!)
-                                 (dispatch! (str "/#/admin/registries/" id))
+                                 (dispatch! (str "/#/registries/" id))
                                  (message/mount! message)))
               :error-handler (fn [{:keys [status response]}]
                                (let [error (get response "error")
@@ -125,6 +126,8 @@
                 password]} (state/react cursor)]
     [:div
      [:div.form-panel
+      [:div.form-panel-left
+       (comp/panel-info icon/registries "New registry")]
       [:div.form-panel-right
        (comp/mui
          (comp/raised-button

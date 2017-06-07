@@ -8,25 +8,25 @@
 (defonce location (atom nil))
 
 (def location-domains
-  {:index              "Home"
-   :service-list       "Services"
-   :service-create     "Services / Wizard"
-   :service-info       "Services"
-   :service-edit       "Services"
-   :network-list       "Networks"
-   :network-create     "Networks / Wizard"
-   :network-info       "Networks"
-   :node-list          "Nodes"
-   :node-info          "Nodes"
-   :task-list          "Tasks"
-   :task-info          "Tasks"
-   :user-list          "Users"
-   :registry-info      "Registries"
-   :registry-list      "Registries"
-   :registry-create    "Registries / Create"
-   :registry-wizard    "Services / Wizard"
-   :repository-v1-list "Services / Wizard"
-   :repository-v2-list "Services / Wizard"})
+  {:index                 "Home"
+   :service-list          "Services"
+   :service-create-config "Services / Wizard"
+   :service-create-image  "Services / Wizard"
+   :service-info          "Services"
+   :service-edit          "Services"
+   :network-list          "Networks"
+   :network-create        "Networks / Create"
+   :network-info          "Networks"
+   :node-list             "Nodes"
+   :node-info             "Nodes"
+   :task-list             "Tasks"
+   :task-info             "Tasks"
+   :user-list             "Users"
+   :user-create           "Users / Create"
+   :user-info             "Users"
+   :registry-info         "Registries"
+   :registry-list         "Registries"
+   :registry-create       "Registries / Create"})
 
 (def location-page
   #{:login nil})
@@ -35,10 +35,8 @@
                  "/login"      :login
                  "/error"      :error
                  "/services"   {""                :service-list
-                                "/create/wizard"  {"/registry"                       :registry-wizard
-                                                   ["/v1/registries/" :name "/repo"] :repository-v1-list
-                                                   ["/v2/registries/" :name "/repo"] :repository-v2-list
-                                                   "/config"                         :service-create}
+                                "/create/wizard"  {"/image"  :service-create-image
+                                                   "/config" :service-create-config}
                                 ["/" :id]         :service-info
                                 ["/" :id "/edit"] :service-edit}
                  "/networks"   {""        :network-list
