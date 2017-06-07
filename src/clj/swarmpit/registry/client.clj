@@ -30,7 +30,7 @@
   [registry]
   (let [headers {}]
     (if (:isPrivate registry)
-      (assoc headers "Authorization" (token/generate-basic (:user registry)
+      (assoc headers "Authorization" (token/generate-basic (:username registry)
                                                            (:password registry)))
       headers)))
 
