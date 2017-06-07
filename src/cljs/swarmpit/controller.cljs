@@ -20,6 +20,8 @@
             [swarmpit.component.task.list :as tlist]
             [swarmpit.component.task.info :as tinfo]
             [swarmpit.component.user.list :as ulist]
+            [swarmpit.component.user.info :as uinfo]
+            [swarmpit.component.user.create :as ucreate]
             [swarmpit.component.registry.info :as reginfo]
             [swarmpit.component.registry.list :as reglist]
             [swarmpit.component.registry.create :as regcreate]
@@ -143,6 +145,16 @@
   (fetch "/admin/users"
          (fn [response]
            (ulist/mount! response))))
+
+(defmethod dispatch :user-info
+  [{:keys [route-params]}]
+  (fetch (str "/admin/users/" (:id route-params))
+         (fn [response]
+           (uinfo/mount! response))))
+
+(defmethod dispatch :user-create
+  [_]
+  (ucreate/mount!))
 
 ;;; Registry controller
 

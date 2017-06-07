@@ -7,7 +7,7 @@
 
 (enable-console-print!)
 
-(def cursor [:page :service :form :settings])
+(def cursor [:page :service :wizard :settings])
 
 (def form-mode-style
   {:display   "flex"

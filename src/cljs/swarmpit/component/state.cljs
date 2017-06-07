@@ -8,18 +8,19 @@
                 :page {:network    {:list {:filter {}}
                                     :form {}}
                        :node       {:list {:filter {}}}
-                       :service    {:list {:filter {}}
-                                    :form {:settings   {}
-                                           :deployment {}
-                                           :ports      []
-                                           :variables  []
-                                           :volumes    []}}
+                       :service    {:list   {:filter {}}
+                                    :wizard {:settings   {}
+                                             :deployment {}
+                                             :ports      []
+                                             :variables  []
+                                             :volumes    []}}
                        :task       {:list {:filter {}}}
                        :registry   {:list   {:filter {}}
                                     :form   {}
                                     :wizard {}}
-                       :user       {:list {:filter {}}}
-                       :repository {:list {:data {}}}}}))
+                       :user       {:list {:filter {}}
+                                    :form {}}
+                       :repository {:wizard {}}}}))
 
 (defn react
   [cursor]

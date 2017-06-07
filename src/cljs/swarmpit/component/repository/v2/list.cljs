@@ -9,7 +9,7 @@
             [rum.core :as rum]
             [ajax.core :as ajax]))
 
-(def cursor [:page :repository :list :data])
+(def cursor [:page :repository :wizard])
 
 (def headers ["Name"])
 
@@ -28,7 +28,7 @@
              :params  {:repositoryQuery query}
              :handler (fn [response]
                         (let [res (walk/keywordize-keys response)]
-                          (state/set-value res cursor)))}))
+                          (state/update-value [:data] res cursor)))}))
 
 (defn- form-repository [registry-name]
   (comp/form-comp
@@ -39,8 +39,8 @@
                    (repository-handler registry-name v))})))
 
 (rum/defc repository-list < rum/reactive [registry-name]
-  (let [items (state/react cursor)
-        repository (fn [index] (:name (nth items index)))]
+  (let [{:keys [data]} (state/react cursor)
+        repository (fn [index] (:name (nth data index)))]
     [:div
      [:div.form-panel
       [:div.form-panel-left
@@ -56,13 +56,13 @@
                                                       :registry        registry-name
                                                       :registryVersion "v2"}))))}
          (comp/list-table-header headers)
-         (comp/list-table-body items
+         (comp/list-table-body data
                                render-item
                                render-item-keys)))]))
 
 (defn- init-state
   []
-  (state/set-value {} cursor))
+  (state/set-value {:data {}} cursor))
 
 (defn mount!
   [registry-name]

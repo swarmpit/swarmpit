@@ -5,7 +5,7 @@
             [cheshire.core :refer [parse-string]]
             [bidi.ring :refer [make-handler]]
             [clojure.string :refer [starts-with?]]
-            [swarmpit.handler :refer :all]
+            [swarmpit.handler :as handler :refer :all]
             [swarmpit.token :as token]))
 
 (def routes
@@ -30,6 +30,7 @@
                                                          "/tags" v2-repository-tags}}}
         "admin/"         {"users"       {:get  users
                                          :post user-create}
+                          "users/"      {:get {[:id] handler/user}}
                           "registries"  {:get  registries
                                          :post registry-create}
                           "registries/" {:get {[:id] registry}}}}])

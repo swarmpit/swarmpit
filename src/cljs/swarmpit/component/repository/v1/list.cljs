@@ -29,7 +29,7 @@
                        :repositoryPage  page}
              :handler (fn [response]
                         (let [res (walk/keywordize-keys response)]
-                          (state/set-value res cursor)))}))
+                          (state/update-value [:data] res cursor)))}))
 
 (defn- form-repository [registry-name]
   (comp/form-comp
@@ -40,7 +40,7 @@
                    (repository-handler registry-name v 1))})))
 
 (rum/defc repository-list < rum/reactive [registry-name]
-  (let [{:keys [results page limit total query]} (state/react cursor)
+  (let [{{:keys [results page limit total query]} :data} (state/react cursor)
         offset (* limit (- page 1))
         repository (fn [index] (:name (nth results index)))]
     [:div
@@ -70,7 +70,7 @@
 
 (defn- init-state
   []
-  (state/set-value {} cursor))
+  (state/set-value {:data {}} cursor))
 
 (defn mount!
   [registry-name]

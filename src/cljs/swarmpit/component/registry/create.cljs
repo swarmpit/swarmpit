@@ -103,10 +103,10 @@
               :params        (state/get-value cursor)
               :finally       (progress/mount!)
               :handler       (fn [response]
-                               (let [id (get response "Id")
+                               (let [id (get response "id")
                                      message (str "Registry " id " has been created.")]
                                  (progress/unmount!)
-                                 (dispatch! (str "/#/registries"))
+                                 (dispatch! (str "/#/admin/registries/" id))
                                  (message/mount! message)))
               :error-handler (fn [{:keys [status response]}]
                                (let [error (get response "error")

@@ -5,7 +5,7 @@
 
 (enable-console-print!)
 
-(def cursor [:page :service :form :volumes])
+(def cursor [:page :service :wizard :volumes])
 
 (def state-item {:containerPath ""
                  :hostPath      ""

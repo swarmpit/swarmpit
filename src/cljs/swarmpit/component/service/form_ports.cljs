@@ -5,7 +5,7 @@
 
 (enable-console-print!)
 
-(def cursor [:page :service :form :ports])
+(def cursor [:page :service :wizard :ports])
 
 (def headers ["Container port" "Protocol" "Host port"])
 

@@ -23,6 +23,10 @@
   []
   (cc/users))
 
+(defn user
+  [user-id]
+  (cc/user user-id))
+
 (defn user-by-credentials
   [credentails]
   (cc/user-by-credentials (:username credentails)

@@ -51,7 +51,9 @@
                  "/registries" {""        :registry-list
                                 "/create" :registry-create
                                 ["/" :id] :registry-info}
-                 "/users"      {"" :user-list}}])
+                 "/users"      {""        :user-list
+                                "/create" :user-create
+                                ["/" :id] :user-info}}])
 
 ;;; Router config
 

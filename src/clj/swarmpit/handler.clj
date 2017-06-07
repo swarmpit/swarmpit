@@ -44,6 +44,11 @@
   (->> (api/users)
        (resp-ok)))
 
+(defn user
+  [{:keys [route-params]}]
+  (->> (api/user (:id route-params))
+       (resp-ok)))
+
 (defn user-create
   [{:keys [params]}]
   (let [payload (keywordize-keys params)]
