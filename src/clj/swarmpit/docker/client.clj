@@ -85,12 +85,16 @@
   ([uri params headers] (execute "GET" uri params headers nil)))
 
 (defn- post
-  ([uri payload] (execute "POST" uri nil nil payload))
-  ([uri params payload] (execute "POST" uri params nil payload)))
+  ([uri payload] (post uri nil nil payload))
+  ([uri params payload] (post uri params nil payload))
+  ([uri params headers payload]
+   (execute "POST" uri params (merge headers {:Content-Type "application/json"}) payload)))
 
 (defn- put
-  ([uri payload] (execute "PUT" uri nil nil payload))
-  ([uri payload headers] (execute "PUT" uri nil headers payload)))
+  ([uri payload] (put uri nil nil payload))
+  ([uri headers payload] (put uri nil headers payload))
+  ([uri params headers payload]
+   (execute "PUT" uri params (merge headers {:Content-Type "application/json"}) payload)))
 
 (defn- delete
   ([uri] (execute "DELETE" uri nil nil nil))
