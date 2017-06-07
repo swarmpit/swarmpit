@@ -60,13 +60,13 @@
        (comp/form-item "MODE" (:mode item))]
       [:div.form-view-group
        (comp/form-section "Ports")
-       (comp/info-table ports/headers (:ports item) "30%")]
+       (comp/info-table ports/headers (:ports item) "300px")]
       [:div.form-view-group
        (comp/form-section "Volumes")
-       (comp/info-table volumes/headers (:volumes item) "100%")]
+       (comp/info-table volumes/headers (:volumes item) "150vh")]
       [:div.form-view-group
        (comp/form-section "Environment variables")
-       (comp/info-table variables/headers (:variables item) "60%")]
+       (comp/info-table variables/headers (:variables item) "100vh")]
       [:div.form-view-group
        (comp/form-section "Tasks")
        (comp/list-table tasks/headers

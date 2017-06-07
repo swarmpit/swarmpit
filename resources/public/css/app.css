@@ -74,7 +74,12 @@ main {
 
 .form-row-label {
     align-self: center;
-    width: 200px;
+    min-width: 200px;
+}
+
+.form-row-value {
+    align-self: center;
+    min-width: 300px;
 }
 
 .form-row-section {
@@ -92,6 +97,7 @@ main {
 /* Form panel */
 
 .form-panel {
+    min-width: 650px;
     padding-top: 12px;
     display: inline-block;
     position: relative;
