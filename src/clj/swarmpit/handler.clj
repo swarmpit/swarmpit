@@ -57,13 +57,13 @@
     (->> (api/users)
          (resp-ok))))
 
-(defmethod dispatch :user [{:keys [route-params]}]
-  (fn [_]
+(defmethod dispatch :user [_]
+  (fn [{:keys [route-params]}]
     (->> (api/user (:id route-params))
          (resp-ok))))
 
-(defmethod dispatch :user-create [{:keys [params]}]
-  (fn [_]
+(defmethod dispatch :user-create [_]
+  (fn [{:keys [params]}]
     (let [payload (keywordize-keys params)]
       (if (some? (api/create-registry payload))
         (resp-created)
@@ -76,8 +76,8 @@
     (->> (api/registries)
          (resp-ok))))
 
-(defmethod dispatch :registry [{:keys [route-params]}]
-  (fn [_]
+(defmethod dispatch :registry [_]
+  (fn [{:keys [route-params]}]
     (->> (api/registry (:id route-params))
          (resp-ok))))
 
