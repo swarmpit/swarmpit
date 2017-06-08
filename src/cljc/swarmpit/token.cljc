@@ -3,7 +3,7 @@
      (:import java.util.Base64))
   (:require
     #?@(:clj  [[clojure.string :as str]
-               [swarmpit.utils :refer [uuid]]
+               [swarmpit.uuid :refer [uuid]]
                [buddy.sign.jwt :as jwt]
                [clj-time.core :refer [now plus days]]]
         :cljs [[clojure.string :as str]

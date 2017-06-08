@@ -1,6 +1,6 @@
 (ns swarmpit.couchdb.mapper.outbound
   (:require [digest :as d]
-            [swarmpit.utils :refer [uuid]]))
+            [swarmpit.uuid :refer [uuid]]))
 
 (defn ->password
   [password]

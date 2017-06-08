@@ -1,12 +1,4 @@
-(ns swarmpit.utils
-  #?(:clj
-     (:import java.util.UUID)))
-
-#?(:clj
-   (defn uuid
-     "Generate cuuid"
-     []
-     (str (UUID/randomUUID))))
+(ns swarmpit.utils)
 
 (defn remove-el
   "Remove element in `vector` on given `index`"
