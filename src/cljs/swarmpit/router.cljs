@@ -1,6 +1,7 @@
 (ns swarmpit.router
   (:require [bidi.router :as br]
             [swarmpit.storage :as storage]
+            [swarmpit.routes :as routes]
             [swarmpit.controller :as ctrl]
             [swarmpit.component.state :as state]
             [swarmpit.component.layout :as layout]))
@@ -30,28 +31,6 @@
 
 (def location-page
   #{:login nil})
-
-(def routes ["" {"/"           :index
-                 "/login"      :login
-                 "/error"      :error
-                 "/services"   {""                :service-list
-                                "/create/wizard"  {"/image"  :service-create-image
-                                                   "/config" :service-create-config}
-                                ["/" :id]         :service-info
-                                ["/" :id "/edit"] :service-edit}
-                 "/networks"   {""        :network-list
-                                "/create" :network-create
-                                ["/" :id] :network-info}
-                 "/nodes"      {""        :node-list
-                                ["/" :id] :node-info}
-                 "/tasks"      {""        :task-list
-                                ["/" :id] :task-info}
-                 "/registries" {""        :registry-list
-                                "/create" :registry-create
-                                ["/" :id] :registry-info}
-                 "/users"      {""        :user-list
-                                "/create" :user-create
-                                ["/" :id] :user-info}}])
 
 ;;; Router config
 
@@ -89,7 +68,7 @@
 
 (defn start
   []
-  (let [router (br/start-router! routes {:on-navigate navigate})
+  (let [router (br/start-router! routes/frontend {:on-navigate navigate})
         route (:handler @location)]
     (if (some? route)
       (br/set-location! router @location))))

@@ -25,181 +25,185 @@
   ([response] {:status 201
                :body   response}))
 
-;;; Index handler
+;;; Handler
 
-(defn index
-  [_]
-  {:status  200
-   :headers {"Content-Type" "text/html"}
-   :body    (slurp (io/resource "public/index.html"))})
+(defmulti dispatch identity)
 
-;;; Login handler
+;; Index handler
 
-(defn login
-  [{:keys [headers]}]
-  (let [token (get headers "authorization")]
-    (if (nil? token)
-      (resp-error 400 "Missing token")
-      (let [user (->> (token/decode-basic token)
-                      (api/user-by-credentials))]
-        (if (nil? user)
-          (resp-unauthorized "Invalid credentials")
-          (resp-ok {:token (token/generate-jwt user)}))))))
+(defmethod dispatch :index [_]
+  (fn [_]
+    {:status  200
+     :headers {"Content-Type" "text/html"}
+     :body    (slurp (io/resource "public/index.html"))}))
 
-;;; User handler
+;; Login handler
 
-(defn users
-  [_]
-  (->> (api/users)
-       (resp-ok)))
+(defmethod dispatch :login [_]
+  (fn [{:keys [headers]}]
+    (let [token (get headers "authorization")]
+      (if (nil? token)
+        (resp-error 400 "Missing token")
+        (let [user (->> (token/decode-basic token)
+                        (api/user-by-credentials))]
+          (if (nil? user)
+            (resp-unauthorized "Invalid credentials")
+            (resp-ok {:token (token/generate-jwt user)})))))))
 
-(defn user
-  [{:keys [route-params]}]
-  (->> (api/user (:id route-params))
-       (resp-ok)))
+;; User handler
 
-(defn user-create
-  [{:keys [params]}]
-  (let [payload (keywordize-keys params)]
-    (if (some? (api/create-registry payload))
-      (resp-created)
-      (resp-error 400 "User already exist"))))
+(defmethod dispatch :users [_]
+  (fn [_]
+    (->> (api/users)
+         (resp-ok))))
 
-;;; Registry handler
+(defmethod dispatch :user [{:keys [route-params]}]
+  (fn [_]
+    (->> (api/user (:id route-params))
+         (resp-ok))))
 
-(defn registries
-  [_]
-  (->> (api/registries)
-       (resp-ok)))
-
-(defn registry
-  [{:keys [route-params]}]
-  (->> (api/registry (:id route-params))
-       (resp-ok)))
-
-(defn registries-sum
-  [_]
-  (->> (api/registries-sum)
-       (resp-ok)))
-
-(defn registry-create
-  [{:keys [params]}]
-  (let [payload (keywordize-keys params)]
-    (if (api/registry-valid? payload)
+(defmethod dispatch :user-create [{:keys [params]}]
+  (fn [_]
+    (let [payload (keywordize-keys params)]
       (if (some? (api/create-registry payload))
         (resp-created)
-        (resp-error 400 "Registry already exist"))
-      (resp-error 400 "Registry credentials does not match any known registry"))))
+        (resp-error 400 "User already exist")))))
 
-;;; Service handler
+;; Registry handler
 
-(defn services
-  [_]
-  (->> (api/services)
-       (resp-ok)))
+(defmethod dispatch :registries [_]
+  (fn [_]
+    (->> (api/registries)
+         (resp-ok))))
 
-(defn service
-  [{:keys [route-params]}]
-  (->> (api/service (:id route-params))
-       (resp-ok)))
+(defmethod dispatch :registry [{:keys [route-params]}]
+  (fn [_]
+    (->> (api/registry (:id route-params))
+         (resp-ok))))
 
-(defn service-create
-  [{:keys [params]}]
-  (let [payload (keywordize-keys params)]
-    (->> (api/create-service payload)
-         (resp-created))))
+(defmethod dispatch :registries-sum [_]
+  (fn [_]
+    (->> (api/registries-sum)
+         (resp-ok))))
 
-(defn service-update
-  [{:keys [route-params params]}]
-  (let [payload (keywordize-keys params)]
-    (api/update-service (:id route-params) payload)
+(defmethod dispatch :registry-create [_]
+  (fn [{:keys [params]}]
+    (let [payload (keywordize-keys params)]
+      (if (api/registry-valid? payload)
+        (if (some? (api/create-registry payload))
+          (resp-created)
+          (resp-error 400 "Registry already exist"))
+        (resp-error 400 "Registry credentials does not match any known registry")))))
+
+;; Service handler
+
+(defmethod dispatch :services [_]
+  (fn [_]
+    (->> (api/services)
+         (resp-ok))))
+
+(defmethod dispatch :service [_]
+  (fn [{:keys [route-params]}]
+    (->> (api/service (:id route-params))
+         (resp-ok))))
+
+(defmethod dispatch :service-create [_]
+  (fn [{:keys [params]}]
+    (let [payload (keywordize-keys params)]
+      (->> (api/create-service payload)
+           (resp-created)))))
+
+(defmethod dispatch :service-update [_]
+  (fn [{:keys [route-params params]}]
+    (let [payload (keywordize-keys params)]
+      (api/update-service (:id route-params) payload)
+      (resp-ok))))
+
+(defmethod dispatch :service-delete [_]
+  (fn [{:keys [route-params]}]
+    (api/delete-service (:id route-params))
     (resp-ok)))
 
-(defn service-delete
-  [{:keys [route-params]}]
-  (api/delete-service (:id route-params))
-  (resp-ok))
+;; Network handler
 
-;;; Network handler
-
-(defn networks
-  [_]
-  (->> (api/networks)
-       (resp-ok)))
-
-(defn network
-  [{:keys [route-params]}]
-  (->> (api/network (:id route-params))
-       (resp-ok)))
-
-(defn network-create
-  [{:keys [params]}]
-  (let [payload (keywordize-keys params)]
-    (->> (api/create-network payload)
-         (resp-created))))
-
-(defn network-delete
-  [{:keys [route-params]}]
-  (api/delete-network (:id route-params))
-  (resp-ok))
-
-;;; Node handler
-
-(defn nodes
-  [_]
-  (->> (api/nodes)
-       (resp-ok)))
-
-(defn node
-  [{:keys [route-params]}]
-  (->> (api/node (:id route-params))
-       (resp-ok)))
-
-;;; Task handler
-
-(defn tasks
-  [_]
-  (->> (api/tasks)
-       (resp-ok)))
-
-(defn task
-  [{:keys [route-params]}]
-  (->> (api/task (:id route-params))
-       (resp-ok)))
-
-;;; Repository handler
-
-(defn v1-repositories
-  [{:keys [route-params query-string]}]
-  (let [query (keywordize-keys (query->map query-string))]
-    (->> (api/v1-repositories (:registryName route-params)
-                              (:repositoryQuery query)
-                              (:repositoryPage query))
+(defmethod dispatch :networks [_]
+  (fn [_]
+    (->> (api/networks)
          (resp-ok))))
 
-(defn v2-repositories
-  [{:keys [route-params query-string]}]
-  (let [query (keywordize-keys (query->map query-string))]
-    (->> (api/v2-repositories (:registryName route-params)
-                              (:repositoryQuery query))
+(defmethod dispatch :network [_]
+  (fn [{:keys [route-params]}]
+    (->> (api/network (:id route-params))
          (resp-ok))))
 
-(defn v1-repository-tags
-  [{:keys [route-params query-string]}]
-  (let [query (keywordize-keys (query->map query-string))
-        repository (:repositoryName query)]
-    (if (nil? repository)
-      (resp-error 400 "Parameter repositoryName missing")
-      (->> (api/v1-tags (:registryName route-params)
-                        repository)
+(defmethod dispatch :network-create [_]
+  (fn [{:keys [params]}]
+    (let [payload (keywordize-keys params)]
+      (->> (api/create-network payload)
+           (resp-created)))))
+
+(defmethod dispatch :network-delete [_]
+  (fn [{:keys [route-params]}]
+    (api/delete-network (:id route-params))
+    (resp-ok)))
+
+;; Node handler
+
+(defmethod dispatch :nodes [_]
+  (fn [_]
+    (->> (api/nodes)
+         (resp-ok))))
+
+(defmethod dispatch :node [_]
+  (fn [{:keys [route-params]}]
+    (->> (api/node (:id route-params))
+         (resp-ok))))
+
+;; Task handler
+
+(defmethod dispatch :tasks [_]
+  (fn [_]
+    (->> (api/tasks)
+         (resp-ok))))
+
+(defmethod dispatch :task [_]
+  (fn [{:keys [route-params]}]
+    (->> (api/task (:id route-params))
+         (resp-ok))))
+
+;; Repository handler
+
+(defmethod dispatch :v1-repositories [_]
+  (fn [{:keys [route-params query-string]}]
+    (let [query (keywordize-keys (query->map query-string))]
+      (->> (api/v1-repositories (:registryName route-params)
+                                (:repositoryQuery query)
+                                (:repositoryPage query))
            (resp-ok)))))
 
-(defn v2-repository-tags
-  [{:keys [route-params query-string]}]
-  (let [query (keywordize-keys (query->map query-string))
-        repository (:repositoryName query)]
-    (if (nil? repository)
-      (resp-error 400 "Parameter repositoryName missing")
-      (->> (api/v2-tags (:registryName route-params)
-                        repository)
+(defmethod dispatch :v2-repositories [_]
+  (fn [{:keys [route-params query-string]}]
+    (let [query (keywordize-keys (query->map query-string))]
+      (->> (api/v2-repositories (:registryName route-params)
+                                (:repositoryQuery query))
            (resp-ok)))))
+
+(defmethod dispatch :v1-repository-tags [_]
+  (fn [{:keys [route-params query-string]}]
+    (let [query (keywordize-keys (query->map query-string))
+          repository (:repositoryName query)]
+      (if (nil? repository)
+        (resp-error 400 "Parameter repositoryName missing")
+        (->> (api/v1-tags (:registryName route-params)
+                          repository)
+             (resp-ok))))))
+
+(defmethod dispatch :v2-repository-tags [_]
+  (fn [{:keys [route-params query-string]}]
+    (let [query (keywordize-keys (query->map query-string))
+          repository (:repositoryName query)]
+      (if (nil? repository)
+        (resp-error 400 "Parameter repositoryName missing")
+        (->> (api/v2-tags (:registryName route-params)
+                          repository)
+             (resp-ok))))))

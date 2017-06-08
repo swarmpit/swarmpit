@@ -10,35 +10,8 @@
             [bidi.ring :refer [make-handler]]
             [clojure.string :refer [starts-with?]]
             [swarmpit.handler :as handler :refer :all]
+            [swarmpit.routes :as routes]
             [swarmpit.token :as token]))
-
-(def routes
-  ["" {"/"               {:get index}
-       "/login"          {:post login}
-       "/registries/"    {:get {"sum" registries-sum}}
-       "/services"       {:get  services
-                          :post service-create}
-       "/services/"      {:get    {[:id] service}
-                          :delete {[:id] service-delete}
-                          :post   {[:id] service-update}}
-       "/networks"       {:get  networks
-                          :post network-create}
-       "/networks/"      {:get    {[:id] network}
-                          :delete {[:id] network-delete}}
-       "/nodes"          {:get nodes}
-       "/nodes/"         {:get {[:id] node}}
-       "/tasks"          {:get tasks}
-       "/tasks/"         {:get {[:id] task}}
-       "/v1/registries/" {:get {[:registryName "/repo"] {""      v1-repositories
-                                                         "/tags" v1-repository-tags}}}
-       "/v2/registries/" {:get {[:registryName "/repo"] {""      v2-repositories
-                                                         "/tags" v2-repository-tags}}}
-       "/admin/"         {"users"       {:get  users
-                                         :post user-create}
-                          "users/"      {:get {[:id] handler/user}}
-                          "registries"  {:get  registries
-                                         :post registry-create}
-                          "registries/" {:get {[:id] registry}}}}])
 
 (def unsecure-api #{{:request-method :post
                      :uri            "/login"}
@@ -101,7 +74,7 @@
       (handler request))))
 
 (def app
-  (-> (make-handler routes)
+  (-> (make-handler routes/backend handler/dispatch)
       (wrap-resource "public")
       (wrap-resource "react")
       wrap-auth-exception
