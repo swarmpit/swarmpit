@@ -13,26 +13,27 @@
             [swarmpit.token :as token]))
 
 (def routes
-  ["/" {"login"          {:post login}
-        "registries/"    {:get {"sum" registries-sum}}
-        "services"       {:get  services
+  ["" {"/"               {:get index}
+       "/login"          {:post login}
+       "/registries/"    {:get {"sum" registries-sum}}
+       "/services"       {:get  services
                           :post service-create}
-        "services/"      {:get    {[:id] service}
+       "/services/"      {:get    {[:id] service}
                           :delete {[:id] service-delete}
                           :post   {[:id] service-update}}
-        "networks"       {:get  networks
+       "/networks"       {:get  networks
                           :post network-create}
-        "networks/"      {:get    {[:id] network}
+       "/networks/"      {:get    {[:id] network}
                           :delete {[:id] network-delete}}
-        "nodes"          {:get nodes}
-        "nodes/"         {:get {[:id] node}}
-        "tasks"          {:get tasks}
-        "tasks/"         {:get {[:id] task}}
-        "v1/registries/" {:get {[:registryName "/repo"] {""      v1-repositories
+       "/nodes"          {:get nodes}
+       "/nodes/"         {:get {[:id] node}}
+       "/tasks"          {:get tasks}
+       "/tasks/"         {:get {[:id] task}}
+       "/v1/registries/" {:get {[:registryName "/repo"] {""      v1-repositories
                                                          "/tags" v1-repository-tags}}}
-        "v2/registries/" {:get {[:registryName "/repo"] {""      v2-repositories
+       "/v2/registries/" {:get {[:registryName "/repo"] {""      v2-repositories
                                                          "/tags" v2-repository-tags}}}
-        "admin/"         {"users"       {:get  users
+       "/admin/"         {"users"       {:get  users
                                          :post user-create}
                           "users/"      {:get {[:id] handler/user}}
                           "registries"  {:get  registries
@@ -42,7 +43,7 @@
 (def unsecure-api #{{:request-method :post
                      :uri            "/login"}
                     {:request-method :get
-                     :uri            "/index.html"}
+                     :uri            "/"}
                     {:request-method :get
                      :uri            "/css/app.css"}
                     {:request-method :get

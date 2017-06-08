@@ -1,6 +1,7 @@
 (ns swarmpit.handler
   (:require [cemerick.url :refer [query->map]]
             [clojure.walk :refer [keywordize-keys]]
+            [clojure.java.io :as io]
             [swarmpit.api :as api]
             [swarmpit.token :as token]))
 
@@ -23,6 +24,14 @@
   ([] {:status 201})
   ([response] {:status 201
                :body   response}))
+
+;;; Index handler
+
+(defn index
+  [_]
+  {:status  200
+   :headers {"Content-Type" "text/html"}
+   :body    (slurp (io/resource "public/index.html"))})
 
 ;;; Login handler
 
