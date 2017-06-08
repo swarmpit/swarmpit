@@ -1,7 +1,11 @@
 (ns swarmpit.server
+  (:gen-class)
   (:import (clojure.lang ExceptionInfo))
-  (:use [org.httpkit.server :only [run-server]])
-  (:require [ring.middleware.json :as ring-json]
+  (:require [ring.middleware.defaults :refer [wrap-defaults site-defaults]]
+            [ring.middleware.resource :refer [wrap-resource]]
+            [ring.middleware.gzip :refer [wrap-gzip]]
+            [ring.middleware.json :as ring-json]
+            [org.httpkit.server :refer [run-server]]
             [cheshire.core :refer [parse-string]]
             [bidi.ring :refer [make-handler]]
             [clojure.string :refer [starts-with?]]
@@ -36,7 +40,15 @@
                           "registries/" {:get {[:id] registry}}}}])
 
 (def unsecure-api #{{:request-method :post
-                     :uri            "/login"}})
+                     :uri            "/login"}
+                    {:request-method :get
+                     :uri            "/index.html"}
+                    {:request-method :get
+                     :uri            "/css/app.css"}
+                    {:request-method :get
+                     :uri            "/js/main.js"}
+                    {:request-method :get
+                     :uri            "/favicon.ico"}})
 
 (defn- secure-api?
   [request]
@@ -89,11 +101,17 @@
 
 (def app
   (-> (make-handler routes)
+      (wrap-resource "public")
+      (wrap-resource "react")
       wrap-auth-exception
       wrap-client-exception
       ring-json/wrap-json-response
       ring-json/wrap-json-params
-      wrap-fallback-exception))
+      wrap-fallback-exception
+      (wrap-defaults (assoc-in site-defaults [:security :anti-forgery] false))
+      wrap-gzip))
 
-(defn -main [& _]
-  (run-server app {:port 8080}))
+(defn -main [& [port]]
+  (let [port (or port 8080)]
+    (run-server app {:port port})
+    (println (str "Server running on port " port))))

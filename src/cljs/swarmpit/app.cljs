@@ -1,7 +1,6 @@
 (ns swarmpit.app
   (:require [swarmpit.router :as router]))
 
-(js/console.log "Swarmpit loaded !!!")
-(js/console.log "Starting router ...")
+;; Starting router
 
 (router/start)

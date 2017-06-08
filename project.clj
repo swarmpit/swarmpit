@@ -10,9 +10,12 @@
                  [cljsjs/react "15.4.2-2"]
                  [cljsjs/react-dom "15.4.2-2"]
                  [cljsjs/material-ui "0.18.1-0"]
+                 ;Material validation fields -> check [cljsjs/formsy-material-ui "0.5.3-0"]
                  [rum "0.10.8" :exclusions [cljsjs/react cljsjs/react-dom]]
                  [ring "1.5.1"]
                  [ring/ring-json "0.4.0"]
+                 [ring/ring-defaults "0.3.0"]
+                 [bk/ring-gzip "0.2.1"]
                  [buddy/buddy-sign "1.4.0"]
                  [bidi "2.0.16"]
                  [http-kit "2.2.0"]
@@ -46,10 +49,7 @@
                 :source-paths ["src/cljs" "src/cljc"]
                 :jar          true
                 :compiler     {:main                 swarmpit.app
-                               :foreign-libs         [{:file     "libs/material-ui/material-ui.inc.js"
-                                                       :provides ["cljsjs.material-ui"]
-                                                       :requires ["cljsjs.react" "cljsjs.react.dom"]}]
-                               :externs              ["libs/material-ui/material-ui.ext.js"]
+                               :externs              ["ext/material-ui.ext.js"]
                                :output-to            "resources/public/js/main.js"
                                :output-dir           "target"
                                :source-map-timestamp true
