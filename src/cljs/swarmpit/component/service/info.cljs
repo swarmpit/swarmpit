@@ -8,6 +8,7 @@
             [swarmpit.component.service.form-variables :as variables]
             [swarmpit.component.task.list :as tasks]
             [swarmpit.component.message :as message]
+            [swarmpit.routes :as routes]
             [rum.core :as rum]
             [ajax.core :as ajax]))
 
@@ -15,11 +16,12 @@
 
 (defn- delete-service-handler
   [service-id]
-  (ajax/DELETE (str "/services/" service-id)
+  (ajax/DELETE (routes/path-for-backend :service-delete {:id service-id})
                {:headers       {"Authorization" (storage/get "token")}
                 :handler       (fn [_]
                                  (let [message (str "Service " service-id " has been removed.")]
-                                   (dispatch! "/#/services")
+                                   (dispatch!
+                                     (routes/path-for-frontend :service-list))
                                    (message/mount! message)))
                 :error-handler (fn [{:keys [status status-text]}]
                                  (let [message (str "Service " service-id " removing failed. Reason: " status-text)]
@@ -40,7 +42,7 @@
       [:div.form-panel-right
        (comp/mui
          (comp/raised-button
-           {:href    (str "/#/services/" id "/edit")
+           {:href    (routes/path-for-frontend :service-edit {:id id})
             :label   "Edit"
             :primary true}))
        [:span.form-panel-delimiter]
@@ -73,7 +75,7 @@
                         (filter #(not (= "shutdown" (:state %))) (:tasks item))
                         tasks/render-item
                         tasks/render-item-keys
-                        "/#/tasks/")]]]))
+                        :task-info)]]]))
 
 (defn mount!
   [item]

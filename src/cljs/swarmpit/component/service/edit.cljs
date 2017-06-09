@@ -11,6 +11,7 @@
             [swarmpit.component.service.form-deployment :as deployment]
             [swarmpit.component.message :as message]
             [swarmpit.component.progress :as progress]
+            [swarmpit.routes :as routes]
             [rum.core :as rum]
             [ajax.core :as ajax]))
 
@@ -23,7 +24,7 @@
         volumes (state/get-value volumes/cursor)
         variables (state/get-value variables/cursor)
         deployment (state/get-value deployment/cursor)]
-    (ajax/POST (str "/services/" service-id)
+    (ajax/POST (routes/path-for-backend :service-update {:id service-id})
                {:format        :json
                 :headers       {"Authorization" (storage/get "token")}
                 :params        (-> settings
@@ -35,7 +36,8 @@
                 :handler       (fn [_]
                                  (let [message (str "Service " service-id " has been updated.")]
                                    (progress/unmount!)
-                                   (dispatch! (str "/#/services/" service-id))
+                                   (dispatch!
+                                     (routes/path-for-frontend :service-info {:id service-id}))
                                    (message/mount! message)))
                 :error-handler (fn [{:keys [status response]}]
                                  (let [error (get-in response ["error" "message"])

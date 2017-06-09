@@ -2,6 +2,7 @@
   (:require [material.component :as comp]
             [swarmpit.storage :as storage]
             [swarmpit.component.state :as state]
+            [swarmpit.routes :as routes]
             [rum.core :as rum]
             [ajax.core :as ajax]))
 
@@ -21,6 +22,10 @@
 
 (def form-image-style
   {:color "rgb(117, 117, 117)"})
+
+(defn- version-v1?
+  [version]
+  (= version "v1"))
 
 (defn- form-image [value]
   (comp/form-comp
@@ -95,7 +100,9 @@
 
 (defn image-tags-handler
   [registry registry-version repository]
-  (ajax/GET (str registry-version "/registries/" registry "/repo/tags")
+  (ajax/GET (routes/path-for-backend (if (version-v1? registry-version)
+                                       :v1-repository-tags
+                                       :v2-repository-tags) {:registryName registry})
             {:headers {"Authorization" (storage/get "token")}
              :params  {:repositoryName repository}
              :handler (fn [response]

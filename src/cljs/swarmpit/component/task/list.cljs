@@ -63,7 +63,7 @@
                       filtered-items
                       render-item
                       render-item-keys
-                      "/#/tasks/")]))
+                      :task-info)]))
 
 (defn- init-state
   []

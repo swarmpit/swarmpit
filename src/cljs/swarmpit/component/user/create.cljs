@@ -6,6 +6,7 @@
             [swarmpit.component.state :as state]
             [swarmpit.component.message :as message]
             [swarmpit.component.progress :as progress]
+            [swarmpit.routes :as routes]
             [rum.core :as rum]
             [ajax.core :as ajax]))
 
@@ -58,7 +59,7 @@
 
 (defn- create-user-handler
   []
-  (ajax/POST "/admin/users"
+  (ajax/POST (routes/path-for-backend :user-create)
              {:format        :json
               :headers       {"Authorization" (storage/get "token")}
               :params        (state/get-value cursor)
@@ -67,7 +68,8 @@
                                (let [id (get response "id")
                                      message (str "User " id " has been created.")]
                                  (progress/unmount!)
-                                 (dispatch! (str "/#/users/" id))
+                                 (dispatch!
+                                   (routes/path-for-frontend :user-info {:id id}))
                                  (message/mount! message)))
               :error-handler (fn [{:keys [status response]}]
                                (let [error (get response "error")

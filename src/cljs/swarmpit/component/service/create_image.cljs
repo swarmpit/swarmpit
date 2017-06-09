@@ -4,8 +4,8 @@
             [swarmpit.component.state :as state]
             [swarmpit.storage :as storage]
             [swarmpit.url :refer [dispatch!]]
-            [cemerick.url :refer [map->query]]
             [clojure.walk :refer [keywordize-keys]]
+            [swarmpit.routes :as routes]
             [rum.core :as rum]
             [ajax.core :as ajax]))
 
@@ -32,7 +32,7 @@
 
 (defn- repository-v1-handler
   [name query page]
-  (ajax/GET (str "v1/registries/" name "/repo")
+  (ajax/GET (routes/path-for-backend :v1-repositories {:registryName name})
             {:headers {"Authorization" (storage/get "token")}
              :params  {:repositoryQuery query
                        :repositoryPage  page}
@@ -44,7 +44,7 @@
 
 (defn- repository-v2-handler
   [name query]
-  (ajax/GET (str "v2/registries/" name "/repo")
+  (ajax/GET (routes/path-for-backend :v2-repositories {:registryName name})
             {:headers {"Authorization" (storage/get "token")}
              :params  {:repositoryQuery query}
              :finally (state/update-value [:searching] true cursor)
@@ -89,10 +89,13 @@
         {:key         "tbl"
          :selectable  false
          :onCellClick (fn [i]
-                        (dispatch! (str "/#/services/create/wizard/config?"
-                                        (map->query {:repository      (repository i)
-                                                     :registry        registry
-                                                     :registryVersion "v1"}))))}
+                        (dispatch!
+                          (routes/path-for-frontend
+                            :service-create-config
+                            {}
+                            {:repository      (repository i)
+                             :registry        registry
+                             :registryVersion "v1"})))}
         (comp/list-table-header ["Name" "Description"])
         (comp/list-table-body results
                               render-item
@@ -111,10 +114,13 @@
         {:key         "tbl"
          :selectable  false
          :onCellClick (fn [i]
-                        (dispatch! (str "/#/services/create/wizard/config?"
-                                        (map->query {:repository      (repository i)
-                                                     :registry        registry
-                                                     :registryVersion "v2"}))))}
+                        (dispatch!
+                          (routes/path-for-frontend
+                            :service-create-config
+                            {}
+                            {:repository      (repository i)
+                             :registry        registry
+                             :registryVersion "v2"})))}
         (comp/list-table-header ["Name"])
         (comp/list-table-body data
                               render-item

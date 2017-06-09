@@ -1,4 +1,6 @@
-(ns swarmpit.routes)
+(ns swarmpit.routes
+  (:require [bidi.bidi :as b]
+            [cemerick.url :refer [map->query]]))
 
 (def backend
   ["" {"/"               {:get :index}
@@ -23,7 +25,7 @@
                                                          "/tags" :v2-repository-tags}}}
        "/admin/"         {"users"       {:get  :users
                                          :post :user-create}
-                          "users/"      {:get {[:id] :handler/user}}
+                          "users/"      {:get {[:id] :user}}
                           "registries"  {:get  :registries
                                          :post :registry-create}
                           "registries/" {:get {[:id] :registry}}}}])
@@ -49,3 +51,21 @@
                    "/users"      {""        :user-list
                                   "/create" :user-create
                                   ["/" :id] :user-info}}])
+
+(defn path-for-frontend
+  ([handler params query] (str "/#" (b/unmatch-pair frontend {:handler handler
+                                                              :params  params})
+                               "?" (map->query query)))
+  ([handler params] (str "/#" (b/unmatch-pair frontend {:handler handler
+                                                        :params  params})))
+  ([handler] (str "/#" (b/unmatch-pair frontend {:handler handler
+                                                 :params  {}}))))
+
+(defn path-for-backend
+  ([handler params query] (str (b/unmatch-pair backend {:handler handler
+                                                        :params  params})
+                               "?" (map->query query)))
+  ([handler params] (b/unmatch-pair backend {:handler handler
+                                             :params  params}))
+  ([handler] (b/unmatch-pair backend {:handler handler
+                                      :params  {}})))

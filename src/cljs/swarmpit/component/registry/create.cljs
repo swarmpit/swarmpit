@@ -6,6 +6,7 @@
             [swarmpit.component.state :as state]
             [swarmpit.component.message :as message]
             [swarmpit.component.progress :as progress]
+            [swarmpit.routes :as routes]
             [rum.core :as rum]
             [ajax.core :as ajax]))
 
@@ -98,7 +99,7 @@
 
 (defn- create-registry-handler
   []
-  (ajax/POST "/admin/registries"
+  (ajax/POST (routes/path-for-backend :registry-create)
              {:format        :json
               :headers       {"Authorization" (storage/get "token")}
               :params        (state/get-value cursor)
@@ -107,7 +108,8 @@
                                (let [id (get response "id")
                                      message (str "Registry " id " has been created.")]
                                  (progress/unmount!)
-                                 (dispatch! (str "/#/registries/" id))
+                                 (dispatch!
+                                   (routes/path-for-frontend :registry-info {:id id}))
                                  (message/mount! message)))
               :error-handler (fn [{:keys [status response]}]
                                (let [error (get response "error")

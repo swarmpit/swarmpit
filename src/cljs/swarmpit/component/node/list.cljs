@@ -41,7 +41,7 @@
                       filtered-items
                       render-item
                       render-item-keys
-                      "/#/nodes/")]))
+                      :node-info)]))
 
 (defn- init-state
   []

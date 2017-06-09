@@ -3,6 +3,7 @@
             [material.icon :as icon]
             [swarmpit.url :refer [dispatch!]]
             [swarmpit.component.message :as message]
+            [swarmpit.routes :as routes]
             [rum.core :as rum]
             [ajax.core :as ajax]))
 
@@ -10,10 +11,11 @@
 
 (defn- delete-network-handler
   [network-id]
-  (ajax/DELETE (str "/networks/" network-id)
+  (ajax/DELETE (routes/path-for-backend :network-delete {:id network-id})
                {:handler       (fn [_]
                                  (let [message (str "Network " network-id " has been removed.")]
-                                   (dispatch! "/#/networks")
+                                   (dispatch!
+                                     (routes/path-for-frontend :network-list))
                                    (message/mount! message)))
                 :error-handler (fn [{:keys [status status-text]}]
                                  (let [message (str "Network " network-id " removing failed. Reason: " status-text)]

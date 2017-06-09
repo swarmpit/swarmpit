@@ -1,6 +1,7 @@
 (ns swarmpit.component.network.list
   (:require [material.component :as comp]
             [swarmpit.component.state :as state]
+            [swarmpit.routes :as routes]
             [clojure.string :as string]
             [rum.core :as rum]))
 
@@ -39,14 +40,14 @@
       [:div.form-panel-right
        (comp/mui
          (comp/raised-button
-           {:href    "/#/networks/create"
+           {:href    (routes/path-for-frontend :network-create)
             :label   "Create"
             :primary true}))]]
      (comp/list-table headers
                       filtered-items
                       render-item
                       render-item-keys
-                      "/#/networks/")]))
+                      :network-info)]))
 
 (defn- init-state
   []

@@ -4,7 +4,8 @@
             [material.icon :as icon]
             [sablono.core :refer-macros [html]]
             [swarmpit.url :refer [dispatch!]]
-            [swarmpit.utils :refer [select-keys*]]))
+            [swarmpit.utils :refer [select-keys*]]
+            [swarmpit.routes :as routes]))
 
 ;;; Theme components
 
@@ -384,15 +385,16 @@
              (min (+ offset limit) total) " of " total)))))
 
 (defn list-table
-  [headers items render-item-fn render-items-key url]
+  [headers items render-item-fn render-items-key handler]
   (let [item-id (fn [index] (:id (nth items index)))]
+    (print handler)
     (mui
       (table
         {:key         "tbl"
          :selectable  false
          :onCellClick (fn [i]
                         (dispatch!
-                          (str url (item-id i))))}
+                          (routes/path-for-frontend handler {:id (item-id i)})))}
         (list-table-header headers)
         (list-table-body items
                          render-item-fn

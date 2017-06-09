@@ -11,6 +11,7 @@
             [swarmpit.component.service.form-deployment :as deployment]
             [swarmpit.component.message :as message]
             [swarmpit.component.progress :as progress]
+            [swarmpit.routes :as routes]
             [rum.core :as rum]
             [ajax.core :as ajax]))
 
@@ -95,7 +96,7 @@
         volumes (state/get-value volumes/cursor)
         variables (state/get-value variables/cursor)
         deployment (state/get-value deployment/cursor)]
-    (ajax/POST "/services"
+    (ajax/POST (routes/path-for-backend :service-create)
                {:format        :json
                 :headers       {"Authorization" (storage/get "token")}
                 :params        (-> settings
@@ -108,7 +109,8 @@
                                  (let [id (get response "ID")
                                        message (str "Service " id " has been created.")]
                                    (progress/unmount!)
-                                   (dispatch! (str "/#/services/" id))
+                                   (dispatch!
+                                     (routes/path-for-frontend :service-info {:id id}))
                                    (message/mount! message)))
                 :error-handler (fn [{:keys [status response]}]
                                  (let [error (get response "error")
