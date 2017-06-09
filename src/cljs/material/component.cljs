@@ -65,6 +65,10 @@
   ([props] (factory/slider (clj->js props)))
   ([] (factory/slider nil)))
 
+(defn linear-progress
+  ([props] (factory/linear-progress (clj->js props)))
+  ([] (factory/linear-progress nil)))
+
 (defn circular-progress
   ([props] (factory/circular-progress (clj->js props)))
   ([] (factory/circular-progress nil)))
@@ -200,7 +204,6 @@
     (merge props
            {:size  30
             :left  8
-            :top   0
             :style {:display  "inline-block"
                     :position "relative"}})))
 
@@ -286,6 +289,16 @@
   (html [:span.label.label-info text]))
 
 ;; Form component layout
+
+(defn form-comp-loading [loading]
+  (let [mode (if loading "indeterminate"
+                         "determinate")]
+    (mui
+      (linear-progress
+        {:mode  mode
+         :style {:borderRadius 0
+                 :background   "rgb(224, 228, 231)"
+                 :height       "1px"}}))))
 
 (defn form-comp [label comp]
   [:div.form-edit-row

@@ -31,6 +31,7 @@
 (def toogle (create-factory js/MaterialUI.Toggle))
 (def checkbox (create-factory js/MaterialUI.Checkbox))
 (def dialog (create-factory js/MaterialUI.Dialog))
+(def linear-progress (create-factory js/MaterialUI.LinearProgress))
 (def circular-progress (create-factory js/MaterialUI.CircularProgress))
 (def refresh-indicator (create-factory js/MaterialUI.RefreshIndicator))
 (def table (create-factory js/MaterialUI.Table))

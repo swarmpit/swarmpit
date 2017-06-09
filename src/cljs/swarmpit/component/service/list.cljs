@@ -24,7 +24,8 @@
 (defn form-updates [value]
   (let [status (if value "loading" "ready")]
     (comp/loader
-      {:status status})))
+      {:status status
+       :top    0})))
 
 (defn form-state [value]
   (case value

@@ -1,10 +1,10 @@
 (ns swarmpit.server
   (:gen-class)
   (:import (clojure.lang ExceptionInfo))
-  (:require [ring.middleware.defaults :refer [wrap-defaults site-defaults]]
+  (:require [ring.middleware.json :refer [wrap-json-params wrap-json-response]]
+            [ring.middleware.defaults :refer [wrap-defaults site-defaults]]
             [ring.middleware.resource :refer [wrap-resource]]
             [ring.middleware.gzip :refer [wrap-gzip]]
-            [ring.middleware.json :as ring-json]
             [org.httpkit.server :refer [run-server]]
             [cheshire.core :refer [parse-string]]
             [bidi.ring :refer [make-handler]]
@@ -79,8 +79,8 @@
       (wrap-resource "react")
       wrap-auth-exception
       wrap-client-exception
-      ring-json/wrap-json-response
-      ring-json/wrap-json-params
+      wrap-json-response
+      wrap-json-params
       wrap-fallback-exception
       (wrap-defaults (assoc-in site-defaults [:security :anti-forgery] false))
       wrap-gzip))

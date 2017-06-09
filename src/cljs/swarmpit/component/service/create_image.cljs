@@ -36,8 +36,10 @@
             {:headers {"Authorization" (storage/get "token")}
              :params  {:repositoryQuery query
                        :repositoryPage  page}
+             :finally (state/update-value [:searching] true cursor)
              :handler (fn [response]
                         (let [res (keywordize-keys response)]
+                          (state/update-value [:searching] false cursor)
                           (state/update-value [:data] res cursor)))}))
 
 (defn- repository-v2-handler
@@ -45,8 +47,10 @@
   (ajax/GET (str "v2/registries/" name "/repo")
             {:headers {"Authorization" (storage/get "token")}
              :params  {:repositoryQuery query}
+             :finally (state/update-value [:searching] true cursor)
              :handler (fn [response]
                         (let [res (keywordize-keys response)]
+                          (state/update-value [:searching] false cursor)
                           (state/update-value [:data] res cursor)))}))
 
 (defn- form-registry [selected registries]
@@ -116,8 +120,14 @@
                               render-item
                               [[:name]])))))
 
+(rum/defc form-loading < rum/static []
+  (comp/form-comp-loading true))
+
+(rum/defc form-loaded < rum/static []
+  (comp/form-comp-loading false))
+
 (rum/defc form < rum/reactive [registries]
-  (let [{:keys [repository registry registryVersion data]} (state/react cursor)]
+  (let [{:keys [searching repository registry registryVersion data]} (state/react cursor)]
     [:div
      [:div.form-panel
       [:div.form-panel-left
@@ -125,6 +135,10 @@
      [:div.form-edit
       (form-registry registry registries)
       (form-repository repository registry registryVersion)
+      [:div#repository-loader {:style {:marginTop "12px"}}]
+      (if searching
+        (form-loading)
+        (form-loaded))
       (if (version-v1? registryVersion)
         (repository-v1-list data registry)
         (repository-v2-list data registry))]]))
@@ -132,6 +146,7 @@
 (defn- init-state
   [registries]
   (let [registry (first registries)]
+    (state/update-value [:searching] false cursor)
     (state/update-value [:data] [] cursor)
     (state/update-value [:repository] "" cursor)
     (state/update-value [:registry] (:name registry) cursor)
