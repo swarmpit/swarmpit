@@ -77,7 +77,6 @@
   [_]
   (let [params (keywordize-keys (query->map (query-string)))]
     (screatec/mount! (:registry params)
-                     (:registryVersion params)
                      (:repository params))))
 
 (defmethod dispatch :service-edit

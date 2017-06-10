@@ -73,9 +73,7 @@
   [registry]
   (some?
     (try
-      (case (:version registry)
-        "v1" (rc/v1-info registry)
-        "v2" (rc/v2-info registry))
+      (rc/info registry)
       (catch Exception _))))
 
 (defn create-registry
@@ -168,33 +166,28 @@
 ;;; Repository API
 
 (defn dockerhub-repositories
-  [registry-name repository-query repository-page]
-  (let [registry (registry-by-name registry-name)]
+  [repository-query repository-page]
+  (let [registry (registry-by-name "dockerhub")]
     (-> (rc/dockerhub-repositories registry repository-query repository-page)
         (rci/->dockerhub-repositories repository-query repository-page))))
 
-(defn v1-repositories
-  [registry-name repository-query repository-page]
-  (let [registry (registry-by-name registry-name)]
-    (->> (rc/v1-repositories registry repository-query repository-page)
-         (rci/->v1-repositories))))
-
-(defn v2-repositories
+(defn repositories
   [registry-name repository-query]
   (let [registry (registry-by-name registry-name)]
-    (->> (rc/v2-repositories registry)
+    (->> (rc/repositories registry)
          (filter #(string/includes? % (or repository-query "")))
-         (rci/->v2-repositories))))
+         (rci/->repositories))))
 
-(defn v1-tags
-  [registry-name repository-name]
-  (let [registry (registry-by-name registry-name)]
-    (->> (rc/v1-tags registry repository-name)
+(defn dockerhub-tags
+  [repository-name]
+  (let [registry (registry-by-name "dockerhub")]
+    (->> (rc/dockerhub-tags registry repository-name)
+         :results
          (map :name)
          (into []))))
 
-(defn v2-tags
+(defn tags
   [registry-name repository-name]
   (let [registry (registry-by-name registry-name)]
-    (->> (rc/v2-tags registry repository-name)
+    (->> (rc/tags registry repository-name)
          :tags)))

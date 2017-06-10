@@ -139,8 +139,8 @@
          (step-items)))]))
 
 (defn- init-state
-  [registry registry-version repository]
-  (settings/image-tags-handler registry registry-version repository)
+  [registry repository]
+  (settings/image-tags-handler registry repository)
   (state/set-value {:repository  {:registry  registry
                                   :imageName repository
                                   :imageTag  ""
@@ -154,6 +154,6 @@
   (state/set-value {:autoredeploy false} deployment/cursor))
 
 (defn mount!
-  [registry registry-version repository]
-  (init-state registry registry-version repository)
+  [registry repository]
+  (init-state registry repository)
   (rum/mount (form) (.getElementById js/document "content")))

@@ -7,8 +7,7 @@
 (defn- build-url
   [registry api]
   (str (:scheme registry) "://"
-       (:url registry) "/"
-       (:version registry) api))
+       (:url registry) "/v2" api))
 
 (defn- execute
   [call-fx]
@@ -26,14 +25,6 @@
                      {:status status
                       :body   {:error (:errors response)}})))))))
 
-(defn- headers
-  [registry]
-  (let [headers {}]
-    (if (:isPrivate registry)
-      (assoc headers "Authorization" (token/generate-basic (:username registry)
-                                                           (:password registry)))
-      headers)))
-
 (defn- get
   [registry api headers params]
   (let [url (build-url registry api)
@@ -42,44 +33,42 @@
                  :query-params params}]
     (execute @(http/get url options))))
 
-(defn v1-repositories
-  [registry query page]
-  (let [params {:q    query
-                :page page
-                :n    25}
-        headers (headers registry)]
-    (get registry "/search" headers params)))
+;; Dockerhub
 
 (defn dockerhub-repositories
   [registry query page]
   (let [params {:query     query
                 :page      page
-                :page-size 20}
-        headers (headers registry)]
-    (get registry "/search/repositories" headers params)))
+                :page_size 20}]
+    (get registry "/search/repositories" {} params)))
 
-(defn v2-repositories
+(defn dockerhub-tags
+  [registry repository-name]
+  (let []
+    (get registry (str "/repositories/" repository-name "/tags") {} {})))
+
+;; Classic v2 registry
+
+(defn- headers
+  [registry]
+  (let [headers {}]
+    (if (:withAuth registry)
+      (assoc headers "Authorization" (token/generate-basic (:username registry)
+                                                           (:password registry)))
+      headers)))
+
+(defn repositories
   [registry]
   (let [headers (headers registry)]
     (->> (get registry "/_catalog" headers nil)
          :repositories)))
 
-(defn v1-info
-  [registry]
-  (let [headers (headers registry)]
-    (get registry "/_ping" headers nil)))
-
-(defn v2-info
+(defn info
   [registry]
   (let [headers (headers registry)]
     (get registry "/" headers {})))
 
-(defn v1-tags
-  [registry repository-name]
-  (let [headers (headers registry)]
-    (get registry (str "/repositories/" repository-name "/tags") headers {})))
-
-(defn v2-tags
+(defn tags
   [registry repository-name]
   (let [headers (headers registry)]
     (get registry (str "/" repository-name "/tags/list") headers {})))

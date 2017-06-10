@@ -26,22 +26,6 @@
        :onChange (fn [_ v]
                    (state/update-value [:name] v cursor))})))
 
-(defn- form-version [value]
-  (comp/form-comp
-    "VERSION"
-    (comp/select-field
-      {:value    value
-       :onChange (fn [_ _ v]
-                   (state/update-value [:version] v cursor))}
-      (comp/menu-item
-        {:key         "fv1"
-         :value       "v1"
-         :primaryText "v1"})
-      (comp/menu-item
-        {:key         "fv2"
-         :value       "v2"
-         :primaryText "v2"}))))
-
 (defn- form-scheme [value]
   (comp/form-comp
     "SCHEME"
@@ -68,14 +52,14 @@
        :onChange (fn [_ v]
                    (state/update-value [:url] v cursor))})))
 
-(defn- form-private [value]
+(defn- form-auth [value]
   (comp/form-comp
-    "IS PRIVATE"
+    "AUTHENTICATION"
     (comp/checkbox
       {:checked value
        :style   form-private-style
        :onCheck (fn [_ v]
-                  (state/update-value [:isPrivate] v cursor))})))
+                  (state/update-value [:withAuth] v cursor))})))
 
 (defn- form-username [value]
   (comp/form-comp
@@ -120,10 +104,9 @@
 
 (rum/defc form < rum/reactive []
   (let [{:keys [name
-                version
                 scheme
                 url
-                isPrivate
+                withAuth
                 username
                 password]} (state/react cursor)]
     [:div
@@ -138,24 +121,22 @@
             :onTouchTap create-registry-handler}))]]
      [:div.form-edit
       (form-name name)
-      (form-version version)
       (form-scheme scheme)
       (form-url url)
-      (form-private isPrivate)
-      (if isPrivate
+      (form-auth withAuth)
+      (if withAuth
         [:div
          (form-username username)
          (form-password password)])]]))
 
 (defn- init-state
   []
-  (state/set-value {:name      ""
-                    :version   "v2"
-                    :scheme    "https"
-                    :url       ""
-                    :isPrivate false
-                    :username  ""
-                    :password  ""} cursor))
+  (state/set-value {:name     ""
+                    :scheme   "https"
+                    :url      ""
+                    :withAuth false
+                    :username ""
+                    :password ""} cursor))
 
 (defn mount!
   []

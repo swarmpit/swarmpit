@@ -23,10 +23,6 @@
 (def form-image-style
   {:color "rgb(117, 117, 117)"})
 
-(defn- version-v1?
-  [version]
-  (= version "v1"))
-
 (defn- form-image [value]
   (comp/form-comp
     "IMAGE"
@@ -38,6 +34,7 @@
        :value         value})))
 
 (defn- form-image-tag-ac [tags]
+  "Preload tags for services created via swarmit"
   (comp/form-comp
     "IMAGE TAG"
     (comp/autocomplete {:id            "imageTag"
@@ -45,7 +42,7 @@
                         :dataSource    tags})))
 
 (defn- form-image-tag [value]
-  "Temporary solution. Will be fixed with persistence. There is no way to get tags without context during update"
+  "For services created by docker cli there is no preload"
   (comp/form-comp
     "IMAGE TAG"
     (comp/text-field
@@ -99,10 +96,8 @@
                        (state/update-value [:replicas] v cursor))})))
 
 (defn image-tags-handler
-  [registry registry-version repository]
-  (ajax/GET (routes/path-for-backend (if (version-v1? registry-version)
-                                       :v1-repository-tags
-                                       :v2-repository-tags) {:registryName registry})
+  [registry repository]
+  (ajax/GET (routes/path-for-backend :repository-tags {:registryName registry})
             {:headers {"Authorization" (storage/get "token")}
              :params  {:repositoryName repository}
              :handler (fn [response]

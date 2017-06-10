@@ -173,37 +173,24 @@
 
 ;; Repository handler
 
-(defmethod dispatch :v1-repositories [_]
-  (fn [{:keys [route-params query-string]}]
-    (let [query (keywordize-keys (query->map query-string))]
-      (->> (api/v1-repositories (:registryName route-params)
-                                (:repositoryQuery query)
-                                (:repositoryPage query))
-           (resp-ok)))))
-
-(defmethod dispatch :v2-repositories [_]
-  (fn [{:keys [route-params query-string]}]
-    (let [query (keywordize-keys (query->map query-string))]
-      (->> (api/v2-repositories (:registryName route-params)
-                                (:repositoryQuery query))
-           (resp-ok)))))
-
-(defmethod dispatch :v1-repository-tags [_]
+(defmethod dispatch :repositories [_]
   (fn [{:keys [route-params query-string]}]
     (let [query (keywordize-keys (query->map query-string))
-          repository (:repositoryName query)]
-      (if (nil? repository)
-        (resp-error 400 "Parameter repositoryName missing")
-        (->> (api/v1-tags (:registryName route-params)
-                          repository)
-             (resp-ok))))))
+          registry-name (:registryName route-params)
+          repository-query (:repositoryQuery query)]
+      (resp-ok
+        (if (= "dockerhub" registry-name)
+          (api/dockerhub-repositories repository-query (:repositoryPage query))
+          (api/repositories registry-name repository-query))))))
 
-(defmethod dispatch :v2-repository-tags [_]
+(defmethod dispatch :repository-tags [_]
   (fn [{:keys [route-params query-string]}]
     (let [query (keywordize-keys (query->map query-string))
-          repository (:repositoryName query)]
-      (if (nil? repository)
+          repository-name (:repositoryName query)
+          registry-name (:registryName route-params)]
+      (if (nil? repository-name)
         (resp-error 400 "Parameter repositoryName missing")
-        (->> (api/v2-tags (:registryName route-params)
-                          repository)
-             (resp-ok))))))
+        (resp-ok
+          (if (= "dockerhub" registry-name)
+            (api/dockerhub-tags repository-name)
+            (api/tags registry-name repository-name)))))))

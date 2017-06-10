@@ -20,11 +20,10 @@
 
 (defn- init-registry
   []
-  (api/create-registry {:name      "dockerhub"
-                        :version   "v1"
-                        :scheme    "https"
-                        :url       "registry.hub.docker.com"
-                        :isPrivate false}))
+  (api/create-registry {:name     "dockerhub"
+                        :scheme   "https"
+                        :url      "hub.docker.com"
+                        :withAuth false}))
 
 (defn- on-startup
   []
