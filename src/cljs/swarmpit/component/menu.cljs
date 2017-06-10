@@ -125,7 +125,7 @@
             (fn [menu-item]
               (let [icon (:icon menu-item)
                     name (:name menu-item)
-                    selected (= name domain)]
+                    selected (string/includes? domain name)]
                 (if (some? icon)
                   (drawer-item name icon opened selected)
                   (drawer-category name opened)))) menu))))))
