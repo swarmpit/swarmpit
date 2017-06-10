@@ -3,9 +3,10 @@
   (:require [clojure.java.shell :as shell]
             [clojure.string :as string]
             [ring.util.codec :refer [form-encode]]
-            [cheshire.core :refer [parse-string generate-string]]))
+            [cheshire.core :refer [parse-string generate-string]]
+            [swarmpit.token :as token]))
 
-(def ^:private api-version "v1.24")
+(def ^:private api-version "v1.27")
 (def ^:private base-cmd ["curl" "--unix-socket" "/var/run/docker.sock" "-w" "%{http_code}"])
 
 (defn- map-headers
@@ -100,6 +101,10 @@
   ([uri] (execute "DELETE" uri nil nil nil))
   ([uri headers] (execute "DELETE" uri nil headers nil)))
 
+(defn- registry-token
+  [auth]
+  (token/generate-base64 (generate-string auth)))
+
 ;; Service
 
 (defn services
@@ -117,8 +122,9 @@
       (delete)))
 
 (defn create-service
-  [service]
-  (post "/services/create" service))
+  [auth-config service]
+  (let [headers {:X-Registry-Auth (registry-token auth-config)}]
+    (post "/services/create" {} headers service)))
 
 (defn update-service
   [id version service]

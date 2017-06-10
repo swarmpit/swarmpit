@@ -37,12 +37,12 @@
        :inputStyle    form-image-style
        :value         value})))
 
-(defn- form-image-tag-ac [tagList]
+(defn- form-image-tag-ac [tags]
   (comp/form-comp
     "IMAGE TAG"
     (comp/autocomplete {:id            "imageTag"
                         :onUpdateInput (fn [v] (state/update-value [:repository :imageTag] v cursor))
-                        :dataSource    tagList})))
+                        :dataSource    tags})))
 
 (defn- form-image-tag [value]
   "Temporary solution. Will be fixed with persistence. There is no way to get tags without context during update"
@@ -106,7 +106,7 @@
             {:headers {"Authorization" (storage/get "token")}
              :params  {:repositoryName repository}
              :handler (fn [response]
-                        (state/update-value [:repository :tagList] response cursor))}))
+                        (state/update-value [:repository :tags] response cursor))}))
 
 (rum/defc form < rum/reactive [update-form?]
   (let [{:keys [repository
@@ -117,7 +117,7 @@
      (form-image (:imageName repository))
      (if update-form?
        (form-image-tag (:imageTag repository))
-       (form-image-tag-ac (:tagList repository)))
+       (form-image-tag-ac (:tags repository)))
      (form-name serviceName update-form?)
      (form-mode mode update-form?)
      (if (= "replicated" mode)

@@ -47,12 +47,17 @@
          (jwt/unsign "secret"))))
 
 #?(:clj
+   (defn generate-base64
+     [credentials]
+     (let [credentials-bytes (.getBytes credentials)]
+       (.encodeToString (Base64/getEncoder) credentials-bytes))))
+
+#?(:clj
    (defn generate-basic
      [username password]
      (let [credentials (credentials username password)
-           credentials-bytes (.getBytes credentials)
-           credentials-encoded (.encodeToString (Base64/getEncoder) credentials-bytes)]
-       (basic credentials-encoded))))
+           base64 (generate-base64 credentials)]
+       (basic base64))))
 
 #?(:cljs
    (defn generate-basic

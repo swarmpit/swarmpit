@@ -2,6 +2,12 @@
   "Map swarmpit domain to docker domain"
   (:require [clojure.string :as str]))
 
+(defn ->auth-config
+  [registry]
+  {:username      (:username registry)
+   :password      (:password registry)
+   :serveraddress (:url registry)})
+
 (defn ->service-mode
   [service]
   (if (= (:mode service) "global")
@@ -38,18 +44,26 @@
                                {:DriverConfig {}}}))
        (into [])))
 
-(defn ->service-image
+(defn ->service-image-create
+  [service registry]
+  (let [image (get-in service [:repository :imageName])
+        tag (get-in service [:repository :imageTag])]
+    (if (= "dockerhub" (:name registry))
+      (str image ":" tag)
+      (str (:url registry) "/" image ":" tag))))
+
+(defn ->service-image-update
   [service]
   (let [image (get-in service [:repository :imageName])
         tag (get-in service [:repository :imageTag])]
     (str image ":" tag)))
 
 (defn ->service
-  [service]
+  [service image]
   {:Name (:serviceName service)
    :TaskTemplate
          {:ContainerSpec
-          {:Image  (->service-image service)
+          {:Image  image
            :Mounts (->service-volumes service)
            :Env    (->service-variables service)}}
    :Mode (->service-mode service)

@@ -46,6 +46,44 @@
     (->> (cmo/->user user)
          (cc/create-user))))
 
+;;; Registry API
+
+(defn registries
+  []
+  (cc/registries))
+
+(defn registries-sum
+  []
+  (->> (registries)
+       (map #(select-keys % [:name :version]))))
+
+(defn registry
+  [registry-id]
+  (cc/registry registry-id))
+
+(defn registry-by-name
+  [registry-name]
+  (cc/registry-by-name registry-name))
+
+(defn registry-exist?
+  [registry]
+  (some? (registry-by-name (:name registry))))
+
+(defn registry-valid?
+  [registry]
+  (some?
+    (try
+      (case (:version registry)
+        "v1" (rc/v1-info registry)
+        "v2" (rc/v2-info registry))
+      (catch Exception _))))
+
+(defn create-registry
+  [registry]
+  (if (not (registry-exist? registry))
+    (->> (cmo/->registry registry)
+         (cc/create-registry))))
+
 ;;; Service API
 
 (defn services
@@ -66,13 +104,18 @@
 
 (defn create-service
   [service]
-  (->> (dmo/->service service)
-       (dc/create-service)))
+  (let [registry-name (get-in service [:repository :registry])
+        registry (registry-by-name registry-name)
+        auth-config (dmo/->auth-config registry)]
+    (->> (dmo/->service-image-create service registry)
+         (dmo/->service service)
+         (dc/create-service auth-config))))
 
 (defn update-service
   [service-id service]
   (let [service-version (:version service)]
-    (->> (dmo/->service service)
+    (->> (dmo/->service-image-update service)
+         (dmo/->service service)
          (dc/update-service service-id service-version))))
 
 ;;; Network API
@@ -122,45 +165,13 @@
        (filter #(= (:id %) task-id))
        (first)))
 
-;;; Registry API
-
-(defn registries
-  []
-  (cc/registries))
-
-(defn registries-sum
-  []
-  (->> (registries)
-       (map #(select-keys % [:name :version]))))
-
-(defn registry
-  [registry-id]
-  (cc/registry registry-id))
-
-(defn registry-by-name
-  [registry-name]
-  (cc/registry-by-name registry-name))
-
-(defn registry-exist?
-  [registry]
-  (some? (registry-by-name (:name registry))))
-
-(defn registry-valid?
-  [registry]
-  (some?
-    (try
-      (case (:version registry)
-        "v1" (rc/v1-info registry)
-        "v2" (rc/v2-info registry))
-      (catch Exception _))))
-
-(defn create-registry
-  [registry]
-  (if (not (registry-exist? registry))
-    (->> (cmo/->registry registry)
-         (cc/create-registry))))
-
 ;;; Repository API
+
+(defn dockerhub-repositories
+  [registry-name repository-query repository-page]
+  (let [registry (registry-by-name registry-name)]
+    (-> (rc/dockerhub-repositories registry repository-query repository-page)
+        (rci/->dockerhub-repositories repository-query repository-page))))
 
 (defn v1-repositories
   [registry-name repository-query repository-page]

@@ -10,6 +10,17 @@
             :total   (:num_results repositories)
             :results results})))
 
+(defn ->dockerhub-repositories
+  [repositories query page]
+  (let [results (->> (:results repositories)
+                     (map #(assoc % :id (hash (:name %))))
+                     (into []))]
+    {:query   query
+     :page    page
+     :limit   20
+     :total   (:count repositories)
+     :results results}))
+
 (defn ->v2-repositories
   [repositories]
   (->> repositories

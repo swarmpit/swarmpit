@@ -50,6 +50,14 @@
         headers (headers registry)]
     (get registry "/search" headers params)))
 
+(defn dockerhub-repositories
+  [registry query page]
+  (let [params {:query     query
+                :page      page
+                :page-size 20}
+        headers (headers registry)]
+    (get registry "/search/repositories" headers params)))
+
 (defn v2-repositories
   [registry]
   (let [headers (headers registry)]

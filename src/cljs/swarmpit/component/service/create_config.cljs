@@ -141,9 +141,10 @@
 (defn- init-state
   [registry registry-version repository]
   (settings/image-tags-handler registry registry-version repository)
-  (state/set-value {:repository  {:imageName repository
+  (state/set-value {:repository  {:registry  registry
+                                  :imageName repository
                                   :imageTag  ""
-                                  :tagList   []}
+                                  :tags      []}
                     :serviceName ""
                     :mode        "replicated"
                     :replicas    1} settings/cursor)

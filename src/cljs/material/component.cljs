@@ -387,7 +387,6 @@
 (defn list-table
   [headers items render-item-fn render-items-key handler]
   (let [item-id (fn [index] (:id (nth items index)))]
-    (print handler)
     (mui
       (table
         {:key         "tbl"
