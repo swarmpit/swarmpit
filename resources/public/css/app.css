@@ -56,6 +56,10 @@ main {
     margin: 0 24px 0 24px;
 }
 
+.form-edit-loader {
+    margin-top: 12px;
+}
+
 /* Form view layout */
 
 .form-view {
@@ -104,6 +108,7 @@ main {
     width: 100%;
     height: 48px;
     background: rgb(245, 245, 245);
+    /*border-bottom: 1px solid rgb(224, 228, 231);*/
 }
 
 .form-panel-buttons {

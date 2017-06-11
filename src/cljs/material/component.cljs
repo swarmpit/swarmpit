@@ -150,6 +150,14 @@
   [props & childs]
   (factory/drawer (clj->js props) childs))
 
+(defn tab
+  [props & childs]
+  (factory/tab (clj->js props) childs))
+
+(defn tabs
+  [props & childs]
+  (factory/tabs (clj->js props) childs))
+
 (defn step
   [props & childs]
   (factory/step (clj->js props) childs))
@@ -262,6 +270,20 @@
            {:style      {:top 5}
             :labelStyle {:lineHeight "45px"
                          :top        2}}) childs))
+
+;; Form elements
+
+(defn form-checkbox
+  [props]
+  (checkbox
+    (merge props
+           {:style {:marginTop "14px"}})))
+
+(defn form-toogle
+  [props]
+  (toogle
+    (merge props
+           {:style {:marginTop "14px"}})))
 
 ;; Labels
 

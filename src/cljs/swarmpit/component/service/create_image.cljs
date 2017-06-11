@@ -123,16 +123,33 @@
      [:div.form-panel
       [:div.form-panel-left
        (comp/panel-info icon/services "New service")]]
+
+     ;[:div {:style {:display        "flex"
+     ;               :justifyContent "center"
+     ;               :borderBottom   "1px solid rgb(224, 224, 224)"}}
+     ; (comp/mui
+     ;   (comp/icon-button
+     ;     {:tooltip "Search in registries"}
+     ;     (comp/svg
+     ;       {:key "user-menu-button-icon"}
+     ;       icon/registries)))
+     ; (comp/mui
+     ;   (comp/icon-button
+     ;     {:tooltip "Show user repositories"}
+     ;     (comp/svg
+     ;       {:key "user-menu-button-icon"}
+     ;       icon/images)))]
+
      [:div.form-edit
       (form-registry registry registries)
       (form-repository repository registry)
-      [:div#repository-loader {:style {:marginTop "12px"}}]
-      (if searching
-        (form-loading)
-        (form-loaded))
-      (if (dockerhub? registry)
-        (repository-dockerhub-list data registry)
-        (repository-list data registry))]]))
+      [:div.form-edit-loader
+       (if searching
+         (form-loading)
+         (form-loaded))
+       (if (dockerhub? registry)
+         (repository-dockerhub-list data registry)
+         (repository-list data registry))]]]))
 
 (defn- init-state
   [registries]

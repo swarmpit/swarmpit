@@ -14,9 +14,6 @@
 
 (def cursor [:page :registry :form])
 
-(def form-private-style
-  {:marginTop "14px"})
-
 (defn- form-name [value]
   (comp/form-comp
     "NAME"
@@ -55,9 +52,8 @@
 (defn- form-auth [value]
   (comp/form-comp
     "AUTHENTICATION"
-    (comp/checkbox
+    (comp/form-checkbox
       {:checked value
-       :style   form-private-style
        :onCheck (fn [_ v]
                   (state/update-value [:withAuth] v cursor))})))
 

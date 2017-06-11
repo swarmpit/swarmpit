@@ -7,15 +7,11 @@
 
 (def cursor [:page :service :wizard :deployment])
 
-(def form-autoredeploy-style
-  {:marginTop "14px"})
-
 (defn- form-autoredeploy [value]
   (comp/form-comp
     "AUTOREDEPLOY"
-    (comp/toogle
+    (comp/form-toogle
       {:toggled  value
-       :style    form-autoredeploy-style
        :onToggle (fn [_ v]
                    (state/update-value [:autoredeploy] v cursor))})))
 

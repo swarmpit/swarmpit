@@ -14,9 +14,6 @@
 
 (def cursor [:page :network :form])
 
-(def form-internal-style
-  {:marginTop "14px"})
-
 (defn- form-name [value]
   (comp/form-comp
     "NAME"
@@ -49,9 +46,8 @@
 (defn- form-internal [value]
   (comp/form-comp
     "IS PRIVATE"
-    (comp/checkbox
+    (comp/form-checkbox
       {:checked value
-       :style   form-internal-style
        :onCheck (fn [_ v]
                   (state/update-value [:internal] v cursor))})))
 
