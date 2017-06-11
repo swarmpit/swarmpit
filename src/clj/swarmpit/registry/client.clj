@@ -1,7 +1,7 @@
 (ns swarmpit.registry.client
   (:refer-clojure :exclude [get])
   (:require [org.httpkit.client :as http]
-            [cheshire.core :refer [parse-string]]
+            [cheshire.core :refer [parse-string generate-string]]
             [swarmpit.token :as token]))
 
 (defn- build-url
@@ -23,7 +23,7 @@
           (throw
             (ex-info "Registry error!"
                      {:status status
-                      :body   {:error (:errors response)}})))))))
+                      :body   {:error response}})))))))
 
 (defn- get
   [registry api headers params]
@@ -33,7 +33,33 @@
                  :query-params params}]
     (execute @(http/get url options))))
 
+(defn- post
+  [registry api headers body]
+  (let [url (build-url registry api)
+        options {:headers (merge headers {"Content-Type" "application/json"})
+                 :body    (generate-string body)}]
+    (execute @(http/post url options))))
+
+(defn- basic-auth
+  [registry]
+  {:Authorization (token/generate-basic (:username registry)
+                                        (:password registry))})
+
+(defn- jwt-auth
+  [token]
+  {:Authorization (str "JWT " token)})
+
 ;; Dockerhub
+
+(defn dockerhub-login
+  [registry]
+  (let [body (select-keys registry [:username :password])]
+    (post registry "/users/login" {} body)))
+
+(defn dockerhub-user-repo
+  [registry token]
+  (let [api (str "/repositories/" (:username registry))]
+    (get registry api {} (jwt-auth token))))
 
 (defn dockerhub-repositories
   [registry query page]
@@ -44,18 +70,15 @@
 
 (defn dockerhub-tags
   [registry repository-name]
-  (let []
-    (get registry (str "/repositories/" repository-name "/tags") {} {})))
+  (get registry (str "/repositories/" repository-name "/tags") {} {}))
 
 ;; Classic v2 registry
 
 (defn- headers
   [registry]
-  (let [headers {}]
-    (if (:withAuth registry)
-      (assoc headers "Authorization" (token/generate-basic (:username registry)
-                                                           (:password registry)))
-      headers)))
+  (if (:withAuth registry)
+    (basic-auth registry)
+    {}))
 
 (defn repositories
   [registry]
@@ -70,5 +93,6 @@
 
 (defn tags
   [registry repository-name]
-  (let [headers (headers registry)]
-    (get registry (str "/" repository-name "/tags/list") headers {})))
+  (let [headers (headers registry)
+        api (str "/" repository-name "/tags/list")]
+    (get registry api headers {})))
