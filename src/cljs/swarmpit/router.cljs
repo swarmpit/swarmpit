@@ -37,7 +37,12 @@
 (defn- is-layout?
   "Check whether `loc` belong to layout. Not single page!"
   [loc]
-  (not (contains? location-page loc)))
+  (not (contains? location-page (:handler loc))))
+
+(defn- domain
+  "Associate domain value based na handler"
+  [loc]
+  (get location-domains (:handler loc)))
 
 (defn- route
   "Route to given `loc`"
@@ -48,17 +53,15 @@
 (defn- route-to-loc
   "Route to given `loc` and update state domain"
   [loc]
-  (let [domain (get location-domains (:handler loc))]
-    (state/update-value [:domain] domain [:menu])
-    (if (is-layout? loc)
-      (layout/mount!))
-    (route loc)))
+  (state/update-value [:domain] (domain loc) [:menu])
+  (if (is-layout? loc)
+    (layout/mount!))
+  (route loc))
 
 (defn- route-to-login
   "Route to login page"
   []
-  (let [login {:handler :login}]
-    (route login)))
+  (route {:handler :login}))
 
 (defn- navigate
   [loc]
