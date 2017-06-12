@@ -169,4 +169,6 @@
   [networks]
   (->> networks
        (map ->network)
+       (filter #(or (= "bridge" (:driver %))
+                    (= "overlay" (:driver %))))
        (into [])))

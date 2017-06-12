@@ -35,10 +35,6 @@
          :value       "overlay"
          :primaryText "overlay"})
       (comp/menu-item
-        {:key         "fdi2"
-         :value       "host"
-         :primaryText "host"})
-      (comp/menu-item
         {:key         "fdi3"
          :value       "bridge"
          :primaryText "bridge"}))))
@@ -93,7 +89,7 @@
 (defn- init-state
   []
   (state/set-value {:networkName ""
-                    :driver      "overlay"
+                    :driver      "bridge"
                     :internal    false} cursor))
 
 (defn mount!
