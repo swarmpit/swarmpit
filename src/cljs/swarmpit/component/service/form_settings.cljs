@@ -97,11 +97,14 @@
 
 (defn image-tags-handler
   [registry repository]
-  (ajax/GET (routes/path-for-backend :repository-tags {:registryName registry})
-            {:headers {"Authorization" (storage/get "token")}
-             :params  {:repositoryName repository}
-             :handler (fn [response]
-                        (state/update-value [:repository :tags] response cursor))}))
+  (let [url (if (= "dockerhub" registry)
+              (routes/path-for-backend :dockerhub-tags)
+              (routes/path-for-backend :repository-tags {:registryName registry}))]
+    (ajax/GET url
+              {:headers {"Authorization" (storage/get "token")}
+               :params  {:repositoryName repository}
+               :handler (fn [response]
+                          (state/update-value [:repository :tags] response cursor))})))
 
 (rum/defc form < rum/reactive [update-form?]
   (let [{:keys [repository

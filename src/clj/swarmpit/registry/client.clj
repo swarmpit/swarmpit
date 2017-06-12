@@ -42,43 +42,14 @@
 
 (defn- basic-auth
   [registry]
-  {:Authorization (token/generate-basic (:username registry)
-                                        (:password registry))})
-
-(defn- jwt-auth
-  [token]
-  {:Authorization (str "JWT " token)})
-
-;; Dockerhub
-
-(defn dockerhub-login
-  [registry]
-  (let [body (select-keys registry [:username :password])]
-    (post registry "/users/login" {} body)))
-
-(defn dockerhub-user-repo
-  [registry token]
-  (let [api (str "/repositories/" (:username registry))]
-    (get registry api {} (jwt-auth token))))
-
-(defn dockerhub-repositories
-  [registry query page]
-  (let [params {:query     query
-                :page      page
-                :page_size 20}]
-    (get registry "/search/repositories" {} params)))
-
-(defn dockerhub-tags
-  [registry repository-name]
-  (get registry (str "/repositories/" repository-name "/tags") {} {}))
-
-;; Classic v2 registry
+  {"Authorization" (token/generate-basic (:username registry)
+                                         (:password registry))})
 
 (defn- headers
   [registry]
   (if (:withAuth registry)
     (basic-auth registry)
-    {}))
+    nil))
 
 (defn repositories
   [registry]
@@ -89,10 +60,10 @@
 (defn info
   [registry]
   (let [headers (headers registry)]
-    (get registry "/" headers {})))
+    (get registry "/" headers nil)))
 
 (defn tags
   [registry repository-name]
   (let [headers (headers registry)
         api (str "/" repository-name "/tags/list")]
-    (get registry api headers {})))
+    (get registry api headers nil)))

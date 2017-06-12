@@ -108,7 +108,6 @@ main {
     width: 100%;
     height: 48px;
     background: rgb(245, 245, 245);
-    /*border-bottom: 1px solid rgb(224, 228, 231);*/
 }
 
 .form-panel-buttons {
@@ -165,6 +164,10 @@ main {
 
 .form-panel-item-sf-field {
     width: 30px;
+}
+
+.form-panel-tabs {
+    margin-top: -4px;
 }
 
 /* Page layout (404/Login) */

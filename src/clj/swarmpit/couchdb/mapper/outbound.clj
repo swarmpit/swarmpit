@@ -17,4 +17,9 @@
   (assoc registry :type "registry"
                   :id (uuid)))
 
+(defn ->docker-user
+  [docker-user]
+  (assoc docker-user :type "dockeruser"
+                     :id (uuid)))
+
 

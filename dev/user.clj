@@ -18,13 +18,6 @@
                     :email    "admin@admin.com"
                     :role     "admin"}))
 
-(defn- init-registry
-  []
-  (api/create-registry {:name     "dockerhub"
-                        :scheme   "https"
-                        :url      "hub.docker.com"
-                        :withAuth false}))
-
 (defn- on-startup
   []
   (print (:out (sh "sh" "dev/script/init-db.sh")))
@@ -32,10 +25,7 @@
                                                   "Database has been created.")))
   (println (str "Swarmpit DEV user status: " (if (some? (init-user))
                                                "Admin user has been created."
-                                               "Admin user already exist.")))
-  (println (str "Swarmpit DEV registry status: " (if (some? (init-registry))
-                                                   "Dockerhub registry has been created."
-                                                   "Dockerhub registry already exist."))))
+                                               "Admin user already exist."))))
 
 (def http-handler
   (wrap-reload #'swarmpit.server/app))

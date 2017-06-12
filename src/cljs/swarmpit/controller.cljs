@@ -70,8 +70,10 @@
 (defmethod dispatch :service-create-image
   [_]
   (fetch "/registries/sum"
-         (fn [response]
-           (screatei/mount! response))))
+         (fn [response-reg]
+           (fetch "/dockerhub/users/sum"
+                  (fn [response-usr]
+                    (screatei/mount! response-reg response-usr))))))
 
 (defmethod dispatch :service-create-config
   [_]

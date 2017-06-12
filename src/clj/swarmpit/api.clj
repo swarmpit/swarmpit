@@ -1,12 +1,13 @@
 (ns swarmpit.api
   (:require [clojure.core.memoize :as memo]
             [clojure.string :as string]
-            [swarmpit.utils :as u]
             [swarmpit.docker.client :as dc]
             [swarmpit.docker.mapper.inbound :as dmi]
             [swarmpit.docker.mapper.outbound :as dmo]
+            [swarmpit.dockerhub.client :as dhc]
+            [swarmpit.dockerhub.mapper.inbound :as dhmi]
             [swarmpit.registry.client :as rc]
-            [swarmpit.registry.mapper.inbound :as rci]
+            [swarmpit.registry.mapper.inbound :as rmi]
             [swarmpit.couchdb.client :as cc]
             [swarmpit.couchdb.mapper.outbound :as cmo]))
 
@@ -55,7 +56,8 @@
 (defn registries-sum
   []
   (->> (registries)
-       (map #(select-keys % [:name :version]))))
+       (map :name)
+       (into [])))
 
 (defn registry
   [registry-id]
@@ -163,31 +165,55 @@
        (filter #(= (:id %) task-id))
        (first)))
 
-;;; Repository API
+;;; Repository Dockerhub API
+
+(defn dockerhub-users
+  []
+  (cc/docker-users))
+
+(defn dockerhub-users-sum
+  []
+  (->> (dockerhub-users)
+       (map :username)
+       (into [])))
+
+(defn dockerhub-user
+  [username]
+  (cc/docker-user username))
+
+(defn create-dockerhub-user
+  [dockerhub-user]
+  (->> (cmo/->docker-user dockerhub-user)
+       (cc/create-docker-user)))
+
+(defn dockerhub-user-repositories
+  [user repository-page]
+  (dhmi/->user-repositories
+    (->> (dhc/login user)
+         :token
+         (dhc/user-repositories (:username user))) repository-page))
 
 (defn dockerhub-repositories
   [repository-query repository-page]
-  (let [registry (registry-by-name "dockerhub")]
-    (-> (rc/dockerhub-repositories registry repository-query repository-page)
-        (rci/->dockerhub-repositories repository-query repository-page))))
-
-(defn repositories
-  [registry-name repository-query]
-  (let [registry (registry-by-name registry-name)]
-    (->> (rc/repositories registry)
-         (filter #(string/includes? % (or repository-query "")))
-         (rci/->repositories))))
+  (-> (dhc/repositories repository-query repository-page)
+      (dhmi/->repositories repository-query repository-page)))
 
 (defn dockerhub-tags
-  [repository-name]
-  (let [registry (registry-by-name "dockerhub")]
-    (->> (rc/dockerhub-tags registry repository-name)
-         :results
+  [repository-name username]
+  (let [user (dockerhub-user username)]
+    (->> (dhc/tags repository-name user)
          (map :name)
          (into []))))
 
+;;; Repository V2 API
+
+(defn repositories
+  [registry repository-query]
+  (->> (rc/repositories registry)
+       (filter #(string/includes? % (or repository-query "")))
+       (rmi/->repositories)))
+
 (defn tags
-  [registry-name repository-name]
-  (let [registry (registry-by-name registry-name)]
-    (->> (rc/tags registry repository-name)
-         :tags)))
+  [registry repository-name]
+  (->> (rc/tags registry repository-name)
+       :tags))

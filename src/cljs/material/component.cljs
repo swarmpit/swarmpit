@@ -283,7 +283,8 @@
   [props]
   (toogle
     (merge props
-           {:style {:marginTop "14px"}})))
+           {:style {:marginTop  "14px"
+                    :marginLeft "-10px"}})))
 
 ;; Labels
 

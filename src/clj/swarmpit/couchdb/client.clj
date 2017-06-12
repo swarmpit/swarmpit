@@ -67,6 +67,20 @@
   []
   (put "/swarmpit"))
 
+;; Docker user
+
+(defn docker-users
+  []
+  (find-all "dockeruser"))
+
+(defn docker-user
+  [username]
+  (find {:username {"$eq" username}} "dockeruser"))
+
+(defn create-docker-user
+  [docker-user]
+  (post "/swarmpit" docker-user))
+
 ;; Registry
 
 (defn registries

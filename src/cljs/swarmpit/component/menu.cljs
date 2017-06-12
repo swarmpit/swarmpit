@@ -64,6 +64,8 @@
    {:name "Networks"
     :icon icon/networks}
    {:name "SETTINGS"}
+   {:name "Dockerhub"
+    :icon icon/registries}
    {:name "Registries"
     :icon icon/registries}
    {:name "Users"

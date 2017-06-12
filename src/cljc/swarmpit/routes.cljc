@@ -8,6 +8,10 @@
        "/registries/" {:get {"sum"                   :registries-sum
                              [:registryName "/repo"] {""      :repositories
                                                       "/tags" :repository-tags}}}
+       "/dockerhub/"  {:get {"users"             {"/sum" :dockerhub-users-sum}
+                             "repo"              {""      :dockerhub-repo
+                                                  "/tags" :dockerhub-tags}
+                             [:username "/repo"] :dockerhub-user-repo}}
        "/services"    {:get  :services
                        :post :service-create}
        "/services/"   {:get    {[:id] :service}

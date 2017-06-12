@@ -9,7 +9,9 @@
                                     :form {}}
                        :node       {:list {:filter {}}}
                        :service    {:list   {:filter {}}
-                                    :wizard {:image      {}
+                                    :wizard {:image      {:dockerhub  {}
+                                                          :repository {}
+                                                          :other      {}}
                                              :settings   {}
                                              :deployment {}
                                              :ports      []
