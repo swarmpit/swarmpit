@@ -46,6 +46,9 @@
 (def step-style
   {:backgroundColor "transparent"})
 
+(def step-content-style
+  {:minWidth "600px"})
+
 (def stepper-style
   {:height "60px"})
 
@@ -83,7 +86,8 @@
            :onClick            (fn [] (reset! step-index index))}
           item)
         (comp/step-content
-          {:key (str "step-context-" index)}
+          {:key   (str "step-context-" index)
+           :style step-content-style}
           (form-item index)
           (form-previous-button index)
           (form-next-button index))))

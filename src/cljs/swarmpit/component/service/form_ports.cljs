@@ -41,7 +41,7 @@
 
 (defn- form-host [value index]
   (comp/table-row-column
-    {:key (str "ph-" index)}
+    {:key   (str "ph-" index)}
     (comp/form-list-textfield
       {:id       "hostPort"
        :type     "number"

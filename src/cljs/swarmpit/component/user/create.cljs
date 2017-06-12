@@ -25,9 +25,10 @@
 
 (defn- form-password [value]
   (comp/form-comp
-    "URL"
+    "PASSWORD"
     (comp/text-field
       {:id       "password"
+       :type     "password"
        :value    value
        :onChange (fn [_ v]
                    (state/update-value [:password] v cursor))})))
