@@ -1,6 +1,6 @@
 (ns user
-  (:use [clojure.java.shell :only [sh]])
   (:require [ring.middleware.reload :refer [wrap-reload]]
+            [clojure.java.shell :refer [sh]]
             [figwheel-sidecar.repl-api :as figwheel]
             [swarmpit.api :as api]
             [swarmpit.server]))

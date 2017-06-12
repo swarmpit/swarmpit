@@ -16,12 +16,11 @@
      (comp/form-section "General settings")
      (comp/form-item "ID" (:id item))
      (comp/form-item "NAME" (:name item))
-     (comp/form-item "VERSION" (:version item))
      (comp/form-item "URL" (str (:scheme item) "://" (:url item)))
-     (comp/form-item "IS PRIVATE" (if (:isPrivate item)
-                                    "yes"
-                                    "no"))
-     (if (:isPrivate item)
+     (comp/form-item "AUTHENTICATION" (if (:withAuth item)
+                                        "yes"
+                                        "no"))
+     (if (:withAuth item)
        [:div (comp/form-section "Registry access")
         (comp/form-item "USERNAME" (:username item))
         (comp/form-item "PASSWORD" (:password item))])]]])
