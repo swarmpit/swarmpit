@@ -84,5 +84,7 @@
           (form-loading)
           (form-loaded))
         (repository-list user data)]]
-      [:div.form-edit "No docker user found. Please ask your admin to create some :)"])))
+      [:div.form-edit
+       [:h4
+        (comp/form-value "No docker user found. Please ask your admin to create some :)")]])))
 

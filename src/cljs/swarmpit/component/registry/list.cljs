@@ -7,7 +7,7 @@
 
 (def cursor [:page :registry :list :filter])
 
-(def headers ["Name" "Version" "Scheme" "Url"])
+(def headers ["Name" "Scheme" "Url"])
 
 (defn- filter-items
   "Filter list items based on given predicate"
@@ -15,7 +15,7 @@
   (filter #(string/includes? (:name %) predicate) items))
 
 (def render-item-keys
-  [[:name] [:version] [:scheme] [:url]])
+  [[:name] [:scheme] [:url]])
 
 (defn- render-item
   [item]

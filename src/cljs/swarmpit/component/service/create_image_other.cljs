@@ -87,4 +87,6 @@
           (form-loading)
           (form-loaded))
         (repository-list registry data)]]
-      [:div "No custom registries found. Please ask your admin to create some :)"])))
+      [:div.form-edit
+       [:h4
+        (comp/form-value "No custom registries found. Please ask your admin to create some :)")]])))
