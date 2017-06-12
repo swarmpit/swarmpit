@@ -31,12 +31,12 @@
          :tabItemContainerStyle tabs-container-style}
         (comp/tab
           {:key   "tab1"
-           :label "SEARCH PUBLIC"
+           :label "SEARCH DOCKERHUB"
            :style tab-style}
           (cid/form))
         (comp/tab
           {:key      "tab2"
-           :label    "USER REPOSITORIES"
+           :label    "DOCKERHUB USERS"
            :style    tab-style
            :onActive (fn [] (let [state (state/get-value cir/cursor)
                                   user (:user state)]

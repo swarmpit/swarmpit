@@ -1,5 +1,6 @@
 (ns swarmpit.component.service.create-image-other
-  (:require [material.component :as comp]
+  (:require [material.icon :as icon]
+            [material.component :as comp]
             [swarmpit.component.state :as state]
             [swarmpit.storage :as storage]
             [swarmpit.url :refer [dispatch!]]
@@ -88,5 +89,4 @@
           (form-loaded))
         (repository-list registry data)]]
       [:div.form-edit
-       [:h4
-        (comp/form-value "No custom registries found. Please ask your admin to create some :)")]])))
+       (comp/form-icon-value icon/info "No custom registries found. Please ask your admin to create some :)")])))

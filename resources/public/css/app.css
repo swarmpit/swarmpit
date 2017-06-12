@@ -98,6 +98,12 @@ main {
     position: relative;
 }
 
+.form-row-icon-field {
+    width: 27px;
+    position: relative;
+    margin-top: 3px;
+}
+
 /* Form panel */
 
 .form-panel {

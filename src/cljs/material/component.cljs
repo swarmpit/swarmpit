@@ -338,6 +338,12 @@
   [:div.form-view-row
    [:div.form-row-value value]])
 
+(defn form-icon-value [icon value]
+  [:div.form-view-row
+   [:div.form-row-icon-field (mui
+                               (svg icon))]
+   [:div.form-row-value value]])
+
 (defn form-section [label]
   [:div.form-view-row
    [:span.form-row-section label]])

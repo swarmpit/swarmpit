@@ -1,5 +1,6 @@
 (ns swarmpit.component.service.create-image-repository
-  (:require [material.component :as comp]
+  (:require [material.icon :as icon]
+            [material.component :as comp]
             [swarmpit.component.state :as state]
             [swarmpit.storage :as storage]
             [swarmpit.url :refer [dispatch!]]
@@ -85,6 +86,5 @@
           (form-loaded))
         (repository-list user data)]]
       [:div.form-edit
-       [:h4
-        (comp/form-value "No docker user found. Please ask your admin to create some :)")]])))
+       (comp/form-icon-value icon/info "No docker user found. Please ask your admin to create some :)")])))
 
