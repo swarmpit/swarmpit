@@ -1,11 +1,13 @@
 (ns material.factory
   (:refer-clojure :exclude [stepper list])
   (:require [cljsjs.react]
-            [cljsjs.material-ui]))
+            [cljsjs.material-ui]
+            [cljsjs.formsy-react]
+            [cljsjs.formsy-material-ui]))
 
 (def create-factory js/React.createFactory)
 
-;;; Components
+;;; Material-UI
 
 (def card (create-factory js/MaterialUI.Card))
 (def card-header (create-factory js/MaterialUI.CardHeader))
@@ -56,8 +58,23 @@
 (def auto-complete (create-factory js/MaterialUI.AutoComplete))
 (def mui-theme-provider (create-factory js/MaterialUIStyles.MuiThemeProvider))
 
-;;; Functions
-
 (def mui-theme js/MaterialUIStyles.getMuiTheme)
 (def fade js/MaterialUIUtils.colorManipulator.fade)
 (def auto-complete-filter js/MaterialUI.AutoComplete.caseInsensitiveFilter)
+
+;;; Formsy
+
+(def vform (create-factory js/Formsy.Form))
+(def add-validation-rule (create-factory js/Formsy.addValidationRule))
+
+;;; Formsy Material-UI
+
+(def vcheckbox (create-factory js/FormsyMaterialUI.FormsyCheckbox))
+(def vdate (create-factory js/FormsyMaterialUI.FormsyDate))
+(def vradio (create-factory js/FormsyMaterialUI.FormsyRadio))
+(def vradio-group (create-factory js/FormsyMaterialUI.FormsyRadioGroup))
+(def vselect (create-factory js/FormsyMaterialUI.FormsySelect))
+(def vtext (create-factory js/FormsyMaterialUI.FormsyText))
+(def vtime (create-factory js/FormsyMaterialUI.FormsyTime))
+(def vtoogle (create-factory js/FormsyMaterialUI.FormsyToggle))
+(def vauto-complete (create-factory js/FormsyMaterialUI.FormsyAutoComplete))

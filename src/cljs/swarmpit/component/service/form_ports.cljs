@@ -15,36 +15,49 @@
 
 (defn- form-container [value index]
   (comp/table-row-column
-    {:key (str "pc-" index)}
+    {:name (str "form-container-" index)
+     :key  (str "form-container-" index)}
     (comp/form-list-textfield
-      {:id       "containerPort"
+      {:name     (str "form-container-text-" index)
+       :key      (str "form-container-text-" index)
        :type     "number"
+       :min      1
+       :max      65535
        :value    (format-port-value value)
        :onChange (fn [_ v]
                    (state/update-item index :containerPort (js/parseInt v) cursor))})))
 
 (defn- form-protocol [value index]
   (comp/table-row-column
-    {:key (str "pp-" index)}
+    {:name (str "form-protocol-" index)
+     :key  (str "form-protocol-" index)}
     (comp/form-list-selectfield
-      {:value    value
+      {:name     (str "form-protocol-select-" index)
+       :key      (str "form-protocol-select-" index)
+       :value    value
        :onChange (fn [_ _ v]
                    (state/update-item index :protocol v cursor))}
       (comp/menu-item
-        {:key         (str "ptcp-" index)
+        {:name        (str "form-protocol-tcp-" index)
+         :key         (str "form-protocol-tcp-" index)
          :value       "tcp"
          :primaryText "TCP"})
       (comp/menu-item
-        {:key         (str "pudp-" index)
+        {:name        (str "form-protocol-udp-" index)
+         :key         (str "form-protocol-udp-" index)
          :value       "udp"
          :primaryText "UDP"}))))
 
 (defn- form-host [value index]
   (comp/table-row-column
-    {:key   (str "ph-" index)}
+    {:name (str "form-host-" index)
+     :key  (str "form-host-" index)}
     (comp/form-list-textfield
-      {:id       "hostPort"
+      {:name     (str "form-host-text-" index)
+       :key      (str "form-host-text-" index)
        :type     "number"
+       :min      1
+       :max      65535
        :value    (format-port-value value)
        :onChange (fn [_ v]
                    (state/update-item index :hostPort (js/parseInt v) cursor))})))

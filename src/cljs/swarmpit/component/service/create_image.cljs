@@ -27,7 +27,8 @@
    [:div.form-panel-tabs
     (comp/mui
       (comp/tabs
-        {:inkBarStyle           tabs-inkbar-style
+        {:key                   "tabs"
+         :inkBarStyle           tabs-inkbar-style
          :tabItemContainerStyle tabs-container-style}
         (comp/tab
           {:key   "tab1"

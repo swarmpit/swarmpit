@@ -25,7 +25,9 @@
             [swarmpit.component.user.create :as ucreate]
             [swarmpit.component.registry.info :as reginfo]
             [swarmpit.component.registry.list :as reglist]
-            [swarmpit.component.registry.create :as regcreate]))
+            [swarmpit.component.registry.create :as regcreate]
+            [swarmpit.component.dockerhub.list :as dhlist]
+            [swarmpit.component.dockerhub.create :as dhcreate]))
 
 (defn- fetch
   [api api-resp-fx]
@@ -168,3 +170,16 @@
 (defmethod dispatch :registry-create
   [_]
   (regcreate/mount!))
+
+;;; Dockerhub controller
+
+(defmethod dispatch :dockerhub-list
+  [_]
+  (fetch "/dockerhub/users/sum"
+         (fn [response]
+           (dhlist/mount! response))))
+
+(defmethod dispatch :dockerhub-create
+  [_]
+  (dhcreate/mount!))
+

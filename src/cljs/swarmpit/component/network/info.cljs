@@ -41,7 +41,8 @@
      (comp/form-item "DRIVER" (:driver item))
      (comp/form-item "INTERNAL" (if (:internal item)
                                   "yes"
-                                  "no"))
+                                  "no"))]
+    [:div.form-view-group
      (comp/form-section "IP address management")
      (comp/form-item "SUBNET" (:subnet item))
      (comp/form-item "GATEWAY" (:gateway item))]]])

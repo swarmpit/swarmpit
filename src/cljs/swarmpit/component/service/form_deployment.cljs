@@ -11,11 +11,15 @@
   (comp/form-comp
     "AUTOREDEPLOY"
     (comp/form-toogle
-      {:toggled  value
+      {:name     "autoredaploy"
+       :key      "autoredaploy"
+       :toggled  value
        :onToggle (fn [_ v]
                    (state/update-value [:autoredeploy] v cursor))})))
 
 (rum/defc form < rum/reactive []
   (let [{:keys [autoredeploy]} (state/react cursor)]
     [:div.form-edit
-     (form-autoredeploy autoredeploy)]))
+     (comp/form
+       {}
+       (form-autoredeploy autoredeploy))]))

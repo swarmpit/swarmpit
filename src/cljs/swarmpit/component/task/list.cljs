@@ -15,7 +15,6 @@
     "preparing" (comp/label-yellow value)
     "starting" (comp/label-yellow value)
     "pending" (comp/label-yellow value)
-
     "new" (comp/label-blue value)
     "ready" (comp/label-blue value)
     "assigned" (comp/label-blue value)

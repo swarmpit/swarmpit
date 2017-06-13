@@ -8,18 +8,18 @@
 
 (defn ->user
   [user]
-  (assoc user :password (->password (:password user))
-              :type "user"
-              :id (uuid)))
+  (-> (assoc user :password (->password (:password user))
+                  :type "user")
+      (dissoc :isValid)))
 
 (defn ->registry
   [registry]
-  (assoc registry :type "registry"
-                  :id (uuid)))
+  (-> (assoc registry :type "registry")
+      (dissoc :isValid)))
 
 (defn ->docker-user
   [docker-user]
-  (assoc docker-user :type "dockeruser"
-                     :id (uuid)))
+  (-> (assoc docker-user :type "dockeruser")
+      (dissoc :isValid)))
 
 

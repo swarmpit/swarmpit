@@ -40,7 +40,28 @@
      {:muiTheme (mui-theme theme)}
      comp)])
 
-;;; Single components
+;;; Custom validation
+
+(def validationRule
+  (factory/add-validation-rule
+    "isPortRange"
+    (fn [values value otherField]
+      (<= 0 65000 value))))
+
+;;; Single formsy components
+
+(defn vform
+  [props & childs] (factory/vform (clj->js props) childs))
+
+(defn vtext-field
+  ([props] (factory/vtext (clj->js props)))
+  ([] (factory/vtext nil)))
+
+(defn vauto-complete
+  ([props] (factory/vauto-complete (clj->js props)))
+  ([] (factory/vauto-complete nil)))
+
+;;; Single material-ui components
 
 (defn auto-complete
   ([props] (factory/auto-complete (clj->js props)))
@@ -109,6 +130,9 @@
 (defn card-title
   ([props] (factory/card-title (clj->js props)))
   ([] (factory/card-title nil)))
+
+(defn paper
+  [props & childs] (factory/paper (clj->js props) childs))
 
 (defn chip
   [props & childs] (factory/chip (clj->js props) childs))
@@ -286,6 +310,16 @@
            {:style {:marginTop  "14px"
                     :marginLeft "-10px"}})))
 
+(defn form-comp-loading [loading]
+  (let [mode (if loading "indeterminate"
+                         "determinate")]
+    (mui
+      (linear-progress
+        {:mode  mode
+         :style {:borderRadius 0
+                 :background   "rgb(224, 228, 231)"
+                 :height       "1px"}}))))
+
 ;; Labels
 
 (defn label-red
@@ -314,20 +348,18 @@
 
 ;; Form component layout
 
-(defn form-comp-loading [loading]
-  (let [mode (if loading "indeterminate"
-                         "determinate")]
-    (mui
-      (linear-progress
-        {:mode  mode
-         :style {:borderRadius 0
-                 :background   "rgb(224, 228, 231)"
-                 :height       "1px"}}))))
+(defn form [props & childs]
+  (mui
+    (vform props childs)))
+
+(defn form-comps [& comps]
+  (html comps))
 
 (defn form-comp [label comp]
-  [:div.form-edit-row
-   [:span.form-row-label label]
-   [:div.form-row-field (mui comp)]])
+  (html
+    [:div.form-edit-row
+     [:span.form-row-label label]
+     [:div.form-row-field comp]]))
 
 (defn form-item [label value]
   [:div.form-view-row
@@ -347,6 +379,43 @@
 (defn form-section [label]
   [:div.form-view-row
    [:span.form-row-section label]])
+
+;; Single item list
+
+(defn single-list-body
+  [items remove-item-fn]
+  (table-body
+    {:key                "tb"
+     :showRowHover       true
+     :displayRowCheckbox false}
+    (map-indexed
+      (fn [index item]
+        (table-row
+          {:key       (str "tr-" item)
+           :style     {:cursor "pointer"}
+           :rowNumber index}
+          (table-row-column
+            {:key (str "trci-" item)}
+            (html [:div {:style {:display "flex"}}
+                   (svg icon/users)
+                   [:div {:style {:marginTop  "4px"
+                                  :marginLeft "4px"}} item]]))
+          (table-row-column
+            {:key (str "trcd-" item)}
+            (icon-button
+              {:onClick #(remove-item-fn item)}
+              (svg
+                {:hoverColor "rgb(244, 67, 54)"}
+                icon/trash)))))
+      items)))
+
+(defn single-list
+  [items remove-item-fn]
+  (mui
+    (table
+      {:key        "tbl"
+       :selectable false}
+      (single-list-body items remove-item-fn))))
 
 ;; List table component
 
@@ -369,21 +438,24 @@
 
 (defn list-table-body
   [items render-item-fn render-items-key]
-  (table-body
-    {:key                "tb"
-     :showRowHover       true
-     :displayRowCheckbox false}
-    (map-indexed
-      (fn [index item]
-        (table-row
-          {:key       (str "tr-" (:id item))
-           :style     {:cursor "pointer"}
-           :rowNumber index}
-          (->> (select-keys* item render-items-key)
-               (map #(table-row-column
-                       {:key (str "trc-" (:id item))}
-                       (render-item-fn %))))))
-      items)))
+  (let [item-id (fn [item] (if (contains? item :id)
+                             (:id item)
+                             (:_id item)))]
+    (table-body
+      {:key                "tb"
+       :showRowHover       true
+       :displayRowCheckbox false}
+      (map-indexed
+        (fn [index item]
+          (table-row
+            {:key       (str "tr-" (item-id item))
+             :style     {:cursor "pointer"}
+             :rowNumber index}
+            (->> (select-keys* item render-items-key)
+                 (map #(table-row-column
+                         {:key (str "trc-" (item-id item))}
+                         (render-item-fn %))))))
+        items))))
 
 (defn list-table-paging
   [offset total limit on-prev-fn on-next-fn]
@@ -415,7 +487,10 @@
 
 (defn list-table
   [headers items render-item-fn render-items-key handler]
-  (let [item-id (fn [index] (:id (nth items index)))]
+  (let [item-id (fn [index] (let [item (nth items index)]
+                              (if (contains? item :id)
+                                (:id item)
+                                (:_id item))))]
     (mui
       (table
         {:key         "tbl"
@@ -472,7 +547,7 @@
             (icon-button
               {:onClick #(remove-item-fn index)}
               (svg
-                {:hoverColor "red"}
+                {:hoverColor "rgb(244, 67, 54)"}
                 icon/trash)))))
       items)))
 

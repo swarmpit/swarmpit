@@ -21,6 +21,7 @@
                        :registry   {:list   {:filter {}}
                                     :form   {}
                                     :wizard {}}
+                       :dockerhub  {:list {:filter {}}}
                        :user       {:list {:filter {}}
                                     :form {}}
                        :repository {:wizard {}}}}))

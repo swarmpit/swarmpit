@@ -7,7 +7,7 @@
 
 (def cursor [:page :registry :list :filter])
 
-(def headers ["Name" "Scheme" "Url"])
+(def headers ["Name" "Url" "Secure"])
 
 (defn- filter-items
   "Filter list items based on given predicate"
@@ -15,13 +15,13 @@
   (filter #(string/includes? (:name %) predicate) items))
 
 (def render-item-keys
-  [[:name] [:scheme] [:url]])
+  [[:name] [:url] [:withAuth]])
 
 (defn- render-item
   [item]
   (let [value (val item)]
     (case (key item)
-      :isPrivate (comp/checkbox {:checked value})
+      :withAuth (comp/checkbox {:checked value})
       value)))
 
 (rum/defc registry-list < rum/reactive [items]

@@ -6,8 +6,7 @@
 
 (defn- build-url
   [registry api]
-  (str (:scheme registry) "://"
-       (:url registry) "/v2" api))
+  (str (:url registry) "/v2" api))
 
 (defn- execute
   [call-fx]

@@ -17,21 +17,29 @@
 (defn- form-username [value]
   (comp/form-comp
     "USERNAME"
-    (comp/text-field
-      {:id       "username"
-       :value    value
-       :onChange (fn [_ v]
-                   (state/update-value [:username] v cursor))})))
+    (comp/vtext-field
+      {:name            "username"
+       :key             "username"
+       :required        true
+       :validations     "minLength:4"
+       :validationError "Username must be at least 4 characters long"
+       :value           value
+       :onChange        (fn [_ v]
+                          (state/update-value [:username] v cursor))})))
 
 (defn- form-password [value]
   (comp/form-comp
     "PASSWORD"
-    (comp/text-field
-      {:id       "password"
-       :type     "password"
-       :value    value
-       :onChange (fn [_ v]
-                   (state/update-value [:password] v cursor))})))
+    (comp/vtext-field
+      {:name            "password"
+       :key             "password"
+       :required        true
+       :validations     "minLength:6"
+       :validationError "Password must be at least 6 characters long"
+       :type            "password"
+       :value           value
+       :onChange        (fn [_ v]
+                          (state/update-value [:password] v cursor))})))
 
 (defn- form-role [value]
   (comp/form-comp
@@ -52,11 +60,15 @@
 (defn- form-email [value]
   (comp/form-comp
     "EMAIL"
-    (comp/text-field
-      {:id       "email"
-       :value    value
-       :onChange (fn [_ v]
-                   (state/update-value [:email] v cursor))})))
+    (comp/vtext-field
+      {:name            "email"
+       :key             "email"
+       :required        true
+       :validations     "isEmail"
+       :validationError "Please provide a valid Email"
+       :value           value
+       :onChange        (fn [_ v]
+                          (state/update-value [:email] v cursor))})))
 
 (defn- create-user-handler
   []
@@ -72,18 +84,19 @@
                                  (dispatch!
                                    (routes/path-for-frontend :user-info {:id id}))
                                  (message/mount! message)))
-              :error-handler (fn [{:keys [status response]}]
+              :error-handler (fn [{:keys [response]}]
                                (let [error (get response "error")
-                                     message (str "User creation failed. Status: " status " Reason: " error)]
+                                     message (str "User creation failed. Reason: " error)]
                                  (print message)
                                  (progress/unmount!)
-                                 (message/mount! error)))}))
+                                 (message/mount! message)))}))
 
 (rum/defc form < rum/reactive []
   (let [{:keys [username
                 password
                 role
-                email]} (state/react cursor)]
+                email
+                isValid]} (state/react cursor)]
     [:div
      [:div.form-panel
       [:div.form-panel-left
@@ -92,20 +105,25 @@
        (comp/mui
          (comp/raised-button
            {:label      "Create"
+            :disabled   (not isValid)
             :primary    true
             :onTouchTap create-user-handler}))]]
      [:div.form-edit
-      (form-username username)
-      (form-password password)
-      (form-role role)
-      (form-email email)]]))
+      (comp/form
+        {:onValid   #(state/update-value [:isValid] true cursor)
+         :onInvalid #(state/update-value [:isValid] false cursor)}
+        (form-username username)
+        (form-password password)
+        (form-role role)
+        (form-email email))]]))
 
 (defn- init-state
   []
   (state/set-value {:username ""
                     :password ""
                     :email    ""
-                    :role     "user"} cursor))
+                    :role     "user"
+                    :isValid  false} cursor))
 
 (defn mount!
   []

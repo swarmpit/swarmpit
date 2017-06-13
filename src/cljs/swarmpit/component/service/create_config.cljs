@@ -123,7 +123,8 @@
                                    (message/mount! message)))})))
 
 (rum/defc form < rum/reactive []
-  (let [index (rum/react step-index)]
+  (let [index (rum/react step-index)
+        {:keys [isValid]} (state/react settings/cursor)]
     [:div
      [:div.form-panel
       [:div.form-panel-left
@@ -132,6 +133,7 @@
        (comp/mui
          (comp/raised-button
            {:label      "Create"
+            :disabled   (not isValid)
             :primary    true
             :onTouchTap create-service-handler}))]]
      (comp/mui
@@ -151,7 +153,8 @@
                                   :tags      []}
                     :serviceName ""
                     :mode        "replicated"
-                    :replicas    1} settings/cursor)
+                    :replicas    1
+                    :isValid     false} settings/cursor)
   (state/set-value [] ports/cursor)
   (state/set-value [] volumes/cursor)
   (state/set-value [] variables/cursor)

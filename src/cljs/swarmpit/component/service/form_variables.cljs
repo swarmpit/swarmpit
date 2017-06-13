@@ -11,18 +11,22 @@
 
 (defn- form-name [value index]
   (comp/table-row-column
-    {:key (str "vn-" index)}
+    {:name (str "form-name-" index)
+     :key  (str "form-name-" index)}
     (comp/form-list-textfield
-      {:id       "name"
+      {:name     (str "form-name-text-" index)
+       :key      (str "form-name-text-" index)
        :value    value
        :onChange (fn [_ v]
                    (state/update-item index :name v cursor))})))
 
 (defn- form-value [value index]
   (comp/table-row-column
-    {:key (str "vv-" index)}
+    {:name (str "form-value-" index)
+     :key  (str "form-value-" index)}
     (comp/form-list-textfield
-      {:id       "value"
+      {:name     (str "form-value-text-" index)
+       :key      (str "form-value-text-" index)
        :value    value
        :onChange (fn [_ v]
                    (state/update-item index :value v cursor))})))

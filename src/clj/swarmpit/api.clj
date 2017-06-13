@@ -41,6 +41,11 @@
   [user]
   (some? (user-by-username (:username user))))
 
+(defn delete-user
+  [user-id]
+  (->> (user user-id)
+       (cc/delete-user)))
+
 (defn create-user
   [user]
   (if (not (user-exist? user))
@@ -77,6 +82,11 @@
     (try
       (rc/info registry)
       (catch Exception _))))
+
+(defn delete-registry
+  [registry-id]
+  (->> (registry registry-id)
+       (cc/delete-registry)))
 
 (defn create-registry
   [registry]
@@ -170,6 +180,10 @@
 (defn dockerhub-users
   []
   (cc/docker-users))
+
+;(defn dockerhub-user-exist?
+;  [dockerhub-user]
+;  (some? (registry-by-name (:name dockerhub-user))))
 
 (defn dockerhub-users-sum
   []

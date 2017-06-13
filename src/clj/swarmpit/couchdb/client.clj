@@ -48,18 +48,38 @@
                  :body    (generate-string request)}]
     (execute @(http/post url options))))
 
-(defn- find
+(defn- delete
+  [api params]
+  (let [url (str base-url api)
+        options {:headers      headers
+                 :query-params params}]
+    (execute @(http/delete url options))))
+
+(defn- get-doc
+  [id]
+  (get (str "/swarmpit/" id)))
+
+(defn- create-doc
+  [doc]
+  (post "/swarmpit" doc))
+
+(defn- find-doc
   [query type]
   (->> {:selector (merge query {:type {"$eq" type}})}
        (post "/swarmpit/_find")
        :docs
        (first)))
 
-(defn- find-all
+(defn- find-all-docs
   [type]
   (->> {:selector {:type {"$eq" type}}}
        (post "/swarmpit/_find")
        :docs))
+
+(defn- delete-doc
+  [doc]
+  (let [url (str "/swarmpit/" (:_id doc))]
+    (delete url {:rev (:_rev doc)})))
 
 ;; Database
 
@@ -71,53 +91,61 @@
 
 (defn docker-users
   []
-  (find-all "dockeruser"))
+  (find-all-docs "dockeruser"))
 
 (defn docker-user
   [username]
-  (find {:username {"$eq" username}} "dockeruser"))
+  (find-doc {:username {"$eq" username}} "dockeruser"))
 
 (defn create-docker-user
   [docker-user]
-  (post "/swarmpit" docker-user))
+  (create-doc docker-user))
 
 ;; Registry
 
 (defn registries
   []
-  (find-all "registry"))
+  (find-all-docs "registry"))
 
 (defn registry
   [id]
-  (find {:id {"$eq" id}} "registry"))
+  (get-doc id))
 
 (defn registry-by-name
   [name]
-  (find {:name {"$eq" name}} "registry"))
+  (find-doc {:name {"$eq" name}} "registry"))
 
 (defn create-registry
   [registry]
-  (post "/swarmpit" registry))
+  (create-doc registry))
+
+(defn delete-registry
+  [registry]
+  (delete-doc registry))
 
 ;; User
 
 (defn users
   []
-  (find-all "user"))
+  (find-all-docs "user"))
 
 (defn user
   [id]
-  (find {:id {"$eq" id}} "user"))
+  (get-doc id))
 
 (defn user-by-credentials
   [username password]
-  (find {:username {"$eq" username}
-         :password {"$eq" password}} "user"))
+  (find-doc {:username {"$eq" username}
+             :password {"$eq" password}} "user"))
 
 (defn user-by-username
   [username]
-  (find {:username {"$eq" username}} "user"))
+  (find-doc {:username {"$eq" username}} "user"))
 
 (defn create-user
   [user]
-  (post "/swarmpit" user))
+  (create-doc user))
+
+(defn delete-user
+  [user]
+  (delete-doc user))

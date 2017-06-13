@@ -15,27 +15,34 @@
 
 (defn- form-container [value index]
   (comp/table-row-column
-    {:key (str "vcp-" index)}
+    {:name (str "form-container-path-" index)
+     :key  (str "form-container-path-" index)}
     (comp/form-list-textfield
-      {:id       "containerPath"
+      {:name     (str "form-container-path-text-" index)
+       :key      (str "form-container-path-text-" index)
        :value    value
        :onChange (fn [_ v]
                    (state/update-item index :containerPath v cursor))})))
 
 (defn- form-host [value index]
   (comp/table-row-column
-    {:key (str "vhp-" index)}
+    {:name (str "form-host-path-" index)
+     :key  (str "form-host-path-" index)}
     (comp/form-list-textfield
-      {:id       "hostPath"
+      {:name     (str "form-host-path-text-" index)
+       :key      (str "form-host-path-text-" index)
        :value    value
        :onChange (fn [_ v]
                    (state/update-item index :hostPath v cursor))})))
 
 (defn- form-readonly [value index]
   (comp/table-row-column
-    {:key (str "vro-" index)}
+    {:name (str "form-readonly-" index)
+     :key  (str "form-readonly-" index)}
     (comp/checkbox
-      {:checked value
+      {:name    (str "form-readonly-box-" index)
+       :key     (str "form-readonly-box-" index)
+       :checked value
        :onCheck (fn [_ v]
                   (state/update-item index :readOnly v cursor))})))
 

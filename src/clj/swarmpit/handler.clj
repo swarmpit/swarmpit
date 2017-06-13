@@ -62,12 +62,28 @@
     (->> (api/user (:id route-params))
          (resp-ok))))
 
+(defmethod dispatch :user-delete [_]
+  (fn [{:keys [route-params]}]
+    (api/delete-user (:id route-params))
+    (resp-ok)))
+
 (defmethod dispatch :user-create [_]
   (fn [{:keys [params]}]
-    (let [payload (keywordize-keys params)]
-      (if (some? (api/create-registry payload))
-        (resp-created)
+    (let [payload (keywordize-keys params)
+          response (api/create-user payload)]
+      (if (some? response)
+        (resp-created (select-keys response [:id]))
         (resp-error 400 "User already exist")))))
+
+;; Dockerhub handler
+
+(defmethod dispatch :dockerhub-create [_]
+  (fn [{:keys [params]}]
+    (let [payload (keywordize-keys params)
+          response (api/create-dockerhub-user payload)]
+      (if (some? response)
+        (resp-created (select-keys response [:id]))
+        (resp-error 400 "Dockerhub already exist")))))
 
 ;; Registry handler
 
@@ -86,13 +102,19 @@
     (->> (api/registries-sum)
          (resp-ok))))
 
+(defmethod dispatch :registry-delete [_]
+  (fn [{:keys [route-params]}]
+    (api/delete-registry (:id route-params))
+    (resp-ok)))
+
 (defmethod dispatch :registry-create [_]
   (fn [{:keys [params]}]
     (let [payload (keywordize-keys params)]
       (if (api/registry-valid? payload)
-        (if (some? (api/create-registry payload))
-          (resp-created)
-          (resp-error 400 "Registry already exist"))
+        (let [response (api/create-registry payload)]
+          (if (some? response)
+            (resp-created (select-keys response [:id]))
+            (resp-error 400 "Registry already exist")))
         (resp-error 400 "Registry credentials does not match any known registry")))))
 
 ;; Service handler

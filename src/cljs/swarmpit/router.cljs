@@ -27,7 +27,9 @@
    :user-info             "Users"
    :registry-info         "Registries"
    :registry-list         "Registries"
-   :registry-create       "Registries / Create"})
+   :registry-create       "Registries / Create"
+   :dockerhub-list        "Dockerhub"
+   :dockerhub-create      "Dockerhub / Create"})
 
 (def location-page
   #{:login nil})

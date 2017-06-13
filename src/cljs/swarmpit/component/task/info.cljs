@@ -21,13 +21,15 @@
        (comp/form-item "CREATED" (:createdAt item))
        (comp/form-item "LAST UPDATE" (:updatedAt item))
        (comp/form-item "IMAGE" (get-in item [:repository :image]))
-       (comp/form-item "IMAGE DIGEST" (get-in item [:repository :imageDigest]))
+       (comp/form-item "IMAGE DIGEST" (get-in item [:repository :imageDigest]))]
+      [:div.form-view-group
        (comp/form-section "Status")
        (comp/form-item "STATE" (:state item))
-       (comp/form-item "DESIRED STATE" (:desiredState item))
-       (if (some? error)
-         [(comp/form-section "Error")
-          (comp/form-value error)])]]]))
+       (comp/form-item "DESIRED STATE" (:desiredState item))]
+      (if (some? error)
+        [:div.form-view-group
+         (comp/form-section "Error")
+         (comp/form-value error)])]]))
 
 (defn mount!
   [item]

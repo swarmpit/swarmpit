@@ -17,17 +17,16 @@
 (def form-mode-replicated-style
   {:width "170px"})
 
-(def form-replicas-slider-style
-  {:marginTop "14px"})
-
 (def form-image-style
   {:color "rgb(117, 117, 117)"})
 
 (defn- form-image [value]
   (comp/form-comp
     "IMAGE"
-    (comp/text-field
-      {:id            "image"
+    (comp/vtext-field
+      {:name          "image"
+       :key           "image"
+       :required      true
        :disabled      true
        :underlineShow false
        :inputStyle    form-image-style
@@ -37,7 +36,8 @@
   "Preload tags for services created via swarmit"
   (comp/form-comp
     "IMAGE TAG"
-    (comp/autocomplete {:id            "imageTag"
+    (comp/autocomplete {:name          "imageTagAuto"
+                        :key           "imageTagAuto"
                         :onUpdateInput (fn [v] (state/update-value [:repository :imageTag] v cursor))
                         :dataSource    tags})))
 
@@ -46,7 +46,8 @@
   (comp/form-comp
     "IMAGE TAG"
     (comp/text-field
-      {:id       "imageTag"
+      {:name     "imageTag"
+       :key      "imageTag"
        :value    value
        :onChange (fn [_ v]
                    (state/update-value [:repository :imageTag] v cursor))})))
@@ -54,8 +55,10 @@
 (defn- form-name [value update-form?]
   (comp/form-comp
     "SERVICE NAME"
-    (comp/text-field
-      {:id       "serviceName"
+    (comp/vtext-field
+      {:name     "serviceName"
+       :key      "serviceName"
+       :required true
        :disabled update-form?
        :value    value
        :onChange (fn [_ v]
@@ -66,34 +69,37 @@
     "MODE"
     (comp/radio-button-group
       {:name          "mode"
+       :key           "mode"
        :style         form-mode-style
        :valueSelected value
        :onChange      (fn [_ v]
                         (state/update-value [:mode] v cursor))}
       (comp/radio-button
-        {:key      "mrbr"
+        {:name     "replicated-mode"
+         :key      "replicated-mode"
          :disabled update-form?
          :label    "Replicated"
          :value    "replicated"
          :style    form-mode-replicated-style})
       (comp/radio-button
-        {:key      "mrbg"
+        {:name     "global-mode"
+         :key      "global-mode"
          :disabled update-form?
          :label    "Global"
          :value    "global"}))))
 
 (defn- form-replicas [value]
   (comp/form-comp
-    (str "REPLICAS  " "(" value ")")
-    (comp/slider
-      {:min          1
-       :max          50
-       :step         1
-       :defaultValue 1
-       :value        value
-       :sliderStyle  form-replicas-slider-style
-       :onChange     (fn [_ v]
-                       (state/update-value [:replicas] v cursor))})))
+    "REPLICAS"
+    (comp/vtext-field
+      {:name     "replicas"
+       :key      "replicas"
+       :required true
+       :type     "number"
+       :min      1
+       :value    value
+       :onChange (fn [_ v]
+                   (state/update-value [:replicas] v cursor))})))
 
 (defn image-tags-handler
   [registry repository]
@@ -112,11 +118,14 @@
                 mode
                 replicas]} (state/react cursor)]
     [:div.form-edit
-     (form-image (:imageName repository))
-     (if update-form?
-       (form-image-tag (:imageTag repository))
-       (form-image-tag-ac (:tags repository)))
-     (form-name serviceName update-form?)
-     (form-mode mode update-form?)
-     (if (= "replicated" mode)
-       (form-replicas replicas))]))
+     (comp/form
+       {:onValid   #(state/update-value [:isValid] true cursor)
+        :onInvalid #(state/update-value [:isValid] false cursor)}
+       (form-image (:imageName repository))
+       (if update-form?
+         (form-image-tag (:imageTag repository))
+         (form-image-tag-ac (:tags repository)))
+       (form-name serviceName update-form?)
+       (form-mode mode update-form?)
+       (if (= "replicated" mode)
+         (form-replicas replicas)))]))

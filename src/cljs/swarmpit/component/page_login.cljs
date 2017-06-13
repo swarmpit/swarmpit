@@ -6,12 +6,18 @@
             [rum.core :as rum]
             [ajax.core :as ajax]))
 
-(defonce state (atom {:username ""
-                      :password ""
-                      :message  ""}))
+(defonce state (atom {:username  ""
+                      :password  ""
+                      :message   ""
+                      :canSubmit false}))
 
 (def login-button-style
   {:marginTop "30px"})
+
+(def errorMessages
+  {:wordsError   "Please only use letters"
+   :numericError "Please provide a number"
+   :urlError     "Please provide a valid URL"})
 
 (defn- update-item
   "Update form item configuration"
@@ -19,21 +25,27 @@
   (swap! state assoc k v))
 
 (defn- form-username [value]
-  (comp/mui
-    (comp/text-field
-      {:id                "loginUsername"
-       :floatingLabelText "Username"
-       :value             value
-       :onChange          (fn [_ v] (update-item :username v))})))
+  (comp/vtext-field
+    {:id                "loginUsername"
+     :key               "username"
+     :name              "username"
+     :required          true
+     :validations       "isWords"
+     :validationError   (:wordsError errorMessages)
+     :floatingLabelText "Username"
+     :value             value
+     :onChange          (fn [_ v] (update-item :username v))}))
 
 (defn- form-password [value]
-  (comp/mui
-    (comp/text-field
-      {:id                "loginPassword"
-       :floatingLabelText "Password"
-       :type              "password"
-       :value             value
-       :onChange          (fn [_ v] (update-item :password v))})))
+  (comp/vtext-field
+    {:id                "loginPassword"
+     :key               "password"
+     :name              "password"
+     :required          true
+     :floatingLabelText "Password"
+     :type              "password"
+     :value             value
+     :onChange          (fn [_ v] (update-item :password v))}))
 
 (defn- login-headers
   []
@@ -57,15 +69,23 @@
 (rum/defc form < rum/reactive []
   (let [{:keys [username
                 password
-                message]} (rum/react state)]
+                message
+                canSubmit]} (rum/react state)]
     [:div.page-back
      [:div.page
       [:div message]
-      (form-username username)
-      (form-password password)
+      (comp/mui
+        (comp/vform
+          {:onValid         #(update-item :canSubmit true)
+           :onInvalid       #(update-item :canSubmit false)
+           :onValidSubmit   #()
+           :onInvalidSubmit #()}
+          (form-username username)
+          (form-password password)))
       (comp/mui
         (comp/raised-button
           {:style      login-button-style
+           :disabled   (not canSubmit)
            :label      "Login"
            :primary    true
            :onTouchTap login-handler}))]]))

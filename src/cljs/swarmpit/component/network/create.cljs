@@ -17,8 +17,10 @@
 (defn- form-name [value]
   (comp/form-comp
     "NAME"
-    (comp/text-field
-      {:id       "networkName"
+    (comp/vtext-field
+      {:name     "name"
+       :key      "name"
+       :required true
        :value    value
        :onChange (fn [_ v]
                    (state/update-value [:networkName] v cursor))})))
@@ -70,7 +72,8 @@
 (rum/defc form < rum/reactive []
   (let [{:keys [name
                 driver
-                internal]} (state/react cursor)]
+                internal
+                isValid]} (state/react cursor)]
     [:div
      [:div.form-panel
       [:div.form-panel-left
@@ -79,18 +82,23 @@
        (comp/mui
          (comp/raised-button
            {:label      "Create"
+            :disabled   (not isValid)
             :primary    true
             :onTouchTap create-network-handler}))]]
      [:div.form-edit
-      (form-name name)
-      (form-driver driver)
-      (form-internal internal)]]))
+      (comp/form
+        {:onValid   #(state/update-value [:isValid] true cursor)
+         :onInvalid #(state/update-value [:isValid] false cursor)}
+        (form-name name)
+        (form-driver driver)
+        (form-internal internal))]]))
 
 (defn- init-state
   []
   (state/set-value {:networkName ""
                     :driver      "bridge"
-                    :internal    false} cursor))
+                    :internal    false
+                    :isValid     false} cursor))
 
 (defn mount!
   []
