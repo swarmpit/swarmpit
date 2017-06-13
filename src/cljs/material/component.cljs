@@ -5,6 +5,7 @@
             [sablono.core :refer-macros [html]]
             [swarmpit.url :refer [dispatch!]]
             [swarmpit.utils :refer [select-keys*]]
+            [swarmpit.ip :as ip]
             [swarmpit.routes :as routes]))
 
 ;;; Theme components
@@ -40,13 +41,13 @@
      {:muiTheme (mui-theme theme)}
      comp)])
 
-;;; Custom validation
+;;; Custom formsy validation
 
-(def validationRule
-  (factory/add-validation-rule
-    "isPortRange"
-    (fn [values value otherField]
-      (<= 0 65000 value))))
+(.addValidationRule js/Formsy "isValidIp"
+                    (fn [_ value]
+                      (if (empty? value)
+                        true
+                        (ip/is-valid value))))
 
 ;;; Single formsy components
 

@@ -49,6 +49,18 @@
        :onCheck (fn [_ v]
                   (state/update-value [:internal] v cursor))})))
 
+(defn- form-gateway [value]
+  (comp/form-comp
+    "GATEWAY"
+    (comp/vtext-field
+      {:name            "gateway"
+       :key             "gateway"
+       :validations     "isValidIp"
+       :validationError "Please provide a valid IP configuration"
+       :value           value
+       :onChange        (fn [_ v]
+                          (state/update-value [:gateway] v cursor))})))
+
 (defn- create-network-handler
   []
   (ajax/POST (routes/path-for-backend :network-create)
@@ -73,6 +85,7 @@
   (let [{:keys [name
                 driver
                 internal
+                gateway
                 isValid]} (state/react cursor)]
     [:div
      [:div.form-panel
@@ -91,13 +104,15 @@
          :onInvalid #(state/update-value [:isValid] false cursor)}
         (form-name name)
         (form-driver driver)
-        (form-internal internal))]]))
+        (form-internal internal)
+        (form-gateway gateway))]]))
 
 (defn- init-state
   []
   (state/set-value {:networkName ""
                     :driver      "bridge"
                     :internal    false
+                    :gateway     ""
                     :isValid     false} cursor))
 
 (defn mount!
