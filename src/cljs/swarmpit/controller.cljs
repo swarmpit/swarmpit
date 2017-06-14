@@ -4,6 +4,7 @@
             [swarmpit.url :refer [dispatch! query-string]]
             [cemerick.url :refer [query->map]]
             [swarmpit.storage :as storage]
+            [swarmpit.routes :as routes]
             [swarmpit.component.page-login :as page-login]
             [swarmpit.component.page-401 :as page-401]
             [swarmpit.component.page-404 :as page-404]
@@ -59,33 +60,36 @@
 
 (defmethod dispatch :service-list
   [_]
-  (fetch "/services"
+  (fetch (routes/path-for-backend :services)
          (fn [response]
            (slist/mount! response))))
 
 (defmethod dispatch :service-info
   [{:keys [route-params]}]
-  (fetch (str "/services/" (:id route-params))
+  (fetch (routes/path-for-backend :service route-params)
          (fn [response]
            (sinfo/mount! response))))
 
 (defmethod dispatch :service-create-image
   [_]
-  (fetch "/registries/sum"
-         (fn [response-reg]
-           (fetch "/dockerhub/users/sum"
-                  (fn [response-usr]
-                    (screatei/mount! response-reg response-usr))))))
+  (fetch (routes/path-for-backend :registries-sum)
+         (fn [registries]
+           (fetch (routes/path-for-backend :dockerhub-users-sum)
+                  (fn [users]
+                    (screatei/mount! registries users))))))
 
 (defmethod dispatch :service-create-config
   [_]
   (let [params (keywordize-keys (query->map (query-string)))]
-    (screatec/mount! (:registry params)
-                     (:repository params))))
+    (fetch (routes/path-for-backend :networks)
+           (fn [networks]
+             (screatec/mount! (:registry params)
+                              (:repository params)
+                              networks)))))
 
 (defmethod dispatch :service-edit
   [{:keys [route-params]}]
-  (fetch (str "/services/" (:id route-params))
+  (fetch (routes/path-for-backend :service-update route-params)
          (fn [response]
            (sedit/mount! response))))
 
@@ -93,13 +97,13 @@
 
 (defmethod dispatch :network-list
   [_]
-  (fetch "/networks"
+  (fetch (routes/path-for-backend :networks)
          (fn [response]
            (nlist/mount! response))))
 
 (defmethod dispatch :network-info
   [{:keys [route-params]}]
-  (fetch (str "/networks/" (:id route-params))
+  (fetch (routes/path-for-backend :network route-params)
          (fn [response]
            (ninfo/mount! response))))
 
@@ -111,13 +115,13 @@
 
 (defmethod dispatch :node-list
   [_]
-  (fetch "/nodes"
+  (fetch (routes/path-for-backend :nodes)
          (fn [response]
            (ndlist/mount! response))))
 
 (defmethod dispatch :node-info
   [{:keys [route-params]}]
-  (fetch (str "/nodes/" (:id route-params))
+  (fetch (routes/path-for-backend :node route-params)
          (fn [response]
            (ndinfo/mount! response))))
 
@@ -125,13 +129,13 @@
 
 (defmethod dispatch :task-list
   [_]
-  (fetch "/tasks"
+  (fetch (routes/path-for-backend :tasks)
          (fn [response]
            (tlist/mount! response))))
 
 (defmethod dispatch :task-info
   [{:keys [route-params]}]
-  (fetch (str "/tasks/" (:id route-params))
+  (fetch (routes/path-for-backend :task route-params)
          (fn [response]
            (tinfo/mount! response))))
 
@@ -139,13 +143,13 @@
 
 (defmethod dispatch :user-list
   [_]
-  (fetch "/admin/users"
+  (fetch (routes/path-for-backend :users)
          (fn [response]
            (ulist/mount! response))))
 
 (defmethod dispatch :user-info
   [{:keys [route-params]}]
-  (fetch (str "/admin/users/" (:id route-params))
+  (fetch (routes/path-for-backend :user route-params)
          (fn [response]
            (uinfo/mount! response))))
 
@@ -157,13 +161,13 @@
 
 (defmethod dispatch :registry-list
   [_]
-  (fetch "/admin/registries"
+  (fetch (routes/path-for-backend :registries)
          (fn [response]
            (reglist/mount! response))))
 
 (defmethod dispatch :registry-info
   [{:keys [route-params]}]
-  (fetch (str "/admin/registries/" (:id route-params))
+  (fetch (routes/path-for-backend :registry route-params)
          (fn [response]
            (reginfo/mount! response))))
 
@@ -175,7 +179,7 @@
 
 (defmethod dispatch :dockerhub-list
   [_]
-  (fetch "/dockerhub/users/sum"
+  (fetch (routes/path-for-backend :dockerhub-users-sum)
          (fn [response]
            (dhlist/mount! response))))
 
