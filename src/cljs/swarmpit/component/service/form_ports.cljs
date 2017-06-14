@@ -63,7 +63,7 @@
                    (state/update-item index :hostPort (js/parseInt v) cursor))})))
 
 (defn- render-ports
-  [item index]
+  [item index _]
   (let [{:keys [containerPort
                 protocol
                 hostPort]} item]
@@ -75,6 +75,8 @@
   (let [ports (state/react cursor)]
     (comp/form-table headers
                      ports
+                     nil
+                     true
                      render-ports
                      (fn [] (state/add-item {:containerPort 0
                                              :protocol      "tcp"

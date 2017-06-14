@@ -9,14 +9,16 @@
                                     :form {}}
                        :node       {:list {:filter {}}}
                        :service    {:list   {:filter {}}
-                                    :wizard {:image      {:dockerhub  {}
+                                    :wizard {:data       {}
+                                             :image      {:dockerhub  {}
                                                           :repository {}
                                                           :other      {}}
                                              :settings   {}
-                                             :deployment {}
                                              :ports      []
+                                             :networks   []
                                              :variables  []
-                                             :volumes    []}}
+                                             :volumes    []
+                                             :deployment {}}}
                        :task       {:list {:filter {}}}
                        :registry   {:list   {:filter {}}
                                     :form   {}

@@ -513,7 +513,7 @@
 ;; Form table component
 
 (defn form-table-header
-  [headers add-item-fn]
+  [headers editable? add-item-fn]
   (table-header
     {:key               "th"
      :displaySelectAll  false
@@ -531,13 +531,14 @@
       (table-header-column
         {:key "thc"}
         (icon-button
-          {:onClick #(add-item-fn)}
+          {:onClick  #(add-item-fn)
+           :disabled (not editable?)}
           (svg
             {:hoverColor "#437f9d"}
             icon/plus))))))
 
 (defn form-table-body
-  [items render-items-fn remove-item-fn]
+  [items data editable? render-items-fn remove-item-fn]
   (table-body
     {:key                "tb"
      :displayRowCheckbox false}
@@ -548,24 +549,25 @@
            :rowNumber     index
            :displayBorder false}
           (map (fn [row] row)
-               (render-items-fn item index))
+               (render-items-fn item index data))
           (table-row-column
             {:key (str "trc-" index)}
             (icon-button
-              {:onClick #(remove-item-fn index)}
+              {:onClick  #(remove-item-fn index)
+               :disabled (not editable?)}
               (svg
                 {:hoverColor "rgb(244, 67, 54)"}
                 icon/trash)))))
       items)))
 
 (defn form-table
-  [headers items render-items-fn add-item-fn remove-item-fn]
+  [headers items data editable? render-items-fn add-item-fn remove-item-fn]
   (mui
     (table
       {:key        "tbl"
        :selectable false}
-      (form-table-header headers add-item-fn)
-      (form-table-body items render-items-fn remove-item-fn))))
+      (form-table-header headers editable? add-item-fn)
+      (form-table-body items data editable? render-items-fn remove-item-fn))))
 
 ;; Info table component
 

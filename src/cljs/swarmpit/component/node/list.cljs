@@ -18,11 +18,16 @@
 (def render-item-keys
   [[:nodeName] [:availability] [:state] [:leader]])
 
+(defn form-state [value]
+  (case value
+    "ready" (comp/label-green value)
+    "down" (comp/label-red value)))
+
 (defn- render-item
   [item]
   (let [value (val item)]
     (case (key item)
-      :state (comp/label-green value)
+      :state (form-state value)
       :leader (if (val item)
                 (comp/label-blue "Leader"))
       value)))

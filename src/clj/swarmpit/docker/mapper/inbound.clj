@@ -160,6 +160,7 @@
       :id (get network :Id)
       :networkName (get network :Name)
       :created (date (get network :Created))
+      :scope (get network :Scope)
       :driver (get network :Driver)
       :internal (get network :Internal)
       :ipam {:subnet  (:Subnet config)
@@ -169,6 +170,5 @@
   [networks]
   (->> networks
        (map ->network)
-       (filter #(or (= "bridge" (:driver %))
-                    (= "overlay" (:driver %))))
+       (filter #(= "swarm" (:scope %)))
        (into [])))

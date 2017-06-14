@@ -4,6 +4,7 @@
             [swarmpit.url :refer [dispatch!]]
             [swarmpit.storage :as storage]
             [swarmpit.component.service.form-ports :as ports]
+            [swarmpit.component.service.form-networks :as networks]
             [swarmpit.component.service.form-volumes :as volumes]
             [swarmpit.component.service.form-variables :as variables]
             [swarmpit.component.task.list :as tasks]
@@ -64,6 +65,9 @@
       [:div.form-view-group
        (comp/form-section "Ports")
        (comp/info-table ports/headers (:ports item) "300px")]
+      [:div.form-view-group
+       (comp/form-section "Networks")
+       (comp/info-table networks/headers (:networks item) "300px")]
       [:div.form-view-group
        (comp/form-section "Volumes")
        (comp/info-table volumes/headers (:volumes item) "150vh")]

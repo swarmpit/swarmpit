@@ -59,6 +59,8 @@
   (let [volumes (state/react cursor)]
     (comp/form-table headers
                      volumes
+                     nil
+                     true
                      render-volumes
                      (fn [] (state/add-item {:containerPath ""
                                              :hostPath      ""

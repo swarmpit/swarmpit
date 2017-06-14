@@ -6,6 +6,7 @@
             [swarmpit.component.state :as state]
             [swarmpit.component.service.form-settings :as settings]
             [swarmpit.component.service.form-ports :as ports]
+            [swarmpit.component.service.form-networks :as networks]
             [swarmpit.component.service.form-volumes :as volumes]
             [swarmpit.component.service.form-variables :as variables]
             [swarmpit.component.service.form-deployment :as deployment]
@@ -71,6 +72,9 @@
        (comp/form-section "Ports")
        (ports/form)]
       [:div.form-view-group
+       (comp/form-section "Networks")
+       (networks/form true [])]
+      [:div.form-view-group
        (comp/form-section "Volumes")
        (volumes/form)]
       [:div.form-view-group
@@ -84,6 +88,7 @@
   [item]
   (state/set-value (select-keys item [:repository :version :serviceName :mode :replicas]) settings/cursor)
   (state/set-value (:ports item) ports/cursor)
+  (state/set-value (:networks item) networks/cursor)
   (state/set-value (:volumes item) volumes/cursor)
   (state/set-value (:variables item) variables/cursor)
   (state/set-value (:deployment item) deployment/cursor))

@@ -6,6 +6,7 @@
             [swarmpit.component.state :as state]
             [swarmpit.component.service.form-settings :as settings]
             [swarmpit.component.service.form-ports :as ports]
+            [swarmpit.component.service.form-networks :as networks]
             [swarmpit.component.service.form-volumes :as volumes]
             [swarmpit.component.service.form-variables :as variables]
             [swarmpit.component.service.form-deployment :as deployment]
@@ -19,19 +20,7 @@
 
 (defonce step-index (atom 0))
 
-(def steps ["General settings" "Ports" "Volumes" "Environment variables" "Deployment"])
-
-(defmulti form-item identity)
-
-(defmethod form-item 0 [_] (settings/form false))
-
-(defmethod form-item 1 [_] (ports/form))
-
-(defmethod form-item 2 [_] (volumes/form))
-
-(defmethod form-item 3 [_] (variables/form))
-
-(defmethod form-item 4 [_] (deployment/form))
+(def steps ["General settings" "Ports" "Networks" "Volumes" "Environment variables" "Deployment"])
 
 (defn- step-previous
   [index]
@@ -74,24 +63,21 @@
      :disabled   (= (- (count steps) 1) index)
      :onTouchTap (fn [] (step-next index))}))
 
-(defn- step-items []
-  (map-indexed
-    (fn [index item]
-      (comp/step
-        {:key (str "step-" index)}
-        (comp/step-button
-          {:key                (str "step-btn-" index)
-           :disableTouchRipple true
-           :style              step-style
-           :onClick            (fn [] (reset! step-index index))}
-          item)
-        (comp/step-content
-          {:key   (str "step-context-" index)
-           :style step-content-style}
-          (form-item index)
-          (form-previous-button index)
-          (form-next-button index))))
-    steps))
+(defn- step-item [index form]
+  (comp/step
+    {:key (str "step-" index)}
+    (comp/step-button
+      {:key                (str "step-btn-" index)
+       :disableTouchRipple true
+       :style              step-style
+       :onClick            (fn [] (reset! step-index index))}
+      (nth steps index))
+    (comp/step-content
+      {:key   (str "step-context-" index)
+       :style step-content-style}
+      form
+      (form-previous-button index)
+      (form-next-button index))))
 
 (defn- create-service-handler
   []
@@ -122,7 +108,7 @@
                                    (progress/unmount!)
                                    (message/mount! message)))})))
 
-(rum/defc form < rum/reactive []
+(rum/defc form < rum/reactive [networks]
   (let [index (rum/react step-index)
         {:keys [isValid]} (state/react settings/cursor)]
     [:div
@@ -142,7 +128,12 @@
           :linear      false
           :style       stepper-style
           :orientation "vertical"}
-         (step-items)))]))
+         (step-item 0 (settings/form false))
+         (step-item 1 (ports/form))
+         (step-item 2 (networks/form false networks))
+         (step-item 3 (volumes/form))
+         (step-item 4 (variables/form))
+         (step-item 5 (deployment/form))))]))
 
 (defn- init-state
   [registry repository]
@@ -156,11 +147,12 @@
                     :replicas    1
                     :isValid     false} settings/cursor)
   (state/set-value [] ports/cursor)
+  (state/set-value [] networks/cursor)
   (state/set-value [] volumes/cursor)
   (state/set-value [] variables/cursor)
   (state/set-value {:autoredeploy false} deployment/cursor))
 
 (defn mount!
-  [registry repository]
+  [registry repository networks]
   (init-state registry repository)
-  (rum/mount (form) (.getElementById js/document "content")))
+  (rum/mount (form networks) (.getElementById js/document "content")))

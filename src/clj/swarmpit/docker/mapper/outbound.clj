@@ -70,8 +70,19 @@
    :EndpointSpec
          {:Ports (->service-ports service)}})
 
+(defn ->network-ipam
+  [network]
+  (let [ipam (:ipam network)
+        gateway (:gateway ipam)
+        subnet (:subnet ipam)]
+    (if (and (not (str/blank? gateway))
+             (not (str/blank? subnet)))
+      {:Config [{:Subnet  subnet
+                 :Gateway gateway}]})))
+
 (defn ->network
   [network]
   {:Name     (:networkName network)
    :Driver   (:driver network)
-   :Internal (:internal network)})
+   :Internal (:internal network)
+   :IPAM     (->network-ipam network)})

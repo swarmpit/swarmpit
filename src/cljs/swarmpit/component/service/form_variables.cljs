@@ -42,6 +42,8 @@
   (let [variables (state/react cursor)]
     (comp/form-table headers
                      variables
+                     nil
+                     true
                      render-variables
                      (fn [] (state/add-item {:name  ""
                                              :value ""} cursor))

@@ -35,11 +35,7 @@
       (comp/menu-item
         {:key         "fdi1"
          :value       "overlay"
-         :primaryText "overlay"})
-      (comp/menu-item
-        {:key         "fdi3"
-         :value       "bridge"
-         :primaryText "bridge"}))))
+         :primaryText "overlay"}))))
 
 (defn- form-internal [value]
   (comp/form-comp
@@ -57,7 +53,7 @@
        :key             "subnet"
        :validations     "isValidSubnet"
        :validationError "Please provide a valid CIDR format"
-       :hintText        "e.g. 172.10.0.0/16"
+       :hintText        "e.g. 10.0.0.0/24"
        :value           value
        :onChange        (fn [_ v]
                           (state/update-value [:ipam :subnet] v cursor))})))
@@ -70,7 +66,7 @@
        :key             "gateway"
        :validations     "isValidGateway"
        :validationError "Please provide a valid IP format"
-       :hintText        "e.g. 172.10.0.1"
+       :hintText        "e.g. 10.0.0.1"
        :value           value
        :onChange        (fn [_ v]
                           (state/update-value [:ipam :gateway] v cursor))})))
@@ -135,10 +131,9 @@
 (defn- init-state
   []
   (state/set-value {:networkName nil
-                    :driver      "bridge"
+                    :driver      "overlay"
                     :internal    false
-                    :ipam        {:subnet  nil
-                                  :gateway nil}
+                    :ipam        nil
                     :isValid     false
                     :isValidIpam true} cursor))
 
