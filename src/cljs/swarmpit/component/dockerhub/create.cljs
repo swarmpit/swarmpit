@@ -32,6 +32,7 @@
     (comp/vtext-field
       {:name     "password"
        :key      "password"
+       :type     "password"
        :required true
        :value    value
        :onChange (fn [_ v]

@@ -64,6 +64,7 @@
     (comp/text-field
       {:name     "password"
        :key      "password"
+       :type     "password"
        :value    value
        :onChange (fn [_ v]
                    (state/update-value [:password] v cursor))})))
