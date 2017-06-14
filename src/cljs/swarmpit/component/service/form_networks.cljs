@@ -35,11 +35,10 @@
     [(form-network networkName index data)]))
 
 (defn- form-table
-  [networks data editable?]
+  [networks data]
   (comp/form-table []
                    networks
                    data
-                   editable?
                    render-networks
                    (fn [index] (state/remove-item index cursor))))
 
@@ -52,10 +51,9 @@
     [:div
      (comp/form-add-btn "Attach network" add-item)
      (if (not (empty? networks))
-       (form-table networks data true))]))
+       (form-table networks data))]))
 
-(rum/defc form-update < rum/reactive [data]
-  (let [networks (state/react cursor)]
-    (if (empty? networks)
-      undefined
-      (form-table networks data false))))
+(rum/defc form-view < rum/static [networks]
+  (if (empty? networks)
+    undefined
+    (comp/form-info-table ["Name" "Driver"] networks identity "300px")))

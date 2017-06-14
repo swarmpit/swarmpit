@@ -79,7 +79,7 @@
        (ports/form-update)]
       [:div.form-view-group
        (comp/form-section "Networks")
-       (networks/form-update [])]
+       (networks/form-view (:networks item))]
       [:div.form-view-group
        (comp/form-section-add "Mounts" mounts/add-item)
        (mounts/form-update)]

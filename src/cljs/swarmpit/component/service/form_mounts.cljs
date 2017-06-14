@@ -59,7 +59,6 @@
   (comp/form-table headers
                    mounts
                    nil
-                   true
                    render-mounts
                    (fn [index] (state/remove-item index cursor))))
 
@@ -81,3 +80,8 @@
     (if (empty? mounts)
       undefined
       (form-table mounts))))
+
+(rum/defc form-view < rum/static [mounts]
+  (if (empty? mounts)
+    undefined
+    (comp/form-info-table headers mounts identity "150vh")))

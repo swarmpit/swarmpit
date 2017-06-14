@@ -80,7 +80,6 @@
   (comp/form-table headers
                    ports
                    nil
-                   true
                    render-ports
                    (fn [index] (state/remove-item index cursor))))
 
@@ -102,3 +101,8 @@
     (if (empty? ports)
       undefined
       (form-table ports))))
+
+(rum/defc form-view < rum/static [ports]
+  (if (empty? ports)
+    undefined
+    (comp/form-info-table headers ports identity "300px")))

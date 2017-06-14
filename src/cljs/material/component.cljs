@@ -403,7 +403,7 @@
 
 (defn form-section-add
   [label add-item-fn]
-  [:div.form-view-row
+  [:div.form-edit-row
    [:span.form-row-section.form-row-icon-section label]
    [:div.form-row-icon-field
     (mui
@@ -466,8 +466,7 @@
         (fn [index header]
           (table-header-column
             {:key (str "thc-" index)}
-            header))
-        headers))))
+            header)) headers))))
 
 (defn list-table-body
   [items render-item-fn render-items-key]
@@ -487,8 +486,7 @@
             (->> (select-keys* item render-items-key)
                  (map #(table-row-column
                          {:key (str "trc-" (item-id item))}
-                         (render-item-fn %))))))
-        items))))
+                         (render-item-fn %)))))) items))))
 
 (defn list-table-paging
   [offset total limit on-prev-fn on-next-fn]
@@ -540,26 +538,28 @@
 
 (defn form-table-header
   [headers]
-  (table-header
-    {:key               "th"
-     :displaySelectAll  false
-     :adjustForCheckbox false
-     :style             {:border "none"}}
-    (table-row
-      {:key           "tr"
-       :displayBorder false}
-      (map-indexed
-        (fn [index header]
-          (table-header-column
-            {:key (str "thc-" index)}
-            header))
-        headers)
-      (table-header-column
-        {:key "thc"}
-        ""))))
+  (let [el-style {:height "35px"}]
+    (table-header
+      {:key               "th"
+       :displaySelectAll  false
+       :adjustForCheckbox false
+       :style             {:border "none"}}
+      (table-row
+        {:key           "tr"
+         :displayBorder false
+         :style         el-style}
+        (map-indexed
+          (fn [index header]
+            (table-header-column
+              {:key   (str "thc-" index)
+               :style el-style}
+              header)) headers)
+        (table-header-column
+          {:key   "thc"
+           :style el-style} "")))))
 
 (defn form-table-body
-  [items data editable? render-items-fn remove-item-fn]
+  [items data render-items-fn remove-item-fn]
   (table-body
     {:key                "tb"
      :displayRowCheckbox false}
@@ -574,26 +574,24 @@
           (table-row-column
             {:key (str "trc-" index)}
             (icon-button
-              {:onClick  #(remove-item-fn index)
-               :disabled (not editable?)}
+              {:onClick  #(remove-item-fn index)}
               (svg
                 {:hoverColor "rgb(244, 67, 54)"}
-                icon/trash)))))
-      items)))
+                icon/trash))))) items)))
 
 (defn form-table
-  [headers items data editable? render-items-fn remove-item-fn]
+  [headers items data render-items-fn remove-item-fn]
   (mui
     (table
       {:key        "tbl"
        :selectable false}
       (if (not (empty? headers))
         (form-table-header headers))
-      (form-table-body items data editable? render-items-fn remove-item-fn))))
+      (form-table-body items data render-items-fn remove-item-fn))))
 
 ;; Info table component
 
-(defn info-table-header [headers header-el-style]
+(defn form-info-table-header [headers header-el-style]
   (table-header
     {:key               "th"
      :displaySelectAll  false
@@ -608,10 +606,9 @@
           (table-header-column
             {:key   (str "thc-" index)
              :style header-el-style}
-            header))
-        headers))))
+            header)) headers))))
 
-(defn info-table-body [items render-item-fn item-el-style]
+(defn form-info-table-body [items render-item-fn item-el-style]
   (table-body
     {:key                "tb"
      :showRowHover       false
@@ -627,16 +624,15 @@
                (map #(table-row-column
                        {:key   (str "trc-" index "-" %)
                         :style item-el-style}
-                       (render-item-fn (% item)))))))
-      items)))
+                       (render-item-fn (% item))))))) items)))
 
-(defn info-table [headers items render-item-fn width]
+(defn form-info-table [headers items render-item-fn width]
   (let [el-style {:height "20px"}]
     (mui
       (table
         {:key        "tbl"
          :selectable false
          :style      {:width width}}
-        (info-table-header headers el-style)
-        (info-table-body items render-item-fn el-style)))))
+        (form-info-table-header headers el-style)
+        (form-info-table-body items render-item-fn el-style)))))
 

@@ -32,12 +32,6 @@
 (defn form-panel-label [item]
   (str (:state item) "  " (get-in item [:status :info])))
 
-(defn render-item
-  [val]
-  (if (boolean? val)
-    (comp/checkbox {:checked val})
-    val))
-
 (rum/defc form < rum/static [item]
   (let [id (:id item)]
     [:div
@@ -70,24 +64,21 @@
        (comp/form-item "MODE" (:mode item))]
       [:div.form-view-group
        (comp/form-section "Ports")
-       (if (empty? (:ports item))
-         ports/undefined
-         (comp/info-table ports/headers (:ports item) render-item "300px"))]
+       (ports/form-view (:ports item))]
       [:div.form-view-group
        (comp/form-section "Networks")
-       (if (empty? (:networks item))
-         networks/undefined
-         (comp/info-table ["Name" "Driver"] (:networks item) render-item "300px"))]
+       (networks/form-view (:networks item))]
       [:div.form-view-group
        (comp/form-section "Mounts")
-       (if (empty? (:mounts item))
-         mounts/undefined
-         (comp/info-table mounts/headers (:mounts item) render-item "150vh"))]
+       (mounts/form-view (:mounts item))]
       [:div.form-view-group
        (comp/form-section "Environment variables")
-       (if (empty? (:networks item))
-         variables/undefined
-         (comp/info-table variables/headers (:variables item) render-item "100vh"))]
+       (variables/form-view (:variables item))]
+      [:div.form-view-group
+       (comp/form-section "Deployment")
+       (comp/form-item "PARALLELISM" (get-in item [:deployment :parallelism]))
+       (comp/form-item "DELAY" (get-in item [:deployment :delay]))
+       (comp/form-item "ON FAILURE" (get-in item [:deployment :failureAction]))]
       [:div.form-view-group
        (comp/form-section "Tasks")
        (comp/list-table tasks/headers

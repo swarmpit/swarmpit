@@ -46,7 +46,6 @@
   (comp/form-table headers
                    variables
                    nil
-                   true
                    render-variables
                    (fn [index] (state/remove-item index cursor))))
 
@@ -67,3 +66,8 @@
     (if (empty? variables)
       undefined
       (form-table variables))))
+
+(rum/defc form-view < rum/static [variables]
+  (if (empty? variables)
+    undefined
+    (comp/form-info-table headers variables identity "100vh")))
