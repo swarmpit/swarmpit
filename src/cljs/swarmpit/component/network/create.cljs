@@ -49,17 +49,31 @@
        :onCheck (fn [_ v]
                   (state/update-value [:internal] v cursor))})))
 
+(defn- form-subnet [value]
+  (comp/form-comp
+    "SUBNET"
+    (comp/vtext-field
+      {:name            "subnet"
+       :key             "subnet"
+       :validations     "isValidSubnet"
+       :validationError "Please provide a valid CIDR format"
+       :hintText        "e.g. 172.10.0.0/16"
+       :value           value
+       :onChange        (fn [_ v]
+                          (state/update-value [:ipam :subnet] v cursor))})))
+
 (defn- form-gateway [value]
   (comp/form-comp
     "GATEWAY"
     (comp/vtext-field
       {:name            "gateway"
        :key             "gateway"
-       :validations     "isValidIp"
-       :validationError "Please provide a valid IP configuration"
+       :validations     "isValidGateway"
+       :validationError "Please provide a valid IP format"
+       :hintText        "e.g. 172.10.0.1"
        :value           value
        :onChange        (fn [_ v]
-                          (state/update-value [:gateway] v cursor))})))
+                          (state/update-value [:ipam :gateway] v cursor))})))
 
 (defn- create-network-handler
   []
@@ -75,9 +89,9 @@
                                  (dispatch!
                                    (routes/path-for-frontend :network-info {:id id}))
                                  (message/mount! message)))
-              :error-handler (fn [{:keys [status response]}]
+              :error-handler (fn [{:keys [response]}]
                                (let [error (get response "error")
-                                     message (str "Network creation failed. Status: " status " Reason: " error)]
+                                     message (str "Network creation failed. Reason: " error)]
                                  (progress/unmount!)
                                  (message/mount! message)))}))
 
@@ -85,8 +99,9 @@
   (let [{:keys [name
                 driver
                 internal
-                gateway
-                isValid]} (state/react cursor)]
+                ipam
+                isValid
+                isValidIpam]} (state/react cursor)]
     [:div
      [:div.form-panel
       [:div.form-panel-left
@@ -95,25 +110,37 @@
        (comp/mui
          (comp/raised-button
            {:label      "Create"
-            :disabled   (not isValid)
+            :disabled   (or (not isValid)
+                            (not isValidIpam))
             :primary    true
             :onTouchTap create-network-handler}))]]
-     [:div.form-edit
-      (comp/form
-        {:onValid   #(state/update-value [:isValid] true cursor)
-         :onInvalid #(state/update-value [:isValid] false cursor)}
-        (form-name name)
-        (form-driver driver)
-        (form-internal internal)
-        (form-gateway gateway))]]))
+
+     [:div.form-view
+      [:div.form-view-group
+       (comp/form-section "General settings")
+       (comp/form
+         {:onValid   #(state/update-value [:isValid] true cursor)
+          :onInvalid #(state/update-value [:isValid] false cursor)}
+         (form-name name)
+         (form-driver driver)
+         (form-internal internal))]
+      [:div.form-view-group
+       (comp/form-section "IP address management")
+       (comp/form
+         {:onValid   #(state/update-value [:isValidIpam] true cursor)
+          :onInvalid #(state/update-value [:isValidIpam] false cursor)}
+         (form-subnet (:subnet ipam))
+         (form-gateway (:gateway ipam)))]]]))
 
 (defn- init-state
   []
-  (state/set-value {:networkName ""
+  (state/set-value {:networkName nil
                     :driver      "bridge"
                     :internal    false
-                    :gateway     ""
-                    :isValid     false} cursor))
+                    :ipam        {:subnet  nil
+                                  :gateway nil}
+                    :isValid     false
+                    :isValidIpam true} cursor))
 
 (defn mount!
   []

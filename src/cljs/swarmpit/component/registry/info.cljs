@@ -19,8 +19,9 @@
                                    (dispatch!
                                      (routes/path-for-frontend :registry-list))
                                    (message/mount! message)))
-                :error-handler (fn [{:keys [status-text]}]
-                                 (let [message (str "Registry " registry-id " removing failed. Reason: " status-text)]
+                :error-handler (fn [{:keys [response]}]
+                                 (let [error (get response "error")
+                                       message (str "Registry removing failed. Reason: " error)]
                                    (message/mount! message)))}))
 
 (rum/defc form < rum/static [item]

@@ -19,8 +19,9 @@
                                    (dispatch!
                                      (routes/path-for-frontend :user-list))
                                    (message/mount! message)))
-                :error-handler (fn [{:keys [status-text]}]
-                                 (let [message (str "User " user-id " removing failed. Reason: " status-text)]
+                :error-handler (fn [{:keys [response]}]
+                                 (let [error (get response "error")
+                                       message (str "User removal failed. Reason: " error)]
                                    (message/mount! message)))}))
 
 (rum/defc form < rum/static [item]

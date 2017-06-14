@@ -39,9 +39,9 @@
                                    (dispatch!
                                      (routes/path-for-frontend :service-info {:id service-id}))
                                    (message/mount! message)))
-                :error-handler (fn [{:keys [status response]}]
+                :error-handler (fn [{:keys [response]}]
                                  (let [error (get-in response ["error" "message"])
-                                       message (str "Service update failed. Status: " status " Reason: " error)]
+                                       message (str "Service update failed. Reason: " error)]
                                    (progress/unmount!)
                                    (message/mount! message)))})))
 

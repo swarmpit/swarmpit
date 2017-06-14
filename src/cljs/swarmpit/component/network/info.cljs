@@ -2,6 +2,7 @@
   (:require [material.component :as comp]
             [material.icon :as icon]
             [swarmpit.url :refer [dispatch!]]
+            [swarmpit.storage :as storage]
             [swarmpit.component.message :as message]
             [swarmpit.routes :as routes]
             [rum.core :as rum]
@@ -12,13 +13,15 @@
 (defn- delete-network-handler
   [network-id]
   (ajax/DELETE (routes/path-for-backend :network-delete {:id network-id})
-               {:handler       (fn [_]
+               {:headers       {"Authorization" (storage/get "token")}
+                :handler       (fn [_]
                                  (let [message (str "Network " network-id " has been removed.")]
                                    (dispatch!
                                      (routes/path-for-frontend :network-list))
                                    (message/mount! message)))
-                :error-handler (fn [{:keys [status status-text]}]
-                                 (let [message (str "Network " network-id " removing failed. Reason: " status-text)]
+                :error-handler (fn [{:keys [response]}]
+                                 (let [error (get response "error")
+                                       message (str "Network removing failed. Reason: " error)]
                                    (message/mount! message)))}))
 
 (rum/defc form < rum/static [item]
@@ -30,7 +33,7 @@
     [:div.form-panel-right
      (comp/mui
        (comp/raised-button
-         {:onTouchTap delete-network-handler
+         {:onTouchTap #(delete-network-handler (:id item))
           :label      "Delete"}))]]
    [:div.form-view
     [:div.form-view-group
@@ -44,8 +47,8 @@
                                   "no"))]
     [:div.form-view-group
      (comp/form-section "IP address management")
-     (comp/form-item "SUBNET" (:subnet item))
-     (comp/form-item "GATEWAY" (:gateway item))]]])
+     (comp/form-item "SUBNET" (get-in item [:ipam :subnet]))
+     (comp/form-item "GATEWAY" (get-in item [:ipam :gateway]))]]])
 
 (defn mount!
   [item]

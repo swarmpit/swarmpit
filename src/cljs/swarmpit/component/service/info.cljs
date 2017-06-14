@@ -23,8 +23,9 @@
                                    (dispatch!
                                      (routes/path-for-frontend :service-list))
                                    (message/mount! message)))
-                :error-handler (fn [{:keys [status status-text]}]
-                                 (let [message (str "Service " service-id " removing failed. Reason: " status-text)]
+                :error-handler (fn [{:keys [response]}]
+                                 (let [error (get response "error")
+                                       message (str "Service removing failed. Reason: " error)]
                                    (message/mount! message)))}))
 
 (defn form-panel-label [item]

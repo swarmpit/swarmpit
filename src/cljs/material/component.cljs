@@ -43,11 +43,17 @@
 
 ;;; Custom formsy validation
 
-(.addValidationRule js/Formsy "isValidIp"
+(.addValidationRule js/Formsy "isValidGateway"
                     (fn [_ value]
                       (if (empty? value)
                         true
-                        (ip/is-valid value))))
+                        (ip/is-valid-gateway value))))
+
+(.addValidationRule js/Formsy "isValidSubnet"
+                    (fn [_ value]
+                      (if (empty? value)
+                        true
+                        (ip/is-valid-subnet value))))
 
 ;;; Single formsy components
 

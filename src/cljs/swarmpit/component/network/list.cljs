@@ -9,7 +9,7 @@
 
 (def cursor [:page :network :list :filter])
 
-(def headers ["Name" "Driver" ""])
+(def headers ["Name" "Driver" "Subnet" "Gateway" ""])
 
 (defn- filter-items
   "Filter list items based on given predicate"
@@ -17,7 +17,7 @@
   (filter #(string/includes? (:networkName %) predicate) items))
 
 (def render-item-keys
-  [[:networkName] [:driver] [:internal]])
+  [[:networkName] [:driver] [:ipam :subnet] [:ipam :gateway] [:internal]])
 
 (defn- render-item
   [item]

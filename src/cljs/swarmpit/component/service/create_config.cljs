@@ -116,9 +116,9 @@
                                    (dispatch!
                                      (routes/path-for-frontend :service-info {:id id}))
                                    (message/mount! message)))
-                :error-handler (fn [{:keys [status response]}]
+                :error-handler (fn [{:keys [response]}]
                                  (let [error (get response "error")
-                                       message (str "Service creation failed. Status: " status " Reason: " error)]
+                                       message (str "Service creation failed. Reason: " error)]
                                    (progress/unmount!)
                                    (message/mount! message)))})))
 

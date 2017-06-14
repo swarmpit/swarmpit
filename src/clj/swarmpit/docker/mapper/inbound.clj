@@ -162,8 +162,8 @@
       :created (date (get network :Created))
       :driver (get network :Driver)
       :internal (get network :Internal)
-      :subnet (:Subnet config)
-      :gateway (:Gateway config))))
+      :ipam {:subnet  (:Subnet config)
+             :gateway (:Gateway config)})))
 
 (defn ->networks
   [networks]
