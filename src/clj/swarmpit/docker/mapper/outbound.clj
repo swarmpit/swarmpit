@@ -25,6 +25,12 @@
                      :TargetPort    (:containerPort p)}))
        (into [])))
 
+(defn- ->service-networks
+  [service]
+  (->> (:networks service)
+       (map (fn [n] {:Target (:networkName n)}))
+       (into [])))
+
 (defn ->service-variables
   [service]
   (->> (:variables service)
@@ -33,9 +39,9 @@
        (map (fn [p] (str (:name p) "=" (:value p))))
        (into [])))
 
-(defn ->service-volumes
+(defn ->service-mounts
   [service]
-  (->> (:volumes service)
+  (->> (:mounts service)
        (map (fn [v] {:ReadOnly (:readOnly v)
                      :Source   (:containerPath v)
                      :Target   (:hostPath v)
@@ -44,15 +50,20 @@
                                {:DriverConfig {}}}))
        (into [])))
 
-(defn ->service-image-create
+(defn ->service-update-config
+  [service]
+  (let [deployment (:deployment service)]
+    {:Parallelism    (:parallelism deployment)
+     :Delay          (:delay deployment)
+     ::FailureAction (:failureAction deployment)}))
+
+(defn ->service-image-registry
   [service registry]
   (let [image (get-in service [:repository :imageName])
         tag (get-in service [:repository :imageTag])]
-    (if (= "dockerhub" (:name registry))
-      (str image ":" tag)
-      (str (:url registry) "/" image ":" tag))))
+    (str (:url registry) "/" image ":" tag)))
 
-(defn ->service-image-update
+(defn ->service-image
   [service]
   (let [image (get-in service [:repository :imageName])
         tag (get-in service [:repository :imageTag])]
@@ -60,15 +71,15 @@
 
 (defn ->service
   [service image]
-  {:Name (:serviceName service)
-   :TaskTemplate
-         {:ContainerSpec
-          {:Image  image
-           :Mounts (->service-volumes service)
-           :Env    (->service-variables service)}}
-   :Mode (->service-mode service)
-   :EndpointSpec
-         {:Ports (->service-ports service)}})
+  {:Name         (:serviceName service)
+   :TaskTemplate {:ContainerSpec
+                            {:Image  image
+                             :Mounts (->service-mounts service)
+                             :Env    (->service-variables service)}
+                  :Networks (->service-networks service)}
+   :Mode         (->service-mode service)
+   :UpdateConfig (->service-update-config service)
+   :EndpointSpec {:Ports (->service-ports service)}})
 
 (defn ->network-ipam
   [network]

@@ -7,7 +7,7 @@
             [swarmpit.component.service.form-settings :as settings]
             [swarmpit.component.service.form-ports :as ports]
             [swarmpit.component.service.form-networks :as networks]
-            [swarmpit.component.service.form-volumes :as volumes]
+            [swarmpit.component.service.form-mounts :as mounts]
             [swarmpit.component.service.form-variables :as variables]
             [swarmpit.component.service.form-deployment :as deployment]
             [swarmpit.component.message :as message]
@@ -22,7 +22,7 @@
   [service-id]
   (let [settings (state/get-value settings/cursor)
         ports (state/get-value ports/cursor)
-        volumes (state/get-value volumes/cursor)
+        volumes (state/get-value mounts/cursor)
         variables (state/get-value variables/cursor)
         deployment (state/get-value deployment/cursor)]
     (ajax/POST (routes/path-for-backend :service-update {:id service-id})
@@ -45,6 +45,12 @@
                                        message (str "Service update failed. Reason: " error)]
                                    (progress/unmount!)
                                    (message/mount! message)))})))
+
+(defn render-item
+  [val]
+  (if (boolean? val)
+    (comp/checkbox {:checked val})
+    val))
 
 (rum/defc form < rum/static [item]
   (let [id (:id item)]
@@ -69,17 +75,17 @@
        (comp/form-section "General settings")
        (settings/form true)]
       [:div.form-view-group
-       (comp/form-section "Ports")
-       (ports/form)]
+       (comp/form-section-add "Ports" ports/add-item)
+       (ports/form-update)]
       [:div.form-view-group
        (comp/form-section "Networks")
-       (networks/form true [])]
+       (networks/form-update [])]
       [:div.form-view-group
-       (comp/form-section "Volumes")
-       (volumes/form)]
+       (comp/form-section-add "Mounts" mounts/add-item)
+       (mounts/form-update)]
       [:div.form-view-group
-       (comp/form-section "Environment variables")
-       (variables/form)]
+       (comp/form-section-add "Environment variables" variables/add-item)
+       (variables/form-update)]
       [:div.form-view-group
        (comp/form-section "Deployment")
        (deployment/form)]]]))
@@ -89,7 +95,7 @@
   (state/set-value (select-keys item [:repository :version :serviceName :mode :replicas]) settings/cursor)
   (state/set-value (:ports item) ports/cursor)
   (state/set-value (:networks item) networks/cursor)
-  (state/set-value (:volumes item) volumes/cursor)
+  (state/set-value (:volumes item) mounts/cursor)
   (state/set-value (:variables item) variables/cursor)
   (state/set-value (:deployment item) deployment/cursor))
 

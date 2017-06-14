@@ -100,13 +100,15 @@
   []
   (dmi/->services (dc/services)
                   (dc/tasks)
-                  (dc/nodes)))
+                  (dc/nodes)
+                  (dc/networks)))
 
 (defn service
   [service-id]
   (dmi/->service (dc/service service-id)
                  (dc/tasks)
-                 (dc/nodes)))
+                 (dc/nodes)
+                 (dc/networks)))
 
 (defn delete-service
   [service-id]
@@ -114,17 +116,21 @@
 
 (defn create-service
   [service]
-  (let [registry-name (get-in service [:repository :registry])
-        registry (registry-by-name registry-name)
-        auth-config (dmo/->auth-config registry)]
-    (->> (dmo/->service-image-create service registry)
-         (dmo/->service service)
-         (dc/create-service auth-config))))
+  (let [registry-name (get-in service [:repository :registry])]
+    (if (= "dockerhub" registry-name)
+      (->> (dmo/->service-image service)
+           (dmo/->service service)
+           (dc/create-service))
+      (let [registry (registry-by-name registry-name)
+            auth-config (dmo/->auth-config registry)]
+        (->> (dmo/->service-image-registry service registry)
+             (dmo/->service service)
+             (dc/create-service auth-config))))))
 
 (defn update-service
   [service-id service]
   (let [service-version (:version service)]
-    (->> (dmo/->service-image-update service)
+    (->> (dmo/->service-image service)
          (dmo/->service service)
          (dc/update-service service-id service-version))))
 

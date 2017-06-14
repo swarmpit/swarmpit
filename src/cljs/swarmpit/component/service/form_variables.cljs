@@ -9,6 +9,9 @@
 
 (def headers ["Name" "Value"])
 
+(def undefined
+  (comp/form-value "No environment variables defined for the service."))
+
 (defn- form-name [value index]
   (comp/table-row-column
     {:name (str "form-name-" index)
@@ -38,13 +41,29 @@
     [(form-name name index)
      (form-value value index)]))
 
-(rum/defc form < rum/reactive []
+(defn- form-table
+  [variables]
+  (comp/form-table headers
+                   variables
+                   nil
+                   true
+                   render-variables
+                   (fn [index] (state/remove-item index cursor))))
+
+(defn add-item
+  []
+  (state/add-item {:name  ""
+                   :value ""} cursor))
+
+(rum/defc form-create < rum/reactive []
   (let [variables (state/react cursor)]
-    (comp/form-table headers
-                     variables
-                     nil
-                     true
-                     render-variables
-                     (fn [] (state/add-item {:name  ""
-                                             :value ""} cursor))
-                     (fn [index] (state/remove-item index cursor)))))
+    [:div
+     (comp/form-add-btn "Add ENV variable" add-item)
+     (if (not (empty? variables))
+       (form-table variables))]))
+
+(rum/defc form-update < rum/reactive []
+  (let [variables (state/react cursor)]
+    (if (empty? variables)
+      undefined
+      (form-table variables))))

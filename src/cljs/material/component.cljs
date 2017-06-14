@@ -118,6 +118,10 @@
   ([props] (factory/menu-item (clj->js props)))
   ([] (factory/menu-item nil)))
 
+(defn flat-button
+  ([props] (factory/flat-button (clj->js props)))
+  ([] (factory/flat-button nil)))
+
 (defn radio-button
   ([props] (factory/radio-button (clj->js props)))
   ([] (factory/radio-button nil)))
@@ -327,6 +331,16 @@
                  :background   "rgb(224, 228, 231)"
                  :height       "1px"}}))))
 
+(defn form-add-btn [label add-item-fn]
+  [:div.form-add-button
+   (mui
+     (flat-button
+       {:label         label
+        :labelPosition "before"
+        :primary       true
+        :onTouchTap    add-item-fn
+        :icon          (svg icon/add-small)}))])
+
 ;; Labels
 
 (defn label-red
@@ -386,6 +400,18 @@
 (defn form-section [label]
   [:div.form-view-row
    [:span.form-row-section label]])
+
+(defn form-section-add
+  [label add-item-fn]
+  [:div.form-view-row
+   [:span.form-row-section.form-row-icon-section label]
+   [:div.form-row-icon-field
+    (mui
+      (svg
+        {:hoverColor "#437f9d"
+         :style      {:cursor "pointer"}
+         :onClick    #(add-item-fn)}
+        icon/add-small))]])
 
 ;; Single item list
 
@@ -513,7 +539,7 @@
 ;; Form table component
 
 (defn form-table-header
-  [headers editable? add-item-fn]
+  [headers]
   (table-header
     {:key               "th"
      :displaySelectAll  false
@@ -530,12 +556,7 @@
         headers)
       (table-header-column
         {:key "thc"}
-        (icon-button
-          {:onClick  #(add-item-fn)
-           :disabled (not editable?)}
-          (svg
-            {:hoverColor "#437f9d"}
-            icon/plus))))))
+        ""))))
 
 (defn form-table-body
   [items data editable? render-items-fn remove-item-fn]
@@ -561,12 +582,13 @@
       items)))
 
 (defn form-table
-  [headers items data editable? render-items-fn add-item-fn remove-item-fn]
+  [headers items data editable? render-items-fn remove-item-fn]
   (mui
     (table
       {:key        "tbl"
        :selectable false}
-      (form-table-header headers editable? add-item-fn)
+      (if (not (empty? headers))
+        (form-table-header headers))
       (form-table-body items data editable? render-items-fn remove-item-fn))))
 
 ;; Info table component
@@ -589,7 +611,7 @@
             header))
         headers))))
 
-(defn info-table-body [items item-el-style]
+(defn info-table-body [items render-item-fn item-el-style]
   (table-body
     {:key                "tb"
      :showRowHover       false
@@ -604,10 +626,11 @@
           (->> (keys item)
                (map #(table-row-column
                        {:key   (str "trc-" index "-" %)
-                        :style item-el-style} (% item))))))
+                        :style item-el-style}
+                       (render-item-fn (% item)))))))
       items)))
 
-(defn info-table [headers items width]
+(defn info-table [headers items render-item-fn width]
   (let [el-style {:height "20px"}]
     (mui
       (table
@@ -615,5 +638,5 @@
          :selectable false
          :style      {:width width}}
         (info-table-header headers el-style)
-        (info-table-body items el-style)))))
+        (info-table-body items render-item-fn el-style)))))
 

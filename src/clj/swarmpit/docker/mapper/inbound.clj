@@ -70,7 +70,20 @@
                      :hostPort      (:PublishedPort p)}))
        (into [])))
 
-(defn ->service-volumes
+(defn ->service-network
+  [network networks]
+  (first (filter #(= (:Id %)
+                     (:Target network)) networks)))
+
+(defn ->service-networks
+  [service networks]
+  (->> (get-in service [:Spec :TaskTemplate :Networks])
+       (map (fn [n] (->service-network n networks)))
+       (map (fn [n] {:networkName   (:Name n)
+                     :networkDriver (:Driver n)}))
+       (into [])))
+
+(defn ->service-mounts
   [service]
   (->> (get-in service [:Spec :TaskTemplate :ContainerSpec :Mounts])
        (map (fn [v] {:containerPath (:Source v)
@@ -86,6 +99,13 @@
                 {:name  (first variable)
                  :value (second variable)})))
        (into [])))
+
+(defn ->service-deployment
+  [service]
+  (let [update-config (get-in service [:Spec :UpdateConfig])]
+    {:parallelism   (:Parallelism update-config)
+     :delay         (:Delay update-config)
+     :failureAction (:FailureAction update-config)}))
 
 (defn ->service-replicas-running
   [service-tasks]
@@ -115,7 +135,7 @@
                "running")))
 
 (defn ->service
-  [service tasks nodes]
+  [service tasks nodes networks]
   (let [service-mode (str/lower-case (name (first (keys (get-in service [:Spec :Mode])))))
         service-name (get-in service [:Spec :Name])
         service-id (get service :ID)
@@ -143,14 +163,16 @@
       :status {:info   (->service-info-status replicas replicas-running service-mode)
                :update (->service-update-status service)}
       :ports (->service-ports service)
-      :volumes (->service-volumes service)
+      :networks (->service-networks service networks)
+      :mounts (->service-mounts service)
       :variables (->service-variables service)
+      :deployment (->service-deployment service)
       :tasks (->tasks service-tasks nodes service-name service-mode))))
 
 (defn ->services
-  [services tasks nodes]
+  [services tasks nodes networks]
   (->> services
-       (map #(->service % tasks nodes))
+       (map #(->service % tasks nodes networks))
        (into [])))
 
 (defn ->network

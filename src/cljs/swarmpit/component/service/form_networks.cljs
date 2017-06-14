@@ -9,6 +9,9 @@
 
 (def headers ["Name"])
 
+(def undefined
+  (comp/form-value "Service is not connected to any networks."))
+
 (defn- form-network [value index data]
   (comp/table-row-column
     {:name (str "form-network-" index)
@@ -31,12 +34,28 @@
   (let [{:keys [networkName]} item]
     [(form-network networkName index data)]))
 
-(rum/defc form < rum/reactive [update-form? data]
+(defn- form-table
+  [networks data editable?]
+  (comp/form-table []
+                   networks
+                   data
+                   editable?
+                   render-networks
+                   (fn [index] (state/remove-item index cursor))))
+
+(defn add-item
+  []
+  (state/add-item {:networkName ""} cursor))
+
+(rum/defc form-create < rum/reactive [data]
   (let [networks (state/react cursor)]
-    (comp/form-table headers
-                     networks
-                     data
-                     (not update-form?)
-                     render-networks
-                     (fn [] (state/add-item {:networkName ""} cursor))
-                     (fn [index] (state/remove-item index cursor)))))
+    [:div
+     (comp/form-add-btn "Attach network" add-item)
+     (if (not (empty? networks))
+       (form-table networks data true))]))
+
+(rum/defc form-update < rum/reactive [data]
+  (let [networks (state/react cursor)]
+    (if (empty? networks)
+      undefined
+      (form-table networks data false))))

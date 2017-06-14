@@ -115,6 +115,10 @@ select:-webkit-autofill:focus {
     position: relative;
 }
 
+.form-row-icon-section {
+    margin-right: 10px;
+}
+
 .form-row-icon-field {
     width: 27px;
     position: relative;
@@ -191,6 +195,10 @@ select:-webkit-autofill:focus {
 
 .form-panel-tabs {
     margin-top: -4px;
+}
+
+.form-add-button {
+    margin-left: 9px;
 }
 
 /* Page layout (404/Login) */

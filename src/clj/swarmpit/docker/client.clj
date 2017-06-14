@@ -122,9 +122,11 @@
       (delete)))
 
 (defn create-service
-  [auth-config service]
-  (let [headers {:X-Registry-Auth (registry-token auth-config)}]
-    (post "/services/create" {} headers service)))
+  ([service]
+   (post "/services/create" {} nil service))
+  ([auth-config service]
+   (let [headers {:X-Registry-Auth (registry-token auth-config)}]
+     (post "/services/create" {} headers service))))
 
 (defn update-service
   [id version service]

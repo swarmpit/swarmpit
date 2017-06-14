@@ -7,7 +7,7 @@
             [swarmpit.component.service.form-settings :as settings]
             [swarmpit.component.service.form-ports :as ports]
             [swarmpit.component.service.form-networks :as networks]
-            [swarmpit.component.service.form-volumes :as volumes]
+            [swarmpit.component.service.form-mounts :as mounts]
             [swarmpit.component.service.form-variables :as variables]
             [swarmpit.component.service.form-deployment :as deployment]
             [swarmpit.component.message :as message]
@@ -20,7 +20,7 @@
 
 (defonce step-index (atom 0))
 
-(def steps ["General settings" "Ports" "Networks" "Volumes" "Environment variables" "Deployment"])
+(def steps ["General settings" "Ports" "Networks" "Mounts" "Environment variables" "Deployment"])
 
 (defn- step-previous
   [index]
@@ -83,7 +83,8 @@
   []
   (let [settings (state/get-value settings/cursor)
         ports (state/get-value ports/cursor)
-        volumes (state/get-value volumes/cursor)
+        networks (state/get-value networks/cursor)
+        volumes (state/get-value mounts/cursor)
         variables (state/get-value variables/cursor)
         deployment (state/get-value deployment/cursor)]
     (ajax/POST (routes/path-for-backend :service-create)
@@ -91,6 +92,7 @@
                 :headers       {"Authorization" (storage/get "token")}
                 :params        (-> settings
                                    (assoc :ports ports)
+                                   (assoc :networks networks)
                                    (assoc :volumes volumes)
                                    (assoc :variables variables)
                                    (assoc :deployment deployment))
@@ -129,10 +131,10 @@
           :style       stepper-style
           :orientation "vertical"}
          (step-item 0 (settings/form false))
-         (step-item 1 (ports/form))
-         (step-item 2 (networks/form false networks))
-         (step-item 3 (volumes/form))
-         (step-item 4 (variables/form))
+         (step-item 1 (ports/form-create))
+         (step-item 2 (networks/form-create networks))
+         (step-item 3 (mounts/form-create))
+         (step-item 4 (variables/form-create))
          (step-item 5 (deployment/form))))]))
 
 (defn- init-state
@@ -148,9 +150,12 @@
                     :isValid     false} settings/cursor)
   (state/set-value [] ports/cursor)
   (state/set-value [] networks/cursor)
-  (state/set-value [] volumes/cursor)
+  (state/set-value [] mounts/cursor)
   (state/set-value [] variables/cursor)
-  (state/set-value {:autoredeploy false} deployment/cursor))
+  (state/set-value {:autoredeploy  false
+                    :parallelism   1
+                    :delay         0
+                    :failureAction "pause"} deployment/cursor))
 
 (defn mount!
   [registry repository networks]

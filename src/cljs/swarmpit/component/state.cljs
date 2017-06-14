@@ -17,7 +17,7 @@
                                              :ports      []
                                              :networks   []
                                              :variables  []
-                                             :volumes    []
+                                             :mounts     []
                                              :deployment {}}}
                        :task       {:list {:filter {}}}
                        :registry   {:list   {:filter {}}

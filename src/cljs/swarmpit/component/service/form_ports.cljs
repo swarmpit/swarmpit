@@ -1,5 +1,6 @@
 (ns swarmpit.component.service.form-ports
-  (:require [material.component :as comp]
+  (:require [material.icon :as icon]
+            [material.component :as comp]
             [swarmpit.component.state :as state]
             [rum.core :as rum]))
 
@@ -8,6 +9,9 @@
 (def cursor [:page :service :wizard :ports])
 
 (def headers ["Container port" "Protocol" "Host port"])
+
+(def undefined
+  (comp/form-value "Service has no published ports."))
 
 (defn- format-port-value
   [value]
@@ -71,14 +75,30 @@
      (form-protocol protocol index)
      (form-host hostPort index)]))
 
-(rum/defc form < rum/reactive []
+(defn- form-table
+  [ports]
+  (comp/form-table headers
+                   ports
+                   nil
+                   true
+                   render-ports
+                   (fn [index] (state/remove-item index cursor))))
+
+(defn add-item
+  []
+  (state/add-item {:containerPort 0
+                   :protocol      "tcp"
+                   :hostPort      0} cursor))
+
+(rum/defc form-create < rum/reactive []
   (let [ports (state/react cursor)]
-    (comp/form-table headers
-                     ports
-                     nil
-                     true
-                     render-ports
-                     (fn [] (state/add-item {:containerPort 0
-                                             :protocol      "tcp"
-                                             :hostPort      0} cursor))
-                     (fn [index] (state/remove-item index cursor)))))
+    [:div
+     (comp/form-add-btn "Publish port" add-item)
+     (if (not (empty? ports))
+       (form-table ports))]))
+
+(rum/defc form-update < rum/reactive []
+  (let [ports (state/react cursor)]
+    (if (empty? ports)
+      undefined
+      (form-table ports))))

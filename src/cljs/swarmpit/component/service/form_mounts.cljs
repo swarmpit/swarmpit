@@ -1,17 +1,16 @@
-(ns swarmpit.component.service.form-volumes
+(ns swarmpit.component.service.form-mounts
   (:require [material.component :as comp]
             [swarmpit.component.state :as state]
             [rum.core :as rum]))
 
 (enable-console-print!)
 
-(def cursor [:page :service :wizard :volumes])
-
-(def state-item {:containerPath ""
-                 :hostPath      ""
-                 :readOnly      false})
+(def cursor [:page :service :wizard :mounts])
 
 (def headers ["Container path" "Host path" "Read only"])
+
+(def undefined
+  (comp/form-value "No mounts defined for the service."))
 
 (defn- form-container [value index]
   (comp/table-row-column
@@ -46,7 +45,7 @@
        :onCheck (fn [_ v]
                   (state/update-item index :readOnly v cursor))})))
 
-(defn- render-volumes
+(defn- render-mounts
   [item index]
   (let [{:keys [containerPath
                 hostPath
@@ -55,14 +54,30 @@
      (form-host hostPath index)
      (form-readonly readOnly index)]))
 
-(rum/defc form < rum/reactive []
-  (let [volumes (state/react cursor)]
-    (comp/form-table headers
-                     volumes
-                     nil
-                     true
-                     render-volumes
-                     (fn [] (state/add-item {:containerPath ""
-                                             :hostPath      ""
-                                             :readOnly      false} cursor))
-                     (fn [index] (state/remove-item index cursor)))))
+(defn- form-table
+  [mounts]
+  (comp/form-table headers
+                   mounts
+                   nil
+                   true
+                   render-mounts
+                   (fn [index] (state/remove-item index cursor))))
+
+(defn add-item
+  []
+  (state/add-item {:containerPath ""
+                   :hostPath      ""
+                   :readOnly      false} cursor))
+
+(rum/defc form-create < rum/reactive []
+  (let [mounts (state/react cursor)]
+    [:div
+     (comp/form-add-btn "Mount volume" add-item)
+     (if (not (empty? mounts))
+       (form-table mounts))]))
+
+(rum/defc form-update < rum/reactive []
+  (let [mounts (state/react cursor)]
+    (if (empty? mounts)
+      undefined
+      (form-table mounts))))
