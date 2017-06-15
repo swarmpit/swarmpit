@@ -26,12 +26,8 @@
          :private     (:is_private repository)}))
 
 (defn ->user-repositories
-  [repositories page]
-  (let [results (->> (:results repositories)
-                     (map #(->user-repository %))
-                     (map #(assoc % :id (hash (:name %))))
-                     (into []))]
-    {:page    page
-     :limit   20
-     :total   (:count repositories)
-     :results results}))
+  [repositories]
+  (->> (:results repositories)
+       (map #(->user-repository %))
+       (map #(assoc % :id (hash (:name %))))
+       (into [])))

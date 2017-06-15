@@ -6,10 +6,16 @@
             [swarmpit.url :refer [dispatch!]]
             [clojure.walk :refer [keywordize-keys]]
             [swarmpit.routes :as routes]
+            [clojure.string :as string]
             [rum.core :as rum]
             [ajax.core :as ajax]))
 
 (def cursor [:page :service :wizard :image :other])
+
+(defn- filter-items
+  "Filter list items based on given predicate"
+  [items predicate]
+  (filter #(string/includes? (:name %) predicate) items))
 
 (defn- render-item
   [item]
@@ -17,10 +23,9 @@
     value))
 
 (defn- repository-handler
-  [registry query]
+  [registry]
   (ajax/GET (routes/path-for-backend :repositories {:registryName registry})
             {:headers {"Authorization" (storage/get "token")}
-             :params  {:repositoryQuery query}
              :finally (state/update-value [:searching] true cursor)
              :handler (fn [response]
                         (let [res (keywordize-keys response)]
@@ -41,15 +46,14 @@
                     :value       %
                     :primaryText %}))))))
 
-(defn- form-repository [registry repository]
+(defn- form-repository [repository]
   (comp/form-comp
     "REPOSITORY"
     (comp/text-field
-      {:hintText "Find repository"
+      {:hintText "Filter by name"
        :value    repository
        :onChange (fn [_ v]
-                   (state/update-value [:repository] v cursor)
-                   (repository-handler registry v))})))
+                   (state/update-value [:repository] v cursor))})))
 
 (rum/defc form-loading < rum/static []
   (comp/form-comp-loading true))
@@ -78,15 +82,16 @@
   (let [{:keys [searching
                 repository
                 registry
-                data]} (state/react cursor)]
+                data]} (state/react cursor)
+        filtered-data (filter-items data repository)]
     (if (some? registry)
       [:div.form-edit
        (form-registry registry registries)
-       (form-repository registry repository)
+       (form-repository repository)
        [:div.form-edit-loader
         (if searching
           (form-loading)
           (form-loaded))
-        (repository-list registry data)]]
+        (repository-list registry filtered-data)]]
       [:div.form-edit
        (comp/form-icon-value icon/info "No custom registries found. Please ask your admin to create some :)")])))

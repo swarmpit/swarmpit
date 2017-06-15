@@ -1,4 +1,4 @@
-(ns swarmpit.component.service.create-image-dockerhub
+(ns swarmpit.component.service.create-image-public
   (:require [material.component :as comp]
             [swarmpit.component.state :as state]
             [swarmpit.storage :as storage]
@@ -8,7 +8,7 @@
             [rum.core :as rum]
             [ajax.core :as ajax]))
 
-(def cursor [:page :service :wizard :image :dockerhub])
+(def cursor [:page :service :wizard :image :public])
 
 (defn- render-item
   [item]

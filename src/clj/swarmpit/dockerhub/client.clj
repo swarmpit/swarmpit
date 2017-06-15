@@ -60,7 +60,7 @@
   [username token]
   (let [api (str "/repositories/" username)
         url (str v2-base-url api)]
-    (get url (jwt-auth token) nil)))
+    (get url (jwt-auth token) {:page_size 1000})))
 
 (defn repositories
   [query page]

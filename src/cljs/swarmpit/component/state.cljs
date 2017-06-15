@@ -10,9 +10,9 @@
                        :node       {:list {:filter {}}}
                        :service    {:list   {:filter {}}
                                     :wizard {:data       {}
-                                             :image      {:dockerhub  {}
-                                                          :repository {}
-                                                          :other      {}}
+                                             :image      {:public {}
+                                                          :user   {}
+                                                          :other  {}}
                                              :settings   {}
                                              :ports      []
                                              :networks   []

@@ -196,14 +196,12 @@
 ;; Repository v2 handler
 
 (defmethod dispatch :repositories [_]
-  (fn [{:keys [route-params query-string]}]
-    (let [query (keywordize-keys (query->map query-string))
-          registry-name (:registryName route-params)
-          repository-query (:repositoryQuery query)
+  (fn [{:keys [route-params]}]
+    (let [registry-name (:registryName route-params)
           registry (api/registry-by-name registry-name)]
       (if (nil? registry)
         (resp-error 400 "Unknown registry")
-        (->> (api/repositories registry repository-query)
+        (->> (api/repositories registry)
              (resp-ok))))))
 
 (defmethod dispatch :repository-tags [_]
@@ -245,14 +243,12 @@
              (resp-ok))))))
 
 (defmethod dispatch :dockerhub-user-repo [_]
-  (fn [{:keys [route-params query-string]}]
-    (let [query (keywordize-keys (query->map query-string))
-          username (:username route-params)
-          repository-page (:repositoryPage query)
+  (fn [{:keys [route-params]}]
+    (let [username (:username route-params)
           user (api/dockerhub-user-by-name username)]
       (if (nil? user)
         (resp-error 400 "Unknown dockerhub user")
-        (->> (api/dockerhub-user-repositories user repository-page)
+        (->> (api/dockerhub-user-repositories user)
              (resp-ok))))))
 
 (defmethod dispatch :dockerhub-users [_]

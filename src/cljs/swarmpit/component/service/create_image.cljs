@@ -2,9 +2,9 @@
   (:require [material.icon :as icon]
             [material.component :as comp]
             [swarmpit.component.state :as state]
-            [swarmpit.component.service.create-image-dockerhub :as cid]
+            [swarmpit.component.service.create-image-public :as cip]
             [swarmpit.component.service.create-image-other :as cio]
-            [swarmpit.component.service.create-image-repository :as cir]
+            [swarmpit.component.service.create-image-user :as ciu]
             [rum.core :as rum]))
 
 (def tabs-inkbar-style
@@ -36,37 +36,42 @@
            :className "service-image-tab"
            :icon      (comp/svg icon/search)
            :style     tab-style}
-          (cid/form))
+          (cip/form))
         (comp/tab
           {:key       "tab2"
            :label     "DOCKERHUB USERS"
            :className "service-image-tab"
            :icon      (comp/svg icon/dockerhub)
            :style     tab-style
-           :onActive  (fn [] (let [state (state/get-value cir/cursor)
+           :onActive  (fn [] (let [state (state/get-value ciu/cursor)
                                    user (:user state)]
                                (if (some? user)
-                                 (cir/repository-handler user 1))))}
-          (cir/form users))
+                                 (ciu/repository-handler user))))}
+          (ciu/form users))
         (comp/tab
           {:key       "tab3"
            :label     "OTHER REGISTRIES"
            :className "service-image-tab"
            :icon      (comp/svg icon/registries)
-           :style     tab-style}
+           :style     tab-style
+           :onActive  (fn [] (let [state (state/get-value cio/cursor)
+                                   registry (:registry state)]
+                               (if (some? registry)
+                                 (cio/repository-handler registry))))}
           (cio/form registries))))]])
 
-(defn- init-dockerhub-tab-state
+(defn- init-public-tab-state
   []
-  (state/update-value [:searching] false cid/cursor)
-  (state/update-value [:data] [] cid/cursor)
-  (state/update-value [:repository] "" cid/cursor))
+  (state/update-value [:searching] false cip/cursor)
+  (state/update-value [:data] [] cip/cursor)
+  (state/update-value [:repository] "" cip/cursor))
 
-(defn- init-repository-tab-state
+(defn- init-user-tab-state
   [user]
-  (state/update-value [:loading] false cir/cursor)
-  (state/update-value [:data] [] cir/cursor)
-  (state/update-value [:user] user cir/cursor))
+  (state/update-value [:searching] false ciu/cursor)
+  (state/update-value [:data] [] ciu/cursor)
+  (state/update-value [:repository] "" ciu/cursor)
+  (state/update-value [:user] user ciu/cursor))
 
 (defn- init-other-tab-state
   [registry]
@@ -79,8 +84,8 @@
   [registries users]
   (let [registry (first registries)
         user (first users)]
-    (init-dockerhub-tab-state)
-    (init-repository-tab-state user)
+    (init-public-tab-state)
+    (init-user-tab-state user)
     (init-other-tab-state registry)))
 
 (defn mount!

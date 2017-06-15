@@ -213,11 +213,11 @@
       (cc/delete-docker-user)))
 
 (defn dockerhub-user-repositories
-  [user repository-page]
-  (dhmi/->user-repositories
-    (->> (dhc/login user)
+  [user]
+  (->> (dhc/login user)
          :token
-         (dhc/user-repositories (:username user))) repository-page))
+         (dhc/user-repositories (:username user))
+         (dhmi/->user-repositories)))
 
 (defn dockerhub-repositories
   [repository-query repository-page]
@@ -234,9 +234,8 @@
 ;;; Repository V2 API
 
 (defn repositories
-  [registry repository-query]
+  [registry]
   (->> (rc/repositories registry)
-       (filter #(string/includes? % (or repository-query "")))
        (rmi/->repositories)))
 
 (defn tags
