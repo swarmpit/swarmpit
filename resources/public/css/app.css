@@ -266,3 +266,9 @@ select:-webkit-autofill:focus {
     border: 1px solid rgb(224, 228, 231);
     border-radius: .25em;
 }
+
+/* Custom tab */
+
+.service-image-tab > div > div > svg {
+    fill: rgb(117, 117, 117) !important;
+}

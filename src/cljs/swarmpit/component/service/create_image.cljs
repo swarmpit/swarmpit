@@ -31,23 +31,29 @@
          :inkBarStyle           tabs-inkbar-style
          :tabItemContainerStyle tabs-container-style}
         (comp/tab
-          {:key   "tab1"
-           :label "SEARCH DOCKERHUB"
-           :style tab-style}
+          {:key       "tab1"
+           :label     "SEARCH DOCKERHUB"
+           :className "service-image-tab"
+           :icon      (comp/svg icon/search)
+           :style     tab-style}
           (cid/form))
         (comp/tab
-          {:key      "tab2"
-           :label    "DOCKERHUB USERS"
-           :style    tab-style
-           :onActive (fn [] (let [state (state/get-value cir/cursor)
-                                  user (:user state)]
-                              (if (some? user)
-                                (cir/repository-handler user 1))))}
+          {:key       "tab2"
+           :label     "DOCKERHUB USERS"
+           :className "service-image-tab"
+           :icon      (comp/svg icon/dockerhub)
+           :style     tab-style
+           :onActive  (fn [] (let [state (state/get-value cir/cursor)
+                                   user (:user state)]
+                               (if (some? user)
+                                 (cir/repository-handler user 1))))}
           (cir/form users))
         (comp/tab
-          {:key   "tab3"
-           :label "OTHER REGISTRIES"
-           :style tab-style}
+          {:key       "tab3"
+           :label     "OTHER REGISTRIES"
+           :className "service-image-tab"
+           :icon      (comp/svg icon/registries)
+           :style     tab-style}
           (cio/form registries))))]])
 
 (defn- init-dockerhub-tab-state
