@@ -249,8 +249,31 @@
     (let [query (keywordize-keys (query->map query-string))
           username (:username route-params)
           repository-page (:repositoryPage query)
-          user (api/dockerhub-user username)]
+          user (api/dockerhub-user-by-name username)]
       (if (nil? user)
         (resp-error 400 "Unknown dockerhub user")
         (->> (api/dockerhub-user-repositories user repository-page)
              (resp-ok))))))
+
+(defmethod dispatch :dockerhub-users [_]
+  (fn [_]
+    (->> (api/dockerhub-users)
+         (resp-ok))))
+
+(defmethod dispatch :dockerhub-user [_]
+  (fn [{:keys [route-params]}]
+    (->> (api/dockerhub-user (:id route-params))
+         (resp-ok))))
+
+(defmethod dispatch :dockerhub-user-create [_]
+  (fn [{:keys [params]}]
+    (let [payload (keywordize-keys params)
+          user-info (api/dockerhub-user-info payload)]
+      (api/dockerhub-user-login payload)
+      (->> (api/create-dockerhub-user payload user-info)
+           (resp-created)))))
+
+(defmethod dispatch :dockerhub-user-delete [_]
+  (fn [{:keys [route-params]}]
+    (api/delete-dockerhub-user (:id route-params))
+    (resp-ok)))

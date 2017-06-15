@@ -21,7 +21,6 @@
       {:name     "username"
        :key      "username"
        :required true
-
        :value    value
        :onChange (fn [_ v]
                    (state/update-value [:username] v cursor))})))
@@ -40,21 +39,21 @@
 
 (defn- add-user-handler
   []
-  (ajax/POST (routes/path-for-backend :dockerhub-create)
+  (ajax/POST (routes/path-for-backend :dockerhub-user-create)
              {:format        :json
               :headers       {"Authorization" (storage/get "token")}
               :params        (state/get-value cursor)
               :finally       (progress/mount!)
               :handler       (fn [response]
                                (let [id (get response "id")
-                                     message (str "Dockerhub user " id " has been added.")]
+                                     message (str "User " id " has been added.")]
                                  (progress/unmount!)
                                  (dispatch!
-                                   (routes/path-for-frontend :dockerhub-list))
+                                   (routes/path-for-frontend :dockerhub-user-info {:id id}))
                                  (message/mount! message)))
               :error-handler (fn [{:keys [response]}]
                                (let [error (get response "error")
-                                     message (str "Dockerhub user cannot be added. Reason: " error)]
+                                     message (str "User cannot be added. Reason: " error)]
                                  (progress/unmount!)
                                  (message/mount! message)))}))
 
@@ -65,11 +64,11 @@
     [:div
      [:div.form-panel
       [:div.form-panel-left
-       (comp/panel-info icon/dockerhub "New dockerhub user")]
+       (comp/panel-info icon/dockerhub "Add dockerhub user")]
       [:div.form-panel-right
        (comp/mui
          (comp/raised-button
-           {:label      "Create"
+           {:label      "Add"
             :disabled   (not isValid)
             :primary    true
             :onTouchTap add-user-handler}))]]

@@ -7,10 +7,22 @@
 
 (def cursor [:page :dockerhub :list :filter])
 
+(def headers ["Name" "Username" "Company" "Is Organization"])
+
+(def render-item-keys
+  [[:name] [:username] [:company] [:role]])
+
+(defn- render-item
+  [item]
+  (let [value (val item)]
+    (case (key item)
+      :role (comp/checkbox {:checked (= "Organization" value)})
+      value)))
+
 (defn- filter-items
   "Filter list items based on given predicate"
   [items predicate]
-  (filter #(string/includes? % predicate) items))
+  (filter #(string/includes? (:name %) predicate) items))
 
 (rum/defc dockeruser-list < rum/reactive [items]
   (let [{:keys [name]} (state/react cursor)
@@ -19,17 +31,20 @@
      [:div.form-panel
       [:div.form-panel-left
        (comp/panel-text-field
-         {:hintText "Filter by user"
+         {:hintText "Filter by name"
           :onChange (fn [_ v]
                       (state/update-value [:name] v cursor))})]
       [:div.form-panel-right
        (comp/mui
          (comp/raised-button
-           {:href    (routes/path-for-frontend :dockerhub-create)
+           {:href    (routes/path-for-frontend :dockerhub-user-create)
             :label   "Add User"
             :primary true}))]]
-     (comp/single-list filtered-items
-                       (fn [item] (print item)))]))
+     (comp/list-table headers
+                      filtered-items
+                      render-item
+                      render-item-keys
+                      :dockerhub-user-info)]))
 
 (defn- init-state
   []

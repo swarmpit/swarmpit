@@ -96,12 +96,20 @@
   (find-all-docs "dockeruser"))
 
 (defn docker-user
+  [id]
+  (get-doc id))
+
+(defn docker-user-by-name
   [username]
   (find-doc {:username {"$eq" username}} "dockeruser"))
 
 (defn create-docker-user
   [docker-user]
   (create-doc docker-user))
+
+(defn delete-docker-user
+  [docker-user]
+  (delete-doc docker-user))
 
 ;; Registry
 

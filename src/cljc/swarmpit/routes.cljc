@@ -25,15 +25,18 @@
        "/nodes/"      {:get {[:id] :node}}
        "/tasks"       {:get :tasks}
        "/tasks/"      {:get {[:id] :task}}
-       "/admin/"      {"users"       {:get  :users
-                                      :post :user-create}
-                       "dockerhub"   {:post :dockerhub-create}
-                       "users/"      {:get    {[:id] :user}
-                                      :delete {[:id] :user-delete}}
-                       "registries"  {:get  :registries
-                                      :post :registry-create}
-                       "registries/" {:get    {[:id] :registry}
-                                      :delete {[:id] :registry-delete}}}}])
+       "/admin/"      {"users"            {:get  :users
+                                           :post :user-create}
+                       "dockerhub/users"  {:get  :dockerhub-users
+                                           :post :dockerhub-user-create}
+                       "dockerhub/users/" {:get    {[:id] :dockerhub-user}
+                                           :delete {[:id] :dockerhub-user-delete}}
+                       "users/"           {:get    {[:id] :user}
+                                           :delete {[:id] :user-delete}}
+                       "registries"       {:get  :registries
+                                           :post :registry-create}
+                       "registries/"      {:get    {[:id] :registry}
+                                           :delete {[:id] :registry-delete}}}}])
 
 (def frontend ["" {"/"           :index
                    "/login"      :login
@@ -53,8 +56,9 @@
                    "/registries" {""        :registry-list
                                   "/create" :registry-create
                                   ["/" :id] :registry-info}
-                   "/dockerhub"  {""        :dockerhub-list
-                                  "/create" :dockerhub-create}
+                   "/dockerhub"  {""        :dockerhub-user-list
+                                  "/create" :dockerhub-user-create
+                                  ["/" :id] :dockerhub-user-info}
                    "/users"      {""        :user-list
                                   "/create" :user-create
                                   ["/" :id] :user-info}}])

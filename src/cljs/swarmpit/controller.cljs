@@ -27,6 +27,7 @@
             [swarmpit.component.registry.info :as reginfo]
             [swarmpit.component.registry.list :as reglist]
             [swarmpit.component.registry.create :as regcreate]
+            [swarmpit.component.dockerhub.info :as dhinfo]
             [swarmpit.component.dockerhub.list :as dhlist]
             [swarmpit.component.dockerhub.create :as dhcreate]))
 
@@ -175,15 +176,21 @@
   [_]
   (regcreate/mount!))
 
-;;; Dockerhub controller
+;;; Dockerhub user controller
 
-(defmethod dispatch :dockerhub-list
+(defmethod dispatch :dockerhub-user-list
   [_]
-  (fetch (routes/path-for-backend :dockerhub-users-sum)
+  (fetch (routes/path-for-backend :dockerhub-users)
          (fn [response]
            (dhlist/mount! response))))
 
-(defmethod dispatch :dockerhub-create
+(defmethod dispatch :dockerhub-user-info
+  [{:keys [route-params]}]
+  (fetch (routes/path-for-backend :dockerhub-user route-params)
+         (fn [response]
+           (dhinfo/mount! response))))
+
+(defmethod dispatch :dockerhub-user-create
   [_]
   (dhcreate/mount!))
 

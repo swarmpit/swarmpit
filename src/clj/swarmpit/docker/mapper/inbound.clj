@@ -105,7 +105,7 @@
   (let [update-config (get-in service [:Spec :UpdateConfig])]
     {:parallelism   (or (:Parallelism update-config) 1)
      :delay         (or (:Delay update-config) 0)
-     :failureAction (or (:FailureAction update-config) "pause"}))
+     :failureAction (or (:FailureAction update-config) "pause")}))
 
 (defn ->service-replicas-running
   [service-tasks]

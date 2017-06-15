@@ -50,6 +50,12 @@
         url (str v2-base-url api)]
     (post url nil user)))
 
+(defn info
+  [user]
+  (let [api (str "/users/" (:username user))
+        url (str v2-base-url api)]
+    (get url nil nil)))
+
 (defn user-repositories
   [username token]
   (let [api (str "/repositories/" username)

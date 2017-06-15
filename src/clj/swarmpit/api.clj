@@ -180,24 +180,37 @@
   []
   (cc/docker-users))
 
-;(defn dockerhub-user-exist?
-;  [dockerhub-user]
-;  (some? (registry-by-name (:name dockerhub-user))))
-
 (defn dockerhub-users-sum
   []
   (->> (dockerhub-users)
        (map :username)
        (into [])))
 
-(defn dockerhub-user
+(defn dockerhub-user-info
+  [user]
+  (dhc/info user))
+
+(defn dockerhub-user-login
+  [user]
+  (dhc/login user))
+
+(defn dockerhub-user-by-name
   [username]
-  (cc/docker-user username))
+  (cc/docker-user-by-name username))
+
+(defn dockerhub-user
+  [user-id]
+  (cc/docker-user user-id))
 
 (defn create-dockerhub-user
-  [dockerhub-user]
-  (->> (cmo/->docker-user dockerhub-user)
+  [dockerhub-user dockerhub-user-info]
+  (->> (cmo/->docker-user dockerhub-user dockerhub-user-info)
        (cc/create-docker-user)))
+
+(defn delete-dockerhub-user
+  [user-id]
+  (-> (dockerhub-user user-id)
+      (cc/delete-docker-user)))
 
 (defn dockerhub-user-repositories
   [user repository-page]
@@ -213,7 +226,7 @@
 
 (defn dockerhub-tags
   [repository-name username]
-  (let [user (dockerhub-user username)]
+  (let [user (dockerhub-user-by-name username)]
     (->> (dhc/tags repository-name user)
          (map :name)
          (into []))))
