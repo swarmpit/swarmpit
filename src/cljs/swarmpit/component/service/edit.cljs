@@ -22,7 +22,8 @@
   [service-id]
   (let [settings (state/get-value settings/cursor)
         ports (state/get-value ports/cursor)
-        volumes (state/get-value mounts/cursor)
+        networks (state/get-value networks/cursor)
+        mounts (state/get-value mounts/cursor)
         variables (state/get-value variables/cursor)
         deployment (state/get-value deployment/cursor)]
     (ajax/POST (routes/path-for-backend :service-update {:id service-id})
@@ -30,7 +31,8 @@
                 :headers       {"Authorization" (storage/get "token")}
                 :params        (-> settings
                                    (assoc :ports ports)
-                                   (assoc :volumes volumes)
+                                   (assoc :networks networks)
+                                   (assoc :mounts mounts)
                                    (assoc :variables variables)
                                    (assoc :deployment deployment))
                 :finally       (progress/mount!)
@@ -95,7 +97,7 @@
   (state/set-value (select-keys item [:repository :version :serviceName :mode :replicas]) settings/cursor)
   (state/set-value (:ports item) ports/cursor)
   (state/set-value (:networks item) networks/cursor)
-  (state/set-value (:volumes item) mounts/cursor)
+  (state/set-value (:mounts item) mounts/cursor)
   (state/set-value (:variables item) variables/cursor)
   (state/set-value (:deployment item) deployment/cursor))
 

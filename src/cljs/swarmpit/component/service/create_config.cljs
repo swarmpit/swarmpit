@@ -84,7 +84,7 @@
   (let [settings (state/get-value settings/cursor)
         ports (state/get-value ports/cursor)
         networks (state/get-value networks/cursor)
-        volumes (state/get-value mounts/cursor)
+        mounts (state/get-value mounts/cursor)
         variables (state/get-value variables/cursor)
         deployment (state/get-value deployment/cursor)]
     (ajax/POST (routes/path-for-backend :service-create)
@@ -93,7 +93,7 @@
                 :params        (-> settings
                                    (assoc :ports ports)
                                    (assoc :networks networks)
-                                   (assoc :volumes volumes)
+                                   (assoc :mounts mounts)
                                    (assoc :variables variables)
                                    (assoc :deployment deployment))
                 :finally       (progress/mount!)
