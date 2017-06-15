@@ -574,7 +574,7 @@
           (table-row-column
             {:key (str "trc-" index)}
             (icon-button
-              {:onClick  #(remove-item-fn index)}
+              {:onClick #(remove-item-fn index)}
               (svg
                 {:hoverColor "rgb(244, 67, 54)"}
                 icon/trash))))) items)))
@@ -584,7 +584,8 @@
   (mui
     (table
       {:key        "tbl"
-       :selectable false}
+       :selectable false
+       :style      {:minWidth "700px"}}
       (if (not (empty? headers))
         (form-table-header headers))
       (form-table-body items data render-items-fn remove-item-fn))))

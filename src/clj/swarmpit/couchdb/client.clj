@@ -4,7 +4,8 @@
             [cheshire.core :refer [parse-string generate-string]]))
 
 (def ^:private base-url
-  (or (System/getenv "SWARMPIT_DB") (str "http://localhost:5984")))
+  (or (System/getenv "SWARMPIT_DB")
+      (str "http://localhost:5984")))
 
 (def headers
   {"Accept"       "application/json"

@@ -11,7 +11,6 @@
 (set! *warn-on-reflection* true)
 (set! *unchecked-math* :warn-on-boxed)
 
-
 (defn- on-startup
   []
   (print (:out (sh "sh" "dev/script/init-db.sh")))
