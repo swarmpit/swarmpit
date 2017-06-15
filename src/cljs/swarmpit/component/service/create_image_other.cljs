@@ -95,4 +95,6 @@
           (form-loaded))
         (repository-list registry filtered-data)]]
       [:div.form-edit
-       (comp/form-icon-value icon/info "No custom registries found. Please ask your admin to create some :)")])))
+       (if (storage/admin?)
+         (comp/form-icon-value icon/info [:span "No custom registries found. Add new " [:a {:href (routes/path-for-frontend :registry-create)} "registry."]])
+         (comp/form-icon-value icon/info "No custom registries found. Please ask your admin to setup."))])))

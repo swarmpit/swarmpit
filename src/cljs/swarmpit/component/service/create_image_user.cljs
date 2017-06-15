@@ -94,5 +94,7 @@
           (form-loaded))
         (repository-list filtered-data)]]
       [:div.form-edit
-       (comp/form-icon-value icon/info "No docker user found. Please ask your admin to create some :)")])))
+       (if (storage/admin?)
+         (comp/form-icon-value icon/info [:span "No dockerhub users found. Add new " [:a {:href (routes/path-for-frontend :dockerhub-user-create)} "user."]])
+         (comp/form-icon-value icon/info "No dockerhub users found. Please ask your admin to setup."))])))
 
