@@ -3,15 +3,12 @@
   (:require [org.httpkit.client :as http]
             [cheshire.core :refer [parse-string generate-string]]))
 
-(def ^:private base-domain "localhost")
-(def ^:private base-port 5984)
 (def ^:private base-url
-  (str "http://" base-domain ":" base-port))
+  (or (System/getenv "SWARMPIT_DB") (str "http://localhost:5984")))
 
 (def headers
   {"Accept"       "application/json"
-   "Content-Type" "application/json"
-   "Host"         "localhost:5984"})
+   "Content-Type" "application/json"})
 
 (defn- execute
   [call-fx]
@@ -82,6 +79,10 @@
     (delete url {:rev (:_rev doc)})))
 
 ;; Database
+
+(defn db-version
+  []
+  (get "/"))
 
 (defn create-database
   []

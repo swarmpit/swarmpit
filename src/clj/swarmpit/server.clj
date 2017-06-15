@@ -11,7 +11,8 @@
             [clojure.string :refer [starts-with?]]
             [swarmpit.handler :as handler :refer :all]
             [swarmpit.routes :as routes]
-            [swarmpit.token :as token]))
+            [swarmpit.token :as token]
+            [swarmpit.install :as install]))
 
 (def unsecure-api #{{:request-method :post
                      :uri            "/login"}
@@ -86,6 +87,7 @@
       wrap-gzip))
 
 (defn -main [& [port]]
+  (install/init)
   (let [port (or port 8080)]
     (run-server app {:port port})
     (println (str "Server running on port " port))))

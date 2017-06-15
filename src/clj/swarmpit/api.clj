@@ -11,13 +11,6 @@
             [swarmpit.couchdb.client :as cc]
             [swarmpit.couchdb.mapper.outbound :as cmo]))
 
-(defn create-database
-  []
-  (try
-    (cc/create-database)
-    (catch Exception ex
-      (get-in (ex-data ex) [:body :error]))))
-
 ;;; User API
 
 (defn users

@@ -2,7 +2,7 @@
   (:require [ring.middleware.reload :refer [wrap-reload]]
             [clojure.java.shell :refer [sh]]
             [figwheel-sidecar.repl-api :as figwheel]
-            [swarmpit.api :as api]
+            [swarmpit.install :as install]
             [swarmpit.server]))
 
 ;; Let Clojure warn you when it needs to reflect on types, or when it does math
@@ -11,21 +11,11 @@
 (set! *warn-on-reflection* true)
 (set! *unchecked-math* :warn-on-boxed)
 
-(defn- init-user
-  []
-  (api/create-user {:username "admin"
-                    :password "admin"
-                    :email    "admin@admin.com"
-                    :role     "admin"}))
 
 (defn- on-startup
   []
   (print (:out (sh "sh" "dev/script/init-db.sh")))
-  (println (str "Swarmpit DB schema status: " (or (:reason (api/create-database))
-                                                  "Database has been created.")))
-  (println (str "Swarmpit DEV user status: " (if (some? (init-user))
-                                               "Admin user has been created."
-                                               "Admin user already exist."))))
+  (install/init))
 
 (def http-handler
   (wrap-reload #'swarmpit.server/app))
