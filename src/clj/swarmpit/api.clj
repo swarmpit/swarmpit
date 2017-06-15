@@ -176,48 +176,51 @@
 
 ;;; Repository Dockerhub API
 
-(defn dockerhub-users
+(defn dockerusers
   []
   (cc/docker-users))
 
-(defn dockerhub-users-sum
+(defn dockerusers-sum
   []
-  (->> (dockerhub-users)
+  (->> (dockerusers)
        (map :username)
        (into [])))
 
-(defn dockerhub-user-info
-  [user]
-  (dhc/info user))
+(defn dockeruser-info
+  [dockeruser]
+  (dhc/info dockeruser))
 
-(defn dockerhub-user-login
-  [user]
-  (dhc/login user))
+(defn dockeruser-login
+  [dockeruser]
+  (dhc/login dockeruser))
 
-(defn dockerhub-user-by-name
-  [username]
-  (cc/docker-user-by-name username))
+(defn dockeruser-by-username
+  [docker-username]
+  (cc/docker-user-by-name docker-username))
 
-(defn dockerhub-user
-  [user-id]
-  (cc/docker-user user-id))
+(defn dockeruser
+  [dockeruser-id]
+  (cc/docker-user dockeruser-id))
 
-(defn create-dockerhub-user
-  [dockerhub-user dockerhub-user-info]
-  (->> (cmo/->docker-user dockerhub-user dockerhub-user-info)
+(defn create-dockeruser
+  [dockeruser dockeruser-info]
+  (->> (cmo/->docker-user dockeruser dockeruser-info)
        (cc/create-docker-user)))
 
-(defn delete-dockerhub-user
-  [user-id]
-  (-> (dockerhub-user user-id)
+(defn delete-dockeruser
+  [dockeruser-id]
+  (-> (dockeruser dockeruser-id)
       (cc/delete-docker-user)))
 
-(defn dockerhub-user-repositories
-  [user]
-  (->> (dhc/login user)
-         :token
-         (dhc/user-repositories (:username user))
-         (dhmi/->user-repositories)))
+(defn dockeruser-repositories
+  [dockeruser]
+  (let [user-token (:token (dhc/login dockeruser))]
+    (->> (dhc/namespaces user-token)
+         :namespaces
+         (map #(:results (dhc/repositories-by-namespace user-token %)))
+         (flatten)
+         (dhmi/->user-repositories)
+         (filter #(:private %)))))
 
 (defn dockerhub-repositories
   [repository-query repository-page]
@@ -226,7 +229,7 @@
 
 (defn dockerhub-tags
   [repository-name username]
-  (let [user (dockerhub-user-by-name username)]
+  (let [user (dockeruser-by-username username)]
     (->> (dhc/tags repository-name user)
          (map :name)
          (into []))))

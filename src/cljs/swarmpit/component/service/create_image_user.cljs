@@ -19,10 +19,7 @@
 
 (defn- render-item
   [item]
-  (let [value (val item)]
-    (case (key item)
-      :private (comp/checkbox {:checked value})
-      value)))
+  (val item))
 
 (defn repository-handler
   [user]
@@ -36,7 +33,7 @@
 
 (defn- form-username [user users]
   (comp/form-comp
-    "USERNAME"
+    "DOCKER USER"
     (comp/select-field
       {:value    user
        :onChange (fn [_ _ v]
@@ -76,10 +73,10 @@
                                                     {}
                                                     {:repository (repository i)
                                                      :registry   "dockerhub"})))}
-        (comp/list-table-header ["Name" "Description" "Is Private"])
+        (comp/list-table-header ["Name" "Description"])
         (comp/list-table-body data
                               render-item
-                              [[:name] [:description] [:private]])))))
+                              [[:name] [:description]])))))
 
 (rum/defc form < rum/reactive [users]
   (let [{:keys [searching

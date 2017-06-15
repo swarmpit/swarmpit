@@ -80,7 +80,7 @@
 (defmethod dispatch :dockerhub-create [_]
   (fn [{:keys [params]}]
     (let [payload (keywordize-keys params)
-          response (api/create-dockerhub-user payload)]
+          response (api/create-dockeruser payload)]
       (if (some? response)
         (resp-created (select-keys response [:id]))
         (resp-error 400 "Dockerhub already exist")))))
@@ -221,7 +221,7 @@
 
 (defmethod dispatch :dockerhub-users-sum [_]
   (fn [_]
-    (->> (api/dockerhub-users-sum)
+    (->> (api/dockerusers-sum)
          (resp-ok))))
 
 (defmethod dispatch :dockerhub-repo [_]
@@ -245,31 +245,31 @@
 (defmethod dispatch :dockerhub-user-repo [_]
   (fn [{:keys [route-params]}]
     (let [username (:username route-params)
-          user (api/dockerhub-user-by-name username)]
+          user (api/dockeruser-by-username username)]
       (if (nil? user)
         (resp-error 400 "Unknown dockerhub user")
-        (->> (api/dockerhub-user-repositories user)
+        (->> (api/dockeruser-repositories user)
              (resp-ok))))))
 
 (defmethod dispatch :dockerhub-users [_]
   (fn [_]
-    (->> (api/dockerhub-users)
+    (->> (api/dockerusers)
          (resp-ok))))
 
 (defmethod dispatch :dockerhub-user [_]
   (fn [{:keys [route-params]}]
-    (->> (api/dockerhub-user (:id route-params))
+    (->> (api/dockeruser (:id route-params))
          (resp-ok))))
 
 (defmethod dispatch :dockerhub-user-create [_]
   (fn [{:keys [params]}]
     (let [payload (keywordize-keys params)
-          user-info (api/dockerhub-user-info payload)]
-      (api/dockerhub-user-login payload)
-      (->> (api/create-dockerhub-user payload user-info)
+          user-info (api/dockeruser-info payload)]
+      (api/dockeruser-login payload)
+      (->> (api/create-dockeruser payload user-info)
            (resp-created)))))
 
 (defmethod dispatch :dockerhub-user-delete [_]
   (fn [{:keys [route-params]}]
-    (api/delete-dockerhub-user (:id route-params))
+    (api/delete-dockeruser (:id route-params))
     (resp-ok)))

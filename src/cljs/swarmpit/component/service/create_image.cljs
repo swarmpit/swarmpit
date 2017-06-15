@@ -32,14 +32,14 @@
          :tabItemContainerStyle tabs-container-style}
         (comp/tab
           {:key       "tab1"
-           :label     "SEARCH DOCKERHUB"
+           :label     "SEARCH PUBLIC"
            :className "service-image-tab"
            :icon      (comp/svg icon/search)
            :style     tab-style}
           (cip/form))
         (comp/tab
           {:key       "tab2"
-           :label     "DOCKERHUB USERS"
+           :label     "SEARCH PRIVATE"
            :className "service-image-tab"
            :icon      (comp/svg icon/dockerhub)
            :style     tab-style

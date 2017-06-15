@@ -27,7 +27,7 @@
 
 (defn ->user-repositories
   [repositories]
-  (->> (:results repositories)
+  (->> repositories
        (map #(->user-repository %))
        (map #(assoc % :id (hash (:name %))))
        (into [])))

@@ -56,11 +56,17 @@
         url (str v2-base-url api)]
     (get url nil nil)))
 
-(defn user-repositories
-  [username token]
-  (let [api (str "/repositories/" username)
+(defn repositories-by-namespace
+  [token namespace]
+  (let [api (str "/repositories/" namespace)
         url (str v2-base-url api)]
     (get url (jwt-auth token) {:page_size 1000})))
+
+(defn namespaces
+  [token]
+  (let [api "/repositories/namespaces"
+        url (str v2-base-url api)]
+    (get url (jwt-auth token) nil)))
 
 (defn repositories
   [query page]
