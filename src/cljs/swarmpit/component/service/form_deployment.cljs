@@ -10,7 +10,7 @@
 (defn- form-parallelism [value]
   (comp/form-comp
     "PARALLELISM"
-    (comp/vtext-field
+    (comp/text-field
       {:name     "parallelism"
        :key      "parallelism"
        :type     "number"
@@ -22,7 +22,7 @@
 (defn- form-delay [value]
   (comp/form-comp
     "DELAY"
-    (comp/vtext-field
+    (comp/text-field
       {:name     "delay"
        :key      "delay"
        :type     "number"
