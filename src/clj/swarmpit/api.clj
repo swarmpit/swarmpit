@@ -45,6 +45,11 @@
     (->> (cmo/->user user)
          (cc/create-user))))
 
+(defn change-password
+  [user password]
+  (->> (cmo/->password password)
+       (cc/change-password user)))
+
 ;;; Registry API
 
 (defn registries

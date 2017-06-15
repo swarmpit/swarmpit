@@ -50,6 +50,16 @@
             (resp-unauthorized "Invalid credentials")
             (resp-ok {:token (token/generate-jwt user)})))))))
 
+;; Password handler
+
+(defmethod dispatch :password [_]
+  (fn [{:keys [headers params]}]
+    (let [token (get headers "authorization")
+          username (get-in (token/verify-jwt token) [:usr :username])
+          payload (keywordize-keys params)]
+      (-> (api/user-by-username username)
+          (api/change-password (:password payload))))))
+
 ;; User handler
 
 (defmethod dispatch :users [_]
@@ -74,16 +84,6 @@
       (if (some? response)
         (resp-created (select-keys response [:id]))
         (resp-error 400 "User already exist")))))
-
-;; Dockerhub handler
-
-(defmethod dispatch :dockerhub-create [_]
-  (fn [{:keys [params]}]
-    (let [payload (keywordize-keys params)
-          response (api/create-dockeruser payload)]
-      (if (some? response)
-        (resp-created (select-keys response [:id]))
-        (resp-error 400 "Dockerhub already exist")))))
 
 ;; Registry handler
 

@@ -10,6 +10,7 @@
 
 (def location-domains
   {:index                 "Home"
+   :password              "Change password"
    :service-list          "Services"
    :service-create-config "Services / Wizard"
    :service-create-image  "Services / Wizard"

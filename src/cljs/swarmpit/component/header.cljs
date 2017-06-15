@@ -3,6 +3,7 @@
             [material.icon :as icon]
             [swarmpit.url :refer [dispatch!]]
             [swarmpit.storage :as storage]
+            [swarmpit.routes :as routes]
             [swarmpit.component.state :as state]
             [rum.core :as rum]))
 
@@ -45,12 +46,16 @@
     {:iconButtonElement (user-menu-button)}
     (comp/menu-item
       {:key         "user-menu-settings"
+       :onTouchTap  (fn []
+                      (dispatch!
+                        (routes/path-for-frontend :password)))
        :primaryText "Change password"})
     (comp/menu-item
       {:key         "user-menu-logout"
        :onTouchTap  (fn []
                       (storage/remove "token")
-                      (dispatch! "/#/login"))
+                      (dispatch!
+                        (routes/path-for-frontend :login)))
        :primaryText "Log out"})))
 
 (rum/defc userbar < rum/static []

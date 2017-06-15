@@ -9,6 +9,7 @@
             [swarmpit.component.page-401 :as page-401]
             [swarmpit.component.page-404 :as page-404]
             [swarmpit.component.page-error :as page-error]
+            [swarmpit.component.password :as passwd]
             [swarmpit.component.service.create-config :as screatec]
             [swarmpit.component.service.create-image :as screatei]
             [swarmpit.component.service.edit :as sedit]
@@ -56,6 +57,10 @@
 (defmethod dispatch :login
   [_]
   (page-login/mount!))
+
+(defmethod dispatch :password
+  [_]
+  (passwd/mount!))
 
 ;;; Service controller
 

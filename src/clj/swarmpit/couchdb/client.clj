@@ -34,10 +34,11 @@
     (execute @(http/get url options))))
 
 (defn- put
-  [api]
-  (let [url (str base-url api)
-        options {:headers headers}]
-    (execute @(http/put url options))))
+  ([api] (put api {}))
+  ([api request] (let [url (str base-url api)
+                       options {:headers headers
+                                :body    (generate-string request)}]
+                   (execute @(http/put url options)))))
 
 (defn- post
   [api request]
@@ -78,6 +79,11 @@
   [doc]
   (let [url (str "/swarmpit/" (:_id doc))]
     (delete url {:rev (:_rev doc)})))
+
+(defn- update-doc
+  [doc field value]
+  (let [url (str "/swarmpit/" (:_id doc))]
+    (put url (assoc doc field value))))
 
 ;; Database
 
@@ -159,3 +165,7 @@
 (defn delete-user
   [user]
   (delete-doc user))
+
+(defn change-password
+  [user encrypted-password]
+  (update-doc user :password encrypted-password))

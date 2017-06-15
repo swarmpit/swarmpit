@@ -5,6 +5,7 @@
 (def backend
   ["" {"/"            {:get :index}
        "/login"       {:post :login}
+       "/password"    {:post :password}
        "/registries/" {:get {"sum"                   :registries-sum
                              [:registryName "/repo"] {""      :repositories
                                                       "/tags" :repository-tags}}}
@@ -41,6 +42,7 @@
 (def frontend ["" {"/"           :index
                    "/login"      :login
                    "/error"      :error
+                   "/password"   :password
                    "/services"   {""                :service-list
                                   "/create/wizard"  {"/image"  :service-create-image
                                                      "/config" :service-create-config}

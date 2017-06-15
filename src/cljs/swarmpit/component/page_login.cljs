@@ -3,6 +3,7 @@
             [swarmpit.url :refer [dispatch!]]
             [swarmpit.storage :as storage]
             [swarmpit.token :as token]
+            [swarmpit.routes :as routes]
             [rum.core :as rum]
             [ajax.core :as ajax]))
 
@@ -48,13 +49,14 @@
 
 (defn- login-handler
   []
-  (ajax/POST "/login"
+  (ajax/POST (routes/path-for-backend :login)
              {:format        :json
               :headers       (login-headers)
               :handler       (fn [response]
                                (let [token (get response "token")]
                                  (storage/add "token" token)
-                                 (dispatch! "/")))
+                                 (dispatch!
+                                   (routes/path-for-frontend :index))))
               :error-handler (fn [{:keys [response]}]
                                (let [error (get response "error")]
                                  (update-item :message error)))}))
@@ -69,10 +71,8 @@
       [:div message]
       (comp/mui
         (comp/vform
-          {:onValid         #(update-item :canSubmit true)
-           :onInvalid       #(update-item :canSubmit false)
-           :onValidSubmit   #()
-           :onInvalidSubmit #()}
+          {:onValid   #(update-item :canSubmit true)
+           :onInvalid #(update-item :canSubmit false)}
           (form-username username)
           (form-password password)))
       (comp/mui
