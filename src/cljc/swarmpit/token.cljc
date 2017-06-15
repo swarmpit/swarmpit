@@ -7,7 +7,11 @@
                [buddy.sign.jwt :as jwt]
                [clj-time.core :refer [now plus days]]]
         :cljs [[clojure.string :as str]
+               [cognitect.transit :as t]
+               [clojure.walk :refer [keywordize-keys]]
                [goog.crypt.base64 :as b64]])))
+
+(def r (t/reader :json))
 
 (defn- token-value
   [token]
@@ -58,6 +62,16 @@
      (let [credentials (credentials username password)
            base64 (generate-base64 credentials)]
        (basic base64))))
+
+#?(:cljs
+   (defn decode-jwt
+     [token]
+     (keywordize-keys
+       (t/read r
+               (-> (token-value token)
+                   (clojure.string/split #"\.")
+                   (second)
+                   (b64/decodeString))))))
 
 #?(:cljs
    (defn generate-basic
