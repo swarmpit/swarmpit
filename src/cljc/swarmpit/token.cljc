@@ -11,7 +11,8 @@
                [clojure.walk :refer [keywordize-keys]]
                [goog.crypt.base64 :as b64]])))
 
-(def r (t/reader :json))
+#?(:cljs
+   (def r (t/reader :json)))
 
 (defn- token-value
   [token]
