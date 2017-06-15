@@ -413,43 +413,6 @@
          :onClick    #(add-item-fn)}
         icon/add-small))]])
 
-;; Single item list
-
-(defn single-list-body
-  [items remove-item-fn]
-  (table-body
-    {:key                "tb"
-     :showRowHover       true
-     :displayRowCheckbox false}
-    (map-indexed
-      (fn [index item]
-        (table-row
-          {:key       (str "tr-" item)
-           :style     {:cursor "pointer"}
-           :rowNumber index}
-          (table-row-column
-            {:key (str "trci-" item)}
-            (html [:div {:style {:display "flex"}}
-                   (svg icon/users)
-                   [:div {:style {:marginTop  "4px"
-                                  :marginLeft "4px"}} item]]))
-          (table-row-column
-            {:key (str "trcd-" item)}
-            (icon-button
-              {:onClick #(remove-item-fn item)}
-              (svg
-                {:hoverColor "rgb(244, 67, 54)"}
-                icon/trash)))))
-      items)))
-
-(defn single-list
-  [items remove-item-fn]
-  (mui
-    (table
-      {:key        "tbl"
-       :selectable false}
-      (single-list-body items remove-item-fn))))
-
 ;; List table component
 
 (defn list-table-header
