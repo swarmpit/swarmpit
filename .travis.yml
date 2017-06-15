@@ -1,0 +1,14 @@
+language: clojure
+lein: lein2
+services:
+  - docker
+cache:
+  directories:
+    - ~/.m2
+jdk:
+  - oraclejdk8
+script:
+  - lein test
+  - lein with-profile prod uberjar
+  - docker build -t swarmpit .
+  - bash dev/deploy-image.sh

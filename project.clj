@@ -69,7 +69,7 @@
                              [lein-doo "0.1.6"]]
               :source-paths ["dev"]
               :repl-options {:nrepl-middleware [cemerick.piggieback/wrap-cljs-repl]}}
-             :uberjar
+             :prod
              {:source-paths ^:replace ["src/clj" "src/cljc"]
               :prep-tasks   ["compile" ["cljsbuild" "once" "min"]]
               :hooks        []
