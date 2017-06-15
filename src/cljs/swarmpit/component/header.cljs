@@ -5,7 +5,11 @@
             [swarmpit.storage :as storage]
             [swarmpit.routes :as routes]
             [swarmpit.component.state :as state]
-            [rum.core :as rum]))
+            [clojure.string :as string]
+            [rum.core :as rum]
+            [goog.crypt :as crypt])
+  (:import
+    [goog.crypt Md5]))
 
 (enable-console-print!)
 
@@ -28,10 +32,17 @@
   {:position "fixed"
    :right    20})
 
+(defn user-gravatar-hash [email]
+  (let [md5 (Md5.)]
+    (.update md5 (string/trim email))
+    (crypt/byteArrayToHex (.digest md5))))
+
 (defn- user-avatar []
   (comp/avatar
     {:style user-avatar-style
-     :src   "https://www.gravatar.com/avatar/6e6fd910c0594f4f2b448e3530eb5abd"}))
+     :src   (->> (storage/email)
+                 (user-gravatar-hash)
+                 (str "https://www.gravatar.com/avatar/"))}))
 
 (defn- user-menu-button []
   (comp/icon-button
@@ -61,7 +72,7 @@
 (rum/defc userbar < rum/static []
   [:div.user-bar
    (user-avatar)
-   [:span "admin"]
+   [:span (storage/user)]
    (user-menu)])
 
 (rum/defc appbar < rum/reactive []
