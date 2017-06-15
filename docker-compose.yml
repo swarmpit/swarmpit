@@ -1,0 +1,31 @@
+version: '3'
+
+services:
+  app:
+    image: swarmpit/swarmpit:latest
+    environment:
+      SWARMPIT_DB: http://db:5984
+    volumes:
+      - /var/run/docker.sock:/var/run/docker.sock:ro
+    ports:
+      - 888:8080
+    networks:
+      - net
+    deploy:
+      placement:
+        constraints:
+          - node.role == manager
+  db:
+    image: klaemo/couchdb:2.0.0
+    volumes:
+      - db-data:/opt/couchdb/data
+    networks:
+      - net
+
+networks:
+  net:
+    driver: overlay
+
+volumes:
+  db-data:
+    driver: local
