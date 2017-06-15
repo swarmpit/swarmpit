@@ -1,5 +1,6 @@
 (ns swarmpit.component.registry.list
   (:require [material.component :as comp]
+            [material.icon :as icon]
             [swarmpit.component.state :as state]
             [swarmpit.routes :as routes]
             [clojure.string :as string]
@@ -21,7 +22,9 @@
   [item]
   (let [value (val item)]
     (case (key item)
-      :withAuth (comp/checkbox {:checked value})
+      :withAuth (if value
+                  (comp/svg icon/ok)
+                  "")
       value)))
 
 (rum/defc registry-list < rum/reactive [items]

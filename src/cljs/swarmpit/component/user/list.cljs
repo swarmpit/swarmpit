@@ -1,5 +1,6 @@
 (ns swarmpit.component.user.list
   (:require [material.component :as comp]
+            [material.icon :as icon]
             [swarmpit.component.state :as state]
             [swarmpit.routes :as routes]
             [clojure.string :as string]
@@ -21,7 +22,9 @@
   [item]
   (let [value (val item)]
     (case (key item)
-      :role (comp/checkbox {:checked (= "admin" value)})
+      :role (if (= "admin" value)
+              (comp/svg icon/ok)
+              "")
       value)))
 
 (rum/defc user-list < rum/reactive [items]
