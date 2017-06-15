@@ -2,6 +2,7 @@
   (:require [material.component :as comp]
             [material.icon :as icon]
             [swarmpit.component.state :as state]
+            [swarmpit.storage :as storage]
             [clojure.string :as string]
             [rum.core :as rum]))
 
@@ -62,8 +63,10 @@
    {:name "Nodes"
     :icon icon/nodes}
    {:name "Networks"
-    :icon icon/networks}
-   {:name "SETTINGS"}
+    :icon icon/networks}])
+
+(def admin-menu
+  [{:name "SETTINGS"}
    {:name "Dockerhub"
     :icon icon/dockerhub}
    {:name "Registries"
@@ -130,4 +133,6 @@
                     selected (string/includes? domain name)]
                 (if (some? icon)
                   (drawer-item name icon opened selected)
-                  (drawer-category name opened)))) menu))))))
+                  (drawer-category name opened)))) (if (storage/admin?)
+                                                     (concat menu admin-menu)
+                                                     menu)))))))
