@@ -17,7 +17,7 @@
        :min      0
        :value    value
        :onChange (fn [_ v]
-                   (state/update-value [:parallelism] v cursor))})))
+                   (state/update-value [:parallelism] (js/parseInt v) cursor))})))
 
 (defn- form-delay [value]
   (comp/form-comp
@@ -29,7 +29,7 @@
        :min      0
        :value    value
        :onChange (fn [_ v]
-                   (state/update-value [:delay] v cursor))})))
+                   (state/update-value [:delay] (js/parseInt v) cursor))})))
 
 (defn- form-failure-action [value]
   (comp/form-comp

@@ -99,7 +99,7 @@
        :min      1
        :value    value
        :onChange (fn [_ v]
-                   (state/update-value [:replicas] v cursor))})))
+                   (state/update-value [:replicas] (js/parseInt v) cursor))})))
 
 (defn image-tags-handler
   [registry repository]

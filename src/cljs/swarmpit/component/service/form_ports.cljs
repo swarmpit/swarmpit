@@ -13,10 +13,6 @@
 (def undefined
   (comp/form-value "Service has no published ports."))
 
-(defn- format-port-value
-  [value]
-  (if (zero? value) "" value))
-
 (defn- form-container [value index]
   (comp/table-row-column
     {:name (str "form-container-" index)
@@ -27,7 +23,7 @@
        :type     "number"
        :min      1
        :max      65535
-       :value    (format-port-value value)
+       :value    value
        :onChange (fn [_ v]
                    (state/update-item index :containerPort (js/parseInt v) cursor))})))
 
@@ -62,7 +58,7 @@
        :type     "number"
        :min      1
        :max      65535
-       :value    (format-port-value value)
+       :value    value
        :onChange (fn [_ v]
                    (state/update-item index :hostPort (js/parseInt v) cursor))})))
 
