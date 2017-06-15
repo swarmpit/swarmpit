@@ -14,11 +14,6 @@
 (def login-button-style
   {:marginTop "30px"})
 
-(def errorMessages
-  {:wordsError   "Please only use letters"
-   :numericError "Please provide a number"
-   :urlError     "Please provide a valid URL"})
-
 (defn- update-item
   "Update form item configuration"
   [k v]
@@ -30,8 +25,6 @@
      :key               "username"
      :name              "username"
      :required          true
-     :validations       "isWords"
-     :validationError   (:wordsError errorMessages)
      :floatingLabelText "Username"
      :value             value
      :onChange          (fn [_ v] (update-item :username v))}))
