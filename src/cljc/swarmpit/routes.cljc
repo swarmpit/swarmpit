@@ -22,6 +22,10 @@
                        :post :network-create}
        "/networks/"   {:get    {[:id] :network}
                        :delete {[:id] :network-delete}}
+       "/volumes"     {:get  :volumes
+                       :post :volume-create}
+       "/volumes/"    {:get    {[:name] :volume}
+                       :delete {[:name] :volume-delete}}
        "/nodes"       {:get :nodes}
        "/nodes/"      {:get {[:id] :node}}
        "/tasks"       {:get :tasks}
@@ -51,6 +55,9 @@
                    "/networks"   {""        :network-list
                                   "/create" :network-create
                                   ["/" :id] :network-info}
+                   "/volumes"    {""          :volume-list
+                                  "/create"   :volume-create
+                                  ["/" :name] :volume-info}
                    "/nodes"      {""        :node-list
                                   ["/" :id] :node-info}
                    "/tasks"      {""        :task-list

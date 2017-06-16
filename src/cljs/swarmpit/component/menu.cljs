@@ -60,10 +60,12 @@
    {:name "Tasks"
     :icon icon/tasks}
    {:name "INFRASTRUCTURE"}
-   {:name "Nodes"
-    :icon icon/nodes}
    {:name "Networks"
-    :icon icon/networks}])
+    :icon icon/networks}
+   {:name "Volumes"
+    :icon icon/volumes}
+   {:name "Nodes"
+    :icon icon/nodes}])
 
 (def admin-menu
   [{:name "SETTINGS"}

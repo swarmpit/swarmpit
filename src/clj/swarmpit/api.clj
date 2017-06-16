@@ -153,6 +153,28 @@
   (->> (dmo/->network network)
        (dc/create-network)))
 
+;;; Volume API
+
+(defn volumes
+  []
+  (-> (dc/volumes)
+      (dmi/->volumes)))
+
+(defn volume
+  [volume-id]
+  (-> (dc/volume volume-id)
+      (dmi/->volume)))
+
+(defn delete-volume
+  [volume-id]
+  (dc/delete-volume volume-id))
+
+(defn create-volume
+  [volume]
+  (->> (dmo/->volume volume)
+       (dc/create-volume)
+       (dmi/->volume)))
+
 ;;; Node API
 
 (defn nodes

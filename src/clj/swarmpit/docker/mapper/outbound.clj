@@ -97,3 +97,8 @@
    :Driver   (:driver network)
    :Internal (:internal network)
    :IPAM     (->network-ipam network)})
+
+(defn ->volume
+  [volume]
+  {:Name   (:volumeName volume)
+   :Driver (:driver volume)})

@@ -45,11 +45,11 @@
               :params        (state/get-value cursor)
               :finally       (progress/mount!)
               :handler       (fn [response]
-                               (let [id (get response "Id")
-                                     message (str "Volume " id " has been created.")]
+                               (let [name (get response "volumeName")
+                                     message (str "Volume " name " has been created.")]
                                  (progress/unmount!)
                                  (dispatch!
-                                   (routes/path-for-frontend :volume-info {:id id}))
+                                   (routes/path-for-frontend :volume-info {:name name}))
                                  (message/mount! message)))
               :error-handler (fn [{:keys [response]}]
                                (let [error (get response "error")
@@ -58,13 +58,13 @@
                                  (message/mount! message)))}))
 
 (rum/defc form < rum/reactive []
-  (let [{:keys [name
+  (let [{:keys [volumeName
                 driver
                 isValid]} (state/react cursor)]
     [:div
      [:div.form-panel
       [:div.form-panel-left
-       (comp/panel-info icon/networks "New network")]
+       (comp/panel-info icon/networks "New volume")]
       [:div.form-panel-right
        (comp/mui
          (comp/raised-button
@@ -79,14 +79,14 @@
        (comp/form
          {:onValid   #(state/update-value [:isValid] true cursor)
           :onInvalid #(state/update-value [:isValid] false cursor)}
-         (form-name name)
+         (form-name volumeName)
          (form-driver driver))]]]))
 
 (defn- init-state
   []
-  (state/set-value {:networkName nil
-                    :driver      "local"
-                    :isValid     false} cursor))
+  (state/set-value {:volumeName nil
+                    :driver     "local"
+                    :isValid    false} cursor))
 
 (defn mount!
   []

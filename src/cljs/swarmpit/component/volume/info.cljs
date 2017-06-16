@@ -11,11 +11,11 @@
 (enable-console-print!)
 
 (defn- delete-volume-handler
-  [volume-id]
-  (ajax/DELETE (routes/path-for-backend :volume-delete {:id volume-id})
+  [volume-name]
+  (ajax/DELETE (routes/path-for-backend :volume-delete {:name volume-name})
                {:headers       {"Authorization" (storage/get "token")}
                 :handler       (fn [_]
-                                 (let [message (str "Volume " volume-id " has been removed.")]
+                                 (let [message (str "Volume " volume-name " has been removed.")]
                                    (dispatch!
                                      (routes/path-for-frontend :volume-list))
                                    (message/mount! message)))
@@ -33,7 +33,7 @@
     [:div.form-panel-right
      (comp/mui
        (comp/raised-button
-         {:onTouchTap #(delete-volume-handler (:id item))
+         {:onTouchTap #(delete-volume-handler (:name item))
           :label      "Delete"}))]]
    [:div.form-view
     [:div.form-view-group

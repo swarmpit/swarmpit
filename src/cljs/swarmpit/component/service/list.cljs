@@ -83,7 +83,7 @@
                       filtered-items
                       render-item
                       render-item-keys
-                      :service-info)]))
+                      (fn [i] (routes/path-for-frontend :service-info (select-keys i [:id]))))]))
 
 (defn- init-state
   []

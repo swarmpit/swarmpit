@@ -47,7 +47,7 @@
                       filtered-items
                       render-item
                       render-item-keys
-                      :registry-info)]))
+                      (fn [i] (routes/path-for-frontend :registry-info {:id (:_id i)})))]))
 
 (defn- init-state
   []

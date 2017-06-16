@@ -197,3 +197,19 @@
        (map ->network)
        (filter #(= "swarm" (:scope %)))
        (into [])))
+
+(defn ->volume
+  [volume]
+  (let [name (get volume :Name)]
+    (array-map
+      :id (hash name)
+      :volumeName name
+      :driver (get volume :Driver)
+      :mountpoint (get volume :Mountpoint)
+      :scope (get volume :Scope))))
+
+(defn ->volumes
+  [volumes]
+  (->> (:Volumes volumes)
+       (map ->volume)
+       (into [])))

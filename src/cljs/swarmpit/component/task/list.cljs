@@ -1,6 +1,7 @@
 (ns swarmpit.component.task.list
   (:require [material.component :as comp]
             [swarmpit.component.state :as state]
+            [swarmpit.routes :as routes]
             [clojure.string :as string]
             [rum.core :as rum]))
 
@@ -62,7 +63,7 @@
                       filtered-items
                       render-item
                       render-item-keys
-                      :task-info)]))
+                      (fn [i] (routes/path-for-frontend :task-info (select-keys i [:id]))))]))
 
 (defn- init-state
   []

@@ -43,7 +43,7 @@
                       filtered-items
                       render-item
                       render-item-keys
-                      :volume-info)]))
+                      (fn [i] (routes/path-for-frontend :volume-info {:name (:volumeName i)})))]))
 
 (defn- init-state
   []

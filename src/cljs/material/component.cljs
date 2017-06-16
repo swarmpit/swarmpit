@@ -481,18 +481,15 @@
              (min (+ offset limit) total) " of " total)))))
 
 (defn list-table
-  [headers items render-item-fn render-items-key handler]
-  (let [item-id (fn [index] (let [item (nth items index)]
-                              (if (contains? item :id)
-                                (:id item)
-                                (:_id item))))]
+  [headers items render-item-fn render-items-key handler-fn]
+  (let [item (fn [index] (nth items index))]
     (mui
       (table
         {:key         "tbl"
          :selectable  false
          :onCellClick (fn [i]
                         (dispatch!
-                          (routes/path-for-frontend handler {:id (item-id i)})))}
+                          (handler-fn (item i))))}
         (list-table-header headers)
         (list-table-body items
                          render-item-fn

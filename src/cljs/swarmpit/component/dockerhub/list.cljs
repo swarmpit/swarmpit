@@ -42,7 +42,7 @@
                       filtered-items
                       render-item
                       render-item-keys
-                      :dockerhub-user-info)]))
+                      (fn [i] (routes/path-for-frontend :dockerhub-user-info {:id (:_id i)})))]))
 
 (defn- init-state
   []

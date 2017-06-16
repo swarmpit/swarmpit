@@ -47,7 +47,7 @@
                       filtered-items
                       render-item
                       render-item-keys
-                      :network-info)]))
+                      (fn [i] (routes/path-for-frontend :network-info (select-keys i [:id]))))]))
 
 (defn- init-state
   []

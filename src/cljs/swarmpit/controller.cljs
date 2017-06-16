@@ -18,6 +18,9 @@
             [swarmpit.component.network.create :as ncreate]
             [swarmpit.component.network.info :as ninfo]
             [swarmpit.component.network.list :as nlist]
+            [swarmpit.component.volume.create :as vcreate]
+            [swarmpit.component.volume.info :as vinfo]
+            [swarmpit.component.volume.list :as vlist]
             [swarmpit.component.node.list :as ndlist]
             [swarmpit.component.node.info :as ndinfo]
             [swarmpit.component.task.list :as tlist]
@@ -130,6 +133,24 @@
   (fetch (routes/path-for-backend :node route-params)
          (fn [response]
            (ndinfo/mount! response))))
+
+;;; Volume controller
+
+(defmethod dispatch :volume-list
+  [_]
+  (fetch (routes/path-for-backend :volumes)
+         (fn [response]
+           (vlist/mount! response))))
+
+(defmethod dispatch :volume-info
+  [{:keys [route-params]}]
+  (fetch (routes/path-for-backend :volume route-params)
+         (fn [response]
+           (vinfo/mount! response))))
+
+(defmethod dispatch :volume-create
+  [_]
+  (vcreate/mount!))
 
 ;;; Task controller
 

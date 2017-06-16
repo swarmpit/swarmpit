@@ -169,6 +169,29 @@
     (api/delete-network (:id route-params))
     (resp-ok)))
 
+;; Volume handler
+
+(defmethod dispatch :volumes [_]
+  (fn [_]
+    (->> (api/volumes)
+         (resp-ok))))
+
+(defmethod dispatch :volume [_]
+  (fn [{:keys [route-params]}]
+    (->> (api/volume (:name route-params))
+         (resp-ok))))
+
+(defmethod dispatch :volume-create [_]
+  (fn [{:keys [params]}]
+    (let [payload (keywordize-keys params)]
+      (->> (api/create-volume payload)
+           (resp-created)))))
+
+(defmethod dispatch :volume-delete [_]
+  (fn [{:keys [route-params]}]
+    (api/delete-volume (:name route-params))
+    (resp-ok)))
+
 ;; Node handler
 
 (defmethod dispatch :nodes [_]

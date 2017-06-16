@@ -85,7 +85,7 @@
                         (filter #(not (= "shutdown" (:state %))) (:tasks item))
                         tasks/render-item
                         tasks/render-item-keys
-                        :task-info)]]]))
+                        (fn [i] (routes/path-for-frontend :task-info (select-keys i [:id]))))]]]))
 
 (defn mount!
   [item]

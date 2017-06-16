@@ -164,6 +164,26 @@
   [network]
   (post "/networks/create" network))
 
+;; Volume
+
+(defn volumes
+  []
+  (get "/volumes"))
+
+(defn volume
+  [id]
+  (-> (str "/volumes/" id)
+      (get)))
+
+(defn delete-volume
+  [id]
+  (-> (str "/volumes/" id)
+      (delete)))
+
+(defn create-volume
+  [network]
+  (post "/volumes/create" network))
+
 ;; Node
 
 (defn nodes
