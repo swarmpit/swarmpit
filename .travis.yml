@@ -10,4 +10,4 @@ script:
   - lein test
   - lein with-profile prod uberjar
   - docker build -t swarmpit .
-  - bash dev/deploy-image.sh
+  - bash dev/script/deploy-image.sh

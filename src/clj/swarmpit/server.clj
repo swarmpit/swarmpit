@@ -23,6 +23,10 @@
                     {:request-method :get
                      :uri            "/js/main.js"}
                     {:request-method :get
+                     :uri            "/browserconfig.xml"}
+                    {:request-method :get
+                     :uri            "/manifest.json"}
+                    {:request-method :get
                      :uri            "/favicon.ico"}})
 
 (defn- secure-api?
