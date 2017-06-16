@@ -7,6 +7,8 @@
                        :domain ""}
                 :page {:network    {:list {:filter {}}
                                     :form {}}
+                       :volume     {:list {:filter {}}
+                                    :form {}}
                        :node       {:list {:filter {}}}
                        :service    {:list   {:filter {}}
                                     :wizard {:data       {}
