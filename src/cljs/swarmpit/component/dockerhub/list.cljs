@@ -8,19 +8,14 @@
 
 (def cursor [:page :dockerhub :list :filter])
 
-(def headers ["Name" "Username" "Company" "Is Organization"])
+(def headers ["Name" "Username" "Company"])
 
 (def render-item-keys
-  [[:name] [:username] [:company] [:role]])
+  [[:name] [:username] [:company]])
 
 (defn- render-item
   [item]
-  (let [value (val item)]
-    (case (key item)
-      :role (if (= "Organization" value)
-              (comp/svg icon/ok)
-              "")
-      value)))
+  (val item))
 
 (defn- filter-items
   "Filter list items based on given predicate"

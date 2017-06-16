@@ -12,6 +12,7 @@
 
 (def theme
   {:palette {:primary1Color      "#437f9d"
+             ;:primary1Color      "#5e469c"
              :primary2Color      "#3C728D"
              :primary3Color      "#bdbdbd"
              :accent1Color       "#437f9d"
