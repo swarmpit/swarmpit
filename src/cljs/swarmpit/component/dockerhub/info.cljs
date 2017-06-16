@@ -28,7 +28,7 @@
   [:div
    [:div.form-panel
     [:div.form-panel-left
-     (comp/panel-info icon/dockerhub
+     (comp/panel-info icon/docker
                       (:name item))]
     [:div.form-panel-right
      (comp/mui

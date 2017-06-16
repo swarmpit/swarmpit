@@ -41,7 +41,7 @@
           {:key       "tab2"
            :label     "SEARCH PRIVATE"
            :className "service-image-tab"
-           :icon      (comp/svg icon/dockerhub)
+           :icon      (comp/svg icon/docker)
            :style     tab-style
            :onActive  (fn [] (let [state (state/get-value ciu/cursor)
                                    user (:user state)]

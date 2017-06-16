@@ -7,7 +7,7 @@
 
 (def cursor [:page :service :wizard :mounts])
 
-(def headers ["Container path" "Host path" "Read only"])
+(def headers ["Container path" "Host path" "Type" "Read only"])
 
 (def undefined
   (comp/form-value "No mounts defined for the service."))
@@ -34,6 +34,27 @@
        :onChange (fn [_ v]
                    (state/update-item index :hostPath v cursor))})))
 
+(defn- form-type [value index]
+  (comp/table-row-column
+    {:name (str "form-type-" index)
+     :key  (str "form-type-" index)}
+    (comp/form-list-selectfield
+      {:name     (str "form-type-select-" index)
+       :key      (str "form-type-select-" index)
+       :value    value
+       :onChange (fn [_ _ v]
+                   (state/update-item index :type v cursor))}
+      (comp/menu-item
+        {:name        (str "form-type-bind-" index)
+         :key         (str "form-type-bind-" index)
+         :value       "bind"
+         :primaryText "bind"})
+      (comp/menu-item
+        {:name        (str "form-type-volume-" index)
+         :key         (str "form-type-volume-" index)
+         :value       "volume"
+         :primaryText "volume"}))))
+
 (defn- form-readonly [value index]
   (comp/table-row-column
     {:name (str "form-readonly-" index)
@@ -49,9 +70,11 @@
   [item index]
   (let [{:keys [containerPath
                 hostPath
+                type
                 readOnly]} item]
     [(form-container containerPath index)
      (form-host hostPath index)
+     (form-type type index)
      (form-readonly readOnly index)]))
 
 (defn- form-table
@@ -66,6 +89,7 @@
   []
   (state/add-item {:containerPath ""
                    :hostPath      ""
+                   :type          "bind"
                    :readOnly      false} cursor))
 
 (rum/defc form-create < rum/reactive []

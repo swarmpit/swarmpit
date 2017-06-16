@@ -17,6 +17,8 @@
     :role (get-in node [:Spec :Role])
     :availability (get-in node [:Spec :Availability])
     :state (get-in node [:Status :State])
+    :address (get-in node [:Status :Addr])
+    :engine (get-in node [:Description :Engine :EngineVersion])
     :leader (get-in node [:ManagerStatus :Leader])))
 
 (defn ->nodes
@@ -86,9 +88,10 @@
 (defn ->service-mounts
   [service]
   (->> (get-in service [:Spec :TaskTemplate :ContainerSpec :Mounts])
-       (map (fn [v] {:containerPath (:Source v)
-                     :hostPath      (:Target v)
-                     :readOnly      (:ReadOnly v)}))
+       (map (fn [v] {:containerPath (:Target v)
+                     :hostPath      (:Source v)
+                     :type          (:Type v)
+                     :readOnly      (or (:ReadOnly v) false)}))
        (into [])))
 
 (defn ->service-variables

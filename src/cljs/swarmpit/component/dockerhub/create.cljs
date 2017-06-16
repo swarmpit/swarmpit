@@ -64,7 +64,7 @@
     [:div
      [:div.form-panel
       [:div.form-panel-left
-       (comp/panel-info icon/dockerhub "Add dockerhub user")]
+       (comp/panel-info icon/docker "Add dockerhub user")]
       [:div.form-panel-right
        (comp/mui
          (comp/raised-button

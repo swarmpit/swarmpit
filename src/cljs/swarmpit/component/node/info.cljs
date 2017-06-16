@@ -15,7 +15,7 @@
    [:div.form-view
     [:div.form-view-group
      (comp/form-section "General settings")
-     (comp/form-item "ID" (:id item))
+     (comp/form-icon-value icon/docker (:id item))
      (comp/form-item "NAME" (:nodeName item))
      (comp/form-item "AVAILABILITY" (:availability item))]
     [:div.form-view-group

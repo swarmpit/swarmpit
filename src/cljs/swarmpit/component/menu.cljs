@@ -68,7 +68,7 @@
 (def admin-menu
   [{:name "SETTINGS"}
    {:name "Dockerhub"
-    :icon icon/dockerhub}
+    :icon icon/docker}
    {:name "Registries"
     :icon icon/registries}
    {:name "Users"
