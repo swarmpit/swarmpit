@@ -8,10 +8,10 @@
 
 (def cursor [:page :dockerhub :list :filter])
 
-(def headers ["Name" "Username" "Company"])
+(def headers ["Username" "Name" "Company"])
 
 (def render-item-keys
-  [[:name] [:username] [:company]])
+  [[:username] [:name] [:company]])
 
 (defn- render-item
   [item]
@@ -24,18 +24,18 @@
 (defn- filter-items
   "Filter list items based on given predicate"
   [items predicate]
-  (filter #(string/includes? (:name %) predicate) items))
+  (filter #(string/includes? (:username %) predicate) items))
 
 (rum/defc dockeruser-list < rum/reactive [items]
-  (let [{:keys [name]} (state/react cursor)
-        filtered-items (filter-items items name)]
+  (let [{:keys [username]} (state/react cursor)
+        filtered-items (filter-items items username)]
     [:div
      [:div.form-panel
       [:div.form-panel-left
        (comp/panel-text-field
-         {:hintText "Filter by name"
+         {:hintText "Filter by username"
           :onChange (fn [_ v]
-                      (state/update-value [:name] v cursor))})]
+                      (state/update-value [:username] v cursor))})]
       [:div.form-panel-right
        (comp/mui
          (comp/raised-button
@@ -50,7 +50,7 @@
 
 (defn- init-state
   []
-  (state/set-value {:name ""} cursor))
+  (state/set-value {:username ""} cursor))
 
 (defn mount!
   [items]
