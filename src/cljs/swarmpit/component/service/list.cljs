@@ -11,17 +11,6 @@
 
 (def headers ["Name" "Image" "Mode" "Replicas" "Status" "Updates"])
 
-(def form-replicas-style
-  {:backgroundColor "rgb(245, 245, 245)"
-   :border          "1px solid rgb(224, 228, 231)"})
-
-(def form-replicas-label-style
-  {:fontSize "13px"})
-
-(defn- form-replicas [value]
-  (comp/chip {:style      form-replicas-style
-              :labelStyle form-replicas-label-style} value))
-
 (defn- form-updates [value]
   (let [status (if value "loading" "ready")]
     (comp/loader
@@ -53,7 +42,7 @@
   (let [value (val item)]
     (case (key item)
       :state (form-state value)
-      :info (form-replicas value)
+      :info (comp/label-info value)
       :update (form-updates value)
       value)))
 
