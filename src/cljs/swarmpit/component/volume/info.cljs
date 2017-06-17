@@ -33,7 +33,7 @@
     [:div.form-panel-right
      (comp/mui
        (comp/raised-button
-         {:onTouchTap #(delete-volume-handler (:name item))
+         {:onTouchTap #(delete-volume-handler (:volumeName item))
           :label      "Delete"}))]]
    [:div.form-view
     [:div.form-view-group

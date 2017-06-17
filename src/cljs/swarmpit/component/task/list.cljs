@@ -64,7 +64,7 @@
           :onCheck (fn [_ v]
                      (state/update-value [:running] (false? v) cursor))})]]
      (comp/list-table headers
-                      filtered-items
+                      (sort-by :serviceName filtered-items)
                       render-item
                       render-item-keys
                       onclick-handler)]))

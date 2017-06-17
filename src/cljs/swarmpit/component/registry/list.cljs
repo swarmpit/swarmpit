@@ -48,7 +48,7 @@
             :label   "Add"
             :primary true}))]]
      (comp/list-table headers
-                      filtered-items
+                      (sort-by :name filtered-items)
                       render-item
                       render-item-keys
                       onclick-handler)]))

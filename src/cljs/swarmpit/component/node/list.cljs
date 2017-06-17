@@ -69,7 +69,7 @@
      (comp/mui
        (comp/list
          {}
-         (->> filtered-items
+         (->> (sort-by :nodeName filtered-items)
               (map #(comp/list-item
                       {:style         list-item-style
                        :disabled      true

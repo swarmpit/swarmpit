@@ -84,7 +84,7 @@
             :label   "Create"
             :primary true}))]]
      (comp/list-table headers
-                      filtered-items
+                      (sort-by :serviceName filtered-items)
                       render-item
                       render-item-keys
                       onclick-handler)]))
