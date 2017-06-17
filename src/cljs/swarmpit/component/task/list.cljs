@@ -11,9 +11,7 @@
 
 (enable-console-print!)
 
-(def cursor [:page :task :list :filter])
-
-(def cursor-data [:page :task :list :data])
+(def cursor [:page :task :list])
 
 (def headers ["Name" "Service" "Image" "Node" "Status"])
 
@@ -60,29 +58,30 @@
              :handler (fn [response]
                         (keywordize-keys response)
                         (let [resp (keywordize-keys response)]
-                          (state/set-value resp cursor-data)))}))
+                          (state/update-value [:data] resp cursor)))}))
 
 (def refresh-mixin
   (mixin/list-refresh-mixin data-handler))
 
 (rum/defc task-list < rum/reactive
                       refresh-mixin []
-  (let [items (state/react cursor-data)
-        {:keys [serviceName running]} (state/react cursor)
-        filtered-items (filter-items items serviceName running)]
+  (let [{:keys [filter data]} (state/react cursor)
+        filtered-items (filter-items data
+                                     (:serviceName filter)
+                                     (:running filter))]
     [:div
      [:div.form-panel
       [:div.form-panel-left
        (comp/panel-text-field
          {:hintText "Filter by service name"
           :onChange (fn [_ v]
-                      (state/update-value [:serviceName] v cursor))})
+                      (state/update-value [:filter :serviceName] v cursor))})
        [:span.form-panel-space]
        (comp/panel-checkbox
-         {:checked (false? running)
+         {:checked (false? (:running filter))
           :label   "Show all tasks"
           :onCheck (fn [_ v]
-                     (state/update-value [:running] (false? v) cursor))})]]
+                     (state/update-value [:filter :running] (false? v) cursor))})]]
      (comp/list-table headers
                       (sort-by :serviceName filtered-items)
                       render-item
@@ -91,9 +90,9 @@
 
 (defn- init-state
   [tasks]
-  (state/set-value {:serviceName ""
-                    :running     true} cursor)
-  (state/set-value tasks cursor-data))
+  (state/set-value {:filter {:serviceName ""
+                             :running     true}
+                    :data   tasks} cursor))
 
 (defn mount!
   [tasks]

@@ -6,7 +6,7 @@
             [clojure.string :as string]
             [rum.core :as rum]))
 
-(def cursor [:page :user :list :filter])
+(def cursor [:page :user :list])
 
 (def headers ["Username" "Email" "Is Admin"])
 
@@ -32,7 +32,7 @@
   (routes/path-for-frontend :user-info {:id (:_id item)}))
 
 (rum/defc user-list < rum/reactive [items]
-  (let [{:keys [username]} (state/react cursor)
+  (let [{{:keys [username]} :filter} (state/react cursor)
         filtered-items (filter-items items username)]
     [:div
      [:div.form-panel
@@ -40,7 +40,7 @@
        (comp/panel-text-field
          {:hintText "Filter by username"
           :onChange (fn [_ v]
-                      (state/update-value [:username] v cursor))})]
+                      (state/update-value [:filter :username] v cursor))})]
       [:div.form-panel-right
        (comp/mui
          (comp/raised-button
@@ -55,7 +55,7 @@
 
 (defn- init-state
   []
-  (state/set-value {:username ""} cursor))
+  (state/set-value {:filter {:username ""}} cursor))
 
 (defn mount!
   [items]

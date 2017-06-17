@@ -6,7 +6,7 @@
             [clojure.string :as string]
             [rum.core :as rum]))
 
-(def cursor [:page :registry :list :filter])
+(def cursor [:page :registry :list])
 
 (def headers ["Name" "Url" "Secure"])
 
@@ -32,7 +32,7 @@
   (routes/path-for-frontend :registry-info {:id (:_id item)}))
 
 (rum/defc registry-list < rum/reactive [items]
-  (let [{:keys [name]} (state/react cursor)
+  (let [{{:keys [name]} :filter} (state/react cursor)
         filtered-items (filter-items items name)]
     [:div
      [:div.form-panel
@@ -40,7 +40,7 @@
        (comp/panel-text-field
          {:hintText "Filter by name"
           :onChange (fn [_ v]
-                      (state/update-value [:name] v cursor))})]
+                      (state/update-value [:filter :name] v cursor))})]
       [:div.form-panel-right
        (comp/mui
          (comp/raised-button
@@ -55,7 +55,7 @@
 
 (defn- init-state
   []
-  (state/set-value {:name ""} cursor))
+  (state/set-value {:filter {:name ""}} cursor))
 
 (defn mount!
   [items]

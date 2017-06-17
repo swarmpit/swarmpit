@@ -13,9 +13,7 @@
 
 (enable-console-print!)
 
-(def cursor [:page :node :list :filter])
-
-(def cursor-data [:page :node :list :data])
+(def cursor [:page :node :list])
 
 (defn- filter-items
   "Filter list items based on given predicate"
@@ -34,7 +32,7 @@
              :handler (fn [response]
                         (keywordize-keys response)
                         (let [resp (keywordize-keys response)]
-                          (state/set-value resp cursor-data)))}))
+                          (state/update-value [:data] resp cursor)))}))
 
 (def refresh-mixin
   (mixin/list-refresh-mixin data-handler))
@@ -63,24 +61,23 @@
 
 (rum/defc node-list < rum/reactive
                       refresh-mixin []
-  (let [items (state/react cursor-data)
-        {:keys [nodeName]} (state/react cursor)
-        filtered-items (filter-items items nodeName)]
+  (let [{:keys [filter data]} (state/react cursor)
+        filtered-items (filter-items data (:nodeName filter))]
     [:div
      [:div.form-panel
       [:div.form-panel-left
        (comp/panel-text-field
          {:hintText "Filter by name"
           :onChange (fn [_ v]
-                      (state/update-value [:nodeName] v cursor))})]]
+                      (state/update-value [:filter :nodeName] v cursor))})]]
      [:div.content-grid.mdl-grid
       (->> (sort-by :nodeName filtered-items)
            (map #(node-item %)))]]))
 
 (defn- init-state
   [nodes]
-  (state/set-value {:nodeName ""} cursor)
-  (state/set-value nodes cursor-data))
+  (state/set-value {:filter {:nodeName ""}
+                    :data   nodes} cursor))
 
 (defn mount!
   [nodes]

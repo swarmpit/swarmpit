@@ -12,9 +12,7 @@
 
 (enable-console-print!)
 
-(def cursor [:page :service :list :filter])
-
-(def cursor-data [:page :service :list :data])
+(def cursor [:page :service :list])
 
 (def headers ["Name" "Image" "Mode" "Replicas" "Status"])
 
@@ -65,29 +63,30 @@
              :handler (fn [response]
                         (keywordize-keys response)
                         (let [resp (keywordize-keys response)]
-                          (state/set-value resp cursor-data)))}))
+                          (state/update-value [:data] resp cursor)))}))
 
 (def refresh-mixin
   (mixin/list-refresh-mixin data-handler))
 
 (rum/defc service-list < rum/reactive
                          refresh-mixin []
-  (let [items (state/react cursor-data)
-        {:keys [serviceName cranky]} (state/react cursor)
-        filtered-items (filter-items items serviceName cranky)]
+  (let [{:keys [filter data]} (state/react cursor)
+        filtered-items (filter-items data
+                                     (:serviceName filter)
+                                     (:cranky filter))]
     [:div
      [:div.form-panel
       [:div.form-panel-left
        (comp/panel-text-field
          {:hintText "Filter by name"
           :onChange (fn [_ v]
-                      (state/update-value [:serviceName] v cursor))})
+                      (state/update-value [:filter :serviceName] v cursor))})
        [:span.form-panel-space]
        (comp/panel-checkbox
-         {:checked cranky
+         {:checked (:cranky filter)
           :label   "Show cranky services"
           :onCheck (fn [_ v]
-                     (state/update-value [:cranky] v cursor))})]
+                     (state/update-value [:filter :cranky] v cursor))})]
       [:div.form-panel-right
        (comp/mui
          (comp/raised-button
@@ -102,9 +101,9 @@
 
 (defn- init-state
   [services]
-  (state/set-value {:serviceName ""
-                    :cranky      false} cursor)
-  (state/set-value services cursor-data))
+  (state/set-value {:filter {:serviceName ""
+                             :cranky      false}
+                    :data   services} cursor))
 
 (defn mount!
   [services]

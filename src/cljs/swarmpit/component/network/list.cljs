@@ -7,7 +7,7 @@
 
 (enable-console-print!)
 
-(def cursor [:page :network :list :filter])
+(def cursor [:page :network :list])
 
 (def headers ["Name" "Driver" "Subnet" "Gateway" ""])
 
@@ -32,7 +32,7 @@
   (routes/path-for-frontend :network-info (select-keys item [:id])))
 
 (rum/defc network-list < rum/reactive [items]
-  (let [{:keys [networkName]} (state/react cursor)
+  (let [{{:keys [networkName]} :filter} (state/react cursor)
         filtered-items (filter-items items networkName)]
     [:div
      [:div.form-panel
@@ -40,7 +40,7 @@
        (comp/panel-text-field
          {:hintText "Filter by name"
           :onChange (fn [_ v]
-                      (state/update-value [:networkName] v cursor))})]
+                      (state/update-value [:filter :networkName] v cursor))})]
       [:div.form-panel-right
        (comp/mui
          (comp/raised-button
@@ -55,7 +55,7 @@
 
 (defn- init-state
   []
-  (state/set-value {:networkName ""} cursor))
+  (state/set-value {:filter {:networkName ""}} cursor))
 
 (defn mount!
   [items]

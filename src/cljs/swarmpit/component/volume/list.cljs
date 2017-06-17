@@ -7,7 +7,7 @@
 
 (enable-console-print!)
 
-(def cursor [:page :volume :list :filter])
+(def cursor [:page :volume :list])
 
 (def headers ["Name" "Driver"])
 
@@ -28,7 +28,7 @@
   (routes/path-for-frontend :volume-info {:name (:volumeName item)}))
 
 (rum/defc volume-list < rum/reactive [items]
-  (let [{:keys [volumeName]} (state/react cursor)
+  (let [{{:keys [volumeName]} :filter} (state/react cursor)
         filtered-items (filter-items items volumeName)]
     [:div
      [:div.form-panel
@@ -36,7 +36,7 @@
        (comp/panel-text-field
          {:hintText "Filter by name"
           :onChange (fn [_ v]
-                      (state/update-value [:volumeName] v cursor))})]
+                      (state/update-value [:filter :volumeName] v cursor))})]
       [:div.form-panel-right
        (comp/mui
          (comp/raised-button
@@ -51,7 +51,7 @@
 
 (defn- init-state
   []
-  (state/set-value {:volumeName ""} cursor))
+  (state/set-value {:filter {:volumeName ""}} cursor))
 
 (defn mount!
   [items]

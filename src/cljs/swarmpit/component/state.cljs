@@ -5,14 +5,12 @@
 (defonce state
          (atom {:menu {:opened true
                        :domain ""}
-                :page {:network   {:list {:filter {}}
+                :page {:network   {:list {}
                                    :form {}}
-                       :volume    {:list {:filter {}}
+                       :volume    {:list {}
                                    :form {}}
-                       :node      {:list {:filter {}
-                                          :data   []}}
-                       :service   {:list   {:filter {}
-                                            :data   []}
+                       :node      {:list {}}
+                       :service   {:list   {}
                                    :wizard {:image      {:public {}
                                                          :user   {}
                                                          :other  {}}
@@ -22,12 +20,11 @@
                                             :variables  []
                                             :mounts     []
                                             :deployment {}}}
-                       :task      {:list {:filter {}
-                                          :data   []}}
-                       :registry  {:list {:filter {}}
+                       :task      {:list {}}
+                       :registry  {:list {}
                                    :form {}}
-                       :dockerhub {:list {:filter {}}}
-                       :user      {:list {:filter {}}
+                       :dockerhub {:list {}}
+                       :user      {:list {}
                                    :form {}}}}))
 
 (defn react
