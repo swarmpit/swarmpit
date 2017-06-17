@@ -1,6 +1,6 @@
 #!/bin/bash
 
-if [ "$(docker ps -q -f name=swarmpitdb)" ];
+if [ "$(docker ps -aq -f name=swarmpitdb)" ];
 then
    	echo "Swarmpit DB already exists."
     if [ "$(docker ps -aq -f status=exited -f name=swarmpitdb)" ];
