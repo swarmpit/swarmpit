@@ -22,7 +22,6 @@
             [swarmpit.component.volume.info :as vinfo]
             [swarmpit.component.volume.list :as vlist]
             [swarmpit.component.node.list :as ndlist]
-            [swarmpit.component.node.info :as ndinfo]
             [swarmpit.component.task.list :as tlist]
             [swarmpit.component.task.info :as tinfo]
             [swarmpit.component.user.list :as ulist]
@@ -127,12 +126,6 @@
   (fetch (routes/path-for-backend :nodes)
          (fn [response]
            (ndlist/mount! response))))
-
-(defmethod dispatch :node-info
-  [{:keys [route-params]}]
-  (fetch (routes/path-for-backend :node route-params)
-         (fn [response]
-           (ndinfo/mount! response))))
 
 ;;; Volume controller
 

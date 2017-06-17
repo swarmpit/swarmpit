@@ -15,46 +15,32 @@
   [items predicate]
   (filter #(string/includes? (:nodeName %) predicate) items))
 
-(def list-item-style
-  {:minWidth   "600px"
-   :marginLeft "6px"})
-
-(def address-span-style
-  {:fontWeight "lighter"
-   :fontSize   "12px"
-   :marginLeft "10px"})
-
-(def span-style
-  {:marginLeft "10px"})
-
-(def span-engine-style
-  {:marginLeft "50px"})
-
-(def engine-icon-style
-  {:height "12px"})
-
 (defn form-state [value]
   (case value
-    "READY" (comp/label-green value)
-    "DOWN" (comp/label-red value)))
+    "ready" (comp/label-green value)
+    "down" (comp/label-red value)))
 
-(defn- render-primary-text
+(defn- node-item
   [item]
-  (html [:div
-         [:span (:nodeName item)]
-         [:span {:style address-span-style} (:address item)]]))
-
-(defn- render-secondary-text
-  [item]
-  (html [:p
-         [:span (:role item)]
-         [:span {:style span-style} (form-state (string/upper-case (:state item)))]
-         [:span {:style span-engine-style}
-          (comp/svg {:style engine-icon-style} icon/docker)]
-         [:span (:engine item)]
-         [:span {:style span-style} (string/upper-case (:availability item))]
-         (if (:leader item)
-           [:span {:style span-style} (comp/label-blue "LEADER")])]))
+  (html
+    [:div.mdl-cell.node-item
+     [:div
+      [:span
+       [:svg.node-item-ico {::width "24" :height "24" :fill "rgb(117, 117, 117)"}
+        [:path {:d icon/docker}]]]
+      [:span [:b (:nodeName item)]]]
+     [:div.node-item-states
+      [:span.node-item-state (form-state (:state item))]
+      (if (:leader item)
+        [:span.node-item-state (comp/label-blue "leader")])]
+     [:div
+      [:span "[ " (:role item) " ]"]]
+     [:div
+      [:span.node-item-secondary "address: " (:address item)]]
+     [:div
+      [:span.node-item-secondary "engine: " (:engine item)]]
+     [:div
+      [:span.node-item-secondary "availability: " (:availability item)]]]))
 
 (rum/defc node-list < rum/reactive [items]
   (let [{:keys [nodeName]} (state/react cursor)
@@ -66,16 +52,9 @@
          {:hintText "Filter by name"
           :onChange (fn [_ v]
                       (state/update-value [:nodeName] v cursor))})]]
-     (comp/mui
-       (comp/list
-         {}
-         (->> (sort-by :nodeName filtered-items)
-              (map #(comp/list-item
-                      {:style         list-item-style
-                       :disabled      true
-                       :leftIcon      (comp/svg icon/nodes)
-                       :primaryText   (render-primary-text %)
-                       :secondaryText (render-secondary-text %)})))))]))
+     [:div.content-grid.mdl-grid
+      (->> (sort-by :nodeName filtered-items)
+           (map #(node-item %)))]]))
 
 (defn- init-state
   []

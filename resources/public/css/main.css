@@ -55,6 +55,10 @@ select:-webkit-autofill:focus {
     margin-left: 200px;
 }
 
+.content-grid {
+    margin: 8px;
+}
+
 /* Form layout */
 
 .form-panel-info,
@@ -225,14 +229,6 @@ select:-webkit-autofill:focus {
     height: 100vh;
 }
 
-/* User bar layout */
-
-.user-bar {
-    display: flex;
-    align-items: center;
-    color: #fff;
-}
-
 /* Labels */
 
 .label {
@@ -275,7 +271,48 @@ select:-webkit-autofill:focus {
     border-radius: .25em;
 }
 
-/* Custom tab */
+/* User bar layout */
+
+.user-bar {
+    display: flex;
+    align-items: center;
+    color: #fff;
+}
+
+/* Node grid layout */
+
+.node-item {
+    border: 1px solid rgb(117, 117, 117);
+    padding: 10px;
+    text-align: center;
+    background: rgb(245, 245, 245);
+    min-width: 200px;
+}
+
+.node-item-secondary {
+    font-weight: lighter;
+    font-size: 12px;
+}
+
+.node-item-state {
+    margin-left: 5px;
+}
+
+.node-item-states {
+    margin: 5px;
+    height: 20px;
+    font-size: 13px;
+}
+
+.node-item-ico {
+    transform: scale(0.8);
+    -webkit-transform: scale(0.8);
+    -moz-transform: scale(0.8);
+    -ms-transform: scale(0.8);
+    -o-transform: scale(0.8);
+}
+
+/* Custom service tab */
 
 .service-image-tab > div > div > svg {
     fill: rgb(117, 117, 117) !important;

@@ -23,7 +23,6 @@
    :volume-create         "Volumes / Create"
    :volume-info           "Volumes"
    :node-list             "Nodes"
-   :node-info             "Nodes"
    :task-list             "Tasks"
    :task-info             "Tasks"
    :user-list             "Users / Swarmpit"

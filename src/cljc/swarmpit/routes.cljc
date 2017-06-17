@@ -58,8 +58,7 @@
                    "/volumes"    {""          :volume-list
                                   "/create"   :volume-create
                                   ["/" :name] :volume-info}
-                   "/nodes"      {""        :node-list
-                                  ["/" :id] :node-info}
+                   "/nodes"      {""        :node-list}
                    "/tasks"      {""        :task-list
                                   ["/" :id] :task-info}
                    "/registries" {""        :registry-list
