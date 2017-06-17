@@ -180,7 +180,7 @@ select:-webkit-autofill:focus {
 
 .form-panel-info-text {
     font-size: 20px;
-    margin-top: 5px;
+    margin-top: 9px;
     margin-right: 10px;
 }
 
@@ -234,6 +234,7 @@ select:-webkit-autofill:focus {
 .label {
     display: inline;
     padding: .2em .6em .3em;
+    background-color: #fff;
 }
 
 .label-red {
@@ -266,7 +267,6 @@ select:-webkit-autofill:focus {
     display: inline;
     padding: .2em .6em .3em;
     color: rgb(117, 117, 117);
-    background-color: #fff;
     border: 1px solid rgb(224, 228, 231);
     border-radius: .25em;
 }
@@ -300,7 +300,6 @@ select:-webkit-autofill:focus {
 
 .node-item-states {
     margin: 5px;
-    height: 20px;
     font-size: 13px;
 }
 
@@ -310,6 +309,13 @@ select:-webkit-autofill:focus {
     -moz-transform: scale(0.8);
     -ms-transform: scale(0.8);
     -o-transform: scale(0.8);
+}
+
+/* Custom step label */
+
+.step-label > span {
+    font-size: 15px !important;
+    color: rgb(117, 117, 117) !important;
 }
 
 /* Custom service tab */
