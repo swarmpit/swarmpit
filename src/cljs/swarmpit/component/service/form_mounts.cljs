@@ -39,11 +39,12 @@
     {:name (str "form-volume-" index)
      :key  (str "form-volume-" index)}
     (comp/form-list-selectfield
-      {:name     (str "form-volume-select-" index)
-       :key      (str "form-volume-select-" index)
-       :value    value
-       :onChange (fn [_ _ v]
-                   (state/update-item index :hostPath v cursor))}
+      {:name      (str "form-volume-select-" index)
+       :key       (str "form-volume-select-" index)
+       :value     value
+       :autoWidth true
+       :onChange  (fn [_ _ v]
+                    (state/update-item index :hostPath v cursor))}
       (->> data
            (map #(comp/menu-item
                    {:name        (str "form-volume-item-" (:volumeName %))
