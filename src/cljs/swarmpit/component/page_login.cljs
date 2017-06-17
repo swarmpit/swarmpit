@@ -15,31 +15,12 @@
 (def login-button-style
   {:marginTop "30px"})
 
+
+
 (defn- update-item
   "Update form item configuration"
   [k v]
   (swap! state assoc k v))
-
-(defn- form-username [value]
-  (comp/vtext-field
-    {:id                "loginUsername"
-     :key               "username"
-     :name              "username"
-     :required          true
-     :floatingLabelText "Username"
-     :value             value
-     :onChange          (fn [_ v] (update-item :username v))}))
-
-(defn- form-password [value]
-  (comp/vtext-field
-    {:id                "loginPassword"
-     :key               "password"
-     :name              "password"
-     :required          true
-     :floatingLabelText "Password"
-     :type              "password"
-     :value             value
-     :onChange          (fn [_ v] (update-item :password v))}))
 
 (defn- login-headers
   []
@@ -60,6 +41,34 @@
               :error-handler (fn [{:keys [response]}]
                                (let [error (get response "error")]
                                  (update-item :message error)))}))
+
+(defn- on-enter
+  [event]
+  (if (= 13 (.-charCode event))
+    (login-handler)))
+
+(defn- form-username [value]
+  (comp/vtext-field
+    {:id                "loginUsername"
+     :key               "username"
+     :name              "username"
+     :required          true
+     :floatingLabelText "Username"
+     :value             value
+     :onKeyPress        on-enter
+     :onChange          (fn [_ v] (update-item :username v))}))
+
+(defn- form-password [value]
+  (comp/vtext-field
+    {:id                "loginPassword"
+     :key               "password"
+     :name              "password"
+     :required          true
+     :floatingLabelText "Password"
+     :type              "password"
+     :value             value
+     :onKeyPress        on-enter
+     :onChange          (fn [_ v] (update-item :password v))}))
 
 (rum/defc form < rum/reactive []
   (let [{:keys [username
