@@ -27,6 +27,10 @@
               "")
       value)))
 
+(defn- onclick-handler
+  [item]
+  (routes/path-for-frontend :user-info {:id (:_id item)}))
+
 (rum/defc user-list < rum/reactive [items]
   (let [{:keys [username]} (state/react cursor)
         filtered-items (filter-items items username)]
@@ -47,7 +51,7 @@
                       filtered-items
                       render-item
                       render-item-keys
-                      (fn [i] (routes/path-for-frontend :user-info {:id (:_id i)})))]))
+                      onclick-handler)]))
 
 (defn- init-state
   []

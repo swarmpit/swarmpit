@@ -27,6 +27,10 @@
                   "")
       value)))
 
+(defn- onclick-handler
+  [item]
+  (routes/path-for-frontend :registry-info {:id (:_id item)}))
+
 (rum/defc registry-list < rum/reactive [items]
   (let [{:keys [name]} (state/react cursor)
         filtered-items (filter-items items name)]
@@ -47,7 +51,7 @@
                       filtered-items
                       render-item
                       render-item-keys
-                      (fn [i] (routes/path-for-frontend :registry-info {:id (:_id i)})))]))
+                      onclick-handler)]))
 
 (defn- init-state
   []

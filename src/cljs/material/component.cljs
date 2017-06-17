@@ -5,14 +5,12 @@
             [sablono.core :refer-macros [html]]
             [swarmpit.url :refer [dispatch!]]
             [swarmpit.utils :refer [select-keys*]]
-            [swarmpit.ip :as ip]
-            [swarmpit.routes :as routes]))
+            [swarmpit.ip :as ip]))
 
 ;;; Theme components
 
 (def theme
   {:palette {:primary1Color      "#437f9d"
-             ;:primary1Color      "#5e469c"
              :primary2Color      "#3C728D"
              :primary3Color      "#bdbdbd"
              :accent1Color       "#437f9d"
@@ -481,7 +479,7 @@
              (min (+ offset limit) total) " of " total)))))
 
 (defn list-table
-  [headers items render-item-fn render-items-key handler-fn]
+  [headers items render-item-fn render-items-key onclick-handler-fn]
   (let [item (fn [index] (nth items index))]
     (mui
       (table
@@ -489,7 +487,7 @@
          :selectable  false
          :onCellClick (fn [i]
                         (dispatch!
-                          (handler-fn (item i))))}
+                          (onclick-handler-fn (item i))))}
         (list-table-header headers)
         (list-table-body items
                          render-item-fn

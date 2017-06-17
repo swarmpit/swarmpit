@@ -29,7 +29,7 @@
                                        message (str "Service removing failed. Reason: " error)]
                                    (message/mount! message)))}))
 
-(defn form-panel-label [item]
+(defn- form-panel-label [item]
   (str (:state item) "  " (get-in item [:status :info])))
 
 (rum/defc form < rum/static [item]
@@ -85,7 +85,7 @@
                         (filter #(not (= "shutdown" (:state %))) (:tasks item))
                         tasks/render-item
                         tasks/render-item-keys
-                        (fn [i] (routes/path-for-frontend :task-info (select-keys i [:id]))))]]]))
+                        tasks/onclick-handler)]]]))
 
 (defn mount!
   [item]

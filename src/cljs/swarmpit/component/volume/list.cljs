@@ -23,6 +23,10 @@
   [item]
   (val item))
 
+(defn- onclick-handler
+  [item]
+  (routes/path-for-frontend :volume-info {:name (:volumeName item)}))
+
 (rum/defc volume-list < rum/reactive [items]
   (let [{:keys [volumeName]} (state/react cursor)
         filtered-items (filter-items items volumeName)]
@@ -43,7 +47,7 @@
                       filtered-items
                       render-item
                       render-item-keys
-                      (fn [i] (routes/path-for-frontend :volume-info {:name (:volumeName i)})))]))
+                      onclick-handler)]))
 
 (defn- init-state
   []

@@ -37,8 +37,6 @@
           :label      "Delete"}))]]
    [:div.form-view
     [:div.form-view-group
-     (comp/form-section "General settings")
-     (comp/form-item "ID" (:id item))
      (comp/form-item "NAME" (:volumeName item))
      (comp/form-item "DRIVER" (:driver item))
      (comp/form-item "SCOPE" (:scope item))

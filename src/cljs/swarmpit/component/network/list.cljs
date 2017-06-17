@@ -27,6 +27,10 @@
                   (comp/label-blue "internal"))
       value)))
 
+(defn- onclick-handler
+  [item]
+  (routes/path-for-frontend :network-info (select-keys item [:id])))
+
 (rum/defc network-list < rum/reactive [items]
   (let [{:keys [networkName]} (state/react cursor)
         filtered-items (filter-items items networkName)]
@@ -47,7 +51,7 @@
                       filtered-items
                       render-item
                       render-item-keys
-                      (fn [i] (routes/path-for-frontend :network-info (select-keys i [:id]))))]))
+                      onclick-handler)]))
 
 (defn- init-state
   []

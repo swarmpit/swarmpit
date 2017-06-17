@@ -17,6 +17,10 @@
   [item]
   (val item))
 
+(defn- onclick-handler
+  [item]
+  (routes/path-for-frontend :dockerhub-user-info {:id (:_id item)}))
+
 (defn- filter-items
   "Filter list items based on given predicate"
   [items predicate]
@@ -42,7 +46,7 @@
                       filtered-items
                       render-item
                       render-item-keys
-                      (fn [i] (routes/path-for-frontend :dockerhub-user-info {:id (:_id i)})))]))
+                      onclick-handler)]))
 
 (defn- init-state
   []

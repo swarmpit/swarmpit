@@ -18,17 +18,17 @@
 (def form-replicas-label-style
   {:fontSize "13px"})
 
-(defn form-replicas [value]
+(defn- form-replicas [value]
   (comp/chip {:style      form-replicas-style
               :labelStyle form-replicas-label-style} value))
 
-(defn form-updates [value]
+(defn- form-updates [value]
   (let [status (if value "loading" "ready")]
     (comp/loader
       {:status status
        :top    0})))
 
-(defn form-state [value]
+(defn- form-state [value]
   (case value
     "running" (comp/label-green value)
     "not running" (comp/label-grey value)
@@ -57,6 +57,10 @@
       :update (form-updates value)
       value)))
 
+(defn- onclick-handler
+  [item]
+  (routes/path-for-frontend :service-info (select-keys item [:id])))
+
 (rum/defc service-list < rum/reactive [items]
   (let [{:keys [serviceName cranky]} (state/react cursor)
         filtered-items (filter-items items serviceName cranky)]
@@ -83,7 +87,7 @@
                       filtered-items
                       render-item
                       render-item-keys
-                      (fn [i] (routes/path-for-frontend :service-info (select-keys i [:id]))))]))
+                      onclick-handler)]))
 
 (defn- init-state
   []

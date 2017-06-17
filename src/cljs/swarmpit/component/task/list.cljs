@@ -43,6 +43,10 @@
       (form-state value)
       (val item))))
 
+(defn- onclick-handler
+  [item]
+  (routes/path-for-frontend :task-info (select-keys item [:id])))
+
 (rum/defc task-list < rum/reactive [items]
   (let [{:keys [serviceName running]} (state/react cursor)
         filtered-items (filter-items items serviceName running)]
@@ -63,7 +67,7 @@
                       filtered-items
                       render-item
                       render-item-keys
-                      (fn [i] (routes/path-for-frontend :task-info (select-keys i [:id]))))]))
+                      onclick-handler)]))
 
 (defn- init-state
   []
