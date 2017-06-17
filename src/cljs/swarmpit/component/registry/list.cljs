@@ -45,7 +45,7 @@
        (comp/mui
          (comp/raised-button
            {:href    (routes/path-for-frontend :registry-create)
-            :label   "Create"
+            :label   "Add"
             :primary true}))]]
      (comp/list-table headers
                       filtered-items

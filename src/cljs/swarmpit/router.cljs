@@ -26,15 +26,15 @@
    :node-info             "Nodes"
    :task-list             "Tasks"
    :task-info             "Tasks"
-   :user-list             "Users"
-   :user-create           "Users / Create"
-   :user-info             "Users"
+   :user-list             "Users / Swarmpit"
+   :user-create           "Users / Swarmpit / Create"
+   :user-info             "Users / Swarmpit "
    :registry-info         "Registries"
    :registry-list         "Registries"
    :registry-create       "Registries / Create"
-   :dockerhub-user-info   "Dockerhub"
-   :dockerhub-user-list   "Dockerhub"
-   :dockerhub-user-create "Dockerhub / Create"})
+   :dockerhub-user-info   "Users / Dockerhub"
+   :dockerhub-user-list   "Users / Dockerhub"
+   :dockerhub-user-create "Users / Dockerhub / Add"})
 
 (def location-page
   #{:login nil})

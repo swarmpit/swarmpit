@@ -3,6 +3,7 @@
             [material.icon :as icon]
             [swarmpit.component.state :as state]
             [swarmpit.storage :as storage]
+            [swarmpit.routes :as routes]
             [clojure.string :as string]
             [rum.core :as rum]))
 
@@ -55,26 +56,36 @@
 
 (def menu
   [{:name "APPLICATIONS"}
-   {:name "Services"
-    :icon icon/services}
-   {:name "Tasks"
-    :icon icon/tasks}
+   {:name    "Services"
+    :icon    icon/services
+    :handler :service-list}
+   {:name    "Tasks"
+    :icon    icon/tasks
+    :handler :task-list}
+   {:name "STORAGE"}
+   {:name    "Volumes"
+    :icon    icon/volumes
+    :handler :volume-list}
    {:name "INFRASTRUCTURE"}
-   {:name "Networks"
-    :icon icon/networks}
-   {:name "Volumes"
-    :icon icon/volumes}
-   {:name "Nodes"
-    :icon icon/nodes}])
+   {:name    "Networks"
+    :icon    icon/networks
+    :handler :network-list}
+   {:name    "Nodes"
+    :icon    icon/nodes
+    :handler :node-list}])
 
 (def admin-menu
-  [{:name "SETTINGS"}
-   {:name "Dockerhub"
-    :icon icon/docker}
-   {:name "Registries"
-    :icon icon/registries}
-   {:name "Users"
-    :icon icon/users}])
+  [{:name "USERS"}
+   {:name    "Dockerhub"
+    :icon    icon/docker
+    :handler :dockerhub-user-list}
+   {:name    "Swarmpit"
+    :icon    icon/users
+    :handler :user-list}
+   {:name "OTHER"}
+   {:name    "Registries"
+    :icon    icon/registries
+    :handler :registry-list}])
 
 (def menu-style
   {:height   "100%"
@@ -89,7 +100,7 @@
        :primaryText name
        :disabled    true})))
 
-(rum/defc drawer-item < rum/static [name icon opened? selected?]
+(rum/defc drawer-item < rum/static [name icon handler opened? selected?]
   (let [drawer-item-text (if opened?
                            name
                            nil)
@@ -103,7 +114,7 @@
       {:style         drawer-item-style
        :innerDivStyle drawer-item-inner-style
        :primaryText   drawer-item-text
-       :href          (str "/#/" (string/lower-case name))
+       :href          (routes/path-for-frontend handler)
        :leftIcon      drawer-item-icon})))
 
 (rum/defc drawer < rum/reactive []
@@ -132,9 +143,10 @@
             (fn [menu-item]
               (let [icon (:icon menu-item)
                     name (:name menu-item)
+                    handler (:handler menu-item)
                     selected (string/includes? domain name)]
                 (if (some? icon)
-                  (drawer-item name icon opened selected)
+                  (drawer-item name icon handler opened selected)
                   (drawer-category name opened)))) (if (storage/admin?)
                                                      (concat menu admin-menu)
                                                      menu)))))))

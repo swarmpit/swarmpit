@@ -64,11 +64,11 @@
     [:div
      [:div.form-panel
       [:div.form-panel-left
-       (comp/panel-info icon/docker "Add dockerhub user")]
+       (comp/panel-info icon/docker "New user")]
       [:div.form-panel-right
        (comp/mui
          (comp/raised-button
-           {:label      "Add"
+           {:label      "Create"
             :disabled   (not isValid)
             :primary    true
             :onTouchTap add-user-handler}))]]
