@@ -301,7 +301,7 @@
   [props & childs]
   (select-field
     (merge props
-           {:style      {:top 5}
+           {:style      {:top 7}
             :labelStyle {:lineHeight "45px"
                          :top        2}}) childs))
 

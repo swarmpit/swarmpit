@@ -54,7 +54,7 @@
     (comp/checkbox {:checked val})
     val))
 
-(rum/defc form < rum/static [item]
+(rum/defc form < rum/static [item volumes]
   (let [id (:id item)]
     [:div
      [:div.form-panel
@@ -84,7 +84,7 @@
        (networks/form-view (:networks item))]
       [:div.form-view-group
        (comp/form-section-add "Mounts" mounts/add-item)
-       (mounts/form-update)]
+       (mounts/form-update volumes)]
       [:div.form-view-group
        (comp/form-section-add "Environment variables" variables/add-item)
        (variables/form-update)]
@@ -102,6 +102,6 @@
   (state/set-value (:deployment item) deployment/cursor))
 
 (defn mount!
-  [item]
+  [item volumes]
   (init-state item)
-  (rum/mount (form item) (.getElementById js/document "content")))
+  (rum/mount (form item volumes) (.getElementById js/document "content")))

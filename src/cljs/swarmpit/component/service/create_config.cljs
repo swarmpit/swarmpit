@@ -70,6 +70,7 @@
       {:key                (str "step-btn-" index)
        :disableTouchRipple true
        :style              step-style
+       :className          "step-label"
        :onClick            (fn [] (reset! step-index index))}
       (nth steps index))
     (comp/step-content
@@ -110,7 +111,7 @@
                                    (progress/unmount!)
                                    (message/mount! message)))})))
 
-(rum/defc form < rum/reactive [networks]
+(rum/defc form < rum/reactive [networks volumes]
   (let [index (rum/react step-index)
         {:keys [isValid]} (state/react settings/cursor)]
     [:div
@@ -133,7 +134,7 @@
          (step-item 0 (settings/form false))
          (step-item 1 (ports/form-create))
          (step-item 2 (networks/form-create networks))
-         (step-item 3 (mounts/form-create))
+         (step-item 3 (mounts/form-create volumes))
          (step-item 4 (variables/form-create))
          (step-item 5 (deployment/form))))]))
 
@@ -158,6 +159,6 @@
                     :failureAction "pause"} deployment/cursor))
 
 (defn mount!
-  [registry repository networks]
+  [registry repository networks volumes]
   (init-state registry repository)
-  (rum/mount (form networks) (.getElementById js/document "content")))
+  (rum/mount (form networks volumes) (.getElementById js/document "content")))

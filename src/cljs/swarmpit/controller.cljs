@@ -91,15 +91,20 @@
   (let [params (keywordize-keys (query->map (query-string)))]
     (fetch (routes/path-for-backend :networks)
            (fn [networks]
-             (screatec/mount! (:registry params)
-                              (:repository params)
-                              networks)))))
+             (fetch (routes/path-for-backend :volumes)
+                    (fn [volumes]
+                      (screatec/mount! (:registry params)
+                                       (:repository params)
+                                       networks
+                                       volumes)))))))
 
 (defmethod dispatch :service-edit
   [{:keys [route-params]}]
-  (fetch (routes/path-for-backend :service-update route-params)
-         (fn [response]
-           (sedit/mount! response))))
+  (fetch (routes/path-for-backend :service route-params)
+         (fn [service]
+           (fetch (routes/path-for-backend :volumes)
+                  (fn [volumes]
+                    (sedit/mount! service volumes))))))
 
 ;;; Network controller
 
