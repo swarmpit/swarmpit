@@ -72,7 +72,7 @@
       [:div.form-panel-right
        (comp/mui
          (comp/raised-button
-           {:label      "Submit"
+           {:label      "Change"
             :disabled   (not canSubmit)
             :primary    true
             :onTouchTap change-password-handler}))]]
