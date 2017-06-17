@@ -16,6 +16,10 @@ main {
     margin-top: 64px;
 }
 
+a {
+    color: #437f9d;
+}
+
 /* Webkit default setup */
 
 input:-webkit-autofill,
