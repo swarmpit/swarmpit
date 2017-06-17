@@ -1,14 +1,21 @@
 (ns swarmpit.component.node.list
   (:require [material.component :as comp]
+            [material.mixin :as mixin]
             [material.icon :as icon]
             [swarmpit.component.state :as state]
+            [swarmpit.routes :as routes]
+            [swarmpit.storage :as storage]
             [clojure.string :as string]
             [sablono.core :refer-macros [html]]
+            [clojure.walk :refer [keywordize-keys]]
+            [ajax.core :as ajax]
             [rum.core :as rum]))
 
 (enable-console-print!)
 
 (def cursor [:page :node :list :filter])
+
+(def cursor-data [:page :node :list :data])
 
 (defn- filter-items
   "Filter list items based on given predicate"
@@ -19,6 +26,18 @@
   (case value
     "ready" (comp/label-green value)
     "down" (comp/label-red value)))
+
+(defn- data-handler
+  []
+  (ajax/GET (routes/path-for-backend :nodes)
+            {:headers {"Authorization" (storage/get "token")}
+             :handler (fn [response]
+                        (keywordize-keys response)
+                        (let [resp (keywordize-keys response)]
+                          (state/set-value resp cursor-data)))}))
+
+(def refresh-mixin
+  (mixin/list-refresh-mixin data-handler))
 
 (defn- node-item
   [item]
@@ -42,8 +61,10 @@
      [:div
       [:span.node-item-secondary "availability: " (:availability item)]]]))
 
-(rum/defc node-list < rum/reactive [items]
-  (let [{:keys [nodeName]} (state/react cursor)
+(rum/defc node-list < rum/reactive
+                      refresh-mixin []
+  (let [items (state/react cursor-data)
+        {:keys [nodeName]} (state/react cursor)
         filtered-items (filter-items items nodeName)]
     [:div
      [:div.form-panel
@@ -57,10 +78,11 @@
            (map #(node-item %)))]]))
 
 (defn- init-state
-  []
-  (state/set-value {:nodeName ""} cursor))
+  [nodes]
+  (state/set-value {:nodeName ""} cursor)
+  (state/set-value nodes cursor-data))
 
 (defn mount!
-  [items]
-  (init-state)
-  (rum/mount (node-list items) (.getElementById js/document "content")))
+  [nodes]
+  (init-state nodes)
+  (rum/mount (node-list) (.getElementById js/document "content")))

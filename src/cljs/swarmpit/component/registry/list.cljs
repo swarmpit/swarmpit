@@ -19,7 +19,7 @@
   [[:name] [:url] [:withAuth]])
 
 (defn- render-item
-  [item]
+  [item _]
   (let [value (val item)]
     (case (key item)
       :withAuth (if value

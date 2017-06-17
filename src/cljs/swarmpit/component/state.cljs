@@ -5,30 +5,30 @@
 (defonce state
          (atom {:menu {:opened true
                        :domain ""}
-                :page {:network    {:list {:filter {}}
-                                    :form {}}
-                       :volume     {:list {:filter {}}
-                                    :form {}}
-                       :node       {:list {:filter {}}}
-                       :service    {:list   {:filter {}}
-                                    :wizard {:data       {}
-                                             :image      {:public {}
-                                                          :user   {}
-                                                          :other  {}}
-                                             :settings   {}
-                                             :ports      []
-                                             :networks   []
-                                             :variables  []
-                                             :mounts     []
-                                             :deployment {}}}
-                       :task       {:list {:filter {}}}
-                       :registry   {:list   {:filter {}}
-                                    :form   {}
-                                    :wizard {}}
-                       :dockerhub  {:list {:filter {}}}
-                       :user       {:list {:filter {}}
-                                    :form {}}
-                       :repository {:wizard {}}}}))
+                :page {:network   {:list {:filter {}}
+                                   :form {}}
+                       :volume    {:list {:filter {}}
+                                   :form {}}
+                       :node      {:list {:filter {}
+                                          :data   []}}
+                       :service   {:list   {:filter {}
+                                            :data   []}
+                                   :wizard {:image      {:public {}
+                                                         :user   {}
+                                                         :other  {}}
+                                            :settings   {}
+                                            :ports      []
+                                            :networks   []
+                                            :variables  []
+                                            :mounts     []
+                                            :deployment {}}}
+                       :task      {:list {:filter {}
+                                          :data   []}}
+                       :registry  {:list {:filter {}}
+                                   :form {}}
+                       :dockerhub {:list {:filter {}}}
+                       :user      {:list {:filter {}}
+                                   :form {}}}}))
 
 (defn react
   [cursor]

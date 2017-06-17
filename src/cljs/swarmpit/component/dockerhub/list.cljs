@@ -14,7 +14,7 @@
   [[:username] [:name] [:company]])
 
 (defn- render-item
-  [item]
+  [item _]
   (val item))
 
 (defn- onclick-handler

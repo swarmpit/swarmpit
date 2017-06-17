@@ -448,7 +448,7 @@
             (->> (select-keys* item render-items-key)
                  (map #(table-row-column
                          {:key (str "trc-" (item-id item))}
-                         (render-item-fn %)))))) items))))
+                         (render-item-fn % item)))))) items))))
 
 (defn list-table-paging
   [offset total limit on-prev-fn on-next-fn]

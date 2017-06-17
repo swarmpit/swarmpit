@@ -1,21 +1,26 @@
 (ns swarmpit.component.service.list
   (:require [material.component :as comp]
+            [material.mixin :as mixin]
             [swarmpit.component.state :as state]
             [swarmpit.routes :as routes]
             [clojure.string :as string]
+            [swarmpit.storage :as storage]
+            [clojure.walk :refer [keywordize-keys]]
+            [sablono.core :refer-macros [html]]
+            [ajax.core :as ajax]
             [rum.core :as rum]))
 
 (enable-console-print!)
 
 (def cursor [:page :service :list :filter])
 
-(def headers ["Name" "Image" "Mode" "Replicas" "Status" "Updates"])
+(def cursor-data [:page :service :list :data])
 
-(defn- form-updates [value]
-  (let [status (if value "loading" "ready")]
-    (comp/loader
-      {:status status
-       :top    0})))
+(def headers ["Name" "Image" "Mode" "Replicas" "Status"])
+
+(defn- form-update [value]
+  (if value
+    (comp/label-blue "updating")))
 
 (defn- form-state [value]
   (case value
@@ -35,23 +40,40 @@
       (filter #(string/includes? (:serviceName %) name) items))))
 
 (def render-item-keys
-  [[:serviceName] [:repository :image] [:mode] [:status :info] [:state] [:status :update]])
+  [[:serviceName] [:repository :image] [:mode] [:status :info] [:state]])
 
 (defn- render-item
-  [item]
-  (let [value (val item)]
+  [item service]
+  (let [update (get-in service [:status :update])
+        value (val item)]
     (case (key item)
-      :state (form-state value)
+      :state (html [:span
+                    [:span (form-state value)]
+                    [:span " "]
+                    [:span (form-update update)]])
       :info (comp/label-info value)
-      :update (form-updates value)
       value)))
 
 (defn- onclick-handler
   [item]
   (routes/path-for-frontend :service-info (select-keys item [:id])))
 
-(rum/defc service-list < rum/reactive [items]
-  (let [{:keys [serviceName cranky]} (state/react cursor)
+(defn- data-handler
+  []
+  (ajax/GET (routes/path-for-backend :services)
+            {:headers {"Authorization" (storage/get "token")}
+             :handler (fn [response]
+                        (keywordize-keys response)
+                        (let [resp (keywordize-keys response)]
+                          (state/set-value resp cursor-data)))}))
+
+(def refresh-mixin
+  (mixin/list-refresh-mixin data-handler))
+
+(rum/defc service-list < rum/reactive
+                         refresh-mixin []
+  (let [items (state/react cursor-data)
+        {:keys [serviceName cranky]} (state/react cursor)
         filtered-items (filter-items items serviceName cranky)]
     [:div
      [:div.form-panel
@@ -79,11 +101,12 @@
                       onclick-handler)]))
 
 (defn- init-state
-  []
+  [services]
   (state/set-value {:serviceName ""
-                    :cranky      false} cursor))
+                    :cranky      false} cursor)
+  (state/set-value services cursor-data))
 
 (defn mount!
-  [items]
-  (init-state)
-  (rum/mount (service-list items) (.getElementById js/document "content")))
+  [services]
+  (init-state services)
+  (rum/mount (service-list) (.getElementById js/document "content")))

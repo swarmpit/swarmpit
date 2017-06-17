@@ -43,33 +43,32 @@
                        "registries/"      {:get    {[:id] :registry}
                                            :delete {[:id] :registry-delete}}}}])
 
-(def frontend ["" {"/"           :index
-                   "/login"      :login
-                   "/error"      :error
-                   "/password"   :password
-                   "/services"   {""                :service-list
-                                  "/create/wizard"  {"/image"  :service-create-image
-                                                     "/config" :service-create-config}
-                                  ["/" :id]         :service-info
-                                  ["/" :id "/edit"] :service-edit}
-                   "/networks"   {""        :network-list
-                                  "/create" :network-create
-                                  ["/" :id] :network-info}
-                   "/volumes"    {""          :volume-list
-                                  "/create"   :volume-create
-                                  ["/" :name] :volume-info}
-                   "/nodes"      {""        :node-list}
-                   "/tasks"      {""        :task-list
-                                  ["/" :id] :task-info}
-                   "/registries" {""        :registry-list
-                                  "/create" :registry-create
-                                  ["/" :id] :registry-info}
-                   "/dockerhub"  {""        :dockerhub-user-list
-                                  "/create" :dockerhub-user-create
-                                  ["/" :id] :dockerhub-user-info}
-                   "/users"      {""        :user-list
-                                  "/create" :user-create
-                                  ["/" :id] :user-info}}])
+(def frontend ["" {"/"             :index
+                   "/login"        :login
+                   "/password"     :password
+                   "/services"     {""                :service-list
+                                    "/create/wizard"  {"/image"  :service-create-image
+                                                       "/config" :service-create-config}
+                                    ["/" :id]         :service-info
+                                    ["/" :id "/edit"] :service-edit}
+                   "/networks"     {""        :network-list
+                                    "/create" :network-create
+                                    ["/" :id] :network-info}
+                   "/volumes"      {""          :volume-list
+                                    "/create"   :volume-create
+                                    ["/" :name] :volume-info}
+                   "/nodes"        {"" :node-list}
+                   "/tasks"        {""        :task-list
+                                    ["/" :id] :task-info}
+                   "/registries"   {""        :registry-list
+                                    "/create" :registry-create
+                                    ["/" :id] :registry-info}
+                   "/dockerhub"    {""        :dockerhub-user-list
+                                    "/create" :dockerhub-user-create
+                                    ["/" :id] :dockerhub-user-info}
+                   "/users"        {""        :user-list
+                                    "/create" :user-create
+                                    ["/" :id] :user-info}}])
 
 (defn path-for-frontend
   ([handler params query] (str "/#" (b/unmatch-pair frontend {:handler handler

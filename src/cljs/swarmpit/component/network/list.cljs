@@ -20,7 +20,7 @@
   [[:networkName] [:driver] [:ipam :subnet] [:ipam :gateway] [:internal]])
 
 (defn- render-item
-  [item]
+  [item _]
   (let [value (val item)]
     (case (key item)
       :internal (if value

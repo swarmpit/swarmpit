@@ -1,13 +1,19 @@
 (ns swarmpit.component.task.list
   (:require [material.component :as comp]
+            [material.mixin :as mixin]
             [swarmpit.component.state :as state]
             [swarmpit.routes :as routes]
             [clojure.string :as string]
+            [swarmpit.storage :as storage]
+            [clojure.walk :refer [keywordize-keys]]
+            [ajax.core :as ajax]
             [rum.core :as rum]))
 
 (enable-console-print!)
 
 (def cursor [:page :task :list :filter])
+
+(def cursor-data [:page :task :list :data])
 
 (def headers ["Name" "Service" "Image" "Node" "Status"])
 
@@ -37,7 +43,7 @@
   [[:taskName] [:serviceName] [:repository :image] [:node :nodeName] [:state]])
 
 (defn- render-item
-  [item]
+  [item _]
   (let [value (val item)]
     (if (= :state (key item))
       (form-state value)
@@ -47,8 +53,22 @@
   [item]
   (routes/path-for-frontend :task-info (select-keys item [:id])))
 
-(rum/defc task-list < rum/reactive [items]
-  (let [{:keys [serviceName running]} (state/react cursor)
+(defn- data-handler
+  []
+  (ajax/GET (routes/path-for-backend :tasks)
+            {:headers {"Authorization" (storage/get "token")}
+             :handler (fn [response]
+                        (keywordize-keys response)
+                        (let [resp (keywordize-keys response)]
+                          (state/set-value resp cursor-data)))}))
+
+(def refresh-mixin
+  (mixin/list-refresh-mixin data-handler))
+
+(rum/defc task-list < rum/reactive
+                      refresh-mixin []
+  (let [items (state/react cursor-data)
+        {:keys [serviceName running]} (state/react cursor)
         filtered-items (filter-items items serviceName running)]
     [:div
      [:div.form-panel
@@ -70,11 +90,12 @@
                       onclick-handler)]))
 
 (defn- init-state
-  []
+  [tasks]
   (state/set-value {:serviceName ""
-                    :running     true} cursor))
+                    :running     true} cursor)
+  (state/set-value tasks cursor-data))
 
 (defn mount!
-  [items]
-  (init-state)
-  (rum/mount (task-list items) (.getElementById js/document "content")))
+  [tasks]
+  (init-state tasks)
+  (rum/mount (task-list) (.getElementById js/document "content")))

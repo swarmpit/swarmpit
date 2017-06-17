@@ -20,7 +20,7 @@
   [[:volumeName] [:driver]])
 
 (defn- render-item
-  [item]
+  [item _]
   (val item))
 
 (defn- onclick-handler

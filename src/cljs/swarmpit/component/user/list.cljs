@@ -19,7 +19,7 @@
   [[:username] [:email] [:role]])
 
 (defn- render-item
-  [item]
+  [item _]
   (let [value (val item)]
     (case (key item)
       :role (if (= "admin" value)
