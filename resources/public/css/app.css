@@ -238,28 +238,32 @@ select:-webkit-autofill:focus {
 .label {
     display: inline;
     padding: .2em .6em .3em;
-    color: #fff;
-    border-radius: .25em;
 }
 
 .label-red {
-    background-color: rgb(244, 67, 54);
+    border: 1px solid rgb(244, 67, 54);
+    color: rgb(244, 67, 54);
 }
 
 .label-green {
-    background-color: #509E50;
+    border: 1px solid #509E50;
+    color: #509E50;
 }
 
 .label-yellow {
-    background-color: #9e931b;
+    border: 1px solid #9e931b;
+    color: #9e931b;
 }
 
 .label-grey {
-    background-color: #757474;
+    border: 1px solid #757474;
+    color: #757474;
+
 }
 
 .label-blue {
-    background-color: #437f9d;
+    border: 1px solid #437f9d;
+    color: #437f9d;
 }
 
 .label-info {
