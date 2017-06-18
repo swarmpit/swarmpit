@@ -49,10 +49,17 @@
                    render-variables
                    (fn [index] (state/remove-item index cursor))))
 
-(defn add-item
+(defn- add-item
   []
   (state/add-item {:name  ""
                    :value ""} cursor))
+
+(def render-item-keys
+  [[:name] [:value]])
+
+(defn- render-item
+  [item]
+  (val item))
 
 (rum/defc form-create < rum/reactive []
   (let [variables (state/react cursor)]
@@ -70,4 +77,8 @@
 (rum/defc form-view < rum/static [variables]
   (if (empty? variables)
     empty-info
-    (comp/form-info-table headers variables identity "100vh")))
+    (comp/form-info-table headers
+                          variables
+                          render-item
+                          render-item-keys
+                          "100vh")))

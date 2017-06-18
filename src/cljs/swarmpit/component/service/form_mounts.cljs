@@ -105,12 +105,22 @@
                    render-mounts
                    (fn [index] (state/remove-item index cursor))))
 
-(defn add-item
+(defn- add-item
   []
-  (state/add-item {:containerPath ""
+  (state/add-item {:type          "bind"
+                   :containerPath ""
                    :hostPath      ""
-                   :type          "bind"
                    :readOnly      false} cursor))
+
+(def render-item-keys
+  [[:type] [:containerPath] [:hostPath] [:readOnly]])
+
+(defn- render-item
+  [item]
+  (let [value (val item)]
+    (case (key item)
+      :readOnly (if value "yes" "no")
+      value)))
 
 (rum/defc form-create < rum/reactive [data]
   (let [mounts (state/react cursor)]
@@ -128,4 +138,8 @@
 (rum/defc form-view < rum/static [mounts]
   (if (empty? mounts)
     empty-info
-    (comp/form-info-table headers mounts identity "150vh")))
+    (comp/form-info-table headers
+                          mounts
+                          render-item
+                          render-item-keys
+                          "150vh")))

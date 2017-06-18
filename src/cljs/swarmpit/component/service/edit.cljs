@@ -89,7 +89,9 @@
        (comp/form-section-add "Mounts" mounts/add-item)
        (mounts/form-update volumes)]
       [:div.form-view-group
-       (comp/form-section-add "Secrets" secrets/add-item)
+       (if (empty? secrets)
+         (comp/form-section "Secrets")
+         (comp/form-section-add "Secrets" secrets/add-item))
        (secrets/form-update secrets)]
       [:div.form-view-group
        (comp/form-section-add "Environment variables" variables/add-item)

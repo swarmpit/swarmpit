@@ -57,10 +57,17 @@
                    render-secrets
                    (fn [index] (state/remove-item index cursor))))
 
-(defn add-item
+(defn- add-item
   []
   (state/add-item {:secretName ""
                    :id         ""} cursor))
+
+(def render-item-keys
+  [[:secretName]])
+
+(defn- render-item
+  [item]
+  (val item))
 
 (rum/defc form-create < rum/reactive [data]
   (let [secrets (state/react cursor)]
@@ -80,4 +87,8 @@
 (rum/defc form-view < rum/static [secrets]
   (if (empty? secrets)
     empty-info
-    (comp/form-info-table ["Name"] secrets identity "300px")))
+    (comp/form-info-table headers
+                          secrets
+                          render-item
+                          render-item-keys
+                          "300px")))

@@ -579,7 +579,7 @@
              :style header-el-style}
             header)) headers))))
 
-(defn form-info-table-body [items render-item-fn item-el-style]
+(defn form-info-table-body [items render-item-fn render-items-key item-el-style]
   (table-body
     {:key                "tb"
      :showRowHover       false
@@ -591,13 +591,14 @@
            :rowNumber     index
            :displayBorder false
            :style         item-el-style}
-          (->> (keys item)
-               (map #(table-row-column
-                       {:key   (str "trc-" index "-" %)
-                        :style item-el-style}
-                       (render-item-fn (% item))))))) items)))
 
-(defn form-info-table [headers items render-item-fn width]
+          (->> (select-keys* item render-items-key)
+               (map #(table-row-column
+                       {:key   (str "trc-" (:id item))
+                        :style item-el-style}
+                       (render-item-fn % item)))))) items)))
+
+(defn form-info-table [headers items render-item-fn render-items-key width]
   (let [el-style {:height "20px"}]
     (mui
       (table
@@ -605,5 +606,5 @@
          :selectable false
          :style      {:width width}}
         (form-info-table-header headers el-style)
-        (form-info-table-body items render-item-fn el-style)))))
+        (form-info-table-body items render-item-fn render-items-key el-style)))))
 

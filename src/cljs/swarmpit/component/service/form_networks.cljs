@@ -42,7 +42,14 @@
                    render-networks
                    (fn [index] (state/remove-item index cursor))))
 
-(defn add-item
+(def render-item-keys
+  [[:networkName] [:driver]])
+
+(defn- render-item
+  [item]
+  (val item))
+
+(defn- add-item
   []
   (state/add-item {:networkName ""} cursor))
 
@@ -56,4 +63,8 @@
 (rum/defc form-view < rum/static [networks]
   (if (empty? networks)
     empty-info
-    (comp/form-info-table ["Name" "Driver"] networks identity "300px")))
+    (comp/form-info-table ["Name" "Driver"]
+                          networks
+                          render-item
+                          render-item-keys
+                          "300px")))

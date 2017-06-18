@@ -83,11 +83,18 @@
                    render-ports
                    (fn [index] (state/remove-item index cursor))))
 
-(defn add-item
+(defn- add-item
   []
   (state/add-item {:containerPort 0
                    :protocol      "tcp"
                    :hostPort      0} cursor))
+
+(def render-item-keys
+  [[:containerPort] [:protocol] [:hostPort]])
+
+(defn- render-item
+  [item]
+  (val item))
 
 (rum/defc form-create < rum/reactive []
   (let [ports (state/react cursor)]
@@ -105,4 +112,8 @@
 (rum/defc form-view < rum/static [ports]
   (if (empty? ports)
     empty-info
-    (comp/form-info-table headers ports identity "300px")))
+    (comp/form-info-table headers
+                          ports
+                          render-item
+                          render-item-keys
+                          "300px")))
