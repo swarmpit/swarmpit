@@ -338,6 +338,7 @@
         :labelPosition "before"
         :primary       true
         :onTouchTap    add-item-fn
+        :style         {:marginLeft "10px"}
         :icon          (svg icon/add-small)}))])
 
 ;; Labels

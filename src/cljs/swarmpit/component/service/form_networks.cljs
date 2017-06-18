@@ -9,7 +9,7 @@
 
 (def headers ["Name"])
 
-(def undefined
+(def empty-info
   (comp/form-value "Service is not connected to any networks."))
 
 (defn- form-network [value index data]
@@ -55,5 +55,5 @@
 
 (rum/defc form-view < rum/static [networks]
   (if (empty? networks)
-    undefined
+    empty-info
     (comp/form-info-table ["Name" "Driver"] networks identity "300px")))

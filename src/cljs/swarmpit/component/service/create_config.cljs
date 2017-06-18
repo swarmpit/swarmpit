@@ -43,10 +43,7 @@
   {:height "60px"})
 
 (def form-previous-button-style
-  {:margin "10px"})
-
-(def form-next-button-style
-  {:marginBottom "10px"})
+  {:margin "10px 10px 10px 20px"})
 
 (defn- form-previous-button [index]
   (comp/raised-button
@@ -60,7 +57,6 @@
   (comp/raised-button
     {:label      "Next"
      :key        "fnb"
-     :style      form-next-button-style
      :disabled   (= (- (count steps) 1) index)
      :onTouchTap (fn [] (step-next index))}))
 

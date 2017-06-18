@@ -9,7 +9,7 @@
 
 (def headers ["Type" "Container path" "Host path" "Read only"])
 
-(def undefined
+(def empty-info
   (comp/form-value "No mounts defined for the service."))
 
 (defn- form-container [value index]
@@ -122,10 +122,10 @@
 (rum/defc form-update < rum/reactive [data]
   (let [mounts (state/react cursor)]
     (if (empty? mounts)
-      undefined
+      empty-info
       (form-table mounts data))))
 
 (rum/defc form-view < rum/static [mounts]
   (if (empty? mounts)
-    undefined
+    empty-info
     (comp/form-info-table headers mounts identity "150vh")))

@@ -10,7 +10,7 @@
 
 (def headers ["Container port" "Protocol" "Host port"])
 
-(def undefined
+(def empty-info
   (comp/form-value "Service has no published ports."))
 
 (defn- format-port-value
@@ -99,10 +99,10 @@
 (rum/defc form-update < rum/reactive []
   (let [ports (state/react cursor)]
     (if (empty? ports)
-      undefined
+      empty-info
       (form-table ports))))
 
 (rum/defc form-view < rum/static [ports]
   (if (empty? ports)
-    undefined
+    empty-info
     (comp/form-info-table headers ports identity "300px")))

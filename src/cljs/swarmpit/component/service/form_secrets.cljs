@@ -1,5 +1,7 @@
 (ns swarmpit.component.service.form-secrets
   (:require [material.component :as comp]
+            [material.icon :as icon]
+            [swarmpit.routes :as routes]
             [swarmpit.component.state :as state]
             [rum.core :as rum]))
 
@@ -9,8 +11,14 @@
 
 (def headers ["Name"])
 
-(def undefined
+(def empty-info
   (comp/form-value "No secrets defined for the service."))
+
+(def undefined-info
+  (comp/form-icon-value
+    icon/info
+    [:span "No secrets found. Create new "
+     [:a {:href (routes/path-for-frontend :secret-create)} "secret."]]))
 
 (defn- secret-id
   [secret-name secrets]
@@ -57,17 +65,19 @@
 (rum/defc form-create < rum/reactive [data]
   (let [secrets (state/react cursor)]
     [:div
-     (comp/form-add-btn "Expose secrets" add-item)
+     (if (empty? data)
+       undefined-info
+       (comp/form-add-btn "Expose secrets" add-item))
      (if (not (empty? secrets))
        (form-table secrets data))]))
 
 (rum/defc form-update < rum/reactive [data]
   (let [secrets (state/react cursor)]
     (if (empty? secrets)
-      undefined
+      empty-info
       (form-table secrets data))))
 
 (rum/defc form-view < rum/static [secrets]
   (if (empty? secrets)
-    undefined
+    empty-info
     (comp/form-info-table ["Name"] secrets identity "300px")))

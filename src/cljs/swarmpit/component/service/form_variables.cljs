@@ -9,7 +9,7 @@
 
 (def headers ["Name" "Value"])
 
-(def undefined
+(def empty-info
   (comp/form-value "No environment variables defined for the service."))
 
 (defn- form-name [value index]
@@ -64,10 +64,10 @@
 (rum/defc form-update < rum/reactive []
   (let [variables (state/react cursor)]
     (if (empty? variables)
-      undefined
+      empty-info
       (form-table variables))))
 
 (rum/defc form-view < rum/static [variables]
   (if (empty? variables)
-    undefined
+    empty-info
     (comp/form-info-table headers variables identity "100vh")))
