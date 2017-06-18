@@ -53,7 +53,7 @@
 
 (defmethod dispatch :index
   [_]
-  (print "TO-DO"))
+  (dispatch! (routes/path-for-frontend :service-list)))
 
 (defmethod dispatch nil
   [_]

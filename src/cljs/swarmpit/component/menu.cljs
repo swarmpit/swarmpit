@@ -62,20 +62,20 @@
    {:name    "Tasks"
     :icon    icon/tasks
     :handler :task-list}
-   {:name "STORAGE"}
-   {:name    "Volumes"
-    :icon    icon/volumes
-    :handler :volume-list}
-   {:name    "Secrets"
-    :icon    icon/secrets
-    :handler :secret-list}
    {:name "INFRASTRUCTURE"}
    {:name    "Networks"
     :icon    icon/networks
     :handler :network-list}
    {:name    "Nodes"
     :icon    icon/nodes
-    :handler :node-list}])
+    :handler :node-list}
+   {:name "DATA"}
+   {:name    "Volumes"
+    :icon    icon/volumes
+    :handler :volume-list}
+   {:name    "Secrets"
+    :icon    icon/secrets
+    :handler :secret-list}])
 
 (def admin-menu
   [{:name "USERS"}
