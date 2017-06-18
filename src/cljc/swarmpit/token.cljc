@@ -1,9 +1,8 @@
 (ns swarmpit.token
-  #?(:clj
-     (:import java.util.Base64))
   (:require
     #?@(:clj  [[clojure.string :as str]
                [swarmpit.uuid :refer [uuid]]
+               [swarmpit.base64 :as base64]
                [buddy.sign.jwt :as jwt]
                [clj-time.core :refer [now plus days]]]
         :cljs [[clojure.string :as str]
@@ -52,17 +51,19 @@
          (jwt/unsign "secret"))))
 
 #?(:clj
-   (defn generate-base64
-     [credentials]
-     (let [credentials-bytes (.getBytes credentials)]
-       (.encodeToString (Base64/getEncoder) credentials-bytes))))
-
-#?(:clj
    (defn generate-basic
      [username password]
      (let [credentials (credentials username password)
-           base64 (generate-base64 credentials)]
+           base64 (base64/encode credentials)]
        (basic base64))))
+
+#?(:clj
+   (defn decode-basic
+     [token]
+     (let [decoded (base64/decode (token-value token))
+           credentials (str/split decoded #":")]
+       {:username (first credentials)
+        :password (second credentials)})))
 
 #?(:cljs
    (defn decode-jwt
@@ -80,12 +81,3 @@
      (let [credentials (credentials username password)
            credentials-encoded (b64/encodeString credentials)]
        (basic credentials-encoded))))
-
-#?(:clj
-   (defn decode-basic
-     [token]
-     (let [decoded (String. (.decode (Base64/getDecoder)
-                                     (token-value token)))
-           credentials (str/split decoded #":")]
-       {:username (first credentials)
-        :password (second credentials)})))

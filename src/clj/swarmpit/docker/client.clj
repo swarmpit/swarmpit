@@ -4,7 +4,7 @@
             [clojure.string :as string]
             [ring.util.codec :refer [form-encode]]
             [cheshire.core :refer [parse-string generate-string]]
-            [swarmpit.token :as token]))
+            [swarmpit.base64 :as base64]))
 
 (def ^:private api-version "v1.27")
 (def ^:private base-cmd ["curl" "--unix-socket" "/var/run/docker.sock" "-w" "%{http_code}"])
@@ -105,7 +105,7 @@
 
 (defn- registry-token
   [auth]
-  (token/generate-base64 (generate-string auth)))
+  (base64/encode (generate-string auth)))
 
 ;; Service
 
