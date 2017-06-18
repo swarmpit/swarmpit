@@ -362,6 +362,10 @@
   [text]
   (html [:span.label.label-grey text]))
 
+(defn label-update
+  [text]
+  (html [:span.label.label-update text]))
+
 (defn label-info
   [text]
   (html [:span.label.label-info text]))

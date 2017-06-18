@@ -18,7 +18,7 @@
 
 (defn- form-update [value]
   (if value
-    (comp/label-blue "updating")))
+    (comp/label-update "updating")))
 
 (defn- form-state [value]
   (case value

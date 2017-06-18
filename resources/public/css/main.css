@@ -124,13 +124,13 @@ select:-webkit-autofill:focus {
 }
 
 .form-row-icon-section {
-    margin-right: 10px;
+    margin-right: 5px;
 }
 
 .form-row-icon-field {
     width: 27px;
     position: relative;
-    margin-top: 3px;
+    margin-top: -1px;
 }
 
 /* Form panel */
@@ -261,6 +261,11 @@ select:-webkit-autofill:focus {
 .label-blue {
     border: 1px solid #437f9d;
     color: #437f9d;
+}
+
+.label-update {
+    border: 1px solid rgb(117, 117, 117);
+    color: rgb(117, 117, 117);
 }
 
 .label-info {
