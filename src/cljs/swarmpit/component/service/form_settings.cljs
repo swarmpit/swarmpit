@@ -32,12 +32,13 @@
        :inputStyle    form-image-style
        :value         value})))
 
-(defn- form-image-tag-ac [tags]
+(defn- form-image-tag-ac [value tags]
   "Preload tags for services created via swarmit"
   (comp/form-comp
     "IMAGE TAG"
     (comp/autocomplete {:name          "imageTagAuto"
                         :key           "imageTagAuto"
+                        :searchText    value
                         :onUpdateInput (fn [v] (state/update-value [:repository :imageTag] v cursor))
                         :dataSource    tags})))
 
@@ -124,7 +125,8 @@
        (form-image (:imageName repository))
        (if update-form?
          (form-image-tag (:imageTag repository))
-         (form-image-tag-ac (:tags repository)))
+         (form-image-tag-ac (:imageTag repository)
+                            (:tags repository)))
        (form-name serviceName update-form?)
        (form-mode mode update-form?)
        (if (= "replicated" mode)
