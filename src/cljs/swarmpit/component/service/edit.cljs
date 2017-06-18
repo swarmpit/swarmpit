@@ -8,6 +8,7 @@
             [swarmpit.component.service.form-ports :as ports]
             [swarmpit.component.service.form-networks :as networks]
             [swarmpit.component.service.form-mounts :as mounts]
+            [swarmpit.component.service.form-secrets :as secrets]
             [swarmpit.component.service.form-variables :as variables]
             [swarmpit.component.service.form-deployment :as deployment]
             [swarmpit.component.message :as message]
@@ -24,6 +25,7 @@
         ports (state/get-value ports/cursor)
         networks (state/get-value networks/cursor)
         mounts (state/get-value mounts/cursor)
+        secrets (state/get-value secrets/cursor)
         variables (state/get-value variables/cursor)
         deployment (state/get-value deployment/cursor)]
     (ajax/POST (routes/path-for-backend :service-update {:id service-id})
@@ -33,6 +35,7 @@
                                    (assoc :ports ports)
                                    (assoc :networks networks)
                                    (assoc :mounts mounts)
+                                   (assoc :secrets secrets)
                                    (assoc :variables variables)
                                    (assoc :deployment deployment))
                 :finally       (progress/mount!)
@@ -54,7 +57,7 @@
     (comp/checkbox {:checked val})
     val))
 
-(rum/defc form < rum/static [item volumes]
+(rum/defc form < rum/static [item volumes secrets]
   (let [id (:id item)]
     [:div
      [:div.form-panel
@@ -86,6 +89,9 @@
        (comp/form-section-add "Mounts" mounts/add-item)
        (mounts/form-update volumes)]
       [:div.form-view-group
+       (comp/form-section-add "Secrets" secrets/add-item)
+       (secrets/form-update secrets)]
+      [:div.form-view-group
        (comp/form-section-add "Environment variables" variables/add-item)
        (variables/form-update)]
       [:div.form-view-group
@@ -98,10 +104,11 @@
   (state/set-value (:ports item) ports/cursor)
   (state/set-value (:networks item) networks/cursor)
   (state/set-value (:mounts item) mounts/cursor)
+  (state/set-value (:secrets item) secrets/cursor)
   (state/set-value (:variables item) variables/cursor)
   (state/set-value (:deployment item) deployment/cursor))
 
 (defn mount!
-  [item volumes]
+  [item volumes secrets]
   (init-state item)
-  (rum/mount (form item volumes) (.getElementById js/document "content")))
+  (rum/mount (form item volumes secrets) (.getElementById js/document "content")))

@@ -6,6 +6,7 @@
             [swarmpit.component.service.form-ports :as ports]
             [swarmpit.component.service.form-networks :as networks]
             [swarmpit.component.service.form-mounts :as mounts]
+            [swarmpit.component.service.form-secrets :as secrets]
             [swarmpit.component.service.form-variables :as variables]
             [swarmpit.component.task.list :as tasks]
             [swarmpit.component.message :as message]
@@ -71,6 +72,9 @@
       [:div.form-view-group
        (comp/form-section "Mounts")
        (mounts/form-view (:mounts item))]
+      [:div.form-view-group
+       (comp/form-section "Secrets")
+       (secrets/form-view (:secrets item))]
       [:div.form-view-group
        (comp/form-section "Environment variables")
        (variables/form-view (:variables item))]

@@ -46,9 +46,20 @@
        (map (fn [v] {:ReadOnly (:readOnly v)
                      :Source   (:containerPath v)
                      :Target   (:hostPath v)
-                     :Type     "volume"
+                     :Type     (:type v)
                      :VolumeOptions
                                {:DriverConfig {}}}))
+       (into [])))
+
+(defn ->service-secrets
+  [service]
+  (->> (:secrets service)
+       (map (fn [s] {:SecretName (:secretName s)
+                     :SecretID   (:id s)
+                     :File       {:GID  "0"
+                                  :Mode 292
+                                  :Name (:secretName s)
+                                  :UID  "0"}}))
        (into [])))
 
 (defn ->service-update-config
@@ -74,9 +85,10 @@
   [service image]
   {:Name         (:serviceName service)
    :TaskTemplate {:ContainerSpec
-                            {:Image  image
-                             :Mounts (->service-mounts service)
-                             :Env    (->service-variables service)}
+                            {:Image   image
+                             :Mounts  (->service-mounts service)
+                             :Secrets (->service-secrets service)
+                             :Env     (->service-variables service)}
                   :Networks (->service-networks service)}
    :Mode         (->service-mode service)
    :UpdateConfig (->service-update-config service)

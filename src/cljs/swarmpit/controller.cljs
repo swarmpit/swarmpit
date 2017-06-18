@@ -96,10 +96,13 @@
            (fn [networks]
              (fetch (routes/path-for-backend :volumes)
                     (fn [volumes]
-                      (screatec/mount! (:registry params)
-                                       (:repository params)
-                                       networks
-                                       volumes)))))))
+                      (fetch (routes/path-for-backend :secrets)
+                             (fn [secrets]
+                               (screatec/mount! (:registry params)
+                                                (:repository params)
+                                                networks
+                                                volumes
+                                                secrets)))))))))
 
 (defmethod dispatch :service-edit
   [{:keys [route-params]}]
@@ -107,7 +110,9 @@
          (fn [service]
            (fetch (routes/path-for-backend :volumes)
                   (fn [volumes]
-                    (sedit/mount! service volumes))))))
+                    (fetch (routes/path-for-backend :secrets)
+                           (fn [secrets]
+                             (sedit/mount! service volumes secrets))))))))
 
 ;;; Network controller
 

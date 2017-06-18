@@ -19,6 +19,7 @@
                                             :settings   {}
                                             :ports      []
                                             :networks   []
+                                            :secrets    []
                                             :variables  []
                                             :mounts     []
                                             :deployment {}}}

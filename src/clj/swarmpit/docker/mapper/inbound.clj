@@ -103,6 +103,12 @@
                  :value (second variable)})))
        (into [])))
 
+(defn ->service-secrets
+  [service]
+  (->> (get-in service [:Spec :TaskTemplate :ContainerSpec :Secrets])
+       (map (fn [s] {:secretName (:SecretName s)}))
+       (into [])))
+
 (defn ->service-deployment
   [service]
   (let [update-config (get-in service [:Spec :UpdateConfig])]
@@ -168,6 +174,7 @@
       :ports (->service-ports service)
       :networks (->service-networks service networks)
       :mounts (->service-mounts service)
+      :secrets (->service-secrets service)
       :variables (->service-variables service)
       :deployment (->service-deployment service)
       :tasks (->tasks service-tasks nodes service-name service-mode))))

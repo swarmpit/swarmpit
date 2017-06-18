@@ -8,6 +8,7 @@
             [swarmpit.component.service.form-ports :as ports]
             [swarmpit.component.service.form-networks :as networks]
             [swarmpit.component.service.form-mounts :as mounts]
+            [swarmpit.component.service.form-secrets :as secrets]
             [swarmpit.component.service.form-variables :as variables]
             [swarmpit.component.service.form-deployment :as deployment]
             [swarmpit.component.message :as message]
@@ -20,7 +21,7 @@
 
 (defonce step-index (atom 0))
 
-(def steps ["General settings" "Ports" "Networks" "Mounts" "Environment variables" "Deployment"])
+(def steps ["General settings" "Ports" "Networks" "Mounts" "Secrets" "Environment variables" "Deployment"])
 
 (defn- step-previous
   [index]
@@ -86,6 +87,7 @@
         ports (state/get-value ports/cursor)
         networks (state/get-value networks/cursor)
         mounts (state/get-value mounts/cursor)
+        secrets (state/get-value secrets/cursor)
         variables (state/get-value variables/cursor)
         deployment (state/get-value deployment/cursor)]
     (ajax/POST (routes/path-for-backend :service-create)
@@ -95,6 +97,7 @@
                                    (assoc :ports ports)
                                    (assoc :networks networks)
                                    (assoc :mounts mounts)
+                                   (assoc :secrets secrets)
                                    (assoc :variables variables)
                                    (assoc :deployment deployment))
                 :finally       (progress/mount!)
@@ -111,7 +114,7 @@
                                    (progress/unmount!)
                                    (message/mount! message)))})))
 
-(rum/defc form < rum/reactive [networks volumes]
+(rum/defc form < rum/reactive [networks volumes secrets]
   (let [index (rum/react step-index)
         {:keys [isValid]} (state/react settings/cursor)]
     [:div
@@ -135,11 +138,13 @@
          (step-item 1 (ports/form-create))
          (step-item 2 (networks/form-create networks))
          (step-item 3 (mounts/form-create volumes))
-         (step-item 4 (variables/form-create))
-         (step-item 5 (deployment/form))))]))
+         (step-item 4 (secrets/form-create secrets))
+         (step-item 5 (variables/form-create))
+         (step-item 6 (deployment/form))))]))
 
 (defn- init-state
   [registry repository]
+  (reset! step-index 0)
   (settings/image-tags-handler registry repository)
   (state/set-value {:repository  {:registry  registry
                                   :imageName repository
@@ -152,6 +157,7 @@
   (state/set-value [] ports/cursor)
   (state/set-value [] networks/cursor)
   (state/set-value [] mounts/cursor)
+  (state/set-value [] secrets/cursor)
   (state/set-value [] variables/cursor)
   (state/set-value {:autoredeploy  false
                     :parallelism   1
@@ -159,6 +165,6 @@
                     :failureAction "pause"} deployment/cursor))
 
 (defn mount!
-  [registry repository networks volumes]
+  [registry repository networks volumes secrets]
   (init-state registry repository)
-  (rum/mount (form networks volumes) (.getElementById js/document "content")))
+  (rum/mount (form networks volumes secrets) (.getElementById js/document "content")))
