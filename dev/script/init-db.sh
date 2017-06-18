@@ -7,6 +7,7 @@ then
     then
         echo "Swarmpit DB down. Starting ..."
         docker start swarmpitdb
+        sleep 5
     else
         echo "Swarmpit DB running."
     fi

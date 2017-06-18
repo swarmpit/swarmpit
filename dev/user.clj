@@ -14,7 +14,6 @@
 (defn- on-startup
   []
   (print (:out (sh "sh" "dev/script/init-db.sh")))
-  (Thread/sleep 5000)
   (install/init))
 
 (def http-handler
