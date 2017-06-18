@@ -123,6 +123,13 @@ select:-webkit-autofill:focus {
     position: relative;
 }
 
+.form-row-textarea {
+    line-height: 24px;
+    width: 100%;
+    height: 48px;
+    position: relative;
+}
+
 .form-row-icon-section {
     margin-right: 5px;
 }

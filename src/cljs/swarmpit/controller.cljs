@@ -21,6 +21,9 @@
             [swarmpit.component.volume.create :as vcreate]
             [swarmpit.component.volume.info :as vinfo]
             [swarmpit.component.volume.list :as vlist]
+            [swarmpit.component.secret.create :as seccreate]
+            [swarmpit.component.secret.info :as secinfo]
+            [swarmpit.component.secret.list :as seclist]
             [swarmpit.component.node.list :as ndlist]
             [swarmpit.component.task.list :as tlist]
             [swarmpit.component.task.info :as tinfo]
@@ -149,6 +152,24 @@
 (defmethod dispatch :volume-create
   [_]
   (vcreate/mount!))
+
+;;; Secret controller
+
+(defmethod dispatch :secret-list
+  [_]
+  (fetch (routes/path-for-backend :secrets)
+         (fn [response]
+           (seclist/mount! response))))
+
+(defmethod dispatch :secret-info
+  [{:keys [route-params]}]
+  (fetch (routes/path-for-backend :secret route-params)
+         (fn [response]
+           (secinfo/mount! response))))
+
+(defmethod dispatch :secret-create
+  [_]
+  (seccreate/mount!))
 
 ;;; Task controller
 

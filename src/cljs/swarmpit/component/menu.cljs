@@ -66,6 +66,9 @@
    {:name    "Volumes"
     :icon    icon/volumes
     :handler :volume-list}
+   {:name    "Secrets"
+    :icon    icon/secrets
+    :handler :secret-list}
    {:name "INFRASTRUCTURE"}
    {:name    "Networks"
     :icon    icon/networks

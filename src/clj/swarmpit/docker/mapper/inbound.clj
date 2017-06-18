@@ -219,7 +219,7 @@
   (array-map
     :id (get secret :ID)
     :version (get-in secret [:Version :Index])
-    :name (get-in secret [:Spec :Name])
+    :secretName (get-in secret [:Spec :Name])
     :createdAt (date (get secret :CreatedAt))
     :updatedAt (date (get secret :UpdatedAt))))
 

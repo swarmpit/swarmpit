@@ -62,6 +62,9 @@
                    "/volumes"    {""          :volume-list
                                   "/create"   :volume-create
                                   ["/" :name] :volume-info}
+                   "/secrets"    {""        :secret-list
+                                  "/create" :secret-create
+                                  ["/" :id] :secret-info}
                    "/nodes"      {"" :node-list}
                    "/tasks"      {""        :task-list
                                   ["/" :id] :task-info}

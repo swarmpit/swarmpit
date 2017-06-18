@@ -9,6 +9,8 @@
                                    :form {}}
                        :volume    {:list {}
                                    :form {}}
+                       :secret    {:list {}
+                                   :form {}}
                        :node      {:list {}}
                        :service   {:list   {}
                                    :wizard {:image      {:public {}

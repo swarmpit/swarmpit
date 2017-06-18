@@ -311,13 +311,13 @@
   [props]
   (checkbox
     (merge props
-           {:style {:marginTop "14px"}})))
+           {:style {:marginTop "12px"}})))
 
 (defn form-toogle
   [props]
   (toogle
     (merge props
-           {:style {:marginTop  "14px"
+           {:style {:marginTop  "12px"
                     :marginLeft "-10px"}})))
 
 (defn form-comp-loading [loading]
@@ -384,6 +384,12 @@
     [:div.form-edit-row
      [:span.form-row-label label]
      [:div.form-row-field comp]]))
+
+(defn form-textarea [label textarea]
+  (html
+    [:div.form-edit-row
+     [:span.form-row-label label]
+     [:div.form-row-textarea textarea]]))
 
 (defn form-item [label value]
   [:div.form-view-row

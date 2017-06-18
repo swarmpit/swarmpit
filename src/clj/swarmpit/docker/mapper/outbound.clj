@@ -1,6 +1,7 @@
 (ns swarmpit.docker.mapper.outbound
   "Map swarmpit domain to docker domain"
-  (:require [clojure.string :as str]))
+  (:require [clojure.string :as str]
+            [swarmpit.base64 :as base64]))
 
 (defn ->auth-config
   [registry]
@@ -105,5 +106,7 @@
 
 (defn ->secret
   [secret]
-  {:Name (:name secret)
-   :Data (:data secret)})
+  {:Name (:secretName secret)
+   :Data (if (:encode secret)
+           (base64/encode (:data secret))
+           (:data secret))})
