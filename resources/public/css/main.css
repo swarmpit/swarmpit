@@ -189,6 +189,10 @@ select:-webkit-autofill:focus {
     font-size: 20px;
     margin-top: 9px;
     margin-right: 10px;
+    max-width: 400px;
+    overflow: hidden;
+    white-space: nowrap;
+    text-overflow: ellipsis;
 }
 
 .form-panel-info-label {

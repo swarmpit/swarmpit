@@ -75,7 +75,6 @@
 
      [:div.form-view
       [:div.form-view-group
-       (comp/form-section "General settings")
        (comp/form
          {:onValid   #(state/update-value [:isValid] true cursor)
           :onInvalid #(state/update-value [:isValid] false cursor)}
