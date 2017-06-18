@@ -91,7 +91,7 @@
        (map (fn [v] {:containerPath (:Target v)
                      :hostPath      (:Source v)
                      :type          (:Type v)
-                     :readOnly      (or (:ReadOnly v) false)}))
+                     :readOnly      (contains? #{true 1 nil} (:ReadOnly v))}))
        (into [])))
 
 (defn ->service-variables
