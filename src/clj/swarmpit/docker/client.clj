@@ -81,9 +81,10 @@
                        :body   {:error (parse-string (:err cmd-result) true)}})))))
 
 (defn- get
-  ([uri] (execute "GET" uri nil nil nil))
-  ([uri params] (execute "GET" uri params nil nil))
-  ([uri params headers] (execute "GET" uri params headers nil)))
+  ([uri] (get uri nil nil))
+  ([uri params] (get uri params nil))
+  ([uri params headers]
+   (execute "GET" uri params headers nil)))
 
 (defn- post
   ([uri payload] (post uri nil nil payload))
@@ -98,8 +99,9 @@
    (execute "PUT" uri params (merge headers {:Content-Type "application/json"}) payload)))
 
 (defn- delete
-  ([uri] (execute "DELETE" uri nil nil nil))
-  ([uri headers] (execute "DELETE" uri nil headers nil)))
+  ([uri] (delete uri nil))
+  ([uri headers]
+   (execute "DELETE" uri nil headers nil)))
 
 (defn- registry-token
   [auth]
