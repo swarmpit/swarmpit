@@ -1,6 +1,5 @@
 (ns swarmpit.api
   (:require [clojure.core.memoize :as memo]
-            [clojure.string :as string]
             [swarmpit.docker.client :as dc]
             [swarmpit.docker.mapper.inbound :as dmi]
             [swarmpit.docker.mapper.outbound :as dmo]
@@ -161,19 +160,46 @@
       (dmi/->volumes)))
 
 (defn volume
-  [volume-id]
-  (-> (dc/volume volume-id)
+  [volume-name]
+  (-> (dc/volume volume-name)
       (dmi/->volume)))
 
 (defn delete-volume
-  [volume-id]
-  (dc/delete-volume volume-id))
+  [volume-name]
+  (dc/delete-volume volume-name))
 
 (defn create-volume
   [volume]
   (->> (dmo/->volume volume)
        (dc/create-volume)
        (dmi/->volume)))
+
+;;; Secret API
+
+(defn secrets
+  []
+  (-> (dc/secrets)
+      (dmi/->secrets)))
+
+(defn secret
+  [secret-id]
+  (-> (dc/secret secret-id)
+      (dmi/->secret)))
+
+(defn delete-secret
+  [secret-id]
+  (dc/delete-secret secret-id))
+
+(defn create-secret
+  [secret]
+  (->> (dmo/->secret secret)
+       (dc/create-secret)))
+
+(defn update-secret
+  [secret-id secret]
+  (let [secret-version (:version secret)]
+    (->> (dmo/->secret service)
+         (dc/update-secret secret-id secret-version))))
 
 ;;; Node API
 

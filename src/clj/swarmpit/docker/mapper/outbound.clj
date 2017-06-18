@@ -102,3 +102,8 @@
   [volume]
   {:Name   (:volumeName volume)
    :Driver (:driver volume)})
+
+(defn ->secret
+  [secret]
+  {:Name (:name secret)
+   :Data (:data secret)})

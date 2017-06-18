@@ -213,3 +213,18 @@
   (->> (:Volumes volumes)
        (map ->volume)
        (into [])))
+
+(defn ->secret
+  [secret]
+  (array-map
+    :id (get secret :ID)
+    :version (get-in secret [:Version :Index])
+    :name (get-in secret [:Spec :Name])
+    :createdAt (date (get secret :CreatedAt))
+    :updatedAt (date (get secret :UpdatedAt))))
+
+(defn ->secrets
+  [secrets]
+  (->> secrets
+       (map ->secret)
+       (into [])))

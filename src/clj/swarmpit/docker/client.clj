@@ -171,18 +171,43 @@
   (get "/volumes"))
 
 (defn volume
-  [id]
-  (-> (str "/volumes/" id)
+  [name]
+  (-> (str "/volumes/" name)
       (get)))
 
 (defn delete-volume
-  [id]
-  (-> (str "/volumes/" id)
+  [name]
+  (-> (str "/volumes/" name)
       (delete)))
 
 (defn create-volume
-  [network]
-  (post "/volumes/create" network))
+  [volume]
+  (post "/volumes/create" volume))
+
+;; Secret
+
+(defn secrets
+  []
+  (get "/secrets"))
+
+(defn secret
+  [id]
+  (-> (str "/secrets/" id)
+      (get)))
+
+(defn delete-secret
+  [id]
+  (-> (str "/secrets/" id)
+      (delete)))
+
+(defn create-secret
+  [secret]
+  (post "/secrets/create" secret))
+
+(defn update-secret
+  [id version secret]
+  (let [uri (str "/secrets/" id "/update")]
+    (post uri {:version version} secret)))
 
 ;; Node
 

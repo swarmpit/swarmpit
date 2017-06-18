@@ -192,6 +192,35 @@
     (api/delete-volume (:name route-params))
     (resp-ok)))
 
+;; Secret handler
+
+(defmethod dispatch :secrets [_]
+  (fn [_]
+    (->> (api/secrets)
+         (resp-ok))))
+
+(defmethod dispatch :secret [_]
+  (fn [{:keys [route-params]}]
+    (->> (api/secret (:id route-params))
+         (resp-ok))))
+
+(defmethod dispatch :secret-create [_]
+  (fn [{:keys [params]}]
+    (let [payload (keywordize-keys params)]
+      (->> (api/create-secret payload)
+           (resp-created)))))
+
+(defmethod dispatch :secret-delete [_]
+  (fn [{:keys [route-params]}]
+    (api/delete-secret (:id route-params))
+    (resp-ok)))
+
+(defmethod dispatch :secret-update [_]
+  (fn [{:keys [route-params params]}]
+    (let [payload (keywordize-keys params)]
+      (api/update-secret (:id route-params) payload)
+      (resp-ok))))
+
 ;; Node handler
 
 (defmethod dispatch :nodes [_]
