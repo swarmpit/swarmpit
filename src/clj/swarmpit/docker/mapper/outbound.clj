@@ -72,7 +72,7 @@
   (let [deployment (:deployment service)]
     {:Parallelism    (:parallelism deployment)
      :Delay          (:delay deployment)
-     ::FailureAction (:failureAction deployment)}))
+     :FailureAction (:failureAction deployment)}))
 
 (defn ->service-image-registry
   [service registry]
