@@ -70,15 +70,16 @@
 (defn ->service-update-config
   [service]
   (let [deployment (:deployment service)]
-    {:Parallelism    (:parallelism deployment)
-     :Delay          (:delay deployment)
+    {:Parallelism   (:parallelism deployment)
+     :Delay         (:delay deployment)
      :FailureAction (:failureAction deployment)}))
 
 (defn ->service-image-registry
   [service registry]
   (let [image (get-in service [:repository :imageName])
-        tag (get-in service [:repository :imageTag])]
-    (str (:url registry) "/" image ":" tag)))
+        tag (get-in service [:repository :imageTag])
+        url (second (str/split (:url registry) #"//"))]
+    (str url "/" image ":" tag)))
 
 (defn ->service-image
   [service]
