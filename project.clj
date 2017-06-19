@@ -1,6 +1,6 @@
 (defproject swarmpit "0.1.0-SNAPSHOT"
   :description "Docker swarm management UI"
-  :url "http://example.com/FIXME"
+  :url "http://swarmpit.io"
   :license {:name "Eclipse Public License"
             :url  "http://www.eclipse.org/legal/epl-v10.html"}
   :dependencies [[org.clojure/clojure "1.9.0-alpha16"]
