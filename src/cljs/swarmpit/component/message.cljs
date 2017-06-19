@@ -7,6 +7,8 @@
 (def message-body-style
   {:backgroundColor "#fff"
    :maxWidth        "100%"
+   :height          "100%"
+   :lineHeight      "30px"
    :minWidth        0})
 
 (def message-info-body-style
@@ -34,7 +36,8 @@
     (comp/snackbar
       (merge props
              {:open  true
-              :style message-style}))))
+              ;:style message-style
+              }))))
 
 (rum/defc info-message < rum/reactive [text]
   (message {:bodyStyle        message-info-body-style

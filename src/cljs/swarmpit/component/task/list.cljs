@@ -24,6 +24,7 @@
     "ready" (comp/label-blue value)
     "assigned" (comp/label-blue value)
     "accepted" (comp/label-blue value)
+    "complete" (comp/label-blue value)
     "running" (comp/label-green value)
     "shutdown" (comp/label-grey value)
     "rejected" (comp/label-red value)
