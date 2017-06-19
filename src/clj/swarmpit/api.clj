@@ -91,6 +91,33 @@
     (->> (cmo/->registry registry)
          (cc/create-registry))))
 
+;;; Secret API
+
+(defn secrets
+  []
+  (-> (dc/secrets)
+      (dmi/->secrets)))
+
+(defn secret
+  [secret-id]
+  (-> (dc/secret secret-id)
+      (dmi/->secret)))
+
+(defn delete-secret
+  [secret-id]
+  (dc/delete-secret secret-id))
+
+(defn create-secret
+  [secret]
+  (->> (dmo/->secret secret)
+       (dc/create-secret)))
+
+(defn update-secret
+  [secret-id secret]
+  (let [secret-version (:version secret)]
+    (->> (dmo/->secret secret)
+         (dc/update-secret secret-id secret-version))))
+
 ;;; Service API
 
 (defn services
@@ -111,24 +138,34 @@
   [service-id]
   (dc/delete-service service-id))
 
+(defn- create-dockerhub-service
+  [service secrets]
+  (->> (dmo/->service-image service)
+       (dmo/->service service secrets)
+       (dc/create-service)))
+
+(defn- create-registry-service
+  [service secrets registry-name]
+  (let [registry (registry-by-name registry-name)
+        auth-config (dmo/->auth-config registry)]
+    (->> (dmo/->service-image-registry service registry)
+         (dmo/->service service secrets)
+         (dc/create-service auth-config))))
+
 (defn create-service
   [service]
-  (let [registry-name (get-in service [:repository :registry])]
+  (let [registry-name (get-in service [:repository :registry])
+        secrets (dmo/->service-secrets service (secrets))]
     (if (= "dockerhub" registry-name)
-      (->> (dmo/->service-image service)
-           (dmo/->service service)
-           (dc/create-service))
-      (let [registry (registry-by-name registry-name)
-            auth-config (dmo/->auth-config registry)]
-        (->> (dmo/->service-image-registry service registry)
-             (dmo/->service service)
-             (dc/create-service auth-config))))))
+      (create-dockerhub-service service secrets)
+      (create-registry-service service secrets registry-name))))
 
 (defn update-service
   [service-id service]
-  (let [service-version (:version service)]
+  (let [service-version (:version service)
+        secrets (dmo/->service-secrets service (secrets))]
     (->> (dmo/->service-image service)
-         (dmo/->service service)
+         (dmo/->service service secrets)
          (dc/update-service service-id service-version))))
 
 ;;; Network API
@@ -173,33 +210,6 @@
   (->> (dmo/->volume volume)
        (dc/create-volume)
        (dmi/->volume)))
-
-;;; Secret API
-
-(defn secrets
-  []
-  (-> (dc/secrets)
-      (dmi/->secrets)))
-
-(defn secret
-  [secret-id]
-  (-> (dc/secret secret-id)
-      (dmi/->secret)))
-
-(defn delete-secret
-  [secret-id]
-  (dc/delete-secret secret-id))
-
-(defn create-secret
-  [secret]
-  (->> (dmo/->secret secret)
-       (dc/create-secret)))
-
-(defn update-secret
-  [secret-id secret]
-  (let [secret-version (:version secret)]
-    (->> (dmo/->secret service)
-         (dc/update-secret secret-id secret-version))))
 
 ;;; Node API
 

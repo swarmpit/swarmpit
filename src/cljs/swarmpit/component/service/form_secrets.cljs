@@ -20,12 +20,6 @@
     [:span "No secrets found. Create new "
      [:a {:href (routes/path-for-frontend :secret-create)} "secret."]]))
 
-(defn- secret-id
-  [secret-name secrets]
-  (->> (filter #(= secret-name (:secretName %)) secrets)
-       (first)
-       :id))
-
 (defn- form-secret [value index data]
   (comp/table-row-column
     {:name (str "form-secret-" index)
@@ -35,8 +29,7 @@
        :key      (str "form-secret-select-" index)
        :value    value
        :onChange (fn [_ _ v]
-                   (state/update-item index :secretName v cursor)
-                   (state/update-item index :id (secret-id v data) cursor))}
+                   (state/update-item index :secretName v cursor))}
       (->> data
            (map #(comp/menu-item
                    {:name        (str "form-secret-item-" (:secretName %))

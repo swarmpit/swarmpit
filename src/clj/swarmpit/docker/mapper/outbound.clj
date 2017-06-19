@@ -49,11 +49,18 @@
                      :Type     (:type v)}))
        (into [])))
 
+(defn- ->secret-id
+  [secret-name secrets]
+  (->> secrets
+       (filter #(= secret-name (:secretName %)))
+       (first)
+       :id))
+
 (defn ->service-secrets
-  [service]
+  [service secrets]
   (->> (:secrets service)
        (map (fn [s] {:SecretName (:secretName s)
-                     :SecretID   (:id s)
+                     :SecretID   (->secret-id (:secretName s) secrets)
                      :File       {:GID  "0"
                                   :Mode 292
                                   :Name (:secretName s)
@@ -80,12 +87,12 @@
     (str image ":" tag)))
 
 (defn ->service
-  [service image]
+  [service secrets image]
   {:Name         (:serviceName service)
    :TaskTemplate {:ContainerSpec
                             {:Image   image
                              :Mounts  (->service-mounts service)
-                             :Secrets (->service-secrets service)
+                             :Secrets secrets
                              :Env     (->service-variables service)}
                   :Networks (->service-networks service)}
    :Mode         (->service-mode service)

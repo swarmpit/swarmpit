@@ -54,8 +54,8 @@
 
 (defn- form-type [value index]
   (comp/table-row-column
-    {:name (str "form-type-" index)
-     :key  (str "form-type-" index)}
+    {:name  (str "form-type-" index)
+     :key   (str "form-type-" index)}
     (comp/form-list-selectfield
       {:name     (str "form-type-select-" index)
        :key      (str "form-type-select-" index)
@@ -142,4 +142,4 @@
                           mounts
                           render-item
                           render-item-keys
-                          "150vh")))
+                          "100%")))
