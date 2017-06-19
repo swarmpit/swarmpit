@@ -75,7 +75,7 @@
           response-body
           (throw (ex-info "Docker engine error!"
                           {:status response-code
-                           :body   {:error response-body}}))))
+                           :body   {:error (:message response-body)}}))))
       (throw (ex-info "Docker client failure!"
                       {:status 500
                        :body   {:error (parse-string (:err cmd-result) true)}})))))
