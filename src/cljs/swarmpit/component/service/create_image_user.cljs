@@ -61,7 +61,7 @@
 (rum/defc form-loaded < rum/static []
   (comp/form-comp-loading false))
 
-(defn- repository-list [data]
+(defn- repository-list [data user]
   (let [repository (fn [index] (:name (nth data index)))]
     (comp/mui
       (comp/table
@@ -72,7 +72,8 @@
                           (routes/path-for-frontend :service-create-config
                                                     {}
                                                     {:repository (repository i)
-                                                     :registry   "dockerhub"})))}
+                                                     :registry   "dockerhub"
+                                                     :username   user})))}
         (comp/list-table-header ["Name" "Description"])
         (comp/list-table-body data
                               render-item
@@ -92,7 +93,7 @@
         (if searching
           (form-loading)
           (form-loaded))
-        (repository-list filtered-data)]]
+        (repository-list filtered-data user)]]
       [:div.form-edit
        (if (storage/admin?)
          (comp/form-icon-value icon/info [:span "No dockerhub users found. Add new " [:a {:href (routes/path-for-frontend :dockerhub-user-create)} "user."]])

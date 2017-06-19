@@ -147,9 +147,9 @@
          (step-item 6 (deployment/form))))]))
 
 (defn- init-state
-  [registry repository]
+  [registry registry-user repository]
   (reset! step-index 0)
-  (settings/image-tags-handler registry repository)
+  (settings/image-tags-handler registry registry-user repository)
   (state/set-value {:repository  {:registry  registry
                                   :imageName repository
                                   :imageTag  ""
@@ -169,6 +169,6 @@
                     :failureAction "pause"} deployment/cursor))
 
 (defn mount!
-  [registry repository networks volumes secrets]
-  (init-state registry repository)
+  [registry registry-user repository networks volumes secrets]
+  (init-state registry registry-user repository)
   (rum/mount (form networks volumes secrets) (.getElementById js/document "content")))

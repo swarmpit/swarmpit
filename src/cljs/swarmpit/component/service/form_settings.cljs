@@ -102,14 +102,25 @@
        :onChange (fn [_ v]
                    (state/update-value [:replicas] (js/parseInt v) cursor))})))
 
+(defn- image-tags-url
+  [registry]
+  (if (= "dockerhub" registry)
+    (routes/path-for-backend :dockerhub-tags)
+    (routes/path-for-backend :repository-tags {:registryName registry})))
+
+(defn- image-tags-params
+  [registry-user repository]
+  (let [query-params {:repositoryName repository}]
+    (if (some? registry-user)
+      (merge query-params {:username registry-user})
+      query-params)))
+
 (defn image-tags-handler
-  [registry repository]
-  (let [url (if (= "dockerhub" registry)
-              (routes/path-for-backend :dockerhub-tags)
-              (routes/path-for-backend :repository-tags {:registryName registry}))]
+  [registry registry-user repository]
+  (let [url (image-tags-url registry)]
     (ajax/GET url
               {:headers {"Authorization" (storage/get "token")}
-               :params  {:repositoryName repository}
+               :params  (image-tags-params registry-user repository)
                :handler (fn [response]
                           (state/update-value [:repository :tags] response cursor))})))
 

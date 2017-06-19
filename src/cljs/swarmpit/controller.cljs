@@ -99,6 +99,7 @@
                       (fetch (routes/path-for-backend :secrets)
                              (fn [secrets]
                                (screatec/mount! (:registry params)
+                                                (:username params)
                                                 (:repository params)
                                                 networks
                                                 volumes
