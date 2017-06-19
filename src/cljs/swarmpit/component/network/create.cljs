@@ -71,6 +71,14 @@
        :onChange        (fn [_ v]
                           (state/update-value [:ipam :gateway] v cursor))})))
 
+(defn- create-network-info-msg
+  [id]
+  (str "Network " id " has been created."))
+
+(defn- create-network-error-msg
+  [error]
+  (str "Network creation failed. Reason: " error))
+
 (defn- create-network-handler
   []
   (ajax/POST (routes/path-for-backend :network-create)
@@ -79,17 +87,17 @@
               :params        (state/get-value cursor)
               :finally       (progress/mount!)
               :handler       (fn [response]
-                               (let [id (get response "Id")
-                                     message (str "Network " id " has been created.")]
+                               (let [id (get response "Id")]
                                  (progress/unmount!)
                                  (dispatch!
                                    (routes/path-for-frontend :network-info {:id id}))
-                                 (message/mount! message)))
+                                 (message/mount!
+                                   (create-network-info-msg id))))
               :error-handler (fn [{:keys [response]}]
-                               (let [error (get response "error")
-                                     message (str "Network creation failed. Reason: " error)]
+                               (let [error (get response "error")]
                                  (progress/unmount!)
-                                 (message/mount! message)))}))
+                                 (message/mount!
+                                   (create-network-error-msg error) true)))}))
 
 (rum/defc form < rum/reactive []
   (let [{:keys [name

@@ -56,6 +56,14 @@
        :onCheck  (fn [_ v]
                    (state/update-value [:encode] v cursor))})))
 
+(defn- create-secret-info-msg
+  [id]
+  (str "Secret " id " has been created."))
+
+(defn- create-secret-error-msg
+  [error]
+  (str "Secret creation failed. Reason: " error))
+
 (defn- create-secret-handler
   []
   (ajax/POST (routes/path-for-backend :secret-create)
@@ -64,17 +72,17 @@
               :params        (state/get-value cursor)
               :finally       (progress/mount!)
               :handler       (fn [response]
-                               (let [id (get response "ID")
-                                     message (str "Secret " id " has been created.")]
+                               (let [id (get response "ID")]
                                  (progress/unmount!)
                                  (dispatch!
                                    (routes/path-for-frontend :secret-info {:id id}))
-                                 (message/mount! message)))
+                                 (message/mount!
+                                   (create-secret-info-msg id))))
               :error-handler (fn [{:keys [response]}]
-                               (let [error (get response "error")
-                                     message (str "Secret creation failed. Reason: " error)]
+                               (let [error (get response "error")]
                                  (progress/unmount!)
-                                 (message/mount! message)))}))
+                                 (message/mount!
+                                   (create-secret-error-msg error) true)))}))
 
 (rum/defc form < rum/reactive []
   (let [{:keys [secretName

@@ -70,6 +70,14 @@
        :onChange        (fn [_ v]
                           (state/update-value [:email] v cursor))})))
 
+(defn- create-user-info-msg
+  [id]
+  (str "User " id " has been created."))
+
+(defn- create-user-error-msg
+  [error]
+  (str "User creation failed. Reason: " error))
+
 (defn- create-user-handler
   []
   (ajax/POST (routes/path-for-backend :user-create)
@@ -78,18 +86,17 @@
               :params        (state/get-value cursor)
               :finally       (progress/mount!)
               :handler       (fn [response]
-                               (let [id (get response "id")
-                                     message (str "User " id " has been created.")]
+                               (let [id (get response "id")]
                                  (progress/unmount!)
                                  (dispatch!
                                    (routes/path-for-frontend :user-info {:id id}))
-                                 (message/mount! message)))
+                                 (message/mount!
+                                   (create-user-info-msg id))))
               :error-handler (fn [{:keys [response]}]
-                               (let [error (get response "error")
-                                     message (str "User creation failed. Reason: " error)]
-                                 (print message)
+                               (let [error (get response "error")]
                                  (progress/unmount!)
-                                 (message/mount! message)))}))
+                                 (message/mount!
+                                   (create-user-error-msg error) true)))}))
 
 (rum/defc form < rum/reactive []
   (let [{:keys [username

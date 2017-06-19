@@ -47,6 +47,10 @@
        :onChange        (fn [_ v]
                           (update-item :password2 v))})))
 
+(defn- change-password-error-msg
+  [error]
+  (str "Password update failed. Reason " error))
+
 (defn- change-password-handler
   []
   (ajax/POST (routes/path-for-backend :password)
@@ -54,12 +58,13 @@
               :headers       {"Authorization" (storage/get "token")}
               :params        (dissoc @state :canSubmit)
               :handler       (fn [_]
-                               (message/mount! "Password has been changed")
                                (dispatch!
-                                 (routes/path-for-frontend :index)))
+                                 (routes/path-for-frontend :index))
+                               (message/mount! "Password has been changed"))
               :error-handler (fn [{:keys [response]}]
                                (let [error (get response "error")]
-                                 (message/mount! (str "Password update failed. Reason " error))))}))
+                                 (message/mount!
+                                   (change-password-error-msg error) true)))}))
 
 (rum/defc form < rum/reactive []
   (let [{:keys [password

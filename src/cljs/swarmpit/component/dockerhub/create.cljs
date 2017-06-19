@@ -37,6 +37,14 @@
        :onChange (fn [_ v]
                    (state/update-value [:password] v cursor))})))
 
+(defn- add-user-info-msg
+  [id]
+  (str "User " id " has been added."))
+
+(defn- add-user-error-msg
+  [error]
+  (str "User cannot be added. Reason: " error))
+
 (defn- add-user-handler
   []
   (ajax/POST (routes/path-for-backend :dockerhub-user-create)
@@ -45,17 +53,17 @@
               :params        (state/get-value cursor)
               :finally       (progress/mount!)
               :handler       (fn [response]
-                               (let [id (get response "id")
-                                     message (str "User " id " has been added.")]
+                               (let [id (get response "id")]
                                  (progress/unmount!)
                                  (dispatch!
                                    (routes/path-for-frontend :dockerhub-user-info {:id id}))
-                                 (message/mount! message)))
+                                 (message/mount!
+                                   (add-user-info-msg id))))
               :error-handler (fn [{:keys [response]}]
-                               (let [error (get response "error")
-                                     message (str "User cannot be added. Reason: " error)]
+                               (let [error (get response "error")]
                                  (progress/unmount!)
-                                 (message/mount! message)))}))
+                                 (message/mount!
+                                   (add-user-error-msg error) true)))}))
 
 (rum/defc form < rum/reactive []
   (let [{:keys [username

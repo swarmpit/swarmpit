@@ -10,19 +10,27 @@
 
 (enable-console-print!)
 
+(defn- delete-user-info-msg
+  [id]
+  (str "User " id " has been removed."))
+
+(defn- delete-user-error-msg
+  [error]
+  (str "User removing failed. Reason: " error))
+
 (defn- delete-user-handler
   [user-id]
   (ajax/DELETE (routes/path-for-backend :dockerhub-user-delete {:id user-id})
                {:headers       {"Authorization" (storage/get "token")}
                 :handler       (fn [_]
-                                 (let [message (str "User " user-id " has been removed.")]
-                                   (dispatch!
-                                     (routes/path-for-frontend :dockerhub-user-list))
-                                   (message/mount! message)))
+                                 (dispatch!
+                                   (routes/path-for-frontend :dockerhub-user-list))
+                                 (message/mount!
+                                   (delete-user-info-msg user-id)))
                 :error-handler (fn [{:keys [response]}]
-                                 (let [error (get response "error")
-                                       message (str "User removing failed. Reason: " error)]
-                                   (message/mount! message)))}))
+                                 (let [error (get response "error")]
+                                   (message/mount!
+                                     (delete-user-error-msg error) true)))}))
 
 (rum/defc form < rum/static [item]
   [:div

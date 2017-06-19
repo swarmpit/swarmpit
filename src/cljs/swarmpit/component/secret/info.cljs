@@ -10,19 +10,27 @@
 
 (enable-console-print!)
 
+(defn- delete-secret-info-msg
+  [id]
+  (str "Secret " id " has been removed."))
+
+(defn- delete-secret-error-msg
+  [error]
+  (str "Secret removing failed. Reason: " error))
+
 (defn- delete-secret-handler
   [secret-id]
   (ajax/DELETE (routes/path-for-backend :secret-delete {:id secret-id})
                {:headers       {"Authorization" (storage/get "token")}
                 :handler       (fn [_]
-                                 (let [message (str "Secret " secret-id " has been removed.")]
-                                   (dispatch!
-                                     (routes/path-for-frontend :secret-list))
-                                   (message/mount! message)))
+                                 (dispatch!
+                                   (routes/path-for-frontend :secret-list))
+                                 (message/mount!
+                                   (delete-secret-info-msg secret-id)))
                 :error-handler (fn [{:keys [response]}]
-                                 (let [error (get response "error")
-                                       message (str "Secret removing failed. Reason: " error)]
-                                   (message/mount! message)))}))
+                                 (let [error (get response "error")]
+                                   (message/mount!
+                                     (delete-secret-error-msg error) true)))}))
 
 (rum/defc form < rum/static [item]
   [:div

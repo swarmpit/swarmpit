@@ -29,7 +29,7 @@
       (if (some? error)
         [:div.form-view-group
          (comp/form-section "Error")
-         (comp/form-value error)])]]))
+         (comp/form-icon-value icon/error error)])]]))
 
 (defn mount!
   [item]

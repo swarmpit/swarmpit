@@ -10,19 +10,27 @@
 
 (enable-console-print!)
 
+(defn- delete-network-info-msg
+  [id]
+  (str "Network " id " has been removed."))
+
+(defn- delete-network-error-msg
+  [error]
+  (str "Network removing failed. Reason: " error))
+
 (defn- delete-network-handler
   [network-id]
   (ajax/DELETE (routes/path-for-backend :network-delete {:id network-id})
                {:headers       {"Authorization" (storage/get "token")}
                 :handler       (fn [_]
-                                 (let [message (str "Network " network-id " has been removed.")]
-                                   (dispatch!
-                                     (routes/path-for-frontend :network-list))
-                                   (message/mount! message)))
+                                 (dispatch!
+                                   (routes/path-for-frontend :network-list))
+                                 (message/mount!
+                                   (delete-network-info-msg network-id)))
                 :error-handler (fn [{:keys [response]}]
-                                 (let [error (get response "error")
-                                       message (str "Network removing failed. Reason: " error)]
-                                   (message/mount! message)))}))
+                                 (let [error (get response "error")]
+                                   (message/mount!
+                                     (delete-network-error-msg error) true)))}))
 
 (rum/defc form < rum/static [item]
   [:div

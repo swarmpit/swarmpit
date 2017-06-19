@@ -16,19 +16,27 @@
 
 (enable-console-print!)
 
+(defn- delete-service-info-msg
+  [id]
+  (str "Service " id " has been removed."))
+
+(defn- delete-service-error-msg
+  [error]
+  (str "Service removing failed. Reason: " error))
+
 (defn- delete-service-handler
   [service-id]
   (ajax/DELETE (routes/path-for-backend :service-delete {:id service-id})
                {:headers       {"Authorization" (storage/get "token")}
                 :handler       (fn [_]
-                                 (let [message (str "Service " service-id " has been removed.")]
-                                   (dispatch!
-                                     (routes/path-for-frontend :service-list))
-                                   (message/mount! message)))
+                                 (dispatch!
+                                   (routes/path-for-frontend :service-list))
+                                 (message/mount!
+                                   (delete-service-info-msg service-id)))
                 :error-handler (fn [{:keys [response]}]
-                                 (let [error (get response "error")
-                                       message (str "Service removing failed. Reason: " error)]
-                                   (message/mount! message)))}))
+                                 (let [error (get response "error")]
+                                   (message/mount!
+                                     (delete-service-error-msg error) true)))}))
 
 (defn- form-panel-label [item]
   (str (:state item) "  " (get-in item [:status :info])))

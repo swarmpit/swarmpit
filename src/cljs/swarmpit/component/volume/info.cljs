@@ -10,19 +10,27 @@
 
 (enable-console-print!)
 
+(defn- delete-volume-info-msg
+  [name]
+  (str "Volume " name " has been removed."))
+
+(defn- delete-volume-error-msg
+  [error]
+  (str "Volume removing failed. Reason: " error))
+
 (defn- delete-volume-handler
   [volume-name]
   (ajax/DELETE (routes/path-for-backend :volume-delete {:name volume-name})
                {:headers       {"Authorization" (storage/get "token")}
                 :handler       (fn [_]
-                                 (let [message (str "Volume " volume-name " has been removed.")]
-                                   (dispatch!
-                                     (routes/path-for-frontend :volume-list))
-                                   (message/mount! message)))
+                                 (dispatch!
+                                   (routes/path-for-frontend :volume-list))
+                                 (message/mount!
+                                   (delete-volume-info-msg volume-name)))
                 :error-handler (fn [{:keys [response]}]
-                                 (let [error (get response "error")
-                                       message (str "Volume removing failed. Reason: " error)]
-                                   (message/mount! message)))}))
+                                 (let [error (get response "error")]
+                                   (message/mount!
+                                     (delete-volume-error-msg error) true)))}))
 
 (rum/defc form < rum/static [item]
   [:div

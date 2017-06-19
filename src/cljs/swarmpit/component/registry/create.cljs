@@ -69,6 +69,14 @@
        :onChange (fn [_ v]
                    (state/update-value [:password] v cursor))})))
 
+(defn- create-registry-info-msg
+  [id]
+  (str "Registry " id " has been created."))
+
+(defn- create-registry-error-msg
+  [error]
+  (str "Registry creation failed. Reason: " error))
+
 (defn- create-registry-handler
   []
   (ajax/POST (routes/path-for-backend :registry-create)
@@ -77,17 +85,17 @@
               :params        (state/get-value cursor)
               :finally       (progress/mount!)
               :handler       (fn [response]
-                               (let [id (get response "id")
-                                     message (str "Registry " id " has been created.")]
+                               (let [id (get response "id")]
                                  (progress/unmount!)
                                  (dispatch!
                                    (routes/path-for-frontend :registry-info {:id id}))
-                                 (message/mount! message)))
+                                 (message/mount!
+                                   (create-registry-info-msg id))))
               :error-handler (fn [{:keys [response]}]
-                               (let [error (get response "error")
-                                     message (str "Registry creation failed. Reason: " error)]
+                               (let [error (get response "error")]
                                  (progress/unmount!)
-                                 (message/mount! message)))}))
+                                 (message/mount!
+                                   (create-registry-error-msg error) true)))}))
 
 (rum/defc form < rum/reactive []
   (let [{:keys [name

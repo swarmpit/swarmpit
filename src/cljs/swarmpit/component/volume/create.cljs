@@ -37,6 +37,14 @@
          :value       "local"
          :primaryText "local"}))))
 
+(defn- create-volume-info-msg
+  [name]
+  (str "Volume " name " has been created."))
+
+(defn- create-volume-error-msg
+  [error]
+  (str "Volume creation failed. Reason: " error))
+
 (defn- create-volume-handler
   []
   (ajax/POST (routes/path-for-backend :volume-create)
@@ -45,17 +53,17 @@
               :params        (state/get-value cursor)
               :finally       (progress/mount!)
               :handler       (fn [response]
-                               (let [name (get response "volumeName")
-                                     message (str "Volume " name " has been created.")]
+                               (let [name (get response "volumeName")]
                                  (progress/unmount!)
                                  (dispatch!
                                    (routes/path-for-frontend :volume-info {:name name}))
-                                 (message/mount! message)))
+                                 (message/mount!
+                                   (create-volume-info-msg name))))
               :error-handler (fn [{:keys [response]}]
-                               (let [error (get response "error")
-                                     message (str "Volume creation failed. Reason: " error)]
+                               (let [error (get response "error")]
                                  (progress/unmount!)
-                                 (message/mount! message)))}))
+                                 (message/mount!
+                                   (create-volume-error-msg error) true)))}))
 
 (rum/defc form < rum/reactive []
   (let [{:keys [volumeName

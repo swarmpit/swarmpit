@@ -19,6 +19,14 @@
 
 (enable-console-print!)
 
+(defn- update-service-info-msg
+  [id]
+  (str "Service " id " has been updated."))
+
+(defn- update-service-error-msg
+  [error]
+  (str "Service update failed. Reason: " error))
+
 (defn- update-service-handler
   [service-id]
   (let [settings (state/get-value settings/cursor)
@@ -40,16 +48,16 @@
                                    (assoc :deployment deployment))
                 :finally       (progress/mount!)
                 :handler       (fn [_]
-                                 (let [message (str "Service " service-id " has been updated.")]
-                                   (progress/unmount!)
-                                   (dispatch!
-                                     (routes/path-for-frontend :service-info {:id service-id}))
-                                   (message/mount! message)))
+                                 (progress/unmount!)
+                                 (dispatch!
+                                   (routes/path-for-frontend :service-info {:id service-id}))
+                                 (message/mount!
+                                   (update-service-info-msg service-id)))
                 :error-handler (fn [{:keys [response]}]
-                                 (let [error (get-in response ["error" "message"])
-                                       message (str "Service update failed. Reason: " error)]
+                                 (let [error (get-in response ["error"])]
                                    (progress/unmount!)
-                                   (message/mount! message)))})))
+                                   (message/mount!
+                                     (update-service-error-msg error) true)))})))
 
 (defn render-item
   [val]

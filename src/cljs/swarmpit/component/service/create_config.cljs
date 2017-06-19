@@ -77,6 +77,14 @@
       (form-previous-button index)
       (form-next-button index))))
 
+(defn- create-service-info-msg
+  [id]
+  (str "Service " id " has been created."))
+
+(defn- create-service-error-msg
+  [error]
+  (str "Service creation failed. Reason: " error))
+
 (defn- create-service-handler
   []
   (let [settings (state/get-value settings/cursor)
@@ -98,17 +106,17 @@
                                    (assoc :deployment deployment))
                 :finally       (progress/mount!)
                 :handler       (fn [response]
-                                 (let [id (get response "ID")
-                                       message (str "Service " id " has been created.")]
+                                 (let [id (get response "ID")]
                                    (progress/unmount!)
                                    (dispatch!
                                      (routes/path-for-frontend :service-info {:id id}))
-                                   (message/mount! message)))
+                                   (message/mount!
+                                     (create-service-info-msg id))))
                 :error-handler (fn [{:keys [response]}]
-                                 (let [error (get response "error")
-                                       message (str "Service creation failed. Reason: " error)]
+                                 (let [error (get response "error")]
                                    (progress/unmount!)
-                                   (message/mount! message)))})))
+                                   (message/mount!
+                                     (create-service-error-msg error) true)))})))
 
 (rum/defc form < rum/reactive [networks volumes secrets]
   (let [index (rum/react step-index)

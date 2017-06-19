@@ -10,19 +10,27 @@
 
 (enable-console-print!)
 
+(defn- delete-registry-info-msg
+  [id]
+  (str "Registry " id " has been removed."))
+
+(defn- delete-registry-error-msg
+  [error]
+  (str "Registry removing failed. Reason: " error))
+
 (defn- delete-registry-handler
   [registry-id]
   (ajax/DELETE (routes/path-for-backend :registry-delete {:id registry-id})
                {:headers       {"Authorization" (storage/get "token")}
                 :handler       (fn [_]
-                                 (let [message (str "Registry " registry-id " has been removed.")]
-                                   (dispatch!
-                                     (routes/path-for-frontend :registry-list))
-                                   (message/mount! message)))
+                                 (dispatch!
+                                   (routes/path-for-frontend :registry-list))
+                                 (message/mount!
+                                   (delete-registry-info-msg registry-id)))
                 :error-handler (fn [{:keys [response]}]
-                                 (let [error (get response "error")
-                                       message (str "Registry removing failed. Reason: " error)]
-                                   (message/mount! message)))}))
+                                 (let [error (get response "error")]
+                                   (message/mount!
+                                     (delete-registry-error-msg error) true)))}))
 
 (rum/defc form < rum/static [item]
   [:div
