@@ -44,11 +44,9 @@
   [service]
   (->> (:mounts service)
        (map (fn [v] {:ReadOnly (:readOnly v)
-                     :Source   (:containerPath v)
-                     :Target   (:hostPath v)
-                     :Type     (:type v)
-                     :VolumeOptions
-                               {:DriverConfig {}}}))
+                     :Source   (:hostPath v)
+                     :Target   (:containerPath v)
+                     :Type     (:type v)}))
        (into [])))
 
 (defn ->service-secrets
