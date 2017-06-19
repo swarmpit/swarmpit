@@ -15,8 +15,6 @@
 (def login-button-style
   {:marginTop "30px"})
 
-
-
 (defn- update-item
   "Update form item configuration"
   [k v]

@@ -8,8 +8,7 @@
             [clojure.string :as string]
             [rum.core :as rum]
             [goog.crypt :as crypt])
-  (:import
-    [goog.crypt Md5]))
+  (:import [goog.crypt Md5]))
 
 (enable-console-print!)
 
