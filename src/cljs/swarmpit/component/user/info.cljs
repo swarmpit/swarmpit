@@ -42,6 +42,7 @@
      (comp/mui
        (comp/raised-button
          {:onTouchTap #(delete-user-handler (:_id item))
+          :disabled   (= (storage/user) (:username item))
           :label      "Delete"}))]]
    [:div.form-view
     [:div.form-view-group

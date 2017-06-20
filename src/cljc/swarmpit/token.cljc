@@ -51,6 +51,11 @@
          (jwt/unsign "secret"))))
 
 #?(:clj
+   (defn user
+     [token]
+     (get-in (verify-jwt token) [:usr :username])))
+
+#?(:clj
    (defn generate-basic
      [username password]
      (let [credentials (credentials username password)

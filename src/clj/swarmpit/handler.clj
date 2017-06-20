@@ -55,7 +55,7 @@
 (defmethod dispatch :password [_]
   (fn [{:keys [headers params]}]
     (let [token (get headers "authorization")
-          username (get-in (token/verify-jwt token) [:usr :username])
+          username (token/user token)
           payload (keywordize-keys params)]
       (-> (api/user-by-username username)
           (api/change-password (:password payload))))))
@@ -73,9 +73,15 @@
          (resp-ok))))
 
 (defmethod dispatch :user-delete [_]
-  (fn [{:keys [route-params]}]
-    (api/delete-user (:id route-params))
-    (resp-ok)))
+  (fn [{:keys [headers route-params]}]
+    (let [token (get headers "authorization")
+          username (token/user token)
+          user (api/user-by-username username)]
+      (if (= (:_id user)
+             (:id route-params))
+        (resp-error 400 "Operation not allowed")
+        (do (api/delete-user (:id route-params))
+            (resp-ok))))))
 
 (defmethod dispatch :user-create [_]
   (fn [{:keys [params]}]
