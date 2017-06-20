@@ -1,14 +1,34 @@
-# cljs.swarmpit
+[![swarmpit](http://swarmpit.io/img/logo-swarmpit.svg)](http://swarmpit.io)
 
-A Clojure library designed to ... well, that part is up to you.
+Lightweight Docker Swarm orchestration
 
-## Usage
+![screenshot](http://swarmpit.io/img/example.jpg)
 
-FIXME
+Swarmpit provides simple and easy to use interface for your Docker Swarm cluster. You can manage your services, secrets, volumes, networks etc. After linking your Docker Hub account or custom repository, private registries can be easily deployed on Swarm. Best of all, you can share this management console securely with your whole team.
 
-## License
+We have more features coming like automatic redeployments, stack management, user permissions constraints and more, so stay tuned or even better help us shape features you would like.
 
-Copyright © 2017 FIXME
+## Installation
 
-Distributed under the Eclipse Public License either version 1.0 or (at
-your option) any later version.
+The only dependency for Swarmpit deployment is Docker with Swarm initialized, we are supporting Docker 1.13 and newer.
+
+The simplest way to deploy Swarmpit is by using a Compose file from our git repo.
+
+```
+git clone https://github.com/swarmpit/swarmpit
+docker stack deploy -c swarmpit/docker-compose.yml swarmpit
+```
+
+[This stack](docker-compose.yml) is a composition of Swarmpit and CouchDB. Feel free to edit the stackfile to change a port on which will be Swarmpit published and we're strongly recommending you to specify `db-data` volume driver to shared-volume driver of your choice. Alternatively, you can link db service to the specific node by using [constraint](https://docs.docker.com/compose/compose-file/#placement).
+
+## Development
+
+Swarmpit is written purely in Clojure and utilizes React on front-end. CouchDB is just used to store data, that cannot be stored directly in Docker API.
+
+Everything about building Swarmpit and setting up development environment can be found in [CONTRIBUTING.md](CONTRIBUTING.md)
+
+## Preview
+
+<kbd>
+  <img src="http://swarmpit.io/img/demo-screen-1.gif">
+</kbd>
