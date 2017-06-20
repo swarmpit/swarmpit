@@ -23,16 +23,6 @@
 
 (def steps ["General settings" "Ports" "Networks" "Mounts" "Secrets" "Environment variables" "Deployment"])
 
-(defn- step-previous
-  [index]
-  (if (< 0 index)
-    (reset! step-index (dec index))))
-
-(defn- step-next
-  [index]
-  (if (> (count steps) index)
-    (reset! step-index (inc index))))
-
 (def step-style
   {:backgroundColor "transparent"})
 
@@ -41,24 +31,6 @@
 
 (def stepper-style
   {:height "60px"})
-
-(def form-previous-button-style
-  {:margin "10px 10px 10px 20px"})
-
-(defn- form-previous-button [index]
-  (comp/raised-button
-    {:label      "Previous"
-     :key        "fpb"
-     :style      form-previous-button-style
-     :disabled   (= 0 index)
-     :onTouchTap (fn [] (step-previous index))}))
-
-(defn- form-next-button [index]
-  (comp/raised-button
-    {:label      "Next"
-     :key        "fnb"
-     :disabled   (= (- (count steps) 1) index)
-     :onTouchTap (fn [] (step-next index))}))
 
 (defn- step-item [index form]
   (comp/step
@@ -73,9 +45,7 @@
     (comp/step-content
       {:key   (str "step-context-" index)
        :style step-content-style}
-      form
-      (form-previous-button index)
-      (form-next-button index))))
+      form)))
 
 (defn- create-service-info-msg
   [id]
