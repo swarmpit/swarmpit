@@ -39,9 +39,9 @@
       [:div.form-panel-right
        (comp/mui
          (comp/raised-button
-           {:href    (routes/path-for-frontend :dockerhub-user-create)
-            :label   "Add User"
-            :primary true}))]]
+           {:href          (routes/path-for-frontend :dockerhub-user-create)
+            :label         "New user"
+            :primary       true}))]]
      (comp/list-table headers
                       (sort-by :username filtered-items)
                       render-item

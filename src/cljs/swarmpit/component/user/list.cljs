@@ -45,7 +45,7 @@
        (comp/mui
          (comp/raised-button
            {:href    (routes/path-for-frontend :user-create)
-            :label   "Create"
+            :label   "New user"
             :primary true}))]]
      (comp/list-table headers
                       (sort-by :username filtered-items)

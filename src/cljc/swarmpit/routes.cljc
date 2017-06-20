@@ -69,10 +69,10 @@
                    "/tasks"      {""        :task-list
                                   ["/" :id] :task-info}
                    "/registries" {""        :registry-list
-                                  "/create" :registry-create
+                                  "/add"    :registry-create
                                   ["/" :id] :registry-info}
                    "/dockerhub"  {""        :dockerhub-user-list
-                                  "/create" :dockerhub-user-create
+                                  "/add"    :dockerhub-user-create
                                   ["/" :id] :dockerhub-user-info}
                    "/users"      {""        :user-list
                                   "/create" :user-create

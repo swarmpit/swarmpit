@@ -111,7 +111,7 @@
       [:div.form-panel-right
        (comp/mui
          (comp/raised-button
-           {:label      "Create"
+           {:label      "Save"
             :disabled   (not isValid)
             :primary    true
             :onTouchTap create-registry-handler}))]]

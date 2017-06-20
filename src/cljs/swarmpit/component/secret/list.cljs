@@ -41,7 +41,7 @@
        (comp/mui
          (comp/raised-button
            {:href    (routes/path-for-frontend :secret-create)
-            :label   "Create"
+            :label   "New secret"
             :primary true}))]]
      (comp/list-table headers
                       (sort-by :secretName filtered-items)

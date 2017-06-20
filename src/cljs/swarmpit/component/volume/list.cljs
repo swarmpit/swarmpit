@@ -41,7 +41,7 @@
        (comp/mui
          (comp/raised-button
            {:href    (routes/path-for-frontend :volume-create)
-            :label   "Create"
+            :label   "New volume"
             :primary true}))]]
      (comp/list-table headers
                       (sort-by :volumeName filtered-items)

@@ -33,7 +33,7 @@
    :user-info             "Users / Swarmpit "
    :registry-info         "Registries"
    :registry-list         "Registries"
-   :registry-create       "Registries / Create"
+   :registry-create       "Registries / Add"
    :dockerhub-user-info   "Users / Dockerhub"
    :dockerhub-user-list   "Users / Dockerhub"
    :dockerhub-user-create "Users / Dockerhub / Add"})

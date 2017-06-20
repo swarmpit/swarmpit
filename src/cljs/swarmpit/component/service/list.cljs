@@ -91,7 +91,7 @@
        (comp/mui
          (comp/raised-button
            {:href    (routes/path-for-frontend :service-create-image)
-            :label   "Create"
+            :label   "New service"
             :primary true}))]]
      (comp/list-table headers
                       (sort-by :serviceName filtered-items)

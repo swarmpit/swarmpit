@@ -45,7 +45,7 @@
        (comp/mui
          (comp/raised-button
            {:href    (routes/path-for-frontend :network-create)
-            :label   "Create"
+            :label   "New network"
             :primary true}))]]
      (comp/list-table headers
                       (sort-by :networkName filtered-items)
