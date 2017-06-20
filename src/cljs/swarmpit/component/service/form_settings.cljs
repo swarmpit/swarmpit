@@ -39,7 +39,7 @@
     (comp/autocomplete {:name          "imageTagAuto"
                         :key           "imageTagAuto"
                         :searchText    value
-                        :onUpdateInput (fn [v] (state/update-value [:repository :imageTag] v cursor))
+                        :onUpdateInput (fn [v] (state/update-value [:repository :tag] v cursor))
                         :dataSource    tags})))
 
 (defn- form-image-tag [value]
@@ -51,7 +51,7 @@
        :key      "imageTag"
        :value    value
        :onChange (fn [_ v]
-                   (state/update-value [:repository :imageTag] v cursor))})))
+                   (state/update-value [:repository :tag] v cursor))})))
 
 (defn- form-name [value update-form?]
   (comp/form-comp
@@ -102,27 +102,22 @@
        :onChange (fn [_ v]
                    (state/update-value [:replicas] (js/parseInt v) cursor))})))
 
-(defn- image-tags-url
-  [registry]
-  (if (= "dockerhub" registry)
-    (routes/path-for-backend :dockerhub-tags)
-    (routes/path-for-backend :repository-tags {:registryName registry})))
+(defn dockerhub-image-tags-handler
+  [repository-user repository]
+  (ajax/GET (routes/path-for-backend :dockerhub-tags)
+            {:headers {"Authorization" (storage/get "token")}
+             :params  {:repositoryName repository
+                       :repositoryUser repository-user}
+             :handler (fn [response]
+                        (state/update-value [:repository :tags] response cursor))}))
 
-(defn- image-tags-params
-  [registry-user repository]
-  (let [query-params {:repositoryName repository}]
-    (if (some? registry-user)
-      (merge query-params {:username registry-user})
-      query-params)))
-
-(defn image-tags-handler
-  [registry registry-user repository]
-  (let [url (image-tags-url registry)]
-    (ajax/GET url
-              {:headers {"Authorization" (storage/get "token")}
-               :params  (image-tags-params registry-user repository)
-               :handler (fn [response]
-                          (state/update-value [:repository :tags] response cursor))})))
+(defn registry-image-tags-handler
+  [registry repository]
+  (ajax/GET (routes/path-for-backend :repository-tags {:registryName registry})
+            {:headers {"Authorization" (storage/get "token")}
+             :params  {:repositoryName repository}
+             :handler (fn [response]
+                        (state/update-value [:repository :tags] response cursor))}))
 
 (rum/defc form < rum/reactive [update-form?]
   (let [{:keys [repository
@@ -133,10 +128,10 @@
      (comp/form
        {:onValid   #(state/update-value [:isValid] true cursor)
         :onInvalid #(state/update-value [:isValid] false cursor)}
-       (form-image (:imageName repository))
+       (form-image (:name repository))
        (if update-form?
-         (form-image-tag (:imageTag repository))
-         (form-image-tag-ac (:imageTag repository)
+         (form-image-tag (:tag repository))
+         (form-image-tag-ac (:tag repository)
                             (:tags repository)))
        (form-name serviceName update-form?)
        (form-mode mode update-form?)

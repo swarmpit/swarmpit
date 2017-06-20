@@ -288,10 +288,10 @@
   (fn [{:keys [query-string]}]
     (let [query (keywordize-keys (query->map query-string))
           repository-name (:repositoryName query)
-          username (:username query)]
+          repository-user (:repositoryUser query)]
       (if (nil? repository-name)
         (resp-error 400 "Parameter repositoryName missing")
-        (->> (api/dockerhub-tags repository-name username)
+        (->> (api/dockerhub-tags repository-name repository-user)
              (resp-ok))))))
 
 (defmethod dispatch :dockerhub-user-repo [_]

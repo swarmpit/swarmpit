@@ -147,13 +147,16 @@
          (step-item 6 (deployment/form))))]))
 
 (defn- init-state
-  [registry registry-user repository]
+  [registry repository-user repository]
   (reset! step-index 0)
-  (settings/image-tags-handler registry registry-user repository)
-  (state/set-value {:repository  {:registry  registry
-                                  :imageName repository
-                                  :imageTag  ""
-                                  :tags      []}
+  (if (= "dockerhub" registry)
+    (settings/dockerhub-image-tags-handler repository-user repository)
+    (settings/registry-image-tags-handler registry repository))
+  (state/set-value {:repository  {:registry registry
+                                  :user     repository-user
+                                  :name     repository
+                                  :tag      ""
+                                  :tags     []}
                     :serviceName ""
                     :mode        "replicated"
                     :replicas    1
@@ -169,6 +172,6 @@
                     :failureAction "pause"} deployment/cursor))
 
 (defn mount!
-  [registry registry-user repository networks volumes secrets]
-  (init-state registry registry-user repository)
+  [registry repository-user repository networks volumes secrets]
+  (init-state registry repository-user repository)
   (rum/mount (form networks volumes secrets) (.getElementById js/document "content")))

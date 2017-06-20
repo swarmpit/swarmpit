@@ -163,8 +163,8 @@
       :updatedAt (date (get service :UpdatedAt))
       :repository {:image       image-name
                    :imageDigest image-digest
-                   :imageName   (first image-segments)
-                   :imageTag    (second image-segments)}
+                   :name        (first image-segments)
+                   :tag         (second image-segments)}
       :serviceName service-name
       :mode service-mode
       :replicas replicas

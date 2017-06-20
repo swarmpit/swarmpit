@@ -1,4 +1,4 @@
-(ns swarmpit.component.service.create-image-user
+(ns swarmpit.component.service.create-image-private
   (:require [material.icon :as icon]
             [material.component :as comp]
             [swarmpit.component.state :as state]
@@ -10,7 +10,7 @@
             [rum.core :as rum]
             [ajax.core :as ajax]))
 
-(def cursor [:page :service :wizard :image :user])
+(def cursor [:page :service :wizard :image :private])
 
 (defn- filter-items
   "Filter list items based on given predicate"
@@ -71,9 +71,9 @@
                         (dispatch!
                           (routes/path-for-frontend :service-create-config
                                                     {}
-                                                    {:repository (repository i)
-                                                     :registry   "dockerhub"
-                                                     :username   user})))}
+                                                    {:repository     (repository i)
+                                                     :repositoryUser user
+                                                     :registry       "dockerhub"})))}
         (comp/list-table-header ["Name" "Description"])
         (comp/list-table-body data
                               render-item

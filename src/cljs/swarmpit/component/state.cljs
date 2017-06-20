@@ -13,9 +13,9 @@
                                    :form {}}
                        :node      {:list {}}
                        :service   {:list   {}
-                                   :wizard {:image      {:public {}
-                                                         :user   {}
-                                                         :other  {}}
+                                   :wizard {:image      {:public  {}
+                                                         :private {}
+                                                         :other   {}}
                                             :settings   {}
                                             :ports      []
                                             :networks   []

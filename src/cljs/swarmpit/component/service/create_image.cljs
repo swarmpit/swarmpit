@@ -4,7 +4,7 @@
             [swarmpit.component.state :as state]
             [swarmpit.component.service.create-image-public :as cip]
             [swarmpit.component.service.create-image-other :as cio]
-            [swarmpit.component.service.create-image-user :as ciu]
+            [swarmpit.component.service.create-image-private :as ciu]
             [rum.core :as rum]))
 
 (def tabs-inkbar-style

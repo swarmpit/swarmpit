@@ -118,56 +118,6 @@
     (->> (dmo/->secret secret)
          (dc/update-secret secret-id secret-version))))
 
-;;; Service API
-
-(defn services
-  []
-  (dmi/->services (dc/services)
-                  (dc/tasks)
-                  (dc/nodes)
-                  (dc/networks)))
-
-(defn service
-  [service-id]
-  (dmi/->service (dc/service service-id)
-                 (dc/tasks)
-                 (dc/nodes)
-                 (dc/networks)))
-
-(defn delete-service
-  [service-id]
-  (dc/delete-service service-id))
-
-(defn- create-dockerhub-service
-  [service secrets]
-  (->> (dmo/->service-image service)
-       (dmo/->service service secrets)
-       (dc/create-service)))
-
-(defn- create-registry-service
-  [service secrets registry-name]
-  (let [registry (registry-by-name registry-name)
-        auth-config (dmo/->auth-config registry)]
-    (->> (dmo/->service-image-registry service registry)
-         (dmo/->service service secrets)
-         (dc/create-service auth-config))))
-
-(defn create-service
-  [service]
-  (let [registry-name (get-in service [:repository :registry])
-        secrets (dmo/->service-secrets service (secrets))]
-    (if (= "dockerhub" registry-name)
-      (create-dockerhub-service service secrets)
-      (create-registry-service service secrets registry-name))))
-
-(defn update-service
-  [service-id service]
-  (let [service-version (:version service)
-        secrets (dmo/->service-secrets service (secrets))]
-    (->> (dmo/->service-image service)
-         (dmo/->service service secrets)
-         (dc/update-service service-id service-version))))
-
 ;;; Network API
 
 (defn networks
@@ -223,20 +173,6 @@
   (-> (dc/node node-id)
       (dmi/->node)))
 
-;;; Task API
-
-(defn tasks
-  []
-  (->> (services)
-       (map #(:tasks %))
-       (flatten)))
-
-(defn task
-  [task-id]
-  (->> (tasks)
-       (filter #(= (:id %) task-id))
-       (first)))
-
 ;;; Repository Dockerhub API
 
 (defn dockerusers
@@ -291,8 +227,8 @@
       (dhmi/->repositories repository-query repository-page)))
 
 (defn dockerhub-tags
-  [repository-name username]
-  (let [user (dockeruser-by-username username)]
+  [repository-name repository-user]
+  (let [user (dockeruser-by-username repository-user)]
     (->> (dhc/tags repository-name user)
          (map :name)
          (into []))))
@@ -308,3 +244,73 @@
   [registry repository-name]
   (->> (rc/tags registry repository-name)
        :tags))
+
+;;; Service API
+
+(defn services
+  []
+  (dmi/->services (dc/services)
+                  (dc/tasks)
+                  (dc/nodes)
+                  (dc/networks)))
+
+(defn service
+  [service-id]
+  (dmi/->service (dc/service service-id)
+                 (dc/tasks)
+                 (dc/nodes)
+                 (dc/networks)))
+
+(defn delete-service
+  [service-id]
+  (dc/delete-service service-id))
+
+(defn service-registry
+  [service]
+  (get-in service [:repository :registry]))
+
+(defn create-dockerhub-service
+  [service secrets]
+  (let [auth-config (->> (get-in service [:repository :user])
+                         (dockeruser-by-username)
+                         (dmo/->auth-config))]
+    (->> (dmo/->service-image service)
+         (dmo/->service service secrets)
+         (dc/create-service auth-config))))
+
+(defn create-registry-service
+  [service registry secrets]
+  (let [registry (registry-by-name registry)
+        auth-config (dmo/->auth-config registry)]
+    (->> (dmo/->service-image-registry service registry)
+         (dmo/->service service secrets)
+         (dc/create-service auth-config))))
+
+(defn create-service
+  [service]
+  (let [registry (get-in service [:repository :registry])
+        secrets (dmo/->service-secrets service (secrets))]
+    (if (= "dockerhub" registry)
+      (create-dockerhub-service service secrets)
+      (create-registry-service service registry secrets))))
+
+(defn update-service
+  [service-id service]
+  (let [secrets (dmo/->service-secrets service (secrets))]
+    (->> (dmo/->service-image service)
+         (dmo/->service service secrets)
+         (dc/update-service service-id (:version service)))))
+
+;;; Task API
+
+(defn tasks
+  []
+  (->> (services)
+       (map #(:tasks %))
+       (flatten)))
+
+(defn task
+  [task-id]
+  (->> (tasks)
+       (filter #(= (:id %) task-id))
+       (first)))

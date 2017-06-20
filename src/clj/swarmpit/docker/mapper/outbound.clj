@@ -4,10 +4,11 @@
             [swarmpit.base64 :as base64]))
 
 (defn ->auth-config
-  [registry]
-  {:username      (:username registry)
-   :password      (:password registry)
-   :serveraddress (:url registry)})
+  "Pass registry or dockeruser entity"
+  [auth-entity]
+  {:username      (:username auth-entity)
+   :password      (:password auth-entity)
+   :serveraddress (:url auth-entity)})
 
 (defn ->service-mode
   [service]
@@ -76,16 +77,16 @@
 
 (defn ->service-image-registry
   [service registry]
-  (let [image (get-in service [:repository :imageName])
-        tag (get-in service [:repository :imageTag])
+  (let [repository (get-in service [:repository :name])
+        tag (get-in service [:repository :tag])
         url (second (str/split (:url registry) #"//"))]
-    (str url "/" image ":" tag)))
+    (str url "/" repository ":" tag)))
 
 (defn ->service-image
   [service]
-  (let [image (get-in service [:repository :imageName])
-        tag (get-in service [:repository :imageTag])]
-    (str image ":" tag)))
+  (let [repository (get-in service [:repository :name])
+        tag (get-in service [:repository :tag])]
+    (str repository ":" tag)))
 
 (defn ->service
   [service secrets image]
