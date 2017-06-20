@@ -4,7 +4,7 @@ Lightweight Docker Swarm orchestration
 
 ![screenshot](http://swarmpit.io/img/example.jpg)
 
-Swarmpit provides simple and easy to use interface for your Docker Swarm cluster. You can manage your services, secrets, volumes, networks etc. After linking your Docker Hub account or custom repository, private registries can be easily deployed on Swarm. Best of all, you can share this management console securely with your whole team.
+Swarmpit provides simple and easy to use interface for your Docker Swarm cluster. You can manage your services, secrets, volumes, networks etc. After linking your Docker Hub account or custom registry, private repositories can be easily deployed on Swarm. Best of all, you can share this management console securely with your whole team.
 
 We have more features coming like automatic redeployments, stack management, user permissions constraints and more, so stay tuned or even better help us shape features you would like.
 
