@@ -1,6 +1,6 @@
 # How to contribute
 
-Swarmpit is almost entirely written in Clojure, this allows seamless transition between frontend and backend and helps with fast development.
+Swarmpit is almost entirely written in Clojure, this allows seamless transition between frontend and backend development.
 
 Backend part of application runs in JVM and frontend utilizes React with [RUM](https://github.com/tonsky/rum). Persistent data are stored in CouchDB. Docker is connected via a socket.
 
