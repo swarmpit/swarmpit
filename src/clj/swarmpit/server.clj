@@ -42,6 +42,10 @@
   [claims]
   (= "admin" (get-in claims [:usr :role])))
 
+(defn- invalid-claims?
+  [claims]
+  (some? (get-in claims [:body :error])))
+
 (defn wrap-client-exception
   [handler]
   (fn [request]
@@ -70,11 +74,13 @@
                          (token/verify-jwt token)
                          (catch ExceptionInfo _
                            (resp-unauthorized "Invalid token")))]
-            (if (admin-api? request)
-              (if (admin-access? claims)
-                (handler request)
-                (resp-unauthorized "Unauthorized access"))
-              (handler request)))
+            (if (invalid-claims? claims)
+              (resp-unauthorized "Invalid token")
+              (if (admin-api? request)
+                (if (admin-access? claims)
+                  (handler request)
+                  (resp-unauthorized "Unauthorized access"))
+                (handler request))))
           (resp-error 400 "Missing token")))
       (handler request))))
 
