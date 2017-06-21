@@ -504,6 +504,55 @@
                          render-item-fn
                          render-items-key)))))
 
+;; List selectable component
+
+(defn list-selecttable-header
+  [headers]
+  (table-header
+    {:key               "th"
+     :displaySelectAll  true
+     :adjustForCheckbox true
+     :enableSelectAll   true
+     :style             {:border "none"}}
+    (table-row
+      {:key           "tr"
+       :displayBorder true}
+      (map-indexed
+        (fn [index header]
+          (table-header-column
+            {:key (str "thc-" index)}
+            header)) headers))))
+
+(defn list-selecttable-body
+  [items render-item-fn render-items-key]
+  (table-body
+    {:key                 "tb"
+     :showRowHover        true
+     :deselectOnClickaway true
+     :displayRowCheckbox  true}
+    (map-indexed
+      (fn [index item]
+        (table-row
+          {:key       (str "tr-" (:id item))
+           :style     {:cursor "pointer"}
+           :rowNumber index}
+          (->> (select-keys* item render-items-key)
+               (map #(table-row-column
+                       {:key (str "trc-" (:id item))}
+                       (render-item-fn % item)))))) items)))
+
+(defn list-selectable
+  [headers items render-item-fn render-items-key]
+  (mui
+    (table
+      {:key            "tbl"
+       :selectable     true
+       :onRowSelection nil}
+      (list-selecttable-header headers)
+      (list-selecttable-body items
+                             render-item-fn
+                             render-items-key))))
+
 ;; Form table component
 
 (defn form-table-header
