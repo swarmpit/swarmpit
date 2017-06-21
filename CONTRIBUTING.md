@@ -21,7 +21,7 @@ lein repl
 
 and call function `(run)`, which will start DB container and Swarmpit with Figwheel on http://localhost:3449
 In order to use REPL on frontend side call additionally `(browser-repl)`. Both `(run)` & `(browser-repl)` are
-part of dev `User` namespace.
+part of dev [`User`](dev/user.clj) namespace.
 
 ## Build
 
