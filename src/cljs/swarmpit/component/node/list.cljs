@@ -20,24 +20,32 @@
   [items predicate]
   (filter #(string/includes? (:nodeName %) predicate) items))
 
-(defn node-item-state [value]
+(defn- node-item-state [value]
   (case value
     "ready" (comp/label-green value)
     "down" (comp/label-red value)))
 
+(defn- node-item-states [item]
+  [:div.node-item-states
+   [:span.node-item-state (node-item-state (:state item))]
+   (if (:leader item)
+     [:span.node-item-state (comp/label-blue "leader")])])
+
+(defn- node-item-header [item]
+  [:div
+   [:span
+    [:svg.node-item-ico {:width  "24"
+                         :height "24"
+                         :fill   "rgb(117, 117, 117)"}
+     [:path {:d icon/docker}]]]
+   [:span [:b (:nodeName item)]]])
+
 (defn- node-item
   [item]
   (html
-    [:div.mdl-cell.node-item
-     [:div
-      [:span
-       [:svg.node-item-ico {::width "24" :height "24" :fill "rgb(117, 117, 117)"}
-        [:path {:d icon/docker}]]]
-      [:span [:b (:nodeName item)]]]
-     [:div.node-item-states
-      [:span.node-item-state (node-item-state (:state item))]
-      (if (:leader item)
-        [:span.node-item-state (comp/label-blue "leader")])]
+    [:div.mdl-cell.node-item {:key (:id item)}
+     (node-item-header item)
+     (node-item-states item)
      [:div
       [:span "[ " (:role item) " ]"]]
      [:div
