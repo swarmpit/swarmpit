@@ -66,13 +66,11 @@
 (def init-state-mixin
   (mixin/init
     (fn [{:keys [service]}]
-      (print "mixin")
       (init-state service))))
 
 (rum/defc form < rum/static
                  init-state-mixin [data]
   (let [{:keys [secrets volumes service]} data]
-    (print "red")
     [:div
      [:div.form-panel
       [:div.form-panel-left
