@@ -3,7 +3,7 @@
             [rum.core :as rum]))
 
 (defonce state
-         (atom {:route   {}
+         (atom {:route   nil
                 :layout  {:opened true}
                 :message {:text ""
                           :type :info
