@@ -66,9 +66,10 @@
 
 (rum/defc layout < rum/reactive []
   (let [{:keys [handler] :as route} (state/react controller/cursor)]
-    (if (page-layout? handler)
-      (page-layout route)
-      (page-single route))))
+    (when (some? route)
+      (if (page-layout? handler)
+        (page-layout route)
+        (page-single route)))))
 
 (defn mount!
   []
