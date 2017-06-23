@@ -1,6 +1,6 @@
 (ns swarmpit.component.task.list
   (:require [material.component :as comp]
-            [material.mixin :as mixin]
+            [swarmpit.component.mixin :as mixin]
             [swarmpit.component.state :as state]
             [swarmpit.routes :as routes]
             [clojure.string :as string]
@@ -15,7 +15,10 @@
 
 (def headers ["Name" "Service" "Image" "Node" "Status"])
 
-(defn form-state [value]
+(def render-item-keys
+  [[:taskName] [:serviceName] [:repository :image] [:node :nodeName] [:state]])
+
+(defn render-item-state [value]
   (case value
     "preparing" (comp/label-yellow value)
     "starting" (comp/label-yellow value)
@@ -30,28 +33,24 @@
     "rejected" (comp/label-red value)
     "failed" (comp/label-red value)))
 
+(defn- render-item
+  [item _]
+  (let [value (val item)]
+    (if (= :state (key item))
+      (render-item-state value)
+      (val item))))
+
+(defn- onclick-handler
+  [item]
+  (routes/path-for-frontend :task-info (select-keys item [:id])))
+
 (defn- filter-items
-  "Filter list `items` based on service `name` & `running?` flag"
   [items name running?]
   (let [is-running (fn [item] (= "running" (:state item)))]
     (if running?
       (filter #(and (string/includes? (:serviceName %) name)
                     (is-running %)) items)
       (filter #(string/includes? (:serviceName %) name) items))))
-
-(def render-item-keys
-  [[:taskName] [:serviceName] [:repository :image] [:node :nodeName] [:state]])
-
-(defn- render-item
-  [item _]
-  (let [value (val item)]
-    (if (= :state (key item))
-      (form-state value)
-      (val item))))
-
-(defn- onclick-handler
-  [item]
-  (routes/path-for-frontend :task-info (select-keys item [:id])))
 
 (defn- data-handler
   []
@@ -62,11 +61,23 @@
                         (let [resp (keywordize-keys response)]
                           (state/update-value [:data] resp cursor)))}))
 
-(def refresh-mixin
-  (mixin/list-refresh-mixin data-handler))
+(defn- init-state
+  [tasks]
+  (state/set-value {:filter {:serviceName ""
+                             :running     true}
+                    :data   tasks} cursor))
 
-(rum/defc task-list < rum/reactive
-                      refresh-mixin []
+(def refresh-state-mixin
+  (mixin/refresh data-handler))
+
+(def init-state-mixin
+  (mixin/init
+    (fn [data]
+      (init-state data))))
+
+(rum/defc form < rum/reactive
+                 init-state-mixin
+                 refresh-state-mixin [_]
   (let [{:keys [filter data]} (state/react cursor)
         filtered-items (filter-items data
                                      (:serviceName filter)
@@ -89,14 +100,3 @@
                       render-item
                       render-item-keys
                       onclick-handler)]))
-
-(defn- init-state
-  [tasks]
-  (state/set-value {:filter {:serviceName ""
-                             :running     true}
-                    :data   tasks} cursor))
-
-(defn mount!
-  [tasks]
-  (init-state tasks)
-  (rum/mount (task-list) (.getElementById js/document "content")))

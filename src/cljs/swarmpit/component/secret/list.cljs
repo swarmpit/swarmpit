@@ -1,5 +1,6 @@
 (ns swarmpit.component.secret.list
   (:require [material.component :as comp]
+            [swarmpit.component.mixin :as mixin]
             [swarmpit.component.state :as state]
             [swarmpit.routes :as routes]
             [clojure.string :as string]
@@ -10,11 +11,6 @@
 (def cursor [:page :secret :list])
 
 (def headers ["Name" "Created"])
-
-(defn- filter-items
-  "Filter list items based on given predicate"
-  [items predicate]
-  (filter #(string/includes? (:secretName %) predicate) items))
 
 (def render-item-keys
   [[:secretName] [:createdAt]])
@@ -27,7 +23,21 @@
   [item]
   (routes/path-for-frontend :secret-info (select-keys item [:id])))
 
-(rum/defc secret-list < rum/reactive [items]
+(defn- filter-items
+  [items predicate]
+  (filter #(string/includes? (:secretName %) predicate) items))
+
+(defn- init-state
+  []
+  (state/set-value {:filter {:secretName ""}} cursor))
+
+(def init-state-mixin
+  (mixin/init
+    (fn [_]
+      (init-state))))
+
+(rum/defc form < rum/reactive
+                 init-state-mixin [items]
   (let [{{:keys [secretName]} :filter} (state/react cursor)
         filtered-items (filter-items items secretName)]
     [:div
@@ -48,12 +58,3 @@
                       render-item
                       render-item-keys
                       onclick-handler)]))
-
-(defn- init-state
-  []
-  (state/set-value {:filter {:secretName ""}} cursor))
-
-(defn mount!
-  [items]
-  (init-state)
-  (rum/mount (secret-list items) (.getElementById js/document "content")))

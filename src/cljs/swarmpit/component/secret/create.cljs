@@ -3,6 +3,7 @@
             [material.icon :as icon]
             [swarmpit.url :refer [dispatch!]]
             [swarmpit.storage :as storage]
+            [swarmpit.component.mixin :as mixin]
             [swarmpit.component.state :as state]
             [swarmpit.component.message :as message]
             [swarmpit.component.progress :as progress]
@@ -84,6 +85,18 @@
                                  (message/mount!
                                    (create-secret-error-msg error) true)))}))
 
+(defn- init-state
+  []
+  (state/set-value {:secretName nil
+                    :data       ""
+                    :encode     false
+                    :isValid    false} cursor))
+
+(def init-state-mixin
+  (mixin/init
+    (fn [_]
+      (init-state))))
+
 (rum/defc form < rum/reactive []
   (let [{:keys [secretName
                 data
@@ -110,15 +123,3 @@
          (form-name secretName)
          (form-data-encoder encode)
          (form-data data))]]]))
-
-(defn- init-state
-  []
-  (state/set-value {:secretName nil
-                    :data       ""
-                    :encode     false
-                    :isValid    false} cursor))
-
-(defn mount!
-  []
-  (init-state)
-  (rum/mount (form) (.getElementById js/document "content")))

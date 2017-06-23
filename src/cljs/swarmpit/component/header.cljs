@@ -74,13 +74,12 @@
    [:span (storage/user)]
    (user-menu)])
 
-(rum/defc appbar < rum/reactive []
-  (let [{:keys [domain]} (state/react cursor)]
-    (comp/mui
-      (comp/app-bar
-        {:title              domain
-         :titleStyle         appbar-title-style
-         :style              appbar-style
-         :iconElementRight   (userbar)
-         :iconStyleRight     appbar-icon-style
-         :showMenuIconButton false}))))
+(rum/defc appbar < rum/static [title]
+  (comp/mui
+    (comp/app-bar
+      {:title              title
+       :titleStyle         appbar-title-style
+       :style              appbar-style
+       :iconElementRight   (userbar)
+       :iconStyleRight     appbar-icon-style
+       :showMenuIconButton false})))

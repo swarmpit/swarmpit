@@ -1,6 +1,7 @@
 (ns swarmpit.component.registry.list
   (:require [material.component :as comp]
             [material.icon :as icon]
+            [swarmpit.component.mixin :as mixin]
             [swarmpit.component.state :as state]
             [swarmpit.routes :as routes]
             [clojure.string :as string]
@@ -9,11 +10,6 @@
 (def cursor [:page :registry :list])
 
 (def headers ["Name" "Url" "Secure"])
-
-(defn- filter-items
-  "Filter list items based on given predicate"
-  [items predicate]
-  (filter #(string/includes? (:name %) predicate) items))
 
 (def render-item-keys
   [[:name] [:url] [:withAuth]])
@@ -31,7 +27,21 @@
   [item]
   (routes/path-for-frontend :registry-info {:id (:_id item)}))
 
-(rum/defc registry-list < rum/reactive [items]
+(defn- filter-items
+  [items predicate]
+  (filter #(string/includes? (:name %) predicate) items))
+
+(defn- init-state
+  []
+  (state/set-value {:filter {:name ""}} cursor))
+
+(def init-state-mixin
+  (mixin/init
+    (fn [_]
+      (init-state))))
+
+(rum/defc form < rum/reactive
+                 init-state-mixin [items]
   (let [{{:keys [name]} :filter} (state/react cursor)
         filtered-items (filter-items items name)]
     [:div
@@ -52,12 +62,3 @@
                       render-item
                       render-item-keys
                       onclick-handler)]))
-
-(defn- init-state
-  []
-  (state/set-value {:filter {:name ""}} cursor))
-
-(defn mount!
-  [items]
-  (init-state)
-  (rum/mount (registry-list items) (.getElementById js/document "content")))

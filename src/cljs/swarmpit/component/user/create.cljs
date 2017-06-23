@@ -3,6 +3,7 @@
             [material.icon :as icon]
             [swarmpit.url :refer [dispatch!]]
             [swarmpit.storage :as storage]
+            [swarmpit.component.mixin :as mixin]
             [swarmpit.component.state :as state]
             [swarmpit.component.message :as message]
             [swarmpit.component.progress :as progress]
@@ -98,7 +99,21 @@
                                  (message/mount!
                                    (create-user-error-msg error) true)))}))
 
-(rum/defc form < rum/reactive []
+(defn- init-state
+  []
+  (state/set-value {:username ""
+                    :password ""
+                    :email    ""
+                    :role     "user"
+                    :isValid  false} cursor))
+
+(def init-state-mixin
+  (mixin/init
+    (fn [_]
+      (init-state))))
+
+(rum/defc form < rum/reactive
+                 init-state-mixin []
   (let [{:keys [username
                 password
                 role
@@ -123,16 +138,3 @@
         (form-password password)
         (form-role role)
         (form-email email))]]))
-
-(defn- init-state
-  []
-  (state/set-value {:username ""
-                    :password ""
-                    :email    ""
-                    :role     "user"
-                    :isValid  false} cursor))
-
-(defn mount!
-  []
-  (init-state)
-  (rum/mount (form) (.getElementById js/document "content")))

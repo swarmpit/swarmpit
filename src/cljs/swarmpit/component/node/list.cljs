@@ -1,7 +1,7 @@
 (ns swarmpit.component.node.list
   (:require [material.component :as comp]
-            [material.mixin :as mixin]
             [material.icon :as icon]
+            [swarmpit.component.mixin :as mixin]
             [swarmpit.component.state :as state]
             [swarmpit.routes :as routes]
             [swarmpit.storage :as storage]
@@ -20,22 +20,10 @@
   [items predicate]
   (filter #(string/includes? (:nodeName %) predicate) items))
 
-(defn form-state [value]
+(defn node-item-state [value]
   (case value
     "ready" (comp/label-green value)
     "down" (comp/label-red value)))
-
-(defn- data-handler
-  []
-  (ajax/GET (routes/path-for-backend :nodes)
-            {:headers {"Authorization" (storage/get "token")}
-             :handler (fn [response]
-                        (keywordize-keys response)
-                        (let [resp (keywordize-keys response)]
-                          (state/update-value [:data] resp cursor)))}))
-
-(def refresh-mixin
-  (mixin/list-refresh-mixin data-handler))
 
 (defn- node-item
   [item]
@@ -47,7 +35,7 @@
         [:path {:d icon/docker}]]]
       [:span [:b (:nodeName item)]]]
      [:div.node-item-states
-      [:span.node-item-state (form-state (:state item))]
+      [:span.node-item-state (node-item-state (:state item))]
       (if (:leader item)
         [:span.node-item-state (comp/label-blue "leader")])]
      [:div
@@ -59,8 +47,31 @@
      [:div
       [:span.node-item-secondary "availability: " (:availability item)]]]))
 
-(rum/defc node-list < rum/reactive
-                      refresh-mixin []
+(defn- data-handler
+  []
+  (ajax/GET (routes/path-for-backend :nodes)
+            {:headers {"Authorization" (storage/get "token")}
+             :handler (fn [response]
+                        (keywordize-keys response)
+                        (let [resp (keywordize-keys response)]
+                          (state/update-value [:data] resp cursor)))}))
+
+(defn- init-state
+  [nodes]
+  (state/set-value {:filter {:nodeName ""}
+                    :data   nodes} cursor))
+
+(def refresh-state-mixin
+  (mixin/refresh data-handler))
+
+(def init-state-mixin
+  (mixin/init
+    (fn [data]
+      (init-state data))))
+
+(rum/defc form < rum/reactive
+                 init-state-mixin
+                 refresh-state-mixin [_]
   (let [{:keys [filter data]} (state/react cursor)
         filtered-items (filter-items data (:nodeName filter))]
     [:div
@@ -73,13 +84,3 @@
      [:div.content-grid.mdl-grid
       (->> (sort-by :nodeName filtered-items)
            (map #(node-item %)))]]))
-
-(defn- init-state
-  [nodes]
-  (state/set-value {:filter {:nodeName ""}
-                    :data   nodes} cursor))
-
-(defn mount!
-  [nodes]
-  (init-state nodes)
-  (rum/mount (node-list) (.getElementById js/document "content")))

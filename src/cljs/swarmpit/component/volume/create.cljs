@@ -3,6 +3,7 @@
             [material.icon :as icon]
             [swarmpit.url :refer [dispatch!]]
             [swarmpit.storage :as storage]
+            [swarmpit.component.mixin :as mixin]
             [swarmpit.component.state :as state]
             [swarmpit.component.message :as message]
             [swarmpit.component.progress :as progress]
@@ -65,7 +66,19 @@
                                  (message/mount!
                                    (create-volume-error-msg error) true)))}))
 
-(rum/defc form < rum/reactive []
+(defn- init-state
+  []
+  (state/set-value {:volumeName nil
+                    :driver     "local"
+                    :isValid    false} cursor))
+
+(def init-state-mixin
+  (mixin/init
+    (fn [_]
+      (init-state))))
+
+(rum/defc form < rum/reactive
+                 init-state-mixin []
   (let [{:keys [volumeName
                 driver
                 isValid]} (state/react cursor)]
@@ -88,14 +101,3 @@
           :onInvalid #(state/update-value [:isValid] false cursor)}
          (form-name volumeName)
          (form-driver driver))]]]))
-
-(defn- init-state
-  []
-  (state/set-value {:volumeName nil
-                    :driver     "local"
-                    :isValid    false} cursor))
-
-(defn mount!
-  []
-  (init-state)
-  (rum/mount (form) (.getElementById js/document "content")))

@@ -1,5 +1,6 @@
 (ns swarmpit.component.volume.list
   (:require [material.component :as comp]
+            [swarmpit.component.mixin :as mixin]
             [swarmpit.component.state :as state]
             [swarmpit.routes :as routes]
             [clojure.string :as string]
@@ -10,11 +11,6 @@
 (def cursor [:page :volume :list])
 
 (def headers ["Name" "Driver"])
-
-(defn- filter-items
-  "Filter list items based on given predicate"
-  [items predicate]
-  (filter #(string/includes? (:volumeName %) predicate) items))
 
 (def render-item-keys
   [[:volumeName] [:driver]])
@@ -27,7 +23,21 @@
   [item]
   (routes/path-for-frontend :volume-info {:name (:volumeName item)}))
 
-(rum/defc volume-list < rum/reactive [items]
+(defn- filter-items
+  [items predicate]
+  (filter #(string/includes? (:volumeName %) predicate) items))
+
+(defn- init-state
+  []
+  (state/set-value {:filter {:volumeName ""}} cursor))
+
+(def init-state-mixin
+  (mixin/init
+    (fn [_]
+      (init-state))))
+
+(rum/defc form < rum/reactive
+                 init-state-mixin [items]
   (let [{{:keys [volumeName]} :filter} (state/react cursor)
         filtered-items (filter-items items volumeName)]
     [:div
@@ -49,11 +59,3 @@
                       render-item-keys
                       onclick-handler)]))
 
-(defn- init-state
-  []
-  (state/set-value {:filter {:volumeName ""}} cursor))
-
-(defn mount!
-  [items]
-  (init-state)
-  (rum/mount (volume-list items) (.getElementById js/document "content")))

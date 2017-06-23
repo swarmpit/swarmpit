@@ -49,7 +49,3 @@
      (comp/form-item "DRIVER" (:driver item))
      (comp/form-item "SCOPE" (:scope item))
      (comp/form-item "MOUNTPOINT" (:mountpoint item))]]])
-
-(defn mount!
-  [item]
-  (rum/mount (form item) (.getElementById js/document "content")))

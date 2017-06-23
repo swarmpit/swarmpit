@@ -87,7 +87,3 @@
          :onInvalid #(update-item :canSubmit false)}
         (form-password password)
         (form-password-confirmation password2))]]))
-
-(defn mount!
-  []
-  (rum/mount (form) (.getElementById js/document "content")))

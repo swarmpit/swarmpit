@@ -30,7 +30,3 @@
         [:div.form-view-group
          (comp/form-section "Error")
          (comp/form-icon-value icon/error error)])]]))
-
-(defn mount!
-  [item]
-  (rum/mount (form item) (.getElementById js/document "content")))

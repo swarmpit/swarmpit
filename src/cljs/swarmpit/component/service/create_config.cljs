@@ -3,6 +3,7 @@
             [material.component :as comp]
             [swarmpit.url :refer [dispatch!]]
             [swarmpit.storage :as storage]
+            [swarmpit.component.mixin :as mixin]
             [swarmpit.component.state :as state]
             [swarmpit.component.service.form-settings :as settings]
             [swarmpit.component.service.form-ports :as ports]
@@ -88,8 +89,42 @@
                                    (message/mount!
                                      (create-service-error-msg error) true)))})))
 
-(rum/defc form < rum/reactive [networks volumes secrets]
+(defn init-state
+  [registry repository-user repository]
+  (reset! step-index 0)
+  (if (= "dockerhub" registry)
+    (settings/dockerhub-image-tags-handler repository-user repository)
+    (settings/registry-image-tags-handler registry repository))
+  (state/set-value {:repository  {:registry registry
+                                  :user     repository-user
+                                  :name     repository
+                                  :tag      ""
+                                  :tags     []}
+                    :serviceName ""
+                    :mode        "replicated"
+                    :replicas    1
+                    :isValid     false} settings/cursor)
+  (state/set-value [] ports/cursor)
+  (state/set-value [] networks/cursor)
+  (state/set-value [] mounts/cursor)
+  (state/set-value [] secrets/cursor)
+  (state/set-value [] variables/cursor)
+  (state/set-value {:autoredeploy  false
+                    :parallelism   1
+                    :delay         0
+                    :failureAction "pause"} deployment/cursor))
+
+(def init-state-mixin
+  (mixin/init
+    (fn [data]
+      (init-state (:registry data)
+                  (:repositoryUser data)
+                  (:repository data)))))
+
+(rum/defc form < rum/reactive
+                 init-state-mixin [data]
   (let [index (rum/react step-index)
+        {:keys [secrets volumes networks]} data
         {:keys [isValid]} (state/react settings/cursor)]
     [:div
      [:div.form-panel
@@ -115,33 +150,3 @@
          (step-item 4 (secrets/form-create secrets))
          (step-item 5 (variables/form-create))
          (step-item 6 (deployment/form))))]))
-
-(defn- init-state
-  [registry repository-user repository]
-  (reset! step-index 0)
-  (if (= "dockerhub" registry)
-    (settings/dockerhub-image-tags-handler repository-user repository)
-    (settings/registry-image-tags-handler registry repository))
-  (state/set-value {:repository  {:registry registry
-                                  :user     repository-user
-                                  :name     repository
-                                  :tag      ""
-                                  :tags     []}
-                    :serviceName ""
-                    :mode        "replicated"
-                    :replicas    1
-                    :isValid     false} settings/cursor)
-  (state/set-value [] ports/cursor)
-  (state/set-value [] networks/cursor)
-  (state/set-value [] mounts/cursor)
-  (state/set-value [] secrets/cursor)
-  (state/set-value [] variables/cursor)
-  (state/set-value {:autoredeploy  false
-                    :parallelism   1
-                    :delay         0
-                    :failureAction "pause"} deployment/cursor))
-
-(defn mount!
-  [registry repository-user repository networks volumes secrets]
-  (init-state registry repository-user repository)
-  (rum/mount (form networks volumes secrets) (.getElementById js/document "content")))

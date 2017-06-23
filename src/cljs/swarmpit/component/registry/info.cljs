@@ -55,7 +55,3 @@
        [:div
         (comp/form-item "USERNAME" (:username item))
         (comp/form-item "PASSWORD" (:password item))])]]])
-
-(defn mount!
-  [item]
-  (rum/mount (form item) (.getElementById js/document "content")))

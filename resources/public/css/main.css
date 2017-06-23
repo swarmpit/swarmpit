@@ -216,10 +216,6 @@ select:-webkit-autofill:focus {
     margin-top: -4px;
 }
 
-.form-add-button {
-    margin-left: 9px;
-}
-
 /* Page layout (404/Login) */
 
 .page {

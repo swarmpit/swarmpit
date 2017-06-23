@@ -120,8 +120,8 @@
        :href          (routes/path-for-frontend handler)
        :leftIcon      drawer-item-icon})))
 
-(rum/defc drawer < rum/reactive []
-  (let [{:keys [opened domain]} (state/react cursor)
+(rum/defc drawer < rum/reactive [title]
+  (let [{:keys [opened]} (state/react cursor)
         drawer-container-style (if opened
                                  drawer-container-opened-style
                                  drawer-container-closed-style)
@@ -147,7 +147,7 @@
               (let [icon (:icon menu-item)
                     name (:name menu-item)
                     handler (:handler menu-item)
-                    selected (string/includes? domain name)]
+                    selected (string/includes? title name)]
                 (if (some? icon)
                   (drawer-item name icon handler opened selected)
                   (drawer-category name opened)))) (if (storage/admin?)

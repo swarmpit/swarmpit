@@ -49,7 +49,3 @@
      (comp/form-item "NAME" (:secretName item))
      (comp/form-item "CREATED" (:createdAt item))
      (comp/form-item "UPDATED" (:updatedAt item))]]])
-
-(defn mount!
-  [item]
-  (rum/mount (form item) (.getElementById js/document "content")))

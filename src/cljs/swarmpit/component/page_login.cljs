@@ -89,7 +89,3 @@
            :label      "Login"
            :primary    true
            :onTouchTap login-handler}))]]))
-
-(defn mount!
-  []
-  (rum/mount (form) (.getElementById js/document "layout")))

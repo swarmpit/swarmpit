@@ -1,13 +1,9 @@
 (ns swarmpit.component.page-404
   (:require [rum.core :as rum]))
 
-(rum/defc not-found < rum/static []
+(rum/defc form < rum/static []
   [:div.page-back
    [:div.page
     [:span
      [:h1 "404"]
      [:p "What you are looking for, I do not have."]]]])
-
-(defn mount!
-  []
-  (rum/mount (not-found) (.getElementById js/document "layout")))

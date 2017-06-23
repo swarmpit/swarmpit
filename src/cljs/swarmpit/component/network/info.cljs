@@ -57,7 +57,3 @@
      (comp/form-section "IP address management")
      (comp/form-item "SUBNET" (get-in item [:ipam :subnet]))
      (comp/form-item "GATEWAY" (get-in item [:ipam :gateway]))]]])
-
-(defn mount!
-  [item]
-  (rum/mount (form item) (.getElementById js/document "content")))

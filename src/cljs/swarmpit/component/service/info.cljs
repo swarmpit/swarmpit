@@ -98,7 +98,3 @@
                         tasks/render-item
                         tasks/render-item-keys
                         tasks/onclick-handler)]]]))
-
-(defn mount!
-  [item]
-  (rum/mount (form item) (.getElementById js/document "content")))

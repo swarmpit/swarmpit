@@ -1,10 +1,10 @@
 (ns swarmpit.component.service.list
   (:require [material.component :as comp]
-            [material.mixin :as mixin]
             [swarmpit.component.state :as state]
+            [swarmpit.component.mixin :as mixin]
+            [swarmpit.storage :as storage]
             [swarmpit.routes :as routes]
             [clojure.string :as string]
-            [swarmpit.storage :as storage]
             [clojure.walk :refer [keywordize-keys]]
             [sablono.core :refer-macros [html]]
             [ajax.core :as ajax]
@@ -16,29 +16,18 @@
 
 (def headers ["Name" "Image" "Mode" "Replicas" "Status"])
 
-(defn- form-update [value]
+(def render-item-keys
+  [[:serviceName] [:repository :image] [:mode] [:status :info] [:state]])
+
+(defn- render-item-update-state [value]
   (if value
     (comp/label-update "updating")))
 
-(defn- form-state [value]
+(defn- render-item-state [value]
   (case value
     "running" (comp/label-green value)
     "not running" (comp/label-grey value)
     "partly running" (comp/label-yellow value)))
-
-(defn- filter-items
-  "Filter list `items` based on `name` & `cranky?` flag"
-  [items name cranky?]
-  (let [is-running (fn [item] (= "running" (:state item)))
-        is-updating (fn [item] (get-in item [:status :update]))]
-    (if cranky?
-      (filter #(and (string/includes? (:serviceName %) name)
-                    (and (not (is-running %))
-                         (not (is-updating %)))) items)
-      (filter #(string/includes? (:serviceName %) name) items))))
-
-(def render-item-keys
-  [[:serviceName] [:repository :image] [:mode] [:status :info] [:state]])
 
 (defn- render-item
   [item service]
@@ -46,15 +35,29 @@
         value (val item)]
     (case (key item)
       :state (html [:span
-                    [:span (form-state value)]
+                    [:span (render-item-state value)]
                     [:span " "]
-                    [:span (form-update update)]])
+                    [:span (render-item-update-state update)]])
       :info (comp/label-info value)
       value)))
 
 (defn- onclick-handler
   [item]
   (routes/path-for-frontend :service-info (select-keys item [:id])))
+
+(defn- filter-cranky-items
+  [items name]
+  (let [is-running (fn [item] (= "running" (:state item)))
+        is-updating (fn [item] (get-in item [:status :update]))]
+    (filter #(and (string/includes? (:serviceName %) name)
+                  (and (not (is-running %))
+                       (not (is-updating %)))) items)))
+
+(defn- filter-items
+  [items name cranky?]
+  (if cranky?
+    (filter-cranky-items items name)
+    (filter #(string/includes? (:serviceName %) name) items)))
 
 (defn- data-handler
   []
@@ -65,11 +68,23 @@
                         (let [resp (keywordize-keys response)]
                           (state/update-value [:data] resp cursor)))}))
 
-(def refresh-mixin
-  (mixin/list-refresh-mixin data-handler))
+(defn- init-state
+  [services]
+  (state/set-value {:filter {:serviceName ""
+                             :cranky      false}
+                    :data   services} cursor))
 
-(rum/defc service-list < rum/reactive
-                         refresh-mixin []
+(def refresh-state-mixin
+  (mixin/refresh data-handler))
+
+(def init-state-mixin
+  (mixin/init
+    (fn [data]
+      (init-state data))))
+
+(rum/defc form < rum/reactive
+                 init-state-mixin
+                 refresh-state-mixin [_]
   (let [{:keys [filter data]} (state/react cursor)
         filtered-items (filter-items data
                                      (:serviceName filter)
@@ -98,14 +113,3 @@
                       render-item
                       render-item-keys
                       onclick-handler)]))
-
-(defn- init-state
-  [services]
-  (state/set-value {:filter {:serviceName ""
-                             :cranky      false}
-                    :data   services} cursor))
-
-(defn mount!
-  [services]
-  (init-state services)
-  (rum/mount (service-list) (.getElementById js/document "content")))

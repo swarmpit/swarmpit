@@ -52,7 +52,3 @@
      (comp/form-item "IS ADMIN" (if (= "admin" (:role item))
                                   "yes"
                                   "no"))]]])
-
-(defn mount!
-  [item]
-  (rum/mount (form item) (.getElementById js/document "content")))

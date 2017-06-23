@@ -50,7 +50,3 @@
      (comp/form-item "USERNAME" (:username item))
      (comp/form-item "LOCATION" (:location item))
      (comp/form-item "ROLE" (:role item))]]])
-
-(defn mount!
-  [item]
-  (rum/mount (form item) (.getElementById js/document "content")))

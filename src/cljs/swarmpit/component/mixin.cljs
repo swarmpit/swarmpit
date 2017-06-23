@@ -1,7 +1,7 @@
-(ns material.mixin
+(ns swarmpit.component.mixin
   (:require [rum.core :as rum]))
 
-(defn list-refresh-mixin
+(defn refresh
   [handler]
   {:did-mount    (fn [state]
                    (let [comp (:rum/react-component state)
@@ -12,3 +12,9 @@
    :will-unmount (fn [state]
                    (js/clearInterval (::interval state))
                    (dissoc state ::interval))})
+
+(defn init
+  [handler]
+  {:init (fn [state _]
+           (handler (first (:rum/args state)))
+           state)})

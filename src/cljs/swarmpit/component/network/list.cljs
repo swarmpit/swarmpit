@@ -1,5 +1,6 @@
 (ns swarmpit.component.network.list
   (:require [material.component :as comp]
+            [swarmpit.component.mixin :as mixin]
             [swarmpit.component.state :as state]
             [swarmpit.routes :as routes]
             [clojure.string :as string]
@@ -10,11 +11,6 @@
 (def cursor [:page :network :list])
 
 (def headers ["Name" "Driver" "Subnet" "Gateway" ""])
-
-(defn- filter-items
-  "Filter list items based on given predicate"
-  [items predicate]
-  (filter #(string/includes? (:networkName %) predicate) items))
 
 (def render-item-keys
   [[:networkName] [:driver] [:ipam :subnet] [:ipam :gateway] [:internal]])
@@ -31,7 +27,21 @@
   [item]
   (routes/path-for-frontend :network-info (select-keys item [:id])))
 
-(rum/defc network-list < rum/reactive [items]
+(defn- filter-items
+  [items predicate]
+  (filter #(string/includes? (:networkName %) predicate) items))
+
+(defn- init-state
+  []
+  (state/set-value {:filter {:networkName ""}} cursor))
+
+(def init-state-mixin
+  (mixin/init
+    (fn [_]
+      (init-state))))
+
+(rum/defc form < rum/reactive
+                 init-state-mixin [items]
   (let [{{:keys [networkName]} :filter} (state/react cursor)
         filtered-items (filter-items items networkName)]
     [:div
@@ -52,12 +62,3 @@
                       render-item
                       render-item-keys
                       onclick-handler)]))
-
-(defn- init-state
-  []
-  (state/set-value {:filter {:networkName ""}} cursor))
-
-(defn mount!
-  [items]
-  (init-state)
-  (rum/mount (network-list items) (.getElementById js/document "content")))
