@@ -48,12 +48,11 @@
   (comp/form-comp
     "ENCODE DATA"
     (comp/form-checkbox
-      {:name     "encoded"
-       :key      "encoded"
-       :hintText "Data must be base64 encoded. Disable if data already encoded"
-       :checked  value
-       :onCheck  (fn [_ v]
-                   (state/update-value [:encode] v cursor))})))
+      {:name    "encoded"
+       :key     "encoded"
+       :checked value
+       :onCheck (fn [_ v]
+                  (state/update-value [:encode] v cursor))})))
 
 (defn- create-secret-handler
   []
@@ -83,7 +82,8 @@
     (fn [_]
       (init-state))))
 
-(rum/defc form < rum/reactive []
+(rum/defc form < rum/reactive
+                 init-state-mixin []
   (let [{:keys [secretName
                 data
                 encode
