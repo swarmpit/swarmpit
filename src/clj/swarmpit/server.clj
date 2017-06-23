@@ -72,7 +72,7 @@
         (if (some? token)
           (let [claims (try
                          (token/verify-jwt token)
-                         (catch ExceptionInfo _
+                         (catch Exception _
                            (resp-unauthorized "Invalid token")))]
             (if (invalid-claims? claims)
               (resp-unauthorized "Invalid token")
@@ -81,7 +81,8 @@
                   (handler request)
                   (resp-unauthorized "Unauthorized access"))
                 (handler request))))
-          (resp-error 400 "Missing token")))
+          (resp-error 400 "Missing token"))
+        )
       (handler request))))
 
 (def app
