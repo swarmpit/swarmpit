@@ -12,8 +12,6 @@
 
 (enable-console-print!)
 
-(def cursor [:menu])
-
 (def user-avatar-style
   {:marginRight "10px"
    :border      "1px solid #fff"})

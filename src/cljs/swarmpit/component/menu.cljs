@@ -9,7 +9,7 @@
 
 (enable-console-print!)
 
-(def cursor [:menu])
+(def cursor [:layout])
 
 (def drawer-style
   {:boxShadow "none"})
