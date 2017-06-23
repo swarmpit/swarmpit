@@ -1,7 +1,5 @@
 (ns swarmpit.view
-  (:require [swarmpit.url :refer [dispatch!]]
-            [swarmpit.routes :as routes]
-            [swarmpit.component.page-login :as page-login]
+  (:require [swarmpit.component.page-login :as page-login]
             [swarmpit.component.page-401 :as page-401]
             [swarmpit.component.page-404 :as page-404]
             [swarmpit.component.page-error :as page-error]
@@ -34,10 +32,6 @@
             [swarmpit.component.dockerhub.create :as dockerhub-create]))
 
 (defmulti dispatch (fn [route] (:handler route)))
-
-(defmethod dispatch :index
-  [_]
-  (dispatch! (routes/path-for-frontend :service-list)))
 
 (defmethod dispatch nil
   [_]

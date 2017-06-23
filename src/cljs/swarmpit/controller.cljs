@@ -2,7 +2,7 @@
   (:refer-clojure :exclude [get])
   (:require [ajax.core :as ajax]
             [clojure.walk :refer [keywordize-keys]]
-            [swarmpit.url :refer [dispatch! query-string]]
+            [swarmpit.url :refer [query-string]]
             [cemerick.url :refer [query->map]]
             [swarmpit.storage :as storage]
             [swarmpit.routes :as routes]
@@ -31,10 +31,6 @@
   ([api success-fx error-fx]
    (ajax/GET api
              (execute success-fx error-fx))))
-
-(defmethod dispatch :index
-  [{:keys [handler]}]
-  (state/set-value {:handler handler} cursor))
 
 (defmethod dispatch nil
   [{:keys [handler]}]
