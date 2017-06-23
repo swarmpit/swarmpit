@@ -3,32 +3,35 @@
             [rum.core :as rum]))
 
 (defonce state
-         (atom {:route  {}
-                :layout {:opened true}
-                :page   {:network   {:list {}
-                                     :form {}}
-                         :volume    {:list {}
-                                     :form {}}
-                         :secret    {:list {}
-                                     :form {}}
-                         :node      {:list {}}
-                         :service   {:list   {}
-                                     :wizard {:image      {:public  {}
-                                                           :private {}
-                                                           :other   {}}
-                                              :settings   {}
-                                              :ports      []
-                                              :networks   []
-                                              :secrets    []
-                                              :variables  []
-                                              :mounts     []
-                                              :deployment {}}}
-                         :task      {:list {}}
-                         :registry  {:list {}
-                                     :form {}}
-                         :dockerhub {:list {}}
-                         :user      {:list {}
-                                     :form {}}}}))
+         (atom {:route   {}
+                :layout  {:opened true}
+                :message {:text ""
+                          :type :info
+                          :open false}
+                :page    {:network   {:list {}
+                                      :form {}}
+                          :volume    {:list {}
+                                      :form {}}
+                          :secret    {:list {}
+                                      :form {}}
+                          :node      {:list {}}
+                          :service   {:list   {}
+                                      :wizard {:image      {:public  {}
+                                                            :private {}
+                                                            :other   {}}
+                                               :settings   {}
+                                               :ports      []
+                                               :networks   []
+                                               :secrets    []
+                                               :variables  []
+                                               :mounts     []
+                                               :deployment {}}}
+                          :task      {:list {}}
+                          :registry  {:list {}
+                                      :form {}}
+                          :dockerhub {:list {}}
+                          :user      {:list {}
+                                      :form {}}}}))
 
 (defn react
   [cursor]

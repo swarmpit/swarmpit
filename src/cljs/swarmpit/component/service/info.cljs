@@ -2,7 +2,8 @@
   (:require [material.component :as comp]
             [material.icon :as icon]
             [swarmpit.url :refer [dispatch!]]
-            [swarmpit.storage :as storage]
+            [swarmpit.component.state :as state]
+            [swarmpit.component.handler :as handler]
             [swarmpit.component.service.form-ports :as ports]
             [swarmpit.component.service.form-networks :as networks]
             [swarmpit.component.service.form-mounts :as mounts]
@@ -11,35 +12,27 @@
             [swarmpit.component.task.list :as tasks]
             [swarmpit.component.message :as message]
             [swarmpit.routes :as routes]
-            [rum.core :as rum]
-            [ajax.core :as ajax]))
+            [rum.core :as rum]))
 
 (enable-console-print!)
 
-(defn- delete-service-info-msg
-  [id]
-  (str "Service " id " has been removed."))
-
-(defn- delete-service-error-msg
-  [error]
-  (str "Service removing failed. Reason: " error))
+(defn- form-panel-label [item]
+  (str (:state item) "  " (get-in item [:status :info])))
 
 (defn- delete-service-handler
   [service-id]
-  (ajax/DELETE (routes/path-for-backend :service-delete {:id service-id})
-               {:headers       {"Authorization" (storage/get "token")}
-                :handler       (fn [_]
-                                 (dispatch!
-                                   (routes/path-for-frontend :service-list))
-                                 (message/mount!
-                                   (delete-service-info-msg service-id)))
-                :error-handler (fn [{:keys [response]}]
-                                 (let [error (get response "error")]
-                                   (message/mount!
-                                     (delete-service-error-msg error) true)))}))
-
-(defn- form-panel-label [item]
-  (str (:state item) "  " (get-in item [:status :info])))
+  (handler/delete
+    (routes/path-for-backend :service-delete {:id service-id})
+    (fn [_]
+      (dispatch!
+        (routes/path-for-frontend :service-list))
+      (state/set-value {:text (str "Service " service-id " has been removed.")
+                        :type :info
+                        :open true} message/cursor))
+    (fn [response]
+      (state/set-value {:text (str "Service removing failed. Reason: " (:error response))
+                        :type :error
+                        :open true} message/cursor))))
 
 (rum/defc form < rum/static [item]
   (let [id (:id item)]

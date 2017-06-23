@@ -2,8 +2,8 @@
   (:require [material.icon :as icon]
             [material.component :as comp]
             [swarmpit.url :refer [dispatch!]]
-            [swarmpit.storage :as storage]
             [swarmpit.component.mixin :as mixin]
+            [swarmpit.component.handler :as handler]
             [swarmpit.component.state :as state]
             [swarmpit.component.service.form-settings :as settings]
             [swarmpit.component.service.form-ports :as ports]
@@ -13,10 +13,8 @@
             [swarmpit.component.service.form-variables :as variables]
             [swarmpit.component.service.form-deployment :as deployment]
             [swarmpit.component.message :as message]
-            [swarmpit.component.progress :as progress]
             [swarmpit.routes :as routes]
-            [rum.core :as rum]
-            [ajax.core :as ajax]))
+            [rum.core :as rum]))
 
 (enable-console-print!)
 
@@ -48,14 +46,6 @@
        :style step-content-style}
       form)))
 
-(defn- create-service-info-msg
-  [id]
-  (str "Service " id " has been created."))
-
-(defn- create-service-error-msg
-  [error]
-  (str "Service creation failed. Reason: " error))
-
 (defn- create-service-handler
   []
   (let [settings (state/get-value settings/cursor)
@@ -65,29 +55,25 @@
         secrets (state/get-value secrets/cursor)
         variables (state/get-value variables/cursor)
         deployment (state/get-value deployment/cursor)]
-    (ajax/POST (routes/path-for-backend :service-create)
-               {:format        :json
-                :headers       {"Authorization" (storage/get "token")}
-                :params        (-> settings
-                                   (assoc :ports ports)
-                                   (assoc :networks networks)
-                                   (assoc :mounts mounts)
-                                   (assoc :secrets secrets)
-                                   (assoc :variables variables)
-                                   (assoc :deployment deployment))
-                :finally       (progress/mount!)
-                :handler       (fn [response]
-                                 (let [id (get response "ID")]
-                                   (progress/unmount!)
-                                   (dispatch!
-                                     (routes/path-for-frontend :service-info {:id id}))
-                                   (message/mount!
-                                     (create-service-info-msg id))))
-                :error-handler (fn [{:keys [response]}]
-                                 (let [error (get response "error")]
-                                   (progress/unmount!)
-                                   (message/mount!
-                                     (create-service-error-msg error) true)))})))
+    (handler/post
+      (routes/path-for-backend :service-create)
+      (-> settings
+          (assoc :ports ports)
+          (assoc :networks networks)
+          (assoc :mounts mounts)
+          (assoc :secrets secrets)
+          (assoc :variables variables)
+          (assoc :deployment deployment))
+      (fn [response]
+        (dispatch!
+          (routes/path-for-frontend :service-info {:id (:ID response)}))
+        (state/set-value {:text (str "Service " (:ID response) " has been created.")
+                          :type :info
+                          :open true} message/cursor))
+      (fn [response]
+        (state/set-value {:text (str "Service creation failed. Reason: " (:error response))
+                          :type :error
+                          :open true} message/cursor)))))
 
 (defn init-state
   [registry repository-user repository]

@@ -1,8 +1,11 @@
 (ns swarmpit.component.message
   (:require [material.component :as comp]
+            [swarmpit.component.state :as state]
             [rum.core :as rum]))
 
 (enable-console-print!)
+
+(def cursor [:message])
 
 (def message-body-style
   {:backgroundColor "#fff"
@@ -25,35 +28,28 @@
 (def message-error-content-style
   {:color "rgb(244, 67, 54)"})
 
-(def message-style
-  {:maxWidth "100%"
-   :minWidth "50px"
-   :height   "auto"})
-
-(defn- message
-  [props]
+(rum/defc info-message < rum/static [text opened?]
   (comp/mui
-    (comp/snackbar
-      (merge props
-             {:open  true
-              ;:style message-style
-              }))))
+    (comp/snackbar {:bodyStyle        message-info-body-style
+                    :contentStyle     message-info-content-style
+                    :autoHideDuration 5000
+                    :message          text
+                    :open             opened?})))
 
-(rum/defc info-message < rum/reactive [text]
-  (message {:bodyStyle        message-info-body-style
-            :contentStyle     message-info-content-style
-            :autoHideDuration 5000
-            :message          text}))
+(rum/defc error-message < rum/static [text opened?]
+  (comp/mui
+    (comp/snackbar {:bodyStyle        message-error-body-style
+                    :contentStyle     message-error-content-style
+                    :autoHideDuration 300000
+                    :message          text
+                    :open             opened?})))
 
-(rum/defc error-message < rum/reactive [text]
-  (message {:bodyStyle        message-error-body-style
-            :contentStyle     message-error-content-style
-            :autoHideDuration 300000
-            :message          text}))
+(rum/defc info < rum/reactive []
+  (let [{:keys [open type text]} (state/react cursor)]
+    (case type
+      :info (info-message text open)
+      :error (error-message text open))))
 
 (defn mount!
-  ([text] (mount! text false))
-  ([text isError?]
-   (if isError?
-     (rum/mount (error-message text) (.getElementById js/document "message"))
-     (rum/mount (info-message text) (.getElementById js/document "message")))))
+  []
+  (rum/mount (info) (.getElementById js/document "message")))

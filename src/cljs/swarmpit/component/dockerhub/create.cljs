@@ -2,14 +2,12 @@
   (:require [material.component :as comp]
             [material.icon :as icon]
             [swarmpit.url :refer [dispatch!]]
-            [swarmpit.storage :as storage]
+            [swarmpit.component.handler :as handler]
             [swarmpit.component.mixin :as mixin]
             [swarmpit.component.state :as state]
             [swarmpit.component.message :as message]
-            [swarmpit.component.progress :as progress]
             [swarmpit.routes :as routes]
-            [rum.core :as rum]
-            [ajax.core :as ajax]))
+            [rum.core :as rum]))
 
 (enable-console-print!)
 
@@ -38,33 +36,21 @@
        :onChange (fn [_ v]
                    (state/update-value [:password] v cursor))})))
 
-(defn- add-user-info-msg
-  [id]
-  (str "User " id " has been added."))
-
-(defn- add-user-error-msg
-  [error]
-  (str "User cannot be added. Reason: " error))
-
 (defn- add-user-handler
   []
-  (ajax/POST (routes/path-for-backend :dockerhub-user-create)
-             {:format        :json
-              :headers       {"Authorization" (storage/get "token")}
-              :params        (state/get-value cursor)
-              :finally       (progress/mount!)
-              :handler       (fn [response]
-                               (let [id (get response "id")]
-                                 (progress/unmount!)
-                                 (dispatch!
-                                   (routes/path-for-frontend :dockerhub-user-info {:id id}))
-                                 (message/mount!
-                                   (add-user-info-msg id))))
-              :error-handler (fn [{:keys [response]}]
-                               (let [error (get response "error")]
-                                 (progress/unmount!)
-                                 (message/mount!
-                                   (add-user-error-msg error) true)))}))
+  (handler/post
+    (routes/path-for-backend :dockerhub-user-create)
+    (state/get-value cursor)
+    (fn [response]
+      (dispatch!
+        (routes/path-for-frontend :dockerhub-user-info (select-keys response [:id])))
+      (state/set-value {:text (str "User " (:id response) " has been added.")
+                        :type :info
+                        :open true} message/cursor))
+    (fn [response]
+      (state/set-value {:text (str "User cannot be added. Reason: " (:error response))
+                        :type :error
+                        :open true} message/cursor))))
 
 (defn- init-state
   []

@@ -3,34 +3,28 @@
             [material.icon :as icon]
             [swarmpit.url :refer [dispatch!]]
             [swarmpit.storage :as storage]
+            [swarmpit.component.state :as state]
+            [swarmpit.component.handler :as handler]
             [swarmpit.component.message :as message]
             [swarmpit.routes :as routes]
-            [rum.core :as rum]
-            [ajax.core :as ajax]))
+            [rum.core :as rum]))
 
 (enable-console-print!)
 
-(defn- delete-user-info-msg
-  [id]
-  (str "User " id " has been removed."))
-
-(defn- delete-user-error-msg
-  [error]
-  (str "User removing failed. Reason: " error))
-
 (defn- delete-user-handler
   [user-id]
-  (ajax/DELETE (routes/path-for-backend :user-delete {:id user-id})
-               {:headers       {"Authorization" (storage/get "token")}
-                :handler       (fn [_]
-                                 (dispatch!
-                                   (routes/path-for-frontend :user-list))
-                                 (message/mount!
-                                   (delete-user-info-msg user-id)))
-                :error-handler (fn [{:keys [response]}]
-                                 (let [error (get response "error")]
-                                   (message/mount!
-                                     (delete-user-error-msg error) true)))}))
+  (handler/delete
+    (routes/path-for-backend :user-delete {:id user-id})
+    (fn [_]
+      (dispatch!
+        (routes/path-for-frontend :user-list))
+      (state/set-value {:text (str "User " user-id " has been removed.")
+                        :type :info
+                        :open true} message/cursor))
+    (fn [response]
+      (state/set-value {:text (str "User removing failed. Reason: " (:error response))
+                        :type :error
+                        :open true} message/cursor))))
 
 (rum/defc form < rum/static [item]
   [:div

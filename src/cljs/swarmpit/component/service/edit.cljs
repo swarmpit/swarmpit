@@ -2,9 +2,9 @@
   (:require [material.component :as comp]
             [material.icon :as icon]
             [swarmpit.url :refer [dispatch!]]
-            [swarmpit.storage :as storage]
             [swarmpit.component.mixin :as mixin]
             [swarmpit.component.state :as state]
+            [swarmpit.component.handler :as handler]
             [swarmpit.component.service.form-settings :as settings]
             [swarmpit.component.service.form-ports :as ports]
             [swarmpit.component.service.form-networks :as networks]
@@ -13,20 +13,16 @@
             [swarmpit.component.service.form-variables :as variables]
             [swarmpit.component.service.form-deployment :as deployment]
             [swarmpit.component.message :as message]
-            [swarmpit.component.progress :as progress]
             [swarmpit.routes :as routes]
-            [rum.core :as rum]
-            [ajax.core :as ajax]))
+            [rum.core :as rum]))
 
 (enable-console-print!)
 
-(defn- update-service-info-msg
-  [id]
-  (str "Service " id " has been updated."))
-
-(defn- update-service-error-msg
-  [error]
-  (str "Service update failed. Reason: " error))
+(defn render-item
+  [val]
+  (if (boolean? val)
+    (comp/checkbox {:checked val})
+    val))
 
 (defn- update-service-handler
   [service-id]
@@ -37,34 +33,25 @@
         secrets (state/get-value secrets/cursor)
         variables (state/get-value variables/cursor)
         deployment (state/get-value deployment/cursor)]
-    (ajax/POST (routes/path-for-backend :service-update {:id service-id})
-               {:format        :json
-                :headers       {"Authorization" (storage/get "token")}
-                :params        (-> settings
-                                   (assoc :ports ports)
-                                   (assoc :networks networks)
-                                   (assoc :mounts mounts)
-                                   (assoc :secrets secrets)
-                                   (assoc :variables variables)
-                                   (assoc :deployment deployment))
-                :finally       (progress/mount!)
-                :handler       (fn [_]
-                                 (progress/unmount!)
-                                 (dispatch!
-                                   (routes/path-for-frontend :service-info {:id service-id}))
-                                 (message/mount!
-                                   (update-service-info-msg service-id)))
-                :error-handler (fn [{:keys [response]}]
-                                 (let [error (get-in response ["error"])]
-                                   (progress/unmount!)
-                                   (message/mount!
-                                     (update-service-error-msg error) true)))})))
-
-(defn render-item
-  [val]
-  (if (boolean? val)
-    (comp/checkbox {:checked val})
-    val))
+    (handler/post
+      (routes/path-for-backend :service-update {:id service-id})
+      (-> settings
+          (assoc :ports ports)
+          (assoc :networks networks)
+          (assoc :mounts mounts)
+          (assoc :secrets secrets)
+          (assoc :variables variables)
+          (assoc :deployment deployment))
+      (fn [_]
+        (dispatch!
+          (routes/path-for-frontend :service-info {:id service-id}))
+        (state/set-value {:text (str "Service " service-id " has been updated.")
+                          :type :info
+                          :open true} message/cursor))
+      (fn [response]
+        (state/set-value {:text (str "Service update failed. Reason: " (:error response))
+                          :type :error
+                          :open true} message/cursor)))))
 
 (defn- init-state
   [item]

@@ -58,7 +58,8 @@
           username (token/user token)
           payload (keywordize-keys params)]
       (-> (api/user-by-username username)
-          (api/change-password (:password payload))))))
+          (api/change-password (:password payload))))
+    (resp-ok)))
 
 ;; User handler
 

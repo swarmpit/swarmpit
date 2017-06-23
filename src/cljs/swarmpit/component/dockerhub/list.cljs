@@ -1,6 +1,5 @@
 (ns swarmpit.component.dockerhub.list
   (:require [material.component :as comp]
-            [material.icon :as icon]
             [swarmpit.component.mixin :as mixin]
             [swarmpit.component.state :as state]
             [swarmpit.routes :as routes]

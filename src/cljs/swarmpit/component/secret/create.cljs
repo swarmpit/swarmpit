@@ -2,14 +2,12 @@
   (:require [material.component :as comp]
             [material.icon :as icon]
             [swarmpit.url :refer [dispatch!]]
-            [swarmpit.storage :as storage]
+            [swarmpit.component.handler :as handler]
             [swarmpit.component.mixin :as mixin]
             [swarmpit.component.state :as state]
             [swarmpit.component.message :as message]
-            [swarmpit.component.progress :as progress]
             [swarmpit.routes :as routes]
-            [rum.core :as rum]
-            [ajax.core :as ajax]))
+            [rum.core :as rum]))
 
 (enable-console-print!)
 
@@ -57,33 +55,21 @@
        :onCheck  (fn [_ v]
                    (state/update-value [:encode] v cursor))})))
 
-(defn- create-secret-info-msg
-  [id]
-  (str "Secret " id " has been created."))
-
-(defn- create-secret-error-msg
-  [error]
-  (str "Secret creation failed. Reason: " error))
-
 (defn- create-secret-handler
   []
-  (ajax/POST (routes/path-for-backend :secret-create)
-             {:format        :json
-              :headers       {"Authorization" (storage/get "token")}
-              :params        (state/get-value cursor)
-              :finally       (progress/mount!)
-              :handler       (fn [response]
-                               (let [id (get response "ID")]
-                                 (progress/unmount!)
-                                 (dispatch!
-                                   (routes/path-for-frontend :secret-info {:id id}))
-                                 (message/mount!
-                                   (create-secret-info-msg id))))
-              :error-handler (fn [{:keys [response]}]
-                               (let [error (get response "error")]
-                                 (progress/unmount!)
-                                 (message/mount!
-                                   (create-secret-error-msg error) true)))}))
+  (handler/post
+    (routes/path-for-backend :secret-create)
+    (state/get-value cursor)
+    (fn [response]
+      (dispatch!
+        (routes/path-for-frontend :secret-info (select-keys response [:id])))
+      (state/set-value {:text (str "Secret " (:id response) " has been created.")
+                        :type :info
+                        :open true} message/cursor))
+    (fn [response]
+      (state/set-value {:text (str "Secret creation failed. Reason: " (:error response))
+                        :type :error
+                        :open true} message/cursor))))
 
 (defn- init-state
   []

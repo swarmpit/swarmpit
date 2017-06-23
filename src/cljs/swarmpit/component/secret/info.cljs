@@ -2,35 +2,28 @@
   (:require [material.component :as comp]
             [material.icon :as icon]
             [swarmpit.url :refer [dispatch!]]
-            [swarmpit.storage :as storage]
+            [swarmpit.component.state :as state]
+            [swarmpit.component.handler :as handler]
             [swarmpit.component.message :as message]
             [swarmpit.routes :as routes]
-            [rum.core :as rum]
-            [ajax.core :as ajax]))
+            [rum.core :as rum]))
 
 (enable-console-print!)
 
-(defn- delete-secret-info-msg
-  [id]
-  (str "Secret " id " has been removed."))
-
-(defn- delete-secret-error-msg
-  [error]
-  (str "Secret removing failed. Reason: " error))
-
 (defn- delete-secret-handler
   [secret-id]
-  (ajax/DELETE (routes/path-for-backend :secret-delete {:id secret-id})
-               {:headers       {"Authorization" (storage/get "token")}
-                :handler       (fn [_]
-                                 (dispatch!
-                                   (routes/path-for-frontend :secret-list))
-                                 (message/mount!
-                                   (delete-secret-info-msg secret-id)))
-                :error-handler (fn [{:keys [response]}]
-                                 (let [error (get response "error")]
-                                   (message/mount!
-                                     (delete-secret-error-msg error) true)))}))
+  (handler/delete
+    (routes/path-for-backend :secret-delete {:id secret-id})
+    (fn [_]
+      (dispatch!
+        (routes/path-for-frontend :secret-list))
+      (state/set-value {:text (str "Secret " secret-id " has been removed.")
+                        :type :info
+                        :open true} message/cursor))
+    (fn [response]
+      (state/set-value {:text (str "Secret removing failed. Reason: " (:error response))
+                        :type :error
+                        :open true} message/cursor))))
 
 (rum/defc form < rum/static [item]
   [:div

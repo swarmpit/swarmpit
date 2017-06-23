@@ -12,14 +12,13 @@
 
 (def cursor [:page :service :wizard :image :private])
 
-(defn- filter-items
-  "Filter list items based on given predicate"
-  [items predicate]
-  (filter #(string/includes? (:name %) predicate) items))
-
 (defn- render-item
   [item]
   (val item))
+
+(defn- filter-items
+  [items predicate]
+  (filter #(string/includes? (:name %) predicate) items))
 
 (defn repository-handler
   [user]
@@ -98,4 +97,3 @@
        (if (storage/admin?)
          (comp/form-icon-value icon/info [:span "No dockerhub users found. Add new " [:a {:href (routes/path-for-frontend :dockerhub-user-create)} "user."]])
          (comp/form-icon-value icon/info "No dockerhub users found. Please ask your admin to setup."))])))
-

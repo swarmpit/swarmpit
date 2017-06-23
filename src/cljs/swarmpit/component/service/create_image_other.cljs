@@ -12,15 +12,14 @@
 
 (def cursor [:page :service :wizard :image :other])
 
-(defn- filter-items
-  "Filter list items based on given predicate"
-  [items predicate]
-  (filter #(string/includes? (:name %) predicate) items))
-
 (defn- render-item
   [item]
   (let [value (val item)]
     value))
+
+(defn- filter-items
+  [items predicate]
+  (filter #(string/includes? (:name %) predicate) items))
 
 (defn- repository-handler
   [registry]

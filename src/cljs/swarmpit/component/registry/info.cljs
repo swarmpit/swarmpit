@@ -2,35 +2,28 @@
   (:require [material.component :as comp]
             [material.icon :as icon]
             [swarmpit.url :refer [dispatch!]]
-            [swarmpit.storage :as storage]
+            [swarmpit.component.state :as state]
+            [swarmpit.component.handler :as handler]
             [swarmpit.component.message :as message]
             [swarmpit.routes :as routes]
-            [rum.core :as rum]
-            [ajax.core :as ajax]))
+            [rum.core :as rum]))
 
 (enable-console-print!)
 
-(defn- delete-registry-info-msg
-  [id]
-  (str "Registry " id " has been removed."))
-
-(defn- delete-registry-error-msg
-  [error]
-  (str "Registry removing failed. Reason: " error))
-
 (defn- delete-registry-handler
   [registry-id]
-  (ajax/DELETE (routes/path-for-backend :registry-delete {:id registry-id})
-               {:headers       {"Authorization" (storage/get "token")}
-                :handler       (fn [_]
-                                 (dispatch!
-                                   (routes/path-for-frontend :registry-list))
-                                 (message/mount!
-                                   (delete-registry-info-msg registry-id)))
-                :error-handler (fn [{:keys [response]}]
-                                 (let [error (get response "error")]
-                                   (message/mount!
-                                     (delete-registry-error-msg error) true)))}))
+  (handler/delete
+    (routes/path-for-backend :registry-delete {:id registry-id})
+    (fn [_]
+      (dispatch!
+        (routes/path-for-frontend :registry-list))
+      (state/set-value {:text (str "Registry " registry-id " has been removed.")
+                        :type :info
+                        :open true} message/cursor))
+    (fn [response]
+      (state/set-value {:text (str "Registry removing failed. Reason: " (:error response))
+                        :type :error
+                        :open true} message/cursor))))
 
 (rum/defc form < rum/static [item]
   [:div

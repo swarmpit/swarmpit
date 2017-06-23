@@ -2,24 +2,15 @@
   (:require [material.component :as comp]
             [material.icon :as icon]
             [swarmpit.url :refer [dispatch!]]
-            [swarmpit.storage :as storage]
+            [swarmpit.component.handler :as handler]
+            [swarmpit.component.state :as state]
             [swarmpit.component.message :as message]
             [swarmpit.routes :as routes]
-            [rum.core :as rum]
-            [ajax.core :as ajax]))
+            [rum.core :as rum]))
 
 (enable-console-print!)
 
-(defonce state (atom {:password  ""
-                      :password2 ""
-                      :canSubmit false}))
-
-(defn- update-item
-  "Update form item configuration"
-  [k v]
-  (swap! state assoc k v))
-
-(defn- form-password [value]
+(defn- form-password [value local-state]
   (comp/form-comp
     "NEW PASSWORD"
     (comp/vtext-field
@@ -31,9 +22,9 @@
        :type            "password"
        :value           value
        :onChange        (fn [_ v]
-                          (update-item :password v))})))
+                          (swap! local-state assoc :password v))})))
 
-(defn- form-password-confirmation [value]
+(defn- form-password-confirmation [value local-state]
   (comp/form-comp
     "CONFIRM PASSWORD"
     (comp/vtext-field
@@ -45,31 +36,32 @@
        :type            "password"
        :value           value
        :onChange        (fn [_ v]
-                          (update-item :password2 v))})))
-
-(defn- change-password-error-msg
-  [error]
-  (str "Password update failed. Reason " error))
+                          (swap! local-state assoc :password2 v))})))
 
 (defn- change-password-handler
-  []
-  (ajax/POST (routes/path-for-backend :password)
-             {:format        :json
-              :headers       {"Authorization" (storage/get "token")}
-              :params        (dissoc @state :canSubmit)
-              :handler       (fn [_]
-                               (dispatch!
-                                 (routes/path-for-frontend :index))
-                               (message/mount! "Password has been changed"))
-              :error-handler (fn [{:keys [response]}]
-                               (let [error (get response "error")]
-                                 (message/mount!
-                                   (change-password-error-msg error) true)))}))
+  [local-state]
+  (handler/post
+    (routes/path-for-backend :password)
+    (dissoc @local-state :canSubmit)
+    (fn [_]
+      (reset! local-state)
+      (dispatch!
+        (routes/path-for-frontend :index))
+      (state/set-value {:text (str "Password has been changed")
+                        :type :info
+                        :open true} message/cursor))
+    (fn [response]
+      (state/set-value {:text (str "Password update failed. Reason " (:error response))
+                        :type :error
+                        :open true} message/cursor))))
 
-(rum/defc form < rum/reactive []
-  (let [{:keys [password
-                password2
-                canSubmit]} (rum/react state)]
+(rum/defcs form < (rum/local {:password  ""
+                              :password2 ""
+                              :canSubmit false} ::password) [state]
+  (let [local-state (::password state)
+        password (:password @local-state)
+        password2 (:password2 @local-state)
+        canSubmit (:canSubmit @local-state)]
     [:div
      [:div.form-panel
       [:div.form-panel-left
@@ -80,10 +72,10 @@
            {:label      "Change"
             :disabled   (not canSubmit)
             :primary    true
-            :onTouchTap change-password-handler}))]]
+            :onTouchTap #(change-password-handler local-state)}))]]
      [:div.form-edit
       (comp/form
-        {:onValid   #(update-item :canSubmit true)
-         :onInvalid #(update-item :canSubmit false)}
-        (form-password password)
-        (form-password-confirmation password2))]]))
+        {:onValid   #(swap! local-state assoc :canSubmit true)
+         :onInvalid #(swap! local-state assoc :canSubmit false)}
+        (form-password password local-state)
+        (form-password-confirmation password2 local-state))]]))
