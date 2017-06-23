@@ -28,7 +28,7 @@
       (reset! local-state)
       (storage/add "token" (:token response))
       (dispatch!
-        (routes/path-for-frontend :index)))
+        (routes/path-for-frontend :service-list)))
     (fn [response]
       (swap! local-state assoc :message (:error response)))))
 
