@@ -1,6 +1,7 @@
 (ns swarmpit.component.header
   (:require [material.component :as comp]
             [material.icon :as icon]
+            [sablono.core :refer-macros [html]]
             [swarmpit.url :refer [dispatch!]]
             [swarmpit.storage :as storage]
             [swarmpit.routes :as routes]
@@ -21,13 +22,20 @@
    :boxShadow "none"
    :top       0})
 
-(def appbar-title-style
-  {:fontSize   "20px"
-   :fontWeight 200})
-
 (def appbar-icon-style
   {:position "fixed"
    :right    20})
+
+(def appbar-title-style
+  {:lineHeight "normal"})
+
+(def title-style
+  {:marginTop  "10px"
+   :fontWeight "lighter"})
+
+(def subtitle-style
+  {:fontSize   "small"
+   :fontWeight 300})
 
 (defn user-gravatar-hash [email]
   (let [md5 (Md5.)]
@@ -72,12 +80,25 @@
    [:span (storage/user)]
    (user-menu)])
 
+(rum/defc logo < rum/static []
+  [:div.logo
+   [:img {:src    "img/swarmpit-transparent.png"
+          :height "50"
+          :width  "50"}]])
+
+(rum/defc titlebar < rum/static [title]
+  (html [:div
+         [:div {:style title-style} "swarmpit.io"]
+         [:div {:style subtitle-style} title]]))
+
 (rum/defc appbar < rum/static [title]
   (comp/mui
     (comp/app-bar
-      {:title              title
+      {
+       :title              (titlebar title)
        :titleStyle         appbar-title-style
        :style              appbar-style
+       :iconElementLeft    (logo)
        :iconElementRight   (userbar)
        :iconStyleRight     appbar-icon-style
-       :showMenuIconButton false})))
+       :showMenuIconButton true})))
