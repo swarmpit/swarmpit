@@ -25,7 +25,7 @@
    :right    20})
 
 (def appbar-title-style
-  {:fontSize   "20px"
+  {:fontSize   "25px"
    :fontWeight 200})
 
 (defn user-gravatar-hash [email]

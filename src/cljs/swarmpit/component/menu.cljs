@@ -68,11 +68,12 @@
   {:lineHeight "normal"})
 
 (def drawer-app-name-style
-  {:marginTop  "10px"
-   :fontWeight "lighter"})
+  {:marginTop  "13px"
+   :fontSize   "20px"
+   :fontWeight 200})
 
 (def drawer-app-version-style
-  {:fontSize   "small"
+  {:fontSize   "11px"
    :fontWeight 300})
 
 (def menu
@@ -143,8 +144,8 @@
 
 (rum/defc drawer-title < rum/static []
   (html [:div
-         [:div {:style drawer-app-name-style} "swarmpit"]
-         [:div {:style drawer-app-version-style} "1.0.beta"]]))
+         [:div {:style drawer-app-name-style} "swarmpit.io"]
+         [:div {:style drawer-app-version-style} "1.0-beta"]]))
 
 (rum/defc drawer < rum/reactive [title]
   (let [{:keys [opened]} (state/react cursor)
