@@ -59,6 +59,7 @@
                       "layout-opened"
                       "layout-closed")
         layout-title (page-title handler)]
+    (set! (. js/document -title) (str layout-title " :: swarmpit"))
     [:div {:class ["layout" layout-type]}
      [:header (header/appbar layout-title)]
      [:nav (menu/drawer layout-title)]
