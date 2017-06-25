@@ -28,11 +28,15 @@
   (merge drawer-container-style
          {:width "200px"}))
 
-(def drawer-opened-icon
-  (comp/icon-button nil (comp/svg {:key "doi"} icon/view-compact)))
+(rum/defc logo < rum/static []
+   [:img {:src    "img/swarmpit-transparent.png"
+          :height "48"
+          :width  "48"}])
 
-(def drawer-closed-icon
-  (comp/icon-button nil (comp/svg {:key "dci"} icon/view-confy)))
+(def drawer-icon
+  (comp/icon-button {:style {:padding 0
+                             :marginLeft 3}}
+                    (logo)))
 
 (def drawer-item-inner-style
   {:paddingLeft "50px"})
@@ -124,10 +128,7 @@
   (let [{:keys [opened]} (state/react cursor)
         drawer-container-style (if opened
                                  drawer-container-opened-style
-                                 drawer-container-closed-style)
-        drawer-icon (if opened
-                      drawer-opened-icon
-                      drawer-closed-icon)]
+                                 drawer-container-closed-style)]
     (comp/mui
       (comp/drawer
         {:key            "menu-drawer"
@@ -136,6 +137,9 @@
         (comp/app-bar
           {:key                      "menu-drawer-bar"
            :style                    drawer-style
+           :title                    "swarmpit"
+           :titleStyle               {:fontWeight "lighter"
+                                      :fontSize   "20px"}
            :iconElementLeft          drawer-icon
            :onLeftIconButtonTouchTap (fn []
                                        (state/update-value [:opened] (not opened) cursor))})
