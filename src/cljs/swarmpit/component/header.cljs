@@ -5,7 +5,6 @@
             [swarmpit.url :refer [dispatch!]]
             [swarmpit.storage :as storage]
             [swarmpit.routes :as routes]
-            [swarmpit.component.state :as state]
             [clojure.string :as string]
             [rum.core :as rum]
             [goog.crypt :as crypt])
