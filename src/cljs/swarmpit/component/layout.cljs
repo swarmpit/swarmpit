@@ -52,6 +52,11 @@
 (rum/defc page-single < rum/static [route]
   (view/dispatch route))
 
+(defn- document-title
+  [layout-title]
+  (set! (-> js/document .-title)
+        (str layout-title " :: swarmpit")))
+
 (rum/defc page-layout < rum/reactive [route]
   (let [{:keys [opened]} (state/react menu/cursor)
         {:keys [handler]} route
@@ -59,7 +64,7 @@
                       "layout-opened"
                       "layout-closed")
         layout-title (page-title handler)]
-    (set! (. js/document -title) (str layout-title " :: swarmpit"))
+    (document-title layout-title)
     [:div {:class ["layout" layout-type]}
      [:header (header/appbar layout-title)]
      [:nav (menu/drawer layout-title)]
