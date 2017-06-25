@@ -144,7 +144,7 @@
 
 (rum/defc drawer-title < rum/static []
   (html [:div
-         [:div {:style drawer-app-name-style} "swarmpit.io"]
+         [:div {:style drawer-app-name-style} "swarmpit"]
          [:div {:style drawer-app-version-style} "1.0-beta"]]))
 
 (rum/defc drawer < rum/reactive [title]
