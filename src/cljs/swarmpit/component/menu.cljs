@@ -1,6 +1,7 @@
 (ns swarmpit.component.menu
   (:require [material.component :as comp]
             [material.icon :as icon]
+            [sablono.core :refer-macros [html]]
             [swarmpit.component.state :as state]
             [swarmpit.storage :as storage]
             [swarmpit.routes :as routes]
@@ -28,11 +29,20 @@
   (merge drawer-container-style
          {:width "200px"}))
 
-(def drawer-opened-icon
-  (comp/icon-button nil (comp/svg {:key "doi"} icon/view-compact)))
+(def drawer-icon-style
+  {:padding    0
+   :marginLeft 3})
 
-(def drawer-closed-icon
-  (comp/icon-button nil (comp/svg {:key "dci"} icon/view-confy)))
+(def logo
+  (html
+    [:img {:src    "img/swarmpit-transparent.png"
+           :height "48"
+           :width  "48"}]))
+
+(def drawer-icon
+  (comp/icon-button
+    {:style drawer-icon-style}
+    logo))
 
 (def drawer-item-inner-style
   {:paddingLeft "50px"})
@@ -53,6 +63,17 @@
 (def drawer-category-closed-style
   (merge drawer-category-style
          {:opacity 0}))
+
+(def drawer-title-style
+  {:lineHeight "normal"})
+
+(def drawer-app-name-style
+  {:marginTop  "10px"
+   :fontWeight "lighter"})
+
+(def drawer-app-version-style
+  {:fontSize   "small"
+   :fontWeight 300})
 
 (def menu
   [{:name "APPLICATIONS"}
@@ -120,14 +141,16 @@
        :href          (routes/path-for-frontend handler)
        :leftIcon      drawer-item-icon})))
 
+(rum/defc drawer-title < rum/static []
+  (html [:div
+         [:div {:style drawer-app-name-style} "swarmpit"]
+         [:div {:style drawer-app-version-style} "1.0.beta"]]))
+
 (rum/defc drawer < rum/reactive [title]
   (let [{:keys [opened]} (state/react cursor)
         drawer-container-style (if opened
                                  drawer-container-opened-style
-                                 drawer-container-closed-style)
-        drawer-icon (if opened
-                      drawer-opened-icon
-                      drawer-closed-icon)]
+                                 drawer-container-closed-style)]
     (comp/mui
       (comp/drawer
         {:key            "menu-drawer"
@@ -135,6 +158,8 @@
          :containerStyle drawer-container-style}
         (comp/app-bar
           {:key                      "menu-drawer-bar"
+           :title                    (drawer-title)
+           :titleStyle               drawer-title-style
            :style                    drawer-style
            :iconElementLeft          drawer-icon
            :onLeftIconButtonTouchTap (fn []
