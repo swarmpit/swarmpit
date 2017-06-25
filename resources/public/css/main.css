@@ -150,7 +150,7 @@ select:-webkit-autofill:focus {
 /* Form panel */
 
 .form-panel {
-    min-width: 650px;
+    min-width: 670px;
     padding-top: 12px;
     display: inline-block;
     position: relative;
