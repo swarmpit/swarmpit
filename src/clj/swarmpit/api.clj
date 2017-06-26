@@ -8,17 +8,20 @@
             [swarmpit.registry.client :as rc]
             [swarmpit.registry.mapper.inbound :as rmi]
             [swarmpit.couchdb.client :as cc]
+            [swarmpit.couchdb.mapper.inbound :as cmi]
             [swarmpit.couchdb.mapper.outbound :as cmo]))
 
 ;;; User API
 
 (defn users
   []
-  (cc/users))
+  (-> (cc/users)
+      (cmi/->users)))
 
 (defn user
   [user-id]
-  (cc/user user-id))
+  (-> (cc/user user-id)
+      (cmi/->user)))
 
 (defn user-by-credentials
   [credentails]
@@ -53,7 +56,8 @@
 
 (defn registries
   []
-  (cc/registries))
+  (-> (cc/registries)
+      (cmi/->registries)))
 
 (defn registries-sum
   []
@@ -63,7 +67,8 @@
 
 (defn registry
   [registry-id]
-  (cc/registry registry-id))
+  (-> (cc/registry registry-id)
+      (cmi/->registry)))
 
 (defn registry-by-name
   [registry-name]
@@ -177,7 +182,8 @@
 
 (defn dockerusers
   []
-  (cc/docker-users))
+  (-> (cc/docker-users)
+      (cmi/->dockerusers)))
 
 (defn dockerusers-sum
   []
@@ -203,7 +209,8 @@
 
 (defn dockeruser
   [dockeruser-id]
-  (cc/docker-user dockeruser-id))
+  (-> (cc/docker-user dockeruser-id)
+      (cmi/->dockeruser)))
 
 (defn create-dockeruser
   [dockeruser dockeruser-info]
