@@ -325,8 +325,10 @@
     (let [payload (keywordize-keys params)
           user-info (api/dockeruser-info payload)]
       (api/dockeruser-login payload)
-      (->> (api/create-dockeruser payload user-info)
-           (resp-created)))))
+      (let [response (api/create-dockeruser payload user-info)]
+        (if (some? response)
+          (resp-created)
+          (resp-error 400 "Docker user already exist"))))))
 
 (defmethod dispatch :dockerhub-user-delete [_]
   (fn [{:keys [route-params]}]

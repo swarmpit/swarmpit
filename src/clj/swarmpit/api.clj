@@ -197,14 +197,19 @@
   [docker-username]
   (cc/docker-user-by-name docker-username))
 
+(defn dockeruser-exist?
+  [dockeruser]
+  (some? (dockeruser-by-username (:username dockeruser))))
+
 (defn dockeruser
   [dockeruser-id]
   (cc/docker-user dockeruser-id))
 
 (defn create-dockeruser
   [dockeruser dockeruser-info]
-  (->> (cmo/->docker-user dockeruser dockeruser-info)
-       (cc/create-docker-user)))
+  (if (not (dockeruser-exist? dockeruser))
+    (->> (cmo/->docker-user dockeruser dockeruser-info)
+         (cc/create-docker-user))))
 
 (defn delete-dockeruser
   [dockeruser-id]
