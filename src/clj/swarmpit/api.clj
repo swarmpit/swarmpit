@@ -1,5 +1,6 @@
 (ns swarmpit.api
   (:require [clojure.core.memoize :as memo]
+            [clojure.set :refer [rename-keys]]
             [swarmpit.docker.client :as dc]
             [swarmpit.docker.mapper.inbound :as dmi]
             [swarmpit.docker.mapper.outbound :as dmo]
@@ -114,8 +115,9 @@
 
 (defn create-secret
   [secret]
-  (->> (dmo/->secret secret)
-       (dc/create-secret)))
+  (-> (dmo/->secret secret)
+      (dc/create-secret)
+      (rename-keys {:ID :id})))
 
 (defn update-secret
   [secret-id secret]
@@ -302,9 +304,10 @@
   [service]
   (let [registry (get-in service [:repository :registry])
         secrets (dmo/->service-secrets service (secrets))]
-    (if (= "dockerhub" registry)
-      (create-dockerhub-service service secrets)
-      (create-registry-service service registry secrets))))
+    (rename-keys
+      (if (= "dockerhub" registry)
+        (create-dockerhub-service service secrets)
+        (create-registry-service service registry secrets)) {:ID :id})))
 
 (defn update-service
   [service-id service]

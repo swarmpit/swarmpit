@@ -66,8 +66,8 @@
           (assoc :deployment deployment))
       (fn [response]
         (dispatch!
-          (routes/path-for-frontend :service-info {:id (:ID response)}))
-        (state/set-value {:text (str "Service " (:ID response) " has been created.")
+          (routes/path-for-frontend :service-info (select-keys response [:id])))
+        (state/set-value {:text (str "Service " (:id response) " has been created.")
                           :type :info
                           :open true} message/cursor))
       (fn [response]
