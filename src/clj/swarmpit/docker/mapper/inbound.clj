@@ -82,7 +82,7 @@
   (->> (get-in service [:Spec :TaskTemplate :Networks])
        (map (fn [n] (->service-network n networks)))
        (map (fn [n] {:networkName   (:Name n)
-                     :networkDriver (:Driver n)}))
+                     :driver (:Driver n)}))
        (into [])))
 
 (defn ->service-mounts
