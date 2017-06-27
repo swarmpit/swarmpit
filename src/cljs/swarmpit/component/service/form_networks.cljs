@@ -60,6 +60,14 @@
      (if (not (empty? networks))
        (form-table networks data))]))
 
+(rum/defc form-update < rum/static [networks]
+  (if (empty? networks)
+    empty-info
+    (comp/form-table-ro ["Name" "Driver"]
+                        networks
+                        render-item-keys
+                        render-item)))
+
 (rum/defc form-view < rum/static [networks]
   (if (empty? networks)
     empty-info

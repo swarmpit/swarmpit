@@ -413,7 +413,7 @@
 
 (defn form-section-add
   [label add-item-fn]
-  [:div.form-edit-row
+  [:div.form-view-row
    [:span.form-row-section.form-row-icon-section label]
    [:div.form-row-icon-field
     (mui
@@ -609,6 +609,59 @@
         (form-table-header headers))
       (form-table-body items data render-items-fn remove-item-fn))))
 
+;; Form table readonly
+
+(defn form-table-ro-header
+  [headers]
+  (let [el-style {:height "35px"}]
+    (table-header
+      {:key               "th"
+       :displaySelectAll  false
+       :adjustForCheckbox false
+       :style             {:border "none"}}
+      (table-row
+        {:key           "tr"
+         :displayBorder false
+         :style         el-style}
+        (map-indexed
+          (fn [index header]
+            (table-header-column
+              {:key   (str "thc-" index)
+               :style el-style}
+              header)) headers)))))
+
+(defn form-table-ro-body
+  [items render-items-key render-item-fn]
+  (table-body
+    {:key                "tb"
+     :displayRowCheckbox false}
+    (map-indexed
+      (fn [index item]
+        (table-row
+          {:key           (str "tr-" index)
+           :rowNumber     index
+           :displayBorder false}
+          ;(map (fn [row] row)
+          ;     (render-items-fn item index))
+
+          (->> (select-keys* item render-items-key)
+               (map #(table-row-column
+                       {:key   (str "trc-" (:id item))}
+                       (render-item-fn % item))))
+
+          )) items)))
+
+(defn form-table-ro
+  [headers items render-items-key render-items-fn]
+  (mui
+    (table
+      {:key        "tbl"
+       :selectable false
+       :style      {:minWidth "700px"}}
+      (if (not (empty? headers))
+        (form-table-ro-header headers))
+      (form-table-ro-body items render-items-key render-items-fn))))
+
 ;; Info table component
 
 (defn form-info-table-header [headers header-el-style]
@@ -640,7 +693,6 @@
            :rowNumber     index
            :displayBorder false
            :style         item-el-style}
-
           (->> (select-keys* item render-items-key)
                (map #(table-row-column
                        {:key   (str "trc-" (:id item))

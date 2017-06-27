@@ -49,7 +49,10 @@
           (str "Service " service-id " has been updated.")))
       (fn [response]
         (message/error
-          (str "Service update failed. Reason: " (:error response)))))))
+          (str "Service update failed. Reason: " (:error response)))
+        (state/set-value {:text (str "Service update failed. Reason: " (:error response))
+                          :type :error
+                          :open true} message/cursor)))))
 
 (defn- init-state
   [item]
@@ -85,27 +88,27 @@
          (comp/raised-button
            {:href  (routes/path-for-frontend :service-info (select-keys service [:id]))
             :label "Back"}))]]
-     [:div.form-view
-      [:div.form-view-group
+     [:div.form-service-edit
+      [:div.form-service-edit-group
        (comp/form-section "General settings")
        (settings/form true)]
-      [:div.form-view-group
+      [:div.form-service-edit-group.form-service-group-border
        (comp/form-section-add "Ports" ports/add-item)
        (ports/form-update)]
-      [:div.form-view-group
+      [:div.form-service-edit-group.form-service-group-border
        (comp/form-section "Networks")
-       (networks/form-view (:networks service))]
-      [:div.form-view-group
+       (networks/form-update (:networks service))]
+      [:div.form-service-edit-group.form-service-group-border
        (comp/form-section-add "Mounts" mounts/add-item)
        (mounts/form-update volumes)]
-      [:div.form-view-group
+      [:div.form-service-edit-group.form-service-group-border
        (if (empty? secrets)
          (comp/form-section "Secrets")
          (comp/form-section-add "Secrets" secrets/add-item))
        (secrets/form-update secrets)]
-      [:div.form-view-group
+      [:div.form-service-edit-group.form-service-group-border
        (comp/form-section-add "Environment variables" variables/add-item)
        (variables/form-update)]
-      [:div.form-view-group
+      [:div.form-service-edit-group.form-service-group-border
        (comp/form-section "Deployment")
        (deployment/form)]]]))

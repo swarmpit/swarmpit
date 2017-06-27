@@ -1,5 +1,6 @@
 (ns swarmpit.component.page-login
   (:require [material.component :as comp]
+            [material.icon :as icon]
             [swarmpit.url :refer [dispatch!]]
             [swarmpit.storage :as storage]
             [swarmpit.component.handler :as handler]
@@ -64,6 +65,15 @@
      :onChange          (fn [_ v]
                           (swap! local-state assoc :password v))}))
 
+(defn- error-message
+  [message]
+  [:div
+   [:svg.node-item-ico {:width  "24"
+                        :height "24"
+                        :fill   "rgb(117, 117, 117)"}
+    [:path {:d icon/error}]]
+   [:span message]])
+
 (rum/defcs form < (rum/local {:username  ""
                               :password  ""
                               :message   ""
@@ -75,17 +85,23 @@
         canSubmit (:canSubmit @local-state)]
     [:div.page-back
      [:div.page
-      [:div message]
-      (comp/mui
-        (comp/vform
-          {:onValid   #(swap! local-state assoc :canSubmit true)
-           :onInvalid #(swap! local-state assoc :canSubmit false)}
-          (form-username username local-state)
-          (form-password password local-state)))
-      (comp/mui
-        (comp/raised-button
-          {:style      login-button-style
-           :disabled   (not canSubmit)
-           :label      "Login"
-           :primary    true
-           :onTouchTap #(login-handler local-state)}))]]))
+      [:div.page-logo
+       [:img {:src    "/img/logo.svg"
+              :width  "177px"
+              :height "90px"}]]
+      [:div.page-form
+       (if (not-empty message)
+         (error-message message))
+       (comp/mui
+         (comp/vform
+           {:onValid   #(swap! local-state assoc :canSubmit true)
+            :onInvalid #(swap! local-state assoc :canSubmit false)}
+           (form-username username local-state)
+           (form-password password local-state)))
+       (comp/mui
+         (comp/raised-button
+           {:style      login-button-style
+            :disabled   (not canSubmit)
+            :label      "Login"
+            :primary    true
+            :onTouchTap #(login-handler local-state)}))]]]))

@@ -78,6 +78,25 @@ select:-webkit-autofill:focus {
     flex-wrap: nowrap;
 }
 
+/* Form service edit layout */
+
+.form-service-edit {
+    height: 100%;
+    background-color: rgb(245, 245, 245);
+}
+
+.form-service-edit-group {
+    margin-bottom: 20px;
+    padding-top: 10px;
+    padding-bottom: 10px;
+    background-color: #fff;
+}
+
+.form-service-group-border {
+    border-top: 1px solid rgb(224, 228, 231);
+    border-bottom: 1px solid rgb(224, 228, 231);
+}
+
 /* Form edit layout */
 
 .form-edit {
@@ -228,18 +247,25 @@ select:-webkit-autofill:focus {
 .page {
     align-self: center;
     width: 400px;
-    background-color: #fdfdfd;
     text-align: center;
     margin: auto;
-    border: 1px solid rgb(127, 127, 127);
+}
+
+.page-logo {
+    margin-bottom: 15px;
+}
+
+.page-form {
     padding-top: 30px;
     padding-bottom: 30px;
+    border: 1px solid rgb(127, 127, 127);
+    background-color: #fdfdfd;
 }
 
 .page-back {
     display: flex;
     justify-content: center;
-    background: rgb(224, 224, 224);
+    background: url("../img/background.jpg") no-repeat;
     height: 100vh;
 }
 
