@@ -327,7 +327,7 @@
       (api/dockeruser-login payload)
       (let [response (api/create-dockeruser payload user-info)]
         (if (some? response)
-          (resp-created)
+          (resp-created (select-keys response [:id]))
           (resp-error 400 "Docker user already exist"))))))
 
 (defmethod dispatch :dockerhub-user-delete [_]
