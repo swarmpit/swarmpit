@@ -44,13 +44,11 @@
     (fn [response]
       (dispatch!
         (routes/path-for-frontend :volume-info {:name (:volumeName response)}))
-      (state/set-value {:text (str "Volume " (:volumeName response) " has been created.")
-                        :type :info
-                        :open true} message/cursor))
+      (message/info
+        (str "Volume " (:volumeName response) " has been created.")))
     (fn [response]
-      (state/set-value {:text (str "Volume creation failed. Reason: " (:error response))
-                        :type :error
-                        :open true} message/cursor))))
+      (message/error
+        (str "Volume creation failed. Reason: " (:error response))))))
 
 (defn- init-state
   []

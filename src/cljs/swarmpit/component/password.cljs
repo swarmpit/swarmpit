@@ -3,7 +3,6 @@
             [material.icon :as icon]
             [swarmpit.url :refer [dispatch!]]
             [swarmpit.component.handler :as handler]
-            [swarmpit.component.state :as state]
             [swarmpit.component.message :as message]
             [swarmpit.routes :as routes]
             [rum.core :as rum]))
@@ -47,13 +46,11 @@
       (reset! local-state)
       (dispatch!
         (routes/path-for-frontend :index))
-      (state/set-value {:text (str "Password has been changed")
-                        :type :info
-                        :open true} message/cursor))
+      (message/info
+        "Password has been changed"))
     (fn [response]
-      (state/set-value {:text (str "Password update failed. Reason " (:error response))
-                        :type :error
-                        :open true} message/cursor))))
+      (message/error
+        (str "Password update failed. Reason " (:error response))))))
 
 (rum/defcs form < (rum/local {:password  ""
                               :password2 ""

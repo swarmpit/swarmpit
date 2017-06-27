@@ -76,13 +76,11 @@
     (fn [response]
       (dispatch!
         (routes/path-for-frontend :registry-info (select-keys response [:id])))
-      (state/set-value {:text (str "Registry " (:id response) " has been created.")
-                        :type :info
-                        :open true} message/cursor))
+      (message/info
+        (str "Registry " (:id response) " has been created.")))
     (fn [response]
-      (state/set-value {:text (str "Registry creation failed. Reason: " (:error response))
-                        :type :error
-                        :open true} message/cursor))))
+      (message/error
+        (str "Registry creation failed. Reason: " (:error response))))))
 
 (defn- init-state
   []

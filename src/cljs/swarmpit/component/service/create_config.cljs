@@ -67,13 +67,11 @@
       (fn [response]
         (dispatch!
           (routes/path-for-frontend :service-info (select-keys response [:id])))
-        (state/set-value {:text (str "Service " (:id response) " has been created.")
-                          :type :info
-                          :open true} message/cursor))
+        (message/info
+          (str "Service " (:id response) " has been created.")))
       (fn [response]
-        (state/set-value {:text (str "Service creation failed. Reason: " (:error response))
-                          :type :error
-                          :open true} message/cursor)))))
+        (message/error
+          (str "Service creation failed. Reason: " (:error response)))))))
 
 (defn init-state
   [registry repository-user repository]

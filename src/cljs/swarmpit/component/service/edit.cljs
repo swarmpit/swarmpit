@@ -45,13 +45,11 @@
       (fn [_]
         (dispatch!
           (routes/path-for-frontend :service-info {:id service-id}))
-        (state/set-value {:text (str "Service " service-id " has been updated.")
-                          :type :info
-                          :open true} message/cursor))
+        (message/info
+          (str "Service " service-id " has been updated.")))
       (fn [response]
-        (state/set-value {:text (str "Service update failed. Reason: " (:error response))
-                          :type :error
-                          :open true} message/cursor)))))
+        (message/error
+          (str "Service update failed. Reason: " (:error response)))))))
 
 (defn- init-state
   [item]

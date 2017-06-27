@@ -3,7 +3,6 @@
             [material.icon :as icon]
             [swarmpit.url :refer [dispatch!]]
             [swarmpit.storage :as storage]
-            [swarmpit.component.state :as state]
             [swarmpit.component.handler :as handler]
             [swarmpit.component.message :as message]
             [swarmpit.routes :as routes]
@@ -18,13 +17,11 @@
     (fn [_]
       (dispatch!
         (routes/path-for-frontend :user-list))
-      (state/set-value {:text (str "User " user-id " has been removed.")
-                        :type :info
-                        :open true} message/cursor))
+      (message/info
+        (str "User " user-id " has been removed.")))
     (fn [response]
-      (state/set-value {:text (str "User removing failed. Reason: " (:error response))
-                        :type :error
-                        :open true} message/cursor))))
+      (message/error
+        (str "User removing failed. Reason: " (:error response))))))
 
 (rum/defc form < rum/static [item]
   [:div

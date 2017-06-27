@@ -44,13 +44,11 @@
     (fn [response]
       (dispatch!
         (routes/path-for-frontend :dockerhub-user-info (select-keys response [:id])))
-      (state/set-value {:text (str "User " (:id response) " has been added.")
-                        :type :info
-                        :open true} message/cursor))
+      (message/info
+        (str "User " (:id response) " has been added.")))
     (fn [response]
-      (state/set-value {:text (str "User cannot be added. Reason: " (:error response))
-                        :type :error
-                        :open true} message/cursor))))
+      (message/error
+        (str "User cannot be added. Reason: " (:error response))))))
 
 (defn- init-state
   []

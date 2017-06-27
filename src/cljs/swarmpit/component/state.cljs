@@ -6,6 +6,7 @@
          (atom {:route   nil
                 :layout  {:opened true}
                 :message {:text ""
+                          :time nil
                           :type :info
                           :open false}
                 :page    {:network   {:list {}

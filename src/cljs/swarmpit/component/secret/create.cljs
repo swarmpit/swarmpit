@@ -62,13 +62,11 @@
     (fn [response]
       (dispatch!
         (routes/path-for-frontend :secret-info (select-keys response [:id])))
-      (state/set-value {:text (str "Secret " (:id response) " has been created.")
-                        :type :info
-                        :open true} message/cursor))
+      (message/info
+        (str "Secret " (:id response) " has been created.")))
     (fn [response]
-      (state/set-value {:text (str "Secret creation failed. Reason: " (:error response))
-                        :type :error
-                        :open true} message/cursor))))
+      (message/error
+        (str "Secret creation failed. Reason: " (:error response))))))
 
 (defn- init-state
   []

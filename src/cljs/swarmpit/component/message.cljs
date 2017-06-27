@@ -28,7 +28,22 @@
 (def message-error-content-style
   {:color "rgb(244, 67, 54)"})
 
-(rum/defc info-message < rum/static [text opened?]
+(defn- show
+  [text type]
+  (state/set-value {:text text
+                    :time (.getTime (js/Date.))
+                    :type type
+                    :open true} cursor))
+
+(defn info
+  [text]
+  (show text :info))
+
+(defn error
+  [text]
+  (show text :error))
+
+(rum/defc info-message < rum/reactive [text opened?]
   (comp/mui
     (comp/snackbar {:bodyStyle        message-info-body-style
                     :contentStyle     message-info-content-style
@@ -36,7 +51,7 @@
                     :message          text
                     :open             opened?})))
 
-(rum/defc error-message < rum/static [text opened?]
+(rum/defc error-message < rum/reactive [text opened?]
   (comp/mui
     (comp/snackbar {:bodyStyle        message-error-body-style
                     :contentStyle     message-error-content-style
@@ -44,7 +59,7 @@
                     :message          text
                     :open             opened?})))
 
-(rum/defc info < rum/reactive []
+(rum/defc message < rum/reactive []
   (let [{:keys [open type text]} (state/react cursor)]
     (case type
       :info (info-message text open)
@@ -52,4 +67,4 @@
 
 (defn mount!
   []
-  (rum/mount (info) (.getElementById js/document "message")))
+  (rum/mount (message) (.getElementById js/document "message")))

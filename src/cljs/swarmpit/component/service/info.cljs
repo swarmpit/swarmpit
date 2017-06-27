@@ -2,7 +2,6 @@
   (:require [material.component :as comp]
             [material.icon :as icon]
             [swarmpit.url :refer [dispatch!]]
-            [swarmpit.component.state :as state]
             [swarmpit.component.handler :as handler]
             [swarmpit.component.service.form-ports :as ports]
             [swarmpit.component.service.form-networks :as networks]
@@ -26,13 +25,11 @@
     (fn [_]
       (dispatch!
         (routes/path-for-frontend :service-list))
-      (state/set-value {:text (str "Service " service-id " has been removed.")
-                        :type :info
-                        :open true} message/cursor))
+      (message/info
+        (str "Service " service-id " has been removed.")))
     (fn [response]
-      (state/set-value {:text (str "Service removing failed. Reason: " (:error response))
-                        :type :error
-                        :open true} message/cursor))))
+      (message/error
+        (str "Service removing failed. Reason: " (:error response))))))
 
 (rum/defc form < rum/static [item]
   (let [id (:id item)]

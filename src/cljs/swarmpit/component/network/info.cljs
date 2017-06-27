@@ -2,7 +2,6 @@
   (:require [material.component :as comp]
             [material.icon :as icon]
             [swarmpit.url :refer [dispatch!]]
-            [swarmpit.component.state :as state]
             [swarmpit.component.handler :as handler]
             [swarmpit.component.message :as message]
             [swarmpit.routes :as routes]
@@ -17,13 +16,11 @@
     (fn [_]
       (dispatch!
         (routes/path-for-frontend :network-list))
-      (state/set-value {:text (str "Network " network-id " has been removed.")
-                        :type :info
-                        :open true} message/cursor))
+      (message/info
+        (str "Network " network-id " has been removed.")))
     (fn [response]
-      (state/set-value {:text (str "Network removing failed. Reason: " (:error response))
-                        :type :error
-                        :open true} message/cursor))))
+      (message/error
+        (str "Network removing failed. Reason: " (:error response))))))
 
 (rum/defc form < rum/static [item]
   [:div
