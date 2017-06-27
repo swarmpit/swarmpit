@@ -30,16 +30,15 @@
 (defn- render-networks
   [item index data]
   (let [{:keys [networkName]} item]
-    [{:item  (form-network networkName index data)
-      :width "90%"}]))
+    [(form-network networkName index data)]))
 
 (defn- form-table
   [networks data]
-  (comp/form-table []
-                   networks
-                   data
-                   render-networks
-                   (fn [index] (state/remove-item index cursor))))
+  (comp/form-table-headless headers
+                            networks
+                            data
+                            render-networks
+                            (fn [index] (state/remove-item index cursor))))
 
 (def render-item-keys
   [[:networkName] [:driver]])

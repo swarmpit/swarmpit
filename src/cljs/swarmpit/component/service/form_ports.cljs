@@ -67,12 +67,9 @@
   (let [{:keys [containerPort
                 protocol
                 hostPort]} item]
-    [{:item  (form-container containerPort index)
-      :width "30%"}
-     {:item  (form-protocol protocol index)
-      :width "30%"}
-     {:item  (form-host hostPort index)
-      :width "30%"}]))
+    [(form-container containerPort index)
+     (form-protocol protocol index)
+     (form-host hostPort index)]))
 
 (defn- form-table
   [ports]

@@ -35,10 +35,8 @@
   [item index]
   (let [{:keys [name
                 value]} item]
-    [{:item  (form-name name index)
-      :width "45%"}
-     {:item  (form-value value index)
-      :width "45%"}]))
+    [(form-name name index)
+     (form-value value index)]))
 
 (defn- form-table
   [variables]

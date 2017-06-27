@@ -580,7 +580,7 @@
            :style el-style} "")))))
 
 (defn form-table-body
-  [items data render-items-fn remove-item-fn]
+  [headers items data render-items-fn remove-item-fn]
   (table-body
     {:key                "tb"
      :displayRowCheckbox false}
@@ -590,13 +590,14 @@
           {:key           (str "tr-" index)
            :rowNumber     index
            :displayBorder false}
-          (map (fn [row]
-                 (table-row-column
-                   {:name  (str "trc-" index)
-                    :key   (str "trc-" index)
-                    :style (select-keys row [:width])}
-                   (:item row)))
-               (render-items-fn item index data))
+          (map-indexed
+            (fn [coll-index coll]
+              (table-row-column
+                {:name  (str "trc-" index)
+                 :key   (str "trc-" index)
+                 :style (select-keys (nth headers coll-index) [:width])}
+                coll))
+            (render-items-fn item index data))
           (table-row-column
             {:key (str "trc-" index)}
             (icon-button
@@ -611,9 +612,16 @@
     (table
       {:key        "tbl"
        :selectable false}
-      (if (not (empty? headers))
-        (form-table-header headers))
-      (form-table-body items data render-items-fn remove-item-fn))))
+      (form-table-header headers)
+      (form-table-body headers items data render-items-fn remove-item-fn))))
+
+(defn form-table-headless
+  [headers items data render-items-fn remove-item-fn]
+  (mui
+    (table
+      {:key        "tbl"
+       :selectable false}
+      (form-table-body headers items data render-items-fn remove-item-fn))))
 
 ;; Form table readonly
 

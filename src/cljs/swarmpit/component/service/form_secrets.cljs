@@ -38,16 +38,15 @@
 (defn- render-secrets
   [item index data]
   (let [{:keys [secretName]} item]
-    [{:item  (form-secret secretName index data)
-      :width "90%"}]))
+    [(form-secret secretName index data)]))
 
 (defn- form-table
   [secrets data]
-  (comp/form-table []
-                   secrets
-                   data
-                   render-secrets
-                   (fn [index] (state/remove-item index cursor))))
+  (comp/form-table-headless headers
+                            secrets
+                            data
+                            render-secrets
+                            (fn [index] (state/remove-item index cursor))))
 
 (defn- add-item
   []

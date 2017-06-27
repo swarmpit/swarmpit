@@ -82,17 +82,12 @@
                 hostPath
                 type
                 readOnly]} item]
-    [{:item  (form-type type index)
-      :width "20%"}
-     {:item  (form-container containerPath index)
-      :width "30%"}
+    [(form-type type index)
+     (form-container containerPath index)
      (if (= "bind" type)
-       {:item  (form-host-bind hostPath index)
-        :width "30%"}
-       {:item  (form-host-volume hostPath index data)
-        :width "30%"})
-     {:item  (form-readonly readOnly index)
-      :width "10%"}]))
+       (form-host-bind hostPath index)
+       (form-host-volume hostPath index data))
+     (form-readonly readOnly index)]))
 
 (defn- form-table
   [mounts data]
