@@ -92,7 +92,7 @@
        [:span.form-panel-space]
        (comp/panel-checkbox
          {:checked (false? (:running filter))
-          :label   "Show all tasks"
+          :label   "Show all"
           :onCheck (fn [_ v]
                      (state/update-value [:filter :running] (false? v) cursor))})]]
      (comp/list-table headers

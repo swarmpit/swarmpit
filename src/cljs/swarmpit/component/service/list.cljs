@@ -99,7 +99,7 @@
        [:span.form-panel-space]
        (comp/panel-checkbox
          {:checked (:cranky filter)
-          :label   "Show cranky services"
+          :label   "Show unhealthy"
           :onCheck (fn [_ v]
                      (state/update-value [:filter :cranky] v cursor))})]
       [:div.form-panel-right
