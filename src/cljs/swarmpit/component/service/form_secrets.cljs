@@ -9,7 +9,8 @@
 
 (def cursor [:page :service :wizard :secrets])
 
-(def headers ["Name"])
+(def headers [{:name  "Name"
+               :width "90%"}])
 
 (def empty-info
   (comp/form-value "No secrets defined for the service."))
@@ -21,26 +22,24 @@
      [:a {:href (routes/path-for-frontend :secret-create)} "secret."]]))
 
 (defn- form-secret [value index data]
-  (comp/table-row-column
-    {:name (str "form-secret-" index)
-     :key  (str "form-secret-" index)}
-    (comp/form-list-selectfield
-      {:name     (str "form-secret-select-" index)
-       :key      (str "form-secret-select-" index)
-       :value    value
-       :onChange (fn [_ _ v]
-                   (state/update-item index :secretName v cursor))}
-      (->> data
-           (map #(comp/menu-item
-                   {:name        (str "form-secret-item-" (:secretName %))
-                    :key         (str "form-secret-item-" (:secretName %))
-                    :value       (:secretName %)
-                    :primaryText (:secretName %)}))))))
+  (comp/form-list-selectfield
+    {:name     (str "form-secret-select-" index)
+     :key      (str "form-secret-select-" index)
+     :value    value
+     :onChange (fn [_ _ v]
+                 (state/update-item index :secretName v cursor))}
+    (->> data
+         (map #(comp/menu-item
+                 {:name        (str "form-secret-item-" (:secretName %))
+                  :key         (str "form-secret-item-" (:secretName %))
+                  :value       (:secretName %)
+                  :primaryText (:secretName %)})))))
 
 (defn- render-secrets
   [item index data]
   (let [{:keys [secretName]} item]
-    [(form-secret secretName index data)]))
+    [{:item  (form-secret secretName index data)
+      :width "90%"}]))
 
 (defn- form-table
   [secrets data]

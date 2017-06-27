@@ -301,7 +301,8 @@
   [props & childs]
   (select-field
     (merge props
-           {:style      {:top 7}
+           {:style      {:top   7
+                         :width "100%"}
             :labelStyle {:lineHeight "45px"
                          :top        2}}) childs))
 
@@ -571,8 +572,9 @@
           (fn [index header]
             (table-header-column
               {:key   (str "thc-" index)
-               :style el-style}
-              header)) headers)
+               :style (merge (select-keys header [:width])
+                             el-style)}
+              (:name header))) headers)
         (table-header-column
           {:key   "thc"
            :style el-style} "")))))
@@ -588,7 +590,12 @@
           {:key           (str "tr-" index)
            :rowNumber     index
            :displayBorder false}
-          (map (fn [row] row)
+          (map (fn [row]
+                 (table-row-column
+                   {:name  (str "trc-" index)
+                    :key   (str "trc-" index)
+                    :style (select-keys row [:width])}
+                   (:item row)))
                (render-items-fn item index data))
           (table-row-column
             {:key (str "trc-" index)}
@@ -603,8 +610,7 @@
   (mui
     (table
       {:key        "tbl"
-       :selectable false
-       :style      {:minWidth "700px"}}
+       :selectable false}
       (if (not (empty? headers))
         (form-table-header headers))
       (form-table-body items data render-items-fn remove-item-fn))))
@@ -641,15 +647,10 @@
           {:key           (str "tr-" index)
            :rowNumber     index
            :displayBorder false}
-          ;(map (fn [row] row)
-          ;     (render-items-fn item index))
-
           (->> (select-keys* item render-items-key)
                (map #(table-row-column
-                       {:key   (str "trc-" (:id item))}
-                       (render-item-fn % item))))
-
-          )) items)))
+                       {:key (str "trc-" (:id item))}
+                       (render-item-fn % item)))))) items)))
 
 (defn form-table-ro
   [headers items render-items-key render-items-fn]
@@ -679,7 +680,7 @@
           (table-header-column
             {:key   (str "thc-" index)
              :style header-el-style}
-            header)) headers))))
+            (:name header))) headers))))
 
 (defn form-info-table-body [items render-item-fn render-items-key item-el-style]
   (table-body
@@ -703,9 +704,9 @@
   (let [el-style {:height "20px"}]
     (mui
       (table
-        {:key        "tbl"
-         :selectable false
-         :style      {:width width}}
+        {:key         "tbl"
+         :selectable  false
+         :fixedHeader true
+         :style       {:width width}}
         (form-info-table-header headers el-style)
         (form-info-table-body items render-item-fn render-items-key el-style)))))
-

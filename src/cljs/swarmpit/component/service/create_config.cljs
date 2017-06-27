@@ -26,7 +26,7 @@
   {:backgroundColor "transparent"})
 
 (def step-content-style
-  {:minWidth "600px"})
+  {:minWidth "800px"})
 
 (def stepper-style
   {:height "60px"})

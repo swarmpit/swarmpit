@@ -7,32 +7,31 @@
 
 (def cursor [:page :service :wizard :networks])
 
-(def headers ["Name"])
+(def headers [{:name  "Name"
+               :width "90%"}])
 
 (def empty-info
   (comp/form-value "Service is not connected to any networks."))
 
 (defn- form-network [value index data]
-  (comp/table-row-column
-    {:name (str "form-network-" index)
-     :key  (str "form-network-" index)}
-    (comp/form-list-selectfield
-      {:name     (str "form-network-select-" index)
-       :key      (str "form-network-select-" index)
-       :value    value
-       :onChange (fn [_ _ v]
-                   (state/update-item index :networkName v cursor))}
-      (->> data
-           (map #(comp/menu-item
-                   {:name        (str "form-network-item-" (:networkName %))
-                    :key         (str "form-network-item-" (:networkName %))
-                    :value       (:networkName %)
-                    :primaryText (:networkName %)}))))))
+  (comp/form-list-selectfield
+    {:name     (str "form-network-select-" index)
+     :key      (str "form-network-select-" index)
+     :value    value
+     :onChange (fn [_ _ v]
+                 (state/update-item index :networkName v cursor))}
+    (->> data
+         (map #(comp/menu-item
+                 {:name        (str "form-network-item-" (:networkName %))
+                  :key         (str "form-network-item-" (:networkName %))
+                  :value       (:networkName %)
+                  :primaryText (:networkName %)})))))
 
 (defn- render-networks
   [item index data]
   (let [{:keys [networkName]} item]
-    [(form-network networkName index data)]))
+    [{:item  (form-network networkName index data)
+      :width "90%"}]))
 
 (defn- form-table
   [networks data]
@@ -71,8 +70,9 @@
 (rum/defc form-view < rum/static [networks]
   (if (empty? networks)
     empty-info
-    (comp/form-info-table ["Name" "Driver"]
+    (comp/form-info-table [{:name "Name"}
+                           {:name "Driver"}]
                           networks
                           render-item
                           render-item-keys
-                          "300px")))
+                          "20%")))
