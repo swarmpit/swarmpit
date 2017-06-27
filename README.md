@@ -30,5 +30,5 @@ Everything about building Swarmpit and setting up development environment can be
 ## Preview
 
 <kbd>
-  <img src="http://swarmpit.io/img/demo-screen-1.gif">
+  <img src="http://swarmpit.io/img/demo-screen-1.gif?asdf">
 </kbd>
