@@ -95,6 +95,16 @@
   []
   (put "/swarmpit"))
 
+;; Secret
+
+(defn create-secret
+  [secret]
+  (create-doc secret))
+
+(defn get-secret
+  []
+  (find-doc {} "secret"))
+
 ;; Docker user
 
 (defn docker-users

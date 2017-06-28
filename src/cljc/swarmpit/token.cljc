@@ -3,6 +3,7 @@
     #?@(:clj  [[clojure.string :as str]
                [swarmpit.uuid :refer [uuid]]
                [swarmpit.base64 :as base64]
+               [swarmpit.couchdb.client :as cc]
                [buddy.sign.jwt :as jwt]
                [clj-time.core :refer [now plus days]]]
         :cljs [[clojure.string :as str]
@@ -41,14 +42,14 @@
 #?(:clj
    (defn generate-jwt
      [user]
-     (let [jwt (jwt/sign (claim user) "secret")]
+     (let [jwt (jwt/sign (claim user) (:secret (cc/get-secret)))]
        (bearer jwt))))
 
 #?(:clj
    (defn verify-jwt
      [token]
      (-> (token-value token)
-         (jwt/unsign "secret"))))
+         (jwt/unsign (:secret (cc/get-secret))))))
 
 #?(:clj
    (defn user

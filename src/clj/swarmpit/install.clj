@@ -1,6 +1,7 @@
 (ns swarmpit.install
   (:require [swarmpit.couchdb.client :as cc]
-            [swarmpit.api :as api]))
+            [swarmpit.api :as api]
+            [swarmpit.uuid :as uuid]))
 
 (defn- create-database
   []
@@ -8,6 +9,12 @@
     (cc/create-database)
     (catch Exception ex
       (get-in (ex-data ex) [:body]))))
+
+(defn- create-secret
+  []
+  (cc/create-secret {:secret (uuid/uuid)
+                     :type   "secret"})
+  (println "Default token secret created"))
 
 (defn- create-admin
   []
@@ -21,7 +28,9 @@
   []
   (println "Swarmpit is starting...")
   (cc/db-version)
-  (if (not (:error (create-database)))
+  (when (not (:error (create-database)))
     (println "DB schema created"))
-  (if (empty? (cc/users))
+  (when (nil? (cc/get-secret))
+    (create-secret))
+  (when (empty? (cc/users))
     (create-admin)))
