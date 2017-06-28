@@ -42,8 +42,8 @@
         slot (get task :Slot)
         id (get task :ID)
         task-name (if (= "replicated" service-mode)
-                    (str service-name "." slot "." id)
-                    (str service-name "." id))]
+                    (str service-name "." slot)
+                    service-name)]
     (array-map
       :id id
       :taskName task-name
