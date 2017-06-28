@@ -90,7 +90,7 @@ select:-webkit-autofill:focus {
     padding-top: 10px;
     padding-bottom: 10px;
     background-color: #fff;
-    min-width: 800px;
+    min-width: 600px;
 }
 
 .form-service-group-border {

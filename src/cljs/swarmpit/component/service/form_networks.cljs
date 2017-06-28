@@ -8,7 +8,7 @@
 (def cursor [:page :service :wizard :networks])
 
 (def headers [{:name  "Name"
-               :width "90%"}])
+               :width "300px"}])
 
 (def empty-info
   (comp/form-value "Service is not connected to any networks."))

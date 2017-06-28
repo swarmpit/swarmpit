@@ -8,9 +8,9 @@
 (def cursor [:page :service :wizard :variables])
 
 (def headers [{:name  "Name"
-               :width "45%"}
+               :width "35%"}
               {:name  "Value"
-               :width "45%"}])
+               :width "35%"}])
 
 (def empty-info
   (comp/form-value "No environment variables defined for the service."))

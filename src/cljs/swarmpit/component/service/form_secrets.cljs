@@ -10,7 +10,7 @@
 (def cursor [:page :service :wizard :secrets])
 
 (def headers [{:name  "Name"
-               :width "90%"}])
+               :width "300px"}])
 
 (def empty-info
   (comp/form-value "No secrets defined for the service."))

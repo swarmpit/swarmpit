@@ -8,13 +8,13 @@
 (def cursor [:page :service :wizard :mounts])
 
 (def headers [{:name  "Type"
-               :width "20%"}
+               :width "150px"}
               {:name  "Container path"
-               :width "30%"}
+               :width "35%"}
               {:name  "Host path"
-               :width "30%"}
+               :width "35%"}
               {:name  "Read only"
-               :width "10%"}])
+               :width "50px"}])
 
 (def empty-info
   (comp/form-value "No mounts defined for the service."))

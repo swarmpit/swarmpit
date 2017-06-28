@@ -9,11 +9,11 @@
 (def cursor [:page :service :wizard :ports])
 
 (def headers [{:name  "Container port"
-               :width "30%"}
+               :width "100px"}
               {:name  "Protocol"
-               :width "30%"}
+               :width "100px"}
               {:name  "Host port"
-               :width "30%"}])
+               :width "100px"}])
 
 (def empty-info
   (comp/form-value "Service has no published ports."))
