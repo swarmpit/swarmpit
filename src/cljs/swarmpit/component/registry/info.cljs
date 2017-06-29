@@ -43,5 +43,4 @@
                                         "no"))
      (if (:withAuth item)
        [:div
-        (comp/form-item "USERNAME" (:username item))
-        (comp/form-item "PASSWORD" (:password item))])]]])
+        (comp/form-item "USERNAME" (:username item))])]]])
