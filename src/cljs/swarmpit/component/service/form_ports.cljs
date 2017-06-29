@@ -111,5 +111,4 @@
     (comp/form-info-table headers
                           ports
                           render-item
-                          render-item-keys
-                          "300px")))
+                          render-item-keys)))

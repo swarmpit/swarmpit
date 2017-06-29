@@ -593,8 +593,8 @@
           (map-indexed
             (fn [coll-index coll]
               (table-row-column
-                {:name  (str "trc-" index)
-                 :key   (str "trc-" index)
+                {:name  (str "trc-" index "-" coll-index)
+                 :key   (str "trc-" index "-" coll-index)
                  :style (select-keys (nth headers coll-index) [:width])}
                 coll))
             (render-items-fn item index data))
@@ -641,11 +641,15 @@
           (fn [index header]
             (table-header-column
               {:key   (str "thc-" index)
-               :style el-style}
-              header)) headers)))))
+               :style (merge (select-keys header [:width])
+                             el-style)}
+              (:name header))) headers)
+        (table-header-column
+          {:key   "thc"
+           :style el-style} "")))))
 
 (defn form-table-ro-body
-  [items render-items-key render-item-fn]
+  [headers items render-item-fn render-items-key]
   (table-body
     {:key                "tb"
      :displayRowCheckbox false}
@@ -656,65 +660,79 @@
            :rowNumber     index
            :displayBorder false}
           (->> (select-keys* item render-items-key)
-               (map #(table-row-column
-                       {:key (str "trc-" (:id item))}
-                       (render-item-fn % item)))))) items)))
+               (map-indexed
+                 (fn [coll-index coll]
+                   (table-row-column
+                     {:key   (str "trc-" index "-" coll-index)
+                      :style (select-keys (nth headers coll-index) [:width])}
+                     (render-item-fn coll item)))))
+          (table-header-column
+            {:key (str "trc-" index)}
+            ""))) items)))
 
 (defn form-table-ro
-  [headers items render-items-key render-items-fn]
+  [headers items render-items-fn render-items-key]
   (mui
     (table
       {:key        "tbl"
-       :selectable false
-       :style      {:minWidth "700px"}}
+       :selectable false}
       (if (not (empty? headers))
         (form-table-ro-header headers))
-      (form-table-ro-body items render-items-key render-items-fn))))
+      (form-table-ro-body headers items render-items-fn render-items-key))))
 
 ;; Info table component
 
-(defn form-info-table-header [headers header-el-style]
-  (table-header
-    {:key               "th"
-     :displaySelectAll  false
-     :adjustForCheckbox false
-     :style             {:border "none"}}
-    (table-row
-      {:key           "tr"
-       :displayBorder false
-       :style         header-el-style}
-      (map-indexed
-        (fn [index header]
-          (table-header-column
-            {:key   (str "thc-" index)
-             :style header-el-style}
-            (:name header))) headers))))
-
-(defn form-info-table-body [items render-item-fn render-items-key item-el-style]
-  (table-body
-    {:key                "tb"
-     :showRowHover       false
-     :displayRowCheckbox false}
-    (map-indexed
-      (fn [index item]
-        (table-row
-          {:key           (str "tr-" index)
-           :rowNumber     index
-           :displayBorder false
-           :style         item-el-style}
-          (->> (select-keys* item render-items-key)
-               (map #(table-row-column
-                       {:key   (str "trc-" (:id item))
-                        :style item-el-style}
-                       (render-item-fn % item)))))) items)))
-
-(defn form-info-table [headers items render-item-fn render-items-key width]
+(defn form-info-table-header [headers]
   (let [el-style {:height "20px"}]
-    (mui
-      (table
-        {:key         "tbl"
-         :selectable  false
-         :fixedHeader true
-         :style       {:width width}}
-        (form-info-table-header headers el-style)
-        (form-info-table-body items render-item-fn render-items-key el-style)))))
+    (table-header
+      {:key               "th"
+       :displaySelectAll  false
+       :adjustForCheckbox false
+       :style             {:border "none"}}
+      (table-row
+        {:key           "tr"
+         :displayBorder false
+         :style         el-style}
+        (map-indexed
+          (fn [index header]
+            (table-header-column
+              {:key   (str "thc-" index)
+               :style (merge (select-keys header [:width])
+                             el-style)}
+              (:name header))) headers)
+        (table-header-column
+          {:key   "thc"
+           :style el-style} "")))))
+
+(defn form-info-table-body [headers items render-item-fn render-items-key]
+  (let [el-style {:height "20px"}]
+    (table-body
+      {:key                "tb"
+       :showRowHover       false
+       :displayRowCheckbox false}
+      (map-indexed
+        (fn [index item]
+          (table-row
+            {:key           (str "tr-" index)
+             :rowNumber     index
+             :displayBorder false
+             :style         el-style}
+            (->> (select-keys* item render-items-key)
+                 (map-indexed
+                   (fn [coll-index coll]
+                     (table-row-column
+                       {:key   (str "trc-" index "-" coll-index)
+                        :style (merge (select-keys (nth headers coll-index) [:width])
+                                      el-style)}
+                       (render-item-fn coll item)))))
+            (table-header-column
+              {:key   (str "trc-" index)
+               :style el-style} ""))) items))))
+
+(defn form-info-table [headers items render-item-fn render-items-key]
+  (mui
+    (table
+      {:key        "tbl"
+       :selectable false}
+      (form-info-table-header headers)
+      (form-info-table-body headers items render-item-fn render-items-key))))

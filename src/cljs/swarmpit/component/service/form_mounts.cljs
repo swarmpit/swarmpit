@@ -133,5 +133,4 @@
     (comp/form-info-table headers
                           mounts
                           render-item
-                          render-item-keys
-                          "100%")))
+                          render-item-keys)))

@@ -8,7 +8,9 @@
 (def cursor [:page :service :wizard :networks])
 
 (def headers [{:name  "Name"
-               :width "300px"}])
+               :width "300px"}
+              {:name  "Driver"
+               :width "200px"}])
 
 (def empty-info
   (comp/form-value "Service is not connected to any networks."))
@@ -34,7 +36,8 @@
 
 (defn- form-table
   [networks data]
-  (comp/form-table-headless headers
+  (comp/form-table-headless [{:name  "Name"
+                              :width "300px"}]
                             networks
                             data
                             render-networks
@@ -61,17 +64,15 @@
 (rum/defc form-update < rum/static [networks]
   (if (empty? networks)
     empty-info
-    (comp/form-table-ro ["Name" "Driver"]
+    (comp/form-table-ro headers
                         networks
-                        render-item-keys
-                        render-item)))
+                        render-item
+                        render-item-keys)))
 
 (rum/defc form-view < rum/static [networks]
   (if (empty? networks)
     empty-info
-    (comp/form-info-table [{:name "Name"}
-                           {:name "Driver"}]
+    (comp/form-info-table headers
                           networks
                           render-item
-                          render-item-keys
-                          "20%")))
+                          render-item-keys)))

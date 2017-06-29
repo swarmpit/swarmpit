@@ -77,5 +77,4 @@
     (comp/form-info-table headers
                           variables
                           render-item
-                          render-item-keys
-                          "100vh")))
+                          render-item-keys)))

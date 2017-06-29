@@ -81,5 +81,4 @@
     (comp/form-info-table headers
                           secrets
                           render-item
-                          render-item-keys
-                          "300px")))
+                          render-item-keys)))
