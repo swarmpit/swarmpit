@@ -4,7 +4,7 @@
   :license {:name "Eclipse Public License"
             :url  "http://www.eclipse.org/legal/epl-v10.html"}
   :dependencies [[org.clojure/clojure "1.9.0-alpha16"]
-                 [org.clojure/clojurescript "1.9.542"]
+                 [org.clojure/clojurescript "1.9.660"]
                  [org.clojure/core.memoize "0.5.8"]
                  [org.clojure/core.async "0.3.443"]
                  [cljsjs/react "15.4.2-2"]
@@ -46,6 +46,7 @@
                                :asset-path           "js/out"
                                :output-to            "resources/public/js/main.js"
                                :output-dir           "resources/public/js/out"
+                               :parallel-build       true
                                :source-map-timestamp true}}
                {:id           "min"
                 :source-paths ["src/cljs" "src/cljc"]
@@ -55,6 +56,8 @@
                                :output-to            "resources/public/js/main.js"
                                :output-dir           "target"
                                :source-map-timestamp true
+                               :parallel-build       true
+                               :closure-defines      {"goog.DEBUG" false}
                                :optimizations        :advanced
                                :pretty-print         false}}]}
   :figwheel {:css-dirs       ["resources/public/css"]
