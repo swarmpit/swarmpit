@@ -21,6 +21,8 @@ docker stack deploy -c swarmpit/docker-compose.yml swarmpit
 
 [This stack](docker-compose.yml) is a composition of Swarmpit and CouchDB. Feel free to edit the stackfile to change a port on which will be Swarmpit published and we're strongly recommending you to specify `db-data` volume driver to shared-volume driver of your choice. Alternatively, you can link db service to the specific node by using [constraint](https://docs.docker.com/compose/compose-file/#placement).
 
+Swarmpit has default port `888`. You can sign into Swarmpit app with default admin account - username: `admin`, password: `admin`.  
+
 ## Development
 
 Swarmpit is written purely in Clojure and utilizes React on front-end. CouchDB is just used to store data, that cannot be stored directly in Docker API.
