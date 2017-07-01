@@ -4,6 +4,8 @@
             [swarmpit.docker.client :as dc]
             [swarmpit.docker.mapper.inbound :as dmi]
             [swarmpit.docker.mapper.outbound :as dmo]
+            [swarmpit.dockerauth.client :as dac]
+            [swarmpit.dockerregistry.client :as drc]
             [swarmpit.dockerhub.client :as dhc]
             [swarmpit.dockerhub.mapper.inbound :as dhmi]
             [swarmpit.registry.client :as rc]
@@ -242,10 +244,10 @@
 
 (defn dockerhub-tags
   [repository-name repository-user]
-  (let [user (dockeruser-by-username repository-user)]
-    (->> (dhc/tags repository-name user)
-         (map :name)
-         (into []))))
+  (let [user (dockeruser-by-username repository-user)
+        token (:token (dac/token user repository-name))]
+    (->> (drc/tags token repository-name)
+         :tags)))
 
 ;;; Repository V2 API
 
