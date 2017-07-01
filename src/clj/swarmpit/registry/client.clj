@@ -22,7 +22,7 @@
           (throw
             (ex-info "Registry error!"
                      {:status status
-                      :body   {:error response}})))))))
+                      :body   response})))))))
 
 (defn- get
   [registry api headers params]
@@ -31,13 +31,6 @@
                  :headers      headers
                  :query-params params}]
     (execute @(http/get url options))))
-
-(defn- post
-  [registry api headers body]
-  (let [url (build-url registry api)
-        options {:headers (merge headers {"Content-Type" "application/json"})
-                 :body    (generate-string body)}]
-    (execute @(http/post url options))))
 
 (defn- basic-auth
   [registry]
