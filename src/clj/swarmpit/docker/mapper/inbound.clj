@@ -65,8 +65,8 @@
        (into [])))
 
 (defn ->service-ports
-  [service]
-  (->> (get-in service [:Spec :EndpointSpec :Ports])
+  [service-spec]
+  (->> (get-in service-spec [:EndpointSpec :Ports])
        (map (fn [p] {:containerPort (:TargetPort p)
                      :protocol      (:Protocol p)
                      :hostPort      (:PublishedPort p)}))
@@ -78,16 +78,16 @@
                      (:Target network)) networks)))
 
 (defn ->service-networks
-  [service networks]
-  (->> (get-in service [:Spec :TaskTemplate :Networks])
+  [service-spec networks]
+  (->> (get-in service-spec [:TaskTemplate :Networks])
        (map (fn [n] (->service-network n networks)))
-       (map (fn [n] {:networkName   (:Name n)
-                     :driver (:Driver n)}))
+       (map (fn [n] {:networkName (:Name n)
+                     :driver      (:Driver n)}))
        (into [])))
 
 (defn ->service-mounts
-  [service]
-  (->> (get-in service [:Spec :TaskTemplate :ContainerSpec :Mounts])
+  [service-spec]
+  (->> (get-in service-spec [:TaskTemplate :ContainerSpec :Mounts])
        (map (fn [v] {:containerPath (:Target v)
                      :hostPath      (:Source v)
                      :type          (:Type v)
@@ -95,8 +95,8 @@
        (into [])))
 
 (defn ->service-variables
-  [service]
-  (->> (get-in service [:Spec :TaskTemplate :ContainerSpec :Env])
+  [service-spec]
+  (->> (get-in service-spec [:TaskTemplate :ContainerSpec :Env])
        (map (fn [p]
               (let [variable (str/split p #"=")]
                 {:name  (first variable)
@@ -104,14 +104,14 @@
        (into [])))
 
 (defn ->service-secrets
-  [service]
-  (->> (get-in service [:Spec :TaskTemplate :ContainerSpec :Secrets])
+  [service-spec]
+  (->> (get-in service-spec [:TaskTemplate :ContainerSpec :Secrets])
        (map (fn [s] {:secretName (:SecretName s)}))
        (into [])))
 
 (defn ->service-deployment
-  [service]
-  (let [update-config (get-in service [:Spec :UpdateConfig])]
+  [service-spec]
+  (let [update-config (:UpdateConfig service-spec)]
     {:parallelism   (or (:Parallelism update-config) 1)
      :delay         (or (:Delay update-config) 0)
      :failureAction (or (:FailureAction update-config) "pause")}))
@@ -145,13 +145,14 @@
 
 (defn ->service
   [service tasks nodes networks]
-  (let [service-mode (str/lower-case (name (first (keys (get-in service [:Spec :Mode])))))
-        service-name (get-in service [:Spec :Name])
-        service-id (get service :ID)
+  (let [service-spec (:Spec service)
+        service-mode (str/lower-case (name (first (keys (:Mode service-spec)))))
+        service-name (:Name service-spec)
+        service-id (:ID service)
         service-tasks (filter #(= (:ServiceID %) service-id) tasks)
-        replicas (get-in service [:Spec :Mode :Replicated :Replicas])
+        replicas (get-in service-spec [:Mode :Replicated :Replicas])
         replicas-running (->service-replicas-running service-tasks)
-        image (get-in service [:Spec :TaskTemplate :ContainerSpec :Image])
+        image (get-in service-spec [:TaskTemplate :ContainerSpec :Image])
         image-info (str/split image #"@")
         image-name (first image-info)
         image-digest (second image-info)
@@ -159,8 +160,8 @@
     (array-map
       :id service-id
       :version (get-in service [:Version :Index])
-      :createdAt (date (get service :CreatedAt))
-      :updatedAt (date (get service :UpdatedAt))
+      :createdAt (date (:CreatedAt service))
+      :updatedAt (date (:UpdatedAt service))
       :repository {:image       image-name
                    :imageDigest image-digest
                    :name        (first image-segments)
@@ -171,12 +172,12 @@
       :state (->service-state replicas replicas-running service-mode)
       :status {:info   (->service-info-status replicas replicas-running service-mode)
                :update (->service-update-status service)}
-      :ports (->service-ports service)
-      :networks (->service-networks service networks)
-      :mounts (->service-mounts service)
-      :secrets (->service-secrets service)
-      :variables (->service-variables service)
-      :deployment (->service-deployment service)
+      :ports (->service-ports service-spec)
+      :networks (->service-networks service-spec networks)
+      :mounts (->service-mounts service-spec)
+      :secrets (->service-secrets service-spec)
+      :variables (->service-variables service-spec)
+      :deployment (->service-deployment service-spec)
       :tasks (->tasks service-tasks nodes service-name service-mode))))
 
 (defn ->services
