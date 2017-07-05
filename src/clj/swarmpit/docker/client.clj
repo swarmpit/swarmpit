@@ -6,7 +6,7 @@
             [cheshire.core :refer [parse-string generate-string]]
             [swarmpit.base64 :as base64]))
 
-(def ^:private api-version "v1.27")
+(def ^:private api-version "v1.28")
 (def ^:private base-cmd ["curl" "--unix-socket" "/var/run/docker.sock" "-w" "%{http_code}"])
 
 (defn- map-headers
