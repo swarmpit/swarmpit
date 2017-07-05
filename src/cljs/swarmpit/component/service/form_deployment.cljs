@@ -1,49 +1,94 @@
 (ns swarmpit.component.service.form-deployment
   (:require [material.component :as comp]
             [swarmpit.component.state :as state]
+            [sablono.core :refer-macros [html]]
             [rum.core :as rum]))
 
 (enable-console-print!)
 
 (def cursor [:page :service :wizard :deployment])
 
-(defn- form-parallelism [value]
+(defn- form-update-parallelism [value]
   (comp/form-comp
     "PARALLELISM"
     (comp/text-field
-      {:name     "parallelism"
-       :key      "parallelism"
+      {:name     "update-parallelism"
+       :key      "update-parallelism"
        :type     "number"
        :min      0
        :value    value
        :onChange (fn [_ v]
-                   (state/update-value [:parallelism] (js/parseInt v) cursor))})))
+                   (state/update-value [:update :parallelism] (js/parseInt v) cursor))})))
 
-(defn- form-delay [value]
+(defn- form-update-delay [value]
   (comp/form-comp
     "DELAY"
     (comp/text-field
-      {:name     "delay"
-       :key      "delay"
+      {:name     "update-delay"
+       :key      "update-delay"
        :type     "number"
        :min      0
        :value    value
        :onChange (fn [_ v]
-                   (state/update-value [:delay] (js/parseInt v) cursor))})))
+                   (state/update-value [:update :delay] (js/parseInt v) cursor))})))
 
-(defn- form-failure-action [value]
+(defn- form-update-failure-action [value]
   (comp/form-comp
     "FAILURE ACTION"
     (comp/select-field
       {:value    value
        :onChange (fn [_ _ v]
-                   (state/update-value [:failureAction] v cursor))}
+                   (state/update-value [:update :failureAction] v cursor))}
       (comp/menu-item
-        {:key         "fdi1"
+        {:key         "fdiu1"
          :value       "pause"
          :primaryText "pause"})
       (comp/menu-item
-        {:key         "fdi2"
+        {:key         "fdiu2"
+         :value       "continue"
+         :primaryText "continue"})
+      (comp/menu-item
+        {:key         "fdiu3"
+         :value       "rollback"
+         :primaryText "rollback"}))))
+
+(defn- form-rollback-parallelism [value]
+  (comp/form-comp
+    "PARALLELISM"
+    (comp/text-field
+      {:name     "rollback-parallelism"
+       :key      "rollback-parallelism"
+       :type     "number"
+       :min      0
+       :value    value
+       :onChange (fn [_ v]
+                   (state/update-value [:rollback :parallelism] (js/parseInt v) cursor))})))
+
+(defn- form-rollback-delay [value]
+  (comp/form-comp
+    "DELAY"
+    (comp/text-field
+      {:name     "rollback-delay"
+       :key      "rollback-delay"
+       :type     "number"
+       :min      0
+       :value    value
+       :onChange (fn [_ v]
+                   (state/update-value [:rollback :delay] (js/parseInt v) cursor))})))
+
+(defn- form-rollback-failure-action [value]
+  (comp/form-comp
+    "FAILURE ACTION"
+    (comp/select-field
+      {:value    value
+       :onChange (fn [_ _ v]
+                   (state/update-value [:rollback :failureAction] v cursor))}
+      (comp/menu-item
+        {:key         "fdir1"
+         :value       "pause"
+         :primaryText "pause"})
+      (comp/menu-item
+        {:key         "fdir2"
          :value       "continue"
          :primaryText "continue"}))))
 
@@ -59,13 +104,20 @@
 
 (rum/defc form < rum/reactive []
   (let [{:keys [autoredeploy
-                parallelism
-                delay
-                failureAction]} (state/react cursor)]
+                update
+                rollback]} (state/react cursor)]
     [:div.form-edit
      (comp/form
        {}
-       (form-parallelism parallelism)
-       (form-delay delay)
-       (form-failure-action failureAction)
-       (form-autoredeploy autoredeploy))]))
+       (form-autoredeploy autoredeploy)
+       (html (comp/form-subsection "Update Config"))
+       (form-update-parallelism (:parallelism update))
+       (form-update-delay (:delay update))
+       (form-update-failure-action (:failureAction update))
+       (when (= "rollback" (:failureAction update))
+         (html
+           [:div
+            (comp/form-subsection "Rollback Config")
+            (form-rollback-parallelism (:parallelism rollback))
+            (form-rollback-delay (:delay rollback))
+            (form-rollback-failure-action (:failureAction rollback))])))]))

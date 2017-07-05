@@ -32,7 +32,14 @@
         (str "Service removing failed. Reason: " (:error response))))))
 
 (rum/defc form < rum/static [item]
-  (let [id (:id item)]
+  (let [id (:id item)
+        autoredeloy (get-in item [:deployment :autoredeploy])
+        update-delay (get-in item [:deployment :update :delay])
+        update-parallelism (get-in item [:deployment :update :parallelism])
+        update-failure-action (get-in item [:deployment :update :failureAction])
+        rollback-delay (get-in item [:deployment :rollback :delay])
+        rollback-parallelism (get-in item [:deployment :rollback :parallelism])
+        rollback-failure-action (get-in item [:deployment :rollback :failureAction])]
     [:div
      [:div.form-panel
       [:div.form-panel-left
@@ -78,9 +85,19 @@
        (variables/form-view (:variables item))]
       [:div.form-view-group
        (comp/form-section "Deployment")
-       (comp/form-item "PARALLELISM" (get-in item [:deployment :parallelism]))
-       (comp/form-item "DELAY" (get-in item [:deployment :delay]))
-       (comp/form-item "ON FAILURE" (get-in item [:deployment :failureAction]))]
+       (comp/form-item "AUTOREDEPLOY" (if autoredeloy
+                                        "on"
+                                        "off"))
+       (comp/form-subsection "Update Config")
+       (comp/form-item "PARALLELISM" update-parallelism)
+       (comp/form-item "DELAY" update-delay)
+       (comp/form-item "ON FAILURE" update-failure-action)
+       (if (= "rollback" update-failure-action)
+         [:div
+          (comp/form-subsection "Rollback Config")
+          (comp/form-item "PARALLELISM" (get-in item [:deployment :rollback :parallelism]))
+          (comp/form-item "DELAY" (get-in item [:deployment :rollback :delay]))
+          (comp/form-item "ON FAILURE" (get-in item [:deployment :rollback :failureAction]))])]
       [:div.form-view-group
        (comp/form-section "Tasks")
        (comp/list-table tasks/headers

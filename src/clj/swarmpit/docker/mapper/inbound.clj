@@ -109,9 +109,16 @@
        (map (fn [s] {:secretName (:SecretName s)}))
        (into [])))
 
-(defn ->service-deployment
+(defn ->service-deployment-update
   [service-spec]
   (let [update-config (:UpdateConfig service-spec)]
+    {:parallelism   (or (:Parallelism update-config) 1)
+     :delay         (or (:Delay update-config) 0)
+     :failureAction (or (:FailureAction update-config) "pause")}))
+
+(defn ->service-deployment-rollback
+  [service-spec]
+  (let [update-config (:RollbackConfig service-spec)]
     {:parallelism   (or (:Parallelism update-config) 1)
      :delay         (or (:Delay update-config) 0)
      :failureAction (or (:FailureAction update-config) "pause")}))
@@ -177,7 +184,9 @@
       :mounts (->service-mounts service-spec)
       :secrets (->service-secrets service-spec)
       :variables (->service-variables service-spec)
-      :deployment (->service-deployment service-spec)
+      :deployment {:update       (->service-deployment-update service-spec)
+                   :rollback     (->service-deployment-rollback service-spec)
+                   :autoredeploy false}
       :tasks (->tasks service-tasks nodes service-name service-mode))))
 
 (defn ->services

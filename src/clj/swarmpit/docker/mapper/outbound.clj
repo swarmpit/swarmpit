@@ -70,10 +70,17 @@
 
 (defn ->service-update-config
   [service]
-  (let [deployment (:deployment service)]
-    {:Parallelism   (:parallelism deployment)
-     :Delay         (:delay deployment)
-     :FailureAction (:failureAction deployment)}))
+  (let [update (get-in service [:deployment :update])]
+    {:Parallelism   (:parallelism update)
+     :Delay         (:delay update)
+     :FailureAction (:failureAction update)}))
+
+(defn ->service-rollback-config
+  [service]
+  (let [rollback (get-in service [:deployment :rollback])]
+    {:Parallelism   (:parallelism rollback)
+     :Delay         (:delay rollback)
+     :FailureAction (:failureAction rollback)}))
 
 (defn ->service-image-registry
   [service registry]
@@ -90,16 +97,17 @@
 
 (defn ->service
   [service secrets image]
-  {:Name         (:serviceName service)
-   :TaskTemplate {:ContainerSpec
-                            {:Image   image
-                             :Mounts  (->service-mounts service)
-                             :Secrets secrets
-                             :Env     (->service-variables service)}
-                  :Networks (->service-networks service)}
-   :Mode         (->service-mode service)
-   :UpdateConfig (->service-update-config service)
-   :EndpointSpec {:Ports (->service-ports service)}})
+  {:Name           (:serviceName service)
+   :TaskTemplate   {:ContainerSpec
+                              {:Image   image
+                               :Mounts  (->service-mounts service)
+                               :Secrets secrets
+                               :Env     (->service-variables service)}
+                    :Networks (->service-networks service)}
+   :Mode           (->service-mode service)
+   :UpdateConfig   (->service-update-config service)
+   :RollbackConfig (->service-rollback-config service)
+   :EndpointSpec   {:Ports (->service-ports service)}})
 
 (defn ->network-ipam
   [network]
