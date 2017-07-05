@@ -9,7 +9,12 @@
 
 (def cursor [:page :registry :list])
 
-(def headers ["Name" "Url" "Secure"])
+(def headers [{:name  "Name"
+               :width "20%"}
+              {:name  "Url"
+               :width "50%"}
+              {:name  "Secure"
+               :width "30%"}])
 
 (def render-item-keys
   [[:name] [:url] [:withAuth]])

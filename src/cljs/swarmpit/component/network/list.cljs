@@ -10,7 +10,16 @@
 
 (def cursor [:page :network :list])
 
-(def headers ["Name" "Driver" "Subnet" "Gateway" ""])
+(def headers [{:name  "Name"
+               :width "20%"}
+              {:name  "Driver"
+               :width "20%"}
+              {:name  "Subnet"
+               :width "20%"}
+              {:name  "Gateway"
+               :width "20%"}
+              {:name  ""
+               :width "20%"}])
 
 (def render-item-keys
   [[:networkName] [:driver] [:ipam :subnet] [:ipam :gateway] [:internal]])

@@ -10,7 +10,10 @@
 
 (def cursor [:page :secret :list])
 
-(def headers ["Name" "Created"])
+(def headers [{:name  "Name"
+               :width "50%"}
+              {:name  "Created"
+               :width "50%"}])
 
 (def render-item-keys
   [[:secretName] [:createdAt]])

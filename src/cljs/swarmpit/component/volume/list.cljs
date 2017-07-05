@@ -10,7 +10,10 @@
 
 (def cursor [:page :volume :list])
 
-(def headers ["Name" "Driver"])
+(def headers [{:name  "Name"
+               :width "50%"}
+              {:name  "Driver"
+               :width "50%"}])
 
 (def render-item-keys
   [[:volumeName] [:driver]])

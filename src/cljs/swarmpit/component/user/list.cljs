@@ -9,7 +9,12 @@
 
 (def cursor [:page :user :list])
 
-(def headers ["Username" "Email" "Is Admin"])
+(def headers [{:name  "Username"
+               :width "40%"}
+              {:name  "Email"
+               :width "40%"}
+              {:name  "Is Admin"
+               :width "20%"}])
 
 (def render-item-keys
   [[:username] [:email] [:role]])

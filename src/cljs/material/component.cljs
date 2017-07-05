@@ -443,11 +443,12 @@
       (map-indexed
         (fn [index header]
           (table-header-column
-            {:key (str "thc-" index)}
-            header)) headers))))
+            {:key   (str "thc-" index)
+             :style (select-keys header [:width])}
+            (:name header))) headers))))
 
 (defn list-table-body
-  [items render-item-fn render-items-key]
+  [headers items render-item-fn render-items-key]
   (let [item-id (fn [item] (if (contains? item :id)
                              (:id item)
                              (:_id item)))]
@@ -462,9 +463,21 @@
              :style     {:cursor "pointer"}
              :rowNumber index}
             (->> (select-keys* item render-items-key)
-                 (map #(table-row-column
-                         {:key (str "trc-" (item-id item))}
-                         (render-item-fn % item)))))) items))))
+
+                 (map-indexed
+                   (fn [coll-index coll]
+                     (table-row-column
+                       {:key   (str "trc-" index "-" coll-index)
+                        :style (select-keys (nth headers coll-index) [:width])}
+                       (render-item-fn coll item))))
+
+
+
+                 ;(map #(table-row-column
+                 ;        {:key (str "trc-" (item-id item))}
+                 ;        (render-item-fn % item)))
+
+                 ))) items))))
 
 (defn list-table-paging
   [offset total limit on-prev-fn on-next-fn]
@@ -505,7 +518,8 @@
                         (dispatch!
                           (onclick-handler-fn (item i))))}
         (list-table-header headers)
-        (list-table-body items
+        (list-table-body headers
+                         items
                          render-item-fn
                          render-items-key)))))
 

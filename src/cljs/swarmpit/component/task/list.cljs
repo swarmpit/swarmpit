@@ -13,7 +13,16 @@
 
 (def cursor [:page :task :list])
 
-(def headers ["Name" "Service" "Image" "Node" "Status"])
+(def headers [{:name  "Name"
+               :width "20%"}
+              {:name  "Service"
+               :width "20%"}
+              {:name  "Image"
+               :width "30%"}
+              {:name  "Node"
+               :width "15%"}
+              {:name  "Status"
+               :width "15%"}])
 
 (def render-item-keys
   [[:taskName] [:serviceName] [:repository :image] [:node :nodeName] [:state]])

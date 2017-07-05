@@ -8,7 +8,12 @@
 
 (def cursor [:page :dockerhub :list])
 
-(def headers ["Username" "Name" "Company"])
+(def headers [{:name  "Username"
+               :width "40%"}
+              {:name  "Name"
+               :width "30%"}
+              {:name  "Company"
+               :width "30%"}])
 
 (def render-item-keys
   [[:username] [:name] [:company]])
