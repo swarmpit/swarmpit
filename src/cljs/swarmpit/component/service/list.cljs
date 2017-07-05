@@ -14,14 +14,25 @@
 
 (def cursor [:page :service :list])
 
-(def headers ["Name" "Image" "Mode" "Replicas" "Status"])
+(def headers [{:name  "Name"
+               :width "20%"}
+              {:name  "Image"
+               :width "30%"}
+              {:name  "Mode"
+               :width "10%"}
+              {:name  "Replicas"
+               :width "10%"}
+              {:name  "Status"
+               :width "15%"}
+              {:name  "Update"
+               :width "15%"}])
 
 (def render-item-keys
-  [[:serviceName] [:repository :image] [:mode] [:status :info] [:state]])
+  [[:serviceName] [:repository :image] [:mode] [:status :info] [:state] [:status :update]])
 
 (defn- render-item-update-state [value]
-  (if value
-    (comp/label-update "updating")))
+  (if (some? value)
+    (comp/label-update value)))
 
 (defn- render-item-state [value]
   (case value
@@ -30,15 +41,12 @@
     "partly running" (comp/label-yellow value)))
 
 (defn- render-item
-  [item service]
-  (let [update (get-in service [:status :update])
-        value (val item)]
+  [item _]
+  (let [value (val item)]
     (case (key item)
-      :state (html [:span
-                    [:span (render-item-state value)]
-                    [:span " "]
-                    [:span (render-item-update-state update)]])
+      :state (render-item-state value)
       :info (comp/label-info value)
+      :update (render-item-update-state value)
       value)))
 
 (defn- onclick-handler
