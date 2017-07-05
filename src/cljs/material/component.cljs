@@ -412,6 +412,10 @@
   [:div.form-view-row
    [:span.form-row-section label]])
 
+(defn form-subsection [label]
+  [:div.form-view-row
+   [:span.form-row-subsection label]])
+
 (defn form-section-add
   [label add-item-fn]
   [:div.form-view-row

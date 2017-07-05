@@ -143,6 +143,11 @@ select:-webkit-autofill:focus {
     color: rgba(0, 0, 0, 0.298039);
 }
 
+.form-row-subsection {
+    font-size: 15px;
+    color: rgba(0, 0, 0, 0.298039);
+}
+
 .form-row-field {
     line-height: 24px;
     width: 256px;
