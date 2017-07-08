@@ -136,10 +136,7 @@
 
 (defn ->service-update-status
   [service]
-  (let [state (get-in service [:UpdateStatus :State])]
-    (if (some? state)
-      (str/replace state #"_" " ")
-      state)))
+  (get-in service [:UpdateStatus :Message]))
 
 (defn ->service-state
   [service-replicas service-replicas-running service-mode]
