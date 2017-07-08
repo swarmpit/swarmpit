@@ -12,6 +12,9 @@
 
 (def cursor [:page :service :wizard :image :other])
 
+(def headers [{:name  "Name"
+               :width "100%"}])
+
 (defn- render-item
   [item]
   (let [value (val item)]
@@ -73,8 +76,9 @@
                                                     {}
                                                     {:repository (repository i)
                                                      :registry   registry})))}
-        (comp/list-table-header ["Name"])
-        (comp/list-table-body data
+        (comp/list-table-header headers)
+        (comp/list-table-body headers
+                              data
                               render-item
                               [[:name]])))))
 

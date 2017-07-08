@@ -10,6 +10,11 @@
 
 (def cursor [:page :service :wizard :image :public])
 
+(def headers [{:name  "Name"
+               :width "50%"}
+              {:name  "Description"
+               :width "50%"}])
+
 (defn- render-item
   [item]
   (let [value (val item)]
@@ -57,8 +62,9 @@
                                                     {}
                                                     {:repository (repository i)
                                                      :registry   "dockerhub"})))}
-        (comp/list-table-header ["Name" "Description"])
-        (comp/list-table-body results
+        (comp/list-table-header headers)
+        (comp/list-table-body headers
+                              results
                               render-item
                               [[:name] [:description]])
         (if (not (empty? results))

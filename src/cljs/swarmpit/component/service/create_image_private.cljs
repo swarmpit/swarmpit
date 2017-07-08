@@ -12,6 +12,11 @@
 
 (def cursor [:page :service :wizard :image :private])
 
+(def headers [{:name  "Name"
+               :width "50%"}
+              {:name  "Description"
+               :width "50%"}])
+
 (defn- render-item
   [item]
   (val item))
@@ -73,8 +78,9 @@
                                                     {:repository     (repository i)
                                                      :repositoryUser user
                                                      :registry       "dockerhub"})))}
-        (comp/list-table-header ["Name" "Description"])
-        (comp/list-table-body data
+        (comp/list-table-header headers)
+        (comp/list-table-body headers
+                              data
                               render-item
                               [[:name] [:description]])))))
 
