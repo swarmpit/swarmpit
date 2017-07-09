@@ -53,18 +53,18 @@
   [item]
   (routes/path-for-frontend :service-info (select-keys item [:id])))
 
-(defn- filter-cranky-items
+(defn- filter-unhealthy-items
   [items name]
   (let [is-running (fn [item] (= "running" (:state item)))
-        is-updating (fn [item] (get-in item [:status :update]))]
+        is-updating (fn [item] (= "updating" (get-in item [:status :update])))]
     (filter #(and (string/includes? (:serviceName %) name)
                   (and (not (is-running %))
                        (not (is-updating %)))) items)))
 
 (defn- filter-items
-  [items name cranky?]
-  (if cranky?
-    (filter-cranky-items items name)
+  [items name unhealthy?]
+  (if unhealthy?
+    (filter-unhealthy-items items name)
     (filter #(string/includes? (:serviceName %) name) items)))
 
 (defn- data-handler
@@ -79,7 +79,7 @@
 (defn- init-state
   [services]
   (state/set-value {:filter {:serviceName ""
-                             :cranky      false}
+                             :unhealthy   false}
                     :data   services} cursor))
 
 (def refresh-state-mixin
@@ -96,7 +96,7 @@
   (let [{:keys [filter data]} (state/react cursor)
         filtered-items (filter-items data
                                      (:serviceName filter)
-                                     (:cranky filter))]
+                                     (:unhealthy filter))]
     [:div
      [:div.form-panel
       [:div.form-panel-left
@@ -106,10 +106,10 @@
                       (state/update-value [:filter :serviceName] v cursor))})
        [:span.form-panel-space]
        (comp/panel-checkbox
-         {:checked (:cranky filter)
+         {:checked (:unhealthy filter)
           :label   "Show unhealthy"
           :onCheck (fn [_ v]
-                     (state/update-value [:filter :cranky] v cursor))})]
+                     (state/update-value [:filter :unhealthy] v cursor))})]
       [:div.form-panel-right
        (comp/mui
          (comp/raised-button
