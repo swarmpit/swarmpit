@@ -24,6 +24,7 @@
                  [cheshire "5.6.3"]
                  [digest "1.4.5"]
                  [me.raynes/conch "0.8.0"]
+                 [org.immutant/immutant "2.1.9"]
                  [com.cemerick/url "0.1.1"]
                  [com.cemerick/friend "0.2.3"]
                  [com.cognitect/transit-cljs "0.8.239"]]
