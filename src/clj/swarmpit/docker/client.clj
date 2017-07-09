@@ -221,3 +221,10 @@
   [id]
   (-> (str "/nodes/" id)
       (get)))
+
+;; Images
+
+(defn image
+  [name]
+  (-> (str "/images/" name "/json")
+      (get)))
