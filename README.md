@@ -1,6 +1,6 @@
 [![swarmpit](http://swarmpit.io/img/logo-swarmpit.svg)](http://swarmpit.io)
 
-Lightweight Docker Swarm orchestration
+Lightweight Docker Swarm orchestration.
 
 ![screenshot](http://swarmpit.io/img/example.jpg)
 
