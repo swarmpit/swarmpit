@@ -32,12 +32,12 @@ Swarmpit is written purely in Clojure and utilizes React on front-end. CouchDB i
 
 Everything about building Swarmpit and setting up development environment can be found in [CONTRIBUTING.md](CONTRIBUTING.md)
 
-## Preview
+## Demo
+
+[![Try in PWD](https://cdn.rawgit.com/play-with-docker/stacks/cff22438/assets/images/button.png)](http://play-with-docker.com?stack=/swarmpit/swarmpit/latest) 
+
+Deploys Swarmpit to play-with-docker sandbox. Use the following credentials for Swarmpit: `admin/admin`
 
 <kbd>
   <img src="http://swarmpit.io/img/demo-screen-1.gif?asdf">
 </kbd></br></br>
-
-[![Try in PWD](https://cdn.rawgit.com/play-with-docker/stacks/cff22438/assets/images/button.png)](http://play-with-docker.com?stack=/swarmpit/swarmpit/latest)
-
-Use the following credentials to access the service: **admin**/**admin**
