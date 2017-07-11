@@ -34,28 +34,30 @@
 
 (defn- basic-auth
   [registry]
-  {"Authorization" (token/generate-basic (:username registry)
-                                         (:password registry))})
-
-(defn- headers
-  [registry]
-  (if (:withAuth registry)
-    (basic-auth registry)
-    nil))
+  (when (:withAuth registry)
+    {"Authorization" (token/generate-basic (:username registry)
+                                           (:password registry))}))
 
 (defn repositories
   [registry]
-  (let [headers (headers registry)]
+  (let [headers (basic-auth registry)]
     (->> (get registry "/_catalog" headers nil)
          :repositories)))
 
 (defn info
   [registry]
-  (let [headers (headers registry)]
+  (let [headers (basic-auth registry)]
     (get registry "/" headers nil)))
 
 (defn tags
   [registry repository-name]
-  (let [headers (headers registry)
+  (let [headers (basic-auth registry)
         api (str "/" repository-name "/tags/list")]
     (get registry api headers nil)))
+
+(defn manifest
+  [registry repository-name repository-tag]
+  (let [headers (basic-auth registry)
+        api (str "/" repository-name "/manifests/" repository-tag)]
+    (get registry api (merge headers
+                             {"Accept" "application/vnd.docker.distribution.manifest.v2+json"}) nil)))

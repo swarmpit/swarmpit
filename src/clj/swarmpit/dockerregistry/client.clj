@@ -33,3 +33,8 @@
   [token repository]
   (let [api (str "/" repository "/tags/list")]
     (get api token {} nil)))
+
+(defn manifest
+  [token repository-name repository-tag]
+  (let [api (str "/" repository-name "/manifests/" repository-tag)]
+    (get api token {"Accept" "application/vnd.docker.distribution.manifest.v2+json"} nil)))
