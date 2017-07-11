@@ -2,7 +2,7 @@
 
 Lightweight Docker Swarm management UI
 
-[![gitter](https://badges.gitter.im/trezor/community.svg)](https://gitter.im/swarmpit_io/swarmpit)
+[![gitter](https://badges.gitter.im/trezor/community.svg)](https://gitter.im/swarmpit_io/swarmpit) [![Build Status](https://travis-ci.org/swarmpit/swarmpit.svg?branch=master)](https://travis-ci.org/swarmpit/swarmpit)
 
 
 ![screenshot](http://swarmpit.io/img/example.jpg)
