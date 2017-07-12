@@ -24,8 +24,8 @@
   [query page]
   (ajax/GET (routes/path-for-backend :dockerhub-repo)
             {:headers {"Authorization" (storage/get "token")}
-             :params  {:repositoryQuery query
-                       :repositoryPage  page}
+             :params  {:query query
+                       :page  page}
              :finally (state/update-value [:searching] true cursor)
              :handler (fn [response]
                         (let [res (keywordize-keys response)]

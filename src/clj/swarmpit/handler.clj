@@ -252,11 +252,11 @@
     (->> (api/task (:id route-params))
          (resp-ok))))
 
-;; Repository v2 handler
+;; Registry v2 handler
 
 (defmethod dispatch :repositories [_]
   (fn [{:keys [route-params]}]
-    (let [registry-name (:registryName route-params)
+    (let [registry-name (:registry route-params)
           registry (api/registry-by-name registry-name)]
       (if (nil? registry)
         (resp-error 400 "Unknown registry")
@@ -266,17 +266,17 @@
 (defmethod dispatch :repository-tags [_]
   (fn [{:keys [route-params query-string]}]
     (let [query (keywordize-keys (query->map query-string))
-          repository-name (:repositoryName query)
-          registry-name (:registryName route-params)
+          repository-name (:repository query)
+          registry-name (:registry route-params)
           registry (api/registry-by-name registry-name)]
       (if (nil? registry)
         (resp-error 400 "Unknown registry")
         (if (nil? repository-name)
-          (resp-error 400 "Parameter repositoryName missing")
+          (resp-error 400 "Parameter repository missing")
           (->> (api/tags registry repository-name)
                (resp-ok)))))))
 
-;; Repository dockerhub handler
+;; Dockerhub handler
 
 (defmethod dispatch :dockerhub-users-sum [_]
   (fn [_]
@@ -286,28 +286,27 @@
 (defmethod dispatch :dockerhub-repo [_]
   (fn [{:keys [query-string]}]
     (let [query (keywordize-keys (query->map query-string))
-          repository-query (:repositoryQuery query)
-          repository-page (:repositoryPage query)]
+          repository-query (:query query)
+          repository-page (:page query)]
       (->> (api/dockerhub-repositories repository-query repository-page)
            (resp-ok)))))
 
 (defmethod dispatch :dockerhub-tags [_]
   (fn [{:keys [query-string]}]
     (let [query (keywordize-keys (query->map query-string))
-          repository-name (:repositoryName query)
-          repository-user (:repositoryUser query)]
+          repository-name (:repository query)
+          dockeruser-name (:user query)]
       (if (nil? repository-name)
-        (resp-error 400 "Parameter repositoryName missing")
-        (->> (api/dockerhub-tags repository-name repository-user)
+        (resp-error 400 "Parameter repository missing")
+        (->> (api/dockerhub-tags repository-name dockeruser-name)
              (resp-ok))))))
 
 (defmethod dispatch :dockerhub-user-repo [_]
   (fn [{:keys [route-params]}]
-    (let [username (:username route-params)
-          user (api/dockeruser-by-username username)]
-      (if (nil? user)
+    (let [dockeruser (api/dockeruser-by-username (:user route-params))]
+      (if (nil? dockeruser)
         (resp-error 400 "Unknown dockerhub user")
-        (->> (api/dockeruser-repositories user)
+        (->> (api/dockeruser-repositories dockeruser)
              (resp-ok))))))
 
 (defmethod dispatch :dockerhub-users [_]

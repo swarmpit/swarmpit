@@ -26,7 +26,7 @@
 
 (defn- repository-handler
   [registry]
-  (ajax/GET (routes/path-for-backend :repositories {:registryName registry})
+  (ajax/GET (routes/path-for-backend :repositories {:registry registry})
             {:headers {"Authorization" (storage/get "token")}
              :finally (state/update-value [:searching] true cursor)
              :handler (fn [response]

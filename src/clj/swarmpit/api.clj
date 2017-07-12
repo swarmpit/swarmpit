@@ -182,7 +182,7 @@
   (-> (dc/node node-id)
       (dmi/->node)))
 
-;;; Repository Dockerhub API
+;;; Dockerhub API
 
 (defn dockerusers
   []
@@ -204,8 +204,8 @@
   (dhc/login dockeruser))
 
 (defn dockeruser-by-username
-  [docker-username]
-  (cc/docker-user-by-name docker-username))
+  [dockeruser-name]
+  (cc/docker-user-by-name dockeruser-name))
 
 (defn dockeruser-exist?
   [dockeruser]
@@ -243,13 +243,20 @@
       (dhmi/->repositories repository-query repository-page)))
 
 (defn dockerhub-tags
-  [repository-name repository-user]
-  (let [user (dockeruser-by-username repository-user)
+  [repository-name dockeruser-name]
+  (let [user (dockeruser-by-username dockeruser-name)
         token (:token (dac/token user repository-name))]
     (->> (drc/tags token repository-name)
          :tags)))
 
-;;; Repository V2 API
+(defn dockerhub-repository-id
+  [repository-name repository-tag dockeruser-name]
+  (let [user (dockeruser-by-username dockeruser-name)
+        token (:token (dac/token user repository-name))]
+    (-> (drc/manifest token repository-name repository-tag)
+        (get-in [:config :digest]))))
+
+;;; Registry V2 API
 
 (defn repositories
   [registry]
@@ -260,6 +267,18 @@
   [registry repository-name]
   (->> (rc/tags registry repository-name)
        :tags))
+
+(defn repository-id
+  [registry-name repository-name repository-tag]
+  (-> (registry-by-name registry-name)
+      (rc/manifest repository-name repository-tag)
+      (get-in [:config :digest])))
+
+;;; Image API
+
+(defn image
+  [image]
+  (dc/image image))
 
 ;;; Service API
 
@@ -281,13 +300,9 @@
   [service-id]
   (dc/delete-service service-id))
 
-(defn service-registry
-  [service]
-  (get-in service [:repository :registry]))
-
 (defn create-dockerhub-service
   [service secrets]
-  (let [auth-config (->> (get-in service [:repository :user])
+  (let [auth-config (->> (get-in service [:registry :user])
                          (dockeruser-by-username)
                          (dmo/->auth-config))]
     (->> (dmo/->service-image service)
@@ -295,8 +310,8 @@
          (dc/create-service auth-config))))
 
 (defn create-registry-service
-  [service registry secrets]
-  (let [registry (registry-by-name registry)
+  [service registry-name secrets]
+  (let [registry (registry-by-name registry-name)
         auth-config (dmo/->auth-config registry)]
     (->> (dmo/->service-image-registry service registry)
          (dmo/->service service secrets)
@@ -304,10 +319,10 @@
 
 (defn create-service
   [service]
-  (let [registry (get-in service [:repository :registry])
+  (let [registry-name (get-in service [:registry :name])
         secrets (dmo/->service-secrets service (secrets))]
     (rename-keys
-      (if (= "dockerhub" registry)
+      (if (= "dockerhub" registry-name)
         (create-dockerhub-service service secrets)
         (create-registry-service service registry secrets)) {:ID :id})))
 
@@ -317,6 +332,21 @@
     (->> (dmo/->service-image service)
          (dmo/->service service secrets)
          (dc/update-service service-id (:version service)))))
+
+(defn service-image-id
+  [service-repository]
+  (-> (image (:image service-repository))
+      :Id))
+
+(defn service-image-latest-id
+  [service-repository]
+  (if (= "dockerhub" (:registry service-repository))
+    (dockerhub-repository-id (:name service-repository)
+                             (:tag service-repository)
+                             (:user service-repository))
+    (repository-id (:registry service-repository)
+                   (:name service-repository)
+                   (:tag service-repository))))
 
 ;;; Task API
 

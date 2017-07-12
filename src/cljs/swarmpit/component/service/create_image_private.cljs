@@ -27,7 +27,7 @@
 
 (defn repository-handler
   [user]
-  (ajax/GET (routes/path-for-backend :dockerhub-user-repo {:username user})
+  (ajax/GET (routes/path-for-backend :dockerhub-user-repo {:user user})
             {:headers {"Authorization" (storage/get "token")}
              :finally (state/update-value [:searching] true cursor)
              :handler (fn [response]
@@ -75,9 +75,9 @@
                         (dispatch!
                           (routes/path-for-frontend :service-create-config
                                                     {}
-                                                    {:repository     (repository i)
-                                                     :repositoryUser user
-                                                     :registry       "dockerhub"})))}
+                                                    {:repository (repository i)
+                                                     :user       user
+                                                     :registry   "dockerhub"})))}
         (comp/list-table-header headers)
         (comp/list-table-body headers
                               data
