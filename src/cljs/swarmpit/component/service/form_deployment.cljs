@@ -98,6 +98,7 @@
     (comp/form-toogle
       {:name     "autoredaploy"
        :key      "autoredaploy"
+       :disabled (nil? value)
        :toggled  value
        :onToggle (fn [_ v]
                    (state/update-value [:autoredeploy] v cursor))})))
