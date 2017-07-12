@@ -95,9 +95,19 @@
         tag (get-in service [:repository :tag])]
     (str repository ":" tag)))
 
+(defn ->service-metadata
+  [service]
+  (let [autoredeploy (str (get-in service [:deployment :autoredeploy]))
+        registry (get-in service [:registry :name])
+        user (get-in service [:registry :user])]
+    {:swarmpit.service.deployment.autoredeploy autoredeploy
+     :swarmpit.service.registry.name           registry
+     :swarmpit.service.registry.user           user}))
+
 (defn ->service
   [service secrets image]
   {:Name           (:serviceName service)
+   :Labels         (->service-metadata service)
    :TaskTemplate   {:ContainerSpec
                               {:Image   image
                                :Mounts  (->service-mounts service)
