@@ -1,4 +1,5 @@
 language: clojure
+fail_fast: true
 services:
   - docker
 cache:
