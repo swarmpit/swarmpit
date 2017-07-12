@@ -6,8 +6,11 @@
             [cheshire.core :refer [parse-string generate-string]]
             [swarmpit.base64 :as base64]))
 
+(def ^:private socket
+  (or (System/getenv "SWARMPIT_DOCKER_SOCK")
+      "/var/run/docker.sock"))
 (def ^:private api-version "v1.28")
-(def ^:private base-cmd ["curl" "--unix-socket" "/var/run/docker.sock" "-w" "%{http_code}"])
+(def ^:private base-cmd ["curl" "--unix-socket" socket "-w" "%{http_code}"])
 
 (defn- map-headers
   "Map request `headers` map to curl vector cmd representation"
