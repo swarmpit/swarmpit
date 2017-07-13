@@ -109,11 +109,12 @@
   {:Name           (:serviceName service)
    :Labels         (->service-metadata service)
    :TaskTemplate   {:ContainerSpec
-                              {:Image   image
-                               :Mounts  (->service-mounts service)
-                               :Secrets secrets
-                               :Env     (->service-variables service)}
-                    :Networks (->service-networks service)}
+                                 {:Image   image
+                                  :Mounts  (->service-mounts service)
+                                  :Secrets secrets
+                                  :Env     (->service-variables service)}
+                    :ForceUpdate (get-in service [:deployment :forceUpdate])
+                    :Networks    (->service-networks service)}
    :Mode           (->service-mode service)
    :UpdateConfig   (->service-update-config service)
    :RollbackConfig (->service-rollback-config service)

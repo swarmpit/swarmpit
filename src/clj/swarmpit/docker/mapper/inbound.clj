@@ -196,6 +196,7 @@
       :secrets (->service-secrets service-spec)
       :variables (->service-variables service-spec)
       :deployment {:update       (->service-deployment-update service-spec)
+                   :forceUpdate  (:ForceUpdate service-task-template)
                    :rollback     (->service-deployment-rollback service-spec)
                    :autoredeploy (->service-autoredeploy service-labels)}
       :tasks (->tasks service-tasks nodes service-name service-mode))))
