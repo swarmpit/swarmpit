@@ -3,6 +3,7 @@
             [clojure.java.shell :refer [sh]]
             [figwheel-sidecar.repl-api :as figwheel]
             [swarmpit.install :as install]
+            [swarmpit.agent :as agent]
             [swarmpit.server]))
 
 ;; Let Clojure warn you when it needs to reflect on types, or when it does math
@@ -14,7 +15,8 @@
 (defn- on-startup
   []
   (print (:out (sh "sh" "dev/script/init-db.sh")))
-  (install/init))
+  (install/init)
+  (agent/init))
 
 (def http-handler
   (wrap-reload #'swarmpit.server/app))

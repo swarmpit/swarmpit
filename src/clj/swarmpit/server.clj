@@ -12,7 +12,8 @@
             [swarmpit.handler :as handler :refer :all]
             [swarmpit.routes :as routes]
             [swarmpit.token :as token]
-            [swarmpit.install :as install]))
+            [swarmpit.install :as install]
+            [swarmpit.agent :as agent]))
 
 (def unsecure-api #{{:request-method :post
                      :uri            "/login"}
@@ -101,4 +102,5 @@
   (install/init)
   (let [port (or port 8080)]
     (run-server app {:port port})
-    (println (str "Server running on port " port))))
+    (println (str "Server running on port " port)))
+  (agent/init))
