@@ -327,11 +327,16 @@
         (create-registry-service service registry secrets)) {:ID :id})))
 
 (defn update-service
-  [service-id service]
-  (let [secrets (dmo/->service-secrets service (secrets))]
-    (->> (dmo/->service-image service)
-         (dmo/->service service secrets)
-         (dc/update-service service-id (:version service)))))
+  [service-id service force?]
+  (let [secrets (dmo/->service-secrets service (secrets))
+        service-payload (->> (dmo/->service-image service)
+                             (dmo/->service service secrets))]
+    (dc/update-service service-id
+                       (:version service)
+                       (update-in service-payload [:TaskTemplate :ForceUpdate]
+                                  (if force?
+                                    inc
+                                    identity)))))
 
 (defn service-image-id
   [service-repository]
@@ -339,12 +344,12 @@
       :Id))
 
 (defn service-image-latest-id
-  [service-repository]
-  (if (= "dockerhub" (:registry service-repository))
+  [service-repository service-registry]
+  (if (= "dockerhub" (:name service-registry))
     (dockerhub-repository-id (:name service-repository)
                              (:tag service-repository)
-                             (:user service-repository))
-    (repository-id (:registry service-repository)
+                             (:user service-registry))
+    (repository-id (:name service-registry)
                    (:name service-repository)
                    (:tag service-repository))))
 

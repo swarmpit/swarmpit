@@ -145,7 +145,7 @@
 (defmethod dispatch :service-update [_]
   (fn [{:keys [route-params params]}]
     (let [payload (keywordize-keys params)]
-      (api/update-service (:id route-params) payload)
+      (api/update-service (:id route-params) payload false)
       (resp-ok))))
 
 (defmethod dispatch :service-delete [_]
