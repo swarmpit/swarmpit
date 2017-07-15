@@ -1,12 +1,13 @@
 (ns swarmpit.agent
   (:require [immutant.scheduling :refer :all]
+            [clojure.tools.logging :as log]
             [swarmpit.api :as api]))
 
 (defn- autoredeploy-job
   []
   (let [services (->> (api/services)
                       (filter #(get-in % [:deployment :autoredeploy])))]
-    (println (str "Autoredeploy agent checking for updates. Service checked: " (count services)))
+    (log/info "Autoredeploy agent checking for updates. Service checked:" (count services))
     (doseq [service services]
       (let [id (:id service)
             repository (:repository service)
@@ -15,9 +16,8 @@
             latest-image-id (api/service-image-latest-id repository registry)]
         (when (not= current-image-id
                     latest-image-id)
-          (do
-            (api/update-service id service true)
-            (println (str "Service " id " autoredeploy fired! [" current-image-id "] -> [" latest-image-id "]"))))))))
+          (api/update-service id service true)
+          (log/info "Service" id "autoredeploy fired! [" current-image-id "] -> [" latest-image-id "]"))))))
 
 (defn init
   []
