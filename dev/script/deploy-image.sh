@@ -6,8 +6,6 @@ NAMESPACE=$ORG/$REPO
 if [ $TRAVIS_PULL_REQUEST == "false" ]
 then
 	docker login -u="$DOCKER_USERNAME" -p="$DOCKER_PASSWORD"
-	docker tag $REPO "$NAMESPACE:build-$TRAVIS_BUILD_NUMBER"
-	docker tag $REPO "$NAMESPACE:sha-$TRAVIS_COMMIT"
 	docker tag $REPO "$NAMESPACE:$TRAVIS_BRANCH"
 
 		if [ $TRAVIS_BRANCH == "master" ]
