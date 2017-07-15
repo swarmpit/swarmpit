@@ -39,6 +39,7 @@
     "complete" (comp/label-blue value)
     "running" (comp/label-green value)
     "shutdown" (comp/label-grey value)
+    "orphaned" (comp/label-grey value)
     "rejected" (comp/label-red value)
     "failed" (comp/label-red value)))
 
