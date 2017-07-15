@@ -31,18 +31,13 @@
 
 (defn- basic-auth
   [user]
-  {"Authorization" (token/generate-basic (:username user)
-                                         (:password user))})
-
-(defn- headers
-  [user]
-  (if (some? user)
-    (basic-auth user)
-    nil))
+  (when (some? user)
+    {"Authorization" (token/generate-basic (:username user)
+                                           (:password user))}))
 
 (defn token
   [user repository]
-  (let [headers (headers user)
+  (let [headers (basic-auth user)
         params {:service "registry.docker.io"
                 :scope   (str "repository:" repository ":pull")}]
     (get "/token" headers params)))
