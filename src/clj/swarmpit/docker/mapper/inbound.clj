@@ -188,8 +188,9 @@
       :mode service-mode
       :replicas replicas
       :state (->service-state replicas replicas-running service-mode)
-      :status {:info   (->service-info-status replicas replicas-running service-mode)
-               :update (->service-update-status service)}
+      :status {:info    (->service-info-status replicas replicas-running service-mode)
+               :update  (get-in service [:UpdateStatus :State])
+               :message (get-in service [:UpdateStatus :Message])}
       :ports (->service-ports service-spec)
       :networks (->service-networks service-spec networks)
       :mounts (->service-mounts service-spec)

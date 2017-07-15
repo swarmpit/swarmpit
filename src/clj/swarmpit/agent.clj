@@ -6,7 +6,8 @@
 (defn- autoredeploy-job
   []
   (let [services (->> (api/services)
-                      (filter #(get-in % [:deployment :autoredeploy])))]
+                      (filter #(get-in % [:deployment :autoredeploy]))
+                      (filter #(not (= "updating" get-in % [:status :update]))))]
     (log/info "Autoredeploy agent checking for updates. Service checked:" (count services))
     (doseq [service services]
       (let [id (:id service)
