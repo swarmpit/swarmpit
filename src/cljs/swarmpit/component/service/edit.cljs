@@ -56,7 +56,7 @@
 
 (defn- init-state
   [item]
-  (state/set-value (select-keys item [:repository :version :serviceName :mode :replicas]) settings/cursor)
+  (state/set-value (select-keys item [:registry :repository :version :serviceName :mode :replicas]) settings/cursor)
   (state/set-value (:ports item) ports/cursor)
   (state/set-value (:networks item) networks/cursor)
   (state/set-value (:mounts item) mounts/cursor)

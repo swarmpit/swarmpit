@@ -28,9 +28,9 @@
                :width "15%"}])
 
 (def render-item-keys
-  [[:serviceName] [:repository :image] [:mode] [:status :info] [:state] [:status :update]])
+  [[:serviceName] [:repository :image] [:mode] [:status :info] [:state] [:status :message]])
 
-(defn- render-item-update-state [value]
+(defn- render-item-status-message [value]
   (if (some? value)
     (comp/label-update value)))
 
@@ -46,7 +46,7 @@
     (case (key item)
       :state (render-item-state value)
       :info (comp/label-info value)
-      :update (render-item-update-state value)
+      :message (render-item-status-message value)
       value)))
 
 (defn- onclick-handler

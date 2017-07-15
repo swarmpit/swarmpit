@@ -8,11 +8,13 @@
             [org.httpkit.server :refer [run-server]]
             [cheshire.core :refer [parse-string]]
             [bidi.ring :refer [make-handler]]
+            [clojure.tools.logging :as log]
             [clojure.string :refer [starts-with?]]
             [swarmpit.handler :as handler :refer :all]
             [swarmpit.routes :as routes]
             [swarmpit.token :as token]
-            [swarmpit.install :as install]))
+            [swarmpit.install :as install]
+            [swarmpit.agent :as agent]))
 
 (def unsecure-api #{{:request-method :post
                      :uri            "/login"}
@@ -81,8 +83,7 @@
                   (handler request)
                   (resp-unauthorized "Unauthorized access"))
                 (handler request))))
-          (resp-error 400 "Missing token"))
-        )
+          (resp-error 400 "Missing token")))
       (handler request))))
 
 (def app
@@ -101,4 +102,5 @@
   (install/init)
   (let [port (or port 8080)]
     (run-server app {:port port})
-    (println (str "Server running on port " port))))
+    (log/info "Server running on port" port))
+  (agent/init))

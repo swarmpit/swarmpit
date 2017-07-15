@@ -103,19 +103,19 @@
                    (state/update-value [:replicas] (js/parseInt v) cursor))})))
 
 (defn dockerhub-image-tags-handler
-  [repository-user repository]
+  [user repository]
   (ajax/GET (routes/path-for-backend :dockerhub-tags)
             {:headers {"Authorization" (storage/get "token")}
-             :params  {:repositoryName repository
-                       :repositoryUser repository-user}
+             :params  {:repository repository
+                       :user       user}
              :handler (fn [response]
                         (state/update-value [:repository :tags] response cursor))}))
 
 (defn registry-image-tags-handler
   [registry repository]
-  (ajax/GET (routes/path-for-backend :repository-tags {:registryName registry})
+  (ajax/GET (routes/path-for-backend :repository-tags {:registry registry})
             {:headers {"Authorization" (storage/get "token")}
-             :params  {:repositoryName repository}
+             :params  {:repository repository}
              :handler (fn [response]
                         (state/update-value [:repository :tags] response cursor))}))
 

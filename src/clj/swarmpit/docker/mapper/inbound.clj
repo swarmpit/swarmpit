@@ -150,16 +150,25 @@
                "not running"
                "running")))
 
+(defn ->service-autoredeploy
+  [service-labels]
+  (let [value (:swarmpit.service.deployment.autoredeploy service-labels)]
+    (if (some? value)
+      (= "true" value)
+      value)))
+
 (defn ->service
   [service tasks nodes networks]
   (let [service-spec (:Spec service)
+        service-labels (:Labels service-spec)
+        service-task-template (:TaskTemplate service-spec)
         service-mode (str/lower-case (name (first (keys (:Mode service-spec)))))
         service-name (:Name service-spec)
         service-id (:ID service)
         service-tasks (filter #(= (:ServiceID %) service-id) tasks)
         replicas (get-in service-spec [:Mode :Replicated :Replicas])
         replicas-running (->service-replicas-running service-tasks)
-        image (get-in service-spec [:TaskTemplate :ContainerSpec :Image])
+        image (get-in service-task-template [:ContainerSpec :Image])
         image-info (str/split image #"@")
         image-name (first image-info)
         image-digest (second image-info)
@@ -169,6 +178,8 @@
       :version (get-in service [:Version :Index])
       :createdAt (date (:CreatedAt service))
       :updatedAt (date (:UpdatedAt service))
+      :registry {:name (:swarmpit.service.registry.name service-labels)
+                 :user (:swarmpit.service.registry.user service-labels)}
       :repository {:image       image-name
                    :imageDigest image-digest
                    :name        (first image-segments)
@@ -177,16 +188,18 @@
       :mode service-mode
       :replicas replicas
       :state (->service-state replicas replicas-running service-mode)
-      :status {:info   (->service-info-status replicas replicas-running service-mode)
-               :update (->service-update-status service)}
+      :status {:info    (->service-info-status replicas replicas-running service-mode)
+               :update  (get-in service [:UpdateStatus :State])
+               :message (get-in service [:UpdateStatus :Message])}
       :ports (->service-ports service-spec)
       :networks (->service-networks service-spec networks)
       :mounts (->service-mounts service-spec)
       :secrets (->service-secrets service-spec)
       :variables (->service-variables service-spec)
       :deployment {:update       (->service-deployment-update service-spec)
+                   :forceUpdate  (:ForceUpdate service-task-template)
                    :rollback     (->service-deployment-rollback service-spec)
-                   :autoredeploy false}
+                   :autoredeploy (->service-autoredeploy service-labels)}
       :tasks (->tasks service-tasks nodes service-name service-mode))))
 
 (defn ->services

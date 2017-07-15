@@ -74,16 +74,16 @@
           (str "Service creation failed. Reason: " (:error response)))))))
 
 (defn init-state
-  [registry repository-user repository]
+  [registry user repository]
   (reset! step-index 0)
   (if (= "dockerhub" registry)
-    (settings/dockerhub-image-tags-handler repository-user repository)
+    (settings/dockerhub-image-tags-handler user repository)
     (settings/registry-image-tags-handler registry repository))
-  (state/set-value {:repository  {:registry registry
-                                  :user     repository-user
-                                  :name     repository
-                                  :tag      ""
-                                  :tags     []}
+  (state/set-value {:registry    {:name registry
+                                  :user user}
+                    :repository  {:name repository
+                                  :tag  ""
+                                  :tags []}
                     :serviceName ""
                     :mode        "replicated"
                     :replicas    1
@@ -105,7 +105,7 @@
   (mixin/init
     (fn [data]
       (init-state (:registry data)
-                  (:repositoryUser data)
+                  (:user data)
                   (:repository data)))))
 
 (rum/defc form < rum/reactive
