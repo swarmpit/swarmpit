@@ -120,14 +120,14 @@
   [service-spec]
   (let [update-config (:UpdateConfig service-spec)]
     {:parallelism   (or (:Parallelism update-config) 1)
-     :delay         (or (:Delay update-config) 0)
+     :delay         (/ (or (:Delay update-config) 0) 1000000000)
      :failureAction (or (:FailureAction update-config) "pause")}))
 
 (defn ->service-deployment-rollback
   [service-spec]
   (let [update-config (:RollbackConfig service-spec)]
     {:parallelism   (or (:Parallelism update-config) 1)
-     :delay         (or (:Delay update-config) 0)
+     :delay         (/ (or (:Delay update-config) 0) 1000000000)
      :failureAction (or (:FailureAction update-config) "pause")}))
 
 (defn ->service-replicas-running

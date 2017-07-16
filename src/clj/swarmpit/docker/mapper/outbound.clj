@@ -78,14 +78,14 @@
   [service]
   (let [update (get-in service [:deployment :update])]
     {:Parallelism   (:parallelism update)
-     :Delay         (:delay update)
+     :Delay         (* (:delay update) 1000000000)
      :FailureAction (:failureAction update)}))
 
 (defn ->service-rollback-config
   [service]
   (let [rollback (get-in service [:deployment :rollback])]
     {:Parallelism   (:parallelism rollback)
-     :Delay         (:delay rollback)
+     :Delay         (* (:delay rollback) 1000000000)
      :FailureAction (:failureAction rollback)}))
 
 (defn ->service-image-registry

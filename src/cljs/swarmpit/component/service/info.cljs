@@ -93,13 +93,13 @@
                                         "off"))
        (comp/form-subsection "Update Config")
        (comp/form-item "PARALLELISM" update-parallelism)
-       (comp/form-item "DELAY" update-delay)
+       (comp/form-item "DELAY" (str update-delay "s"))
        (comp/form-item "ON FAILURE" update-failure-action)
        (if (= "rollback" update-failure-action)
          [:div
           (comp/form-subsection "Rollback Config")
           (comp/form-item "PARALLELISM" rollback-parallelism)
-          (comp/form-item "DELAY" rollback-delay)
+          (comp/form-item "DELAY" (str rollback-delay "s"))
           (comp/form-item "ON FAILURE" rollback-failure-action)])
        (if (not-empty placement)
          [:div
