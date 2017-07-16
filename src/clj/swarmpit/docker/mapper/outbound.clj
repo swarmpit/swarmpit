@@ -50,6 +50,12 @@
                      :Type     (:type v)}))
        (into [])))
 
+(defn- ->service-placement-contraints
+  [service]
+  (->> (get-in service [:deployment :placement])
+       (map (fn [p] (:rule p)))
+       (into [])))
+
 (defn- ->secret-id
   [secret-name secrets]
   (->> secrets
@@ -113,6 +119,8 @@
                                   :Mounts  (->service-mounts service)
                                   :Secrets secrets
                                   :Env     (->service-variables service)}
+                    :Placement
+                                 {:Constraints (->service-placement-contraints service)}
                     :ForceUpdate (get-in service [:deployment :forceUpdate])
                     :Networks    (->service-networks service)}
    :Mode           (->service-mode service)
