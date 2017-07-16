@@ -104,9 +104,9 @@
     (->> (api/registry (:id route-params))
          (resp-ok))))
 
-(defmethod dispatch :registries-sum [_]
+(defmethod dispatch :registries-list [_]
   (fn [_]
-    (->> (api/registries-sum)
+    (->> (api/registries-list)
          (resp-ok))))
 
 (defmethod dispatch :registry-delete [_]
@@ -240,6 +240,13 @@
     (->> (api/node (:id route-params))
          (resp-ok))))
 
+;; Placement handler
+
+(defmethod dispatch :placement [_]
+  (fn [_]
+    (->> (api/placement)
+         (resp-ok))))
+
 ;; Task handler
 
 (defmethod dispatch :tasks [_]
@@ -278,9 +285,9 @@
 
 ;; Dockerhub handler
 
-(defmethod dispatch :dockerhub-users-sum [_]
+(defmethod dispatch :dockerhub-users-list [_]
   (fn [_]
-    (->> (api/dockerusers-sum)
+    (->> (api/dockerusers-list)
          (resp-ok))))
 
 (defmethod dispatch :dockerhub-repo [_]
