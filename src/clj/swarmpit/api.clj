@@ -370,10 +370,10 @@
 ;; Placement API
 
 (defn- placement-rule
-  [nodes-attribute node-attribute-fn]
+  [nodes-attribute node-rule-fn]
   (->> nodes-attribute
        (map #(for [x [" == " " != "]]
-               (node-attribute-fn x %)))
+               (node-rule-fn x %)))
        (flatten)))
 
 (defn placement
