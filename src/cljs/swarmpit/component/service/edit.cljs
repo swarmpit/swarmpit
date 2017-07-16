@@ -71,7 +71,7 @@
 
 (rum/defc form < rum/static
                  init-state-mixin [data]
-  (let [{:keys [secrets volumes service]} data]
+  (let [{:keys [secrets volumes placement service]} data]
     [:div
      [:div.form-panel
       [:div.form-panel-left
@@ -111,4 +111,4 @@
        (variables/form-update)]
       [:div.form-service-edit-group.form-service-group-border
        (comp/form-section "Deployment")
-       (deployment/form)]]]))
+       (deployment/form placement)]]]))

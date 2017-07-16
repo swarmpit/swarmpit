@@ -47,8 +47,8 @@
   (comp/form-comp
     "IMAGE TAG"
     (comp/text-field
-      {:name     "imageTag"
-       :key      "imageTag"
+      {:name     "image-tag"
+       :key      "image-tag"
        :value    value
        :onChange (fn [_ v]
                    (state/update-value [:repository :tag] v cursor))})))
@@ -57,8 +57,8 @@
   (comp/form-comp
     "SERVICE NAME"
     (comp/vtext-field
-      {:name     "serviceName"
-       :key      "serviceName"
+      {:name     "service-name"
+       :key      "service-name"
        :required true
        :disabled update-form?
        :value    value

@@ -8,6 +8,8 @@
             [swarmpit.component.service.form-mounts :as mounts]
             [swarmpit.component.service.form-secrets :as secrets]
             [swarmpit.component.service.form-variables :as variables]
+            [swarmpit.component.service.form-deployment-placement :as placement]
+
             [swarmpit.component.task.list :as tasks]
             [swarmpit.component.message :as message]
             [swarmpit.routes :as routes]
@@ -39,7 +41,8 @@
         update-failure-action (get-in item [:deployment :update :failureAction])
         rollback-delay (get-in item [:deployment :rollback :delay])
         rollback-parallelism (get-in item [:deployment :rollback :parallelism])
-        rollback-failure-action (get-in item [:deployment :rollback :failureAction])]
+        rollback-failure-action (get-in item [:deployment :rollback :failureAction])
+        placement (get-in item [:deployment :placement])]
     [:div
      [:div.form-panel
       [:div.form-panel-left
@@ -95,9 +98,13 @@
        (if (= "rollback" update-failure-action)
          [:div
           (comp/form-subsection "Rollback Config")
-          (comp/form-item "PARALLELISM" (get-in item [:deployment :rollback :parallelism]))
-          (comp/form-item "DELAY" (get-in item [:deployment :rollback :delay]))
-          (comp/form-item "ON FAILURE" (get-in item [:deployment :rollback :failureAction]))])]
+          (comp/form-item "PARALLELISM" rollback-parallelism)
+          (comp/form-item "DELAY" rollback-delay)
+          (comp/form-item "ON FAILURE" rollback-failure-action)])
+       (if (not-empty placement)
+         [:div
+          (comp/form-subsection "Placement")
+          (placement/form-view placement)])]
       [:div.form-view-group
        (comp/form-section "Tasks")
        (comp/list-table tasks/headers
