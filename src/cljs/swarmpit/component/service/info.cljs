@@ -42,7 +42,10 @@
         rollback-delay (get-in item [:deployment :rollback :delay])
         rollback-parallelism (get-in item [:deployment :rollback :parallelism])
         rollback-failure-action (get-in item [:deployment :rollback :failureAction])
-        placement (get-in item [:deployment :placement])]
+        placement (get-in item [:deployment :placement])
+        restart-policy-condition (get-in item [:deployment :restartPolicy :condition])
+        restart-policy-delay (get-in item [:deployment :restartPolicy :delay])
+        restart-policy-attempts (get-in item [:deployment :restartPolicy :attempts])]
     [:div
      [:div.form-panel
       [:div.form-panel-left
@@ -91,6 +94,10 @@
        (comp/form-item "AUTOREDEPLOY" (if autoredeloy
                                         "on"
                                         "off"))
+       (comp/form-subsection "Restart Policy")
+       (comp/form-item "CONDITION" restart-policy-condition)
+       (comp/form-item "DELAY" (str restart-policy-delay "s"))
+       (comp/form-item "MAX ATTEMPTS" restart-policy-attempts)
        (comp/form-subsection "Update Config")
        (comp/form-item "PARALLELISM" update-parallelism)
        (comp/form-item "DELAY" (str update-delay "s"))
