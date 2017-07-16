@@ -94,13 +94,16 @@
   (state/set-value [] mounts/cursor)
   (state/set-value [] secrets/cursor)
   (state/set-value [] variables/cursor)
-  (state/set-value {:autoredeploy false
-                    :update       {:parallelism   1
-                                   :delay         0
-                                   :failureAction "pause"}
-                    :rollback     {:parallelism   1
-                                   :delay         0
-                                   :failureAction "pause"}} deployment/cursor)
+  (state/set-value {:autoredeploy  false
+                    :restartPolicy {:condition "any"
+                                    :delay     5
+                                    :attempts  0}
+                    :update        {:parallelism   1
+                                    :delay         0
+                                    :failureAction "pause"}
+                    :rollback      {:parallelism   1
+                                    :delay         0
+                                    :failureAction "pause"}} deployment/cursor)
   (state/set-value [] placement/cursor))
 
 (def init-state-mixin

@@ -130,6 +130,13 @@
      :delay         (/ (or (:Delay update-config) 0) 1000000000)
      :failureAction (or (:FailureAction update-config) "pause")}))
 
+(defn ->service-deployment-restart-policy
+  [service-task-template]
+  (let [restart-policy (:RestartPolicy service-task-template)]
+    {:condition (or (:Condition restart-policy) "any")
+     :delay     (/ (or (:Delay restart-policy) 5000000000) 1000000000)
+     :attempts  (or (:MaxAttempts restart-policy) 0)}))
+
 (defn ->service-replicas-running
   [service-tasks]
   (-> (filter #(= (get-in % [:Status :State]) "running") service-tasks)
@@ -199,11 +206,12 @@
       :mounts (->service-mounts service-spec)
       :secrets (->service-secrets service-spec)
       :variables (->service-variables service-spec)
-      :deployment {:update       (->service-deployment-update service-spec)
-                   :forceUpdate  (:ForceUpdate service-task-template)
-                   :rollback     (->service-deployment-rollback service-spec)
-                   :autoredeploy (->service-autoredeploy service-labels)
-                   :placement    (->service-placement-constraints service-spec)}
+      :deployment {:update        (->service-deployment-update service-spec)
+                   :forceUpdate   (:ForceUpdate service-task-template)
+                   :restartPolicy (->service-deployment-restart-policy service-task-template)
+                   :rollback      (->service-deployment-rollback service-spec)
+                   :autoredeploy  (->service-autoredeploy service-labels)
+                   :placement     (->service-placement-constraints service-spec)}
       :tasks (->tasks service-tasks nodes service-name service-mode))))
 
 (defn ->services

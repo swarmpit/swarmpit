@@ -9,6 +9,50 @@
 
 (def cursor [:page :service :wizard :deployment])
 
+(defn- form-restart-policy-attempts [value]
+  (comp/form-comp
+    "MAX ATTEMPTS"
+    (comp/text-field
+      {:name     "restart-policy-attempts"
+       :key      "restart-policy-attempts"
+       :type     "number"
+       :min      0
+       :value    value
+       :onChange (fn [_ v]
+                   (state/update-value [:restartPolicy :attempts] (js/parseInt v) cursor))})))
+
+(defn- form-restart-policy-delay [value]
+  (comp/form-comp
+    "DELAY"
+    (comp/text-field
+      {:name     "restart-policy-delay"
+       :key      "restart-policy-delay"
+       :type     "number"
+       :min      0
+       :value    value
+       :onChange (fn [_ v]
+                   (state/update-value [:restartPolicy :delay] (js/parseInt v) cursor))})))
+
+(defn- form-restart-policy-condition [value]
+  (comp/form-comp
+    "CONDITION"
+    (comp/select-field
+      {:value    value
+       :onChange (fn [_ _ v]
+                   (state/update-value [:restartPolicy :condition] v cursor))}
+      (comp/menu-item
+        {:key         "frpc1"
+         :value       "any"
+         :primaryText "any"})
+      (comp/menu-item
+        {:key         "frpc2"
+         :value       "on-failure"
+         :primaryText "on-failure"})
+      (comp/menu-item
+        {:key         "frpc3"
+         :value       "none"
+         :primaryText "none"}))))
+
 (defn- form-update-parallelism [value]
   (comp/form-comp
     "PARALLELISM"
@@ -107,11 +151,16 @@
 (rum/defc form < rum/reactive [placement]
   (let [{:keys [autoredeploy
                 update
-                rollback]} (state/react cursor)]
+                rollback
+                restartPolicy]} (state/react cursor)]
     [:div.form-edit
      (comp/form
        {}
        (form-autoredeploy autoredeploy)
+       (html (comp/form-subsection "Restart Policy"))
+       (form-restart-policy-condition (:condition restartPolicy))
+       (form-restart-policy-delay (:delay restartPolicy))
+       (form-restart-policy-attempts (:attempts restartPolicy))
        (html (comp/form-subsection "Update Config"))
        (form-update-parallelism (:parallelism update))
        (form-update-delay (:delay update))
