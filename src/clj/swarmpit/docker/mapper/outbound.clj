@@ -88,6 +88,13 @@
      :Delay         (* (:delay rollback) 1000000000)
      :FailureAction (:failureAction rollback)}))
 
+(defn ->service-restart-policy
+  [service]
+  (let [policy (get-in service [:deployment :restartPolicy])]
+    {:Condition   (:condition policy)
+     :Delay       (* (:delay policy) 1000000000)
+     :MaxAttempts (:attempts policy)}))
+
 (defn ->service-image-registry
   [service registry]
   (let [repository (get-in service [:repository :name])
@@ -114,15 +121,14 @@
   [service secrets image]
   {:Name           (:serviceName service)
    :Labels         (->service-metadata service)
-   :TaskTemplate   {:ContainerSpec
-                                 {:Image   image
-                                  :Mounts  (->service-mounts service)
-                                  :Secrets secrets
-                                  :Env     (->service-variables service)}
-                    :Placement
-                                 {:Constraints (->service-placement-contraints service)}
-                    :ForceUpdate (get-in service [:deployment :forceUpdate])
-                    :Networks    (->service-networks service)}
+   :TaskTemplate   {:ContainerSpec {:Image   image
+                                    :Mounts  (->service-mounts service)
+                                    :Secrets secrets
+                                    :Env     (->service-variables service)}
+                    :RestartPolicy (->service-restart-policy service)
+                    :Placement     {:Constraints (->service-placement-contraints service)}
+                    :ForceUpdate   (get-in service [:deployment :forceUpdate])
+                    :Networks      (->service-networks service)}
    :Mode           (->service-mode service)
    :UpdateConfig   (->service-update-config service)
    :RollbackConfig (->service-rollback-config service)
