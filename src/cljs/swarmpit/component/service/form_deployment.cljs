@@ -1,6 +1,7 @@
 (ns swarmpit.component.service.form-deployment
   (:require [material.component :as comp]
             [swarmpit.component.state :as state]
+            [swarmpit.component.service.form-deployment-placement :as placement]
             [sablono.core :refer-macros [html]]
             [rum.core :as rum]))
 
@@ -103,7 +104,7 @@
        :onToggle (fn [_ v]
                    (state/update-value [:autoredeploy] v cursor))})))
 
-(rum/defc form < rum/reactive []
+(rum/defc form < rum/reactive [placement]
   (let [{:keys [autoredeploy
                 update
                 rollback]} (state/react cursor)]
@@ -121,4 +122,6 @@
             (comp/form-subsection "Rollback Config")
             (form-rollback-parallelism (:parallelism rollback))
             (form-rollback-delay (:delay rollback))
-            (form-rollback-failure-action (:failureAction rollback))])))]))
+            (form-rollback-failure-action (:failureAction rollback))]))
+       (html (comp/form-subsection-add "Placement" placement/add-item))
+       (placement/form placement))]))

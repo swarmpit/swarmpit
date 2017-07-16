@@ -70,9 +70,9 @@
 
 (defmethod dispatch :service-create-image
   [{:keys [handler]}]
-  (get (routes/path-for-backend :registries-sum)
+  (get (routes/path-for-backend :registries-list)
        (fn [registries]
-         (get (routes/path-for-backend :dockerhub-users-sum)
+         (get (routes/path-for-backend :dockerhub-users-list)
               (fn [users]
                 (state/set-value {:handler handler
                                   :data    {:registries registries
@@ -87,11 +87,14 @@
                 (fn [volumes]
                   (get (routes/path-for-backend :secrets)
                        (fn [secrets]
-                         (state/set-value {:handler handler
-                                           :data    (assoc params
-                                                      :networks networks
-                                                      :volumes volumes
-                                                      :secrets secrets)} cursor)))))))))
+                         (get (routes/path-for-backend :placement)
+                              (fn [placement]
+                                (state/set-value {:handler handler
+                                                  :data    (assoc params
+                                                             :networks networks
+                                                             :volumes volumes
+                                                             :secrets secrets
+                                                             :placement placement)} cursor)))))))))))
 
 (defmethod dispatch :service-edit
   [{:keys [route-params handler]}]
@@ -101,10 +104,13 @@
               (fn [volumes]
                 (get (routes/path-for-backend :secrets)
                      (fn [secrets]
-                       (state/set-value {:handler handler
-                                         :data    {:service service
-                                                   :volumes volumes
-                                                   :secrets secrets}} cursor))))))))
+                       (get (routes/path-for-backend :placement)
+                            (fn [placement]
+                              (state/set-value {:handler handler
+                                                :data    {:service   service
+                                                          :volumes   volumes
+                                                          :secrets   secrets
+                                                          :placement placement}} cursor))))))))))
 
 ;;; Network controller
 

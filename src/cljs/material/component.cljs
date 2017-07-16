@@ -428,6 +428,21 @@
          :onClick    #(add-item-fn)}
         icon/add-small))]])
 
+(defn form-subsection-add
+  [label add-item-fn]
+  [:div.form-view-row
+   [:span.form-row-subsection.form-row-icon-section label]
+   [:div.form-row-icon-field
+    (mui
+      (svg
+        {:hoverColor "#437f9d"
+         :style      {:cursor    "pointer"
+                      :marginTop "2px"
+                      :width     "20px"
+                      :height    "20px"}
+         :onClick    #(add-item-fn)}
+        icon/add-small))]])
+
 ;; List table component
 
 (defn list-table-header
@@ -753,4 +768,11 @@
       {:key        "tbl"
        :selectable false}
       (form-info-table-header headers)
+      (form-info-table-body headers items render-item-fn render-items-key))))
+
+(defn form-info-table-headless [headers items render-item-fn render-items-key]
+  (mui
+    (table
+      {:key        "tbl"
+       :selectable false}
       (form-info-table-body headers items render-item-fn render-items-key))))

@@ -62,7 +62,7 @@
   (-> (cc/registries)
       (cmi/->registries)))
 
-(defn registries-sum
+(defn registries-list
   []
   (->> (registries)
        (map :name)
@@ -189,7 +189,7 @@
   (-> (cc/docker-users)
       (cmi/->dockerusers)))
 
-(defn dockerusers-sum
+(defn dockerusers-list
   []
   (->> (dockerusers)
        (map :username)
@@ -366,3 +366,38 @@
   (->> (tasks)
        (filter #(= (:id %) task-id))
        (first)))
+
+;; Placement API
+
+(defn- placement-rule
+  [nodes-attribute node-rule-fn]
+  (->> nodes-attribute
+       (map #(for [x [" == " " != "]]
+               (node-rule-fn x %)))
+       (flatten)))
+
+(defn placement
+  []
+  (let [nodes (nodes)
+        nodes-id (map :id nodes)
+        nodes-role '("manager" "worker")
+        nodes-hostname (map :nodeName nodes)
+        nodes-label (->> (map :labels nodes)
+                         (into {}))]
+    (concat
+      (placement-rule
+        nodes-id
+        (fn [matcher item]
+          (str "node.id" matcher item)))
+      (placement-rule
+        nodes-role
+        (fn [matcher item]
+          (str "node.role" matcher item)))
+      (placement-rule
+        nodes-hostname
+        (fn [matcher item]
+          (str "node.hostname" matcher item)))
+      (placement-rule
+        nodes-label
+        (fn [matcher item]
+          (str "node.labels." (name (key item)) matcher (val item)))))))

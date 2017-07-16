@@ -16,6 +16,7 @@
     :nodeName (get-in node [:Description :Hostname])
     :role (get-in node [:Spec :Role])
     :availability (get-in node [:Spec :Availability])
+    :labels (get-in node [:Spec :Labels])
     :state (get-in node [:Status :State])
     :address (get-in node [:Status :Addr])
     :engine (get-in node [:Description :Engine :EngineVersion])
@@ -103,6 +104,12 @@
                  :value (second variable)})))
        (into [])))
 
+(defn ->service-placement-constraints
+  [service-spec]
+  (->> (get-in service-spec [:TaskTemplate :Placement :Constraints])
+       (map (fn [v] {:rule v}))
+       (into [])))
+
 (defn ->service-secrets
   [service-spec]
   (->> (get-in service-spec [:TaskTemplate :ContainerSpec :Secrets])
@@ -133,10 +140,6 @@
   (if (= service-mode "replicated")
     (str service-replicas-running " / " service-replicas)
     (str service-replicas-running " / " service-replicas-running)))
-
-(defn ->service-update-status
-  [service]
-  (get-in service [:UpdateStatus :Message]))
 
 (defn ->service-state
   [service-replicas service-replicas-running service-mode]
@@ -199,7 +202,8 @@
       :deployment {:update       (->service-deployment-update service-spec)
                    :forceUpdate  (:ForceUpdate service-task-template)
                    :rollback     (->service-deployment-rollback service-spec)
-                   :autoredeploy (->service-autoredeploy service-labels)}
+                   :autoredeploy (->service-autoredeploy service-labels)
+                   :placement    (->service-placement-constraints service-spec)}
       :tasks (->tasks service-tasks nodes service-name service-mode))))
 
 (defn ->services

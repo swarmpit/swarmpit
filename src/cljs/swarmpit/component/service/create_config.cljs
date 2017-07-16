@@ -12,6 +12,7 @@
             [swarmpit.component.service.form-secrets :as secrets]
             [swarmpit.component.service.form-variables :as variables]
             [swarmpit.component.service.form-deployment :as deployment]
+            [swarmpit.component.service.form-deployment-placement :as placement]
             [swarmpit.component.message :as message]
             [swarmpit.routes :as routes]
             [rum.core :as rum]))
@@ -99,7 +100,8 @@
                                    :failureAction "pause"}
                     :rollback     {:parallelism   1
                                    :delay         0
-                                   :failureAction "pause"}} deployment/cursor))
+                                   :failureAction "pause"}} deployment/cursor)
+  (state/set-value [] placement/cursor))
 
 (def init-state-mixin
   (mixin/init
@@ -111,7 +113,7 @@
 (rum/defc form < rum/reactive
                  init-state-mixin [data]
   (let [index (rum/react step-index)
-        {:keys [secrets volumes networks]} data
+        {:keys [secrets volumes networks placement]} data
         {:keys [isValid]} (state/react settings/cursor)]
     [:div
      [:div.form-panel
@@ -136,4 +138,4 @@
          (step-item 3 (mounts/form-create volumes))
          (step-item 4 (secrets/form-create secrets))
          (step-item 5 (variables/form-create))
-         (step-item 6 (deployment/form))))]))
+         (step-item 6 (deployment/form placement))))]))

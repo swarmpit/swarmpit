@@ -6,10 +6,10 @@
   ["" {"/"            {:get :index}
        "/login"       {:post :login}
        "/password"    {:post :password}
-       "/registries/" {:get {"sum"               :registries-sum
+       "/registries/" {:get {"list"              :registries-list
                              [:registry "/repo"] {""      :repositories
                                                   "/tags" :repository-tags}}}
-       "/dockerhub/"  {:get {"users"         {"/sum" :dockerhub-users-sum}
+       "/dockerhub/"  {:get {"users"         {"/list" :dockerhub-users-list}
                              "repo"          {""      :dockerhub-repo
                                               "/tags" :dockerhub-tags}
                              [:user "/repo"] :dockerhub-user-repo}}
@@ -32,7 +32,8 @@
                        :delete {[:id] :secret-delete}
                        :post   {[:id] :secret-update}}
        "/nodes"       {:get :nodes}
-       "/nodes/"      {:get {[:id] :node}}
+       "/nodes/"      {:get {"placement" :placement
+                             [:id]       :node}}
        "/tasks"       {:get :tasks}
        "/tasks/"      {:get {[:id] :task}}
        "/admin/"      {"users"            {:get  :users
