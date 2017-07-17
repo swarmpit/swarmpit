@@ -13,14 +13,14 @@
   [network-id]
   (handler/delete
     (routes/path-for-backend :network-delete {:id network-id})
-    (fn [_]
-      (dispatch!
-        (routes/path-for-frontend :network-list))
-      (message/info
-        (str "Network " network-id " has been removed.")))
-    (fn [response]
-      (message/error
-        (str "Network removing failed. Reason: " (:error response))))))
+    {:on-success (fn [_]
+                   (dispatch!
+                     (routes/path-for-frontend :network-list))
+                   (message/info
+                     (str "Network " network-id " has been removed.")))
+     :on-error   (fn [response]
+                   (message/error
+                     (str "Network removing failed. Reason: " (:error response))))}))
 
 (rum/defc form < rum/static [item]
   [:div

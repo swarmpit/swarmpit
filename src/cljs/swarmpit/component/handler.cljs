@@ -6,44 +6,45 @@
             [clojure.walk :refer [keywordize-keys]]))
 
 (defn- command
-  [params success-fx error-fx]
-  {:params        params
+  [request]
+  {:params        (:params request)
    :headers       {"Authorization" (storage/get "token")}
+   :finally       (:on-call request)
    :handler       (fn [response]
-                    (let [resp (keywordize-keys response)]
-                      (-> resp success-fx)))
+                    (let [resp (keywordize-keys response)
+                          resp-fx (:on-success request)]
+                      (-> resp resp-fx)))
    :error-handler (fn [response]
-                    (let [resp (:response (keywordize-keys response))]
-                      (-> resp error-fx)))})
+                    (let [resp (:response (keywordize-keys response))
+                          resp-fx (:on-error request)]
+                      (-> resp resp-fx)))})
 
 (defn- command-progress
-  [params headers success-fx error-fx]
+  [request]
   {:format        :json
-   :params        params
-   :headers       (merge {"Authorization" (storage/get "token")} headers)
+   :params        (:params request)
+   :headers       (merge {"Authorization" (storage/get "token")} (:headers request))
    :finally       (progress/mount!)
    :handler       (fn [response]
                     (progress/unmount!)
-                    (let [resp (keywordize-keys response)]
-                      (-> resp success-fx)))
+                    (let [resp (keywordize-keys response)
+                          resp-fx (:on-success request)]
+                      (-> resp resp-fx)))
    :error-handler (fn [response]
                     (progress/unmount!)
-                    (let [resp (:response (keywordize-keys response))]
-                      (-> resp error-fx)))})
+                    (let [resp (:response (keywordize-keys response))
+                          resp-fx (:on-error request)]
+                      (-> resp resp-fx)))})
 
 (defn get
-  [api success-fx error-fx]
-  (ajax/GET api
-            (command nil success-fx error-fx)))
+  [api request]
+  (ajax/GET api (command request)))
 
 (defn delete
-  [api success-fx error-fx]
-  (ajax/DELETE api
-               (command nil success-fx error-fx)))
+  [api request]
+  (ajax/DELETE api (command request)))
 
 (defn post
-  ([api payload success-fx error-fx] (post api payload {} success-fx error-fx))
-  ([api payload headers success-fx error-fx]
-   (ajax/POST api
-              (command-progress payload headers success-fx error-fx))))
+  [api request]
+  (ajax/POST api (command-progress request)))
 

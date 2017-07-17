@@ -74,15 +74,15 @@
   []
   (handler/post
     (routes/path-for-backend :network-create)
-    (state/get-value cursor)
-    (fn [response]
-      (dispatch!
-        (routes/path-for-frontend :network-info {:id (:Id response)}))
-      (message/info
-        (str "Network " (:Id response) " has been added.")))
-    (fn [response]
-      (message/error
-        (str "Network creation failed. Reason: " (:error response))))))
+    {:params     (state/get-value cursor)
+     :on-success (fn [response]
+                   (dispatch!
+                     (routes/path-for-frontend :network-info {:id (:Id response)}))
+                   (message/info
+                     (str "Network " (:Id response) " has been added.")))
+     :on-error   (fn [response]
+                   (message/error
+                     (str "Network creation failed. Reason: " (:error response))))}))
 
 (defn- init-state
   []

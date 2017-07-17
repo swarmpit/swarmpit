@@ -58,15 +58,15 @@
   []
   (handler/post
     (routes/path-for-backend :secret-create)
-    (state/get-value cursor)
-    (fn [response]
-      (dispatch!
-        (routes/path-for-frontend :secret-info (select-keys response [:id])))
-      (message/info
-        (str "Secret " (:id response) " has been created.")))
-    (fn [response]
-      (message/error
-        (str "Secret creation failed. Reason: " (:error response))))))
+    {:params     (state/get-value cursor)
+     :on-success (fn [response]
+                   (dispatch!
+                     (routes/path-for-frontend :secret-info (select-keys response [:id])))
+                   (message/info
+                     (str "Secret " (:id response) " has been created.")))
+     :on-error   (fn [response]
+                   (message/error
+                     (str "Secret creation failed. Reason: " (:error response))))}))
 
 (defn- init-state
   []

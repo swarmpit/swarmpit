@@ -2,13 +2,12 @@
   (:require [material.icon :as icon]
             [material.component :as comp]
             [swarmpit.component.state :as state]
+            [swarmpit.component.handler :as handler]
             [swarmpit.storage :as storage]
             [swarmpit.url :refer [dispatch!]]
-            [clojure.walk :refer [keywordize-keys]]
             [swarmpit.routes :as routes]
             [clojure.string :as string]
-            [rum.core :as rum]
-            [ajax.core :as ajax]))
+            [rum.core :as rum]))
 
 (def cursor [:page :service :wizard :image :private])
 
@@ -25,15 +24,16 @@
   [items predicate]
   (filter #(string/includes? (:name %) predicate) items))
 
-(defn repository-handler
+(defn- repository-handler
   [user]
-  (ajax/GET (routes/path-for-backend :dockerhub-user-repo {:user user})
-            {:headers {"Authorization" (storage/get "token")}
-             :finally (state/update-value [:searching] true cursor)
-             :handler (fn [response]
-                        (let [res (keywordize-keys response)]
-                          (state/update-value [:searching] false cursor)
-                          (state/update-value [:data] res cursor)))}))
+  (handler/get
+    (routes/path-for-backend :dockerhub-user-repo {:user user})
+    {:on-call    (state/update-value [:searching] true cursor)
+     :on-success (fn [response]
+                   (state/update-value [:searching] false cursor)
+                   (state/update-value [:data] response cursor))
+     :on-error   (fn [_]
+                   (state/update-value [:searching] false cursor))}))
 
 (defn- form-username [user users]
   (comp/form-comp

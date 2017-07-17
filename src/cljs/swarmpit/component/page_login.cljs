@@ -23,15 +23,14 @@
   [local-state]
   (handler/post
     (routes/path-for-backend :login)
-    {}
-    (login-headers local-state)
-    (fn [response]
-      (reset! local-state)
-      (storage/add "token" (:token response))
-      (dispatch!
-        (routes/path-for-frontend :service-list)))
-    (fn [response]
-      (swap! local-state assoc :message (:error response)))))
+    {:headers    (login-headers local-state)
+     :on-success (fn [response]
+                   (reset! local-state)
+                   (storage/add "token" (:token response))
+                   (dispatch!
+                     (routes/path-for-frontend :service-list)))
+     :on-error   (fn [response]
+                   (swap! local-state assoc :message (:error response)))}))
 
 (defn- on-enter
   [event local-state]

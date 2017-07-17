@@ -9,7 +9,6 @@
             [swarmpit.component.service.form-secrets :as secrets]
             [swarmpit.component.service.form-variables :as variables]
             [swarmpit.component.service.form-deployment-placement :as placement]
-
             [swarmpit.component.task.list :as tasks]
             [swarmpit.component.message :as message]
             [swarmpit.routes :as routes]
@@ -24,14 +23,14 @@
   [service-id]
   (handler/delete
     (routes/path-for-backend :service-delete {:id service-id})
-    (fn [_]
-      (dispatch!
-        (routes/path-for-frontend :service-list))
-      (message/info
-        (str "Service " service-id " has been removed.")))
-    (fn [response]
-      (message/error
-        (str "Service removing failed. Reason: " (:error response))))))
+    {:on-success (fn [_]
+                   (dispatch!
+                     (routes/path-for-frontend :service-list))
+                   (message/info
+                     (str "Service " service-id " has been removed.")))
+     :on-error   (fn [response]
+                   (message/error
+                     (str "Service removing failed. Reason: " (:error response))))}))
 
 (rum/defc form < rum/static [item]
   (let [id (:id item)

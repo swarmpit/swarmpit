@@ -1,10 +1,9 @@
 (ns swarmpit.component.service.form-settings
   (:require [material.component :as comp]
-            [swarmpit.storage :as storage]
             [swarmpit.component.state :as state]
+            [swarmpit.component.handler :as handler]
             [swarmpit.routes :as routes]
-            [rum.core :as rum]
-            [ajax.core :as ajax]))
+            [rum.core :as rum]))
 
 (enable-console-print!)
 
@@ -104,20 +103,20 @@
 
 (defn dockerhub-image-tags-handler
   [user repository]
-  (ajax/GET (routes/path-for-backend :dockerhub-tags)
-            {:headers {"Authorization" (storage/get "token")}
-             :params  {:repository repository
-                       :user       user}
-             :handler (fn [response]
-                        (state/update-value [:repository :tags] response cursor))}))
+  (handler/get
+    (routes/path-for-backend :dockerhub-tags)
+    {:params     {:repository repository
+                  :user       user}
+     :on-success (fn [response]
+                   (state/update-value [:repository :tags] response cursor))}))
 
 (defn registry-image-tags-handler
   [registry repository]
-  (ajax/GET (routes/path-for-backend :repository-tags {:registry registry})
-            {:headers {"Authorization" (storage/get "token")}
-             :params  {:repository repository}
-             :handler (fn [response]
-                        (state/update-value [:repository :tags] response cursor))}))
+  (handler/get
+    (routes/path-for-backend :repository-tags {:registry registry})
+    {:params     {:repository repository}
+     :on-success (fn [response]
+                   (state/update-value [:repository :tags] response cursor))}))
 
 (rum/defc form < rum/reactive [update-form?]
   (let [{:keys [repository

@@ -40,15 +40,15 @@
   []
   (handler/post
     (routes/path-for-backend :dockerhub-user-create)
-    (state/get-value cursor)
-    (fn [response]
-      (dispatch!
-        (routes/path-for-frontend :dockerhub-user-info (select-keys response [:id])))
-      (message/info
-        (str "User " (:id response) " has been added.")))
-    (fn [response]
-      (message/error
-        (str "User cannot be added. Reason: " (:error response))))))
+    {:params     (state/get-value cursor)
+     :on-success (fn [response]
+                   (dispatch!
+                     (routes/path-for-frontend :dockerhub-user-info (select-keys response [:id])))
+                   (message/info
+                     (str "User " (:id response) " has been added.")))
+     :on-error   (fn [response]
+                   (message/error
+                     (str "User cannot be added. Reason: " (:error response))))}))
 
 (defn- init-state
   []
