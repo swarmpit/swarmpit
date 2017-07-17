@@ -66,6 +66,16 @@ select:-webkit-autofill:focus {
     margin: 8px;
 }
 
+.link {
+    cursor: pointer;
+    color: rgb(117, 117, 117);
+}
+
+.link:hover,
+.link:focus {
+    color: #437f9d;
+}
+
 /* Form layout */
 
 .form-panel-info,
