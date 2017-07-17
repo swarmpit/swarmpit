@@ -41,6 +41,14 @@
        (map (fn [p] (str (:name p) "=" (:value p))))
        (into [])))
 
+(defn ->service-labels
+  [service]
+  (->> (:labels service)
+       (filter #(not (and (str/blank? (:name %))
+                          (str/blank? (:value %)))))
+       (map (fn [l] {(:name l) (:value l)}))
+       (into {})))
+
 (defn ->service-mounts
   [service]
   (->> (:mounts service)
@@ -120,7 +128,9 @@
 (defn ->service
   [service secrets image]
   {:Name           (:serviceName service)
-   :Labels         (->service-metadata service)
+   :Labels         (merge
+                     (->service-labels service)
+                     (->service-metadata service))
    :TaskTemplate   {:ContainerSpec {:Image   image
                                     :Mounts  (->service-mounts service)
                                     :Secrets secrets

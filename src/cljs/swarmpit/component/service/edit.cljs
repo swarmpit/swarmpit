@@ -11,6 +11,7 @@
             [swarmpit.component.service.form-mounts :as mounts]
             [swarmpit.component.service.form-secrets :as secrets]
             [swarmpit.component.service.form-variables :as variables]
+            [swarmpit.component.service.form-labels :as labels]
             [swarmpit.component.service.form-deployment :as deployment]
             [swarmpit.component.message :as message]
             [swarmpit.routes :as routes]
@@ -32,6 +33,7 @@
         mounts (state/get-value mounts/cursor)
         secrets (state/get-value secrets/cursor)
         variables (state/get-value variables/cursor)
+        labels (state/get-value labels/cursor)
         deployment (state/get-value deployment/cursor)]
     (handler/post
       (routes/path-for-backend :service-update {:id service-id})
@@ -41,6 +43,7 @@
                        (assoc :mounts mounts)
                        (assoc :secrets secrets)
                        (assoc :variables variables)
+                       (assoc :labels labels)
                        (assoc :deployment deployment))
        :on-success (fn [_]
                      (dispatch!
@@ -59,6 +62,7 @@
   (state/set-value (:mounts item) mounts/cursor)
   (state/set-value (:secrets item) secrets/cursor)
   (state/set-value (:variables item) variables/cursor)
+  (state/set-value (:labels item) labels/cursor)
   (state/set-value (:deployment item) deployment/cursor))
 
 (def init-state-mixin
@@ -106,6 +110,9 @@
       [:div.form-service-edit-group.form-service-group-border
        (comp/form-section-add "Environment variables" variables/add-item)
        (variables/form-update)]
+      [:div.form-service-edit-group.form-service-group-border
+       (comp/form-section-add "Labels" labels/add-item)
+       (labels/form-update)]
       [:div.form-service-edit-group.form-service-group-border
        (comp/form-section "Deployment")
        (deployment/form placement)]]]))

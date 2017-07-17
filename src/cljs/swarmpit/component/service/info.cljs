@@ -8,6 +8,7 @@
             [swarmpit.component.service.form-mounts :as mounts]
             [swarmpit.component.service.form-secrets :as secrets]
             [swarmpit.component.service.form-variables :as variables]
+            [swarmpit.component.service.form-labels :as labels]
             [swarmpit.component.service.form-deployment-placement :as placement]
             [swarmpit.component.task.list :as tasks]
             [swarmpit.component.message :as message]
@@ -88,6 +89,9 @@
       [:div.form-view-group
        (comp/form-section "Environment variables")
        (variables/form-view (:variables item))]
+      [:div.form-view-group
+       (comp/form-section "Labels")
+       (labels/form-view (:labels item))]
       [:div.form-view-group
        (comp/form-section "Deployment")
        (comp/form-item "AUTOREDEPLOY" (if autoredeloy

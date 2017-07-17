@@ -104,6 +104,16 @@
                  :value (second variable)})))
        (into [])))
 
+(defn ->service-labels
+  [service-labels]
+  (->> service-labels
+       (filter #(not (or (str/starts-with? (name (key %)) "swarmpit")
+                         (str/starts-with? (name (key %)) "com.docker"))))
+       (map (fn [l]
+              {:name  (name (key l))
+               :value (val l)}))
+       (into [])))
+
 (defn ->service-placement-constraints
   [service-spec]
   (->> (get-in service-spec [:TaskTemplate :Placement :Constraints])
@@ -206,6 +216,7 @@
       :mounts (->service-mounts service-spec)
       :secrets (->service-secrets service-spec)
       :variables (->service-variables service-spec)
+      :labels (->service-labels service-labels)
       :deployment {:update        (->service-deployment-update service-spec)
                    :forceUpdate   (:ForceUpdate service-task-template)
                    :restartPolicy (->service-deployment-restart-policy service-task-template)
