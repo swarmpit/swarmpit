@@ -1,6 +1,7 @@
 (ns swarmpit.component.service.form-mounts
   (:require [material.component :as comp]
             [swarmpit.component.state :as state]
+            [swarmpit.routes :as routes]
             [rum.core :as rum]))
 
 (enable-console-print!)
@@ -11,7 +12,7 @@
                :width "15%"}
               {:name  "Container path"
                :width "35%"}
-              {:name  "Host path"
+              {:name  "Host (path/volume)"
                :width "35%"}
               {:name  "Read only"
                :width "5%"}])
@@ -33,7 +34,7 @@
      :key      (str "form-bind-path-text-" index)
      :value    value
      :onChange (fn [_ v]
-                 (state/update-item index :hostPath v cursor))}))
+                 (state/update-item index :host v cursor))}))
 
 (defn- form-host-volume [value index data]
   (comp/form-list-selectfield
@@ -42,7 +43,7 @@
      :value     value
      :autoWidth true
      :onChange  (fn [_ _ v]
-                  (state/update-item index :hostPath v cursor))}
+                  (state/update-item index :host v cursor))}
     (->> data
          (map #(comp/menu-item
                  {:name        (str "form-volume-item-" (:volumeName %))
@@ -79,14 +80,14 @@
 (defn- render-mounts
   [item index data]
   (let [{:keys [containerPath
-                hostPath
+                host
                 type
                 readOnly]} item]
     [(form-type type index)
      (form-container containerPath index)
      (if (= "bind" type)
-       (form-host-bind hostPath index)
-       (form-host-volume hostPath index data))
+       (form-host-bind host index)
+       (form-host-volume host index data))
      (form-readonly readOnly index)]))
 
 (defn- form-table
@@ -101,17 +102,22 @@
   []
   (state/add-item {:type          "bind"
                    :containerPath ""
-                   :hostPath      ""
+                   :host          ""
                    :readOnly      false} cursor))
 
 (def render-item-keys
-  [[:type] [:containerPath] [:hostPath] [:readOnly]])
+  [[:type] [:containerPath] [:host] [:readOnly]])
 
 (defn- render-item
-  [item]
+  [item mount]
   (let [value (val item)]
     (case (key item)
       :readOnly (if value "yes" "no")
+      :host (if (= "volume" (:type mount))
+              (comp/link
+                (routes/path-for-frontend :volume-info {:name value})
+                value)
+              value)
       value)))
 
 (rum/defc form-create < rum/reactive [data]

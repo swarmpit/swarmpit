@@ -1,6 +1,7 @@
 (ns swarmpit.component.service.form-networks
   (:require [material.component :as comp]
             [swarmpit.component.state :as state]
+            [swarmpit.routes :as routes]
             [rum.core :as rum]))
 
 (enable-console-print!)
@@ -47,8 +48,13 @@
   [[:networkName] [:driver]])
 
 (defn- render-item
-  [item]
-  (val item))
+  [item network]
+  (let [value (val item)]
+    (case (key item)
+      :networkName (comp/link
+                     (routes/path-for-frontend :network-info (select-keys network [:id]))
+                     value)
+      value)))
 
 (defn- add-item
   []
