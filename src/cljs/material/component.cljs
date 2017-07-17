@@ -372,6 +372,13 @@
   [text]
   (html [:span.label.label-info text]))
 
+;; Link
+
+(defn link
+  [href name]
+  (html [:a {:href  href
+             :class "link"} name]))
+
 ;; Form component layout
 
 (defn form [props & childs]

@@ -56,9 +56,18 @@
 (def render-item-keys
   [[:secretName]])
 
+;(defn- render-item
+;  [item]
+;  (val item))
+
 (defn- render-item
-  [item]
-  (val item))
+  [item secret]
+  (let [value (val item)]
+    (case (key item)
+      :secretName (comp/link
+                    (routes/path-for-frontend :secret-info (select-keys secret [:id]))
+                    value)
+      value)))
 
 (rum/defc form-create < rum/reactive [data]
   (let [secrets (state/react cursor)]

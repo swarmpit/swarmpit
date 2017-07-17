@@ -53,7 +53,7 @@
   [service]
   (->> (:mounts service)
        (map (fn [v] {:ReadOnly (:readOnly v)
-                     :Source   (:hostPath v)
+                     :Source   (:host v)
                      :Target   (:containerPath v)
                      :Type     (:type v)}))
        (into [])))

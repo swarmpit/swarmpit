@@ -82,7 +82,8 @@
   [service-spec networks]
   (->> (get-in service-spec [:TaskTemplate :Networks])
        (map (fn [n] (->service-network n networks)))
-       (map (fn [n] {:networkName (:Name n)
+       (map (fn [n] {:id          (:Id n)
+                     :networkName (:Name n)
                      :driver      (:Driver n)}))
        (into [])))
 
@@ -90,7 +91,7 @@
   [service-spec]
   (->> (get-in service-spec [:TaskTemplate :ContainerSpec :Mounts])
        (map (fn [v] {:containerPath (:Target v)
-                     :hostPath      (:Source v)
+                     :host          (:Source v)
                      :type          (:Type v)
                      :readOnly      (contains? #{true 1} (:ReadOnly v))}))
        (into [])))
@@ -123,7 +124,8 @@
 (defn ->service-secrets
   [service-spec]
   (->> (get-in service-spec [:TaskTemplate :ContainerSpec :Secrets])
-       (map (fn [s] {:secretName (:SecretName s)}))
+       (map (fn [s] {:id         (:SecretID s)
+                     :secretName (:SecretName s)}))
        (into [])))
 
 (defn ->service-deployment-update
