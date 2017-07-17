@@ -1,12 +1,10 @@
 (ns swarmpit.component.service.create-image-public
   (:require [material.component :as comp]
             [swarmpit.component.state :as state]
-            [swarmpit.storage :as storage]
+            [swarmpit.component.handler :as handler]
             [swarmpit.url :refer [dispatch!]]
-            [clojure.walk :refer [keywordize-keys]]
             [swarmpit.routes :as routes]
-            [rum.core :as rum]
-            [ajax.core :as ajax]))
+            [rum.core :as rum]))
 
 (def cursor [:page :service :wizard :image :public])
 
@@ -22,15 +20,16 @@
 
 (defn- repository-handler
   [query page]
-  (ajax/GET (routes/path-for-backend :dockerhub-repo)
-            {:headers {"Authorization" (storage/get "token")}
-             :params  {:query query
-                       :page  page}
-             :finally (state/update-value [:searching] true cursor)
-             :handler (fn [response]
-                        (let [res (keywordize-keys response)]
-                          (state/update-value [:searching] false cursor)
-                          (state/update-value [:data] res cursor)))}))
+  (handler/get
+    (routes/path-for-backend :dockerhub-repo)
+    {:params     {:query query
+                  :page  page}
+     :on-call    (state/update-value [:searching] true cursor)
+     :on-success (fn [response]
+                   (state/update-value [:searching] false cursor)
+                   (state/update-value [:data] response cursor))
+     :on-error   (fn [_]
+                   (state/update-value [:searching] false cursor))}))
 
 (defn- form-repository [repository]
   (comp/form-comp

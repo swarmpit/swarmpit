@@ -58,21 +58,21 @@
         deployment (state/get-value deployment/cursor)]
     (handler/post
       (routes/path-for-backend :service-create)
-      (-> settings
-          (assoc :ports ports)
-          (assoc :networks networks)
-          (assoc :mounts mounts)
-          (assoc :secrets secrets)
-          (assoc :variables variables)
-          (assoc :deployment deployment))
-      (fn [response]
-        (dispatch!
-          (routes/path-for-frontend :service-info (select-keys response [:id])))
-        (message/info
-          (str "Service " (:id response) " has been created.")))
-      (fn [response]
-        (message/error
-          (str "Service creation failed. Reason: " (:error response)))))))
+      {:params     (-> settings
+                       (assoc :ports ports)
+                       (assoc :networks networks)
+                       (assoc :mounts mounts)
+                       (assoc :secrets secrets)
+                       (assoc :variables variables)
+                       (assoc :deployment deployment))
+       :on-success (fn [response]
+                     (dispatch!
+                       (routes/path-for-frontend :service-info (select-keys response [:id])))
+                     (message/info
+                       (str "Service " (:id response) " has been created.")))
+       :on-error   (fn [response]
+                     (message/error
+                       (str "Service creation failed. Reason: " (:error response))))})))
 
 (defn init-state
   [registry user repository]

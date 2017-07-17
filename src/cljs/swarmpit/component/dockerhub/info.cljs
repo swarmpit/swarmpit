@@ -13,14 +13,14 @@
   [user-id]
   (handler/delete
     (routes/path-for-backend :dockerhub-user-delete {:id user-id})
-    (fn [_]
-      (dispatch!
-        (routes/path-for-frontend :dockerhub-user-list))
-      (message/info
-        (str "User " user-id " has been removed.")))
-    (fn [response]
-      (message/error
-        (str "User removing failed. Reason: " (:error response))))))
+    {:on-success (fn [_]
+                   (dispatch!
+                     (routes/path-for-frontend :dockerhub-user-list))
+                   (message/info
+                     (str "User " user-id " has been removed.")))
+     :on-error   (fn [response]
+                   (message/error
+                     (str "User removing failed. Reason: " (:error response))))}))
 
 (rum/defc form < rum/static [item]
   [:div

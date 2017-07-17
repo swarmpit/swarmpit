@@ -40,15 +40,15 @@
   []
   (handler/post
     (routes/path-for-backend :volume-create)
-    (state/get-value cursor)
-    (fn [response]
-      (dispatch!
-        (routes/path-for-frontend :volume-info {:name (:volumeName response)}))
-      (message/info
-        (str "Volume " (:volumeName response) " has been created.")))
-    (fn [response]
-      (message/error
-        (str "Volume creation failed. Reason: " (:error response))))))
+    {:params     (state/get-value cursor)
+     :on-success (fn [response]
+                   (dispatch!
+                     (routes/path-for-frontend :volume-info {:name (:volumeName response)}))
+                   (message/info
+                     (str "Volume " (:volumeName response) " has been created.")))
+     :on-error   (fn [response]
+                   (message/error
+                     (str "Volume creation failed. Reason: " (:error response))))}))
 
 (defn- init-state
   []

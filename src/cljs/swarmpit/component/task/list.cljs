@@ -2,11 +2,9 @@
   (:require [material.component :as comp]
             [swarmpit.component.mixin :as mixin]
             [swarmpit.component.state :as state]
+            [swarmpit.component.handler :as handler]
             [swarmpit.routes :as routes]
             [clojure.string :as string]
-            [swarmpit.storage :as storage]
-            [clojure.walk :refer [keywordize-keys]]
-            [ajax.core :as ajax]
             [rum.core :as rum]))
 
 (enable-console-print!)
@@ -64,12 +62,10 @@
 
 (defn- data-handler
   []
-  (ajax/GET (routes/path-for-backend :tasks)
-            {:headers {"Authorization" (storage/get "token")}
-             :handler (fn [response]
-                        (keywordize-keys response)
-                        (let [resp (keywordize-keys response)]
-                          (state/update-value [:data] resp cursor)))}))
+  (handler/get
+    (routes/path-for-backend :tasks)
+    {:on-success (fn [response]
+                   (state/update-value [:data] response cursor))}))
 
 (defn- init-state
   [tasks]

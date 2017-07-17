@@ -72,15 +72,15 @@
   []
   (handler/post
     (routes/path-for-backend :registry-create)
-    (state/get-value cursor)
-    (fn [response]
-      (dispatch!
-        (routes/path-for-frontend :registry-info (select-keys response [:id])))
-      (message/info
-        (str "Registry " (:id response) " has been created.")))
-    (fn [response]
-      (message/error
-        (str "Registry creation failed. Reason: " (:error response))))))
+    {:params     (state/get-value cursor)
+     :on-success (fn [response]
+                   (dispatch!
+                     (routes/path-for-frontend :registry-info (select-keys response [:id])))
+                   (message/info
+                     (str "Registry " (:id response) " has been created.")))
+     :on-error   (fn [response]
+                   (message/error
+                     (str "Registry creation failed. Reason: " (:error response))))}))
 
 (defn- init-state
   []

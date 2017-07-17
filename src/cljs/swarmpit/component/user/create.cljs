@@ -74,15 +74,15 @@
   []
   (handler/post
     (routes/path-for-backend :user-create)
-    (state/get-value cursor)
-    (fn [response]
-      (dispatch!
-        (routes/path-for-frontend :user-info (select-keys response [:id])))
-      (message/info
-        (str "User " (:id response) " has been created.")))
-    (fn [response]
-      (message/error
-        (str "User creation failed. Reason: " (:error response))))))
+    {:params     (state/get-value cursor)
+     :on-success (fn [response]
+                   (dispatch!
+                     (routes/path-for-frontend :user-info (select-keys response [:id])))
+                   (message/info
+                     (str "User " (:id response) " has been created.")))
+     :on-error   (fn [response]
+                   (message/error
+                     (str "User creation failed. Reason: " (:error response))))}))
 
 (defn- init-state
   []

@@ -35,24 +35,21 @@
         deployment (state/get-value deployment/cursor)]
     (handler/post
       (routes/path-for-backend :service-update {:id service-id})
-      (-> settings
-          (assoc :ports ports)
-          (assoc :networks networks)
-          (assoc :mounts mounts)
-          (assoc :secrets secrets)
-          (assoc :variables variables)
-          (assoc :deployment deployment))
-      (fn [_]
-        (dispatch!
-          (routes/path-for-frontend :service-info {:id service-id}))
-        (message/info
-          (str "Service " service-id " has been updated.")))
-      (fn [response]
-        (message/error
-          (str "Service update failed. Reason: " (:error response)))
-        (state/set-value {:text (str "Service update failed. Reason: " (:error response))
-                          :type :error
-                          :open true} message/cursor)))))
+      {:params     (-> settings
+                       (assoc :ports ports)
+                       (assoc :networks networks)
+                       (assoc :mounts mounts)
+                       (assoc :secrets secrets)
+                       (assoc :variables variables)
+                       (assoc :deployment deployment))
+       :on-success (fn [_]
+                     (dispatch!
+                       (routes/path-for-frontend :service-info {:id service-id}))
+                     (message/info
+                       (str "Service " service-id " has been updated.")))
+       :on-error   (fn [response]
+                     (message/error
+                       (str "Service update failed. Reason: " (:error response))))})))
 
 (defn- init-state
   [item]

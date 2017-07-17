@@ -13,14 +13,14 @@
   [volume-name]
   (handler/delete
     (routes/path-for-backend :volume-delete {:name volume-name})
-    (fn [_]
-      (dispatch!
-        (routes/path-for-frontend :volume-list))
-      (message/info
-        (str "Volume " volume-name " has been removed.")))
-    (fn [response]
-      (message/error
-        (str "Volume removing failed. Reason: " (:error response))))))
+    {:on-success (fn [_]
+                   (dispatch!
+                     (routes/path-for-frontend :volume-list))
+                   (message/info
+                     (str "Volume " volume-name " has been removed.")))
+     :on-error   (fn [response]
+                   (message/error
+                     (str "Volume removing failed. Reason: " (:error response))))}))
 
 (rum/defc form < rum/static [item]
   [:div

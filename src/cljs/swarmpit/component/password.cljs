@@ -41,16 +41,16 @@
   [local-state]
   (handler/post
     (routes/path-for-backend :password)
-    (dissoc @local-state :canSubmit)
-    (fn [_]
-      (reset! local-state)
-      (dispatch!
-        (routes/path-for-frontend :index))
-      (message/info
-        "Password has been changed"))
-    (fn [response]
-      (message/error
-        (str "Password update failed. Reason " (:error response))))))
+    {:params     (dissoc @local-state :canSubmit)
+     :on-success (fn [_]
+                   (reset! local-state)
+                   (dispatch!
+                     (routes/path-for-frontend :index))
+                   (message/info
+                     "Password has been changed"))
+     :on-error   (fn [response]
+                   (message/error
+                     (str "Password update failed. Reason " (:error response))))}))
 
 (rum/defcs form < (rum/local {:password  ""
                               :password2 ""

@@ -13,14 +13,14 @@
   [registry-id]
   (handler/delete
     (routes/path-for-backend :registry-delete {:id registry-id})
-    (fn [_]
-      (dispatch!
-        (routes/path-for-frontend :registry-list))
-      (message/info
-        (str "Registry " registry-id " has been removed.")))
-    (fn [response]
-      (message/error
-        (str "Registry removing failed. Reason: " (:error response))))))
+    {:on-success (fn [_]
+                   (dispatch!
+                     (routes/path-for-frontend :registry-list))
+                   (message/info
+                     (str "Registry " registry-id " has been removed.")))
+     :on-error   (fn [response]
+                   (message/error
+                     (str "Registry removing failed. Reason: " (:error response))))}))
 
 (rum/defc form < rum/static [item]
   [:div
