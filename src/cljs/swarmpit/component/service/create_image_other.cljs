@@ -42,7 +42,7 @@
        :onChange (fn [_ _ v]
                    (state/update-value [:data] [] cursor)
                    (state/update-value [:registry] v cursor)
-                   (repository-handler registry))}
+                   (repository-handler v))}
       (->> registries
            (map #(comp/menu-item
                    {:key         %
