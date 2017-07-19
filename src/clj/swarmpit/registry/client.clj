@@ -29,7 +29,8 @@
   (let [url (build-url registry api)
         options {:timeout      5000
                  :headers      headers
-                 :query-params params}]
+                 :query-params params
+                 :insecure?    true}]
     (execute @(http/get url options))))
 
 (defn- basic-auth
