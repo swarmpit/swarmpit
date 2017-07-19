@@ -324,7 +324,7 @@
     (rename-keys
       (if (= "dockerhub" registry-name)
         (create-dockerhub-service service secrets)
-        (create-registry-service service registry secrets)) {:ID :id})))
+        (create-registry-service service registry-name secrets)) {:ID :id})))
 
 (defn update-service
   [service-id service force?]
