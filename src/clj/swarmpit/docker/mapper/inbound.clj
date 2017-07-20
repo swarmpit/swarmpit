@@ -179,6 +179,13 @@
       (= "true" value)
       value)))
 
+(defn ->service-image-details
+  [image-name]
+  (let [separator-pos (str/last-index-of image-name ":")
+        length (count image-name)]
+    {:name (subs image-name 0 separator-pos)
+     :tag  (subs image-name (inc separator-pos) length)}))
+
 (defn ->service
   [service tasks nodes networks]
   (let [service-spec (:Spec service)
@@ -193,8 +200,7 @@
         image (get-in service-task-template [:ContainerSpec :Image])
         image-info (str/split image #"@")
         image-name (first image-info)
-        image-digest (second image-info)
-        image-segments (str/split image-name #":")]
+        image-digest (second image-info)]
     (array-map
       :id service-id
       :version (get-in service [:Version :Index])
@@ -202,10 +208,9 @@
       :updatedAt (date (:UpdatedAt service))
       :registry {:name (:swarmpit.service.registry.name service-labels)
                  :user (:swarmpit.service.registry.user service-labels)}
-      :repository {:image       image-name
-                   :imageDigest image-digest
-                   :name        (first image-segments)
-                   :tag         (second image-segments)}
+      :repository (merge (->service-image-details image-name)
+                         {:image       image-name
+                          :imageDigest image-digest})
       :serviceName service-name
       :mode service-mode
       :replicas replicas
