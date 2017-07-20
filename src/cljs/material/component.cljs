@@ -491,15 +491,7 @@
                      (table-row-column
                        {:key   (str "trc-" index "-" coll-index)
                         :style (select-keys (nth headers coll-index) [:width])}
-                       (render-item-fn coll item))))
-
-
-
-                 ;(map #(table-row-column
-                 ;        {:key (str "trc-" (item-id item))}
-                 ;        (render-item-fn % item)))
-
-                 ))) items))))
+                       (render-item-fn coll item))))))) items))))
 
 (defn list-table-paging
   [offset total limit on-prev-fn on-next-fn]
@@ -728,7 +720,8 @@
       {:key               "th"
        :displaySelectAll  false
        :adjustForCheckbox false
-       :style             {:border "none"}}
+       ;:style             {:border "none"}
+       }
       (table-row
         {:key           "tr"
          :displayBorder false
@@ -748,14 +741,14 @@
   (let [el-style {:height "20px"}]
     (table-body
       {:key                "tb"
-       :showRowHover       false
+       :showRowHover       true
        :displayRowCheckbox false}
       (map-indexed
         (fn [index item]
           (table-row
             {:key           (str "tr-" index)
              :rowNumber     index
-             :displayBorder false
+             ;:displayBorder false
              :style         el-style}
             (->> (select-keys* item render-items-key)
                  (map-indexed
@@ -773,7 +766,7 @@
   (mui
     (table
       {:key        "tbl"
-       :selectable false}
+       :selectable true}
       (form-info-table-header headers)
       (form-info-table-body headers items render-item-fn render-items-key))))
 

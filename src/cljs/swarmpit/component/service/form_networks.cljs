@@ -8,10 +8,21 @@
 
 (def cursor [:page :service :wizard :networks])
 
+;(def headers [{:name  "Name"
+;               :width "300px"}
+;              {:name  "Driver"
+;               :width "200px"}])
+
 (def headers [{:name  "Name"
-               :width "300px"}
+               :width "20%"}
               {:name  "Driver"
-               :width "200px"}])
+               :width "20%"}
+              {:name  "Subnet"
+               :width "20%"}
+              {:name  "Gateway"
+               :width "20%"}
+              {:name  ""
+               :width "20%"}])
 
 (def empty-info
   (comp/form-value "Service is not connected to any networks."))
@@ -44,8 +55,11 @@
                             render-networks
                             (fn [index] (state/remove-item index cursor))))
 
+;(def render-item-keys
+;  [[:networkName] [:driver]])
+
 (def render-item-keys
-  [[:networkName] [:driver]])
+  [[:networkName] [:driver] [:ipam :subnet] [:ipam :gateway] [:internal]])
 
 (defn- render-item
   [item network]
