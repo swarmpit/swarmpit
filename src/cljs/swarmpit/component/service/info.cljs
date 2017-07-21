@@ -2,7 +2,6 @@
   (:require [material.component :as comp]
             [material.icon :as icon]
             [swarmpit.url :refer [dispatch!]]
-            [swarmpit.component.mixin :as mixin]
             [swarmpit.component.handler :as handler]
             [swarmpit.component.service.form-ports :as ports]
             [swarmpit.component.service.form-networks :as networks]
@@ -38,30 +37,6 @@
                    (message/error
                      (str "Service removing failed. Reason: " (:error response))))}))
 
-(defn- service-tasks-handler
-  [service-id]
-  (handler/get
-    (routes/path-for-backend :service-tasks {:id service-id})
-    {:on-success (fn [response]
-                   (reset! service-tasks response))}))
-
-(defn- service-networks-handler
-  [service-id]
-  (handler/get
-    (routes/path-for-backend :service-networks {:id service-id})
-    {:on-success (fn [response]
-                   (reset! service-networks response))}))
-
-(defn- init-state
-  [service]
-  (service-tasks-handler (:id service))
-  (service-networks-handler (:id service)))
-
-(def init-state-mixin
-  (mixin/init
-    (fn [data]
-      (init-state data))))
-
 (rum/defc form-settings < rum/static [service]
   [:div.form-view-group
    (comp/form-section "General settings")
@@ -77,61 +52,61 @@
   (when (not-empty ports)
     [:div.form-view-group
      (comp/form-section "Ports")
-     (comp/list-table ports/headers
-                      ports
-                      ports/render-item
-                      ports/render-item-keys
-                      nil)]))
+     (comp/list-table-auto ports/headers
+                           ports
+                           ports/render-item
+                           ports/render-item-keys
+                           nil)]))
 
 (rum/defc form-networks < rum/static [networks]
   (when (not-empty networks)
     [:div.form-view-group
      (comp/form-section "Networks")
-     (comp/list-table networks/headers
-                      networks
-                      networks/render-item
-                      networks/render-item-keys
-                      nil)]))
+     (comp/list-table-auto networks/headers
+                           networks
+                           networks/render-item
+                           networks/render-item-keys
+                           networks/onclick-handler)]))
 
 (rum/defc form-mounts < rum/static [mounts]
   (when (not-empty mounts)
     [:div.form-view-group
      (comp/form-section "Mounts")
-     (comp/list-table mounts/headers
-                      mounts
-                      mounts/render-item
-                      mounts/render-item-keys
-                      nil)]))
+     (comp/list-table-auto mounts/headers
+                           mounts
+                           mounts/render-item
+                           mounts/render-item-keys
+                           nil)]))
 
 (rum/defc form-secrets < rum/static [secrets]
   (when (not-empty secrets)
     [:div.form-view-group
      (comp/form-section "Secrets")
-     (comp/list-table secrets/headers
-                      secrets
-                      secrets/render-item
-                      secrets/render-item-keys
-                      nil)]))
+     (comp/list-table-auto secrets/headers
+                           secrets
+                           secrets/render-item
+                           secrets/render-item-keys
+                           secrets/onclick-handler)]))
 
 (rum/defc form-variables < rum/static [variables]
   (when (not-empty variables)
     [:div.form-view-group
      (comp/form-section "Environment variables")
-     (comp/list-table variables/headers
-                      variables
-                      variables/render-item
-                      variables/render-item-keys
-                      nil)]))
+     (comp/list-table-auto variables/headers
+                           variables
+                           variables/render-item
+                           variables/render-item-keys
+                           nil)]))
 
 (rum/defc form-labels < rum/static [labels]
   (when (not-empty labels)
     [:div.form-view-group
      (comp/form-section "Labels")
-     (comp/list-table labels/headers
-                      labels
-                      labels/render-item
-                      labels/render-item-keys
-                      nil)]))
+     (comp/list-table-auto labels/headers
+                           labels
+                           labels/render-item
+                           labels/render-item-keys
+                           nil)]))
 
 (rum/defc form-deployment < rum/static [deployment]
   (let [autoredeloy (:autoredeploy deployment)
@@ -172,16 +147,14 @@
 (rum/defc form-tasks < rum/static [tasks]
   [:div.form-view-group
    (comp/form-section "Tasks")
-   (comp/list-table tasks/headers
-                    (filter #(not (= "shutdown" (:state %))) tasks)
-                    tasks/render-item
-                    tasks/render-item-keys
-                    tasks/onclick-handler)])
+   (comp/list-table-auto tasks/headers
+                         (filter #(not (= "shutdown" (:state %))) tasks)
+                         tasks/render-item
+                         tasks/render-item-keys
+                         tasks/onclick-handler)])
 
-(rum/defc form < rum/reactive
-                 init-state-mixin [service]
-  (let [networks (rum/react service-networks)
-        tasks (rum/react service-tasks)
+(rum/defc form < rum/static [data]
+  (let [{:keys [service networks tasks]} data
         ports (:ports service)
         mounts (:mounts service)
         secrets (:secrets service)
