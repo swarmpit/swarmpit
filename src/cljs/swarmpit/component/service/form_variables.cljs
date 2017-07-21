@@ -12,6 +12,13 @@
               {:name  "Value"
                :width "35%"}])
 
+(def render-item-keys
+  [[:name] [:value]])
+
+(defn render-item
+  [item]
+  (val item))
+
 (def empty-info
   (comp/form-value "No environment variables defined for the service."))
 
@@ -51,13 +58,6 @@
   (state/add-item {:name  ""
                    :value ""} cursor))
 
-(def render-item-keys
-  [[:name] [:value]])
-
-(defn- render-item
-  [item]
-  (val item))
-
 (rum/defc form-create < rum/reactive []
   (let [variables (state/react cursor)]
     [:div
@@ -70,11 +70,3 @@
     (if (empty? variables)
       empty-info
       (form-table variables))))
-
-(rum/defc form-view < rum/static [variables]
-  (if (empty? variables)
-    empty-info
-    (comp/form-info-table headers
-                          variables
-                          render-item
-                          render-item-keys)))
