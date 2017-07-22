@@ -29,4 +29,4 @@
       (if (some? error)
         [:div.form-view-group
          (comp/form-section "Error")
-         (comp/form-icon-value icon/error error)])]]))
+         (comp/form-value error)])]]))
