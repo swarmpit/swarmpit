@@ -29,17 +29,6 @@
               {:name  ""
                :width "20%"}])
 
-(def render-item-keys
-  [[:networkName] [:driver] [:ipam :subnet] [:ipam :gateway] [:internal]])
-
-(defn render-item
-  [item _]
-  (val item))
-
-(defn onclick-handler
-  [item]
-  (routes/path-for-frontend :network-info (select-keys item [:id])))
-
 (def empty-info
   (comp/form-value "Service is not connected to any networks."))
 

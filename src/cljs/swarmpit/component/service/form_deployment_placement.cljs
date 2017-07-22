@@ -21,13 +21,6 @@
 (def headers [{:name  "Rule"
                :width "500px"}])
 
-(def render-item-keys
-  [[:rule]])
-
-(defn- render-item
-  [item]
-  (val item))
-
 (defn- form-placement [value index placement-list]
   (comp/autocomplete {:name          "form-placement"
                       :key           "form-placement"
@@ -64,8 +57,3 @@
         placement (state/react cursor)]
     [:div
      (form-table placement placement-list)]))
-
-(rum/defc form-view < rum/static [placement]
-  (comp/form-info-table-headless placement
-                                 render-item
-                                 render-item-keys))

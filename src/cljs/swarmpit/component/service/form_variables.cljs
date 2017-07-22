@@ -12,13 +12,6 @@
               {:name  "Value"
                :width "35%"}])
 
-(def render-item-keys
-  [[:name] [:value]])
-
-(defn render-item
-  [item]
-  (val item))
-
 (def empty-info
   (comp/form-value "No environment variables defined for the service."))
 

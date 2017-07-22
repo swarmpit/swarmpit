@@ -22,17 +22,6 @@
 (def headers [{:name  "Name"
                :width "300px"}])
 
-(def render-item-keys
-  [[:secretName]])
-
-(defn render-item
-  [item]
-  (val item))
-
-(defn onclick-handler
-  [item]
-  (routes/path-for-frontend :secret-info (select-keys item [:id])))
-
 (def empty-info
   (comp/form-value "No secrets defined for the service."))
 
@@ -71,8 +60,7 @@
 
 (defn- add-item
   []
-  (state/add-item {:secretName ""
-                   :id         ""} cursor))
+  (state/add-item {:secretName ""} cursor))
 
 (rum/defc form-create < rum/reactive []
   (let [secrets-list (rum/react secrets)

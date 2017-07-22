@@ -15,13 +15,6 @@
               {:name  "Host port"
                :width "100px"}])
 
-(def render-item-keys
-  [[:containerPort] [:protocol] [:hostPort]])
-
-(defn render-item
-  [item]
-  (val item))
-
 (def empty-info
   (comp/form-value "Service has no published ports."))
 

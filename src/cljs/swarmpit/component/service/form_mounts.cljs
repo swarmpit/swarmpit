@@ -27,13 +27,6 @@
               {:name  "Read only"
                :width "5%"}])
 
-(def render-item-keys
-  [[:type] [:containerPath] [:host] [:readOnly]])
-
-(defn render-item
-  [item _]
-  (val item))
-
 (def empty-info
   (comp/form-value "No mounts defined for the service."))
 
