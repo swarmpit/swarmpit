@@ -3,13 +3,14 @@
             [material.icon :as icon]
             [swarmpit.url :refer [dispatch!]]
             [swarmpit.component.handler :as handler]
-            [swarmpit.component.service.form-ports :as ports]
-            [swarmpit.component.service.form-networks :as networks]
-            [swarmpit.component.service.form-mounts :as mounts]
-            [swarmpit.component.service.form-secrets :as secrets]
-            [swarmpit.component.service.form-variables :as variables]
-            [swarmpit.component.service.form-labels :as labels]
-            [swarmpit.component.service.form-deployment-placement :as placement]
+            [swarmpit.component.service.info.settings :as settings]
+            [swarmpit.component.service.info.ports :as ports]
+            [swarmpit.component.service.info.networks :as networks]
+            [swarmpit.component.service.info.mounts :as mounts]
+            [swarmpit.component.service.info.secrets :as secrets]
+            [swarmpit.component.service.info.variables :as variables]
+            [swarmpit.component.service.info.labels :as labels]
+            [swarmpit.component.service.info.deployment :as deployment]
             [swarmpit.component.task.list :as tasks]
             [swarmpit.component.message :as message]
             [swarmpit.routes :as routes]
@@ -37,117 +38,10 @@
                    (message/error
                      (str "Service removing failed. Reason: " (:error response))))}))
 
-(rum/defc form-settings < rum/static [service]
-  [:div.form-view-group
-   (comp/form-section "General settings")
-   (comp/form-item "ID" (:id service))
-   (comp/form-item "SERVICE NAME" (:serviceName service))
-   (comp/form-item "CREATED" (:createdAt service))
-   (comp/form-item "LAST UPDATE" (:updatedAt service))
-   (comp/form-item "IMAGE" (get-in service [:repository :image]))
-   (comp/form-item "IMAGE DIGEST" (get-in service [:repository :imageDigest]))
-   (comp/form-item "MODE" (:mode service))])
-
-(rum/defc form-ports < rum/static [ports]
-  (when (not-empty ports)
-    [:div.form-view-group
-     (comp/form-section "Ports")
-     (comp/list-table-auto ports/headers
-                           ports
-                           ports/render-item
-                           ports/render-item-keys
-                           nil)]))
-
-(rum/defc form-networks < rum/static [networks]
-  (when (not-empty networks)
-    [:div.form-view-group
-     (comp/form-section "Networks")
-     (comp/list-table-auto networks/headers
-                           networks
-                           networks/render-item
-                           networks/render-item-keys
-                           networks/onclick-handler)]))
-
-(rum/defc form-mounts < rum/static [mounts]
-  (when (not-empty mounts)
-    [:div.form-view-group
-     (comp/form-section "Mounts")
-     (comp/list-table-auto mounts/headers
-                           mounts
-                           mounts/render-item
-                           mounts/render-item-keys
-                           nil)]))
-
-(rum/defc form-secrets < rum/static [secrets]
-  (when (not-empty secrets)
-    [:div.form-view-group
-     (comp/form-section "Secrets")
-     (comp/list-table-auto secrets/headers
-                           secrets
-                           secrets/render-item
-                           secrets/render-item-keys
-                           secrets/onclick-handler)]))
-
-(rum/defc form-variables < rum/static [variables]
-  (when (not-empty variables)
-    [:div.form-view-group
-     (comp/form-section "Environment variables")
-     (comp/list-table-auto variables/headers
-                           variables
-                           variables/render-item
-                           variables/render-item-keys
-                           nil)]))
-
-(rum/defc form-labels < rum/static [labels]
-  (when (not-empty labels)
-    [:div.form-view-group
-     (comp/form-section "Labels")
-     (comp/list-table-auto labels/headers
-                           labels
-                           labels/render-item
-                           labels/render-item-keys
-                           nil)]))
-
-(rum/defc form-deployment < rum/static [deployment]
-  (let [autoredeloy (:autoredeploy deployment)
-        update-delay (get-in deployment [:update :delay])
-        update-parallelism (get-in deployment [:update :parallelism])
-        update-failure-action (get-in deployment [:update :failureAction])
-        rollback-delay (get-in deployment [:rollback :delay])
-        rollback-parallelism (get-in deployment [:rollback :parallelism])
-        rollback-failure-action (get-in deployment [:rollback :failureAction])
-        placement (:placement deployment)
-        restart-policy-condition (get-in deployment [:restartPolicy :condition])
-        restart-policy-delay (get-in deployment [:restartPolicy :delay])
-        restart-policy-attempts (get-in deployment [:restartPolicy :attempts])]
-    [:div.form-view-group
-     (comp/form-section "Deployment")
-     (comp/form-item "AUTOREDEPLOY" (if autoredeloy
-                                      "on"
-                                      "off"))
-     (comp/form-subsection "Restart Policy")
-     (comp/form-item "CONDITION" restart-policy-condition)
-     (comp/form-item "DELAY" (str restart-policy-delay "s"))
-     (comp/form-item "MAX ATTEMPTS" restart-policy-attempts)
-     (comp/form-subsection "Update Config")
-     (comp/form-item "PARALLELISM" update-parallelism)
-     (comp/form-item "DELAY" (str update-delay "s"))
-     (comp/form-item "ON FAILURE" update-failure-action)
-     (if (= "rollback" update-failure-action)
-       [:div
-        (comp/form-subsection "Rollback Config")
-        (comp/form-item "PARALLELISM" rollback-parallelism)
-        (comp/form-item "DELAY" (str rollback-delay "s"))
-        (comp/form-item "ON FAILURE" rollback-failure-action)])
-     (if (not-empty placement)
-       [:div
-        (comp/form-subsection "Placement")
-        (placement/form-view placement)])]))
-
 (rum/defc form-tasks < rum/static [tasks]
-  [:div.form-view-group
+  [:div.form-service-view-group.form-service-group-border
    (comp/form-section "Tasks")
-   (comp/list-table-auto tasks/headers
+   (comp/list-table-auto ["Name" "Service" "Image" "Node" "Status"]
                          (filter #(not (= "shutdown" (:state %))) tasks)
                          tasks/render-item
                          tasks/render-item-keys
@@ -180,13 +74,13 @@
          (comp/raised-button
            {:onTouchTap #(delete-service-handler id)
             :label      "Delete"}))]]
-     [:div.form-view
-      (form-settings service)
-      (form-ports ports)
-      (form-networks networks)
-      (form-mounts mounts)
-      (form-secrets secrets)
-      (form-variables variables)
-      (form-labels labels)
-      (form-deployment deployment)
+     [:div.form-service-view
+      (settings/form service)
+      (ports/form ports)
+      (networks/form networks)
+      (mounts/form mounts)
+      (secrets/form secrets)
+      (variables/form variables)
+      (labels/form labels)
+      (deployment/form deployment)
       (form-tasks tasks)]]))
