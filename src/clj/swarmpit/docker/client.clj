@@ -1,8 +1,6 @@
 (ns swarmpit.docker.client
   (:refer-clojure :exclude [get])
-  (:require [clojure.java.shell :as shell]
-            [clojure.string :as string]
-            [ring.util.codec :refer [form-encode]]
+  (:require [ring.util.codec :refer [form-encode]]
             [cheshire.core :refer [parse-string generate-string]]
             [swarmpit.base64 :as base64]
             [swarmpit.config :refer [config]]

@@ -2,7 +2,7 @@
   (:refer-clojure :exclude [get])
   (:require [org.httpkit.client :as http]
             [swarmpit.repository :as repo]
-            [cheshire.core :refer [parse-string generate-string]]))
+            [swarmpit.response :as resp]))
 
 (def ^:private base-url "https://index.docker.io/v2")
 
@@ -14,7 +14,7 @@
         (ex-info "Docker registry client failure!"
                  {:status 500
                   :body   {:error (:cause (Throwable->map error))}}))
-      (let [response (parse-string body true)]
+      (let [response (resp/parse-response-body body)]
         (if (> 400 status)
           response
           (throw
@@ -38,4 +38,9 @@
 (defn manifest
   [token repository-name repository-tag]
   (let [api (str "/" (repo/add-dockerhub-namespace repository-name) "/manifests/" repository-tag)]
+    (get api token {"Accept" "application/vnd.docker.distribution.manifest.v2+json"} nil)))
+
+(defn distribution
+  [token repository-name repository-tag]
+  (let [api (str "/" repository-name "/manifests/" repository-tag)]
     (get api token {"Accept" "application/vnd.docker.distribution.manifest.v2+json"} nil)))
