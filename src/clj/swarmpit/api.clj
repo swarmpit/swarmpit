@@ -218,6 +218,15 @@
     (->> (drc/tags token repository-name)
          :tags)))
 
+(defn dockerhub-ports
+  [repository-name repository-tag dockeruser-name]
+  (let [user (dockeruser-by-username dockeruser-name)
+        token (:token (dac/token user repository-name))]
+    (-> (drc/manifest token repository-name repository-tag)
+        (rmi/->repository-config)
+        :config
+        (dmi/->image-ports))))
+
 (defn public-repositories
   [repository-query repository-page]
   (-> (dhc/repositories repository-query repository-page)
@@ -280,11 +289,25 @@
       (rc/tags repository-name)
       :tags))
 
+(defn registryy-ports
+  [registry-name repository-name repository-tag]
+  (-> (registry-by-name registry-name)
+      (rc/manifest repository-name repository-tag)
+      (rmi/->repository-config)
+      :config
+      (dmi/->image-ports)))
+
 ;;; Image API
 
 (defn image
-  [image]
-  (dc/image image))
+  [img]
+  (dc/image img))
+
+(defn image-ports
+  [img]
+  (-> (image img)
+      :Config
+      (dmi/->image-ports)))
 
 ;;; Service API
 
