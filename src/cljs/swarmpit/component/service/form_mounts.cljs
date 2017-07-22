@@ -1,12 +1,22 @@
 (ns swarmpit.component.service.form-mounts
   (:require [material.component :as comp]
             [swarmpit.component.state :as state]
+            [swarmpit.component.handler :as handler]
             [swarmpit.routes :as routes]
             [rum.core :as rum]))
 
 (enable-console-print!)
 
 (def cursor [:page :service :wizard :mounts])
+
+(defonce volumes (atom []))
+
+(defn volumes-handler
+  []
+  (handler/get
+    (routes/path-for-backend :volumes)
+    {:on-success (fn [response]
+                   (reset! volumes response))}))
 
 (def headers [{:name  "Type"
                :width "15%"}
@@ -36,7 +46,7 @@
      :onChange (fn [_ v]
                  (state/update-item index :host v cursor))}))
 
-(defn- form-host-volume [value index data]
+(defn- form-host-volume [value index volumes-list]
   (comp/form-list-selectfield
     {:name      (str "form-volume-select-" index)
      :key       (str "form-volume-select-" index)
@@ -44,7 +54,7 @@
      :autoWidth true
      :onChange  (fn [_ _ v]
                   (state/update-item index :host v cursor))}
-    (->> data
+    (->> volumes-list
          (map #(comp/menu-item
                  {:name        (str "form-volume-item-" (:volumeName %))
                   :key         (str "form-volume-item-" (:volumeName %))
@@ -91,10 +101,10 @@
      (form-readonly readOnly index)]))
 
 (defn- form-table
-  [mounts data]
+  [mounts volumes-list]
   (comp/form-table headers
                    mounts
-                   data
+                   volumes-list
                    render-mounts
                    (fn [index] (state/remove-item index cursor))))
 
@@ -105,38 +115,17 @@
                    :host          ""
                    :readOnly      false} cursor))
 
-(def render-item-keys
-  [[:type] [:containerPath] [:host] [:readOnly]])
-
-(defn- render-item
-  [item mount]
-  (let [value (val item)]
-    (case (key item)
-      :readOnly (if value "yes" "no")
-      :host (if (= "volume" (:type mount))
-              (comp/link
-                (routes/path-for-frontend :volume-info {:name value})
-                value)
-              value)
-      value)))
-
-(rum/defc form-create < rum/reactive [data]
-  (let [mounts (state/react cursor)]
+(rum/defc form-create < rum/reactive []
+  (let [volumes-list (rum/react volumes)
+        mounts (state/react cursor)]
     [:div
      (comp/form-add-btn "Mount volume" add-item)
-     (if (not (empty? mounts))
-       (form-table mounts data))]))
+     (when (not (empty? mounts))
+       (form-table mounts volumes-list))]))
 
-(rum/defc form-update < rum/reactive [data]
-  (let [mounts (state/react cursor)]
+(rum/defc form-update < rum/reactive []
+  (let [volumes-list (rum/react volumes)
+        mounts (state/react cursor)]
     (if (empty? mounts)
       empty-info
-      (form-table mounts data))))
-
-(rum/defc form-view < rum/static [mounts]
-  (if (empty? mounts)
-    empty-info
-    (comp/form-info-table headers
-                          mounts
-                          render-item
-                          render-item-keys)))
+      (form-table mounts volumes-list))))

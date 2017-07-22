@@ -23,7 +23,7 @@
                :width "15%"}])
 
 (def render-item-keys
-  [[:taskName] [:serviceName] [:repository :image] [:node :nodeName] [:state]])
+  [[:taskName] [:serviceName] [:repository :image] [:nodeName] [:state]])
 
 (defn render-item-state [value]
   (case value

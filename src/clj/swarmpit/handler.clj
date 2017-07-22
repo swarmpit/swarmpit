@@ -136,6 +136,16 @@
     (->> (api/service (:id route-params))
          (resp-ok))))
 
+(defmethod dispatch :service-networks [_]
+  (fn [{:keys [route-params]}]
+    (->> (api/service-networks (:id route-params))
+         (resp-ok))))
+
+(defmethod dispatch :service-tasks [_]
+  (fn [{:keys [route-params]}]
+    (->> (api/service-tasks (:id route-params))
+         (resp-ok))))
+
 (defmethod dispatch :service-create [_]
   (fn [{:keys [params]}]
     (let [payload (keywordize-keys params)]

@@ -51,13 +51,6 @@
   (state/add-item {:name  ""
                    :value ""} cursor))
 
-(def render-item-keys
-  [[:name] [:value]])
-
-(defn- render-item
-  [item]
-  (val item))
-
 (rum/defc form-create < rum/reactive []
   (let [labels (state/react cursor)]
     [:div
@@ -70,11 +63,3 @@
     (if (empty? labels)
       empty-info
       (form-table labels))))
-
-(rum/defc form-view < rum/static [labels]
-  (if (empty? labels)
-    empty-info
-    (comp/form-info-table headers
-                          labels
-                          render-item
-                          render-item-keys)))

@@ -90,11 +90,13 @@ select:-webkit-autofill:focus {
 
 /* Form service edit layout */
 
+.form-service-view,
 .form-service-edit {
     height: 100%;
     background-color: rgb(245, 245, 245);
 }
 
+.form-service-view-group,
 .form-service-edit-group {
     margin-bottom: 20px;
     padding-top: 10px;
@@ -126,6 +128,7 @@ select:-webkit-autofill:focus {
 
 .form-view {
     margin-top: 20px;
+    min-width: 500px;
 }
 
 .form-view-row {

@@ -15,7 +15,9 @@
                              [:user "/repo"] :dockerhub-user-repo}}
        "/services"    {:get  :services
                        :post :service-create}
-       "/services/"   {:get    {[:id] :service}
+       "/services/"   {:get    {[:id] {""          :service
+                                       "/networks" :service-networks
+                                       "/tasks"    :service-tasks}}
                        :delete {[:id] :service-delete}
                        :post   {[:id] :service-update}}
        "/networks"    {:get  :networks

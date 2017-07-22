@@ -1,6 +1,7 @@
 (ns swarmpit.component.service.form-networks
   (:require [material.component :as comp]
             [swarmpit.component.state :as state]
+            [swarmpit.component.handler :as handler]
             [swarmpit.routes :as routes]
             [rum.core :as rum]))
 
@@ -8,22 +9,37 @@
 
 (def cursor [:page :service :wizard :networks])
 
+(defonce networks (atom []))
+
+(defn networks-handler
+  []
+  (handler/get
+    (routes/path-for-backend :networks)
+    {:on-success (fn [response]
+                   (reset! networks response))}))
+
 (def headers [{:name  "Name"
-               :width "300px"}
+               :width "20%"}
               {:name  "Driver"
-               :width "200px"}])
+               :width "20%"}
+              {:name  "Subnet"
+               :width "20%"}
+              {:name  "Gateway"
+               :width "20%"}
+              {:name  ""
+               :width "20%"}])
 
 (def empty-info
   (comp/form-value "Service is not connected to any networks."))
 
-(defn- form-network [value index data]
+(defn- form-network [value index networks-list]
   (comp/form-list-selectfield
     {:name     (str "form-network-select-" index)
      :key      (str "form-network-select-" index)
      :value    value
      :onChange (fn [_ _ v]
                  (state/update-item index :networkName v cursor))}
-    (->> data
+    (->> networks-list
          (map #(comp/menu-item
                  {:name        (str "form-network-item-" (:networkName %))
                   :key         (str "form-network-item-" (:networkName %))
@@ -36,49 +52,29 @@
     [(form-network networkName index data)]))
 
 (defn- form-table
-  [networks data]
+  [networks networks-list]
   (comp/form-table-headless [{:name  "Name"
                               :width "300px"}]
                             networks
-                            data
+                            networks-list
                             render-networks
                             (fn [index] (state/remove-item index cursor))))
-
-(def render-item-keys
-  [[:networkName] [:driver]])
-
-(defn- render-item
-  [item network]
-  (let [value (val item)]
-    (case (key item)
-      :networkName (comp/link
-                     (routes/path-for-frontend :network-info (select-keys network [:id]))
-                     value)
-      value)))
 
 (defn- add-item
   []
   (state/add-item {:networkName ""} cursor))
 
-(rum/defc form-create < rum/reactive [data]
-  (let [networks (state/react cursor)]
+(rum/defc form-create < rum/reactive []
+  (let [networks-list (rum/react networks)
+        networks (state/react cursor)]
     [:div
      (comp/form-add-btn "Attach network" add-item)
      (if (not (empty? networks))
-       (form-table networks data))]))
+       (form-table networks networks-list))]))
 
-(rum/defc form-update < rum/static [networks]
-  (if (empty? networks)
-    empty-info
-    (comp/form-table-ro headers
-                        networks
-                        render-item
-                        render-item-keys)))
-
-(rum/defc form-view < rum/static [networks]
-  (if (empty? networks)
-    empty-info
-    (comp/form-info-table headers
-                          networks
-                          render-item
-                          render-item-keys)))
+(rum/defc form-update < rum/reactive []
+  (let [networks-list (rum/react networks)
+        networks (state/react cursor)]
+    (if (empty? networks)
+      empty-info
+      (form-table networks networks-list))))

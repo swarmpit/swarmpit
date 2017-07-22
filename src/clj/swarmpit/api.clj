@@ -285,16 +285,23 @@
 (defn services
   []
   (dmi/->services (dc/services)
-                  (dc/tasks)
-                  (dc/nodes)
-                  (dc/networks)))
+                  (dc/tasks)))
 
 (defn service
   [service-id]
   (dmi/->service (dc/service service-id)
-                 (dc/tasks)
-                 (dc/nodes)
-                 (dc/networks)))
+                 (dc/service-tasks service-id)))
+
+(defn service-networks
+  [service-id]
+  (dmi/->service-networks (dc/service service-id)
+                          (dc/networks)))
+
+(defn service-tasks
+  [service-id]
+  (dmi/->tasks (dc/service-tasks service-id)
+               (dc/nodes)
+               (dc/services)))
 
 (defn delete-service
   [service-id]
@@ -357,15 +364,15 @@
 
 (defn tasks
   []
-  (->> (services)
-       (map #(:tasks %))
-       (flatten)))
+  (dmi/->tasks (dc/tasks)
+               (dc/nodes)
+               (dc/services)))
 
 (defn task
   [task-id]
-  (->> (tasks)
-       (filter #(= (:id %) task-id))
-       (first)))
+  (dmi/->task (dc/task task-id)
+              (dc/nodes)
+              (dc/services)))
 
 ;; Placement API
 

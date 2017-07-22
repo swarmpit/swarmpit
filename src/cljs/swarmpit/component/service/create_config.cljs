@@ -80,9 +80,6 @@
 (defn init-state
   [registry user repository]
   (reset! step-index 0)
-  (if (= "dockerhub" registry)
-    (settings/dockerhub-image-tags-handler user repository)
-    (settings/registry-image-tags-handler registry repository))
   (state/set-value {:registry    {:name registry
                                   :user user}
                     :repository  {:name repository
@@ -113,14 +110,23 @@
 (def init-state-mixin
   (mixin/init
     (fn [data]
-      (init-state (:registry data)
-                  (:user data)
-                  (:repository data)))))
+      (let [registry (:registry data)
+            repository (:repository data)
+            user (:user data)]
+        (init-state (:registry data)
+                    (:user data)
+                    (:repository data))
+        (mounts/volumes-handler)
+        (networks/networks-handler)
+        (secrets/secrets-handler)
+        (placement/placement-handler)
+        (if (= "dockerhub" registry)
+          (settings/dockerhub-tags-handler user repository)
+          (settings/registry-tags-handler registry repository))))))
 
 (rum/defc form < rum/reactive
-                 init-state-mixin [data]
+                 init-state-mixin [_]
   (let [index (rum/react step-index)
-        {:keys [secrets volumes networks placement]} data
         {:keys [isValid]} (state/react settings/cursor)]
     [:div
      [:div.form-panel
@@ -141,9 +147,9 @@
           :orientation "vertical"}
          (step-item 0 (settings/form false))
          (step-item 1 (ports/form-create))
-         (step-item 2 (networks/form-create networks))
-         (step-item 3 (mounts/form-create volumes))
-         (step-item 4 (secrets/form-create secrets))
+         (step-item 2 (networks/form-create))
+         (step-item 3 (mounts/form-create))
+         (step-item 4 (secrets/form-create))
          (step-item 5 (variables/form-create))
          (step-item 6 (labels/form-create))
-         (step-item 7 (deployment/form placement))))]))
+         (step-item 7 (deployment/form))))]))

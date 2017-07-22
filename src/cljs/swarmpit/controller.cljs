@@ -64,9 +64,15 @@
 (defmethod dispatch :service-info
   [{:keys [route-params handler]}]
   (get (routes/path-for-backend :service route-params)
-       (fn [response]
-         (state/set-value {:handler handler
-                           :data    response} cursor))))
+       (fn [service]
+         (get (routes/path-for-backend :service-tasks route-params)
+              (fn [tasks]
+                (get (routes/path-for-backend :service-networks route-params)
+                     (fn [networks]
+                       (state/set-value {:handler handler
+                                         :data    {:service  service
+                                                   :tasks    tasks
+                                                   :networks networks}} cursor))))))))
 
 (defmethod dispatch :service-create-image
   [{:keys [handler]}]
@@ -81,36 +87,18 @@
 (defmethod dispatch :service-create-config
   [{:keys [handler]}]
   (let [params (keywordize-keys (query->map (query-string)))]
-    (get (routes/path-for-backend :networks)
-         (fn [networks]
-           (get (routes/path-for-backend :volumes)
-                (fn [volumes]
-                  (get (routes/path-for-backend :secrets)
-                       (fn [secrets]
-                         (get (routes/path-for-backend :placement)
-                              (fn [placement]
-                                (state/set-value {:handler handler
-                                                  :data    (assoc params
-                                                             :networks networks
-                                                             :volumes volumes
-                                                             :secrets secrets
-                                                             :placement placement)} cursor)))))))))))
+    (state/set-value {:handler handler
+                      :data    params} cursor)))
 
 (defmethod dispatch :service-edit
   [{:keys [route-params handler]}]
   (get (routes/path-for-backend :service route-params)
        (fn [service]
-         (get (routes/path-for-backend :volumes)
-              (fn [volumes]
-                (get (routes/path-for-backend :secrets)
-                     (fn [secrets]
-                       (get (routes/path-for-backend :placement)
-                            (fn [placement]
-                              (state/set-value {:handler handler
-                                                :data    {:service   service
-                                                          :volumes   volumes
-                                                          :secrets   secrets
-                                                          :placement placement}} cursor))))))))))
+         (get (routes/path-for-backend :service-networks route-params)
+              (fn [networks]
+                (state/set-value {:handler handler
+                                  :data    {:service  service
+                                            :networks networks}} cursor))))))
 
 ;;; Network controller
 

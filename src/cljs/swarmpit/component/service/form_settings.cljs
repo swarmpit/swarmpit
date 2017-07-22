@@ -9,6 +9,25 @@
 
 (def cursor [:page :service :wizard :settings])
 
+(defonce tags (atom []))
+
+(defn dockerhub-tags-handler
+  [user repository]
+  (handler/get
+    (routes/path-for-backend :dockerhub-tags)
+    {:params     {:repository repository
+                  :user       user}
+     :on-success (fn [response]
+                   (reset! tags response))}))
+
+(defn registry-tags-handler
+  [registry repository]
+  (handler/get
+    (routes/path-for-backend :repository-tags {:registry registry})
+    {:params     {:repository repository}
+     :on-success (fn [response]
+                   (reset! tags response))}))
+
 (def form-mode-style
   {:display   "flex"
    :marginTop "14px"})
@@ -101,25 +120,9 @@
        :onChange (fn [_ v]
                    (state/update-value [:replicas] (js/parseInt v) cursor))})))
 
-(defn dockerhub-image-tags-handler
-  [user repository]
-  (handler/get
-    (routes/path-for-backend :dockerhub-tags)
-    {:params     {:repository repository
-                  :user       user}
-     :on-success (fn [response]
-                   (state/update-value [:repository :tags] response cursor))}))
-
-(defn registry-image-tags-handler
-  [registry repository]
-  (handler/get
-    (routes/path-for-backend :repository-tags {:registry registry})
-    {:params     {:repository repository}
-     :on-success (fn [response]
-                   (state/update-value [:repository :tags] response cursor))}))
-
 (rum/defc form < rum/reactive [update-form?]
-  (let [{:keys [repository
+  (let [tags (rum/react tags)
+        {:keys [repository
                 serviceName
                 mode
                 replicas]} (state/react cursor)]
@@ -130,9 +133,8 @@
        (form-image (:name repository))
        (if update-form?
          (form-image-tag (:tag repository))
-         (form-image-tag-ac (:tag repository)
-                            (:tags repository)))
+         (form-image-tag-ac (:tag repository) tags))
        (form-name serviceName update-form?)
        (form-mode mode update-form?)
-       (if (= "replicated" mode)
+       (when (= "replicated" mode)
          (form-replicas replicas)))]))

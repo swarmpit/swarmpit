@@ -118,6 +118,10 @@
   (-> (str "/services/" id)
       (get)))
 
+(defn service-tasks
+  [id]
+  (get "/tasks" {:filters (generate-string {:service [id]})}))
+
 (defn delete-service
   [id]
   (-> (str "/services/" id)

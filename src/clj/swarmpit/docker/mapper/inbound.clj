@@ -9,10 +9,30 @@
   [date]
   (str (.parse date-format date)))
 
+(defn ->network
+  [network]
+  (let [config (first (get-in network [:IPAM :Config]))]
+    (array-map
+      :id (:Id network)
+      :networkName (:Name network)
+      :created (date (:Created network))
+      :scope (:Scope network)
+      :driver (:Driver network)
+      :internal (:Internal network)
+      :ipam {:subnet  (:Subnet config)
+             :gateway (:Gateway config)})))
+
+(defn ->networks
+  [networks]
+  (->> networks
+       (map ->network)
+       (filter #(= "swarm" (:scope %)))
+       (into [])))
+
 (defn ->node
   [node]
   (array-map
-    :id (get node :ID)
+    :id (:ID node)
     :nodeName (get-in node [:Description :Hostname])
     :role (get-in node [:Spec :Role])
     :availability (get-in node [:Spec :Availability])
@@ -28,20 +48,33 @@
        (map ->node)
        (into [])))
 
+(defn- ->service-mode
+  [service-spec]
+  (str/lower-case (name (first (keys (:Mode service-spec))))))
+
 (defn ->task-node
-  [task nodes]
-  (let [task-node (first (filter #(= (:ID %)
-                                     (:NodeID task)) nodes))]
-    (->node task-node)))
+  [node-id nodes]
+  (first (filter #(= (:ID %) node-id) nodes)))
+
+(defn ->task-service
+  [service-id services]
+  (first (filter #(= (:ID %) service-id) services)))
 
 (defn ->task
-  [task nodes service-name service-mode]
+  [task nodes services]
   (let [image (get-in task [:Spec :ContainerSpec :Image])
         image-info (str/split image #"@")
         image-name (first image-info)
         image-digest (second image-info)
-        slot (get task :Slot)
-        id (get task :ID)
+        slot (:Slot task)
+        id (:ID task)
+        node-id (:NodeID task)
+        node (->task-node node-id nodes)
+        node-name (get-in node [:Description :Hostname])
+        service-id (:ServiceID task)
+        service (->task-service service-id services)
+        service-name (get-in service [:Spec :Name])
+        service-mode (->service-mode (:Spec service))
         task-name (if (= "replicated" service-mode)
                     (str service-name "." slot)
                     service-name)]
@@ -49,21 +82,25 @@
       :id id
       :taskName task-name
       :version (get-in task [:Version :Index])
-      :createdAt (date (get task :CreatedAt))
-      :updatedAt (date (get task :UpdatedAt))
+      :createdAt (date (:CreatedAt task))
+      :updatedAt (date (:UpdatedAt task))
       :repository {:image       image-name
                    :imageDigest image-digest}
       :state (get-in task [:Status :State])
       :status {:error (get-in task [:Status :Err])}
-      :desiredState (get task :DesiredState)
+      :desiredState (:DesiredState task)
       :serviceName service-name
-      :node (->task-node task nodes))))
+      :nodeName node-name)))
 
 (defn ->tasks
-  [tasks nodes service-name service-mode]
+  [tasks nodes services]
   (->> tasks
-       (map #(->task % nodes service-name service-mode))
+       (map #(->task % nodes services))
        (into [])))
+
+(defn ->service-tasks
+  [service-id tasks]
+  (filter #(= (:ServiceID %) service-id) tasks))
 
 (defn ->service-ports
   [service-spec]
@@ -74,17 +111,15 @@
        (into [])))
 
 (defn ->service-network
-  [network networks]
+  [network-id networks]
   (first (filter #(= (:Id %)
-                     (:Target network)) networks)))
+                     network-id) networks)))
 
 (defn ->service-networks
-  [service-spec networks]
-  (->> (get-in service-spec [:TaskTemplate :Networks])
-       (map (fn [n] (->service-network n networks)))
-       (map (fn [n] {:id          (:Id n)
-                     :networkName (:Name n)
-                     :driver      (:Driver n)}))
+  [service networks]
+  (->> (get-in service [:Spec :TaskTemplate :Networks])
+       (map (fn [n] (->service-network (:Target n) networks)))
+       (map (fn [n] (->network n)))
        (into [])))
 
 (defn ->service-mounts
@@ -110,9 +145,8 @@
   (->> service-labels
        (filter #(not (or (str/starts-with? (name (key %)) "swarmpit")
                          (str/starts-with? (name (key %)) "com.docker"))))
-       (map (fn [l]
-              {:name  (name (key l))
-               :value (val l)}))
+       (map (fn [l] {:name  (name (key l))
+                     :value (val l)}))
        (into [])))
 
 (defn ->service-placement-constraints
@@ -125,7 +159,10 @@
   [service-spec]
   (->> (get-in service-spec [:TaskTemplate :ContainerSpec :Secrets])
        (map (fn [s] {:id         (:SecretID s)
-                     :secretName (:SecretName s)}))
+                     :secretName (:SecretName s)
+                     :uid        (get-in s [:File :UID])
+                     :gid        (get-in s [:File :GID])
+                     :mode       (get-in s [:File :Mode])}))
        (into [])))
 
 (defn ->service-deployment-update
@@ -187,14 +224,14 @@
      :tag  (subs image-name (inc separator-pos) length)}))
 
 (defn ->service
-  [service tasks nodes networks]
+  [service tasks]
   (let [service-spec (:Spec service)
         service-labels (:Labels service-spec)
         service-task-template (:TaskTemplate service-spec)
-        service-mode (str/lower-case (name (first (keys (:Mode service-spec)))))
+        service-mode (->service-mode service-spec)
         service-name (:Name service-spec)
         service-id (:ID service)
-        service-tasks (filter #(= (:ServiceID %) service-id) tasks)
+        service-tasks (->service-tasks service-id tasks)
         replicas (get-in service-spec [:Mode :Replicated :Replicas])
         replicas-running (->service-replicas-running service-tasks)
         image (get-in service-task-template [:ContainerSpec :Image])
@@ -219,7 +256,6 @@
                :update  (get-in service [:UpdateStatus :State])
                :message (get-in service [:UpdateStatus :Message])}
       :ports (->service-ports service-spec)
-      :networks (->service-networks service-spec networks)
       :mounts (->service-mounts service-spec)
       :secrets (->service-secrets service-spec)
       :variables (->service-variables service-spec)
@@ -229,44 +265,23 @@
                    :restartPolicy (->service-deployment-restart-policy service-task-template)
                    :rollback      (->service-deployment-rollback service-spec)
                    :autoredeploy  (->service-autoredeploy service-labels)
-                   :placement     (->service-placement-constraints service-spec)}
-      :tasks (->tasks service-tasks nodes service-name service-mode))))
+                   :placement     (->service-placement-constraints service-spec)})))
 
 (defn ->services
-  [services tasks nodes networks]
+  [services tasks]
   (->> services
-       (map #(->service % tasks nodes networks))
-       (into [])))
-
-(defn ->network
-  [network]
-  (let [config (first (get-in network [:IPAM :Config]))]
-    (array-map
-      :id (get network :Id)
-      :networkName (get network :Name)
-      :created (date (get network :Created))
-      :scope (get network :Scope)
-      :driver (get network :Driver)
-      :internal (get network :Internal)
-      :ipam {:subnet  (:Subnet config)
-             :gateway (:Gateway config)})))
-
-(defn ->networks
-  [networks]
-  (->> networks
-       (map ->network)
-       (filter #(= "swarm" (:scope %)))
+       (map #(->service % tasks))
        (into [])))
 
 (defn ->volume
   [volume]
-  (let [name (get volume :Name)]
+  (let [name (:Name volume)]
     (array-map
       :id (hash name)
       :volumeName name
-      :driver (get volume :Driver)
-      :mountpoint (get volume :Mountpoint)
-      :scope (get volume :Scope))))
+      :driver (:Driver volume)
+      :mountpoint (:Mountpoint volume)
+      :scope (:Scope volume))))
 
 (defn ->volumes
   [volumes]
@@ -277,11 +292,11 @@
 (defn ->secret
   [secret]
   (array-map
-    :id (get secret :ID)
+    :id (:ID secret)
     :version (get-in secret [:Version :Index])
     :secretName (get-in secret [:Spec :Name])
-    :createdAt (date (get secret :CreatedAt))
-    :updatedAt (date (get secret :UpdatedAt))))
+    :createdAt (date (:CreatedAt secret))
+    :updatedAt (date (:UpdatedAt secret))))
 
 (defn ->secrets
   [secrets]

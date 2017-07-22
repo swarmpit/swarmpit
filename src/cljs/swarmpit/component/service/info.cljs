@@ -3,19 +3,24 @@
             [material.icon :as icon]
             [swarmpit.url :refer [dispatch!]]
             [swarmpit.component.handler :as handler]
-            [swarmpit.component.service.form-ports :as ports]
-            [swarmpit.component.service.form-networks :as networks]
-            [swarmpit.component.service.form-mounts :as mounts]
-            [swarmpit.component.service.form-secrets :as secrets]
-            [swarmpit.component.service.form-variables :as variables]
-            [swarmpit.component.service.form-labels :as labels]
-            [swarmpit.component.service.form-deployment-placement :as placement]
+            [swarmpit.component.service.info.settings :as settings]
+            [swarmpit.component.service.info.ports :as ports]
+            [swarmpit.component.service.info.networks :as networks]
+            [swarmpit.component.service.info.mounts :as mounts]
+            [swarmpit.component.service.info.secrets :as secrets]
+            [swarmpit.component.service.info.variables :as variables]
+            [swarmpit.component.service.info.labels :as labels]
+            [swarmpit.component.service.info.deployment :as deployment]
             [swarmpit.component.task.list :as tasks]
             [swarmpit.component.message :as message]
             [swarmpit.routes :as routes]
             [rum.core :as rum]))
 
 (enable-console-print!)
+
+(defonce service-tasks (atom nil))
+
+(defonce service-networks (atom nil))
 
 (defn- form-panel-label [item]
   (str (:state item) "  " (get-in item [:status :info])))
@@ -33,26 +38,31 @@
                    (message/error
                      (str "Service removing failed. Reason: " (:error response))))}))
 
-(rum/defc form < rum/static [item]
-  (let [id (:id item)
-        autoredeloy (get-in item [:deployment :autoredeploy])
-        update-delay (get-in item [:deployment :update :delay])
-        update-parallelism (get-in item [:deployment :update :parallelism])
-        update-failure-action (get-in item [:deployment :update :failureAction])
-        rollback-delay (get-in item [:deployment :rollback :delay])
-        rollback-parallelism (get-in item [:deployment :rollback :parallelism])
-        rollback-failure-action (get-in item [:deployment :rollback :failureAction])
-        placement (get-in item [:deployment :placement])
-        restart-policy-condition (get-in item [:deployment :restartPolicy :condition])
-        restart-policy-delay (get-in item [:deployment :restartPolicy :delay])
-        restart-policy-attempts (get-in item [:deployment :restartPolicy :attempts])]
+(rum/defc form-tasks < rum/static [tasks]
+  [:div.form-service-view-group.form-service-group-border
+   (comp/form-section "Tasks")
+   (comp/list-table-auto ["Name" "Service" "Image" "Node" "Status"]
+                         (filter #(not (= "shutdown" (:state %))) tasks)
+                         tasks/render-item
+                         tasks/render-item-keys
+                         tasks/onclick-handler)])
+
+(rum/defc form < rum/static [data]
+  (let [{:keys [service networks tasks]} data
+        ports (:ports service)
+        mounts (:mounts service)
+        secrets (:secrets service)
+        variables (:variables service)
+        labels (:labels service)
+        deployment (:deployment service)
+        id (:id service)]
     [:div
      [:div.form-panel
       [:div.form-panel-left
        (comp/panel-info icon/services
-                        (:serviceName item)
+                        (:serviceName service)
                         (comp/label-info
-                          (form-panel-label item)))]
+                          (form-panel-label service)))]
       [:div.form-panel-right
        (comp/mui
          (comp/raised-button
@@ -64,61 +74,13 @@
          (comp/raised-button
            {:onTouchTap #(delete-service-handler id)
             :label      "Delete"}))]]
-     [:div.form-view
-      [:div.form-view-group
-       (comp/form-section "General settings")
-       (comp/form-item "ID" id)
-       (comp/form-item "SERVICE NAME" (:serviceName item))
-       (comp/form-item "CREATED" (:createdAt item))
-       (comp/form-item "LAST UPDATE" (:updatedAt item))
-       (comp/form-item "IMAGE" (get-in item [:repository :image]))
-       (comp/form-item "IMAGE DIGEST" (get-in item [:repository :imageDigest]))
-       (comp/form-item "MODE" (:mode item))]
-      [:div.form-view-group
-       (comp/form-section "Ports")
-       (ports/form-view (:ports item))]
-      [:div.form-view-group
-       (comp/form-section "Networks")
-       (networks/form-view (:networks item))]
-      [:div.form-view-group
-       (comp/form-section "Mounts")
-       (mounts/form-view (:mounts item))]
-      [:div.form-view-group
-       (comp/form-section "Secrets")
-       (secrets/form-view (:secrets item))]
-      [:div.form-view-group
-       (comp/form-section "Environment variables")
-       (variables/form-view (:variables item))]
-      [:div.form-view-group
-       (comp/form-section "Labels")
-       (labels/form-view (:labels item))]
-      [:div.form-view-group
-       (comp/form-section "Deployment")
-       (comp/form-item "AUTOREDEPLOY" (if autoredeloy
-                                        "on"
-                                        "off"))
-       (comp/form-subsection "Restart Policy")
-       (comp/form-item "CONDITION" restart-policy-condition)
-       (comp/form-item "DELAY" (str restart-policy-delay "s"))
-       (comp/form-item "MAX ATTEMPTS" restart-policy-attempts)
-       (comp/form-subsection "Update Config")
-       (comp/form-item "PARALLELISM" update-parallelism)
-       (comp/form-item "DELAY" (str update-delay "s"))
-       (comp/form-item "ON FAILURE" update-failure-action)
-       (if (= "rollback" update-failure-action)
-         [:div
-          (comp/form-subsection "Rollback Config")
-          (comp/form-item "PARALLELISM" rollback-parallelism)
-          (comp/form-item "DELAY" (str rollback-delay "s"))
-          (comp/form-item "ON FAILURE" rollback-failure-action)])
-       (if (not-empty placement)
-         [:div
-          (comp/form-subsection "Placement")
-          (placement/form-view placement)])]
-      [:div.form-view-group
-       (comp/form-section "Tasks")
-       (comp/list-table tasks/headers
-                        (filter #(not (= "shutdown" (:state %))) (:tasks item))
-                        tasks/render-item
-                        tasks/render-item-keys
-                        tasks/onclick-handler)]]]))
+     [:div.form-service-view
+      (settings/form service)
+      (ports/form ports)
+      (networks/form networks)
+      (mounts/form mounts)
+      (secrets/form secrets)
+      (variables/form variables)
+      (labels/form labels)
+      (deployment/form deployment)
+      (form-tasks tasks)]]))

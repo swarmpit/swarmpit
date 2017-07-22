@@ -148,7 +148,7 @@
        :onToggle (fn [_ v]
                    (state/update-value [:autoredeploy] v cursor))})))
 
-(rum/defc form < rum/reactive [placement]
+(rum/defc form < rum/reactive []
   (let [{:keys [autoredeploy
                 update
                 rollback
@@ -173,4 +173,4 @@
             (form-rollback-delay (:delay rollback))
             (form-rollback-failure-action (:failureAction rollback))]))
        (html (comp/form-subsection-add "Placement" placement/add-item))
-       (placement/form placement))]))
+       (placement/form))]))

@@ -85,13 +85,6 @@
                    :protocol      "tcp"
                    :hostPort      0} cursor))
 
-(def render-item-keys
-  [[:containerPort] [:protocol] [:hostPort]])
-
-(defn- render-item
-  [item]
-  (val item))
-
 (rum/defc form-create < rum/reactive []
   (let [ports (state/react cursor)]
     [:div
@@ -104,11 +97,3 @@
     (if (empty? ports)
       empty-info
       (form-table ports))))
-
-(rum/defc form-view < rum/static [ports]
-  (if (empty? ports)
-    empty-info
-    (comp/form-info-table headers
-                          ports
-                          render-item
-                          render-item-keys)))
