@@ -159,7 +159,10 @@
   [service-spec]
   (->> (get-in service-spec [:TaskTemplate :ContainerSpec :Secrets])
        (map (fn [s] {:id         (:SecretID s)
-                     :secretName (:SecretName s)}))
+                     :secretName (:SecretName s)
+                     :uid        (get-in s [:File :UID])
+                     :gid        (get-in s [:File :GID])
+                     :mode       (get-in s [:File :Mode])}))
        (into [])))
 
 (defn ->service-deployment-update
