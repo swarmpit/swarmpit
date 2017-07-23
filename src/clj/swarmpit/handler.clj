@@ -92,6 +92,12 @@
         (resp-created (select-keys response [:id]))
         (resp-error 400 "User already exist")))))
 
+(defmethod dispatch :user-update [_]
+  (fn [{:keys [route-params params]}]
+    (let [payload (keywordize-keys params)]
+      (api/update-user (:id route-params) payload)
+      (resp-ok))))
+
 ;; Registry handler
 
 (defmethod dispatch :registries [_]
