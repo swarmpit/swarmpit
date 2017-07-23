@@ -30,6 +30,7 @@
    :task-info             "Tasks"
    :user-list             "Users / Swarmpit"
    :user-create           "Users / Swarmpit / Create"
+   :user-edit             "Users / Swarmpit / Edit"
    :user-info             "Users / Swarmpit "
    :registry-info         "Registries"
    :registry-list         "Registries"
