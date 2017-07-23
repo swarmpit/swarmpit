@@ -81,9 +81,12 @@
     (delete url {:rev (:_rev doc)})))
 
 (defn- update-doc
-  [doc field value]
-  (let [url (str "/swarmpit/" (:_id doc))]
-    (put url (assoc doc field value))))
+  ([doc delta]
+   (let [url (str "/swarmpit/" (:_id doc))]
+     (put url (merge doc delta))))
+  ([doc field value]
+   (let [url (str "/swarmpit/" (:_id doc))]
+     (put url (assoc doc field value)))))
 
 ;; Database
 
@@ -175,6 +178,11 @@
 (defn delete-user
   [user]
   (delete-doc user))
+
+(defn update-user
+  [user delta]
+  (let [allowed-delta (select-keys delta [:role :email])]
+    (update-doc user allowed-delta)))
 
 (defn change-password
   [user encrypted-password]
