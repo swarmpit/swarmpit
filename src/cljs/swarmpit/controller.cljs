@@ -205,6 +205,13 @@
   [{:keys [handler]}]
   (state/set-value {:handler handler} cursor))
 
+(defmethod dispatch :user-edit
+  [{:keys [route-params handler]}]
+  (get (routes/path-for-backend :user route-params)
+       (fn [response]
+         (state/set-value {:handler handler
+                           :data    response} cursor))))
+
 ;;; Registry controller
 
 (defmethod dispatch :registry-list
