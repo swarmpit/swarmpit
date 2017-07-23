@@ -24,6 +24,7 @@
             [swarmpit.component.user.list :as user-list]
             [swarmpit.component.user.info :as user-info]
             [swarmpit.component.user.create :as user-create]
+            [swarmpit.component.user.edit :as user-edit]
             [swarmpit.component.registry.info :as registry-info]
             [swarmpit.component.registry.list :as registry-list]
             [swarmpit.component.registry.create :as registry-create]
@@ -146,6 +147,10 @@
 (defmethod dispatch :user-create
   [_]
   (user-create/form))
+
+(defmethod dispatch :user-edit
+  [{:keys [data]}]
+  (user-edit/form data))
 
 ;;; Registry view
 

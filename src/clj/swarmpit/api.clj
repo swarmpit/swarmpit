@@ -50,6 +50,11 @@
     (->> (cmo/->user user)
          (cc/create-user))))
 
+(defn update-user
+  [user-id user-delta]
+  (->> (cc/update-user (cc/user user-id) user-delta)
+       (cmi/->user)))
+
 (defn change-password
   [user password]
   (->> (cmo/->password password)

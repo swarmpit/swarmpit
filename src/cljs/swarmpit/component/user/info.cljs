@@ -32,6 +32,12 @@
     [:div.form-panel-right
      (comp/mui
        (comp/raised-button
+         {:href    (routes/path-for-frontend :user-edit {:id (:_id item)})
+          :label   "Edit"
+          :primary true}))
+     [:span.form-panel-delimiter]
+     (comp/mui
+       (comp/raised-button
          {:onTouchTap #(delete-user-handler (:_id item))
           :disabled   (= (storage/user) (:username item))
           :label      "Delete"}))]]

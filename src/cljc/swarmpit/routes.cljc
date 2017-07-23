@@ -41,7 +41,8 @@
        "/admin/"      {"users"            {:get  :users
                                            :post :user-create}
                        "users/"           {:get    {[:id] :user}
-                                           :delete {[:id] :user-delete}}
+                                           :delete {[:id] :user-delete}
+                                           :post   {[:id] :user-update}}
                        "dockerhub/users"  {:get  :dockerhub-users
                                            :post :dockerhub-user-create}
                        "dockerhub/users/" {:get    {[:id] :dockerhub-user}
@@ -77,9 +78,10 @@
                    "/dockerhub"  {""        :dockerhub-user-list
                                   "/add"    :dockerhub-user-create
                                   ["/" :id] :dockerhub-user-info}
-                   "/users"      {""        :user-list
-                                  "/create" :user-create
-                                  ["/" :id] :user-info}}])
+                   "/users"      {""                :user-list
+                                  "/create"         :user-create
+                                  ["/" :id]         :user-info
+                                  ["/" :id "/edit"] :user-edit}}])
 
 (defn- path
   [routes prefix handler params query]

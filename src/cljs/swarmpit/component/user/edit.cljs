@@ -1,4 +1,4 @@
-(ns swarmpit.component.user.create
+(ns swarmpit.component.user.edit
   (:require [material.component :as comp]
             [material.icon :as icon]
             [swarmpit.url :refer [dispatch!]]
@@ -12,33 +12,6 @@
 (enable-console-print!)
 
 (def cursor [:page :user :form])
-
-(defn- form-username [value]
-  (comp/form-comp
-    "USERNAME"
-    (comp/vtext-field
-      {:name            "username"
-       :key             "username"
-       :required        true
-       :validations     "minLength:4"
-       :validationError "Username must be at least 4 characters long"
-       :value           value
-       :onChange        (fn [_ v]
-                          (state/update-value [:username] v cursor))})))
-
-(defn- form-password [value]
-  (comp/form-comp
-    "PASSWORD"
-    (comp/vtext-field
-      {:name            "password"
-       :key             "password"
-       :required        true
-       :validations     "minLength:6"
-       :validationError "Password must be at least 6 characters long"
-       :type            "password"
-       :value           value
-       :onChange        (fn [_ v]
-                          (state/update-value [:password] v cursor))})))
 
 (defn- form-role [value]
   (comp/form-comp
@@ -69,56 +42,56 @@
        :onChange        (fn [_ v]
                           (state/update-value [:email] v cursor))})))
 
-(defn- create-user-handler
-  []
+(defn- update-user-handler
+  [user-id]
   (handler/post
-    (routes/path-for-backend :user-create)
+    (routes/path-for-backend :user-update {:id user-id})
     {:params     (state/get-value cursor)
-     :on-success (fn [response]
+     :on-success (fn [_]
                    (dispatch!
-                     (routes/path-for-frontend :user-info (select-keys response [:id])))
+                     (routes/path-for-frontend :user-info {:id user-id}))
                    (message/info
-                     (str "User " (:id response) " has been created.")))
+                     (str "User " user-id " has been updated.")))
      :on-error   (fn [response]
                    (message/error
-                     (str "User creation failed. Reason: " (:error response))))}))
+                     (str "User update failed. Reason: " (:error response))))}))
 
 (defn- init-state
-  []
-  (state/set-value {:username ""
-                    :password ""
-                    :email    ""
-                    :role     "user"
-                    :isValid  false} cursor))
+  [user]
+  (state/set-value {:email   (:email user)
+                    :role    (:role user)
+                    :isValid true} cursor))
 
 (def init-state-mixin
   (mixin/init
-    (fn [_]
-      (init-state))))
+    (fn [user]
+      (init-state user))))
 
 (rum/defc form < rum/reactive
-                 init-state-mixin []
-  (let [{:keys [username
-                password
-                role
+                 init-state-mixin [user]
+  (let [{:keys [role
                 email
                 isValid]} (state/react cursor)]
     [:div
      [:div.form-panel
       [:div.form-panel-left
-       (comp/panel-info icon/users "New user")]
+       (comp/panel-info icon/users
+                        (:username user))]
       [:div.form-panel-right
        (comp/mui
          (comp/raised-button
-           {:label      "Create"
+           {:onTouchTap #(update-user-handler (:_id user))
+            :label      "Save"
             :disabled   (not isValid)
-            :primary    true
-            :onTouchTap create-user-handler}))]]
+            :primary    true}))
+       [:span.form-panel-delimiter]
+       (comp/mui
+         (comp/raised-button
+           {:href  (routes/path-for-frontend :user-info {:id (:_id user)})
+            :label "Back"}))]]
      [:div.form-edit
       (comp/form
         {:onValid   #(state/update-value [:isValid] true cursor)
          :onInvalid #(state/update-value [:isValid] false cursor)}
-        (form-username username)
-        (form-password password)
         (form-role role)
         (form-email email))]]))
