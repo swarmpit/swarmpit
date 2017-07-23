@@ -100,17 +100,17 @@
     :handler :secret-list}])
 
 (def admin-menu
-  [{:name "USERS"}
+  [{:name "DISTRIBUTION"}
    {:name    "Dockerhub"
     :icon    icon/docker
     :handler :dockerhub-user-list}
-   {:name    "Swarmpit"
-    :icon    icon/users
-    :handler :user-list}
-   {:name "OTHER"}
-   {:name    "Registries"
+   {:name    "Other"
     :icon    icon/registries
-    :handler :registry-list}])
+    :handler :registry-list}
+   {:name "ADMIN"}
+   {:name    "Users"
+    :icon    icon/users
+    :handler :user-list}])
 
 (def menu-style
   {:height   "100%"
