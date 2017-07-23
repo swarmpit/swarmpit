@@ -1,5 +1,6 @@
 (ns swarmpit.component.layout
   (:require [rum.core :as rum]
+            [clojure.string :as str]
             [swarmpit.controller :as controller]
             [swarmpit.view :as view]
             [swarmpit.component.state :as state]
@@ -43,6 +44,10 @@
   [handler]
   (get page-titles handler))
 
+(defn- page-domain
+  [handler]
+  (keyword (first (str/split (name handler) #"-"))))
+
 (def single-pages
   #{:login :error :unauthorized nil})
 
@@ -54,9 +59,9 @@
   (view/dispatch route))
 
 (defn- document-title
-  [layout-title]
+  [page-title]
   (set! (-> js/document .-title)
-        (str layout-title " :: swarmpit")))
+        (str page-title " :: swarmpit")))
 
 (rum/defc page-layout < rum/reactive [route]
   (let [{:keys [opened]} (state/react menu/cursor)
@@ -64,11 +69,12 @@
         layout-type (if opened
                       "layout-opened"
                       "layout-closed")
-        layout-title (page-title handler)]
-    (document-title layout-title)
+        page-title (page-title handler)
+        page-domain (page-domain handler)]
+    (document-title page-title)
     [:div {:class ["layout" layout-type]}
-     [:header (header/appbar layout-title)]
-     [:nav (menu/drawer layout-title)]
+     [:header (header/appbar page-title)]
+     [:nav (menu/drawer page-domain)]
      [:main (view/dispatch route)]]))
 
 (rum/defc layout < rum/reactive []
