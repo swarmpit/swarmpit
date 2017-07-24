@@ -6,11 +6,11 @@
               :docker-api  "v1.28"
               :db-url      "http://localhost:5984"})
 
-(defn environment
-  [] (->> {:docker-sock (env :swarmpit-docker-sock)
-           :docker-api  (env :swarmpit-docker-api)
-           :db-url      (env :swarmpit-db)}
-          (into {} (remove #(nil? (val %))))))
+(def environment
+  (->> {:docker-sock (env :swarmpit-docker-sock)
+        :docker-api  (env :swarmpit-docker-api)
+        :db-url      (env :swarmpit-db)}
+       (into {} (remove #(nil? (val %))))))
 
 (def ^:private dynamic (atom {}))
 
@@ -18,6 +18,6 @@
   [config] (reset! dynamic config))
 
 (defn config
-  ([] (->> [default (environment) @dynamic]
-          (apply merge)))
+  ([] (->> [default environment @dynamic]
+           (apply merge)))
   ([key] ((config) key)))
