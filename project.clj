@@ -28,11 +28,16 @@
                  [org.immutant/immutant "2.1.9"]
                  [com.cemerick/url "0.1.1"]
                  [com.cemerick/friend "0.2.3"]
-                 [com.cognitect/transit-cljs "0.8.239"]]
-  :plugins [[lein-cljsbuild "1.1.4"]]
+                 [com.cognitect/transit-cljs "0.8.239"]
+                 [environ "1.1.0"]]
+  :plugins [[lein-cljsbuild "1.1.4"]
+            [lein-environ "1.1.0"]]
   :min-lein-version "2.6.1"
   :source-paths ["src/clj" "src/cljs" "src/cljc"]
   :test-paths ["test/clj" "test/cljc"]
+  :test-selectors {:default (complement :integration)
+                   :integration :integration
+                   :all (constantly true)}
   :clean-targets ^{:protect false} ["resources/public/js/out"
                                     "resources/public/js/main.js"
                                     :target-path]

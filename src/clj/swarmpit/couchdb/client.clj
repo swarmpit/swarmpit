@@ -1,11 +1,8 @@
 (ns swarmpit.couchdb.client
   (:refer-clojure :exclude [get find])
   (:require [org.httpkit.client :as http]
-            [cheshire.core :refer [parse-string generate-string]]))
-
-(def ^:private base-url
-  (or (System/getenv "SWARMPIT_DB")
-      (str "http://localhost:5984")))
+            [cheshire.core :refer [parse-string generate-string]]
+            [swarmpit.config :refer [config]]))
 
 (def headers
   {"Accept"       "application/json"
@@ -29,27 +26,27 @@
 
 (defn- get
   [api]
-  (let [url (str base-url api)
+  (let [url (str (config :db-url) api)
         options {:headers headers}]
     (execute @(http/get url options))))
 
 (defn- put
   ([api] (put api {}))
-  ([api request] (let [url (str base-url api)
+  ([api request] (let [url (str (config :db-url) api)
                        options {:headers headers
                                 :body    (generate-string request)}]
                    (execute @(http/put url options)))))
 
 (defn- post
   [api request]
-  (let [url (str base-url api)
+  (let [url (str (config :db-url) api)
         options {:headers headers
                  :body    (generate-string request)}]
     (execute @(http/post url options))))
 
 (defn- delete
   [api params]
-  (let [url (str base-url api)
+  (let [url (str (config :db-url) api)
         options {:headers      headers
                  :query-params params}]
     (execute @(http/delete url options))))

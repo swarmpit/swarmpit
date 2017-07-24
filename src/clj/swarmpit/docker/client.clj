@@ -4,10 +4,17 @@
             [clojure.string :as string]
             [ring.util.codec :refer [form-encode]]
             [cheshire.core :refer [parse-string generate-string]]
-            [swarmpit.base64 :as base64]))
+            [swarmpit.base64 :as base64]
+            [swarmpit.config :refer [config]]))
 
-(def ^:private api-version "v1.28")
-(def ^:private base-cmd ["curl" "--unix-socket" "/var/run/docker.sock" "-w" "%{http_code}"])
+(defn- http?
+  [] (not (nil? (re-matches #"^https?:\/\/.*" (config :docker-sock)))))
+
+(defn- base-cmd
+  []
+  (let [socket-params (if (not (http?)) ["--unix-socket" (config :docker-sock)])]
+    (-> ["curl" "-w" "%{http_code}"]
+        (into socket-params))))
 
 (defn- map-headers
   "Map request `headers` map to curl vector cmd representation"
@@ -28,7 +35,8 @@
 (defn- map-uri
   "Map request `method`, `uri` & query `params` to curl vector cmd representation"
   [method uri params]
-  ["-X" method (str "http:/" api-version uri (map-params params))])
+  (let [base-uri (if (http?) (config :docker-sock) "http:")]
+    ["-X" method (str base-uri "/" (config :docker-api) uri (map-params params))]))
 
 (defn- map-payload
   "Map request `payload` to curl vector cmd representation"
@@ -43,7 +51,7 @@
   (let [pheaders (map-headers headers)
         pcommand (map-uri method uri params)
         ppayload (map-payload payload)]
-    (-> base-cmd
+    (-> (base-cmd)
         (into pheaders)
         (into ppayload)
         (into pcommand))))
