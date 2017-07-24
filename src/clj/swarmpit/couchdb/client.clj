@@ -2,7 +2,7 @@
   (:refer-clojure :exclude [get find])
   (:require [org.httpkit.client :as http]
             [cheshire.core :refer [parse-string generate-string]]
-            [swarmpit.docker.config :refer [config]]))
+            [swarmpit.config :refer [config]]))
 
 (def headers
   {"Accept"       "application/json"

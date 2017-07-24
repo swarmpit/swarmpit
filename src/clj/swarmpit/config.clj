@@ -1,4 +1,4 @@
-(ns swarmpit.docker.config
+(ns swarmpit.config
   (:require
     [environ.core :refer [env]]))
 
@@ -12,7 +12,7 @@
            :db-url      (env :swarmpit-db)}
           (into {} (remove #(nil? (val %))))))
 
-(def dynamic (atom {}))
+(def ^:private dynamic (atom {}))
 
 (defn update!
   [config] (reset! dynamic config))

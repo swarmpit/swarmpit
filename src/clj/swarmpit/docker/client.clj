@@ -5,7 +5,7 @@
             [ring.util.codec :refer [form-encode]]
             [cheshire.core :refer [parse-string generate-string]]
             [swarmpit.base64 :as base64]
-            [swarmpit.docker.config :refer [config]]))
+            [swarmpit.config :refer [config]]))
 
 (defn- http?
   [] (not (nil? (re-matches #"^https?:\/\/.*" (config :docker-sock)))))
