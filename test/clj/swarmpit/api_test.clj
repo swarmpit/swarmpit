@@ -1,7 +1,8 @@
 (ns swarmpit.api-test
   (:require [clojure.test :refer :all]
             [swarmpit.test :refer :all]
-            [swarmpit.api :refer :all]))
+            [swarmpit.api :refer :all]
+            [clojure.edn :as edn]))
 
 (use-fixtures :once dind-socket-fixture running-service-fixture)
 
@@ -17,6 +18,20 @@
       (is (= (-> (services) first) (service service-id)))
       (is (some? (service-networks service-id)))
       (is (some? (service-tasks service-id))))
+
+    (testing "crud service"
+      (let [id (-> (edn/read-string (slurp "test/clj/swarmpit/create-service.edn"))
+                   (create-service)
+                   :id)
+            created (service id)]
+        (is (some? id))
+        (is (some? created))
+        (is (= "nginx" (-> created :repository :name)))
+        (is (= 1 (-> created :replicas)))
+        (update-service id (merge created {:replicas 2}) false)
+        (is (= 2 (-> id (service) :replicas)))
+        (delete-service id)
+        (is (empty? (->> (services) (filter #(= id (:id %))))))))
 
     (testing "secrets"
       (is (some? (secrets))))
@@ -49,4 +64,10 @@
         (is (some? tasks))
         (is (= (service-tasks service-id)
                (->> tasks (filter #(.startsWith (:taskName %) "test")))))
-        (is (= some-task (task (:id some-task))))))))
+        (is (= some-task (task (:id some-task))))))
+
+    (testing "find public repository"
+      (let [results (dockerhub-repositories "nginx" 1)]
+        (is (some? results))
+        (is (= "nginx" (:query results)))
+        (is (= "nginx" (-> results :results first :name)))))))
