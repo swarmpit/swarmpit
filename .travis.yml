@@ -12,7 +12,6 @@ env:
   - DOCKER=edge
   - DOCKER=rc
   - DOCKER=1.13.0
-  - DOCKER=1.12.0
 install:
   - bash dev/script/start-dind.sh
 script:
