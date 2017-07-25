@@ -4,6 +4,12 @@ REPO=swarmpit
 NAMESPACE=$ORG/$REPO
 BRANCH=${TRAVIS_BRANCH/\//-}
 
+if [ $DOCKER != "stable" ]
+then
+	echo "images are deployed only for stable docker build"
+	exit 0
+fi
+
 if [ $CONTRIBUTOR == "true" ] 
 then
 	docker login -u="$DOCKER_USERNAME" -p="$DOCKER_PASSWORD"
