@@ -1,4 +1,4 @@
-(ns swarmpit.docker.client_test
+(ns swarmpit.docker.client-test
   (:require [clojure.test :refer :all]
             [swarmpit.test :refer :all]
             [clojure.edn :as edn]
@@ -32,5 +32,3 @@
     (let [service (create-service service-def)]
       (is (some? service))
       (is (some? (delete-service (service :ID)))))))
-
-
