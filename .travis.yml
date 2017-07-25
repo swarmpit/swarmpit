@@ -12,6 +12,7 @@ env:
   - DOCKER=rc
   - DOCKER=1.13.0
 install:
+  - bash dev/script/init-db.sh
   - bash dev/script/start-dind.sh
 script:
   - lein test :all
