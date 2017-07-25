@@ -111,7 +111,7 @@
     :icon    icon/docker
     :handler :dockerhub-user-list
     :domain  :dockerhub}
-   {:name    "Other"
+   {:name    "Registry"
     :icon    icon/registries
     :handler :registry-list
     :domain  :registry}

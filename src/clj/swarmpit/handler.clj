@@ -306,7 +306,7 @@
     (->> (api/dockerusers-list)
          (resp-ok))))
 
-(defmethod dispatch :dockerhub-repo [_]
+(defmethod dispatch :dockerhub-repositories [_]
   (fn [{:keys [query-string]}]
     (let [query (keywordize-keys (query->map query-string))
           repository-query (:query query)
@@ -314,7 +314,7 @@
       (->> (api/dockerhub-repositories repository-query repository-page)
            (resp-ok)))))
 
-(defmethod dispatch :dockerhub-tags [_]
+(defmethod dispatch :dockerhub-repository-tags [_]
   (fn [{:keys [query-string]}]
     (let [query (keywordize-keys (query->map query-string))
           repository-name (:repository query)
@@ -324,7 +324,7 @@
         (->> (api/dockerhub-tags repository-name dockeruser-name)
              (resp-ok))))))
 
-(defmethod dispatch :dockerhub-user-repo [_]
+(defmethod dispatch :dockerhub-user-repositories [_]
   (fn [{:keys [route-params]}]
     (let [dockeruser (api/dockeruser-by-username (:user route-params))]
       (if (nil? dockeruser)

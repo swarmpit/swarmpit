@@ -27,7 +27,7 @@
 (defn- repository-handler
   [user]
   (handler/get
-    (routes/path-for-backend :dockerhub-user-repo {:user user})
+    (routes/path-for-backend :dockerhub-user-repositories {:user user})
     {:on-call    (state/update-value [:searching] true cursor)
      :on-success (fn [response]
                    (state/update-value [:searching] false cursor)

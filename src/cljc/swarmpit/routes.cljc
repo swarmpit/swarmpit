@@ -3,54 +3,54 @@
             [cemerick.url :refer [map->query]]))
 
 (def backend
-  ["" {"/"            {:get :index}
-       "/login"       {:post :login}
-       "/password"    {:post :password}
-       "/registries/" {:get {"list"              :registries-list
-                             [:registry "/repo"] {""      :repositories
-                                                  "/tags" :repository-tags}}}
-       "/dockerhub/"  {:get {"users"         {"/list" :dockerhub-users-list}
-                             "repo"          {""      :dockerhub-repo
-                                              "/tags" :dockerhub-tags}
-                             [:user "/repo"] :dockerhub-user-repo}}
-       "/services"    {:get  :services
-                       :post :service-create}
-       "/services/"   {:get    {[:id] {""          :service
-                                       "/networks" :service-networks
-                                       "/tasks"    :service-tasks}}
-                       :delete {[:id] :service-delete}
-                       :post   {[:id] :service-update}}
-       "/networks"    {:get  :networks
-                       :post :network-create}
-       "/networks/"   {:get    {[:id] :network}
-                       :delete {[:id] :network-delete}}
-       "/volumes"     {:get  :volumes
-                       :post :volume-create}
-       "/volumes/"    {:get    {[:name] :volume}
-                       :delete {[:name] :volume-delete}}
-       "/secrets"     {:get  :secrets
-                       :post :secret-create}
-       "/secrets/"    {:get    {[:id] :secret}
-                       :delete {[:id] :secret-delete}
-                       :post   {[:id] :secret-update}}
-       "/nodes"       {:get :nodes}
-       "/nodes/"      {:get {"placement" :placement
-                             [:id]       :node}}
-       "/tasks"       {:get :tasks}
-       "/tasks/"      {:get {[:id] :task}}
-       "/admin/"      {"users"            {:get  :users
-                                           :post :user-create}
-                       "users/"           {:get    {[:id] :user}
-                                           :delete {[:id] :user-delete}
-                                           :post   {[:id] :user-update}}
-                       "dockerhub/users"  {:get  :dockerhub-users
-                                           :post :dockerhub-user-create}
-                       "dockerhub/users/" {:get    {[:id] :dockerhub-user}
-                                           :delete {[:id] :dockerhub-user-delete}}
-                       "registries"       {:get  :registries
-                                           :post :registry-create}
-                       "registries/"      {:get    {[:id] :registry}
-                                           :delete {[:id] :registry-delete}}}}])
+  ["" {"/"              {:get :index}
+       "/login"         {:post :login}
+       "/password"      {:post :password}
+       "/distribution/" {"dockerhub"  {""  {:get  :dockerhub-users
+                                            :post :dockerhub-user-create}
+                                       "/" {:get    {"list"                  :dockerhub-users-list
+                                                     "repositories"          :dockerhub-repositories
+                                                     "tags"                  :dockerhub-repository-tags
+                                                     [:user "/repositories"] :dockerhub-user-repositories
+                                                     [:id]                   :dockerhub-user}
+                                            :delete {[:id] :dockerhub-user-delete}}}
+                         "registries" {""  {:get  :registries
+                                            :post :registry-create}
+                                       "/" {:get    {"list"                      :registries-list
+                                                     [:registry "/repositories"] :repositories
+                                                     [:registry "/tags"]         :repository-tags
+                                                     [:id]                       :registry}
+                                            :delete {[:id] :registry-delete}}}}
+       "/services"      {:get  :services
+                         :post :service-create}
+       "/services/"     {:get    {[:id] {""          :service
+                                         "/networks" :service-networks
+                                         "/tasks"    :service-tasks}}
+                         :delete {[:id] :service-delete}
+                         :post   {[:id] :service-update}}
+       "/networks"      {:get  :networks
+                         :post :network-create}
+       "/networks/"     {:get    {[:id] :network}
+                         :delete {[:id] :network-delete}}
+       "/volumes"       {:get  :volumes
+                         :post :volume-create}
+       "/volumes/"      {:get    {[:name] :volume}
+                         :delete {[:name] :volume-delete}}
+       "/secrets"       {:get  :secrets
+                         :post :secret-create}
+       "/secrets/"      {:get    {[:id] :secret}
+                         :delete {[:id] :secret-delete}
+                         :post   {[:id] :secret-update}}
+       "/nodes"         {:get :nodes}
+       "/nodes/"        {:get {"placement" :placement
+                               [:id]       :node}}
+       "/tasks"         {:get :tasks}
+       "/tasks/"        {:get {[:id] :task}}
+       "/admin/"        {"users"  {:get  :users
+                                   :post :user-create}
+                         "users/" {:get    {[:id] :user}
+                                   :delete {[:id] :user-delete}
+                                   :post   {[:id] :user-update}}}}])
 
 (def frontend ["" {"/"           :index
                    "/login"      :login

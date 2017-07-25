@@ -14,7 +14,7 @@
 (defn dockerhub-tags-handler
   [user repository]
   (handler/get
-    (routes/path-for-backend :dockerhub-tags)
+    (routes/path-for-backend :dockerhub-repository-tags)
     {:params     {:repository repository
                   :user       user}
      :on-success (fn [response]

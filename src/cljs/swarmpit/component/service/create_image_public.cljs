@@ -21,7 +21,7 @@
 (defn- repository-handler
   [query page]
   (handler/get
-    (routes/path-for-backend :dockerhub-repo)
+    (routes/path-for-backend :dockerhub-repositories)
     {:params     {:query query
                   :page  page}
      :on-call    (state/update-value [:searching] true cursor)

@@ -16,7 +16,7 @@
    :service-create-config "Services / Wizard"
    :service-create-image  "Services / Wizard"
    :service-info          "Services"
-   :service-edit          "Services"
+   :service-edit          "Services / Edit"
    :network-list          "Networks"
    :network-create        "Networks / Create"
    :network-info          "Networks"
@@ -29,16 +29,16 @@
    :node-list             "Nodes"
    :task-list             "Tasks"
    :task-info             "Tasks"
-   :user-list             "Users / Swarmpit"
-   :user-create           "Users / Swarmpit / Create"
-   :user-edit             "Users / Swarmpit / Edit"
-   :user-info             "Users / Swarmpit "
+   :user-list             "Users"
+   :user-create           "Users / Create"
+   :user-edit             "Users / Edit"
+   :user-info             "Users"
    :registry-info         "Registries"
    :registry-list         "Registries"
    :registry-create       "Registries / Add"
-   :dockerhub-user-info   "Users / Dockerhub"
-   :dockerhub-user-list   "Users / Dockerhub"
-   :dockerhub-user-create "Users / Dockerhub / Add"})
+   :dockerhub-user-info   "Dockerhub"
+   :dockerhub-user-list   "Dockerhub"
+   :dockerhub-user-create "Dockerhub / Add"})
 
 (defn- page-title
   [handler]
