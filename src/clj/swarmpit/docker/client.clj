@@ -234,6 +234,10 @@
   (-> (str "/nodes/" id)
       (get)))
 
+(defn version
+  []
+  (get "/version"))
+
 ;; Images
 
 (defn image
