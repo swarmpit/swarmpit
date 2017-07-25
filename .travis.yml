@@ -1,5 +1,4 @@
 language: clojure
-fail_fast: true
 services:
   - docker
 cache:
@@ -18,4 +17,5 @@ script:
   - lein test :all
   - lein with-profile prod uberjar
   - docker build -t swarmpit .
+after_success:
   - bash dev/script/deploy-image.sh
