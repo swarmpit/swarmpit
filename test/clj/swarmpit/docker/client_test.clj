@@ -1,22 +1,12 @@
 (ns swarmpit.docker.client_test
   (:require [clojure.test :refer :all]
+            [swarmpit.test :refer :all]
+            [clojure.edn :as edn]
             [swarmpit.docker.client :refer :all]))
 
-(use-fixtures :once
-              (fn [test]
-                (swarmpit.config/update! {:docker-sock "http://localhost:12375"})
-                (test)))
+(use-fixtures :once dind-socket-fixture)
 
-(def service-def
-  {:Name "alpine",
-   :Labels {:swarmpit.service.deployment.autoredeploy "false", :swarmpit.service.registry.name "dockerhub", :swarmpit.service.registry.user nil},
-   :TaskTemplate {:ContainerSpec {:Image "alpine:latest", :Mounts [], :Secrets [], :Env []},
-                  :RestartPolicy {:Condition "any", :Delay 5000000000, :MaxAttempts 0},
-                  :Placement {:Constraints []}, :ForceUpdate nil, :Networks []},
-   :Mode {:Replicated {:Replicas 1}},
-   :UpdateConfig {:Parallelism 1, :Delay 0, :FailureAction "pause"},
-   :RollbackConfig {:Parallelism 1, :Delay 0, :FailureAction "pause"},
-   :EndpointSpec {:Ports []}})
+(def service-def (edn/read-string (slurp "test/clj/swarmpit/docker/service.edn")))
 
 (deftest ^:integration docker-client
 
