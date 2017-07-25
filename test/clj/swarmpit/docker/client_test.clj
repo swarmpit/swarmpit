@@ -10,6 +10,9 @@
 
 (deftest ^:integration docker-client
 
+  (testing "version"
+    (is (some? (version))))
+
   (testing "get services"
     (is (some? (services))))
 
