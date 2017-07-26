@@ -81,7 +81,7 @@
             response-code (parse-http-code response)]
         (if (> 400 response-code)
           response-body
-          (throw (ex-info "Docker engine error!"
+          (throw (ex-info (str "Docker engine error: " (:message response-body))
                           {:status response-code
                            :body   {:error (:message response-body)}}))))
       (throw (ex-info "Docker client failure!"
@@ -233,6 +233,10 @@
   [id]
   (-> (str "/nodes/" id)
       (get)))
+
+(defn version
+  []
+  (get "/version"))
 
 ;; Images
 

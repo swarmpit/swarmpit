@@ -1,0 +1,13 @@
+{:Name           "nginx",
+ :Labels         {:swarmpit.service.deployment.autoredeploy "false",
+                  :swarmpit.service.registry.name           "dockerhub",
+                  :swarmpit.service.registry.user           nil},
+ :TaskTemplate   {:ContainerSpec {:Image "nginx:latest", :Mounts [], :Secrets [], :Env []},
+                  :RestartPolicy {:Condition "any", :Delay 5000000000, :MaxAttempts 0},
+                  :Placement     {:Constraints []},
+                  :ForceUpdate   nil,
+                  :Networks      []},
+ :Mode           {:Replicated {:Replicas 1}},
+ :UpdateConfig   {:Parallelism 1, :Delay 0, :FailureAction "pause"},
+ :RollbackConfig {:Parallelism 1, :Delay 0, :FailureAction "pause"},
+ :EndpointSpec   {:Ports []}}

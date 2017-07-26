@@ -1,5 +1,4 @@
 language: clojure
-fail_fast: true
 services:
   - docker
 cache:
@@ -7,8 +6,17 @@ cache:
     - ~/.m2
 jdk:
   - oraclejdk8
+env:
+  - DOCKER=stable
+  - DOCKER=edge
+  - DOCKER=rc
+  - DOCKER=1.13.0
+install:
+  - bash dev/script/init-db.sh
+  - bash dev/script/start-dind.sh
 script:
-  - lein test
+  - lein test :all
   - lein with-profile prod uberjar
   - docker build -t swarmpit .
+after_success:
   - bash dev/script/deploy-image.sh
