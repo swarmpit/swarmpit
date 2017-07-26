@@ -34,4 +34,6 @@
   (testing "create and delete service"
     (let [service (create-service service-def)]
       (is (some? service))
-      (is (some? (delete-service (service :ID)))))))
+      (delete-service (:ID service))
+      (is (empty? (->> (services)
+                       (filter #(= (:ID service) (:ID %)))))))))

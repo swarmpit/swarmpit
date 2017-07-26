@@ -21,6 +21,7 @@
                  [buddy/buddy-sign "1.4.0"]
                  [bidi "2.0.16"]
                  [http-kit "2.2.0"]
+                 [clj-http "3.6.1"]
                  [cljs-ajax "0.5.8"]
                  [cheshire "5.6.3"]
                  [digest "1.4.5"]
@@ -29,12 +30,14 @@
                  [com.cemerick/url "0.1.1"]
                  [com.cemerick/friend "0.2.3"]
                  [com.cognitect/transit-cljs "0.8.239"]
-                 [environ "1.1.0"]]
+                 [environ "1.1.0"]
+                 [com.github.jnr/jnr-unixsocket "0.18"]]
   :plugins [[lein-cljsbuild "1.1.4"]
             [lein-environ "1.1.0"]]
   :min-lein-version "2.6.1"
   :source-paths ["src/clj" "src/cljs" "src/cljc"]
   :test-paths ["test/clj" "test/cljc"]
+  :java-source-paths ["src/java"]
   :test-selectors {:default (complement :integration)
                    :integration :integration
                    :all (constantly true)}
