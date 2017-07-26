@@ -1,6 +1,7 @@
 (ns swarmpit.test
   (:require [clojure.test :refer :all]
-            [clojure.edn :as edn]))
+            [clojure.edn :as edn]
+            [swarmpit.install :as install]))
 
 (defn dind-socket-fixture
   [test]
@@ -16,3 +17,8 @@
                :ID)]
     (test)
     (swarmpit.docker.client/delete-service id)))
+
+(defn db-init-fixture
+  [test]
+  (install/init)
+  (test))

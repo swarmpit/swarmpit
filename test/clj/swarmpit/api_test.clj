@@ -4,7 +4,7 @@
             [swarmpit.api :refer :all]
             [clojure.edn :as edn]))
 
-(use-fixtures :once dind-socket-fixture running-service-fixture)
+(use-fixtures :once dind-socket-fixture running-service-fixture db-init-fixture)
 
 (deftest ^:integration docker
   (let [service-id (-> (swarmpit.docker.client/services) first :ID)]
