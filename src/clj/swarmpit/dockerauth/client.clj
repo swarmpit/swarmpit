@@ -7,12 +7,6 @@
 
 (def ^:private base-url "https://auth.docker.io")
 
-(defn- format-repository
-  [repository]
-  (if (repo/namespace? repository)
-    repository
-    (str "library/" repository)))
-
 (defn- execute
   [call-fx]
   (let [{:keys [status body error]} call-fx]
@@ -46,5 +40,5 @@
   [user repository]
   (let [headers (basic-auth user)
         params {:service "registry.docker.io"
-                :scope   (str "repository:" (format-repository repository) ":pull")}]
+                :scope   (str "repository:" (repo/add-dockerhub-namespace repository) ":pull")}]
     (get "/token" headers params)))
