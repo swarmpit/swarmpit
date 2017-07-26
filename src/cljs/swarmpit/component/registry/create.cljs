@@ -68,6 +68,14 @@
        :onChange (fn [_ v]
                    (state/update-value [:password] v cursor))})))
 
+(defn- form-public [value]
+  (comp/form-comp
+    "PUBLIC"
+    (comp/form-checkbox
+      {:checked value
+       :onCheck (fn [_ v]
+                  (state/update-value [:public] v cursor))})))
+
 (defn- create-registry-handler
   []
   (handler/post
@@ -86,6 +94,7 @@
   []
   (state/set-value {:name     ""
                     :url      ""
+                    :public   false
                     :withAuth false
                     :username ""
                     :password ""
@@ -100,6 +109,7 @@
                  init-state-mixin []
   (let [{:keys [name
                 url
+                public
                 withAuth
                 username
                 password
@@ -121,6 +131,7 @@
          :onInvalid #(state/update-value [:isValid] false cursor)}
         (form-name name)
         (form-url url)
+        (form-public public)
         (form-auth withAuth)
         (if withAuth
           (comp/form-comps
