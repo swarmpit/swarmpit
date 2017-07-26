@@ -1,9 +1,16 @@
 (ns swarmpit.dockerregistry.client
   (:refer-clojure :exclude [get])
   (:require [org.httpkit.client :as http]
+            [swarmpit.repository :as repo]
             [cheshire.core :refer [parse-string generate-string]]))
 
 (def ^:private base-url "https://index.docker.io/v2")
+
+(defn- format-repository
+  [repository]
+  (if (repo/namespace? repository)
+    repository
+    (str "library/" repository)))
 
 (defn- execute
   [call-fx]
@@ -31,10 +38,10 @@
 
 (defn tags
   [token repository]
-  (let [api (str "/" repository "/tags/list")]
+  (let [api (str "/" (format-repository repository) "/tags/list")]
     (get api token {} nil)))
 
 (defn manifest
   [token repository-name repository-tag]
-  (let [api (str "/" repository-name "/manifests/" repository-tag)]
+  (let [api (str "/" (format-repository repository-name) "/manifests/" repository-tag)]
     (get api token {"Accept" "application/vnd.docker.distribution.manifest.v2+json"} nil)))

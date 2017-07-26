@@ -2,9 +2,16 @@
   (:refer-clojure :exclude [get])
   (:require [org.httpkit.client :as http]
             [cheshire.core :refer [parse-string generate-string]]
-            [swarmpit.token :as token]))
+            [swarmpit.token :as token]
+            [swarmpit.repository :as repo]))
 
 (def ^:private base-url "https://auth.docker.io")
+
+(defn- format-repository
+  [repository]
+  (if (repo/namespace? repository)
+    repository
+    (str "library/" repository)))
 
 (defn- execute
   [call-fx]
@@ -39,5 +46,5 @@
   [user repository]
   (let [headers (basic-auth user)
         params {:service "registry.docker.io"
-                :scope   (str "repository:" repository ":pull")}]
+                :scope   (str "repository:" (format-repository repository) ":pull")}]
     (get "/token" headers params)))
