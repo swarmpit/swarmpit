@@ -40,5 +40,5 @@
                        (filter #(= (:ID service) (:ID %))))))))
 
   (testing "errors"
-    (is (thrown-with-msg? ExceptionInfo #"Docker engine error: secret not-existing not found"
+    (is (thrown-with-msg? ExceptionInfo #"not-existing"
                           (delete-secret "not-existing")))))
