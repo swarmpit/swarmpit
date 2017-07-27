@@ -47,7 +47,7 @@
                                     :target-path]
   :uberjar-name "swarmpit.jar"
   :main swarmpit.server
-  :repl-options {:init-ns user}
+  :repl-options {:init-ns repl.user}
   :cljsbuild {:builds
               [{:id           "app"
                 :source-paths ["src/cljs" "src/cljc"]
@@ -72,7 +72,7 @@
                                :optimizations        :advanced
                                :pretty-print         false}}]}
   :figwheel {:css-dirs       ["resources/public/css"]
-             :ring-handler   user/http-handler
+             :ring-handler   repl.user/http-handler
              :server-logfile "log/figwheel.log"}
   :profiles {:dev
              {:dependencies [[figwheel "0.5.10"]
@@ -86,8 +86,7 @@
               :repl-options {:nrepl-middleware [cemerick.piggieback/wrap-cljs-repl]}}
              :prod
              {:source-paths ^:replace ["src/clj" "src/cljc"]
-              :prep-tasks   ["compile" ["cljsbuild" "once" "min"]]
-              :hooks        []
+              :prep-tasks   ["javac" "compile" ["cljsbuild" "once" "min"]]
               :omit-source  true
               :aot          :all}
              :uberjar
