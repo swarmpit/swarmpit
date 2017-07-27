@@ -90,4 +90,4 @@
               :omit-source  true
               :aot          :all}
              :uberjar
-             {:aot :all}})
+             [:prod]})
