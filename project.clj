@@ -33,14 +33,15 @@
                  [environ "1.1.0"]
                  [com.github.jnr/jnr-unixsocket "0.18"]]
   :plugins [[lein-cljsbuild "1.1.4"]
-            [lein-environ "1.1.0"]]
+            [lein-environ "1.1.0"]
+            [lein-pprint "1.1.2"]]
   :min-lein-version "2.6.1"
   :source-paths ["src/clj" "src/cljs" "src/cljc"]
   :test-paths ["test/clj" "test/cljc"]
   :java-source-paths ["src/java"]
-  :test-selectors {:default (complement :integration)
+  :test-selectors {:default     (complement :integration)
                    :integration :integration
-                   :all (constantly true)}
+                   :all         (constantly true)}
   :clean-targets ^{:protect false} ["resources/public/js/out"
                                     "resources/public/js/main.js"
                                     :target-path]
@@ -88,4 +89,6 @@
               :prep-tasks   ["compile" ["cljsbuild" "once" "min"]]
               :hooks        []
               :omit-source  true
-              :aot          :all}})
+              :aot          :all}
+             :uberjar
+             {:aot :all}})

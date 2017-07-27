@@ -15,7 +15,7 @@ install:
   - bash dev/script/init-db.sh
   - bash dev/script/start-dind.sh
 script:
-  - lein with-profile uberjar compile
+  - lein with-profile uberjar test
   - lein test :all
   - lein with-profile prod uberjar
   - docker build -t swarmpit .
