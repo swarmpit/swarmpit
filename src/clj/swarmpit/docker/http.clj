@@ -36,18 +36,19 @@
 (defn execute
   "Execute docker command and parse result"
   [method uri params headers payload]
-  (let [response ((get-function method)
-                   (url uri)
-                   {:connection-manager (make-conn-manager)
-                    :headers            headers
-                    :query-params       params
-                    :body               (generate-string payload)})
-        body (-> response :body (parse-string true))
-        code (-> response :status)]
-    (if (> 400 code)
-      body
-      (throw (ex-info (str "Docker engine error: " (:message body))
-                      {:status code
-                       :body   {:error (:message body)}})))))
+  (try
+    (let [response ((get-function method)
+                     (url uri)
+                     {:connection-manager (make-conn-manager)
+                      :headers            headers
+                      :query-params       params
+                      :body               (generate-string payload)})
+          body (-> response :body (parse-string true))
+          code (-> response :status)]
+      body)
+    (catch Exception response
+      (throw (ex-info
+               (str "Docker engine error: " (-> response (ex-data) :body (parse-string true) :message))
+               (ex-data response))))))
 
 

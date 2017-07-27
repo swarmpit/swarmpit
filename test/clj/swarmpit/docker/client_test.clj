@@ -2,7 +2,8 @@
   (:require [clojure.test :refer :all]
             [swarmpit.test :refer :all]
             [clojure.edn :as edn]
-            [swarmpit.docker.client :refer :all]))
+            [swarmpit.docker.client :refer :all])
+  (:import (clojure.lang ExceptionInfo)))
 
 (use-fixtures :once dind-socket-fixture)
 
@@ -36,4 +37,8 @@
       (is (some? service))
       (delete-service (:ID service))
       (is (empty? (->> (services)
-                       (filter #(= (:ID service) (:ID %)))))))))
+                       (filter #(= (:ID service) (:ID %))))))))
+
+  (testing "errors"
+    (is (thrown-with-msg? ExceptionInfo #"Docker engine error: secret not-existing not found"
+                          (delete-secret "not-existing")))))
