@@ -31,7 +31,7 @@
    "DELETE" client/delete})
 
 (defn- url
-  [uri] (str (if (http?) (config :docker-sock) "http://docker") uri))
+  [uri] (str (if (http?) (config :docker-sock) "http://localhost") uri))
 
 (defn execute
   "Execute docker command and parse result"
