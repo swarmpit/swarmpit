@@ -6,6 +6,22 @@
 
 (use-fixtures :once dind-socket-fixture running-service-fixture db-init-fixture)
 
+(defn test-crud
+  [crud]
+  (let [{:keys [name spec create read list update delete]} crud]
+    (let [id (:id (create spec))
+          created (read id)]
+      (is (some? id))
+      (is (some? created))
+      (when name
+        (is (some? (read name))))
+      (is (not (empty? (list))))
+      (when update
+        (update id created)
+        (is (< (:version created) (:version (read id)))))
+      (delete id)
+      (is (thrown? Exception (read id))))))
+
 (deftest ^:integration docker
   (let [service-id (-> (swarmpit.docker.client/services) first :ID)]
 
@@ -19,22 +35,41 @@
       (is (some? (service-networks service-id)))
       (is (some? (service-tasks service-id))))
 
-    (testing "crud service"
+    (testing "scale service"
       (let [id (-> (edn/read-string (slurp "test/clj/swarmpit/create-service.edn"))
                    (create-service)
                    :id)
             created (service id)]
-        (is (some? id))
-        (is (some? created))
         (is (= "nginx" (-> created :repository :name)))
         (is (= 1 (-> created :replicas)))
         (update-service id (merge created {:replicas 2}) false)
         (is (= 2 (-> id (service) :replicas)))
-        (delete-service id)
-        (is (empty? (->> (services) (filter #(= id (:id %))))))))
+        (delete-service id)))
+
+    (testing "crud services"
+      (test-crud {:name   "created"
+                  :spec   (-> "test/clj/swarmpit/create-service.edn"
+                              (slurp)
+                              (edn/read-string))
+                  :create create-service
+                  :read   service
+                  :list   services
+                  :update (fn [id spec] (update-service id spec true))
+                  :delete delete-service}))
 
     (testing "secrets"
       (is (some? (secrets))))
+
+    (testing "crud secrets"
+      (test-crud {:name   "test-secret"
+                  :spec   {:secretName "test-secret"
+                           :encode     true
+                           :data       "asdf"}
+                  :create create-secret
+                  :read   secret
+                  :list   secrets
+                  :update update-secret
+                  :delete delete-secret}))
 
     (testing "networks"
       (let [networks (networks)
@@ -46,8 +81,27 @@
         (is (= "overlay" (:driver some-network)))
         (is (= "swarm" (:scope some-network)))))
 
+    (testing "crud networks"
+      (test-crud {:name   "test-net"
+                  :spec   {:networkName "test-net"
+                           :internal    false
+                           :driver      "overlay"}
+                  :create create-network
+                  :read   network
+                  :list   networks
+                  :delete delete-network}))
+
     (testing "volumes"
       (is (some? (volumes))))
+
+    (testing "crud volumes"
+      (test-crud {:name   "test-volume"
+                  :spec   {:volumeName "test-volume"
+                           :driver     "local"}
+                  :create create-volume
+                  :read   volume
+                  :list   volumes
+                  :delete delete-volume}))
 
     (testing "nodes"
       (let [nodes (nodes)

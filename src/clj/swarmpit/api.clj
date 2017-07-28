@@ -151,7 +151,8 @@
 (defn create-network
   [network]
   (->> (dmo/->network network)
-       (dc/create-network)))
+       (dc/create-network)
+       ((fn [net] {:id (:Id net)}))))
 
 ;;; Volume API
 
