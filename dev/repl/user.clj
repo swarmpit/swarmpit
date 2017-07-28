@@ -1,4 +1,4 @@
-(ns user
+(ns repl.user
   (:require [ring.middleware.reload :refer [wrap-reload]]
             [clojure.java.shell :refer [sh]]
             [figwheel-sidecar.repl-api :as figwheel]

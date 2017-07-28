@@ -2,7 +2,8 @@
   (:require [clojure.test :refer :all]
             [swarmpit.test :refer :all]
             [clojure.edn :as edn]
-            [swarmpit.docker.client :refer :all]))
+            [swarmpit.docker.client :refer :all])
+  (:import (clojure.lang ExceptionInfo)))
 
 (use-fixtures :once dind-socket-fixture)
 
@@ -34,4 +35,10 @@
   (testing "create and delete service"
     (let [service (create-service service-def)]
       (is (some? service))
-      (is (some? (delete-service (service :ID)))))))
+      (delete-service (:ID service))
+      (is (empty? (->> (services)
+                       (filter #(= (:ID service) (:ID %))))))))
+
+  (testing "errors"
+    (is (thrown-with-msg? ExceptionInfo #"not-existing"
+                          (delete-secret "not-existing")))))
