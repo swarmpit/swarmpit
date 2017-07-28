@@ -5,6 +5,10 @@
             [ring.middleware.defaults :refer [wrap-defaults site-defaults]]
             [ring.middleware.resource :refer [wrap-resource]]
             [ring.middleware.gzip :refer [wrap-gzip]]
+            [buddy.auth.backends.token :refer [jws-backend]]
+            [buddy.auth :refer [authenticated?]]
+            [buddy.auth.accessrules :refer [success error wrap-access-rules]]
+            [buddy.auth.middleware :refer [authentication-request]]
             [org.httpkit.server :refer [run-server]]
             [cheshire.core :refer [parse-string]]
             [bidi.ring :refer [make-handler]]
@@ -12,41 +16,49 @@
             [clojure.string :refer [starts-with?]]
             [swarmpit.handler :as handler :refer :all]
             [swarmpit.routes :as routes]
-            [swarmpit.token :as token]
             [swarmpit.install :as install]
-            [swarmpit.agent :as agent]))
+            [swarmpit.agent :as agent]
+            [swarmpit.couchdb.client :as cc]))
 
-(def unsecure-api #{{:request-method :post
-                     :uri            "/login"}
-                    {:request-method :get
-                     :uri            "/"}
-                    {:request-method :get
-                     :uri            "/css/app.css"}
-                    {:request-method :get
-                     :uri            "/js/main.js"}
-                    {:request-method :get
-                     :uri            "/browserconfig.xml"}
-                    {:request-method :get
-                     :uri            "/manifest.json"}
-                    {:request-method :get
-                     :uri            "/favicon.ico"}})
+(defn authentication-backend
+  [secret]
+  (jws-backend
+    {:secret     secret
+     :token-name "Bearer"
+     :on-error   (fn [_ ex] (throw ex))}))
 
-(defn- secure-api?
+(defn authenticated-access
   [request]
-  (let [api (select-keys request [:request-method :uri])]
-    (not (contains? unsecure-api api))))
+  (if (authenticated? request)
+    true
+    (error {:code    401
+            :message "Authentication failed"})))
 
-(defn- admin-api?
+(defn any-access
+  [_]
+  true)
+
+(defn admin-access
   [request]
-  (starts-with? (:uri request) "/admin/"))
+  (let [role (get-in (:identity request) [:usr :role])]
+    (if (= "admin" role)
+      true
+      (error {:code    403
+              :message "Unauthorized access"}))))
 
-(defn- admin-access?
-  [claims]
-  (= "admin" (get-in claims [:usr :role])))
+(def rules [{:pattern #"^/admin/.*"
+             :handler {:and [authenticated-access admin-access]}}
+            {:pattern #"^/login$"
+             :handler any-access}
+            {:pattern #"^/$"
+             :handler any-access}
+            {:pattern #"^/.*"
+             :handler authenticated-access}])
 
-(defn- invalid-claims?
-  [claims]
-  (some? (get-in claims [:body :error])))
+(defn rules-error
+  [_ val]
+  (resp-error (:code val)
+              (:message val)))
 
 (defn wrap-client-exception
   [handler]
@@ -65,32 +77,27 @@
         {:status 500
          :body   (Throwable->map e)}))))
 
-(defn wrap-auth-exception
+(defn wrap-authentication
   [handler]
   (fn [request]
-    (if (secure-api? request)
-      (let [headers (:headers request)
-            token (get headers "authorization")]
-        (if (some? token)
-          (let [claims (try
-                         (token/verify-jwt token)
-                         (catch Exception _
-                           (resp-unauthorized "Invalid token")))]
-            (if (invalid-claims? claims)
-              (resp-unauthorized "Invalid token")
-              (if (admin-api? request)
-                (if (admin-access? claims)
-                  (handler request)
-                  (resp-unauthorized "Unauthorized access"))
-                (handler request))))
-          (resp-error 400 "Missing token")))
-      (handler request))))
+    (let [secret (:secret (cc/get-secret))
+          auth-backend (authentication-backend secret)]
+      (try
+        (handler (authentication-request request auth-backend))
+        (catch ExceptionInfo ex
+          (let [error (case (:cause (ex-data ex))
+                        :exp "Token expired"
+                        :signature "Token corrupted"
+                        "Token invalid")]
+            (resp-unauthorized error)))))))
 
 (def app
   (-> (make-handler routes/backend handler/dispatch)
       (wrap-resource "public")
       (wrap-resource "react")
-      wrap-auth-exception
+      (wrap-access-rules {:rules    rules
+                          :on-error rules-error})
+      wrap-authentication
       wrap-client-exception
       wrap-json-response
       wrap-json-params
