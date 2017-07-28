@@ -61,7 +61,7 @@
       (is (some? (secrets))))
 
     (testing "crud secrets"
-      (test-crud {:name   "test-secret"
+      (test-crud {:name   nil ; docker 1.13 doesn't support query by name
                   :spec   {:secretName "test-secret"
                            :encode     true
                            :data       "asdf"}
