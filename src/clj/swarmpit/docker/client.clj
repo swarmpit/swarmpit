@@ -6,30 +6,7 @@
             [cheshire.core :refer [parse-string generate-string]]
             [swarmpit.base64 :as base64]
             [swarmpit.config :refer [config]]
-            [swarmpit.docker.http :refer [execute]]))
-
-(defn- get
-  ([uri] (get uri nil nil))
-  ([uri params] (get uri params nil))
-  ([uri params headers]
-   (execute "GET" uri params headers nil)))
-
-(defn- post
-  ([uri payload] (post uri nil nil payload))
-  ([uri params payload] (post uri params nil payload))
-  ([uri params headers payload]
-   (execute "POST" uri params (merge headers {:Content-Type "application/json"}) payload)))
-
-(defn- put
-  ([uri payload] (put uri nil nil payload))
-  ([uri headers payload] (put uri nil headers payload))
-  ([uri params headers payload]
-   (execute "PUT" uri params (merge headers {:Content-Type "application/json"}) payload)))
-
-(defn- delete
-  ([uri] (delete uri nil))
-  ([uri headers]
-   (execute "DELETE" uri nil headers nil)))
+            [swarmpit.docker.http :refer :all]))
 
 (defn- registry-token
   [auth]
