@@ -159,11 +159,6 @@
   [id]
   (get-doc id))
 
-(defn user-by-credentials
-  [username password]
-  (find-doc {:username {"$eq" username}
-             :password {"$eq" password}} "user"))
-
 (defn user-by-username
   [username]
   (find-doc {:username {"$eq" username}} "user"))
