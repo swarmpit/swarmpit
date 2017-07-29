@@ -69,9 +69,8 @@
         false))))
 
 (defn user-by-credentials
-  [credentials]
-  (let [{:keys [username password]} credentials
-        user (user-by-username username)]
+  [{:keys [username password]}]
+  (let [user (user-by-username username)]
     (when
       (password-check-upgrade password (:password user)
                               #(change-password user password))
