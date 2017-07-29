@@ -19,6 +19,7 @@
                  [ring/ring-defaults "0.3.0"]
                  [bk/ring-gzip "0.2.1"]
                  [buddy/buddy-sign "1.4.0"]
+                 [buddy/buddy-hashers "1.2.0"]
                  [bidi "2.0.16"]
                  [http-kit "2.2.0"]
                  [clj-http "3.6.1"]
