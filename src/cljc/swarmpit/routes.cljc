@@ -8,18 +8,19 @@
        "/password"      {:post :password}
        "/distribution/" {"dockerhub"  {""  {:get  :dockerhub-users
                                             :post :dockerhub-user-create}
-                                       "/" {:get    {"list"                  :dockerhub-users-list
-                                                     "repositories"          :dockerhub-repositories
-                                                     "tags"                  :dockerhub-repository-tags
-                                                     [:user "/repositories"] :dockerhub-user-repositories
-                                                     [:id]                   :dockerhub-user}
+                                       "/" {:get    {"list"                :dockerhub-users-list
+                                                     "repositories"        :public-repositories
+                                                     "tags"                :public-repository-tags
+                                                     [:id "/repositories"] :dockerhub-user-repositories
+                                                     [:id "/tags"]         :dockerhub-user-tags
+                                                     [:id]                 :dockerhub-user}
                                             :delete {[:id] :dockerhub-user-delete}}}
                          "registries" {""  {:get  :registries
                                             :post :registry-create}
-                                       "/" {:get    {"list"                      :registries-list
-                                                     [:registry "/repositories"] :repositories
-                                                     [:registry "/tags"]         :repository-tags
-                                                     [:id]                       :registry}
+                                       "/" {:get    {"list"                :registries-list
+                                                     [:id "/repositories"] :registry-repositories
+                                                     [:id "/tags"]         :registry-repository-tags
+                                                     [:id]                 :registry}
                                             :delete {[:id] :registry-delete}}}}
        "/services"      {:get  :services
                          :post :service-create}
