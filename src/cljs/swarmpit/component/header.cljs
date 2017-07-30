@@ -46,7 +46,7 @@
     (comp/svg
       {:key   "user-menu-button-icon"
        :color "#fff"}
-      icon/expand)))
+      icon/more)))
 
 (defn- user-menu []
   (comp/icon-menu
