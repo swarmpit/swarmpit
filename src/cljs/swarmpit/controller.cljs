@@ -25,8 +25,9 @@
 (defn get
   ([api success-fx]
    (get api success-fx (fn [{:keys [status]}]
-                         (if (= status 401)
-                           (dispatch {:handler :unauthorized})
+                         (case status
+                           401 (dispatch {:handler :unauthorized})
+                           403 (dispatch {:handler :unauthorized})
                            (dispatch {:handler :error})))))
   ([api success-fx error-fx]
    (ajax/GET api
@@ -76,7 +77,7 @@
 
 (defmethod dispatch :service-create-image
   [{:keys [handler]}]
-  (get (routes/path-for-backend :registries-list)
+  (get (routes/path-for-backend :registries)
        (fn [registries]
          (get (routes/path-for-backend :dockerhub-users-list)
               (fn [users]
