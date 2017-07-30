@@ -157,12 +157,7 @@ public class HttpUnixSocket extends Socket {
 
     @Override
     public synchronized void setSoTimeout(final int timeout) throws SocketException {
-        setSocketOption(new SocketOptionSetter() {
-            @Override
-            public void run() throws IOException {
-                channel.setOption(SO_SNDTIMEO, timeout);
-            }
-        });
+        setSocketOption(() -> channel.setOption(SO_SNDTIMEO, timeout));
     }
 
     @Override
@@ -196,12 +191,7 @@ public class HttpUnixSocket extends Socket {
 
     @Override
     public void setKeepAlive(final boolean on) throws SocketException {
-        setSocketOption(new SocketOptionSetter() {
-            @Override
-            public void run() throws IOException {
-                channel.setOption(SO_KEEPALIVE, on);
-            }
-        });
+        setSocketOption(() -> channel.setOption(SO_KEEPALIVE, on));
     }
 
     @Override

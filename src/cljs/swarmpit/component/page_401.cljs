@@ -8,5 +8,5 @@
     [:div.page-form
      [:span
       [:h1 "401"]
-      [:p "You are not authotized for selected action"]
+      [:p "You are not authorized for selected action"]
       [:p "Go to login " [:a {:href (routes/path-for-frontend :login)} "page"]]]]]])

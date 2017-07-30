@@ -11,7 +11,7 @@ socket.
 
 Prerequisites
 - Leiningen 2.6.1 or newer
-- Docker socket accesible on `/var/run/docker.sock`
+- Docker socket accessible on `/var/run/docker.sock`
 
 Start a REPL session
 

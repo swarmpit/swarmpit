@@ -141,8 +141,8 @@
   (comp/form-comp
     "AUTOREDEPLOY"
     (comp/form-toogle
-      {:name     "autoredaploy"
-       :key      "autoredaploy"
+      {:name     "autoredeploy"
+       :key      "autoredeploy"
        :disabled (nil? value)
        :toggled  value
        :onToggle (fn [_ v]

@@ -51,7 +51,7 @@
        :value         value})))
 
 (defn- form-image-tag-ac [value tags]
-  "Preload tags for services created via swarmit"
+  "Preload tags for services created via swarmpit"
   (comp/form-comp
     "IMAGE TAG"
     (comp/autocomplete {:name          "imageTagAuto"
