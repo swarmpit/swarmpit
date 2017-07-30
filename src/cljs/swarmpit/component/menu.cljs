@@ -103,10 +103,8 @@
     :icon    icon/secrets
     :handler :secret-list
     :route   "secrets"
-    :domain  :secret}])
-
-(def admin-menu
-  [{:name "DISTRIBUTION"}
+    :domain  :secret}
+   {:name "DISTRIBUTION"}
    {:name    "Dockerhub"
     :icon    icon/docker
     :handler :dockerhub-user-list
@@ -114,8 +112,10 @@
    {:name    "Registry"
     :icon    icon/registries
     :handler :registry-list
-    :domain  :registry}
-   {:name "ADMIN"}
+    :domain  :registry}])
+
+(def admin-menu
+  [{:name "ADMIN"}
    {:name    "Users"
     :icon    icon/users
     :handler :user-list
