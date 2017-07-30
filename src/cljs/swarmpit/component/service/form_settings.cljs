@@ -23,7 +23,7 @@
 (defn registry-tags-handler
   [registry repository]
   (handler/get
-    (routes/path-for-backend :repository-tags {:registry registry})
+    (routes/path-for-backend :registry-repository-tags {:registry registry})
     {:params     {:repository repository}
      :on-success (fn [response]
                    (reset! tags response))}))
