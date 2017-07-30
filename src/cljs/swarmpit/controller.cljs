@@ -26,7 +26,7 @@
   ([api success-fx]
    (get api success-fx (fn [{:keys [status]}]
                          (if (= status 401)
-                           (dispatch {:handler :unauthorized})
+                           (dispatch {:handler :login})
                            (dispatch {:handler :error})))))
   ([api success-fx error-fx]
    (ajax/GET api
