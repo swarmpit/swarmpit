@@ -9,33 +9,45 @@
 
 (enable-console-print!)
 
-(defn- form-password [value local-state]
+(defn- input-password [local-state]
+  (comp/form-comp
+    "OLD PASSWORD"
+    (comp/vtext-field
+      {:name     "password"
+       :key      "password"
+       :required true
+       :type     "password"
+       :value    (:password @local-state)
+       :onChange (fn [_ v]
+                   (swap! local-state assoc :password v))})))
+
+(defn- input-new-password [local-state]
   (comp/form-comp
     "NEW PASSWORD"
     (comp/vtext-field
-      {:name            "password"
-       :key             "password"
+      {:name            "new-password"
+       :key             "new-password"
        :required        true
        :validations     "minLength:6"
        :validationError "Password must be at least 6 characters long"
        :type            "password"
-       :value           value
+       :value           (:new-password @local-state)
        :onChange        (fn [_ v]
-                          (swap! local-state assoc :password v))})))
+                          (swap! local-state assoc :new-password v))})))
 
-(defn- form-password-confirmation [value local-state]
+(defn- input-confirm-password [local-state]
   (comp/form-comp
     "CONFIRM PASSWORD"
     (comp/vtext-field
-      {:name            "cpassword"
-       :key             "cpassword"
+      {:name            "confirm-password"
+       :key             "confirm-password"
        :required        true
-       :validations     "equalsField:password"
+       :validations     "equalsField:new-password"
        :validationError "Passwords does not match"
        :type            "password"
-       :value           value
+       :value           (:confirm-password @local-state)
        :onChange        (fn [_ v]
-                          (swap! local-state assoc :password2 v))})))
+                          (swap! local-state assoc :confirm-password v))})))
 
 (defn- change-password-handler
   [local-state]
@@ -50,15 +62,13 @@
                      "Password has been changed"))
      :on-error   (fn [response]
                    (message/error
-                     (str "Password update failed. Reason " (:error response))))}))
+                     (str "Can't update password: " (:error response))))}))
 
-(rum/defcs form < (rum/local {:password  ""
-                              :password2 ""
-                              :canSubmit false} ::password) [state]
-  (let [local-state (::password state)
-        password (:password @local-state)
-        password2 (:password2 @local-state)
-        canSubmit (:canSubmit @local-state)]
+(rum/defcs form < (rum/local {:password         ""
+                              :new-password     ""
+                              :confirm-password ""
+                              :canSubmit        false} ::password) [state]
+  (let [local-state (::password state)]
     [:div
      [:div.form-panel
       [:div.form-panel-left
@@ -67,12 +77,13 @@
        (comp/mui
          (comp/raised-button
            {:label      "Change"
-            :disabled   (not canSubmit)
+            :disabled   (not (:canSubmit @local-state))
             :primary    true
             :onTouchTap #(change-password-handler local-state)}))]]
      [:div.form-edit
       (comp/form
         {:onValid   #(swap! local-state assoc :canSubmit true)
          :onInvalid #(swap! local-state assoc :canSubmit false)}
-        (form-password password local-state)
-        (form-password-confirmation password2 local-state))]]))
+        (input-password local-state)
+        (input-new-password local-state)
+        (input-confirm-password local-state))]]))

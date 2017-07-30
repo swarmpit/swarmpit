@@ -57,9 +57,11 @@
     (let [token (get headers "authorization")
           username (token/user token)
           payload (keywordize-keys params)]
-      (-> (api/user-by-username username)
-          (api/change-password (:password payload))))
-    (resp-ok)))
+      (if (api/user-by-credentials (merge payload {:username username}))
+        (do (-> (api/user-by-username username)
+                (api/change-password (:new-password payload)))
+            (resp-ok))
+        (resp-error 403 "Invalid old password provided")))))
 
 ;; User handler
 
