@@ -26,7 +26,6 @@
 
 (defn init
   []
-  (println "Swarmpit is starting...")
   (cc/db-version)
   (when (not (:error (create-database)))
     (println "DB schema created"))
