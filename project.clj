@@ -18,28 +18,38 @@
                  [ring/ring-json "0.4.0"]
                  [ring/ring-defaults "0.3.0"]
                  [bk/ring-gzip "0.2.1"]
-                 ;[buddy/buddy-sign "1.4.0"]
                  [buddy/buddy-auth "1.4.1"]
+                 [buddy/buddy-sign "1.4.0"]
+                 [buddy/buddy-hashers "1.2.0"]
                  [bidi "2.0.16"]
                  [http-kit "2.2.0"]
+                 [clj-http "3.6.1"]
                  [cljs-ajax "0.5.8"]
                  [cheshire "5.6.3"]
                  [digest "1.4.5"]
                  [me.raynes/conch "0.8.0"]
-                 [org.immutant/immutant "2.1.9"]
+                 [org.immutant/scheduling "2.1.9"]
                  [com.cemerick/url "0.1.1"]
                  [com.cemerick/friend "0.2.3"]
-                 [com.cognitect/transit-cljs "0.8.239"]]
-  :plugins [[lein-cljsbuild "1.1.4"]]
+                 [com.cognitect/transit-cljs "0.8.239"]
+                 [environ "1.1.0"]
+                 [com.github.jnr/jnr-unixsocket "0.18"]]
+  :plugins [[lein-cljsbuild "1.1.4"]
+            [lein-environ "1.1.0"]
+            [lein-pprint "1.1.2"]]
   :min-lein-version "2.6.1"
   :source-paths ["src/clj" "src/cljs" "src/cljc"]
   :test-paths ["test/clj" "test/cljc"]
+  :java-source-paths ["src/java"]
+  :test-selectors {:default     (complement :integration)
+                   :integration :integration
+                   :all         (constantly true)}
   :clean-targets ^{:protect false} ["resources/public/js/out"
                                     "resources/public/js/main.js"
                                     :target-path]
   :uberjar-name "swarmpit.jar"
   :main swarmpit.server
-  :repl-options {:init-ns user}
+  :repl-options {:init-ns repl.user}
   :cljsbuild {:builds
               [{:id           "app"
                 :source-paths ["src/cljs" "src/cljc"]
@@ -64,7 +74,7 @@
                                :optimizations        :advanced
                                :pretty-print         false}}]}
   :figwheel {:css-dirs       ["resources/public/css"]
-             :ring-handler   user/http-handler
+             :ring-handler   repl.user/http-handler
              :server-logfile "log/figwheel.log"}
   :profiles {:dev
              {:dependencies [[figwheel "0.5.10"]
@@ -78,7 +88,8 @@
               :repl-options {:nrepl-middleware [cemerick.piggieback/wrap-cljs-repl]}}
              :prod
              {:source-paths ^:replace ["src/clj" "src/cljc"]
-              :prep-tasks   ["compile" ["cljsbuild" "once" "min"]]
-              :hooks        []
+              :prep-tasks   ["javac" "compile" ["cljsbuild" "once" "min"]]
               :omit-source  true
-              :aot          :all}})
+              :aot          :all}
+             :uberjar
+             [:prod]})

@@ -26,7 +26,7 @@
   ([api success-fx]
    (get api success-fx (fn [{:keys [status]}]
                          (case status
-                           401 (dispatch {:handler :unauthorized})
+                           401 (dispatch {:handler :login})
                            403 (dispatch {:handler :unauthorized})
                            (dispatch {:handler :error})))))
   ([api success-fx error-fx]

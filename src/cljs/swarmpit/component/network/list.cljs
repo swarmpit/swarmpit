@@ -34,7 +34,7 @@
 
 (defn- onclick-handler
   [item]
-  (routes/path-for-frontend :network-info (select-keys item [:id])))
+  (routes/path-for-frontend :network-info {:id (:networkName item)}))
 
 (defn- filter-items
   [items predicate]

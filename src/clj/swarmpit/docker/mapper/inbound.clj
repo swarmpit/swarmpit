@@ -15,7 +15,7 @@
     (array-map
       :id (:Id network)
       :networkName (:Name network)
-      :created (date (:Created network))
+      :created (some-> network :Created (date))
       :scope (:Scope network)
       :driver (:Driver network)
       :internal (:Internal network)
@@ -277,7 +277,7 @@
   [volume]
   (let [name (:Name volume)]
     (array-map
-      :id (hash name)
+      :id name
       :volumeName name
       :driver (:Driver volume)
       :mountpoint (:Mountpoint volume)

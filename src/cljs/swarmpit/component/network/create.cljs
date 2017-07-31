@@ -77,7 +77,7 @@
     {:params     (state/get-value cursor)
      :on-success (fn [response]
                    (dispatch!
-                     (routes/path-for-frontend :network-info {:id (:Id response)}))
+                     (routes/path-for-frontend :network-info {:id (:id response)}))
                    (message/info
                      (str "Network " (:Id response) " has been added.")))
      :on-error   (fn [response]

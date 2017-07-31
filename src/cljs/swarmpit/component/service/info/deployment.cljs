@@ -12,7 +12,7 @@
   (val item))
 
 (rum/defc form < rum/static [deployment]
-  (let [autoredeloy (:autoredeploy deployment)
+  (let [autoredeploy (:autoredeploy deployment)
         update-delay (get-in deployment [:update :delay])
         update-parallelism (get-in deployment [:update :parallelism])
         update-failure-action (get-in deployment [:update :failureAction])
@@ -25,7 +25,7 @@
         restart-policy-attempts (get-in deployment [:restartPolicy :attempts])]
     [:div.form-service-view-group.form-service-group-border
      (comp/form-section "Deployment")
-     (comp/form-item "AUTOREDEPLOY" (if autoredeloy
+     (comp/form-item "AUTOREDEPLOY" (if autoredeploy
                                       "on"
                                       "off"))
      (comp/form-subsection "Restart Policy")

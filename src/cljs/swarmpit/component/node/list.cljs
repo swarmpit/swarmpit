@@ -27,7 +27,8 @@
   [:div.node-item-states
    [:span.node-item-state (node-item-state (:state item))]
    (if (:leader item)
-     [:span.node-item-state (comp/label-blue "leader")])])
+     [:span.node-item-state (comp/label-blue "leader")])
+   [:span.node-item-state (comp/label-blue (:role item))]])
 
 (defn- node-item-header [item]
   [:div
@@ -45,11 +46,9 @@
      (node-item-header item)
      (node-item-states item)
      [:div
-      [:span "[ " (:role item) " ]"]]
+      [:span.node-item-secondary "ip: " (:address item)]]
      [:div
-      [:span.node-item-secondary "address: " (:address item)]]
-     [:div
-      [:span.node-item-secondary "engine: " (:engine item)]]
+      [:span.node-item-secondary "version: " (:engine item)]]
      [:div
       [:span.node-item-secondary "availability: " (:availability item)]]]))
 

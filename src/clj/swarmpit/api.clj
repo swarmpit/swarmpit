@@ -1,6 +1,8 @@
 (ns swarmpit.api
   (:require [clojure.core.memoize :as memo]
             [clojure.set :refer [rename-keys]]
+            [buddy.hashers :as hashers]
+            [digest :refer [digest]]
             [swarmpit.docker.client :as dc]
             [swarmpit.docker.mapper.inbound :as dmi]
             [swarmpit.docker.mapper.outbound :as dmo]
@@ -25,11 +27,6 @@
   [user-id]
   (-> (cc/user user-id)
       (cmi/->user)))
-
-(defn user-by-credentials
-  [credentails]
-  (cc/user-by-credentials (:username credentails)
-                          (cmo/->password (:password credentails))))
 
 (defn user-by-username
   [username]
@@ -59,6 +56,25 @@
   [user password]
   (->> (cmo/->password password)
        (cc/change-password user)))
+
+(def password-check hashers/check)
+
+(defn password-check-upgrade
+  [password hash upgrade-f]
+  (try
+    (password-check password hash)
+    (catch Exception e
+      (if (= hash (digest "sha-256" password))
+        (do (upgrade-f) true)
+        false))))
+
+(defn user-by-credentials
+  [{:keys [username password]}]
+  (let [user (user-by-username username)]
+    (when
+      (password-check-upgrade password (:password user)
+                              #(change-password user password))
+      user)))
 
 ;;; Secret API
 
@@ -107,7 +123,8 @@
 (defn create-network
   [network]
   (->> (dmo/->network network)
-       (dc/create-network)))
+       (dc/create-network)
+       ((fn [net] {:id (:Id net)}))))
 
 ;;; Volume API
 

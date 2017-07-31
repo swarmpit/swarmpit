@@ -1,10 +1,11 @@
 (ns swarmpit.couchdb.mapper.outbound
-  (:require [digest :as d]
+  (:require [buddy.hashers :as hashers]
+            [swarmpit.config :refer [config]]
             [swarmpit.uuid :refer [uuid]]))
 
 (defn ->password
   [password]
-  (d/digest "sha-256" password))
+  (hashers/derive password (config :password-hashing)))
 
 (defn ->user
   [user]

@@ -53,11 +53,14 @@
 ;; Password handler
 
 (defmethod dispatch :password [_]
-  (fn [{:keys [params logged-user]}]
-    (let [payload (keywordize-keys params)]
-      (-> (api/user-by-username logged-user)
-          (api/change-password (:password payload))))
-    (resp-ok)))
+  (fn [{:keys [params identity]}]
+    (let [username (get-in identity [:usr :username])
+          payload (keywordize-keys params)]
+      (if (api/user-by-credentials (merge payload {:username username}))
+        (do (-> (api/user-by-username username)
+                (api/change-password (:new-password payload)))
+            (resp-ok))
+        (resp-error 403 "Invalid old password provided")))))
 
 ;; User handler
 

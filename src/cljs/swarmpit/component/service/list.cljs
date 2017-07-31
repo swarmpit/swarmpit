@@ -49,7 +49,7 @@
 
 (defn- onclick-handler
   [item]
-  (routes/path-for-frontend :service-info (select-keys item [:id])))
+  (routes/path-for-frontend :service-info {:id (:serviceName item)}))
 
 (defn- filter-unhealthy-items
   [items name]
