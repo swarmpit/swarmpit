@@ -3,6 +3,7 @@
             [material.icon :as icon]
             [swarmpit.component.mixin :as mixin]
             [swarmpit.component.state :as state]
+            [swarmpit.storage :as storage]
             [swarmpit.routes :as routes]
             [clojure.string :as string]
             [rum.core :as rum]))
@@ -10,14 +11,16 @@
 (def cursor [:page :registry :list])
 
 (def headers [{:name  "Name"
-               :width "20%"}
+               :width "30%"}
               {:name  "Url"
                :width "50%"}
+              {:name  "Public"
+               :width "10%"}
               {:name  "Secure"
-               :width "30%"}])
+               :width "10%"}])
 
 (def render-item-keys
-  [[:name] [:url] [:withAuth]])
+  [[:name] [:url] [:public] [:withAuth]])
 
 (defn- render-item
   [item _]
@@ -26,6 +29,9 @@
       :withAuth (if value
                   (comp/svg icon/ok)
                   "")
+      :public (if value
+                "yes"
+                "no")
       value)))
 
 (defn- onclick-handler
@@ -34,7 +40,9 @@
 
 (defn- filter-items
   [items predicate]
-  (filter #(string/includes? (:name %) predicate) items))
+  (filter #(and (string/includes? (:name %) predicate)
+                (= (:owner %)
+                   (storage/user))) items))
 
 (defn- init-state
   []

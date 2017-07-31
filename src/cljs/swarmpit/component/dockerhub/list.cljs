@@ -4,23 +4,29 @@
             [swarmpit.component.state :as state]
             [swarmpit.routes :as routes]
             [clojure.string :as string]
+            [swarmpit.storage :as storage]
             [rum.core :as rum]))
 
 (def cursor [:page :dockerhub :list])
 
 (def headers [{:name  "Username"
-               :width "40%"}
+               :width "50%"}
               {:name  "Name"
-               :width "30%"}
-              {:name  "Company"
-               :width "30%"}])
+               :width "40%"}
+              {:name  "Public"
+               :width "10%"}])
 
 (def render-item-keys
-  [[:username] [:name] [:company]])
+  [[:username] [:name] [:public]])
 
 (defn- render-item
   [item _]
-  (val item))
+  (let [value (val item)]
+    (case (key item)
+      :public (if value
+                "yes"
+                "no")
+      value)))
 
 (defn- onclick-handler
   [item]
@@ -28,7 +34,9 @@
 
 (defn- filter-items
   [items predicate]
-  (filter #(string/includes? (:username %) predicate) items))
+  (filter #(and (string/includes? (:username %) predicate)
+                (= (:owner %)
+                   (storage/user))) items))
 
 (defn- init-state
   []
