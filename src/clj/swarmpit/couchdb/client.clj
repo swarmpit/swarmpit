@@ -4,7 +4,7 @@
             [cheshire.core :refer [parse-string generate-string]]
             [swarmpit.config :refer [config]]))
 
-(def headers
+(def ^:private headers
   {"Accept"       "application/json"
    "Content-Type" "application/json"})
 
@@ -13,16 +13,16 @@
   (let [{:keys [status body error]} call-fx]
     (if error
       (throw
-        (ex-info "Clutch DB client failure!"
+        (ex-info (str "DB failure: " (.getMessage error))
                  {:status 500
-                  :body   {:error (:cause (Throwable->map error))}}))
+                  :body   {:error (.getMessage error)}}))
       (let [response (parse-string body true)]
         (if (> 400 status)
           response
           (throw
-            (ex-info "Clutch DB error!"
+            (ex-info (str "DB error: " (:error response))
                      {:status status
-                      :body   {:error response}})))))))
+                      :body   response})))))))
 
 (defn- get
   [api]
