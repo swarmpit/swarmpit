@@ -79,7 +79,7 @@
   [{:keys [handler]}]
   (get (routes/path-for-backend :registries)
        (fn [registries]
-         (get (routes/path-for-backend :dockerhub-users-list)
+         (get (routes/path-for-backend :dockerhub-users)
               (fn [users]
                 (state/set-value {:handler handler
                                   :data    {:registries registries
@@ -233,6 +233,13 @@
   [{:keys [handler]}]
   (state/set-value {:handler handler} cursor))
 
+(defmethod dispatch :registry-edit
+  [{:keys [route-params handler]}]
+  (get (routes/path-for-backend :registry route-params)
+       (fn [response]
+         (state/set-value {:handler handler
+                           :data    response} cursor))))
+
 ;;; Dockerhub user controller
 
 (defmethod dispatch :dockerhub-user-list
@@ -252,3 +259,10 @@
 (defmethod dispatch :dockerhub-user-create
   [{:keys [handler]}]
   (state/set-value {:handler handler} cursor))
+
+(defmethod dispatch :dockerhub-user-edit
+  [{:keys [route-params handler]}]
+  (get (routes/path-for-backend :dockerhub-user route-params)
+       (fn [response]
+         (state/set-value {:handler handler
+                           :data    response} cursor))))
