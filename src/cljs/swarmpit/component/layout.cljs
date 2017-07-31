@@ -1,5 +1,6 @@
 (ns swarmpit.component.layout
   (:require [rum.core :as rum]
+            [clojure.string :as str]
             [swarmpit.controller :as controller]
             [swarmpit.view :as view]
             [swarmpit.component.state :as state]
@@ -15,7 +16,7 @@
    :service-create-config "Services / Wizard"
    :service-create-image  "Services / Wizard"
    :service-info          "Services"
-   :service-edit          "Services"
+   :service-edit          "Services / Edit"
    :network-list          "Networks"
    :network-create        "Networks / Create"
    :network-info          "Networks"
@@ -28,20 +29,24 @@
    :node-list             "Nodes"
    :task-list             "Tasks"
    :task-info             "Tasks"
-   :user-list             "Users / Swarmpit"
-   :user-create           "Users / Swarmpit / Create"
-   :user-edit             "Users / Swarmpit / Edit"
-   :user-info             "Users / Swarmpit "
+   :user-list             "Users"
+   :user-create           "Users / Create"
+   :user-edit             "Users / Edit"
+   :user-info             "Users"
    :registry-info         "Registries"
    :registry-list         "Registries"
    :registry-create       "Registries / Add"
-   :dockerhub-user-info   "Users / Dockerhub"
-   :dockerhub-user-list   "Users / Dockerhub"
-   :dockerhub-user-create "Users / Dockerhub / Add"})
+   :dockerhub-user-info   "Dockerhub"
+   :dockerhub-user-list   "Dockerhub"
+   :dockerhub-user-create "Dockerhub / Add"})
 
 (defn- page-title
   [handler]
   (get page-titles handler))
+
+(defn- page-domain
+  [handler]
+  (keyword (first (str/split (name handler) #"-"))))
 
 (def single-pages
   #{:login :error :unauthorized nil})
@@ -54,9 +59,9 @@
   (view/dispatch route))
 
 (defn- document-title
-  [layout-title]
+  [page-title]
   (set! (-> js/document .-title)
-        (str layout-title " :: swarmpit")))
+        (str page-title " :: swarmpit")))
 
 (rum/defc page-layout < rum/reactive [route]
   (let [{:keys [opened]} (state/react menu/cursor)
@@ -64,11 +69,12 @@
         layout-type (if opened
                       "layout-opened"
                       "layout-closed")
-        layout-title (page-title handler)]
-    (document-title layout-title)
+        page-title (page-title handler)
+        page-domain (page-domain handler)]
+    (document-title page-title)
     [:div {:class ["layout" layout-type]}
-     [:header (header/appbar layout-title)]
-     [:nav (menu/drawer layout-title)]
+     [:header (header/appbar page-title)]
+     [:nav (menu/drawer page-domain)]
      [:main (view/dispatch route)]]))
 
 (rum/defc layout < rum/reactive []

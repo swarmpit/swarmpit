@@ -53,9 +53,8 @@
 ;; Password handler
 
 (defmethod dispatch :password [_]
-  (fn [{:keys [headers params]}]
-    (let [token (get headers "authorization")
-          username (token/user token)
+  (fn [{:keys [params identity]}]
+    (let [username (get-in identity [:usr :username])
           payload (keywordize-keys params)]
       (if (api/user-by-credentials (merge payload {:username username}))
         (do (-> (api/user-by-username username)
@@ -76,11 +75,9 @@
          (resp-ok))))
 
 (defmethod dispatch :user-delete [_]
-  (fn [{:keys [headers route-params]}]
-    (let [token (get headers "authorization")
-          username (token/user token)
-          user (api/user-by-username username)]
-      (if (= (:_id user)
+  (fn [{:keys [route-params identity]}]
+    (let [user (get-in identity [:usr :username])]
+      (if (= (:_id (api/user-by-username user))
              (:id route-params))
         (resp-error 400 "Operation not allowed")
         (do (api/delete-user (:id route-params))
@@ -88,7 +85,7 @@
 
 (defmethod dispatch :user-create [_]
   (fn [{:keys [params]}]
-    (let [payload (keywordize-keys params)
+    (let [payload (assoc (keywordize-keys params) :type "user")
           response (api/create-user payload)]
       (if (some? response)
         (resp-created (select-keys response [:id]))
@@ -99,38 +96,6 @@
     (let [payload (keywordize-keys params)]
       (api/update-user (:id route-params) payload)
       (resp-ok))))
-
-;; Registry handler
-
-(defmethod dispatch :registries [_]
-  (fn [_]
-    (->> (api/registries)
-         (resp-ok))))
-
-(defmethod dispatch :registry [_]
-  (fn [{:keys [route-params]}]
-    (->> (api/registry (:id route-params))
-         (resp-ok))))
-
-(defmethod dispatch :registries-list [_]
-  (fn [_]
-    (->> (api/registries-list)
-         (resp-ok))))
-
-(defmethod dispatch :registry-delete [_]
-  (fn [{:keys [route-params]}]
-    (api/delete-registry (:id route-params))
-    (resp-ok)))
-
-(defmethod dispatch :registry-create [_]
-  (fn [{:keys [params]}]
-    (let [payload (keywordize-keys params)]
-      (if (api/registry-valid? payload)
-        (let [response (api/create-registry payload)]
-          (if (some? response)
-            (resp-created (select-keys response [:id]))
-            (resp-error 400 "Registry already exist")))
-        (resp-error 400 "Registry credentials does not match any known registry")))))
 
 ;; Service handler
 
@@ -277,67 +242,65 @@
     (->> (api/task (:id route-params))
          (resp-ok))))
 
-;; Registry v2 handler
+;; Registry handler
 
-(defmethod dispatch :repositories [_]
+(defmethod dispatch :registries [_]
+  (fn [{:keys [identity]}]
+    (let [owner (get-in identity [:usr :username])]
+      (->> (api/registries owner)
+           (resp-ok)))))
+
+(defmethod dispatch :registry [_]
   (fn [{:keys [route-params]}]
-    (let [registry-name (:registry route-params)
-          registry (api/registry-by-name registry-name)]
-      (if (nil? registry)
-        (resp-error 400 "Unknown registry")
-        (->> (api/repositories registry)
-             (resp-ok))))))
+    (->> (api/registry (:id route-params))
+         (resp-ok))))
 
-(defmethod dispatch :repository-tags [_]
+(defmethod dispatch :registry-delete [_]
+  (fn [{:keys [route-params]}]
+    (api/delete-registry (:id route-params))
+    (resp-ok)))
+
+(defmethod dispatch :registry-create [_]
+  (fn [{:keys [params identity]}]
+    (let [owner (get-in identity [:usr :username])
+          payload (assoc (keywordize-keys params) :owner owner
+                                                  :type "registry")]
+      (if (api/registry-valid? payload)
+        (let [response (api/create-registry payload)]
+          (if (some? response)
+            (resp-created (select-keys response [:id]))
+            (resp-error 400 "Registry already exist")))
+        (resp-error 400 "Registry credentials does not match any known registry")))))
+
+(defmethod dispatch :registry-update [_]
+  (fn [{:keys [route-params params]}]
+    (let [payload (keywordize-keys params)]
+      (api/update-registry (:id route-params) payload)
+      (resp-ok))))
+
+(defmethod dispatch :registry-repositories [_]
+  (fn [{:keys [route-params]}]
+    (let [registry-id (:id route-params)]
+      (->> (api/registry-repositories registry-id)
+           (resp-ok)))))
+
+(defmethod dispatch :registry-repository-tags [_]
   (fn [{:keys [route-params query-string]}]
     (let [query (keywordize-keys (query->map query-string))
           repository-name (:repository query)
-          registry-name (:registry route-params)
-          registry (api/registry-by-name registry-name)]
-      (if (nil? registry)
-        (resp-error 400 "Unknown registry")
-        (if (nil? repository-name)
-          (resp-error 400 "Parameter repository missing")
-          (->> (api/tags registry repository-name)
-               (resp-ok)))))))
+          registry-id (:id route-params)]
+      (if (nil? repository-name)
+        (resp-error 400 "Parameter repository missing")
+        (->> (api/registry-tags registry-id repository-name)
+             (resp-ok))))))
 
 ;; Dockerhub handler
 
-(defmethod dispatch :dockerhub-users-list [_]
-  (fn [_]
-    (->> (api/dockerusers-list)
-         (resp-ok))))
-
-(defmethod dispatch :dockerhub-repo [_]
-  (fn [{:keys [query-string]}]
-    (let [query (keywordize-keys (query->map query-string))
-          repository-query (:query query)
-          repository-page (:page query)]
-      (->> (api/dockerhub-repositories repository-query repository-page)
-           (resp-ok)))))
-
-(defmethod dispatch :dockerhub-tags [_]
-  (fn [{:keys [query-string]}]
-    (let [query (keywordize-keys (query->map query-string))
-          repository-name (:repository query)
-          dockeruser-name (:user query)]
-      (if (nil? repository-name)
-        (resp-error 400 "Parameter repository missing")
-        (->> (api/dockerhub-tags repository-name dockeruser-name)
-             (resp-ok))))))
-
-(defmethod dispatch :dockerhub-user-repo [_]
-  (fn [{:keys [route-params]}]
-    (let [dockeruser (api/dockeruser-by-username (:user route-params))]
-      (if (nil? dockeruser)
-        (resp-error 400 "Unknown dockerhub user")
-        (->> (api/dockeruser-repositories dockeruser)
-             (resp-ok))))))
-
 (defmethod dispatch :dockerhub-users [_]
-  (fn [_]
-    (->> (api/dockerusers)
-         (resp-ok))))
+  (fn [{:keys [identity]}]
+    (let [owner (get-in identity [:usr :username])]
+      (->> (api/dockerusers owner)
+           (resp-ok)))))
 
 (defmethod dispatch :dockerhub-user [_]
   (fn [{:keys [route-params]}]
@@ -345,16 +308,57 @@
          (resp-ok))))
 
 (defmethod dispatch :dockerhub-user-create [_]
-  (fn [{:keys [params]}]
-    (let [payload (keywordize-keys params)
-          user-info (api/dockeruser-info payload)]
+  (fn [{:keys [params identity]}]
+    (let [owner (get-in identity [:usr :username])
+          payload (assoc (keywordize-keys params) :owner owner
+                                                  :type "dockeruser")
+          dockeruser-info (api/dockeruser-info payload)]
       (api/dockeruser-login payload)
-      (let [response (api/create-dockeruser payload user-info)]
+      (let [response (api/create-dockeruser payload dockeruser-info)]
         (if (some? response)
           (resp-created (select-keys response [:id]))
           (resp-error 400 "Docker user already exist"))))))
+
+(defmethod dispatch :dockerhub-user-update [_]
+  (fn [{:keys [route-params params]}]
+    (let [payload (keywordize-keys params)]
+      (api/update-dockeruser (:id route-params) payload)
+      (resp-ok))))
 
 (defmethod dispatch :dockerhub-user-delete [_]
   (fn [{:keys [route-params]}]
     (api/delete-dockeruser (:id route-params))
     (resp-ok)))
+
+(defmethod dispatch :dockerhub-repositories [_]
+  (fn [{:keys [route-params]}]
+    (let [dockeruser-id (:id route-params)]
+      (->> (api/dockeruser-repositories dockeruser-id)
+           (resp-ok)))))
+
+(defmethod dispatch :dockerhub-repository-tags [_]
+  (fn [{:keys [route-params query-string]}]
+    (let [query (keywordize-keys (query->map query-string))
+          repository-name (:repository query)
+          dockeruser-id (:id route-params)]
+      (if (nil? repository-name)
+        (resp-error 400 "Parameter repository missing")
+        (->> (api/dockeruser-tags dockeruser-id repository-name)
+             (resp-ok))))))
+
+(defmethod dispatch :public-repositories [_]
+  (fn [{:keys [query-string]}]
+    (let [query (keywordize-keys (query->map query-string))
+          repository-query (:query query)
+          repository-page (:page query)]
+      (->> (api/public-repositories repository-query repository-page)
+           (resp-ok)))))
+
+(defmethod dispatch :public-repository-tags [_]
+  (fn [{:keys [query-string]}]
+    (let [query (keywordize-keys (query->map query-string))
+          repository-name (:repository query)]
+      (if (nil? repository-name)
+        (resp-error 400 "Parameter repository missing")
+        (->> (api/public-tags repository-name)
+             (resp-ok))))))

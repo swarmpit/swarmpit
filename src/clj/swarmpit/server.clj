@@ -5,48 +5,17 @@
             [ring.middleware.defaults :refer [wrap-defaults site-defaults]]
             [ring.middleware.resource :refer [wrap-resource]]
             [ring.middleware.gzip :refer [wrap-gzip]]
+            [swarmpit.authentication :refer [wrap-authentication]]
+            [swarmpit.authorization :refer [wrap-authorization]]
+            [swarmpit.handler :as handler :refer :all]
             [org.httpkit.server :refer [run-server]]
             [cheshire.core :refer [parse-string]]
             [bidi.ring :refer [make-handler]]
+            [bidi.bidi :refer [match-pair match-route*]]
             [clojure.tools.logging :as log]
-            [clojure.string :refer [starts-with?]]
-            [swarmpit.handler :as handler :refer :all]
             [swarmpit.routes :as routes]
-            [swarmpit.token :as token]
             [swarmpit.install :as install]
             [swarmpit.agent :as agent]))
-
-(def unsecure-api #{{:request-method :post
-                     :uri            "/login"}
-                    {:request-method :get
-                     :uri            "/"}
-                    {:request-method :get
-                     :uri            "/css/app.css"}
-                    {:request-method :get
-                     :uri            "/js/main.js"}
-                    {:request-method :get
-                     :uri            "/browserconfig.xml"}
-                    {:request-method :get
-                     :uri            "/manifest.json"}
-                    {:request-method :get
-                     :uri            "/favicon.ico"}})
-
-(defn- secure-api?
-  [request]
-  (let [api (select-keys request [:request-method :uri])]
-    (not (contains? unsecure-api api))))
-
-(defn- admin-api?
-  [request]
-  (starts-with? (:uri request) "/admin/"))
-
-(defn- admin-access?
-  [claims]
-  (= "admin" (get-in claims [:usr :role])))
-
-(defn- invalid-claims?
-  [claims]
-  (some? (get-in claims [:body :error])))
 
 (defn wrap-client-exception
   [handler]
@@ -65,36 +34,24 @@
         {:status 500
          :body   (Throwable->map e)}))))
 
-(defn wrap-auth-exception
+(defn wrap-path-params
   [handler]
-  (fn [request]
-    (if (secure-api? request)
-      (let [headers (:headers request)
-            token (get headers "authorization")]
-        (if (some? token)
-          (let [claims (try
-                         (token/verify-jwt token)
-                         (catch Exception _
-                           (resp-unauthorized "Invalid token")))]
-            (if (invalid-claims? claims)
-              (resp-unauthorized "Invalid token")
-              (if (admin-api? request)
-                (if (admin-access? claims)
-                  (handler request)
-                  (resp-unauthorized "Unauthorized access"))
-                (handler request))))
-          (resp-error 400 "Missing token")))
-      (handler request))))
+  (fn [{:keys [uri] :as request}]
+    (let [{:keys [route-params]} (match-route* routes/backend uri request)]
+      (handler
+        (assoc request :path-params route-params)))))
 
 (def app
   (-> (make-handler routes/backend handler/dispatch)
       (wrap-resource "public")
       (wrap-resource "react")
-      wrap-auth-exception
+      wrap-authorization
       wrap-client-exception
-      wrap-json-response
-      wrap-json-params
       wrap-fallback-exception
+      wrap-authentication
+      wrap-path-params
+      wrap-json-params
+      wrap-json-response
       (wrap-defaults (assoc-in site-defaults [:security :anti-forgery] false))
       wrap-gzip))
 

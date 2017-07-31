@@ -121,7 +121,7 @@
         (is (= some-task (task (:id some-task))))))
 
     (testing "find public repository"
-      (let [results (dockerhub-repositories "nginx" 1)]
+      (let [results (public-repositories "nginx" 1)]
         (is (some? results))
         (is (= "nginx" (:query results)))
         (is (= "nginx" (-> results :results first :name)))))))

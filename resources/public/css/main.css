@@ -387,3 +387,10 @@ select:-webkit-autofill:focus {
 .service-image-tab > div > div > svg {
     fill: rgb(117, 117, 117) !important;
 }
+
+/* Custom owner label */
+
+.owner-item {
+    font-size: 12px;
+    color: rgb(158, 158, 158);
+}

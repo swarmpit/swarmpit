@@ -31,6 +31,12 @@
     [:div.form-panel-right
      (comp/mui
        (comp/raised-button
+         {:href    (routes/path-for-frontend :registry-edit {:id (:_id item)})
+          :label   "Edit"
+          :primary true}))
+     [:span.form-panel-delimiter]
+     (comp/mui
+       (comp/raised-button
          {:onTouchTap #(delete-registry-handler (:_id item))
           :label      "Delete"}))]]
    [:div.form-view
@@ -38,6 +44,9 @@
      (comp/form-item "ID" (:_id item))
      (comp/form-item "NAME" (:name item))
      (comp/form-item "URL" (:url item))
+     (comp/form-item "PUBLIC" (if (:public item)
+                                "yes"
+                                "no"))
      (comp/form-item "AUTHENTICATION" (if (:withAuth item)
                                         "yes"
                                         "no"))

@@ -83,7 +83,7 @@
              :onActive  (fn [] (let [state (state/get-value ciu/cursor)
                                      user (:user state)]
                                  (if (some? user)
-                                   (ciu/repository-handler user))))}
+                                   (ciu/repository-handler (:_id user)))))}
             (ciu/form users))
           (comp/tab
             {:key       "tab3"
@@ -94,5 +94,5 @@
              :onActive  (fn [] (let [state (state/get-value cio/cursor)
                                      registry (:registry state)]
                                  (if (some? registry)
-                                   (cio/repository-handler registry))))}
+                                   (cio/repository-handler (:_id registry)))))}
             (cio/form registries))))]]))

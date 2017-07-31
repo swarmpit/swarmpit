@@ -5,7 +5,6 @@
             [swarmpit.component.state :as state]
             [swarmpit.storage :as storage]
             [swarmpit.routes :as routes]
-            [clojure.string :as string]
             [rum.core :as rum]))
 
 (enable-console-print!)
@@ -80,37 +79,47 @@
   [{:name "APPLICATIONS"}
    {:name    "Services"
     :icon    icon/services
-    :handler :service-list}
+    :handler :service-list
+    :domain  :service}
    {:name    "Tasks"
     :icon    icon/tasks
-    :handler :task-list}
+    :handler :task-list
+    :domain  :task}
    {:name "INFRASTRUCTURE"}
    {:name    "Networks"
     :icon    icon/networks
-    :handler :network-list}
+    :handler :network-list
+    :domain  :network}
    {:name    "Nodes"
     :icon    icon/nodes
-    :handler :node-list}
+    :handler :node-list
+    :domain  :node}
    {:name "DATA"}
    {:name    "Volumes"
     :icon    icon/volumes
-    :handler :volume-list}
+    :handler :volume-list
+    :domain  :volume}
    {:name    "Secrets"
     :icon    icon/secrets
-    :handler :secret-list}])
-
-(def admin-menu
-  [{:name "USERS"}
+    :handler :secret-list
+    :route   "secrets"
+    :domain  :secret}
+   {:name "DISTRIBUTION"}
    {:name    "Dockerhub"
     :icon    icon/docker
-    :handler :dockerhub-user-list}
-   {:name    "Swarmpit"
-    :icon    icon/users
-    :handler :user-list}
-   {:name "OTHER"}
-   {:name    "Registries"
+    :handler :dockerhub-user-list
+    :domain  :dockerhub}
+   {:name    "Registry"
     :icon    icon/registries
-    :handler :registry-list}])
+    :handler :registry-list
+    :domain  :registry}])
+
+(def admin-menu
+  [{:name "ADMIN"}
+   {:name    "Users"
+    :icon    icon/users
+    :handler :user-list
+    :domain  :user}])
 
 (def menu-style
   {:height   "100%"
@@ -147,7 +156,7 @@
          [:div {:style drawer-app-name-style} "swarmpit"]
          [:div {:style drawer-app-version-style} "1.0-beta"]]))
 
-(rum/defc drawer < rum/reactive [title]
+(rum/defc drawer < rum/reactive [page-domain]
   (let [{:keys [opened]} (state/react cursor)
         drawer-container-style (if opened
                                  drawer-container-opened-style
@@ -173,7 +182,8 @@
               (let [icon (:icon menu-item)
                     name (:name menu-item)
                     handler (:handler menu-item)
-                    selected (string/includes? title name)]
+                    domain (:domain menu-item)
+                    selected (= page-domain domain)]
                 (if (some? icon)
                   (drawer-item name icon handler opened selected)
                   (drawer-category name opened)))) (if (storage/admin?)

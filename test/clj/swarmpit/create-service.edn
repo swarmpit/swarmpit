@@ -2,7 +2,7 @@
  :repository {:name "nginx", :tag "latest", :tags []},
  :mounts [],
  :secrets [],
- :registry {:name "dockerhub", :user nil},
+ :distribution {:id nil, :type "dockerhub"},
  :mode "replicated",
  :isValid true,
  :variables [],

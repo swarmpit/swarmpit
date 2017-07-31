@@ -11,19 +11,26 @@
 
 (defonce tags (atom []))
 
-(defn dockerhub-tags-handler
-  [user repository]
+(defn public-tags-handler
+  [repository]
   (handler/get
-    (routes/path-for-backend :dockerhub-tags)
-    {:params     {:repository repository
-                  :user       user}
+    (routes/path-for-backend :public-repository-tags)
+    {:params     {:repository repository}
+     :on-success (fn [response]
+                   (reset! tags response))}))
+
+(defn dockerhub-tags-handler
+  [distribution repository]
+  (handler/get
+    (routes/path-for-backend :dockerhub-repository-tags {:id distribution})
+    {:params     {:repository repository}
      :on-success (fn [response]
                    (reset! tags response))}))
 
 (defn registry-tags-handler
-  [registry repository]
+  [distribution repository]
   (handler/get
-    (routes/path-for-backend :repository-tags {:registry registry})
+    (routes/path-for-backend :registry-repository-tags {:id distribution})
     {:params     {:repository repository}
      :on-success (fn [response]
                    (reset! tags response))}))

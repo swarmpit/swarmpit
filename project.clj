@@ -18,6 +18,7 @@
                  [ring/ring-json "0.4.0"]
                  [ring/ring-defaults "0.3.0"]
                  [bk/ring-gzip "0.2.1"]
+                 [buddy/buddy-auth "1.4.1"]
                  [buddy/buddy-sign "1.4.0"]
                  [buddy/buddy-hashers "1.2.0"]
                  [bidi "2.0.16"]
