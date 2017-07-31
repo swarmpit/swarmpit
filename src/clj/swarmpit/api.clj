@@ -218,9 +218,9 @@
     (->> (drc/tags token repository-name)
          :tags)))
 
-(defn dockerhub-ports
-  [repository-name repository-tag dockeruser-name]
-  (let [user (dockeruser-by-username dockeruser-name)
+(defn dockeruser-ports
+  [dockeruser-id repository-name repository-tag]
+  (let [user (dockeruser dockeruser-id)
         token (:token (dac/token user repository-name))]
     (-> (drc/manifest token repository-name repository-tag)
         (rmi/->repository-config)
@@ -234,9 +234,11 @@
 
 (defn public-tags
   [repository-name]
-  (let [token (:token (dac/token nil repository-name))]
-    (->> (drc/tags token repository-name)
-         :tags)))
+  (dockeruser-tags nil repository-name))
+
+(defn public-ports
+  [repository-name repository-tag]
+  (dockeruser-ports nil repository-name repository-tag))
 
 ;;; Registry API
 
@@ -289,9 +291,9 @@
       (rc/tags repository-name)
       :tags))
 
-(defn registryy-ports
-  [registry-name repository-name repository-tag]
-  (-> (registry-by-name registry-name)
+(defn registry-ports
+  [registry-id repository-name repository-tag]
+  (-> (registry registry-id)
       (rc/manifest repository-name repository-tag)
       (rmi/->repository-config)
       :config
@@ -387,9 +389,9 @@
       (-> (cc/dockeruser id)
           (dac/token name)
           :token
-          (drc/manifest name tag))
+          (drc/distribution name tag))
       (-> (cc/registry id)
-          (rc/manifest name tag))) [:config :digest]))
+          (rc/distribution name tag))) [:config :digest]))
 
 ;;; Task API
 
