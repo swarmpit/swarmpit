@@ -21,7 +21,7 @@
 (defn- repository-handler
   [query page]
   (handler/get
-    (routes/path-for-backend :dockerhub-repositories)
+    (routes/path-for-backend :public-repositories)
     {:params     {:query query
                   :page  page}
      :on-call    (state/update-value [:searching] true cursor)
@@ -59,8 +59,8 @@
                         (dispatch!
                           (routes/path-for-frontend :service-create-config
                                                     {}
-                                                    {:repository (repository i)
-                                                     :registry   "dockerhub"})))}
+                                                    {:repository       (repository i)
+                                                     :distributionType "dockerhub"})))}
         (comp/list-table-header headers)
         (comp/list-table-body headers
                               results

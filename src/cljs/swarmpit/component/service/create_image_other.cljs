@@ -7,6 +7,7 @@
             [swarmpit.url :refer [dispatch!]]
             [swarmpit.routes :as routes]
             [clojure.string :as string]
+            [sablono.core :refer-macros [html]]
             [rum.core :as rum]))
 
 (def cursor [:page :service :wizard :image :other])
@@ -24,9 +25,9 @@
   (filter #(string/includes? (:name %) predicate) items))
 
 (defn- repository-handler
-  [registry]
+  [registry-id]
   (handler/get
-    (routes/path-for-backend :repositories {:registry registry})
+    (routes/path-for-backend :registry-repositories {:id registry-id})
     {:on-call    (state/update-value [:searching] true cursor)
      :on-success (fn [response]
                    (state/update-value [:searching] false cursor)
@@ -34,20 +35,29 @@
      :on-error   (fn [_]
                    (state/update-value [:searching] false cursor))}))
 
+(defn- form-registry-label
+  [registry]
+  (if (= (storage/user)
+         (:owner registry))
+    (:name registry)
+    (html [:span (:name registry)
+           [:span.owner-item (str " [" (:owner registry) "]")]])))
+
 (defn- form-registry [registry registries]
   (comp/form-comp
     "REGISTRY"
     (comp/select-field
-      {:value    registry
+      {:value    (:_id registry)
        :onChange (fn [_ _ v]
                    (state/update-value [:data] [] cursor)
-                   (state/update-value [:registry] v cursor)
+                   (state/update-value [:registry] (->> (filter #(= v (:_id %)) registries)
+                                                        (first)) cursor)
                    (repository-handler v))}
       (->> registries
            (map #(comp/menu-item
-                   {:key         %
-                    :value       %
-                    :primaryText %}))))))
+                   {:key         (:_id %)
+                    :value       (:_id %)
+                    :primaryText (form-registry-label %)}))))))
 
 (defn- form-repository [repository]
   (comp/form-comp
@@ -74,8 +84,9 @@
                         (dispatch!
                           (routes/path-for-frontend :service-create-config
                                                     {}
-                                                    {:repository (repository i)
-                                                     :registry   registry})))}
+                                                    {:repository       (repository i)
+                                                     :distributionType "registry"
+                                                     :distribution     (:_id registry)})))}
         (comp/list-table-header headers)
         (comp/list-table-body headers
                               data
