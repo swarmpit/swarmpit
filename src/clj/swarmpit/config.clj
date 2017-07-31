@@ -3,7 +3,7 @@
     [environ.core :refer [env]]))
 
 (def default {:docker-sock      "/var/run/docker.sock"
-              :docker-api       "v1.28"
+              :docker-api       "1.28"
               :db-url           "http://localhost:5984"
               :password-hashing {:alg        :pbkdf2+sha512
                                  :iterations 200000}})

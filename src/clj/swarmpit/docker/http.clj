@@ -29,8 +29,9 @@
   [uri]
   (let [server (if (http?)
                  (config :docker-sock)
-                 "http://localhost")]
-    (str server uri)))
+                 "http://localhost")
+        api (str "/v" (config :docker-api))]
+    (str server api uri)))
 
 (def ^:private func-map
   {"GET"    client/get
