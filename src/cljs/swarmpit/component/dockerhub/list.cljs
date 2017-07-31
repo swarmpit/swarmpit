@@ -10,14 +10,16 @@
 (def cursor [:page :dockerhub :list])
 
 (def headers [{:name  "Username"
-               :width "50%"}
+               :width "30%"}
               {:name  "Name"
-               :width "40%"}
+               :width "30%"}
+              {:name  "Company"
+               :width "30%"}
               {:name  "Public"
                :width "10%"}])
 
 (def render-item-keys
-  [[:username] [:name] [:public]])
+  [[:username] [:name] [:company] [:public]])
 
 (defn- render-item
   [item _]
