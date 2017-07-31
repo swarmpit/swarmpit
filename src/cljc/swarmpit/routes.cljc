@@ -6,22 +6,22 @@
   ["" {"/"              {:get :index}
        "/login"         {:post :login}
        "/password"      {:post :password}
-       "/distribution/" {"dockerhub"  {""  {:get  :dockerhub-users
+       "/distribution/" {"public"     {:get {"/repositories" :public-repositories
+                                             "/tags"         :public-repository-tags}}
+                         "dockerhub"  {""  {:get  :dockerhub-users
                                             :post :dockerhub-user-create}
-                                       "/" {:get    {"list"                :dockerhub-users-list
-                                                     "repositories"        :public-repositories
-                                                     "tags"                :public-repository-tags
-                                                     [:id "/repositories"] :dockerhub-user-repositories
-                                                     [:id "/tags"]         :dockerhub-user-tags
+                                       "/" {:get    {[:id "/repositories"] :dockerhub-repositories
+                                                     [:id "/tags"]         :dockerhub-repository-tags
                                                      [:id]                 :dockerhub-user}
-                                            :delete {[:id] :dockerhub-user-delete}}}
+                                            :delete {[:id] :dockerhub-user-delete}
+                                            :post   {[:id] :dockerhub-user-update}}}
                          "registries" {""  {:get  :registries
                                             :post :registry-create}
-                                       "/" {:get    {"list"                :registries-list
-                                                     [:id "/repositories"] :registry-repositories
+                                       "/" {:get    {[:id "/repositories"] :registry-repositories
                                                      [:id "/tags"]         :registry-repository-tags
                                                      [:id]                 :registry}
-                                            :delete {[:id] :registry-delete}}}}
+                                            :delete {[:id] :registry-delete}
+                                            :post   {[:id] :registry-update}}}}
        "/services"      {:get  :services
                          :post :service-create}
        "/services/"     {:get    {[:id] {""          :service
@@ -53,36 +53,38 @@
                                    :delete {[:id] :user-delete}
                                    :post   {[:id] :user-update}}}}])
 
-(def frontend ["" {"/"           :index
-                   "/login"      :login
-                   "/password"   :password
-                   "/services"   {""                :service-list
-                                  "/create/wizard"  {"/image"  :service-create-image
-                                                     "/config" :service-create-config}
-                                  ["/" :id]         :service-info
-                                  ["/" :id "/edit"] :service-edit}
-                   "/networks"   {""        :network-list
-                                  "/create" :network-create
-                                  ["/" :id] :network-info}
-                   "/volumes"    {""          :volume-list
-                                  "/create"   :volume-create
-                                  ["/" :name] :volume-info}
-                   "/secrets"    {""        :secret-list
-                                  "/create" :secret-create
-                                  ["/" :id] :secret-info}
-                   "/nodes"      {"" :node-list}
-                   "/tasks"      {""        :task-list
-                                  ["/" :id] :task-info}
-                   "/registries" {""        :registry-list
-                                  "/add"    :registry-create
-                                  ["/" :id] :registry-info}
-                   "/dockerhub"  {""        :dockerhub-user-list
-                                  "/add"    :dockerhub-user-create
-                                  ["/" :id] :dockerhub-user-info}
-                   "/users"      {""                :user-list
-                                  "/create"         :user-create
-                                  ["/" :id]         :user-info
-                                  ["/" :id "/edit"] :user-edit}}])
+(def frontend ["" {"/"                        :index
+                   "/login"                   :login
+                   "/password"                :password
+                   "/services"                {""                :service-list
+                                               "/create/wizard"  {"/image"  :service-create-image
+                                                                  "/config" :service-create-config}
+                                               ["/" :id]         :service-info
+                                               ["/" :id "/edit"] :service-edit}
+                   "/networks"                {""        :network-list
+                                               "/create" :network-create
+                                               ["/" :id] :network-info}
+                   "/volumes"                 {""          :volume-list
+                                               "/create"   :volume-create
+                                               ["/" :name] :volume-info}
+                   "/secrets"                 {""        :secret-list
+                                               "/create" :secret-create
+                                               ["/" :id] :secret-info}
+                   "/nodes"                   {"" :node-list}
+                   "/tasks"                   {""        :task-list
+                                               ["/" :id] :task-info}
+                   "/distribution/registries" {""                :registry-list
+                                               "/add"            :registry-create
+                                               ["/" :id]         :registry-info
+                                               ["/" :id "/edit"] :registry-edit}
+                   "/distribution/dockerhub"  {""                :dockerhub-user-list
+                                               "/add"            :dockerhub-user-create
+                                               ["/" :id]         :dockerhub-user-info
+                                               ["/" :id "/edit"] :dockerhub-user-edit}
+                   "/users"                   {""                :user-list
+                                               "/create"         :user-create
+                                               ["/" :id]         :user-info
+                                               ["/" :id "/edit"] :user-edit}}])
 
 (defn- path
   [routes prefix handler params query]
