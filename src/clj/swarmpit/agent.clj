@@ -12,9 +12,9 @@
     (doseq [service services]
       (let [id (:id service)
             repository (:repository service)
-            registry (:registry service)
+            distribution (:distribution service)
             current-image-id (api/service-image-id repository)
-            latest-image-id (api/service-image-latest-id repository registry)]
+            latest-image-id (api/service-image-latest-id distribution repository)]
         (when (not= current-image-id
                     latest-image-id)
           (api/update-service id service true)
