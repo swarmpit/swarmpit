@@ -150,12 +150,6 @@
   (-> (cc/dockerusers owner)
       (cmi/->dockerusers)))
 
-(defn dockerusers-list
-  [owner]
-  (->> (dockerusers owner)
-       (map :username)
-       (into [])))
-
 (defn dockeruser-info
   [dockeruser]
   (dhc/info dockeruser))
@@ -178,6 +172,11 @@
   (if (not (dockeruser-exist? dockeruser))
     (->> (cmo/->docker-user dockeruser dockeruser-info)
          (cc/create-dockeruser))))
+
+(defn update-dockeruser
+  [dockeruser-id dockeruser-delta]
+  (->> (cc/update-dockeruser (cc/dockeruser dockeruser-id) dockeruser-delta)
+       (cmi/->dockeruser)))
 
 (defn delete-dockeruser
   [dockeruser-id]
@@ -220,12 +219,6 @@
   (-> (cc/registries owner)
       (cmi/->registries)))
 
-(defn registries-list
-  [owner]
-  (->> (registries owner)
-       (map :name)
-       (into [])))
-
 (defn registry
   [registry-id]
   (-> (cc/registry registry-id)
@@ -252,6 +245,11 @@
   (if (not (registry-exist? registry))
     (->> (cmo/->registry registry)
          (cc/create-registry))))
+
+(defn update-registry
+  [registry-id registry-delta]
+  (->> (cc/update-registry (cc/registry registry-id) registry-delta)
+       (cmi/->registry)))
 
 (defn registry-repositories
   [registry-id]
@@ -316,13 +314,13 @@
 
 (defn create-service
   [service]
-  (let [registry-id (get-in service [:registry :id])
-        registry-type (get-in service [:registry :type])
+  (let [distribution-id (get-in service [:distribution :id])
+        distribution-type (get-in service [:distribution :type])
         secrets (dmo/->service-secrets service (secrets))]
     (rename-keys
-      (if (= "dockerhub" registry-type)
-        (create-dockerhub-service service registry-id secrets)
-        (create-registry-service service registry-id secrets)) {:ID :id})))
+      (if (= "dockerhub" distribution-type)
+        (create-dockerhub-service service distribution-id secrets)
+        (create-registry-service service distribution-id secrets)) {:ID :id})))
 
 (defn update-service
   [service-id service force?]
@@ -342,8 +340,8 @@
       :Id))
 
 (defn service-image-latest-id
-  [{:keys [type id] :as registry}
-   {:keys [name tag] :as repository}]
+  [{:keys [type id] :as service-distribution}
+   {:keys [name tag] :as service-repository}]
   (get-in
     (if (= "dockerhub" type)
       (-> (cc/dockeruser id)

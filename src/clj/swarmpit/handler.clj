@@ -246,12 +246,6 @@
       (->> (api/registries owner)
            (resp-ok)))))
 
-(defmethod dispatch :registries-list [_]
-  (fn [{:keys [identity]}]
-    (let [owner (get-in identity [:usr :username])]
-      (->> (api/registries-list owner)
-           (resp-ok)))))
-
 (defmethod dispatch :registry [_]
   (fn [{:keys [route-params]}]
     (->> (api/registry (:id route-params))
@@ -273,6 +267,12 @@
             (resp-created (select-keys response [:id]))
             (resp-error 400 "Registry already exist")))
         (resp-error 400 "Registry credentials does not match any known registry")))))
+
+(defmethod dispatch :registry-update [_]
+  (fn [{:keys [route-params params]}]
+    (let [payload (keywordize-keys params)]
+      (api/update-registry (:id route-params) payload)
+      (resp-ok))))
 
 (defmethod dispatch :registry-repositories [_]
   (fn [{:keys [route-params]}]
@@ -298,12 +298,6 @@
       (->> (api/dockerusers owner)
            (resp-ok)))))
 
-(defmethod dispatch :dockerhub-users-list [_]
-  (fn [{:keys [identity]}]
-    (let [owner (get-in identity [:usr :username])]
-      (->> (api/dockerusers-list owner)
-           (resp-ok)))))
-
 (defmethod dispatch :dockerhub-user [_]
   (fn [{:keys [route-params]}]
     (->> (api/dockeruser (:id route-params))
@@ -321,18 +315,24 @@
           (resp-created (select-keys response [:id]))
           (resp-error 400 "Docker user already exist"))))))
 
+(defmethod dispatch :dockerhub-user-update [_]
+  (fn [{:keys [route-params params]}]
+    (let [payload (keywordize-keys params)]
+      (api/update-dockeruser (:id route-params) payload)
+      (resp-ok))))
+
 (defmethod dispatch :dockerhub-user-delete [_]
   (fn [{:keys [route-params]}]
     (api/delete-dockeruser (:id route-params))
     (resp-ok)))
 
-(defmethod dispatch :dockerhub-user-repositories [_]
+(defmethod dispatch :dockerhub-repositories [_]
   (fn [{:keys [route-params]}]
     (let [dockeruser-id (:id route-params)]
       (->> (api/dockeruser-repositories dockeruser-id)
            (resp-ok)))))
 
-(defmethod dispatch :dockerhub-user-tags [_]
+(defmethod dispatch :dockerhub-repository-tags [_]
   (fn [{:keys [route-params query-string]}]
     (let [query (keywordize-keys (query->map query-string))
           repository-name (:repository query)
