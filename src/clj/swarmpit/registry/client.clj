@@ -61,8 +61,7 @@
   [registry repository-name repository-tag]
   (let [headers (basic-auth registry)
         api (str "/" repository-name "/manifests/" repository-tag)]
-    (get registry api (merge headers
-                             {"Accept" "application/vnd.docker.container.image.v1+json"}) nil)))
+    (get registry api headers nil)))
 
 (defn distribution
   [registry repository-name repository-tag]
