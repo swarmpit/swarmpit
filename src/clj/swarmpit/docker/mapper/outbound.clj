@@ -119,11 +119,11 @@
 (defn ->service-metadata
   [service]
   (let [autoredeploy (str (get-in service [:deployment :autoredeploy]))
-        registry (get-in service [:registry :name])
-        user (get-in service [:registry :user])]
+        distribution-id (get-in service [:distribution :id])
+        distribution-type (get-in service [:distribution :type])]
     {:swarmpit.service.deployment.autoredeploy autoredeploy
-     :swarmpit.service.registry.name           registry
-     :swarmpit.service.registry.user           user}))
+     :swarmpit.service.distribution.id         distribution-id
+     :swarmpit.service.distribution.type       distribution-type}))
 
 (defn ->service
   [service secrets image]
