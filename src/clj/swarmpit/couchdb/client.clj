@@ -57,7 +57,9 @@
 (defn get-doc
   [id]
   (try
-    (get (str "/swarmpit/" id))
+    (if (empty? id)
+      nil
+      (get (str "/swarmpit/" id)))
     (catch Exception _)))
 
 (defn create-doc
@@ -117,21 +119,25 @@
                      {:public {"$eq" true}}]} "dockeruser"))
 
 (defn dockeruser
-  [id]
-  (get-doc id))
+  ([id]
+   (get-doc id))
+  ([username owner]
+   (find-doc {:username username
+              :owner    owner} "dockeruser")))
 
 (defn dockeruser-exist?
   [docker-user]
   (some? (find-doc {:username {"$eq" (:username docker-user)}
                     :owner    {"$eq" (:owner docker-user)}} "dockeruser")))
 
-(defn dockeruser-by-name
-  [username]
-  (find-doc {:username {"$eq" username}} "dockeruser"))
-
 (defn create-dockeruser
   [docker-user]
   (create-doc docker-user))
+
+(defn update-dockeruser
+  [docker-user delta]
+  (let [allowed-delta (select-keys delta [:public])]
+    (update-doc docker-user allowed-delta)))
 
 (defn delete-dockeruser
   [docker-user]
@@ -148,19 +154,26 @@
   [id]
   (get-doc id))
 
+(defn registry
+  ([id]
+   (get-doc id))
+  ([name owner]
+   (find-doc {:name  name
+              :owner owner} "registry")))
+
 (defn registry-exist?
   [registry]
   (some? (find-doc {:name  {"$eq" (:name registry)}
                     :owner {"$eq" (:owner registry)}} "registry")))
 
-(defn registry-by-name
-  [name owner]
-  (find-doc {:name  {"$eq" name}
-             :owner {"$eq" owner}} "registry"))
-
 (defn create-registry
   [registry]
   (create-doc registry))
+
+(defn update-registry
+  [user delta]
+  (let [allowed-delta (select-keys delta [:public])]
+    (update-doc user allowed-delta)))
 
 (defn delete-registry
   [registry]
