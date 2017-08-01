@@ -117,11 +117,10 @@
       (networks/networks-handler)
       (secrets/secrets-handler)
       (placement/placement-handler)
-      (if (= "dockerhub" distributionType)
-        (if (some? distribution)
-          (settings/dockerhub-tags-handler distribution repository)
-          (settings/public-tags-handler repository))
-        (settings/registry-tags-handler distribution repository)))))
+      (case distributionType
+        "dockerhub" (settings/dockerhub-tags-handler distribution repository)
+        "registry" (settings/registry-tags-handler distribution repository)
+        (settings/public-tags-handler repository)))))
 
 (rum/defc form < rum/reactive
                  init-state-mixin [_]
