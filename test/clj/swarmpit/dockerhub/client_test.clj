@@ -7,8 +7,5 @@
 
   (testing "error"
     (is (thrown-with-msg?
-          ExceptionInfo #":password"
-          (login {:username "fail" :password "pass"})))
-    (is (thrown-with-msg?
-          ExceptionInfo #"Dockerhub error: Incorrect authentication credentials."
-          (login {:username "fail" :password "incorrect"})))))
+          ExceptionInfo #"Dockerhub error: Not Found"
+          (info {:username (swarmpit.uuid/uuid)})))))
