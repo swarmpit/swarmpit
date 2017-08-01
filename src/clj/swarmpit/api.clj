@@ -228,7 +228,7 @@
 
 (defn dockeruser-ports
   [dockeruser-id repository-name repository-tag]
-  (let [user (dockeruser dockeruser-id)
+  (let [user (cc/dockeruser dockeruser-id)
         token (:token (dac/token user repository-name))]
     (-> (drc/manifest token repository-name repository-tag)
         (rmi/->repository-config)
@@ -313,7 +313,7 @@
 
 (defn registry-ports
   [registry-id repository-name repository-tag]
-  (-> (registry registry-id)
+  (-> (cc/registry registry-id)
       (rc/manifest repository-name repository-tag)
       (rmi/->repository-config)
       :config

@@ -294,6 +294,18 @@
         (->> (api/registry-tags registry-id repository-name)
              (resp-ok))))))
 
+(defmethod dispatch :registry-repository-ports [_]
+  (fn [{:keys [route-params query-string]}]
+    (let [query (keywordize-keys (query->map query-string))
+          repository-name (:repositoryName query)
+          repository-tag (:repositoryTag query)
+          registry-id (:id route-params)]
+      (if (or (nil? repository-name)
+              (nil? repository-tag))
+        (resp-error 400 "Parameter repositoryName or repositoryTag missing")
+        (->> (api/registry-ports registry-id repository-name repository-tag)
+             (resp-ok))))))
+
 ;; Dockerhub handler
 
 (defmethod dispatch :dockerhub-users [_]
@@ -346,6 +358,20 @@
         (->> (api/dockeruser-tags dockeruser-id repository-name)
              (resp-ok))))))
 
+(defmethod dispatch :dockerhub-repository-ports [_]
+  (fn [{:keys [route-params query-string]}]
+    (let [query (keywordize-keys (query->map query-string))
+          repository-name (:repositoryName query)
+          repository-tag (:repositoryTag query)
+          dockeruser-id (:id route-params)]
+      (if (or (nil? repository-name)
+              (nil? repository-tag))
+        (resp-error 400 "Parameter repositoryName or repositoryTag missing")
+        (->> (api/dockeruser-ports dockeruser-id repository-name repository-tag)
+             (resp-ok))))))
+
+;; Public dockerhub handler
+
 (defmethod dispatch :public-repositories [_]
   (fn [{:keys [query-string]}]
     (let [query (keywordize-keys (query->map query-string))
@@ -361,4 +387,15 @@
       (if (nil? repository-name)
         (resp-error 400 "Parameter repository missing")
         (->> (api/public-tags repository-name)
+             (resp-ok))))))
+
+(defmethod dispatch :public-repository-ports [_]
+  (fn [{:keys [query-string]}]
+    (let [query (keywordize-keys (query->map query-string))
+          repository-name (:repositoryName query)
+          repository-tag (:repositoryTag query)]
+      (if (or (nil? repository-name)
+              (nil? repository-tag))
+        (resp-error 400 "Parameter repositoryName or repositoryTag missing")
+        (->> (api/public-ports repository-name repository-tag)
              (resp-ok))))))
