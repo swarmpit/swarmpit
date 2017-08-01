@@ -10,6 +10,9 @@ env:
   - DOCKER=stable
   - DOCKER=edge
   - DOCKER=rc
+  - DOCKER=17.05
+  - DOCKER=17.04
+  - DOCKER=17.03
   - DOCKER=1.13.0
 install:
   - bash dev/script/init-db.sh
