@@ -6,9 +6,12 @@ BRANCH=${TRAVIS_BRANCH/\//-}
 
 if [ $DOCKER != "stable" ]
 then
-	echo "images are deployed only for stable docker build"
+	echo "images are build and deployed only for stable docker build"
 	exit 0
 fi
+
+lein uberjar
+docker build -t $REPO .
 
 if [ $CONTRIBUTOR == "true" ] 
 then

@@ -18,7 +18,5 @@ install:
   - bash dev/script/start-dind.sh
 script:
   - lein test :all
-  - lein uberjar
-  - docker build -t swarmpit .
 after_success:
   - bash dev/script/deploy-image.sh
