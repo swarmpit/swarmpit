@@ -1,8 +1,11 @@
 (ns swarmpit.docker.http-test
   (:refer-clojure :exclude [get])
   (:require [clojure.test :refer :all]
+            [swarmpit.test :refer :all]
             [swarmpit.docker.http :refer :all])
   (:import (clojure.lang ExceptionInfo)))
+
+(use-fixtures :once dind-socket-fixture)
 
 (deftest ^:integration http
   (testing "execute"
