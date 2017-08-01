@@ -13,6 +13,15 @@
 
 (def cursor [:page :volume :form])
 
+(defonce volume-plugins (atom []))
+
+(defn volume-plugin-handler
+  []
+  (handler/get
+    (routes/path-for-backend :plugin-volume)
+    {:on-success (fn [response]
+                   (reset! volume-plugins response))}))
+
 (defn- form-name [value]
   (comp/form-comp
     "NAME"
@@ -24,17 +33,18 @@
        :onChange (fn [_ v]
                    (state/update-value [:volumeName] v cursor))})))
 
-(defn- form-driver [value]
+(defn- form-driver [value plugins]
   (comp/form-comp
     "DRIVER"
     (comp/select-field
       {:value    value
        :onChange (fn [_ _ v]
                    (state/update-value [:driver] v cursor))}
-      (comp/menu-item
-        {:key         "fdi1"
-         :value       "local"
-         :primaryText "local"}))))
+      (->> plugins
+           (map #(comp/menu-item
+                   {:key         %
+                    :value       %
+                    :primaryText %}))))))
 
 (defn- create-volume-handler
   []
@@ -63,7 +73,8 @@
 
 (rum/defc form < rum/reactive
                  init-state-mixin []
-  (let [{:keys [volumeName
+  (let [plugins (rum/react volume-plugins)
+        {:keys [volumeName
                 driver
                 isValid]} (state/react cursor)]
     [:div
@@ -84,4 +95,4 @@
          {:onValid   #(state/update-value [:isValid] true cursor)
           :onInvalid #(state/update-value [:isValid] false cursor)}
          (form-name volumeName)
-         (form-driver driver))]]]))
+         (form-driver driver plugins))]]]))
