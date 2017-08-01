@@ -1,12 +1,39 @@
 (ns swarmpit.component.service.form-ports
-  (:require [material.icon :as icon]
-            [material.component :as comp]
+  (:require [material.component :as comp]
             [swarmpit.component.state :as state]
+            [swarmpit.component.handler :as handler]
+            [swarmpit.routes :as routes]
             [rum.core :as rum]))
 
 (enable-console-print!)
 
 (def cursor [:page :service :wizard :ports])
+
+(defonce exposable-ports (atom []))
+
+(defn public-ports-handler
+  [repository]
+  (handler/get
+    (routes/path-for-backend :public-repository-ports)
+    {:params     {:repository repository}
+     :on-success (fn [response]
+                   (reset! exposable-ports response))}))
+
+(defn dockerhub-ports-handler
+  [distribution repository]
+  (handler/get
+    (routes/path-for-backend :dockerhub-repository-ports {:id distribution})
+    {:params     {:repository repository}
+     :on-success (fn [response]
+                   (reset! exposable-ports response))}))
+
+(defn registry-ports-handler
+  [distribution repository]
+  (handler/get
+    (routes/path-for-backend :registry-repository-ports {:id distribution})
+    {:params     {:repository repository}
+     :on-success (fn [response]
+                   (reset! exposable-ports response))}))
 
 (def headers [{:name  "Container port"
                :width "100px"}
@@ -86,7 +113,9 @@
                    :hostPort      0} cursor))
 
 (rum/defc form-create < rum/reactive []
-  (let [ports (state/react cursor)]
+  (let [exposable-ports (rum/react exposable-ports)
+        ports (concat exposable-ports
+                      (state/react cursor))]
     [:div
      (comp/form-add-btn "Publish port" add-item)
      (if (not (empty? ports))
