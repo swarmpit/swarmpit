@@ -13,14 +13,14 @@
   (let [{:keys [status body error]} call-fx]
     (if error
       (throw
-        (ex-info "Registry client failure!"
+        (ex-info (str "Registry failure: " (.getMessage error))
                  {:status 500
-                  :body   {:error (:cause (Throwable->map error))}}))
+                  :body   {:error (.getMessage error)}}))
       (let [response (parse-string body true)]
         (if (> 400 status)
           response
           (throw
-            (ex-info "Registry error!"
+            (ex-info (str "Registry error: " (:error response))
                      {:status status
                       :body   response})))))))
 
