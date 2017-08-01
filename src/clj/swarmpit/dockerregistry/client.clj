@@ -2,8 +2,7 @@
   (:refer-clojure :exclude [get])
   (:require [org.httpkit.client :as http]
             [swarmpit.http :refer :all]
-            [swarmpit.repository :as repo]
-            [cheshire.core :refer [parse-string generate-string]]))
+            [swarmpit.repository :as repo]))
 
 (def ^:private base-url "https://index.docker.io/v2")
 

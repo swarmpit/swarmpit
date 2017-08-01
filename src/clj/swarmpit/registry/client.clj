@@ -2,7 +2,6 @@
   (:refer-clojure :exclude [get])
   (:require [org.httpkit.client :as http]
             [swarmpit.http :refer :all]
-            [cheshire.core :refer [parse-string generate-string]]
             [swarmpit.token :as token]))
 
 (defn- build-url
