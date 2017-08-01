@@ -44,20 +44,20 @@
            [:span.owner-item (str " [" (:owner registry) "]")]])))
 
 (defn- form-registry [registry registries]
-  (comp/form-comp
-    "REGISTRY"
-    (comp/select-field
-      {:value    (:_id registry)
-       :onChange (fn [_ _ v]
-                   (state/update-value [:data] [] cursor)
-                   (state/update-value [:registry] (->> (filter #(= v (:_id %)) registries)
-                                                        (first)) cursor)
-                   (repository-handler v))}
-      (->> registries
-           (map #(comp/menu-item
-                   {:key         (:_id %)
-                    :value       (:_id %)
-                    :primaryText (form-registry-label %)}))))))
+  (let [registry-by-id (fn [id] (first (filter #(= id (:_id %)) registries)))]
+    (comp/form-comp
+      "REGISTRY"
+      (comp/select-field
+        {:value    (:_id registry)
+         :onChange (fn [_ _ v]
+                     (state/update-value [:data] [] cursor)
+                     (state/update-value [:registry] (registry-by-id v) cursor)
+                     (repository-handler v))}
+        (->> registries
+             (map #(comp/menu-item
+                     {:key         (:_id %)
+                      :value       (:_id %)
+                      :primaryText (form-registry-label %)})))))))
 
 (defn- form-repository [repository]
   (comp/form-comp

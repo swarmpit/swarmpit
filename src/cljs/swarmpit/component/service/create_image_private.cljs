@@ -45,20 +45,20 @@
            [:span.owner-item (str " [" (:owner user) "]")]])))
 
 (defn- form-username [user users]
-  (comp/form-comp
-    "DOCKER USER"
-    (comp/select-field
-      {:value    (:_id user)
-       :onChange (fn [_ _ v]
-                   (state/update-value [:data] [] cursor)
-                   (state/update-value [:user] (->> (filter #(= v (:_id %)) users)
-                                                    (first)) cursor)
-                   (repository-handler v))}
-      (->> users
-           (map #(comp/menu-item
-                   {:key         (:_id %)
-                    :value       (:_id %)
-                    :primaryText (form-username-label %)}))))))
+  (let [user-by-id (fn [id] (first (filter #(= id (:_id %)) users)))]
+    (comp/form-comp
+      "DOCKER USER"
+      (comp/select-field
+        {:value    (:_id user)
+         :onChange (fn [_ _ v]
+                     (state/update-value [:data] [] cursor)
+                     (state/update-value [:user] (user-by-id v) cursor)
+                     (repository-handler v))}
+        (->> users
+             (map #(comp/menu-item
+                     {:key         (:_id %)
+                      :value       (:_id %)
+                      :primaryText (form-username-label %)})))))))
 
 (defn- form-repository [repository]
   (comp/form-comp
