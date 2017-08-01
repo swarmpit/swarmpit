@@ -120,10 +120,12 @@
   [service]
   (let [autoredeploy (str (get-in service [:deployment :autoredeploy]))
         distribution-id (get-in service [:distribution :id])
-        distribution-type (get-in service [:distribution :type])]
-    {:swarmpit.service.deployment.autoredeploy autoredeploy
-     :swarmpit.service.distribution.id         distribution-id
-     :swarmpit.service.distribution.type       distribution-type}))
+        distribution-type (get-in service [:distribution :type])
+        metadata {:swarmpit.service.deployment.autoredeploy autoredeploy}]
+    (if (not-empty distribution-type)
+      (merge {:swarmpit.service.distribution.id   distribution-id
+              :swarmpit.service.distribution.type distribution-type} metadata)
+      metadata)))
 
 (defn ->service
   [service secrets image]
