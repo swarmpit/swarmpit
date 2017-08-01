@@ -1,7 +1,7 @@
 (ns swarmpit.docker.client
   (:refer-clojure :exclude [get])
   (:require [ring.util.codec :refer [form-encode]]
-            [cheshire.core :refer [parse-string generate-string]]
+            [cheshire.core :refer [generate-string]]
             [swarmpit.base64 :as base64]
             [swarmpit.config :refer [config]]
             [swarmpit.docker.http :refer :all]))

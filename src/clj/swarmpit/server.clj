@@ -9,7 +9,6 @@
             [swarmpit.authorization :refer [wrap-authorization]]
             [swarmpit.handler :as handler :refer :all]
             [org.httpkit.server :refer [run-server]]
-            [cheshire.core :refer [parse-string]]
             [bidi.ring :refer [make-handler]]
             [bidi.bidi :refer [match-pair match-route*]]
             [clojure.tools.logging :as log]

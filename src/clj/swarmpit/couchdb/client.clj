@@ -2,7 +2,7 @@
   (:refer-clojure :exclude [get find])
   (:require [org.httpkit.client :as http]
             [swarmpit.http :refer :all]
-            [cheshire.core :refer [parse-string generate-string]]
+            [cheshire.core :refer [generate-string]]
             [swarmpit.config :refer [config]]))
 
 (def ^:private headers

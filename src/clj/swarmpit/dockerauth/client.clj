@@ -1,7 +1,6 @@
 (ns swarmpit.dockerauth.client
   (:refer-clojure :exclude [get])
   (:require [org.httpkit.client :as http]
-            [cheshire.core :refer [parse-string generate-string]]
             [swarmpit.token :as token]
             [swarmpit.http :refer :all]
             [swarmpit.repository :as repo]))
