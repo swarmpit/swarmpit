@@ -56,6 +56,7 @@
       wrap-gzip))
 
 (defn -main [& [port]]
+  (println "Swarmpit is starting...")
   (install/init)
   (let [port (or port 8080)]
     (run-server app {:port port})

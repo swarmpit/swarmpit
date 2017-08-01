@@ -7,7 +7,9 @@
   (:import (org.apache.http.conn.socket PlainConnectionSocketFactory)
            (org.apache.http.config RegistryBuilder)
            (swarmpit.socket UnixSocketFactory)
-           (org.apache.http.impl.conn BasicHttpClientConnectionManager)))
+           (org.apache.http.impl.conn BasicHttpClientConnectionManager)
+           (java.io IOException)
+           (clojure.lang ExceptionInfo)))
 
 (defn- http?
   [] (not (nil? (re-matches #"^https?:\/\/.*" (config :docker-sock)))))
@@ -48,14 +50,20 @@
                      {:connection-manager (make-conn-manager)
                       :headers            headers
                       :query-params       params
-                      :body               (generate-string payload)})
+                      :body               (generate-string payload)
+                      :retry-handler      (fn [& args] false)})
           body (-> response :body (parse-string true))
           code (-> response :status)]
       body)
-    (catch Exception response
-      (throw (ex-info
-               (str "Docker engine error: " (-> response (ex-data) :body (parse-string true) :message))
-               (ex-data response))))))
+    (catch IOException exception
+      (throw (let [error (.getMessage exception)]
+               (ex-info (str "Docker failure: " error) {:message error}))))
+    (catch ExceptionInfo exception
+      (throw (let [data (some-> exception (ex-data))
+                   error (if (= "application/json" ((:headers data) "Content-Type"))
+                           (parse-string (:body data) true)
+                           {:message (:reason-phrase data)})]
+               (ex-info (str "Docker error: " (:message error)) error))))))
 
 (defn get
   ([uri] (get uri nil nil))

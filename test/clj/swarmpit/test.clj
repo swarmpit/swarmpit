@@ -8,7 +8,8 @@
 (defn dind-socket-fixture
   [test]
   (config/update! {:docker-sock "http://localhost:12375"})
-  (test))
+  (test)
+  (config/update! {}))
 
 (defn running-service-fixture
   [test]

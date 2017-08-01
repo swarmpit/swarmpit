@@ -3,25 +3,12 @@
   (:require [org.httpkit.client :as http]
             [cheshire.core :refer [parse-string generate-string]]
             [swarmpit.token :as token]
+            [swarmpit.http :refer :all]
             [swarmpit.repository :as repo]))
 
 (def ^:private base-url "https://auth.docker.io")
 
-(defn- execute
-  [call-fx]
-  (let [{:keys [status body error]} call-fx]
-    (if error
-      (throw
-        (ex-info "Docker auth client failure!"
-                 {:status 500
-                  :body   {:error (:cause (Throwable->map error))}}))
-      (let [response (parse-string body true)]
-        (if (> 400 status)
-          response
-          (throw
-            (ex-info "Docker auth error!"
-                     {:status status
-                      :body   {:error response}})))))))
+(defn- execute [call] (execute-in-scope call "Docker auth" :details))
 
 (defn- get
   [api headers params]

@@ -1,28 +1,15 @@
 (ns swarmpit.registry.client
   (:refer-clojure :exclude [get])
   (:require [org.httpkit.client :as http]
-            [swarmpit.response :as resp]
+            [swarmpit.http :refer :all]
+            [cheshire.core :refer [parse-string generate-string]]
             [swarmpit.token :as token]))
 
 (defn- build-url
   [registry api]
   (str (:url registry) "/v2" api))
 
-(defn- execute
-  [call-fx]
-  (let [{:keys [status body error]} call-fx]
-    (if error
-      (throw
-        (ex-info "Registry client failure!"
-                 {:status 500
-                  :body   {:error (:cause (Throwable->map error))}}))
-      (let [response (resp/parse-response-body body)]
-        (if (> 400 status)
-          response
-          (throw
-            (ex-info "Registry error!"
-                     {:status status
-                      :body   response})))))))
+(defn- execute [call] (execute-in-scope call "Registry" #(-> % :errors (first) :message)))
 
 (defn- get
   [registry api headers params]

@@ -1,28 +1,15 @@
 (ns swarmpit.couchdb.client
   (:refer-clojure :exclude [get find])
   (:require [org.httpkit.client :as http]
+            [swarmpit.http :refer :all]
             [cheshire.core :refer [parse-string generate-string]]
             [swarmpit.config :refer [config]]))
 
-(def headers
+(def ^:private headers
   {"Accept"       "application/json"
    "Content-Type" "application/json"})
 
-(defn- execute
-  [call-fx]
-  (let [{:keys [status body error]} call-fx]
-    (if error
-      (throw
-        (ex-info "Clutch DB client failure!"
-                 {:status 500
-                  :body   {:error (:cause (Throwable->map error))}}))
-      (let [response (parse-string body true)]
-        (if (> 400 status)
-          response
-          (throw
-            (ex-info "Clutch DB error!"
-                     {:status status
-                      :body   {:error response}})))))))
+(defn- execute [call] (execute-in-scope call "DB"))
 
 (defn- get
   [api]
