@@ -12,26 +12,29 @@
 (defonce exposable-ports (atom []))
 
 (defn public-ports-handler
-  [repository]
+  [{:keys [name tag] :as repository}]
   (handler/get
     (routes/path-for-backend :public-repository-ports)
-    {:params     {:repository repository}
+    {:params     {:repositoryName name
+                  :repositoryTag  tag}
      :on-success (fn [response]
                    (reset! exposable-ports response))}))
 
 (defn dockerhub-ports-handler
-  [distribution repository]
+  [distribution-id {:keys [name tag] :as repository}]
   (handler/get
-    (routes/path-for-backend :dockerhub-repository-ports {:id distribution})
-    {:params     {:repository repository}
+    (routes/path-for-backend :dockerhub-repository-ports {:id distribution-id})
+    {:params     {:repositoryName name
+                  :repositoryTag  tag}
      :on-success (fn [response]
                    (reset! exposable-ports response))}))
 
 (defn registry-ports-handler
-  [distribution repository]
+  [distribution-id {:keys [name tag] :as repository}]
   (handler/get
-    (routes/path-for-backend :registry-repository-ports {:id distribution})
-    {:params     {:repository repository}
+    (routes/path-for-backend :registry-repository-ports {:id distribution-id})
+    {:params     {:repositoryName name
+                  :repositoryTag  tag}
      :on-success (fn [response]
                    (reset! exposable-ports response))}))
 
