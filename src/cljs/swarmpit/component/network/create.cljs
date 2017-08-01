@@ -13,6 +13,15 @@
 
 (def cursor [:page :network :form])
 
+(defonce network-plugins (atom []))
+
+(defn network-plugin-handler
+  []
+  (handler/get
+    (routes/path-for-backend :plugin-network)
+    {:on-success (fn [response]
+                   (reset! network-plugins response))}))
+
 (defn- form-name [value]
   (comp/form-comp
     "NAME"
@@ -24,17 +33,18 @@
        :onChange (fn [_ v]
                    (state/update-value [:networkName] v cursor))})))
 
-(defn- form-driver [value]
+(defn- form-driver [value plugins]
   (comp/form-comp
     "DRIVER"
     (comp/select-field
       {:value    value
        :onChange (fn [_ _ v]
                    (state/update-value [:driver] v cursor))}
-      (comp/menu-item
-        {:key         "fdi1"
-         :value       "overlay"
-         :primaryText "overlay"}))))
+      (->> plugins
+           (map #(comp/menu-item
+                   {:key         %
+                    :value       %
+                    :primaryText %}))))))
 
 (defn- form-internal [value]
   (comp/form-comp
@@ -100,7 +110,8 @@
 
 (rum/defc form < rum/reactive
                  init-state-mixin []
-  (let [{:keys [name
+  (let [plugins (rum/react network-plugins)
+        {:keys [name
                 driver
                 internal
                 ipam
@@ -126,7 +137,7 @@
          {:onValid   #(state/update-value [:isValid] true cursor)
           :onInvalid #(state/update-value [:isValid] false cursor)}
          (form-name name)
-         (form-driver driver)
+         (form-driver driver plugins)
          (form-internal internal))]
       [:div.form-view-group
        (comp/form-section "IP address management")

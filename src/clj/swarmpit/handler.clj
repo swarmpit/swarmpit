@@ -230,6 +230,24 @@
     (->> (api/placement)
          (resp-ok))))
 
+;; Plugin handler
+
+(defmethod dispatch :plugin-network [_]
+  (fn [_]
+    (->> (api/plugins-by-type "Network")
+         (filter #(not (contains? #{"null" "host"} %)))
+         (resp-ok))))
+
+(defmethod dispatch :plugin-log [_]
+  (fn [_]
+    (->> (api/plugins-by-type "Log")
+         (resp-ok))))
+
+(defmethod dispatch :plugin-volume [_]
+  (fn [_]
+    (->> (api/plugins-by-type "Volume")
+         (resp-ok))))
+
 ;; Task handler
 
 (defmethod dispatch :tasks [_]

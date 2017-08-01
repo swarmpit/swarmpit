@@ -36,7 +36,7 @@
   [networks]
   (->> networks
        (map ->network)
-       (filter #(= "swarm" (:scope %)))
+       (filter #(not (contains? #{"null" "host"} (:driver %))))
        (into [])))
 
 (defn ->node
