@@ -430,6 +430,21 @@
               (dc/nodes)
               (dc/services)))
 
+;; Plugin API
+
+(defn plugins
+  []
+  (->> (dc/nodes)
+       (map #(get-in % [:Description :Engine :Plugins]))
+       (flatten)
+       (distinct)
+       (group-by :Type)))
+
+(defn plugins-by-type
+  [type]
+  (->> (get (plugins) type)
+       (map :Name)))
+
 ;; Placement API
 
 (defn- placement-rule
