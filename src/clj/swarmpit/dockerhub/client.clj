@@ -1,25 +1,12 @@
 (ns swarmpit.dockerhub.client
   (:refer-clojure :exclude [get])
   (:require [org.httpkit.client :as http]
+            [swarmpit.http :refer :all]
             [cheshire.core :refer [parse-string generate-string]]))
 
 (def ^:private base-url "https://hub.docker.com/v2")
 
-(defn- execute
-  [call-fx]
-  (let [{:keys [status body error]} call-fx]
-    (if error
-      (throw
-        (ex-info "Dockerhub client failure!"
-                 {:status 500
-                  :body   {:error (:cause (Throwable->map error))}}))
-      (let [response (parse-string body true)]
-        (if (> 400 status)
-          response
-          (throw
-            (ex-info "Dockerhub error!"
-                     {:status status
-                      :body   {:error response}})))))))
+(defn- execute [call] (execute-in-scope call "Dockerhub" #(or (:detail %) %)))
 
 (defn- get
   [url headers params]

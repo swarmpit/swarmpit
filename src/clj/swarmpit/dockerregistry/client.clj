@@ -1,26 +1,15 @@
 (ns swarmpit.dockerregistry.client
   (:refer-clojure :exclude [get])
   (:require [org.httpkit.client :as http]
+            [swarmpit.http :refer :all]
             [swarmpit.repository :as repo]
             [cheshire.core :refer [parse-string generate-string]]))
 
 (def ^:private base-url "https://index.docker.io/v2")
 
 (defn- execute
-  [call-fx]
-  (let [{:keys [status body error]} call-fx]
-    (if error
-      (throw
-        (ex-info "Docker registry client failure!"
-                 {:status 500
-                  :body   {:error (:cause (Throwable->map error))}}))
-      (let [response (parse-string body true)]
-        (if (> 400 status)
-          response
-          (throw
-            (ex-info "Docker registry error!"
-                     {:status status
-                      :body   response})))))))
+  [call]
+  (execute-in-scope call "Docker registry" #(-> % :errors (first) :message)))
 
 (defn- get
   [api token headers params]
