@@ -50,6 +50,9 @@
                                [:id]       :node}}
        "/tasks"         {:get :tasks}
        "/tasks/"        {:get {[:id] :task}}
+       "/plugin/"       {:get {"network" :plugin-network
+                               "log"     :plugin-log
+                               "volume"  :plugin-volume}}
        "/admin/"        {"users"  {:get  :users
                                    :post :user-create}
                          "users/" {:get    {[:id] :user}
