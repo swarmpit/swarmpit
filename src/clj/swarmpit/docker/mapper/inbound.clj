@@ -9,6 +9,16 @@
   [date]
   (str (.parse date-format date)))
 
+(defn ->image-ports
+  [image-config]
+  (let [ports (:ExposedPorts image-config)]
+    (->> (keys ports)
+         (map #(let [port-segment (str/split (str %) #"/")]
+                 {:containerPort (Integer. (subs (first port-segment) 1))
+                  :protocol      (second port-segment)
+                  :hostPort      0}))
+         (into []))))
+
 (defn ->network
   [network]
   (let [config (first (get-in network [:IPAM :Config]))]
@@ -214,7 +224,7 @@
   (let [value (:swarmpit.service.deployment.autoredeploy service-labels)]
     (if (some? value)
       (= "true" value)
-      value)))
+      nil)))
 
 (defn ->service-image-details
   [image-name]
@@ -243,8 +253,8 @@
       :version (get-in service [:Version :Index])
       :createdAt (date (:CreatedAt service))
       :updatedAt (date (:UpdatedAt service))
-      :registry {:name (:swarmpit.service.registry.name service-labels)
-                 :user (:swarmpit.service.registry.user service-labels)}
+      :distribution {:id   (:swarmpit.service.distribution.id service-labels)
+                     :type (:swarmpit.service.distribution.type service-labels)}
       :repository (merge (->service-image-details image-name)
                          {:image       image-name
                           :imageDigest image-digest})

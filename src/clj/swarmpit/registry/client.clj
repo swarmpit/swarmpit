@@ -15,7 +15,8 @@
   [registry api headers params]
   (let [url (build-url registry api)
         options {:timeout      5000
-                 :headers      headers
+                 :headers      (merge {"Content-Type" "application/json"}
+                                      headers)
                  :query-params params
                  :insecure?    true}]
     (execute @(http/get url options))))
@@ -44,6 +45,12 @@
     (get registry api headers nil)))
 
 (defn manifest
+  [registry repository-name repository-tag]
+  (let [headers (basic-auth registry)
+        api (str "/" repository-name "/manifests/" repository-tag)]
+    (get registry api headers nil)))
+
+(defn distribution
   [registry repository-name repository-tag]
   (let [headers (basic-auth registry)
         api (str "/" repository-name "/manifests/" repository-tag)]

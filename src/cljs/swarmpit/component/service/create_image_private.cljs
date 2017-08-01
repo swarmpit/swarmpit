@@ -7,6 +7,7 @@
             [swarmpit.url :refer [dispatch!]]
             [swarmpit.routes :as routes]
             [clojure.string :as string]
+            [sablono.core :refer-macros [html]]
             [rum.core :as rum]))
 
 (def cursor [:page :service :wizard :image :private])
@@ -25,9 +26,9 @@
   (filter #(string/includes? (:name %) predicate) items))
 
 (defn- repository-handler
-  [user]
+  [user-id]
   (handler/get
-    (routes/path-for-backend :dockerhub-user-repo {:user user})
+    (routes/path-for-backend :dockerhub-repositories {:id user-id})
     {:on-call    (state/update-value [:searching] true cursor)
      :on-success (fn [response]
                    (state/update-value [:searching] false cursor)
@@ -35,20 +36,29 @@
      :on-error   (fn [_]
                    (state/update-value [:searching] false cursor))}))
 
+(defn- form-username-label
+  [user]
+  (if (= (storage/user)
+         (:owner user))
+    (:username user)
+    (html [:span (:username user)
+           [:span.owner-item (str " [" (:owner user) "]")]])))
+
 (defn- form-username [user users]
-  (comp/form-comp
-    "DOCKER USER"
-    (comp/select-field
-      {:value    user
-       :onChange (fn [_ _ v]
-                   (state/update-value [:data] [] cursor)
-                   (state/update-value [:user] v cursor)
-                   (repository-handler v))}
-      (->> users
-           (map #(comp/menu-item
-                   {:key         %
-                    :value       %
-                    :primaryText %}))))))
+  (let [user-by-id (fn [id] (first (filter #(= id (:_id %)) users)))]
+    (comp/form-comp
+      "DOCKER USER"
+      (comp/select-field
+        {:value    (:_id user)
+         :onChange (fn [_ _ v]
+                     (state/update-value [:data] [] cursor)
+                     (state/update-value [:user] (user-by-id v) cursor)
+                     (repository-handler v))}
+        (->> users
+             (map #(comp/menu-item
+                     {:key         (:_id %)
+                      :value       (:_id %)
+                      :primaryText (form-username-label %)})))))))
 
 (defn- form-repository [repository]
   (comp/form-comp
@@ -65,7 +75,7 @@
 (rum/defc form-loaded < rum/static []
   (comp/form-comp-loading false))
 
-(defn- repository-list [data user]
+(defn- repository-list [user data]
   (let [repository (fn [index] (:name (nth data index)))]
     (comp/mui
       (comp/table
@@ -75,9 +85,9 @@
                         (dispatch!
                           (routes/path-for-frontend :service-create-config
                                                     {}
-                                                    {:repository (repository i)
-                                                     :user       user
-                                                     :registry   "dockerhub"})))}
+                                                    {:repository       (repository i)
+                                                     :distributionType "dockerhub"
+                                                     :distribution     (:_id user)})))}
         (comp/list-table-header headers)
         (comp/list-table-body headers
                               data
@@ -98,7 +108,7 @@
         (if searching
           (form-loading)
           (form-loaded))
-        (repository-list filtered-data user)]]
+        (repository-list user filtered-data)]]
       [:div.form-edit
        (if (storage/admin?)
          (comp/form-icon-value icon/info [:span "No dockerhub users found. Add new " [:a {:href (routes/path-for-frontend :dockerhub-user-create)} "user."]])

@@ -36,6 +36,14 @@
        :onChange (fn [_ v]
                    (state/update-value [:password] v cursor))})))
 
+(defn- form-public [value]
+  (comp/form-comp
+    "PUBLIC"
+    (comp/form-checkbox
+      {:checked value
+       :onCheck (fn [_ v]
+                  (state/update-value [:public] v cursor))})))
+
 (defn- add-user-handler
   []
   (handler/post
@@ -54,6 +62,7 @@
   []
   (state/set-value {:username ""
                     :password ""
+                    :public   false
                     :isValid  false} cursor))
 
 (def init-state-mixin
@@ -65,6 +74,7 @@
                  init-state-mixin []
   (let [{:keys [username
                 password
+                public
                 isValid]} (state/react cursor)]
     [:div
      [:div.form-panel
@@ -82,4 +92,5 @@
         {:onValid   #(state/update-value [:isValid] true cursor)
          :onInvalid #(state/update-value [:isValid] false cursor)}
         (form-username username)
-        (form-password password))]]))
+        (form-password password)
+        (form-public public))]]))

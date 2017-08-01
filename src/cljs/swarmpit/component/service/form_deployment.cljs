@@ -157,6 +157,8 @@
      (comp/form
        {}
        (form-autoredeploy autoredeploy)
+       (html (comp/form-subsection-add "Placement" placement/add-item))
+       (placement/form)
        (html (comp/form-subsection "Restart Policy"))
        (form-restart-policy-condition (:condition restartPolicy))
        (form-restart-policy-delay (:delay restartPolicy))
@@ -171,6 +173,4 @@
             (comp/form-subsection "Rollback Config")
             (form-rollback-parallelism (:parallelism rollback))
             (form-rollback-delay (:delay rollback))
-            (form-rollback-failure-action (:failureAction rollback))]))
-       (html (comp/form-subsection-add "Placement" placement/add-item))
-       (placement/form))]))
+            (form-rollback-failure-action (:failureAction rollback))])))]))

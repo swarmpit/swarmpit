@@ -1,5 +1,6 @@
 (ns swarmpit.http
-  (:require [cheshire.core :refer [parse-string generate-string]]))
+  (:require [cheshire.core :refer [parse-string generate-string]]
+            [swarmpit.response :as resp]))
 
 (defn execute-in-scope
   ([call-fx scope] (execute-in-scope call-fx scope :error))
@@ -11,7 +12,7 @@
          (ex-info (str scope " failure: " (.getMessage error))
                   {:status 500
                    :body   {:error (.getMessage error)}}))
-       (let [response (parse-string body true)]
+       (let [response (resp/parse-response-body body)]
          (if (> 400 status)
            response
            (throw

@@ -78,17 +78,17 @@
                        (str "Service creation failed. Reason: " (:error response))))})))
 
 (defn init-state
-  [registry user repository]
+  [distribution distributionType repository]
   (reset! step-index 0)
-  (state/set-value {:registry    {:name registry
-                                  :user user}
-                    :repository  {:name repository
-                                  :tag  ""
-                                  :tags []}
-                    :serviceName ""
-                    :mode        "replicated"
-                    :replicas    1
-                    :isValid     false} settings/cursor)
+  (state/set-value {:distribution {:id   distribution
+                                   :type distributionType}
+                    :repository   {:name repository
+                                   :tag  ""
+                                   :tags []}
+                    :serviceName  ""
+                    :mode         "replicated"
+                    :replicas     1
+                    :isValid      false} settings/cursor)
   (state/set-value [] ports/cursor)
   (state/set-value [] networks/cursor)
   (state/set-value [] mounts/cursor)
@@ -109,20 +109,18 @@
 
 (def init-state-mixin
   (mixin/init
-    (fn [data]
-      (let [registry (:registry data)
-            repository (:repository data)
-            user (:user data)]
-        (init-state (:registry data)
-                    (:user data)
-                    (:repository data))
-        (mounts/volumes-handler)
-        (networks/networks-handler)
-        (secrets/secrets-handler)
-        (placement/placement-handler)
-        (if (= "dockerhub" registry)
-          (settings/dockerhub-tags-handler user repository)
-          (settings/registry-tags-handler registry repository))))))
+    (fn [{:keys [repository distribution distributionType]}]
+      (init-state distribution
+                  distributionType
+                  repository)
+      (mounts/volumes-handler)
+      (networks/networks-handler)
+      (secrets/secrets-handler)
+      (placement/placement-handler)
+      (case distributionType
+        "dockerhub" (settings/dockerhub-tags-handler distribution repository)
+        "registry" (settings/registry-tags-handler distribution repository)
+        (settings/public-tags-handler repository)))))
 
 (rum/defc form < rum/reactive
                  init-state-mixin [_]

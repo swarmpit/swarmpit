@@ -2,6 +2,7 @@
   (:require [material.component :as comp]
             [swarmpit.component.state :as state]
             [swarmpit.component.handler :as handler]
+            [swarmpit.component.service.form-ports :as ports]
             [swarmpit.routes :as routes]
             [rum.core :as rum]))
 
@@ -11,22 +12,36 @@
 
 (defonce tags (atom []))
 
-(defn dockerhub-tags-handler
-  [user repository]
+(defn public-tags-handler
+  [repository]
   (handler/get
-    (routes/path-for-backend :dockerhub-tags)
-    {:params     {:repository repository
-                  :user       user}
+    (routes/path-for-backend :public-repository-tags)
+    {:params     {:repository repository}
+     :on-success (fn [response]
+                   (reset! tags response))}))
+
+(defn dockerhub-tags-handler
+  [distribution repository]
+  (handler/get
+    (routes/path-for-backend :dockerhub-repository-tags {:id distribution})
+    {:params     {:repository repository}
      :on-success (fn [response]
                    (reset! tags response))}))
 
 (defn registry-tags-handler
-  [registry repository]
+  [distribution repository]
   (handler/get
-    (routes/path-for-backend :repository-tags {:registry registry})
+    (routes/path-for-backend :registry-repository-tags {:id distribution})
     {:params     {:repository repository}
      :on-success (fn [response]
                    (reset! tags response))}))
+
+(defn load-suggestable-ports
+  [{:keys [id type] :as distribution} repository]
+  (case type
+    "dockerhub" (ports/dockerhub-ports-handler id repository)
+    "registry" (ports/registry-ports-handler id repository)
+    (ports/public-ports-handler repository)))
 
 (def form-mode-style
   {:display   "flex"
@@ -50,14 +65,15 @@
        :inputStyle    form-image-style
        :value         value})))
 
-(defn- form-image-tag-ac [value tags]
+(defn- form-image-tag-ac [value tags distribution]
   "Preload tags for services created via swarmpit"
   (comp/form-comp
     "IMAGE TAG"
     (comp/autocomplete {:name          "imageTagAuto"
                         :key           "imageTagAuto"
-                        :searchText    value
+                        :searchText    (:tag value)
                         :onUpdateInput (fn [v] (state/update-value [:repository :tag] v cursor))
+                        :onNewRequest  (fn [_] (load-suggestable-ports distribution value))
                         :dataSource    tags})))
 
 (defn- form-image-tag [value]
@@ -122,7 +138,8 @@
 
 (rum/defc form < rum/reactive [update-form?]
   (let [tags (rum/react tags)
-        {:keys [repository
+        {:keys [distribution
+                repository
                 serviceName
                 mode
                 replicas]} (state/react cursor)]
@@ -133,7 +150,7 @@
        (form-image (:name repository))
        (if update-form?
          (form-image-tag (:tag repository))
-         (form-image-tag-ac (:tag repository) tags))
+         (form-image-tag-ac repository tags distribution))
        (form-name serviceName update-form?)
        (form-mode mode update-form?)
        (when (= "replicated" mode)

@@ -76,50 +76,6 @@
                               #(change-password user password))
       user)))
 
-;;; Registry API
-
-(defn registries
-  []
-  (-> (cc/registries)
-      (cmi/->registries)))
-
-(defn registries-list
-  []
-  (->> (registries)
-       (map :name)
-       (into [])))
-
-(defn registry
-  [registry-id]
-  (-> (cc/registry registry-id)
-      (cmi/->registry)))
-
-(defn registry-by-name
-  [registry-name]
-  (cc/registry-by-name registry-name))
-
-(defn registry-exist?
-  [registry]
-  (some? (registry-by-name (:name registry))))
-
-(defn registry-valid?
-  [registry]
-  (some?
-    (try
-      (rc/info registry)
-      (catch Exception _))))
-
-(defn delete-registry
-  [registry-id]
-  (->> (registry registry-id)
-       (cc/delete-registry)))
-
-(defn create-registry
-  [registry]
-  (if (not (registry-exist? registry))
-    (->> (cmo/->registry registry)
-         (cc/create-registry))))
-
 ;;; Secret API
 
 (defn secrets
@@ -207,15 +163,9 @@
 ;;; Dockerhub API
 
 (defn dockerusers
-  []
-  (-> (cc/docker-users)
+  [owner]
+  (-> (cc/dockerusers owner)
       (cmi/->dockerusers)))
-
-(defn dockerusers-list
-  []
-  (->> (dockerusers)
-       (map :username)
-       (into [])))
 
 (defn dockeruser-info
   [dockeruser]
@@ -225,33 +175,35 @@
   [dockeruser]
   (dhc/login dockeruser))
 
-(defn dockeruser-by-username
-  [dockeruser-name]
-  (cc/docker-user-by-name dockeruser-name))
-
 (defn dockeruser-exist?
   [dockeruser]
-  (some? (dockeruser-by-username (:username dockeruser))))
+  (cc/dockeruser-exist? dockeruser))
 
 (defn dockeruser
   [dockeruser-id]
-  (-> (cc/docker-user dockeruser-id)
+  (-> (cc/dockeruser dockeruser-id)
       (cmi/->dockeruser)))
 
 (defn create-dockeruser
   [dockeruser dockeruser-info]
   (if (not (dockeruser-exist? dockeruser))
     (->> (cmo/->docker-user dockeruser dockeruser-info)
-         (cc/create-docker-user))))
+         (cc/create-dockeruser))))
+
+(defn update-dockeruser
+  [dockeruser-id dockeruser-delta]
+  (->> (cc/update-dockeruser (cc/dockeruser dockeruser-id) dockeruser-delta)
+       (cmi/->dockeruser)))
 
 (defn delete-dockeruser
   [dockeruser-id]
   (-> (dockeruser dockeruser-id)
-      (cc/delete-docker-user)))
+      (cc/delete-dockeruser)))
 
 (defn dockeruser-repositories
-  [dockeruser]
-  (let [user-token (:token (dhc/login dockeruser))]
+  [dockeruser-id]
+  (let [dockeruser (cc/dockeruser dockeruser-id)
+        user-token (:token (dhc/login dockeruser))]
     (->> (dhc/namespaces user-token)
          :namespaces
          (map #(:results (dhc/repositories-by-namespace user-token %)))
@@ -259,48 +211,125 @@
          (dhmi/->user-repositories)
          (filter #(:private %)))))
 
-(defn dockerhub-repositories
-  [repository-query repository-page]
-  (-> (dhc/repositories repository-query repository-page)
-      (dhmi/->repositories repository-query repository-page)))
-
-(defn dockerhub-tags
-  [repository-name dockeruser-name]
-  (let [user (dockeruser-by-username dockeruser-name)
+(defn dockeruser-tags
+  [dockeruser-id repository-name]
+  (let [user (cc/dockeruser dockeruser-id)
         token (:token (dac/token user repository-name))]
     (->> (drc/tags token repository-name)
          :tags)))
 
-(defn dockerhub-repository-id
-  [repository-name repository-tag dockeruser-name]
-  (let [user (dockeruser-by-username dockeruser-name)
+(defn dockeruser-latest-distribution
+  [{:keys [id] :as distribution}
+   {:keys [name tag] :as repository}]
+  (-> (cc/dockeruser id)
+      (dac/token name)
+      :token
+      (drc/distribution name tag)))
+
+(defn dockeruser-ports
+  [dockeruser-id repository-name repository-tag]
+  (let [user (cc/dockeruser dockeruser-id)
         token (:token (dac/token user repository-name))]
     (-> (drc/manifest token repository-name repository-tag)
-        (get-in [:config :digest]))))
+        (rmi/->repository-config)
+        :config
+        (dmi/->image-ports))))
 
-;;; Registry V2 API
+;; Public dockerhub API
 
-(defn repositories
+(defn public-repositories
+  [repository-query repository-page]
+  (-> (dhc/repositories repository-query repository-page)
+      (dhmi/->repositories repository-query repository-page)))
+
+(defn public-tags
+  [repository-name]
+  (dockeruser-tags nil repository-name))
+
+(defn public-latest-distribution
+  [repository]
+  (dockeruser-latest-distribution nil repository))
+
+(defn public-ports
+  [repository-name repository-tag]
+  (dockeruser-ports nil repository-name repository-tag))
+
+;;; Registry API
+
+(defn registries
+  [owner]
+  (-> (cc/registries owner)
+      (cmi/->registries)))
+
+(defn registry
+  [registry-id]
+  (-> (cc/registry registry-id)
+      (cmi/->registry)))
+
+(defn registry-exist?
   [registry]
-  (->> (rc/repositories registry)
+  (cc/registry-exist? registry))
+
+(defn registry-valid?
+  [registry]
+  (some?
+    (try
+      (rc/info registry)
+      (catch Exception _))))
+
+(defn delete-registry
+  [registry-id]
+  (->> (registry registry-id)
+       (cc/delete-registry)))
+
+(defn create-registry
+  [registry]
+  (if (not (registry-exist? registry))
+    (->> (cmo/->registry registry)
+         (cc/create-registry))))
+
+(defn update-registry
+  [registry-id registry-delta]
+  (->> (cc/update-registry (cc/registry registry-id) registry-delta)
+       (cmi/->registry)))
+
+(defn registry-repositories
+  [registry-id]
+  (->> (cc/registry registry-id)
+       (rc/repositories)
        (rmi/->repositories)))
 
-(defn tags
-  [registry repository-name]
-  (->> (rc/tags registry repository-name)
-       :tags))
+(defn registry-tags
+  [registry-id repository-name]
+  (-> (cc/registry registry-id)
+      (rc/tags repository-name)
+      :tags))
 
-(defn repository-id
-  [registry-name repository-name repository-tag]
-  (-> (registry-by-name registry-name)
+(defn registry-latest-distribution
+  [{:keys [id] :as distribution}
+   {:keys [name tag] :as repository}]
+  (-> (cc/registry id)
+      (rc/distribution name tag)))
+
+(defn registry-ports
+  [registry-id repository-name repository-tag]
+  (-> (cc/registry registry-id)
       (rc/manifest repository-name repository-tag)
-      (get-in [:config :digest])))
+      (rmi/->repository-config)
+      :config
+      (dmi/->image-ports)))
 
 ;;; Image API
 
 (defn image
-  [image]
-  (dc/image image))
+  [img]
+  (dc/image img))
+
+(defn image-ports
+  [img]
+  (-> (image img)
+      :Config
+      (dmi/->image-ports)))
 
 ;;; Service API
 
@@ -329,18 +358,23 @@
   [service-id]
   (dc/delete-service service-id))
 
-(defn create-dockerhub-service
+(defn create-public-service
   [service secrets]
-  (let [auth-config (->> (get-in service [:registry :user])
-                         (dockeruser-by-username)
+  (->> (dmo/->service-image service)
+       (dmo/->service service secrets)
+       (dc/create-service)))
+
+(defn create-dockerhub-service
+  [service dockeruser-id secrets]
+  (let [auth-config (->> (cc/dockeruser dockeruser-id)
                          (dmo/->auth-config))]
     (->> (dmo/->service-image service)
          (dmo/->service service secrets)
          (dc/create-service auth-config))))
 
 (defn create-registry-service
-  [service registry-name secrets]
-  (let [registry (registry-by-name registry-name)
+  [service registry-id secrets]
+  (let [registry (cc/registry registry-id)
         auth-config (dmo/->auth-config registry)]
     (->> (dmo/->service-image-registry service registry)
          (dmo/->service service secrets)
@@ -348,12 +382,14 @@
 
 (defn create-service
   [service]
-  (let [registry-name (get-in service [:registry :name])
+  (let [distribution-id (get-in service [:distribution :id])
+        distribution-type (get-in service [:distribution :type])
         secrets (dmo/->service-secrets service (secrets))]
     (rename-keys
-      (if (= "dockerhub" registry-name)
-        (create-dockerhub-service service secrets)
-        (create-registry-service service registry-name secrets)) {:ID :id})))
+      (case distribution-type
+        "dockerhub" (create-dockerhub-service service distribution-id secrets)
+        "registry" (create-registry-service service distribution-id secrets)
+        (create-public-service service secrets)) {:ID :id})))
 
 (defn update-service
   [service-id service force?]
@@ -373,14 +409,12 @@
       :Id))
 
 (defn service-image-latest-id
-  [service-repository service-registry]
-  (if (= "dockerhub" (:name service-registry))
-    (dockerhub-repository-id (:name service-repository)
-                             (:tag service-repository)
-                             (:user service-registry))
-    (repository-id (:name service-registry)
-                   (:name service-repository)
-                   (:tag service-repository))))
+  [{:keys [type] :as service-distribution} service-repository]
+  (get-in
+    (case type
+      "dockerhub" (dockeruser-latest-distribution service-distribution service-repository)
+      "registry" (registry-latest-distribution service-distribution service-repository)
+      (public-latest-distribution service-repository)) [:config :digest]))
 
 ;;; Task API
 

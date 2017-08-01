@@ -38,33 +38,36 @@
                  :query-params params}]
     (execute @(http/delete url options))))
 
-(defn- get-doc
+(defn get-doc
   [id]
-  (get (str "/swarmpit/" id)))
+  (try
+    (if (empty? id)
+      nil
+      (get (str "/swarmpit/" id)))
+    (catch Exception _)))
 
-(defn- create-doc
+(defn create-doc
   [doc]
   (post "/swarmpit" doc))
 
-(defn- find-doc
+(defn find-docs
+  ([type]
+   (find-docs nil type))
+  ([query type]
+   (->> {:selector (merge query {:type {"$eq" type}})}
+        (post "/swarmpit/_find")
+        :docs)))
+
+(defn find-doc
   [query type]
-  (->> {:selector (merge query {:type {"$eq" type}})}
-       (post "/swarmpit/_find")
-       :docs
-       (first)))
+  (first (find-docs query type)))
 
-(defn- find-all-docs
-  [type]
-  (->> {:selector {:type {"$eq" type}}}
-       (post "/swarmpit/_find")
-       :docs))
-
-(defn- delete-doc
+(defn delete-doc
   [doc]
   (let [url (str "/swarmpit/" (:_id doc))]
     (delete url {:rev (:_rev doc)})))
 
-(defn- update-doc
+(defn update-doc
   ([doc delta]
    (let [url (str "/swarmpit/" (:_id doc))]
      (put url (merge doc delta))))
@@ -94,43 +97,67 @@
 
 ;; Docker user
 
-(defn docker-users
-  []
-  (find-all-docs "dockeruser"))
+(defn dockerusers
+  [owner]
+  (find-docs {"$or" [{:owner {"$eq" owner}}
+                     {:public {"$eq" true}}]} "dockeruser"))
 
-(defn docker-user
-  [id]
-  (get-doc id))
+(defn dockeruser
+  ([id]
+   (get-doc id))
+  ([username owner]
+   (find-doc {:username username
+              :owner    owner} "dockeruser")))
 
-(defn docker-user-by-name
-  [username]
-  (find-doc {:username {"$eq" username}} "dockeruser"))
+(defn dockeruser-exist?
+  [docker-user]
+  (some? (find-doc {:username {"$eq" (:username docker-user)}
+                    :owner    {"$eq" (:owner docker-user)}} "dockeruser")))
 
-(defn create-docker-user
+(defn create-dockeruser
   [docker-user]
   (create-doc docker-user))
 
-(defn delete-docker-user
+(defn update-dockeruser
+  [docker-user delta]
+  (let [allowed-delta (select-keys delta [:public])]
+    (update-doc docker-user allowed-delta)))
+
+(defn delete-dockeruser
   [docker-user]
   (delete-doc docker-user))
 
 ;; Registry
 
 (defn registries
-  []
-  (find-all-docs "registry"))
+  [owner]
+  (find-docs {"$or" [{:owner {"$eq" owner}}
+                     {:public {"$eq" true}}]} "registry"))
 
 (defn registry
   [id]
   (get-doc id))
 
-(defn registry-by-name
-  [name]
-  (find-doc {:name {"$eq" name}} "registry"))
+(defn registry
+  ([id]
+   (get-doc id))
+  ([name owner]
+   (find-doc {:name  name
+              :owner owner} "registry")))
+
+(defn registry-exist?
+  [registry]
+  (some? (find-doc {:name  {"$eq" (:name registry)}
+                    :owner {"$eq" (:owner registry)}} "registry")))
 
 (defn create-registry
   [registry]
   (create-doc registry))
+
+(defn update-registry
+  [user delta]
+  (let [allowed-delta (select-keys delta [:public])]
+    (update-doc user allowed-delta)))
 
 (defn delete-registry
   [registry]
@@ -140,7 +167,7 @@
 
 (defn users
   []
-  (find-all-docs "user"))
+  (find-docs "user"))
 
 (defn user
   [id]

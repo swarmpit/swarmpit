@@ -87,4 +87,3 @@
   ([uri] (delete uri nil))
   ([uri headers]
    (execute "DELETE" uri nil headers nil)))
-

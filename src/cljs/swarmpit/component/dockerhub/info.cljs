@@ -31,12 +31,21 @@
     [:div.form-panel-right
      (comp/mui
        (comp/raised-button
+         {:href    (routes/path-for-frontend :dockerhub-user-edit {:id (:_id item)})
+          :label   "Edit"
+          :primary true}))
+     [:span.form-panel-delimiter]
+     (comp/mui
+       (comp/raised-button
          {:onTouchTap #(delete-user-handler (:_id item))
           :label      "Delete"}))]]
    [:div.form-view
     [:div.form-view-group
      (comp/form-item "ID" (:_id item))
      (comp/form-item "NAME" (:name item))
+     (comp/form-item "PUBLIC" (if (:public item)
+                                "yes"
+                                "no"))
      (comp/form-item "USERNAME" (:username item))
      (comp/form-item "LOCATION" (:location item))
      (comp/form-item "ROLE" (:role item))]]])

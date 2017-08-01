@@ -28,9 +28,11 @@
             [swarmpit.component.registry.info :as registry-info]
             [swarmpit.component.registry.list :as registry-list]
             [swarmpit.component.registry.create :as registry-create]
+            [swarmpit.component.registry.edit :as registry-edit]
             [swarmpit.component.dockerhub.info :as dockerhub-info]
             [swarmpit.component.dockerhub.list :as dockerhub-list]
-            [swarmpit.component.dockerhub.create :as dockerhub-create]))
+            [swarmpit.component.dockerhub.create :as dockerhub-create]
+            [swarmpit.component.dockerhub.edit :as dockerhub-edit]))
 
 (defmulti dispatch (fn [route] (:handler route)))
 
@@ -166,6 +168,10 @@
   [_]
   (registry-create/form))
 
+(defmethod dispatch :registry-edit
+  [{:keys [data]}]
+  (registry-edit/form data))
+
 ;;; Dockerhub user view
 
 (defmethod dispatch :dockerhub-user-list
@@ -179,3 +185,7 @@
 (defmethod dispatch :dockerhub-user-create
   [_]
   (dockerhub-create/form))
+
+(defmethod dispatch :dockerhub-user-edit
+  [{:keys [data]}]
+  (dockerhub-edit/form data))

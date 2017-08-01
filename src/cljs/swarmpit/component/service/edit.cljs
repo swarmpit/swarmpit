@@ -57,7 +57,7 @@
 
 (defn- init-state
   [service networks]
-  (state/set-value (select-keys service [:registry :repository :version :serviceName :mode :replicas]) settings/cursor)
+  (state/set-value (select-keys service [:distribution :repository :version :serviceName :mode :replicas]) settings/cursor)
   (state/set-value (:ports service) ports/cursor)
   (state/set-value (->> networks
                         (map #(select-keys % [:networkName]))

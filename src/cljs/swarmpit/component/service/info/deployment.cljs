@@ -28,6 +28,12 @@
      (comp/form-item "AUTOREDEPLOY" (if autoredeploy
                                       "on"
                                       "off"))
+     (if (not-empty placement)
+       [:div
+        (comp/form-subsection "Placement")
+        (comp/form-info-table-headless placement
+                                       placement-render-item
+                                       placement-render-item-keys)])
      (comp/form-subsection "Restart Policy")
      (comp/form-item "CONDITION" restart-policy-condition)
      (comp/form-item "DELAY" (str restart-policy-delay "s"))
@@ -41,10 +47,4 @@
         (comp/form-subsection "Rollback Config")
         (comp/form-item "PARALLELISM" rollback-parallelism)
         (comp/form-item "DELAY" (str rollback-delay "s"))
-        (comp/form-item "ON FAILURE" rollback-failure-action)])
-     (if (not-empty placement)
-       [:div
-        (comp/form-subsection "Placement")
-        (comp/form-info-table-headless placement
-                                       placement-render-item
-                                       placement-render-item-keys)])]))
+        (comp/form-item "ON FAILURE" rollback-failure-action)])]))

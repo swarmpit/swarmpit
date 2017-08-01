@@ -20,7 +20,5 @@
             ExceptionInfo #"DB failure: invalid-url: Name or service not known"
             (db-version)))))
 
-  (testing "404 error"
-    (is (thrown-with-msg?
-          ExceptionInfo #"DB error: not_found"
-          (docker-user "not-existing-user")))))
+  (testing "404 error swallowing"
+    (is (nil? (dockeruser "not-existing-user")))))
