@@ -218,6 +218,14 @@
     (->> (drc/tags token repository-name)
          :tags)))
 
+(defn dockeruser-latest-distribution
+  [{:keys [id] :as distribution}
+   {:keys [name tag] :as repository}]
+  (-> (cc/dockeruser id)
+      (dac/token name)
+      :token
+      (drc/distribution name tag)))
+
 (defn dockeruser-ports
   [dockeruser-id repository-name repository-tag]
   (let [user (dockeruser dockeruser-id)
@@ -227,6 +235,8 @@
         :config
         (dmi/->image-ports))))
 
+;; Public dockerhub API
+
 (defn public-repositories
   [repository-query repository-page]
   (-> (dhc/repositories repository-query repository-page)
@@ -235,6 +245,10 @@
 (defn public-tags
   [repository-name]
   (dockeruser-tags nil repository-name))
+
+(defn public-latest-distribution
+  [repository]
+  (dockeruser-latest-distribution nil repository))
 
 (defn public-ports
   [repository-name repository-tag]
@@ -291,6 +305,12 @@
       (rc/tags repository-name)
       :tags))
 
+(defn registry-latest-distribution
+  [{:keys [id] :as distribution}
+   {:keys [name tag] :as repository}]
+  (-> (cc/registry id)
+      (rc/distribution name tag)))
+
 (defn registry-ports
   [registry-id repository-name repository-tag]
   (-> (registry registry-id)
@@ -338,6 +358,12 @@
   [service-id]
   (dc/delete-service service-id))
 
+(defn create-public-service
+  [service secrets]
+  (->> (dmo/->service-image service)
+       (dmo/->service service secrets)
+       (dc/create-service)))
+
 (defn create-dockerhub-service
   [service dockeruser-id secrets]
   (let [auth-config (->> (cc/dockeruser dockeruser-id)
@@ -360,9 +386,10 @@
         distribution-type (get-in service [:distribution :type])
         secrets (dmo/->service-secrets service (secrets))]
     (rename-keys
-      (if (= "dockerhub" distribution-type)
-        (create-dockerhub-service service distribution-id secrets)
-        (create-registry-service service distribution-id secrets)) {:ID :id})))
+      (case distribution-type
+        "dockerhub" (create-dockerhub-service service distribution-id secrets)
+        "registry" (create-registry-service service distribution-id secrets)
+        (create-public-service service secrets)) {:ID :id})))
 
 (defn update-service
   [service-id service force?]
@@ -382,16 +409,12 @@
       :Id))
 
 (defn service-image-latest-id
-  [{:keys [type id] :as service-distribution}
-   {:keys [name tag] :as service-repository}]
+  [{:keys [type] :as service-distribution} service-repository]
   (get-in
-    (if (= "dockerhub" type)
-      (-> (cc/dockeruser id)
-          (dac/token name)
-          :token
-          (drc/distribution name tag))
-      (-> (cc/registry id)
-          (rc/distribution name tag))) [:config :digest]))
+    (case type
+      "dockerhub" (dockeruser-latest-distribution service-distribution service-repository)
+      "registry" (registry-latest-distribution service-distribution service-repository)
+      (public-latest-distribution service-repository)) [:config :digest]))
 
 ;;; Task API
 
