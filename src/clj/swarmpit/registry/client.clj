@@ -1,7 +1,7 @@
 (ns swarmpit.registry.client
   (:refer-clojure :exclude [get])
   (:require [org.httpkit.client :as http]
-            [cheshire.core :refer [parse-string generate-string]]
+            [swarmpit.response :as resp]
             [swarmpit.token :as token]))
 
 (defn- build-url
@@ -16,7 +16,7 @@
         (ex-info "Registry client failure!"
                  {:status 500
                   :body   {:error (:cause (Throwable->map error))}}))
-      (let [response (parse-string body true)]
+      (let [response (resp/parse-response-body body)]
         (if (> 400 status)
           response
           (throw
@@ -28,7 +28,8 @@
   [registry api headers params]
   (let [url (build-url registry api)
         options {:timeout      5000
-                 :headers      headers
+                 :headers      (merge {"Content-Type" "application/json"}
+                                      headers)
                  :query-params params
                  :insecure?    true}]
     (execute @(http/get url options))))
@@ -57,6 +58,12 @@
     (get registry api headers nil)))
 
 (defn manifest
+  [registry repository-name repository-tag]
+  (let [headers (basic-auth registry)
+        api (str "/" repository-name "/manifests/" repository-tag)]
+    (get registry api headers nil)))
+
+(defn distribution
   [registry repository-name repository-tag]
   (let [headers (basic-auth registry)
         api (str "/" repository-name "/manifests/" repository-tag)]

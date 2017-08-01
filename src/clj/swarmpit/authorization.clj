@@ -67,6 +67,9 @@
             {:pattern        #"^/distribution/registries/[a-zA-Z0-9]*/tags$"
              :request-method :get
              :handler        {:and [authenticated-access distribution-access]}}
+            {:pattern        #"^/distribution/registries/[a-zA-Z0-9]*/ports$"
+             :request-method :get
+             :handler        {:and [authenticated-access distribution-access]}}
             {:pattern        #"^/distribution/registries/[a-zA-Z0-9]*$"
              :request-method #{:get :delete :post}
              :handler        {:and [authenticated-access owner-access]}}
@@ -74,6 +77,9 @@
              :request-method :get
              :handler        {:and [authenticated-access distribution-access]}}
             {:pattern        #"^/distribution/dockerhub/[a-zA-Z0-9]*/tags$"
+             :request-method :get
+             :handler        {:and [authenticated-access distribution-access]}}
+            {:pattern        #"^/distribution/dockerhub/[a-zA-Z0-9]*/ports$"
              :request-method :get
              :handler        {:and [authenticated-access distribution-access]}}
             {:pattern        #"^/distribution/dockerhub/[a-zA-Z0-9]*$"

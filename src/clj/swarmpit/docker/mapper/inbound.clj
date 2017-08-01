@@ -9,6 +9,16 @@
   [date]
   (str (.parse date-format date)))
 
+(defn ->image-ports
+  [image-config]
+  (let [ports (:ExposedPorts image-config)]
+    (->> (keys ports)
+         (map #(let [port-segment (str/split (str %) #"/")]
+                 {:containerPort (Integer. (subs (first port-segment) 1))
+                  :protocol      (second port-segment)
+                  :hostPort      0}))
+         (into []))))
+
 (defn ->network
   [network]
   (let [config (first (get-in network [:IPAM :Config]))]

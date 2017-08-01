@@ -59,8 +59,7 @@
                         (dispatch!
                           (routes/path-for-frontend :service-create-config
                                                     {}
-                                                    {:repository       (repository i)
-                                                     :distributionType "dockerhub"})))}
+                                                    {:repository (repository i)})))}
         (comp/list-table-header headers)
         (comp/list-table-body headers
                               results

@@ -7,11 +7,13 @@
        "/login"         {:post :login}
        "/password"      {:post :password}
        "/distribution/" {"public"     {:get {"/repositories" :public-repositories
-                                             "/tags"         :public-repository-tags}}
+                                             "/tags"         :public-repository-tags
+                                             "/ports"        :public-repository-ports}}
                          "dockerhub"  {""  {:get  :dockerhub-users
                                             :post :dockerhub-user-create}
                                        "/" {:get    {[:id "/repositories"] :dockerhub-repositories
                                                      [:id "/tags"]         :dockerhub-repository-tags
+                                                     [:id "/ports"]        :dockerhub-repository-ports
                                                      [:id]                 :dockerhub-user}
                                             :delete {[:id] :dockerhub-user-delete}
                                             :post   {[:id] :dockerhub-user-update}}}
@@ -19,6 +21,7 @@
                                             :post :registry-create}
                                        "/" {:get    {[:id "/repositories"] :registry-repositories
                                                      [:id "/tags"]         :registry-repository-tags
+                                                     [:id "/ports"]        :registry-repository-ports
                                                      [:id]                 :registry}
                                             :delete {[:id] :registry-delete}
                                             :post   {[:id] :registry-update}}}}
