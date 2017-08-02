@@ -9,8 +9,6 @@
 
 (def cursor [:page :service :wizard :ports])
 
-(defonce exposable-ports (atom []))
-
 (defn public-ports-handler
   [{:keys [name tag] :as repository}]
   (handler/get
@@ -18,7 +16,8 @@
     {:params     {:repositoryName name
                   :repositoryTag  tag}
      :on-success (fn [response]
-                   (reset! exposable-ports response))}))
+                   (doseq [port response]
+                     (state/add-item port cursor)))}))
 
 (defn dockerhub-ports-handler
   [distribution-id {:keys [name tag] :as repository}]
@@ -27,7 +26,8 @@
     {:params     {:repositoryName name
                   :repositoryTag  tag}
      :on-success (fn [response]
-                   (reset! exposable-ports response))}))
+                   (doseq [port response]
+                     (state/add-item port cursor)))}))
 
 (defn registry-ports-handler
   [distribution-id {:keys [name tag] :as repository}]
@@ -36,7 +36,8 @@
     {:params     {:repositoryName name
                   :repositoryTag  tag}
      :on-success (fn [response]
-                   (reset! exposable-ports response))}))
+                   (doseq [port response]
+                     (state/add-item port cursor)))}))
 
 (def headers [{:name  "Container port"
                :width "100px"}
@@ -116,9 +117,7 @@
                    :hostPort      0} cursor))
 
 (rum/defc form-create < rum/reactive []
-  (let [exposable-ports (rum/react exposable-ports)
-        ports (concat exposable-ports
-                      (state/react cursor))]
+  (let [ports (state/react cursor)]
     [:div
      (comp/form-add-btn "Publish port" add-item)
      (if (not (empty? ports))
