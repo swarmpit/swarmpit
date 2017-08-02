@@ -21,14 +21,12 @@
               {:name  "Replicas"
                :width "10%"}
               {:name  "Status"
-               :width "15%"}
-              {:name  "Update"
-               :width "15%"}])
+               :width "30%"}])
 
 (def render-item-keys
-  [[:serviceName] [:repository :image] [:mode] [:status :info] [:state] [:status :message]])
+  [[:serviceName] [:repository :image] [:mode] [:status :info] [:state]])
 
-(defn- render-item-status-message [value]
+(defn- render-item-update-state [value]
   (if (some? value)
     (comp/label-update value)))
 
@@ -39,12 +37,15 @@
     "partly running" (comp/label-yellow value)))
 
 (defn- render-item
-  [item _]
-  (let [value (val item)]
+  [item service]
+  (let [update (get-in service [:status :message])
+        value (val item)]
     (case (key item)
-      :state (render-item-state value)
+      :state (html [:span
+                    [:span (render-item-state value)]
+                    [:span " "]
+                    [:span (render-item-update-state update)]])
       :info (comp/label-info value)
-      :message (render-item-status-message value)
       value)))
 
 (defn- onclick-handler
