@@ -15,3 +15,9 @@
       (first)
       (get "v1Compatibility")
       (parse-string true)))
+
+(defn ->repository-without-prefix
+  [image-name]
+  (let [separator-pos (str/index-of image-name "/")
+        length (count image-name)]
+    (subs image-name (inc separator-pos) length)))

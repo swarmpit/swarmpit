@@ -308,8 +308,9 @@
 (defn registry-latest-distribution
   [{:keys [id] :as distribution}
    {:keys [name tag] :as repository}]
-  (-> (cc/registry id)
-      (rc/distribution name tag)))
+  (let [repository (rmi/->repository-without-prefix name)]
+    (-> (cc/registry id)
+        (rc/distribution repository tag))))
 
 (defn registry-ports
   [registry-id repository-name repository-tag]
