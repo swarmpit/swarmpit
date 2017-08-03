@@ -13,21 +13,22 @@
 (def cursor [:page :service :list])
 
 (def headers [{:name  "Name"
-               :width "20%"}
+               :width "15%"}
               {:name  "Image"
                :width "30%"}
-              {:name  "Mode"
-               :width "10%"}
               {:name  "Replicas"
-               :width "10%"}
+               :width "15%"}
+              {:name  "Ports"
+               :width "15%"}
               {:name  "Status"
-               :width "30%"}])
+               :width "25%"}])
 
 (def render-item-keys
-  [[:serviceName] [:repository :image] [:mode] [:status :info] [:state]])
+  [[:serviceName] [:repository :image] [:status :info] [:ports] [:state]])
 
 (defn- render-item-update-state [value]
-  (if (some? value)
+  (case value
+    "rollback_started" (comp/label-update "rollback")
     (comp/label-update value)))
 
 (defn- render-item-state [value]
@@ -36,16 +37,35 @@
     "not running" (comp/label-grey value)
     "partly running" (comp/label-yellow value)))
 
+(defn- render-item-ports [value]
+  (html
+    (for [port value]
+      [:div (str (:hostPort port) " ➟ " (:containerPort port) "/" (:protocol port))])))
+
+(defn- render-item-info [value mode]
+  (html
+    (if (= "global" mode)
+      [:span
+       [:span (comp/label-info value)]
+       [:span " "]
+       [:span.label.label-info [:b "G"]]]
+      [:span (comp/label-info value)])))
+
+(defn- render-status [value update-status]
+  (if (or (= "updating" update-status)
+          (= "rollback_started" update-status))
+    (render-item-update-state update-status)
+    (render-item-state value)))
+
 (defn- render-item
   [item service]
-  (let [update (get-in service [:status :message])
+  (let [update (get-in service [:status :update])
+        mode (:mode service)
         value (val item)]
     (case (key item)
-      :state (html [:span
-                    [:span (render-item-state value)]
-                    [:span " "]
-                    [:span (render-item-update-state update)]])
-      :info (comp/label-info value)
+      :ports (render-item-ports value)
+      :state (render-status value update)
+      :info (render-item-info value mode)
       value)))
 
 (defn- onclick-handler
