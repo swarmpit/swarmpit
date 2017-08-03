@@ -337,12 +337,14 @@
 (defn services
   []
   (dmi/->services (dc/services)
-                  (dc/tasks)))
+                  (dc/tasks)
+                  (count (dc/nodes))))
 
 (defn service
   [service-id]
   (dmi/->service (dc/service service-id)
-                 (dc/service-tasks service-id)))
+                 (dc/service-tasks service-id)
+                 (count (dc/nodes))))
 
 (defn service-networks
   [service-id]

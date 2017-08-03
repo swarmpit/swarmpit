@@ -202,22 +202,16 @@
       (count)))
 
 (defn ->service-info-status
-  [service-replicas service-replicas-running service-mode]
-  (if (= service-mode "replicated")
-    (str service-replicas-running " / " service-replicas)
-    (str service-replicas-running " / " service-replicas-running)))
+  [service-replicas service-replicas-running]
+  (str service-replicas-running " / " service-replicas))
 
 (defn ->service-state
-  [service-replicas service-replicas-running service-mode]
-  (case service-mode
-    "replicated" (if (zero? service-replicas-running)
-                   "not running"
-                   (if (= service-replicas-running service-replicas)
-                     "running"
-                     "partly running"))
-    "global" (if (zero? service-replicas-running)
-               "not running"
-               "running")))
+  [service-replicas-running service-replicas]
+  (if (zero? service-replicas-running)
+    "not running"
+    (if (= service-replicas-running service-replicas)
+      "running"
+      "partly running")))
 
 (defn ->service-autoredeploy
   [service-labels]
@@ -234,7 +228,7 @@
      :tag  (subs image-name (inc separator-pos) length)}))
 
 (defn ->service
-  [service tasks]
+  [service tasks nodes-count]
   (let [service-spec (:Spec service)
         service-labels (:Labels service-spec)
         service-task-template (:TaskTemplate service-spec)
@@ -261,8 +255,12 @@
       :serviceName service-name
       :mode service-mode
       :replicas replicas
-      :state (->service-state replicas replicas-running service-mode)
-      :status {:info    (->service-info-status replicas replicas-running service-mode)
+      :state (if (= service-mode "replicated")
+               (->service-state replicas-running replicas)
+               (->service-state replicas-running nodes-count))
+      :status {:info    (if (= service-mode "replicated")
+                          (->service-info-status replicas-running replicas)
+                          (->service-info-status replicas-running nodes-count))
                :update  (get-in service [:UpdateStatus :State])
                :message (get-in service [:UpdateStatus :Message])}
       :ports (->service-ports service-spec)
@@ -278,9 +276,9 @@
                    :placement     (->service-placement-constraints service-spec)})))
 
 (defn ->services
-  [services tasks]
+  [services tasks nodes-count]
   (->> services
-       (map #(->service % tasks))
+       (map #(->service % tasks nodes-count))
        (into [])))
 
 (defn ->volume
