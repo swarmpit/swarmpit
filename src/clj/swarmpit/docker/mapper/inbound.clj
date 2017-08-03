@@ -202,7 +202,7 @@
       (count)))
 
 (defn ->service-info-status
-  [service-replicas service-replicas-running]
+  [service-replicas-running service-replicas]
   (str service-replicas-running " / " service-replicas))
 
 (defn ->service-state
