@@ -1,5 +1,6 @@
 (ns swarmpit.component.service.list
-  (:require [material.component :as comp]
+  (:require [material.icon :as icon]
+            [material.component :as comp]
             [swarmpit.component.state :as state]
             [swarmpit.component.mixin :as mixin]
             [swarmpit.component.handler :as handler]
@@ -13,7 +14,7 @@
 (def cursor [:page :service :list])
 
 (def headers [{:name  "Name"
-               :width "15%"}
+               :width "20%"}
               {:name  "Image"
                :width "30%"}
               {:name  "Replicas"
@@ -21,7 +22,7 @@
               {:name  "Ports"
                :width "15%"}
               {:name  "Status"
-               :width "25%"}])
+               :width "20%"}])
 
 (def render-item-keys
   [[:serviceName] [:repository :image] [:status :info] [:ports] [:state]])
@@ -40,16 +41,9 @@
 (defn- render-item-ports [value]
   (html
     (for [port value]
-      [:div (str (:hostPort port) " ➟ " (:containerPort port) "/" (:protocol port))])))
-
-(defn- render-item-info [value mode]
-  (html
-    (if (= "global" mode)
-      [:span
-       [:span (comp/label-info value)]
-       [:span " "]
-       [:span.label.label-info [:b "G"]]]
-      [:span (comp/label-info value)])))
+      [:div
+       [:span (:hostPort port)
+        [:span.service-list-port (str " [" (:protocol port) "]")]]])))
 
 (defn- render-status [value update-status]
   (if (or (= "updating" update-status)
@@ -60,12 +54,11 @@
 (defn- render-item
   [item service]
   (let [update (get-in service [:status :update])
-        mode (:mode service)
         value (val item)]
     (case (key item)
       :ports (render-item-ports value)
       :state (render-status value update)
-      :info (render-item-info value mode)
+      :info (comp/label-info value)
       value)))
 
 (defn- onclick-handler
