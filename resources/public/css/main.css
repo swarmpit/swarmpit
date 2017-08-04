@@ -327,8 +327,6 @@ select:-webkit-autofill:focus {
 }
 
 .label-info {
-    display: inline;
-    padding: .2em .6em .3em;
     color: rgb(117, 117, 117);
     border: 1px solid rgb(224, 228, 231);
     border-radius: .25em;
@@ -374,17 +372,22 @@ select:-webkit-autofill:focus {
     -o-transform: scale(0.8);
 }
 
+/* Custom service styles */
+
+.service-image-tab > div > div > svg {
+    fill: rgb(117, 117, 117) !important;
+}
+
+.service-list-port {
+    font-size: 10px;
+    color: rgb(158, 158, 158);
+}
+
 /* Custom step label */
 
 .step-label > span {
     font-size: 15px !important;
     color: rgb(117, 117, 117) !important;
-}
-
-/* Custom service tab */
-
-.service-image-tab > div > div > svg {
-    fill: rgb(117, 117, 117) !important;
 }
 
 /* Custom owner label */
