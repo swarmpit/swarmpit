@@ -68,12 +68,13 @@
     (delete url {:rev (:_rev doc)})))
 
 (defn update-doc
+  ([doc]
+   (let [url (str "/swarmpit/" (:_id doc))]
+     (put url doc)))
   ([doc delta]
-   (let [url (str "/swarmpit/" (:_id doc))]
-     (put url (merge doc delta))))
+   (update-doc (merge doc delta)))
   ([doc field value]
-   (let [url (str "/swarmpit/" (:_id doc))]
-     (put url (assoc doc field value)))))
+   (update-doc (assoc doc field value))))
 
 ;; Database
 
@@ -84,6 +85,20 @@
 (defn create-database
   []
   (put "/swarmpit"))
+
+;; Migration
+(defn migrations
+  []
+  (->> (find-docs "migration")
+       (map :name)
+       (map keyword)
+       (set)))
+
+(defn record-migration
+  [name result]
+  (create-doc {:type "migration"
+               :name name
+               :result result}))
 
 ;; Secret
 
