@@ -57,6 +57,3 @@
   (doseq [migration (->> (apply dissoc migrations (db/migrations))
                          (into []))]
     (db/record-migration (key migration) ((val migration)))))
-
-
-

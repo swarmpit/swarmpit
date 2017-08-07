@@ -1,7 +1,6 @@
 (ns swarmpit.install
   (:require [swarmpit.couchdb.client :as cc]
-            [swarmpit.couchdb.migration :refer [migrate]]
-            [swarmpit.uuid :as uuid]))
+            [swarmpit.couchdb.migration :refer [migrate]]))
 
 (defn- create-database
   []
