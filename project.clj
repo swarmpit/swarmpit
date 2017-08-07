@@ -36,7 +36,8 @@
                  [com.github.jnr/jnr-unixsocket "0.18"]]
   :plugins [[lein-cljsbuild "1.1.4"]
             [lein-environ "1.1.0"]
-            [lein-pprint "1.1.2"]]
+            [lein-pprint "1.1.2"]
+            [lein-cloverage "1.0.9"]]
   :min-lein-version "2.6.1"
   :source-paths ["src/clj" "src/cljs" "src/cljc"]
   :test-paths ["test/clj" "test/cljc"]
