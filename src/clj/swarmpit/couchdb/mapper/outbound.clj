@@ -30,7 +30,3 @@
                            :location (:location docker-user-info)
                            :company (:company docker-user-info))
         (dissoc :isValid))))
-
-
-
-
