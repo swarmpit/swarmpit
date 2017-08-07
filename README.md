@@ -11,6 +11,8 @@ Swarmpit provides simple and easy to use interface for your Docker Swarm cluster
 
 We have more features coming like automatic redeployments, stack management, user permissions constraints and more, so stay tuned or even better help us shape features you would like.
 
+More details about future and past releases can be found in [ROADMAP.md](ROADMAP.md)
+
 ## Installation
 
 The only dependency for Swarmpit deployment is Docker with Swarm initialized, we are supporting Docker 1.13 and newer.
