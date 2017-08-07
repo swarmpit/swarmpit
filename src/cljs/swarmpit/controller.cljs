@@ -4,6 +4,7 @@
             [clojure.walk :refer [keywordize-keys]]
             [swarmpit.url :refer [query-string]]
             [cemerick.url :refer [query->map]]
+            [swarmpit.url :refer [dispatch!]]
             [swarmpit.storage :as storage]
             [swarmpit.routes :as routes]
             [swarmpit.component.state :as state]))
@@ -26,7 +27,8 @@
   ([api success-fx]
    (get api success-fx (fn [{:keys [status]}]
                          (case status
-                           401 (dispatch {:handler :login})
+                           401 (dispatch!
+                                 (routes/path-for-frontend :login))
                            403 (dispatch {:handler :unauthorized})
                            (dispatch {:handler :error})))))
   ([api success-fx error-fx]
