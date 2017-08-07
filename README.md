@@ -9,7 +9,7 @@ Lightweight Docker Swarm management UI
 
 Swarmpit provides simple and easy to use interface for your Docker Swarm cluster. You can manage your services, secrets, volumes, networks etc. After linking your Docker Hub account or custom registry, private repositories can be easily deployed on Swarm. Best of all, you can share this management console securely with your whole team.
 
-We have more features coming like automatic redeployments, stack management, user permissions constraints and more, so stay tuned or even better help us shape features you would like.
+We have more features coming like stack management, monitoring, user permissions constraints and more, so stay tuned or even better help us shape features you would like.
 
 More details about future and past releases can be found in [ROADMAP.md](ROADMAP.md)
 
