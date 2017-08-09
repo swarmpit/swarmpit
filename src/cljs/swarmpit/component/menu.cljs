@@ -154,7 +154,7 @@
 (rum/defc drawer-title < rum/static []
   (html [:div
          [:div {:style drawer-app-name-style} "swarmpit"]
-         [:div {:style drawer-app-version-style} "1.0"]]))
+         [:div {:style drawer-app-version-style} "1.0.1"]]))
 
 (rum/defc drawer < rum/reactive [page-domain]
   (let [{:keys [opened]} (state/react cursor)

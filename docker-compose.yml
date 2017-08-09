@@ -2,7 +2,7 @@ version: '3'
 
 services:
   app:
-    image: swarmpit/swarmpit:1.0
+    image: swarmpit/swarmpit:1.0.1
     environment:
       SWARMPIT_DB: http://db:5984
     volumes:
