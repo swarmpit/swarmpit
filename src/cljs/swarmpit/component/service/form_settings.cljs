@@ -36,13 +36,6 @@
      :on-success (fn [response]
                    (reset! tags response))}))
 
-(defn load-suggestable-ports
-  [{:keys [id type] :as distribution} repository]
-  (case type
-    "dockerhub" (ports/dockerhub-ports-handler id repository)
-    "registry" (ports/registry-ports-handler id repository)
-    (ports/public-ports-handler repository)))
-
 (def form-mode-style
   {:display   "flex"
    :marginTop "14px"})
@@ -73,7 +66,7 @@
                         :key           "imageTagAuto"
                         :searchText    (:tag value)
                         :onUpdateInput (fn [v] (state/update-value [:repository :tag] v cursor))
-                        :onNewRequest  (fn [_] (load-suggestable-ports distribution value))
+                        :onNewRequest  (fn [_] (ports/load-suggestable-ports distribution value))
                         :dataSource    tags})))
 
 (defn- form-image-tag [value]

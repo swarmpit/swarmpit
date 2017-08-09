@@ -307,10 +307,11 @@
 
 (defn registry-latest-distribution
   [{:keys [id] :as distribution}
-   {:keys [name tag] :as repository}]
-  (let [repository (rmi/->repository-without-prefix name)]
-    (-> (cc/registry id)
-        (rc/distribution repository tag))))
+   {:keys [name tag] :as repository} service-update?]
+  (-> (cc/registry id)
+      (rc/distribution (if service-update?
+                         (rmi/->repository-without-prefix name)
+                         name) tag)))
 
 (defn registry-ports
   [registry-id repository-name repository-tag]
@@ -318,18 +319,6 @@
       (rc/manifest repository-name repository-tag)
       (rmi/->repository-config)
       :config
-      (dmi/->image-ports)))
-
-;;; Image API
-
-(defn image
-  [img]
-  (dc/image img))
-
-(defn image-ports
-  [img]
-  (-> (image img)
-      :Config
       (dmi/->image-ports)))
 
 ;;; Service API
@@ -345,6 +334,14 @@
   (dmi/->service (dc/service service-id)
                  (dc/service-tasks service-id)
                  (count (dc/nodes))))
+
+(defn service-image-id
+  [{:keys [distribution repository] :as service} service-update?]
+  (get-in
+    (case (:type distribution)
+      "dockerhub" (dockeruser-latest-distribution distribution repository)
+      "registry" (registry-latest-distribution distribution repository service-update?)
+      (public-latest-distribution repository)) [:config :digest]))
 
 (defn service-networks
   [service-id]
@@ -362,62 +359,59 @@
   (dc/delete-service service-id))
 
 (defn create-public-service
-  [service secrets]
+  [service]
   (->> (dmo/->service-image service)
-       (dmo/->service service secrets)
+       (dmo/->service service)
        (dc/create-service)))
 
 (defn create-dockerhub-service
-  [service dockeruser-id secrets]
+  [service dockeruser-id]
   (let [auth-config (->> (cc/dockeruser dockeruser-id)
                          (dmo/->auth-config))]
     (->> (dmo/->service-image service)
-         (dmo/->service service secrets)
+         (dmo/->service service)
          (dc/create-service auth-config))))
 
 (defn create-registry-service
-  [service registry-id secrets]
+  [service registry-id]
   (let [registry (cc/registry registry-id)
         auth-config (dmo/->auth-config registry)]
     (->> (dmo/->service-image-registry service registry)
-         (dmo/->service service secrets)
+         (dmo/->service service)
          (dc/create-service auth-config))))
+
+(defn- standardize-service
+  ([service]
+   (-> service
+       (assoc-in [:secrets] (dmo/->service-secrets service (secrets)))
+       (assoc-in [:repository :imageId] (service-image-id service false))))
+  ([service force?]
+   (if force?
+     (-> service
+         (assoc-in [:secrets] (dmo/->service-secrets service (secrets)))
+         (assoc-in [:repository :imageId] (service-image-id service true))
+         (update-in [:deployment :forceUpdate] inc))
+     (-> service
+         (assoc-in [:secrets] (dmo/->service-secrets service (secrets)))))))
 
 (defn create-service
   [service]
   (let [distribution-id (get-in service [:distribution :id])
         distribution-type (get-in service [:distribution :type])
-        secrets (dmo/->service-secrets service (secrets))]
+        standardized-service (standardize-service service)]
     (rename-keys
       (case distribution-type
-        "dockerhub" (create-dockerhub-service service distribution-id secrets)
-        "registry" (create-registry-service service distribution-id secrets)
-        (create-public-service service secrets)) {:ID :id})))
+        "dockerhub" (create-dockerhub-service standardized-service distribution-id)
+        "registry" (create-registry-service standardized-service distribution-id)
+        (create-public-service standardized-service)) {:ID :id})))
 
 (defn update-service
   [service-id service force?]
-  (let [secrets (dmo/->service-secrets service (secrets))
-        service-payload (->> (dmo/->service-image service)
-                             (dmo/->service service secrets))]
+  (let [standardized-service (standardize-service service force?)]
     (dc/update-service service-id
                        (:version service)
-                       (update-in service-payload [:TaskTemplate :ForceUpdate]
-                                  (if force?
-                                    inc
-                                    identity)))))
-
-(defn service-image-id
-  [service-repository]
-  (-> (image (:image service-repository))
-      :Id))
-
-(defn service-image-latest-id
-  [{:keys [type] :as service-distribution} service-repository]
-  (get-in
-    (case type
-      "dockerhub" (dockeruser-latest-distribution service-distribution service-repository)
-      "registry" (registry-latest-distribution service-distribution service-repository)
-      (public-latest-distribution service-repository)) [:config :digest]))
+                       (->> (dmo/->service-image standardized-service)
+                            (dmo/->service standardized-service)))))
 
 ;;; Task API
 
