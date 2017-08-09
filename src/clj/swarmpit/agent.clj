@@ -13,15 +13,15 @@
     (doseq [service services]
       (let [id (:id service)
             repository (:repository service)
-            current-image-id (:imageId repository)
-            latest-image-id (api/service-image-id service true)]
-        (when (not= current-image-id
-                    latest-image-id)
-          (try
-            (api/update-service id service true)
-            (log/info "Service" id "has been redeployed! [" current-image-id "] -> [" latest-image-id "]")
-            (catch ExceptionInfo e
-              (log/error "Service" id "autoredeploy failed! " (ex-data e)))))))))
+            current-image-id (:imageId repository)]
+        (try
+          (let [latest-image-id (api/service-image-id service true)]
+            (when (not= current-image-id
+                        latest-image-id)
+              (api/update-service id service true)
+              (log/info "Service" id "has been redeployed! [" current-image-id "] -> [" latest-image-id "]")))
+          (catch ExceptionInfo e
+            (log/error "Service" id "autoredeploy failed! " (ex-data e))))))))
 
 (defn init
   []
