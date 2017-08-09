@@ -9,7 +9,7 @@
 
 (def cursor [:page :service :wizard :ports])
 
-(defn public-ports-handler
+(defn- public-ports-handler
   [{:keys [name tag] :as repository}]
   (handler/get
     (routes/path-for-backend :public-repository-ports)
@@ -19,7 +19,7 @@
                    (doseq [port response]
                      (state/add-item port cursor)))}))
 
-(defn dockerhub-ports-handler
+(defn- dockerhub-ports-handler
   [distribution-id {:keys [name tag] :as repository}]
   (handler/get
     (routes/path-for-backend :dockerhub-repository-ports {:id distribution-id})
@@ -29,7 +29,7 @@
                    (doseq [port response]
                      (state/add-item port cursor)))}))
 
-(defn registry-ports-handler
+(defn- registry-ports-handler
   [distribution-id {:keys [name tag] :as repository}]
   (handler/get
     (routes/path-for-backend :registry-repository-ports {:id distribution-id})
@@ -38,6 +38,13 @@
      :on-success (fn [response]
                    (doseq [port response]
                      (state/add-item port cursor)))}))
+
+(defn load-suggestable-ports
+  [{:keys [id type] :as distribution} repository]
+  (case type
+    "dockerhub" (dockerhub-ports-handler id repository)
+    "registry" (registry-ports-handler id repository)
+    (public-ports-handler repository)))
 
 (def headers [{:name  "Container port"
                :width "100px"}

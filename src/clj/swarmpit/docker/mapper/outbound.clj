@@ -119,23 +119,25 @@
 (defn ->service-metadata
   [service]
   (let [autoredeploy (str (get-in service [:deployment :autoredeploy]))
+        image-id (get-in service [:repository :imageId])
         distribution-id (get-in service [:distribution :id])
         distribution-type (get-in service [:distribution :type])
-        metadata {:swarmpit.service.deployment.autoredeploy autoredeploy}]
+        metadata {:swarmpit.service.deployment.autoredeploy autoredeploy
+                  :swarmpit.service.repository.image.id     image-id}]
     (if (not-empty distribution-type)
       (merge {:swarmpit.service.distribution.id   distribution-id
               :swarmpit.service.distribution.type distribution-type} metadata)
       metadata)))
 
 (defn ->service
-  [service secrets image]
+  [service image]
   {:Name           (:serviceName service)
    :Labels         (merge
                      (->service-labels service)
                      (->service-metadata service))
    :TaskTemplate   {:ContainerSpec {:Image   image
                                     :Mounts  (->service-mounts service)
-                                    :Secrets secrets
+                                    :Secrets (:secrets service)
                                     :Env     (->service-variables service)}
                     :RestartPolicy (->service-restart-policy service)
                     :Placement     {:Constraints (->service-placement-contraints service)}

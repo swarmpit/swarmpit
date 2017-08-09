@@ -1,4 +1,5 @@
 (ns swarmpit.agent
+  (:import (clojure.lang ExceptionInfo))
   (:require [immutant.scheduling :refer :all]
             [clojure.tools.logging :as log]
             [swarmpit.api :as api]))
@@ -12,13 +13,15 @@
     (doseq [service services]
       (let [id (:id service)
             repository (:repository service)
-            distribution (:distribution service)
-            current-image-id (api/service-image-id repository)
-            latest-image-id (api/service-image-latest-id distribution repository)]
+            current-image-id (:imageId repository)
+            latest-image-id (api/service-image-id service true)]
         (when (not= current-image-id
                     latest-image-id)
-          (api/update-service id service true)
-          (log/info "Service" id "autoredeploy fired! [" current-image-id "] -> [" latest-image-id "]"))))))
+          (try
+            (api/update-service id service true)
+            (log/info "Service" id "has been redeployed! [" current-image-id "] -> [" latest-image-id "]")
+            (catch ExceptionInfo e
+              (log/error "Service" id "autoredeploy failed! " (ex-data e)))))))))
 
 (defn init
   []
