@@ -18,7 +18,8 @@
           (let [latest-image-id (api/service-image-id service true)]
             (when (not= current-image-id
                         latest-image-id)
-              (api/update-service id service true)
+              (api/update-service id (-> service
+                                         (assoc-in [:networks] (api/service-networks id))) true)
               (log/info "Service" id "has been redeployed! [" current-image-id "] -> [" latest-image-id "]")))
           (catch ExceptionInfo e
             (log/error "Service" id "autoredeploy failed! " (ex-data e))))))))
