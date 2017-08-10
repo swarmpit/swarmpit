@@ -16,7 +16,10 @@
   (handler/get
     (routes/path-for-backend :networks)
     {:on-success (fn [response]
-                   (reset! networks response))}))
+                   (reset! networks
+                           (->> response
+                                (filter #(= "swarm" (:scope %)))
+                                (into []))))}))
 
 (def headers [{:name  "Name"
                :width "20%"}
