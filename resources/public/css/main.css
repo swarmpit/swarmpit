@@ -383,6 +383,26 @@ select:-webkit-autofill:focus {
     color: rgb(158, 158, 158);
 }
 
+/* Log styles */
+
+.log {
+    margin: 10px 24px 10px 24px;
+    padding-top: 0;
+    padding-left: .5rem;
+    padding-right: .5rem;
+    background-color: rgb(245, 245, 245);
+    font-size: 12px;
+    border: 1px solid rgb(224, 228, 231);
+}
+
+.log-timestamp {
+    color: rgba(0, 0, 0, 0.4);
+}
+
+.log-body {
+    margin-left: 10px;
+}
+
 /* Custom step label */
 
 .step-label > span {
