@@ -5,7 +5,7 @@
   [handler]
   {:did-mount    (fn [state]
                    (let [comp (:rum/react-component state)
-                         callback #(do (handler)
+                         callback #(do (handler (first (:rum/args state)))
                                        (rum/request-render comp))
                          interval (js/setInterval callback 2000)]
                      (assoc state ::interval interval)))
