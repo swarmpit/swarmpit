@@ -3,9 +3,9 @@
   (:require [clj-http.conn-mgr :as conn-mgr]
             [clj-http.client :as client]
             [cheshire.core :refer [parse-string generate-string]]
-            [swarmpit.config :refer [config]])
-  (:import (org.apache.http.conn.socket PlainConnectionSocketFactory)
-           (org.apache.http.config RegistryBuilder)
+            [swarmpit.config :refer [config]]
+            [clojure.string :as str])
+  (:import (org.apache.http.config RegistryBuilder)
            (swarmpit.socket UnixSocketFactory)
            (org.apache.http.impl.conn BasicHttpClientConnectionManager)
            (java.io IOException)
@@ -52,9 +52,10 @@
                       :query-params       params
                       :body               (generate-string payload)
                       :retry-handler      (fn [& args] false)})
-          body (-> response :body (parse-string true))
-          code (-> response :status)]
-      body)
+          response-type (-> response :headers :Content-Type)]
+      (if (str/includes? response-type "application/json")
+        (-> response :body (parse-string true))
+        (-> response :body)))
     (catch IOException exception
       (throw (let [error (.getMessage exception)]
                (ex-info (str "Docker failure: " error) {:message error}))))
