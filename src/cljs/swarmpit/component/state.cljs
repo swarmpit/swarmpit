@@ -17,6 +17,7 @@
                                       :form {}}
                           :node      {:list {}}
                           :service   {:list   {}
+                                      :log    {}
                                       :wizard {:image      {:public  {}
                                                             :private {}
                                                             :other   {}}
