@@ -77,6 +77,14 @@
                                                    :tasks    tasks
                                                    :networks networks}} cursor))))))))
 
+(defmethod dispatch :service-log
+  [{:keys [route-params handler]}]
+  (get (routes/path-for-backend :service-logs route-params)
+       (fn [response]
+         (state/set-value {:handler handler
+                           :data    {:service (:id route-params)
+                                     :logs    response}} cursor))))
+
 (defmethod dispatch :service-create-image
   [{:keys [handler]}]
   (get (routes/path-for-backend :registries)

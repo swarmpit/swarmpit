@@ -8,6 +8,7 @@
             [swarmpit.component.service.create-image :as service-image]
             [swarmpit.component.service.edit :as service-edit]
             [swarmpit.component.service.info :as service-info]
+            [swarmpit.component.service.log :as service-log]
             [swarmpit.component.service.list :as service-list]
             [swarmpit.component.network.create :as network-create]
             [swarmpit.component.network.info :as network-info]
@@ -65,6 +66,10 @@
 (defmethod dispatch :service-info
   [{:keys [data]}]
   (service-info/form data))
+
+(defmethod dispatch :service-log
+  [{:keys [data]}]
+  (service-log/form data))
 
 (defmethod dispatch :service-create-image
   [{:keys [data]}]
