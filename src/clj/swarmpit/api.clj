@@ -1,6 +1,7 @@
 (ns swarmpit.api
   (:require [clojure.core.memoize :as memo]
             [clojure.set :refer [rename-keys]]
+            [clojure.string :refer [split-lines trim split join]]
             [buddy.hashers :as hashers]
             [digest :refer [digest]]
             [swarmpit.docker.client :as dc]
@@ -353,6 +354,29 @@
   (dmi/->tasks (dc/service-tasks service-id)
                (dc/nodes)
                (dc/services)))
+
+(defn service-logs
+  [service-id]
+  (letfn [(resource-id [line type] (-> (str "com.docker.swarm." type ".id=([a-z0-9]+)")
+                                       (re-pattern)
+                                       (re-find line)
+                                       (second)))]
+    (->> (split-lines
+           (dc/service-logs service-id {:details    true
+                                        :stdout     true
+                                        :stderr     true
+                                        :timestamps true}))
+         (map (fn [x] {:line      (->> (split x #" ")
+                                       (split-at 2)
+                                       (second)
+                                       (join " "))
+                       :timestamp (-> (re-pattern "[.:\\-TZ0-9]* ")
+                                      (re-find x)
+                                      (trim))
+                       :node      (resource-id x "node")
+                       :service   (resource-id x "service")
+                       :task      (resource-id x "task")}))
+         (sort-by :timestamp))))
 
 (defn delete-service
   [service-id]
