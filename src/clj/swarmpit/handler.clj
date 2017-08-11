@@ -1,6 +1,5 @@
 (ns swarmpit.handler
-  (:require [cemerick.url :refer [query->map]]
-            [clojure.walk :refer [keywordize-keys]]
+  (:require [clojure.walk :refer [keywordize-keys]]
             [clojure.java.io :as io]
             [swarmpit.api :as api]
             [swarmpit.token :as token]))
@@ -117,6 +116,11 @@
 (defmethod dispatch :service-tasks [_]
   (fn [{:keys [route-params]}]
     (->> (api/service-tasks (:id route-params))
+         (resp-ok))))
+
+(defmethod dispatch :service-logs [_]
+  (fn [{:keys [route-params]}]
+    (->> (api/service-logs (:id route-params))
          (resp-ok))))
 
 (defmethod dispatch :service-create [_]
@@ -303,9 +307,9 @@
            (resp-ok)))))
 
 (defmethod dispatch :registry-repository-tags [_]
-  (fn [{:keys [route-params query-string]}]
-    (let [query (keywordize-keys (query->map query-string))
-          repository-name (:repository query)
+  (fn [{:keys [route-params query-params]}]
+    (let [query-params (keywordize-keys query-params)
+          repository-name (:repository query-params)
           registry-id (:id route-params)]
       (if (nil? repository-name)
         (resp-error 400 "Parameter repository missing")
@@ -313,10 +317,10 @@
              (resp-ok))))))
 
 (defmethod dispatch :registry-repository-ports [_]
-  (fn [{:keys [route-params query-string]}]
-    (let [query (keywordize-keys (query->map query-string))
-          repository-name (:repositoryName query)
-          repository-tag (:repositoryTag query)
+  (fn [{:keys [route-params query-params]}]
+    (let [query-params (keywordize-keys query-params)
+          repository-name (:repositoryName query-params)
+          repository-tag (:repositoryTag query-params)
           registry-id (:id route-params)]
       (if (or (nil? repository-name)
               (nil? repository-tag))
@@ -367,9 +371,9 @@
            (resp-ok)))))
 
 (defmethod dispatch :dockerhub-repository-tags [_]
-  (fn [{:keys [route-params query-string]}]
-    (let [query (keywordize-keys (query->map query-string))
-          repository-name (:repository query)
+  (fn [{:keys [route-params query-params]}]
+    (let [query-params (keywordize-keys query-params)
+          repository-name (:repository query-params)
           dockeruser-id (:id route-params)]
       (if (nil? repository-name)
         (resp-error 400 "Parameter repository missing")
@@ -377,10 +381,10 @@
              (resp-ok))))))
 
 (defmethod dispatch :dockerhub-repository-ports [_]
-  (fn [{:keys [route-params query-string]}]
-    (let [query (keywordize-keys (query->map query-string))
-          repository-name (:repositoryName query)
-          repository-tag (:repositoryTag query)
+  (fn [{:keys [route-params query-params]}]
+    (let [query-params (keywordize-keys query-params)
+          repository-name (:repositoryName query-params)
+          repository-tag (:repositoryTag query-params)
           dockeruser-id (:id route-params)]
       (if (or (nil? repository-name)
               (nil? repository-tag))
@@ -391,27 +395,27 @@
 ;; Public dockerhub handler
 
 (defmethod dispatch :public-repositories [_]
-  (fn [{:keys [query-string]}]
-    (let [query (keywordize-keys (query->map query-string))
-          repository-query (:query query)
-          repository-page (:page query)]
+  (fn [{:keys [query-params]}]
+    (let [query-params (keywordize-keys query-params)
+          repository-query (:query query-params)
+          repository-page (:page query-params)]
       (->> (api/public-repositories repository-query repository-page)
            (resp-ok)))))
 
 (defmethod dispatch :public-repository-tags [_]
-  (fn [{:keys [query-string]}]
-    (let [query (keywordize-keys (query->map query-string))
-          repository-name (:repository query)]
+  (fn [{:keys [query-params]}]
+    (let [query-params (keywordize-keys query-params)
+          repository-name (:repository query-params)]
       (if (nil? repository-name)
         (resp-error 400 "Parameter repository missing")
         (->> (api/public-tags repository-name)
              (resp-ok))))))
 
 (defmethod dispatch :public-repository-ports [_]
-  (fn [{:keys [query-string]}]
-    (let [query (keywordize-keys (query->map query-string))
-          repository-name (:repositoryName query)
-          repository-tag (:repositoryTag query)]
+  (fn [{:keys [query-params]}]
+    (let [query-params (keywordize-keys query-params)
+          repository-name (:repositoryName query-params)
+          repository-tag (:repositoryTag query-params)]
       (if (or (nil? repository-name)
               (nil? repository-tag))
         (resp-error 400 "Parameter repositoryName or repositoryTag missing")
