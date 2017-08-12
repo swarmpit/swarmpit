@@ -4,7 +4,8 @@
             [clj-http.client :as client]
             [cheshire.core :refer [parse-string generate-string]]
             [swarmpit.config :refer [config]]
-            [clojure.string :as str])
+            [clojure.string :as str]
+            [clojure.tools.logging :as log])
   (:import (org.apache.http.config RegistryBuilder)
            (swarmpit.socket UnixSocketFactory)
            (org.apache.http.impl.conn BasicHttpClientConnectionManager)
@@ -53,11 +54,7 @@
                       :body               (generate-string payload)
                       :retry-handler      (fn [& args] false)})
           response-type (-> response :headers :Content-Type)]
-      ;(if (str/includes? response-type "application/json")
-      ;  (-> response :body (parse-string true))
-      ;  (-> response :body))
-
-      (if (str/includes? response-type "text/plain")
+      (if (str/includes? (or response-type "") "text/plain")
         (-> response :body)
         (-> response :body (parse-string true))))
     (catch IOException exception
