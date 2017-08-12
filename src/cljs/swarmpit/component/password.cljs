@@ -9,7 +9,7 @@
 
 (enable-console-print!)
 
-(defn- input-password [local-state]
+(defn- form-password [local-state]
   (comp/form-comp
     "OLD PASSWORD"
     (comp/vtext-field
@@ -21,7 +21,7 @@
        :onChange (fn [_ v]
                    (swap! local-state assoc :password v))})))
 
-(defn- input-new-password [local-state]
+(defn- form-new-password [local-state]
   (comp/form-comp
     "NEW PASSWORD"
     (comp/vtext-field
@@ -35,7 +35,7 @@
        :onChange        (fn [_ v]
                           (swap! local-state assoc :new-password v))})))
 
-(defn- input-confirm-password [local-state]
+(defn- form-confirm-password [local-state]
   (comp/form-comp
     "CONFIRM PASSWORD"
     (comp/vtext-field
@@ -84,6 +84,6 @@
       (comp/form
         {:onValid   #(swap! local-state assoc :canSubmit true)
          :onInvalid #(swap! local-state assoc :canSubmit false)}
-        (input-password local-state)
-        (input-new-password local-state)
-        (input-confirm-password local-state))]]))
+        (form-password local-state)
+        (form-new-password local-state)
+        (form-confirm-password local-state))]]))

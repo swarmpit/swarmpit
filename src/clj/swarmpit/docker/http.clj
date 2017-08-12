@@ -53,9 +53,13 @@
                       :body               (generate-string payload)
                       :retry-handler      (fn [& args] false)})
           response-type (-> response :headers :Content-Type)]
-      (if (str/includes? response-type "application/json")
-        (-> response :body (parse-string true))
-        (-> response :body)))
+      ;(if (str/includes? response-type "application/json")
+      ;  (-> response :body (parse-string true))
+      ;  (-> response :body))
+
+      (if (str/includes? response-type "text/plain")
+        (-> response :body)
+        (-> response :body (parse-string true))))
     (catch IOException exception
       (throw (let [error (.getMessage exception)]
                (ex-info (str "Docker failure: " error) {:message error}))))

@@ -1,10 +1,10 @@
 (ns swarmpit.api
   (:require [clojure.core.memoize :as memo]
             [clojure.set :refer [rename-keys]]
-            [clojure.string :refer [split-lines trim split join]]
             [buddy.hashers :as hashers]
             [digest :refer [digest]]
             [swarmpit.docker.client :as dc]
+            [swarmpit.docker.log :as dl]
             [swarmpit.docker.mapper.inbound :as dmi]
             [swarmpit.docker.mapper.outbound :as dmo]
             [swarmpit.dockerauth.client :as dac]
@@ -322,6 +322,20 @@
       :config
       (dmi/->image-ports)))
 
+;;; Task API
+
+(defn tasks
+  []
+  (dmi/->tasks (dc/tasks)
+               (dc/nodes)
+               (dc/services)))
+
+(defn task
+  [task-id]
+  (dmi/->task (dc/task task-id)
+              (dc/nodes)
+              (dc/services)))
+
 ;;; Service API
 
 (defn services
@@ -357,26 +371,21 @@
 
 (defn service-logs
   [service-id]
-  (letfn [(resource-id [line type] (-> (str "com.docker.swarm." type ".id=([a-z0-9]+)")
-                                       (re-pattern)
-                                       (re-find line)
-                                       (second)))]
-    (->> (split-lines
-           (dc/service-logs service-id {:details    true
-                                        :stdout     true
-                                        :stderr     true
-                                        :timestamps true}))
-         (map (fn [x] {:line      (->> (split x #" ")
-                                       (split-at 2)
-                                       (second)
-                                       (join " "))
-                       :timestamp (-> (re-pattern "[.:\\-TZ0-9]* ")
-                                      (re-find x)
-                                      (trim))
-                       :node      (resource-id x "node")
-                       :service   (resource-id x "service")
-                       :task      (resource-id x "task")}))
-         (sort-by :timestamp))))
+  (letfn [(log-task [log tasks] (->> tasks
+                                     (filter #(= (:task log) (:id %)))
+                                     (first)))]
+    (let [tasks (tasks)]
+      (->> (dl/parse-log
+             (dc/service-logs service-id {:details    true
+                                          :stdout     true
+                                          :stderr     true
+                                          :timestamps true}))
+           (map
+             (fn [i]
+               (let [task (log-task i tasks)]
+                 (-> i
+                     (assoc :taskName (:taskName task))
+                     (assoc :taskNode (:nodeName task))))))))))
 
 (defn delete-service
   [service-id]
@@ -436,20 +445,6 @@
                        (:version service)
                        (->> (dmo/->service-image standardized-service)
                             (dmo/->service standardized-service)))))
-
-;;; Task API
-
-(defn tasks
-  []
-  (dmi/->tasks (dc/tasks)
-               (dc/nodes)
-               (dc/services)))
-
-(defn task
-  [task-id]
-  (dmi/->task (dc/task task-id)
-              (dc/nodes)
-              (dc/services)))
 
 ;; Plugin API
 
