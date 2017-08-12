@@ -79,11 +79,13 @@
 
 (defmethod dispatch :service-log
   [{:keys [route-params handler]}]
-  (get (routes/path-for-backend :service-logs route-params)
-       (fn [response]
-         (state/set-value {:handler handler
-                           :data    {:service (:id route-params)
-                                     :logs    response}} cursor))))
+  (get (routes/path-for-backend :service route-params)
+       (fn [service]
+         (get (routes/path-for-backend :service-logs route-params)
+              (fn [service-logs]
+                (state/set-value {:handler handler
+                                  :data    {:service service
+                                            :logs    service-logs}} cursor))))))
 
 (defmethod dispatch :service-create-image
   [{:keys [handler]}]
