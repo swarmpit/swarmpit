@@ -78,13 +78,13 @@
           :label   "Auto-scroll logs"
           :onCheck (fn [_ v]
                      (state/update-value [:autoscroll] v cursor))})]]
-     (if (empty? filtered-items)
-       (comp/form-icon-value icon/info "There are no logs available for the service.")
-       [:div.log#service-log
+     [:div.log#service-log
+      (if (empty? filtered-items)
+        [:span "There are no logs available for the service."]
         (for [item filtered-items]
           [:span
            (when timestamp
              [:span.log-timestamp (:timestamp item)])
            [:span.log-info (str (:taskName item) "." (subs (:task item) 0 12) "@" (:taskNode item))]
            [:span.log-body (str " " (:line item))]
-           [:br]])])]))
+           [:br]]))]]))
