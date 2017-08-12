@@ -385,7 +385,18 @@ select:-webkit-autofill:focus {
 
 /* Log styles */
 
+.log-panel {
+    padding-top: 12px;
+    display: inline-block;
+    position: relative;
+    width: 100%;
+    height: 48px;
+}
+
 .log {
+    font-family: monospace;
+    max-height: calc(100vh - 220px);
+    overflow: auto;
     margin: 10px 24px 10px 24px;
     padding-top: 0;
     padding-left: .5rem;
@@ -396,11 +407,16 @@ select:-webkit-autofill:focus {
 }
 
 .log-timestamp {
+    margin-right: 5px;
     color: rgba(0, 0, 0, 0.4);
 }
 
+.log-info {
+    font-weight: 600;
+}
+
 .log-body {
-    margin-left: 10px;
+    margin-left: 5px;
 }
 
 /* Custom step label */
