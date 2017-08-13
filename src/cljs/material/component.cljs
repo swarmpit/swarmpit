@@ -168,6 +168,10 @@
   [props & childs]
   (factory/menu (clj->js props) childs))
 
+(defn drowdown
+  [props & childs]
+  (factory/dropdown (clj->js props) childs))
+
 (defn icon-menu
   [props & childs]
   (factory/icon-menu (clj->js props) childs))
@@ -239,6 +243,13 @@
 (defn svg
   ([props d] (factory/svg-icon (clj->js props) (html [:path {:d d}])))
   ([d] (factory/svg-icon nil (html [:path {:d d}]))))
+
+(defn button-icon
+  [icon]
+  (html [:svg {:width  "18"
+               :height "18"
+               :fill   "rgb(117, 117, 117)"}
+         [:path {:d icon}]]))
 
 ;;; Composite components
 
