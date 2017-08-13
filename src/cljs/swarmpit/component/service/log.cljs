@@ -59,7 +59,6 @@
       [:div.form-panel-left
        (comp/panel-info icon/services
                         (:serviceName service))]]
-
      [:div.log-panel
       [:div.form-panel-left
        (comp/panel-text-field
