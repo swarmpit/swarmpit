@@ -12,6 +12,7 @@
             [swarmpit.component.service.form-secrets :as secrets]
             [swarmpit.component.service.form-variables :as variables]
             [swarmpit.component.service.form-labels :as labels]
+            [swarmpit.component.service.form-logdriver :as logdriver]
             [swarmpit.component.service.form-deployment :as deployment]
             [swarmpit.component.service.form-deployment-placement :as placement]
             [swarmpit.component.message :as message]
@@ -22,7 +23,7 @@
 
 (defonce step-index (atom 0))
 
-(def steps ["General settings" "Ports" "Networks" "Mounts" "Secrets" "Environment variables" "Labels" "Deployment"])
+(def steps ["General settings" "Ports" "Networks" "Mounts" "Secrets" "Environment variables" "Labels" "Log driver" "Deployment"])
 
 (def step-style
   {:backgroundColor "transparent"})
@@ -57,6 +58,7 @@
         secrets (state/get-value secrets/cursor)
         variables (state/get-value variables/cursor)
         labels (state/get-value labels/cursor)
+        logdriver (state/get-value logdriver/cursor)
         deployment (state/get-value deployment/cursor)]
     (handler/post
       (routes/path-for-backend :service-create)
@@ -67,6 +69,7 @@
                        (assoc :secrets secrets)
                        (assoc :variables variables)
                        (assoc :labels labels)
+                       (assoc :logdriver logdriver)
                        (assoc :deployment deployment))
        :on-success (fn [response]
                      (dispatch!
@@ -95,6 +98,8 @@
   (state/set-value [] secrets/cursor)
   (state/set-value [] variables/cursor)
   (state/set-value [] labels/cursor)
+  (state/set-value {:name "json-file"
+                    :opts []} logdriver/cursor)
   (state/set-value {:autoredeploy  false
                     :restartPolicy {:condition "any"
                                     :delay     5
@@ -150,4 +155,5 @@
          (step-item 4 (secrets/form-create))
          (step-item 5 (variables/form-create))
          (step-item 6 (labels/form-create))
-         (step-item 7 (deployment/form))))]))
+         (step-item 7 (logdriver/form))
+         (step-item 8 (deployment/form))))]))

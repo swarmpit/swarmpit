@@ -16,7 +16,7 @@
 (rum/defc form < rum/static [variables]
   (when (not-empty variables)
     [:div.form-service-view-group.form-service-group-border
-     (comp/form-section "Environment variables")
+     (comp/form-section "Environment Variables")
      (comp/list-table-auto headers
                            variables
                            render-item

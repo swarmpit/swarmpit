@@ -54,7 +54,7 @@
 (rum/defc form-create < rum/reactive []
   (let [variables (state/react cursor)]
     [:div
-     (comp/form-add-btn "Add ENV variable" add-item)
+     (comp/form-add-btn "Add variable" add-item)
      (if (not (empty? variables))
        (form-table variables))]))
 

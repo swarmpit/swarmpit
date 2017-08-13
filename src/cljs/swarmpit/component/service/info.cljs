@@ -10,6 +10,7 @@
             [swarmpit.component.service.info.secrets :as secrets]
             [swarmpit.component.service.info.variables :as variables]
             [swarmpit.component.service.info.labels :as labels]
+            [swarmpit.component.service.info.logdriver :as logdriver]
             [swarmpit.component.service.info.deployment :as deployment]
             [swarmpit.component.task.list :as tasks]
             [swarmpit.component.message :as message]
@@ -76,6 +77,7 @@
         secrets (:secrets service)
         variables (:variables service)
         labels (:labels service)
+        logdriver (:logdriver service)
         deployment (:deployment service)
         id (:id service)]
     [:div
@@ -101,5 +103,6 @@
       (secrets/form secrets)
       (variables/form variables)
       (labels/form labels)
+      (logdriver/form logdriver)
       (deployment/form deployment)
       (form-tasks tasks)]]))

@@ -422,7 +422,8 @@ select:-webkit-autofill:focus {
 /* Custom step label */
 
 .step-label > span {
-    font-size: 15px !important;
+    font-weight: 300 !important;
+    font-size: 18px !important;
     color: rgb(117, 117, 117) !important;
 }
 
