@@ -30,27 +30,28 @@
                    (state/update-value [:data] response cursor))}))
 
 (defn- init-state
-  [logs]
+  []
   (state/set-value {:filter     {:predicate ""}
                     :autoscroll true
                     :timestamp  false
-                    :data       logs} cursor))
+                    :data       []} cursor))
 
 (def refresh-state-mixin
   (mixin/refresh
-    (fn [data]
-      (data-handler (:service data)))))
+    (fn [service]
+      (data-handler service))))
 
 (def init-state-mixin
   (mixin/init
-    (fn [data]
-      (init-state (:logs data)))))
+    (fn [service]
+      (data-handler service)
+      (init-state))))
 
 (rum/defc form < rum/reactive
                  init-state-mixin
                  refresh-state-mixin
                  {:did-mount  (fn [state] (auto-scroll!) state)
-                  :did-update (fn [state] (auto-scroll!) state)} [{:keys [service]}]
+                  :did-update (fn [state] (auto-scroll!) state)} [service]
   (let [{:keys [filter data autoscroll timestamp]} (state/react cursor)
         filtered-items (filter-items data
                                      (:predicate filter))]
