@@ -6,7 +6,8 @@
 (enable-console-print!)
 
 (rum/defc form < rum/static [item]
-  (let [error (get-in item [:status :error])]
+  (let [error (get-in item [:status :error])
+        image-digest (get-in item [:repository :imageDigest])]
     [:div
      [:div.form-panel
       [:div.form-panel-left
@@ -21,12 +22,13 @@
        (comp/form-item "CREATED" (:createdAt item))
        (comp/form-item "LAST UPDATE" (:updatedAt item))
        (comp/form-item "IMAGE" (get-in item [:repository :image]))
-       (comp/form-item "IMAGE DIGEST" (get-in item [:repository :imageDigest]))]
+       (when (some? image-digest)
+         (comp/form-item "IMAGE DIGEST" image-digest))]
       [:div.form-view-group
        (comp/form-section "Status")
        (comp/form-item "STATE" (:state item))
        (comp/form-item "DESIRED STATE" (:desiredState item))]
-      (if (some? error)
+      (when (some? error)
         [:div.form-view-group
          (comp/form-section "Error")
          (comp/form-value error)])]]))
