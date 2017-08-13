@@ -159,6 +159,14 @@
                      :value (val l)}))
        (into [])))
 
+(defn ->service-log-options
+  [service-task-template]
+  (let [log-driver (get-in service-task-template [:LogDriver :Options])]
+    (->> log-driver
+         (map (fn [l] {:name  (name (key l))
+                       :value (val l)}))
+         (into []))))
+
 (defn ->service-placement-constraints
   [service-spec]
   (->> (get-in service-spec [:TaskTemplate :Placement :Constraints])
@@ -269,6 +277,8 @@
       :secrets (->service-secrets service-spec)
       :variables (->service-variables service-spec)
       :labels (->service-labels service-labels)
+      :logdriver {:name (or (get-in service-task-template [:LogDriver :Name]) "none")
+                  :opts (->service-log-options service-task-template)}
       :deployment {:update        (->service-deployment-update service-spec)
                    :forceUpdate   (:ForceUpdate service-task-template)
                    :restartPolicy (->service-deployment-restart-policy service-task-template)

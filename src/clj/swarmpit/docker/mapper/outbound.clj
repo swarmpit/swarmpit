@@ -49,6 +49,14 @@
        (map (fn [l] {(:name l) (:value l)}))
        (into {})))
 
+(defn ->service-log-options
+  [service]
+  (->> (get-in service [:logdriver :opts])
+       (filter #(not (and (str/blank? (:name %))
+                          (str/blank? (:value %)))))
+       (map (fn [l] {(:name l) (:value l)}))
+       (into {})))
+
 (defn ->service-mounts
   [service]
   (->> (:mounts service)
@@ -139,6 +147,8 @@
                                     :Mounts  (->service-mounts service)
                                     :Secrets (:secrets service)
                                     :Env     (->service-variables service)}
+                    :LogDriver     {:Name    (get-in service [:logdriver :name])
+                                    :Options (->service-log-options service)}
                     :RestartPolicy (->service-restart-policy service)
                     :Placement     {:Constraints (->service-placement-contraints service)}
                     :ForceUpdate   (get-in service [:deployment :forceUpdate])
