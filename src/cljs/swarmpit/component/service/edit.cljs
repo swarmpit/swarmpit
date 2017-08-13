@@ -12,6 +12,7 @@
             [swarmpit.component.service.form-secrets :as secrets]
             [swarmpit.component.service.form-variables :as variables]
             [swarmpit.component.service.form-labels :as labels]
+            [swarmpit.component.service.form-logdriver :as logdriver]
             [swarmpit.component.service.form-deployment :as deployment]
             [swarmpit.component.service.form-deployment-placement :as placement]
             [swarmpit.component.message :as message]
@@ -35,6 +36,7 @@
         secrets (state/get-value secrets/cursor)
         variables (state/get-value variables/cursor)
         labels (state/get-value labels/cursor)
+        logdriver (state/get-value logdriver/cursor)
         deployment (state/get-value deployment/cursor)]
     (handler/post
       (routes/path-for-backend :service-update {:id service-id})
@@ -45,6 +47,7 @@
                        (assoc :secrets secrets)
                        (assoc :variables variables)
                        (assoc :labels labels)
+                       (assoc :logdriver logdriver)
                        (assoc :deployment deployment))
        :on-success (fn [_]
                      (dispatch!
@@ -68,6 +71,7 @@
                         (into [])) secrets/cursor)
   (state/set-value (:variables service) variables/cursor)
   (state/set-value (:labels service) labels/cursor)
+  (state/set-value (:logdriver service) logdriver/cursor)
   (state/set-value (:deployment service) deployment/cursor))
 
 (def init-state-mixin
@@ -108,13 +112,18 @@
 
 (rum/defc form-variables < rum/static []
   [:div.form-service-edit-group.form-service-group-border
-   (comp/form-section-add "Environment variables" variables/add-item)
+   (comp/form-section-add "Environment Variables" variables/add-item)
    (variables/form-update)])
 
 (rum/defc form-labels < rum/static []
   [:div.form-service-edit-group.form-service-group-border
    (comp/form-section-add "Labels" labels/add-item)
    (labels/form-update)])
+
+(rum/defc form-logdriver < rum/static []
+  [:div.form-service-edit-group.form-service-group-border
+   (comp/form-section "Log Driver")
+   (logdriver/form)])
 
 (rum/defc form-deployment < rum/static []
   [:div.form-service-edit-group.form-service-group-border
@@ -148,4 +157,5 @@
       (form-secrets)
       (form-variables)
       (form-labels)
+      (form-logdriver)
       (form-deployment)]]))
