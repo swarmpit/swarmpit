@@ -38,6 +38,28 @@
                    (message/error
                      (str "Service removing failed. Reason: " (:error response))))}))
 
+(defn- form-action-item
+  [icon action]
+  [:span
+   [:svg.node-item-ico {:width  "24"
+                        :height "24"
+                        :fill   "rgb(117, 117, 117)"}
+    [:path {:d icon}]] action])
+
+(rum/defcs form-action-button < (rum/local {:open false} ::dropdown) [state service-id]
+  (let [local-state (::dropdown state)]
+    [:div.dropdown
+     [:button.dropdown-btn {:onClick #(swap! local-state assoc :open (not (:open @local-state)))}
+      "Action"
+      [:span.dropdown-caret]]
+     (when (:open @local-state)
+       [:ul.dropdown-menu
+        [:li [:a {:href (routes/path-for-frontend :service-edit {:id service-id})} (form-action-item icon/edit "Edit")]]
+        ;[:li [:a {:href "#"} (form-action-item icon/restart "Restart")]]
+        ;[:li [:a {:href "#"} (form-action-item icon/rollback "Rollback")]]
+        [:li [:a {:style   {:cursor "pointer"}
+                  :onClick #(delete-service-handler service-id)} (form-action-item icon/trash "Delete")]]])]))
+
 (rum/defc form-tasks < rum/static [tasks]
   [:div.form-service-view-group.form-service-group-border
    (comp/form-section "Tasks")
@@ -66,20 +88,11 @@
       [:div.form-panel-right
        (comp/mui
          (comp/raised-button
-           {:href    (routes/path-for-frontend :service-log {:id id})
-            :label   "Logs"
-            :primary true}))
+           {:href  (routes/path-for-frontend :service-log {:id id})
+            :icon  (comp/button-icon icon/log)
+            :label "Logs"}))
        [:span.form-panel-delimiter]
-       (comp/mui
-         (comp/raised-button
-           {:href    (routes/path-for-frontend :service-edit {:id id})
-            :label   "Edit"
-            :primary true}))
-       [:span.form-panel-delimiter]
-       (comp/mui
-         (comp/raised-button
-           {:onTouchTap #(delete-service-handler id)
-            :label      "Delete"}))]]
+       (form-action-button id)]]
      [:div.form-service-view
       (settings/form service)
       (ports/form ports)

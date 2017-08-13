@@ -21,6 +21,7 @@
 (def drawer (create-factory js/MaterialUI.Drawer))
 (def snackbar (create-factory js/MaterialUI.Snackbar))
 (def menu (create-factory js/MaterialUI.Menu))
+(def dropdown (create-factory js/MaterialUI.DropDownMenu))
 (def menu-item (create-factory js/MaterialUI.MenuItem))
 (def list (create-factory js/MaterialUI.List))
 (def list-item (create-factory js/MaterialUI.ListItem))
