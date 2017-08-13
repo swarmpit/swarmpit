@@ -66,6 +66,12 @@
       [:div.form-panel-right
        (comp/mui
          (comp/raised-button
+           {:href    (routes/path-for-frontend :service-log {:id id})
+            :label   "Logs"
+            :primary true}))
+       [:span.form-panel-delimiter]
+       (comp/mui
+         (comp/raised-button
            {:href    (routes/path-for-frontend :service-edit {:id id})
             :label   "Edit"
             :primary true}))

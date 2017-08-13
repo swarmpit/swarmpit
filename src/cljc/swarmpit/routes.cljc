@@ -28,6 +28,7 @@
        "/services"      {:get  :services
                          :post :service-create}
        "/services/"     {:get    {[:id] {""          :service
+                                         "/logs"     :service-logs
                                          "/networks" :service-networks
                                          "/tasks"    :service-tasks}}
                          :delete {[:id] :service-delete}
@@ -62,11 +63,12 @@
 (def frontend ["" {"/"                        :index
                    "/login"                   :login
                    "/password"                :password
-                   "/services"                {""                :service-list
-                                               "/create/wizard"  {"/image"  :service-create-image
-                                                                  "/config" :service-create-config}
-                                               ["/" :id]         :service-info
-                                               ["/" :id "/edit"] :service-edit}
+                   "/services"                {""               :service-list
+                                               "/create/wizard" {"/image"  :service-create-image
+                                                                 "/config" :service-create-config}
+                                               ["/" :id]        {""      :service-info
+                                                                 "/edit" :service-edit
+                                                                 "/log"  :service-log}}
                    "/networks"                {""        :network-list
                                                "/create" :network-create
                                                ["/" :id] :network-info}

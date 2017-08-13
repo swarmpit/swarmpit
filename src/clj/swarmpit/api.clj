@@ -4,6 +4,7 @@
             [buddy.hashers :as hashers]
             [digest :refer [digest]]
             [swarmpit.docker.client :as dc]
+            [swarmpit.docker.log :as dl]
             [swarmpit.docker.mapper.inbound :as dmi]
             [swarmpit.docker.mapper.outbound :as dmo]
             [swarmpit.dockerauth.client :as dac]
@@ -321,6 +322,20 @@
       :config
       (dmi/->image-ports)))
 
+;;; Task API
+
+(defn tasks
+  []
+  (dmi/->tasks (dc/tasks)
+               (dc/nodes)
+               (dc/services)))
+
+(defn task
+  [task-id]
+  (dmi/->task (dc/task task-id)
+              (dc/nodes)
+              (dc/services)))
+
 ;;; Service API
 
 (defn services
@@ -353,6 +368,24 @@
   (dmi/->tasks (dc/service-tasks service-id)
                (dc/nodes)
                (dc/services)))
+
+(defn service-logs
+  [service-id]
+  (letfn [(log-task [log tasks] (->> tasks
+                                     (filter #(= (:task log) (:id %)))
+                                     (first)))]
+    (let [tasks (tasks)]
+      (->> (dl/parse-log
+             (dc/service-logs service-id {:details    true
+                                          :stdout     true
+                                          :stderr     true
+                                          :timestamps true}))
+           (map
+             (fn [i]
+               (let [task (log-task i tasks)]
+                 (-> i
+                     (assoc :taskName (:taskName task))
+                     (assoc :taskNode (:nodeName task))))))))))
 
 (defn delete-service
   [service-id]
@@ -412,20 +445,6 @@
                        (:version service)
                        (->> (dmo/->service-image standardized-service)
                             (dmo/->service standardized-service)))))
-
-;;; Task API
-
-(defn tasks
-  []
-  (dmi/->tasks (dc/tasks)
-               (dc/nodes)
-               (dc/services)))
-
-(defn task
-  [task-id]
-  (dmi/->task (dc/task task-id)
-              (dc/nodes)
-              (dc/services)))
 
 ;; Plugin API
 

@@ -16,6 +16,7 @@
    :service-create-config "Services / Wizard"
    :service-create-image  "Services / Wizard"
    :service-info          "Services"
+   :service-log           "Services / Log"
    :service-edit          "Services / Edit"
    :network-list          "Networks"
    :network-create        "Networks / Create"
