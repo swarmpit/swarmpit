@@ -22,6 +22,7 @@
                                                             :private {}
                                                             :other   {}}
                                                :settings   {}
+                                               :logdriver  {}
                                                :ports      []
                                                :networks   []
                                                :secrets    []
