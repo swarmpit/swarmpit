@@ -379,7 +379,8 @@
              (dc/service-logs service-id {:details    true
                                           :stdout     true
                                           :stderr     true
-                                          :timestamps true}))
+                                          :timestamps true
+                                          :tail       2000}))
            (map
              (fn [i]
                (let [task (log-task i tasks)]

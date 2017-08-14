@@ -69,6 +69,7 @@
 
 (defmethod dispatch :service-log
   [{:keys [data]}]
+  (service-log/log-handler data)
   (service-log/form data))
 
 (defmethod dispatch :service-create-image

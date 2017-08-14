@@ -22,29 +22,34 @@
   [items predicate]
   (filter #(string/includes? (:line %) predicate) items))
 
-(defn- data-handler
+(defn log-handler
   [service]
   (handler/get
     (routes/path-for-backend :service-logs (select-keys service [:id]))
-    {:on-success (fn [response]
+    {:on-call    (state/update-value [:fetching] true cursor)
+     :on-success (fn [response]
+                   (state/update-value [:initialized] true cursor)
+                   (state/update-value [:fetching] false cursor)
                    (state/update-value [:data] response cursor))}))
 
 (defn- init-state
   []
-  (state/set-value {:filter     {:predicate ""}
-                    :autoscroll true
-                    :timestamp  false
-                    :data       []} cursor))
+  (state/set-value {:filter      {:predicate ""}
+                    :initialized false
+                    :fetching    false
+                    :autoscroll  true
+                    :timestamp   false
+                    :data        []} cursor))
 
 (def refresh-state-mixin
   (mixin/refresh
     (fn [service]
-      (data-handler service))))
+      (when (not (:fetching (state/get-value cursor)))
+        (log-handler service)))))
 
 (def init-state-mixin
   (mixin/init
-    (fn [service]
-      (data-handler service)
+    (fn [_]
       (init-state))))
 
 (rum/defc form < rum/reactive
@@ -52,7 +57,7 @@
                  refresh-state-mixin
                  {:did-mount  (fn [state] (auto-scroll!) state)
                   :did-update (fn [state] (auto-scroll!) state)} [service]
-  (let [{:keys [filter data autoscroll timestamp]} (state/react cursor)
+  (let [{:keys [filter data autoscroll timestamp initialized]} (state/react cursor)
         filtered-items (filter-items data
                                      (:predicate filter))]
     [:div
@@ -79,7 +84,7 @@
           :onCheck (fn [_ v]
                      (state/update-value [:autoscroll] v cursor))})]]
      [:div.log#service-log
-      (if (empty? filtered-items)
+      (if (and (empty? filtered-items) initialized)
         [:span "There are no logs available for the service."]
         (for [item filtered-items]
           [:span

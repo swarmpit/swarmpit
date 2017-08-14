@@ -395,6 +395,7 @@ select:-webkit-autofill:focus {
 
 .log {
     font-family: monospace;
+    min-height: 20px;
     max-height: calc(100vh - 220px);
     overflow: auto;
     margin: 10px 24px 10px 24px;
