@@ -380,7 +380,7 @@
                                           :stdout     true
                                           :stderr     true
                                           :timestamps true
-                                          :tail       2000}))
+                                          :tail       1000}))
            (map
              (fn [i]
                (let [task (log-task i tasks)]

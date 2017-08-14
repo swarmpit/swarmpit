@@ -40,10 +40,11 @@
 
 (defn- render-item-ports [value]
   (html
-    (for [port value]
-      [:div
-       [:span (:hostPort port)
-        [:span.service-list-port (str " [" (:protocol port) "]")]]])))
+    (map
+      (fn [port]
+        [:div
+         [:span (:hostPort port)
+          [:span.service-list-port (str " [" (:protocol port) "]")]]]) value)))
 
 (defn- render-status [value update-status]
   (if (or (= "updating" update-status)
