@@ -12,7 +12,9 @@
   [line]
   (-> (re-pattern "(19|20)\\d{2}[.:\\-TZ0-9]* ")
       (re-find line)
-      (first)))
+      (first)
+      (or "")
+      (trim)))
 
 (defn- parse-log-task
   [line]
