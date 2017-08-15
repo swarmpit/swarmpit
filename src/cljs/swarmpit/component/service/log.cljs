@@ -32,6 +32,18 @@
                    (state/update-value [:fetching] false cursor)
                    (state/update-value [:data] response cursor))}))
 
+(defn log-append-handler
+  [service from-timestamp]
+  (handler/get
+    (routes/path-for-backend :service-logs (select-keys service [:id]))
+    {:on-call    (state/update-value [:fetching] true cursor)
+     :params     {:from from-timestamp}
+     :on-success (fn [response]
+                   (state/update-value [:fetching] false cursor)
+                   (state/update-value [:data] (-> (state/get-value cursor)
+                                                   :data
+                                                   (concat response)) cursor))}))
+
 (defn- init-state
   []
   (state/set-value {:filter      {:predicate ""}
@@ -45,12 +57,22 @@
   (mixin/refresh
     (fn [service]
       (when (not (:fetching (state/get-value cursor)))
-        (log-handler service)))))
+        (log-append-handler service (-> (state/get-value cursor)
+                                        :data
+                                        (last)
+                                        :timestamp))))))
 
 (def init-state-mixin
   (mixin/init
     (fn [_]
       (init-state))))
+
+(rum/defc line < rum/static [item timestamp]
+  [:div
+   (when timestamp
+     [:span.log-timestamp (:timestamp item)])
+   [:span.log-info (str (:taskName item) "." (subs (:task item) 0 12) "@" (:taskNode item))]
+   [:span.log-body (str " " (:line item))]])
 
 (rum/defc form < rum/reactive
                  init-state-mixin
@@ -88,9 +110,4 @@
         [:span "There are no logs available for the service."]
         (map
           (fn [item]
-            [:span
-             (when timestamp
-               [:span.log-timestamp (:timestamp item)])
-             [:span.log-info (str (:taskName item) "." (subs (:task item) 0 12) "@" (:taskNode item))]
-             [:span.log-body (str " " (:line item))]
-             [:br]]) filtered-items))]]))
+            (line item timestamp)) filtered-items))]]))
