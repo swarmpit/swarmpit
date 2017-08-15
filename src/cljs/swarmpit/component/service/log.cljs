@@ -106,8 +106,9 @@
           :onCheck (fn [_ v]
                      (state/update-value [:autoscroll] v cursor))})]]
      [:div.log#service-log
-      (if (and (empty? filtered-items) initialized)
-        [:span "There are no logs available for the service."]
-        (map
-          (fn [item]
-            (line item timestamp)) filtered-items))]]))
+      (cond
+        (and (empty? filtered-items) initialized) [:span "There are no logs available for the service."]
+        (not initialized) [:span "Loading..."]
+        :else (map
+                (fn [item]
+                  (line item timestamp)) filtered-items))]]))
