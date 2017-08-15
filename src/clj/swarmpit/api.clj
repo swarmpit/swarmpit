@@ -370,7 +370,7 @@
                (dc/services)))
 
 (defn service-logs
-  [service-id]
+  [service-id from-timestamp]
   (letfn [(log-task [log tasks] (->> tasks
                                      (filter #(= (:task log) (:id %)))
                                      (first)))]
@@ -380,7 +380,8 @@
                                           :stdout     true
                                           :stderr     true
                                           :timestamps true
-                                          :tail       1000}))
+                                          :tail       2000}))
+           (filter #(= 1 (compare (:timestamp %) from-timestamp)))
            (map
              (fn [i]
                (let [task (log-task i tasks)]

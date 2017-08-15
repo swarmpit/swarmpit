@@ -119,8 +119,10 @@
          (resp-ok))))
 
 (defmethod dispatch :service-logs [_]
-  (fn [{:keys [route-params]}]
-    (->> (api/service-logs (:id route-params))
+  (fn [{:keys [route-params query-params]}]
+    (->> (keywordize-keys query-params)
+         :from
+         (api/service-logs (:id route-params))
          (resp-ok))))
 
 (defmethod dispatch :service-create [_]
