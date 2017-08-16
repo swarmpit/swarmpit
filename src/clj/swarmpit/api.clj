@@ -448,6 +448,16 @@
                        (->> (dmo/->service-image standardized-service)
                             (dmo/->service standardized-service)))))
 
+(defn redeploy-service
+  [service-id]
+  (let [service (dc/service service-id)]
+    (dc/update-service
+      service-id
+      (get-in service [:Version :Index])
+      (-> service
+          :Spec
+          (update-in [:TaskTemplate :ForceUpdate] inc)))))
+
 ;; Plugin API
 
 (defn plugins
