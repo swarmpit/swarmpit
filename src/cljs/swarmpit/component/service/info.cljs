@@ -41,13 +41,25 @@
                    (message/error
                      (str "Service removing failed. Reason: " (:error response))))}))
 
+(defn- redeploy-service-handler
+  [service-id]
+  (handler/post
+    (routes/path-for-backend :service-redeploy {:id service-id})
+    {:on-success (fn [_]
+                   (dispatch!
+                     (routes/path-for-frontend :service-info {:id service-id}))
+                   (message/info
+                     (str "Service " service-id " has been redeployed.")))
+     :on-error   (fn [response]
+                   (message/error
+                     (str "Service redeploy failed. Reason: " (:error response))))}))
+
 (def form-action-menu-style
   {:position   "relative"
    :marginTop  "13px"
    :marginLeft "66px"})
 
 (defn- form-action-menu [service-id opened?]
-  (print opened?)
   (comp/mui
     (comp/icon-menu
       {:iconButtonElement (comp/icon-button nil nil)
@@ -64,12 +76,12 @@
       (comp/menu-item
         {:key         "action-redeploy"
          :leftIcon    (comp/svg nil icon/redeploy)
+         :onClick     #(redeploy-service-handler service-id)
          :primaryText "Redeploy"})
       (comp/menu-item
         {:key         "action-delete"
          :leftIcon    (comp/svg nil icon/trash)
-         :onClick     (fn []
-                        (delete-service-handler service-id))
+         :onClick     #(delete-service-handler service-id)
          :primaryText "Delete"}))))
 
 (rum/defc form-tasks < rum/static [tasks]
