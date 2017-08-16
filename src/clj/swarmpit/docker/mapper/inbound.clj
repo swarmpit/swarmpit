@@ -279,12 +279,13 @@
       :labels (->service-labels service-labels)
       :logdriver {:name (or (get-in service-task-template [:LogDriver :Name]) "none")
                   :opts (->service-log-options service-task-template)}
-      :deployment {:update        (->service-deployment-update service-spec)
-                   :forceUpdate   (:ForceUpdate service-task-template)
-                   :restartPolicy (->service-deployment-restart-policy service-task-template)
-                   :rollback      (->service-deployment-rollback service-spec)
-                   :autoredeploy  (->service-autoredeploy service-labels)
-                   :placement     (->service-placement-constraints service-spec)})))
+      :deployment {:update          (->service-deployment-update service-spec)
+                   :forceUpdate     (:ForceUpdate service-task-template)
+                   :restartPolicy   (->service-deployment-restart-policy service-task-template)
+                   :rollback        (->service-deployment-rollback service-spec)
+                   :rollbackAllowed (some? (:PreviousSpec service))
+                   :autoredeploy    (->service-autoredeploy service-labels)
+                   :placement       (->service-placement-constraints service-spec)})))
 
 (defn ->services
   [services tasks nodes-count]

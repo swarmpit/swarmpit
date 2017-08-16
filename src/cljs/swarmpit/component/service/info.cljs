@@ -49,40 +49,66 @@
                    (dispatch!
                      (routes/path-for-frontend :service-info {:id service-id}))
                    (message/info
-                     (str "Service " service-id " has been redeployed.")))
+                     (str "Service " service-id " redeploy started.")))
      :on-error   (fn [response]
                    (message/error
                      (str "Service redeploy failed. Reason: " (:error response))))}))
 
-(def form-action-menu-style
+(defn- rollback-service-handler
+  [service-id]
+  (handler/post
+    (routes/path-for-backend :service-rollback {:id service-id})
+    {:on-success (fn [_]
+                   (dispatch!
+                     (routes/path-for-frontend :service-info {:id service-id}))
+                   (message/info
+                     (str "Service " service-id " rollback started.")))
+     :on-error   (fn [response]
+                   (message/error
+                     (str "Service rollback failed. Reason: " (:error response))))}))
+
+(def action-menu-style
   {:position   "relative"
    :marginTop  "13px"
    :marginLeft "66px"})
 
-(defn- form-action-menu [service-id opened?]
+(def action-menu-item-style
+  {:padding "0px 10px 0px 52px"})
+
+(defn- form-action-menu [service-id service-rollback-allowed opened?]
   (comp/mui
     (comp/icon-menu
       {:iconButtonElement (comp/icon-button nil nil)
        :open              opened?
-       :style             form-action-menu-style
+       :style             action-menu-style
        :onRequestChange   (fn [state] (reset! action-menu state))}
       (comp/menu-item
-        {:key         "action-edit"
-         :leftIcon    (comp/svg nil icon/edit)
-         :onClick     (fn []
-                        (dispatch!
-                          (routes/path-for-frontend :service-edit {:id service-id})))
-         :primaryText "Edit"})
+        {:key           "action-edit"
+         :innerDivStyle action-menu-item-style
+         :leftIcon      (comp/svg nil icon/edit)
+         :onClick       (fn []
+                          (dispatch!
+                            (routes/path-for-frontend :service-edit {:id service-id})))
+         :primaryText   "Edit"})
       (comp/menu-item
-        {:key         "action-redeploy"
-         :leftIcon    (comp/svg nil icon/redeploy)
-         :onClick     #(redeploy-service-handler service-id)
-         :primaryText "Redeploy"})
+        {:key           "action-redeploy"
+         :innerDivStyle action-menu-item-style
+         :leftIcon      (comp/svg nil icon/redeploy)
+         :onClick       #(redeploy-service-handler service-id)
+         :primaryText   "Redeploy"})
       (comp/menu-item
-        {:key         "action-delete"
-         :leftIcon    (comp/svg nil icon/trash)
-         :onClick     #(delete-service-handler service-id)
-         :primaryText "Delete"}))))
+        {:key           "action-rollback"
+         :innerDivStyle action-menu-item-style
+         :leftIcon      (comp/svg nil icon/rollback)
+         :onClick       #(rollback-service-handler service-id)
+         :disabled      (not service-rollback-allowed)
+         :primaryText   "Rollback"})
+      (comp/menu-item
+        {:key           "action-delete"
+         :innerDivStyle action-menu-item-style
+         :leftIcon      (comp/svg nil icon/trash)
+         :onClick       #(delete-service-handler service-id)
+         :primaryText   "Delete"}))))
 
 (rum/defc form-tasks < rum/static [tasks]
   [:div.form-service-view-group.form-service-group-border
@@ -126,7 +152,7 @@
              :icon          (comp/button-icon icon/expand-18)
              :labelPosition "before"
              :label         "Actions"}))
-        (form-action-menu id opened?)]]]
+        (form-action-menu id (:rollbackAllowed deployment) opened?)]]]
      [:div.form-service-view
       (settings/form service)
       (ports/form ports)
