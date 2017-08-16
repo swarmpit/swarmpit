@@ -30,7 +30,8 @@
      :on-success (fn [response]
                    (state/update-value [:initialized] true cursor)
                    (state/update-value [:fetching] false cursor)
-                   (state/update-value [:data] response cursor))}))
+                   (state/update-value [:data] response cursor))
+     :on-error   #(state/update-value [:error] true cursor)}))
 
 (defn log-append-handler
   [service from-timestamp]
@@ -49,7 +50,8 @@
   (state/set-value {:filter      {:predicate ""}
                     :initialized false
                     :fetching    false
-                    :autoscroll  true
+                    :autoscroll  false
+                    :error       false
                     :timestamp   false
                     :data        []} cursor))
 
@@ -79,7 +81,7 @@
                  refresh-state-mixin
                  {:did-mount  (fn [state] (auto-scroll!) state)
                   :did-update (fn [state] (auto-scroll!) state)} [service]
-  (let [{:keys [filter data autoscroll timestamp initialized]} (state/react cursor)
+  (let [{:keys [filter data autoscroll timestamp initialized error]} (state/react cursor)
         filtered-items (filter-items data
                                      (:predicate filter))]
     [:div
@@ -107,7 +109,8 @@
                      (state/update-value [:autoscroll] v cursor))})]]
      [:div.log#service-log
       (cond
-        (and (empty? filtered-items) initialized) [:span "There are no logs available for the service."]
+        error [:span "Logs for this service couldn't be fetched."]
+        (and (empty? filtered-items) initialized) [:span "Log is empty in this service."]
         (not initialized) [:span "Loading..."]
         :else (map
                 (fn [item]
