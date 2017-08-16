@@ -14,7 +14,7 @@
 
 (defn- form-driver [value]
   (comp/form-comp
-    "DRIVER NAME"
+    "DRIVER"
     (comp/select-field
       {:value    value
        :onChange (fn [_ _ v]

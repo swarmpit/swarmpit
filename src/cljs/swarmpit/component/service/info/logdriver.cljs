@@ -15,8 +15,8 @@
 
 (rum/defc form < rum/static [{:keys [name opts]}]
   [:div.form-service-view-group.form-service-group-border
-   (comp/form-section "Log Driver")
-   (comp/form-item "DRIVER NAME" (or name "none"))
+   (comp/form-section "Logging")
+   (comp/form-item "DRIVER" (or name "none"))
    (when (not-empty opts)
      [:div
       (comp/form-subsection "Log driver options")

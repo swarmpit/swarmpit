@@ -23,7 +23,15 @@
 
 (defonce step-index (atom 0))
 
-(def steps ["General settings" "Ports" "Networks" "Mounts" "Secrets" "Environment variables" "Labels" "Log driver" "Deployment"])
+(def steps ["General settings"
+            "Ports"
+            "Networks"
+            "Mounts"
+            "Secrets"
+            "Environment variables"
+            "Labels"
+            "Logging"
+            "Deployment"])
 
 (def step-style
   {:backgroundColor "transparent"})

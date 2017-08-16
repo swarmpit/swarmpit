@@ -122,7 +122,7 @@
 
 (rum/defc form-logdriver < rum/static []
   [:div.form-service-edit-group.form-service-group-border
-   (comp/form-section "Log Driver")
+   (comp/form-section "Logging")
    (logdriver/form)])
 
 (rum/defc form-deployment < rum/static []
