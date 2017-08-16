@@ -137,6 +137,11 @@
       (api/update-service (:id route-params) payload false)
       (resp-ok))))
 
+(defmethod dispatch :service-redeploy [_]
+  (fn [{:keys [route-params]}]
+    (api/redeploy-service (:id route-params))
+    (resp-ok)))
+
 (defmethod dispatch :service-delete [_]
   (fn [{:keys [route-params]}]
     (api/delete-service (:id route-params))

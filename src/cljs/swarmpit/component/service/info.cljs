@@ -19,6 +19,8 @@
 
 (enable-console-print!)
 
+(defonce action-menu (atom false))
+
 (defonce service-tasks (atom nil))
 
 (defonce service-networks (atom nil))
@@ -39,27 +41,48 @@
                    (message/error
                      (str "Service removing failed. Reason: " (:error response))))}))
 
-(defn- form-action-item
-  [icon action]
-  [:span
-   [:svg.node-item-ico {:width  "24"
-                        :height "24"
-                        :fill   "rgb(117, 117, 117)"}
-    [:path {:d icon}]] action])
+(defn- redeploy-service-handler
+  [service-id]
+  (handler/post
+    (routes/path-for-backend :service-redeploy {:id service-id})
+    {:on-success (fn [_]
+                   (dispatch!
+                     (routes/path-for-frontend :service-info {:id service-id}))
+                   (message/info
+                     (str "Service " service-id " has been redeployed.")))
+     :on-error   (fn [response]
+                   (message/error
+                     (str "Service redeploy failed. Reason: " (:error response))))}))
 
-(rum/defcs form-action-button < (rum/local {:open false} ::dropdown) [state service-id]
-  (let [local-state (::dropdown state)]
-    [:div.dropdown
-     [:button.dropdown-btn {:onClick #(swap! local-state assoc :open (not (:open @local-state)))}
-      "Action"
-      [:span.dropdown-caret]]
-     (when (:open @local-state)
-       [:ul.dropdown-menu
-        [:li [:a {:href (routes/path-for-frontend :service-edit {:id service-id})} (form-action-item icon/edit "Edit")]]
-        ;[:li [:a {:href "#"} (form-action-item icon/restart "Restart")]]
-        ;[:li [:a {:href "#"} (form-action-item icon/rollback "Rollback")]]
-        [:li [:a {:style   {:cursor "pointer"}
-                  :onClick #(delete-service-handler service-id)} (form-action-item icon/trash "Delete")]]])]))
+(def form-action-menu-style
+  {:position   "relative"
+   :marginTop  "13px"
+   :marginLeft "66px"})
+
+(defn- form-action-menu [service-id opened?]
+  (comp/mui
+    (comp/icon-menu
+      {:iconButtonElement (comp/icon-button nil nil)
+       :open              opened?
+       :style             form-action-menu-style
+       :onRequestChange   (fn [state] (reset! action-menu state))}
+      (comp/menu-item
+        {:key         "action-edit"
+         :leftIcon    (comp/svg nil icon/edit)
+         :onClick     (fn []
+                        (dispatch!
+                          (routes/path-for-frontend :service-edit {:id service-id})))
+         :primaryText "Edit"})
+      (comp/menu-item
+        {:key         "action-redeploy"
+         :leftIcon    (comp/svg nil icon/redeploy)
+         :onClick     #(redeploy-service-handler service-id)
+         :primaryText "Redeploy"})
+      (comp/menu-item
+        {:key         "action-delete"
+         :leftIcon    (comp/svg nil icon/trash)
+         :onClick     #(delete-service-handler service-id)
+         :primaryText "Delete"}))))
 
 (rum/defc form-tasks < rum/static [tasks]
   [:div.form-service-view-group.form-service-group-border
@@ -70,8 +93,10 @@
                          tasks/render-item-keys
                          tasks/onclick-handler)])
 
-(rum/defc form < rum/static [data]
-  (let [{:keys [service networks tasks]} data
+(rum/defc form < rum/reactive
+                 rum/static [data]
+  (let [opened? (rum/react action-menu)
+        {:keys [service networks tasks]} data
         ports (:ports service)
         mounts (:mounts service)
         secrets (:secrets service)
@@ -91,10 +116,17 @@
        (comp/mui
          (comp/raised-button
            {:href  (routes/path-for-frontend :service-log {:id id})
-            :icon  (comp/button-icon icon/log)
+            :icon  (comp/button-icon icon/log-18)
             :label "Logs"}))
        [:span.form-panel-delimiter]
-       (form-action-button id)]]
+       [:div
+        (comp/mui
+          (comp/raised-button
+            {:onClick       (fn [_] (reset! action-menu true))
+             :icon          (comp/button-icon icon/expand-18)
+             :labelPosition "before"
+             :label         "Actions"}))
+        (form-action-menu id opened?)]]]
      [:div.form-service-view
       (settings/form service)
       (ports/form ports)
