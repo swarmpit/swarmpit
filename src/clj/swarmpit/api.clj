@@ -458,6 +458,15 @@
           :Spec
           (update-in [:TaskTemplate :ForceUpdate] inc)))))
 
+(defn rollback-service
+  [service-id]
+  (let [service (dc/service service-id)]
+    (dc/update-service
+      service-id
+      (get-in service [:Version :Index])
+      (-> service
+          :PreviousSpec))))
+
 ;; Plugin API
 
 (defn plugins

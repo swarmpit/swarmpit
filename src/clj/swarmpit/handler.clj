@@ -142,6 +142,11 @@
     (api/redeploy-service (:id route-params))
     (resp-ok)))
 
+(defmethod dispatch :service-rollback [_]
+  (fn [{:keys [route-params]}]
+    (api/rollback-service (:id route-params))
+    (resp-ok)))
+
 (defmethod dispatch :service-delete [_]
   (fn [{:keys [route-params]}]
     (api/delete-service (:id route-params))
