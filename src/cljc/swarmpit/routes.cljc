@@ -32,7 +32,8 @@
                                          "/networks" :service-networks
                                          "/tasks"    :service-tasks}}
                          :delete {[:id] :service-delete}
-                         :post   {[:id] :service-update}}
+                         :post   {[:id] {""          :service-update
+                                         "/redeploy" :service-redeploy}}}
        "/networks"      {:get  :networks
                          :post :network-create}
        "/networks/"     {:get    {[:id] :network}
