@@ -3,7 +3,8 @@
   (:require [clojure.test :refer :all]
             [swarmpit.test :refer :all]
             [swarmpit.docker.http :refer :all])
-  (:import (clojure.lang ExceptionInfo)))
+  (:import (clojure.lang ExceptionInfo)
+           (java.util.concurrent TimeoutException)))
 
 (use-fixtures :once dind-socket-fixture)
 
@@ -34,6 +35,12 @@
           ExceptionInfo #"Docker failure: not-existing-dns: Name or service not known"
           (with-redefs [swarmpit.config/config {:docker-sock "http://not-existing-dns"}]
             (get "/version")))))
+
+  (testing "timeout"
+    (is (thrown?
+          TimeoutException
+          (with-redefs [swarmpit.docker.http/timeout-ms 0]
+            (get "/services")))))
 
   (testing "invalid socket"
     (is (thrown-with-msg?

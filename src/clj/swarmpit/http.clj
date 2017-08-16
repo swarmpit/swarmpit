@@ -1,6 +1,7 @@
 (ns swarmpit.http
   (:require [cheshire.core :refer [parse-string parse-stream generate-string]])
-  (:import (org.httpkit BytesInputStream)))
+  (:import (org.httpkit BytesInputStream)
+           (java.util.concurrent TimeoutException ExecutionException)))
 
 (defn parse-response-body
   [body]
@@ -25,3 +26,17 @@
              (ex-info (str scope " error: " (error-message-handler response))
                       {:status status
                        :body   response}))))))))
+
+(defmacro with-timeout
+  [ms & body]
+  `(try
+     (let [f# (future (do ~@body))
+           v# (gensym)
+           result# (deref f# ~ms v#)]
+       (if (= v# result#)
+         (do
+           (future-cancel f#)
+           (throw (TimeoutException.)))
+         result#))
+     (catch ExecutionException e#
+       (throw (.getCause e#)))))

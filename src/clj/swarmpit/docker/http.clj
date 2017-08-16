@@ -4,6 +4,7 @@
             [clj-http.client :as client]
             [cheshire.core :refer [parse-string generate-string]]
             [swarmpit.config :refer [config]]
+            [swarmpit.http :refer [with-timeout]]
             [clojure.string :as str]
             [clojure.tools.logging :as log])
   (:import (org.apache.http.config RegistryBuilder)
@@ -42,17 +43,20 @@
    "PUT"    client/put
    "DELETE" client/delete})
 
+(def timeout-ms 5000)
+
 (defn execute
   "Execute docker command and parse result"
   [method uri params headers payload]
   (try
-    (let [response ((func-map method)
-                     (url uri)
-                     {:connection-manager (make-conn-manager)
-                      :headers            headers
-                      :query-params       params
-                      :body               (generate-string payload)
-                      :retry-handler      (fn [& args] false)})
+    (let [response (->> ((func-map method)
+                          (url uri)
+                          {:connection-manager (make-conn-manager)
+                           :headers            headers
+                           :query-params       params
+                           :body               (generate-string payload)
+                           :retry-handler      (fn [& args] false)})
+                        (with-timeout timeout-ms))
           response-type (-> response :headers :Content-Type)]
       (if (str/includes? (or response-type "") "text/plain")
         (-> response :body)
