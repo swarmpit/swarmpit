@@ -9,6 +9,12 @@
 
 (def cursor [:page :service :wizard :ports])
 
+(defn- not-suggested?
+  [port]
+  (not
+    (some #(= (:containerPort port)
+              (:containerPort %)) (state/get-value cursor))))
+
 (defn- public-ports-handler
   [{:keys [name tag] :as repository}]
   (handler/get
@@ -17,7 +23,8 @@
                   :repositoryTag  tag}
      :on-success (fn [response]
                    (doseq [port response]
-                     (state/add-item port cursor)))}))
+                     (if (not-suggested? port)
+                       (state/add-item port cursor))))}))
 
 (defn- dockerhub-ports-handler
   [distribution-id {:keys [name tag] :as repository}]
@@ -27,7 +34,8 @@
                   :repositoryTag  tag}
      :on-success (fn [response]
                    (doseq [port response]
-                     (state/add-item port cursor)))}))
+                     (if (not-suggested? port)
+                       (state/add-item port cursor))))}))
 
 (defn- registry-ports-handler
   [distribution-id {:keys [name tag] :as repository}]
@@ -37,7 +45,8 @@
                   :repositoryTag  tag}
      :on-success (fn [response]
                    (doseq [port response]
-                     (state/add-item port cursor)))}))
+                     (if (not-suggested? port)
+                       (state/add-item port cursor))))}))
 
 (defn load-suggestable-ports
   [{:keys [id type] :as distribution} repository]
