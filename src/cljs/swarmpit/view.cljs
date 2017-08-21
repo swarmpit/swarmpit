@@ -6,6 +6,9 @@
             [swarmpit.component.password :as password]
             [swarmpit.component.service.create-config :as service-config]
             [swarmpit.component.service.create-image :as service-image]
+
+            [swarmpit.component.stack.editor :as stack-editor]
+
             [swarmpit.component.service.edit :as service-edit]
             [swarmpit.component.service.info :as service-info]
             [swarmpit.component.service.log :as service-log]
@@ -60,6 +63,12 @@
 (defmethod dispatch :password
   [_]
   (password/form))
+
+;;; Stack view
+
+(defmethod dispatch :stack-create
+  [{:keys [data]}]
+  (stack-editor/form data))
 
 ;;; Service view
 

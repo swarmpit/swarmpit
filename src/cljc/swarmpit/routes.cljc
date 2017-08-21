@@ -73,6 +73,8 @@
                                                ["/" :id]        {""      :service-info
                                                                  "/edit" :service-edit
                                                                  "/log"  :service-log}}
+                   "/stacks"                  {""        :stack-list
+                                               "/create" :stack-create}
                    "/networks"                {""        :network-list
                                                "/create" :network-create
                                                ["/" :id] :network-info}

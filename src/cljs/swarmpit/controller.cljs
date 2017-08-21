@@ -60,6 +60,12 @@
   [{:keys [handler]}]
   (state/set-value {:handler handler} cursor))
 
+;;; Stack controller
+
+(defmethod dispatch :stack-create
+  [{:keys [handler]}]
+  (state/set-value {:handler handler} cursor))
+
 ;;; Service controller
 
 (defmethod dispatch :service-list
