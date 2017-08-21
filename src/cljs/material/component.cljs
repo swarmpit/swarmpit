@@ -113,6 +113,7 @@
   ([] (factory/radio-button nil)))
 
 (defn raised-button
+  ([props & childs] (factory/raised-button (clj->js props) childs))
   ([props] (factory/raised-button (clj->js props)))
   ([] (factory/raised-button nil)))
 
