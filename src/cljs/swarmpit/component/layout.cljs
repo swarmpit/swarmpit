@@ -12,6 +12,7 @@
 (def page-titles
   {:index                 "Home"
    :password              "Change password"
+   :stack-create          "Stacks / Create"
    :service-list          "Services"
    :service-create-config "Services / Wizard"
    :service-create-image  "Services / Wizard"
