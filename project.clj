@@ -13,6 +13,7 @@
                  [cljsjs/material-ui "0.18.1-0"]
                  [cljsjs/formsy-react "0.19.0-0"]
                  [cljsjs/formsy-material-ui "0.5.3-0"]
+                 [cljsjs/codemirror "5.24.0-1"]
                  [rum "0.10.8" :exclusions [cljsjs/react cljsjs/react-dom]]
                  [ring "1.5.1"]
                  [ring/ring-json "0.4.0"]
@@ -68,7 +69,7 @@
                 :source-paths ["src/cljs" "src/cljc"]
                 :jar          true
                 :compiler     {:main                 swarmpit.app
-                               :externs              ["ext/material-ui.ext.js"]
+                               :externs              ["resources/ext/material-ui.ext.js"]
                                :output-to            "resources/public/js/main.js"
                                :output-dir           "target"
                                :source-map-timestamp true
