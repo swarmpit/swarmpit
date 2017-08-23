@@ -341,14 +341,12 @@
 (defn services
   []
   (dmi/->services (dc/services)
-                  (dc/tasks)
-                  (count (dc/nodes))))
+                  (dc/tasks)))
 
 (defn service
   [service-id]
   (dmi/->service (dc/service service-id)
-                 (dc/service-tasks service-id)
-                 (count (dc/nodes))))
+                 (dc/service-tasks service-id)))
 
 (defn service-image-id
   [{:keys [distribution repository] :as service} service-update?]
