@@ -206,7 +206,13 @@
 
 (defn ->service-replicas-running
   [service-tasks]
-  (-> (filter #(= (get-in % [:Status :State]) "running") service-tasks)
+  (-> (filter #(and (= (get-in % [:Status :State]) "running")
+                    (= (:DesiredState %) "running")) service-tasks)
+      (count)))
+
+(defn ->service-replicas-no-shutdown
+  [service-tasks]
+  (-> (filter #(not (= (:DesiredState %) "shutdown")) service-tasks)
       (count)))
 
 (defn ->service-info-status
@@ -236,7 +242,7 @@
      :tag  (subs image-name (inc separator-pos) length)}))
 
 (defn ->service
-  [service tasks nodes-count]
+  [service tasks]
   (let [service-spec (:Spec service)
         service-labels (:Labels service-spec)
         service-task-template (:TaskTemplate service-spec)
@@ -246,6 +252,7 @@
         service-tasks (->service-tasks service-id tasks)
         replicas (get-in service-spec [:Mode :Replicated :Replicas])
         replicas-running (->service-replicas-running service-tasks)
+        replicas-no-shutdown (->service-replicas-no-shutdown service-tasks)
         image (get-in service-task-template [:ContainerSpec :Image])
         image-info (str/split image #"@")
         image-name (first image-info)
@@ -266,10 +273,10 @@
       :replicas replicas
       :state (if (= service-mode "replicated")
                (->service-state replicas-running replicas)
-               (->service-state replicas-running nodes-count))
+               (->service-state replicas-running replicas-no-shutdown))
       :status {:info    (if (= service-mode "replicated")
                           (->service-info-status replicas-running replicas)
-                          (->service-info-status replicas-running nodes-count))
+                          (->service-info-status replicas-running replicas-no-shutdown))
                :update  (get-in service [:UpdateStatus :State])
                :message (get-in service [:UpdateStatus :Message])}
       :ports (->service-ports service-spec)
@@ -288,9 +295,9 @@
                    :placement       (->service-placement-constraints service-spec)})))
 
 (defn ->services
-  [services tasks nodes-count]
+  [services tasks]
   (->> services
-       (map #(->service % tasks nodes-count))
+       (map #(->service % tasks))
        (into [])))
 
 (defn ->volume
