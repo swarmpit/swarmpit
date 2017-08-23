@@ -57,7 +57,7 @@
 
 (defn ->task-node
   [node-id nodes]
-  (first (filter #(= (:ID %) node-id) nodes)))
+  (or (first (filter #(= (:ID %) node-id) nodes)) node-id))
 
 (defn ->task-service
   [service-id services]
