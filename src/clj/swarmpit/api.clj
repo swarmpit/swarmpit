@@ -1,6 +1,5 @@
 (ns swarmpit.api
-  (:require [clojure.core.memoize :as memo]
-            [clojure.set :refer [rename-keys]]
+  (:require [clojure.set :refer [rename-keys]]
             [buddy.hashers :as hashers]
             [digest :refer [digest]]
             [swarmpit.docker.client :as dc]
