@@ -41,6 +41,10 @@ on cluster settings and resource plugins as well.
 
 Also, exposable ports were introduced.
 
+### 1.1 
+
+Service logs viewer ([#20](https://github.com/swarmpit/swarmpit/issues/20)) was added in this version.
+
 ## What we will bring into the game
 
 You can find here our goals and related features for future releases.
@@ -50,5 +54,5 @@ You can find here our goals and related features for future releases.
 The main goal is to introduce application stacks & resource role management.
 
 - [[#39](https://github.com/swarmpit/swarmpit/issues/39)] Add application stacks.
-- [[#20](https://github.com/swarmpit/swarmpit/issues/20)] Add service logging.
 - [[#94](https://github.com/swarmpit/swarmpit/issues/94)] Add docker resource role management.
+- [[#57](https://github.com/swarmpit/swarmpit/issues/57)] Integrate FaaS
