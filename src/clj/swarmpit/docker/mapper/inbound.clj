@@ -2,6 +2,10 @@
   "Map docker domain to swarmpit domain"
   (:require [clojure.string :as str]))
 
+(defn- as-megabytes
+  [bytes]
+  (quot bytes (* 1024 1024)))
+
 (defn ->image-ports
   [image-config]
   (let [ports (:ExposedPorts image-config)]
@@ -166,6 +170,11 @@
        (map (fn [v] {:rule v}))
        (into [])))
 
+(defn ->service-resource
+  [service-resource-category]
+  {:cpu    (or (:NanoCPUs service-resource-category) 0.000)
+   :memory (as-megabytes (or (:MemoryBytes service-resource-category) 0))})
+
 (defn ->service-secrets
   [service-spec]
   (->> (get-in service-spec [:TaskTemplate :ContainerSpec :Secrets])
@@ -279,6 +288,8 @@
       :labels (->service-labels service-labels)
       :logdriver {:name (or (get-in service-task-template [:LogDriver :Name]) "none")
                   :opts (->service-log-options service-task-template)}
+      :resources {:reservation (->service-resource (get-in service-task-template [:Resources :Reservation]))
+                  :limit       (->service-resource (get-in service-task-template [:Resources :Limits]))}
       :deployment {:update          (->service-deployment-update service-spec)
                    :forceUpdate     (:ForceUpdate service-task-template)
                    :restartPolicy   (->service-deployment-restart-policy service-task-template)
