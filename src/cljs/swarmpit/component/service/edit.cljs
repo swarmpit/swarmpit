@@ -13,6 +13,7 @@
             [swarmpit.component.service.form-variables :as variables]
             [swarmpit.component.service.form-labels :as labels]
             [swarmpit.component.service.form-logdriver :as logdriver]
+            [swarmpit.component.service.form-resources :as resources]
             [swarmpit.component.service.form-deployment :as deployment]
             [swarmpit.component.service.form-deployment-placement :as placement]
             [swarmpit.component.message :as message]
@@ -37,6 +38,7 @@
         variables (state/get-value variables/cursor)
         labels (state/get-value labels/cursor)
         logdriver (state/get-value logdriver/cursor)
+        resources (state/get-value resources/cursor)
         deployment (state/get-value deployment/cursor)]
     (handler/post
       (routes/path-for-backend :service-update {:id service-id})
@@ -48,6 +50,7 @@
                        (assoc :variables variables)
                        (assoc :labels labels)
                        (assoc :logdriver logdriver)
+                       (assoc :resources resources)
                        (assoc :deployment deployment))
        :on-success (fn [_]
                      (dispatch!
@@ -72,6 +75,7 @@
   (state/set-value (:variables service) variables/cursor)
   (state/set-value (:labels service) labels/cursor)
   (state/set-value (:logdriver service) logdriver/cursor)
+  (state/set-value (:resources service) resources/cursor)
   (state/set-value (:deployment service) deployment/cursor))
 
 (def init-state-mixin
@@ -126,6 +130,11 @@
    (comp/form-section "Logging")
    (logdriver/form)])
 
+(rum/defc form-resources < rum/static []
+  [:div.form-service-edit-group.form-service-group-border
+   (comp/form-section "Resources")
+   (resources/form)])
+
 (rum/defc form-deployment < rum/static []
   [:div.form-service-edit-group.form-service-group-border
    (comp/form-section "Deployment")
@@ -159,4 +168,5 @@
       (form-variables)
       (form-labels)
       (form-logdriver)
+      (form-resources)
       (form-deployment)]]))

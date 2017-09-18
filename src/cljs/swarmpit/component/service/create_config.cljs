@@ -13,6 +13,7 @@
             [swarmpit.component.service.form-variables :as variables]
             [swarmpit.component.service.form-labels :as labels]
             [swarmpit.component.service.form-logdriver :as logdriver]
+            [swarmpit.component.service.form-resources :as resources]
             [swarmpit.component.service.form-deployment :as deployment]
             [swarmpit.component.service.form-deployment-placement :as placement]
             [swarmpit.component.message :as message]
@@ -31,6 +32,7 @@
             "Environment variables"
             "Labels"
             "Logging"
+            "Resources"
             "Deployment"])
 
 (def step-style
@@ -67,6 +69,7 @@
         variables (state/get-value variables/cursor)
         labels (state/get-value labels/cursor)
         logdriver (state/get-value logdriver/cursor)
+        resources (state/get-value resources/cursor)
         deployment (state/get-value deployment/cursor)]
     (handler/post
       (routes/path-for-backend :service-create)
@@ -78,6 +81,7 @@
                        (assoc :variables variables)
                        (assoc :labels labels)
                        (assoc :logdriver logdriver)
+                       (assoc :resources resources)
                        (assoc :deployment deployment))
        :on-success (fn [response]
                      (dispatch!
@@ -118,6 +122,10 @@
                     :rollback      {:parallelism   1
                                     :delay         0
                                     :failureAction "pause"}} deployment/cursor)
+  (state/set-value {:reservation {:cpu    0.000
+                                  :memory 0}
+                    :limit       {:cpu    0.000
+                                  :memory 0}} resources/cursor)
   (state/set-value [] placement/cursor))
 
 (def init-state-mixin
@@ -165,4 +173,5 @@
          (step-item 5 (variables/form-create))
          (step-item 6 (labels/form-create))
          (step-item 7 (logdriver/form))
-         (step-item 8 (deployment/form))))]))
+         (step-item 8 (resources/form))
+         (step-item 9 (deployment/form))))]))

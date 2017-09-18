@@ -11,6 +11,7 @@
             [swarmpit.component.service.info.variables :as variables]
             [swarmpit.component.service.info.labels :as labels]
             [swarmpit.component.service.info.logdriver :as logdriver]
+            [swarmpit.component.service.info.resources :as resources]
             [swarmpit.component.service.info.deployment :as deployment]
             [swarmpit.component.task.list :as tasks]
             [swarmpit.component.message :as message]
@@ -129,6 +130,7 @@
         variables (:variables service)
         labels (:labels service)
         logdriver (:logdriver service)
+        resources (:resources service)
         deployment (:deployment service)
         id (:id service)]
     [:div
@@ -162,5 +164,6 @@
       (variables/form variables)
       (labels/form labels)
       (logdriver/form logdriver)
+      (resources/form resources)
       (deployment/form deployment)
       (form-tasks tasks)]]))
