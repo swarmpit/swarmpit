@@ -20,6 +20,8 @@
            state)})
 
 (def focus-filter
-  {:did-mount #(-> js/document
-                   (.getElementById "filter")
-                   (.focus))})
+  {:did-mount (fn [state]
+                (-> js/document
+                    (.getElementById "filter")
+                    (.focus))
+                state)})
