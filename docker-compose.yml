@@ -11,8 +11,6 @@ services:
       - 888:8080
     networks:
       - net
-    depends_on:
-      - db
     deploy:
       placement:
         constraints:
