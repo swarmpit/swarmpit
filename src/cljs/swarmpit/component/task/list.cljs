@@ -83,7 +83,8 @@
 
 (rum/defc form < rum/reactive
                  init-state-mixin
-                 refresh-state-mixin [_]
+                 refresh-state-mixin
+                 mixin/focus-filter [_]
   (let [{:keys [filter data]} (state/react cursor)
         filtered-items (filter-items data
                                      (:serviceName filter)
@@ -92,7 +93,8 @@
      [:div.form-panel
       [:div.form-panel-left
        (comp/panel-text-field
-         {:hintText "Filter by service name"
+         {:id       "filter"
+          :hintText "Filter by service name"
           :onChange (fn [_ v]
                       (state/update-value [:filter :serviceName] v cursor))})
        [:span.form-panel-space]
