@@ -1,6 +1,7 @@
 *.class
 *.jar
 /.lein-*
+/.cljs_rhino_repl/
 /.nrepl-port
 /.repl
 /checkouts/
