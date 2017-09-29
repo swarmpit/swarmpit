@@ -40,14 +40,16 @@
       (init-state))))
 
 (rum/defc form < rum/reactive
-                 init-state-mixin [items]
+                 init-state-mixin
+                 mixin/focus-filter [items]
   (let [{{:keys [secretName]} :filter} (state/react cursor)
         filtered-items (filter-items items secretName)]
     [:div
      [:div.form-panel
       [:div.form-panel-left
        (comp/panel-text-field
-         {:hintText "Filter by name"
+         {:id       "filter"
+          :hintText "Filter by name"
           :onChange (fn [_ v]
                       (state/update-value [:filter :secretName] v cursor))})]
       [:div.form-panel-right

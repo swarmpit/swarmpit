@@ -74,14 +74,16 @@
 
 (rum/defc form < rum/reactive
                  init-state-mixin
-                 refresh-state-mixin [_]
+                 refresh-state-mixin
+                 mixin/focus-filter [_]
   (let [{:keys [filter data]} (state/react cursor)
         filtered-items (filter-items data (:nodeName filter))]
     [:div
      [:div.form-panel
       [:div.form-panel-left
        (comp/panel-text-field
-         {:hintText "Filter by name"
+         {:id       "filter"
+          :hintText "Filter by name"
           :onChange (fn [_ v]
                       (state/update-value [:filter :nodeName] v cursor))})]]
      [:div.content-grid.mdl-grid

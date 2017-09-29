@@ -18,3 +18,10 @@
   {:init (fn [state _]
            (handler (first (:rum/args state)))
            state)})
+
+(def focus-filter
+  {:did-mount (fn [state]
+                (-> js/document
+                    (.getElementById "filter")
+                    (.focus))
+                state)})

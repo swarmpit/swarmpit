@@ -46,14 +46,16 @@
       (init-state))))
 
 (rum/defc form < rum/reactive
-                 init-state-mixin [items]
+                 init-state-mixin
+                 mixin/focus-filter [items]
   (let [{{:keys [username]} :filter} (state/react cursor)
         filtered-items (filter-items items username)]
     [:div
      [:div.form-panel
       [:div.form-panel-left
        (comp/panel-text-field
-         {:hintText "Filter by username"
+         {:id       "filter"
+          :hintText "Filter by username"
           :onChange (fn [_ v]
                       (state/update-value [:filter :username] v cursor))})]
       [:div.form-panel-right
