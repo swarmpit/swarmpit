@@ -1,5 +1,6 @@
 (ns swarmpit.component.service.form-resources
   (:require [material.component :as comp]
+            [swarmpit.utils :refer [parse-int parse-float]]
             [swarmpit.component.state :as state]
             [sablono.core :refer-macros [html]]
             [rum.core :as rum]))
@@ -20,20 +21,21 @@
        :max      1.0
        :value    value
        :onChange (fn [_ v]
-                   (state/update-value [:reservation :cpu] (js/parseFloat v) cursor))})))
+                   (state/update-value [:reservation :cpu] (parse-float v) cursor))})))
 
 (defn- form-memory-reservation [value]
   (comp/form-comp
     "MEMORY (MB)"
-    (comp/text-field
-      {:name     "memory-reservation"
-       :key      "memory-reservation"
-       :type     "number"
-       :min      0
-       :max      1024
-       :value    value
-       :onChange (fn [_ v]
-                   (state/update-value [:reservation :memory] (js/parseInt v) cursor))})))
+    (comp/vtext-field
+      {:name            "memory-reservation"
+       :key             "memory-reservation"
+       :type            "number"
+       :min             4
+       :validations     "isValidMemoryValue"
+       :validationError "Use minimum of 4MB"
+       :value           value
+       :onChange        (fn [_ v]
+                          (state/update-value [:reservation :memory] (parse-int v) cursor))})))
 
 (defn- form-cpu-limit [value]
   (comp/form-comp
@@ -47,30 +49,33 @@
        :max      1.0
        :value    value
        :onChange (fn [_ v]
-                   (state/update-value [:limit :cpu] (js/parseFloat v) cursor))})))
+                   (state/update-value [:limit :cpu] (parse-float v) cursor))})))
 
 (defn- form-memory-limit [value]
   (comp/form-comp
     "MEMORY (MB)"
-    (comp/text-field
-      {:name     "memory-limit"
-       :key      "memory-limit"
-       :type     "number"
-       :min      0
-       :max      1024
-       :value    value
-       :onChange (fn [_ v]
-                   (state/update-value [:limit :memory] (js/parseInt v) cursor))})))
+    (comp/vtext-field
+      {:name            "memory-limit"
+       :key             "memory-limit"
+       :type            "number"
+       :min             4
+       :validations     "isValidMemoryValue"
+       :validationError "Use minimum of 4MB"
+       :value           value
+       :onChange        (fn [_ v]
+                          (state/update-value [:limit :memory] (parse-int v) cursor))})))
 
 (rum/defc form < rum/reactive []
   (let [{:keys [reservation
                 limit]} (state/react cursor)]
     [:div.form-edit
      (comp/form
-       {}
+       {:onValid   #(state/update-value [:isValid] true cursor)
+        :onInvalid #(state/update-value [:isValid] false cursor)}
        (html (comp/form-subsection "Reservation"))
        (form-cpu-reservation (:cpu reservation))
        (form-memory-reservation (:memory reservation))
        (html (comp/form-subsection "Limit"))
        (form-cpu-limit (:cpu limit))
-       (form-memory-limit (:memory limit)))]))
+       (form-memory-limit (:memory limit))
+       (html [:div {:style {:height "30px"}}]))]))

@@ -125,7 +125,8 @@
   (state/set-value {:reservation {:cpu    0.000
                                   :memory 0}
                     :limit       {:cpu    0.000
-                                  :memory 0}} resources/cursor)
+                                  :memory 0}
+                    :isValid     true} resources/cursor)
   (state/set-value [] placement/cursor))
 
 (def init-state-mixin
@@ -147,7 +148,8 @@
 (rum/defc form < rum/reactive
                  init-state-mixin [_]
   (let [index (rum/react step-index)
-        {:keys [isValid]} (state/react settings/cursor)]
+        settings (state/react settings/cursor)
+        resources (state/react resources/cursor)]
     [:div
      [:div.form-panel
       [:div.form-panel-left
@@ -156,7 +158,8 @@
        (comp/mui
          (comp/raised-button
            {:label      "Create"
-            :disabled   (not isValid)
+            :disabled   (and (not (:isValid settings))
+                             (not (:isValid resources)))
             :primary    true
             :onTouchTap create-service-handler}))]]
      (comp/mui

@@ -55,6 +55,15 @@
                         true
                         (ip/is-valid-subnet value))))
 
+(.addValidationRule js/Formsy "isValidMemoryValue"
+                    (fn [_ value]
+                      (if (nil? value)
+                        true
+                        (if (or (> val 4)
+                                (zero? val))
+                          true
+                          false))))
+
 ;;; Single formsy components
 
 (defn vform
