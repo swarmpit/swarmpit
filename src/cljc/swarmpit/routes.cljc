@@ -4,6 +4,7 @@
 
 (def backend
   ["" {"/"              {:get :index}
+       "/version"       {:get :version}
        "/login"         {:post :login}
        "/password"      {:post :password}
        "/distribution/" {"public"     {:get {"/repositories" :public-repositories
