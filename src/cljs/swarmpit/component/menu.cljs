@@ -2,6 +2,7 @@
   (:require [material.component :as comp]
             [material.icon :as icon]
             [sablono.core :refer-macros [html]]
+            [swarmpit.component.handler :as handler]
             [swarmpit.component.state :as state]
             [swarmpit.storage :as storage]
             [swarmpit.routes :as routes]
@@ -164,20 +165,16 @@
          (take 7)
          (apply str))))
 
-(def get-version
+(def retrieve-version
   {:will-mount
    (fn [state]
-     (swarmpit.controller/get
+     (handler/get
        (routes/path-for-backend :version)
-       (fn [version]
-         (state/update-value
-           [:version]
-           (parse-version version)
-           cursor)))
+       {:on-success #(state/update-value [:version] (parse-version %) cursor)})
      state)})
 
 (rum/defc drawer < rum/reactive
-                   get-version [page-domain]
+                   retrieve-version [page-domain]
   (let [{:keys [opened version]} (state/react cursor)
         drawer-container-style (if opened
                                  drawer-container-opened-style
