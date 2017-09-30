@@ -1,6 +1,7 @@
 (ns swarmpit.handler
   (:require [clojure.walk :refer [keywordize-keys]]
             [clojure.java.io :as io]
+            [swarmpit.version :refer [version]]
             [swarmpit.api :as api]
             [swarmpit.token :as token]))
 
@@ -35,6 +36,12 @@
     {:status  200
      :headers {"Content-Type" "text/html"}
      :body    (slurp (io/resource "public/index.html"))}))
+
+;; Version handler
+
+(defmethod dispatch :version [_]
+  (fn [_]
+    (resp-ok version)))
 
 ;; Login handler
 

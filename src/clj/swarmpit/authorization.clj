@@ -59,6 +59,8 @@
              :handler {:and [authenticated-access admin-access]}}
             {:pattern #"^/login$"
              :handler any-access}
+            {:pattern #"^/version$"
+             :handler any-access}
             {:pattern #"^/$"
              :handler any-access}
             {:pattern        #"^/distribution/registries/[a-zA-Z0-9]*/repositories$"

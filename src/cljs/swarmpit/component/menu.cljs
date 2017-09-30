@@ -2,6 +2,7 @@
   (:require [material.component :as comp]
             [material.icon :as icon]
             [sablono.core :refer-macros [html]]
+            [swarmpit.component.handler :as handler]
             [swarmpit.component.state :as state]
             [swarmpit.storage :as storage]
             [swarmpit.routes :as routes]
@@ -151,13 +152,30 @@
        :href          (routes/path-for-frontend handler)
        :leftIcon      drawer-item-icon})))
 
-(rum/defc drawer-title < rum/static []
+(rum/defc drawer-title < rum/static [version]
   (html [:div
          [:div {:style drawer-app-name-style} "swarmpit"]
-         [:div {:style drawer-app-version-style} "1.2-SNAPSHOT"]]))
+         [:div {:style drawer-app-version-style} version]]))
 
-(rum/defc drawer < rum/reactive [page-domain]
-  (let [{:keys [opened]} (state/react cursor)
+(defn parse-version [version]
+  (clojure.string/replace
+    (:version version)
+    #"SNAPSHOT"
+    (->> (:revision version)
+         (take 7)
+         (apply str))))
+
+(def retrieve-version
+  {:will-mount
+   (fn [state]
+     (handler/get
+       (routes/path-for-backend :version)
+       {:on-success #(state/update-value [:version] (parse-version %) cursor)})
+     state)})
+
+(rum/defc drawer < rum/reactive
+                   retrieve-version [page-domain]
+  (let [{:keys [opened version]} (state/react cursor)
         drawer-container-style (if opened
                                  drawer-container-opened-style
                                  drawer-container-closed-style)]
@@ -168,7 +186,7 @@
          :containerStyle drawer-container-style}
         (comp/app-bar
           {:key                      "menu-drawer-bar"
-           :title                    (drawer-title)
+           :title                    (drawer-title version)
            :titleStyle               drawer-title-style
            :style                    drawer-style
            :iconElementLeft          drawer-icon
