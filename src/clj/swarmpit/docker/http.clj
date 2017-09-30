@@ -63,13 +63,18 @@
         (-> response :body (parse-string true))))
     (catch IOException exception
       (throw (let [error (.getMessage exception)]
-               (ex-info (str "Docker failure: " error) {:message error}))))
+               (ex-info (str "Docker failure: " error) {:status 500
+                                                        :body   {:error error}}))))
     (catch ExceptionInfo exception
       (throw (let [data (some-> exception (ex-data))
+                   status (:status data)
                    error (if (= "application/json" ((:headers data) "Content-Type"))
                            (parse-string (:body data) true)
-                           {:message (:reason-phrase data)})]
-               (ex-info (str "Docker error: " (:message error)) error))))))
+                           (:reason-phrase data))]
+               (ex-info
+                 (str "Docker error: " (:message error))
+                 {:status status
+                  :body   {:error error}}))))))
 
 (defn get
   ([uri] (get uri nil nil))
