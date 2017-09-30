@@ -81,7 +81,8 @@
       (mounts/volumes-handler)
       (networks/networks-handler)
       (secrets/secrets-handler)
-      (placement/placement-handler))))
+      (placement/placement-handler)
+      (labels/labels-handler))))
 
 (rum/defc form-settings < rum/static []
   [:div.form-service-edit-group

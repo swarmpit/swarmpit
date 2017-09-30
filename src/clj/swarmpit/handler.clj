@@ -159,6 +159,10 @@
     (api/delete-service (:id route-params))
     (resp-ok)))
 
+(defmethod dispatch :labels-service [_]
+  (fn [_]
+    (resp-ok (api/labels-service))))
+
 ;; Network handler
 
 (defmethod dispatch :networks [_]

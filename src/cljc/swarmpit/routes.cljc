@@ -57,6 +57,7 @@
        "/plugin/"       {:get {"network" :plugin-network
                                "log"     :plugin-log
                                "volume"  :plugin-volume}}
+       "/labels/"       {:get {"service" :labels-service}}
        "/admin/"        {"users"  {:get  :users
                                    :post :user-create}
                          "users/" {:get    {[:id] :user}
