@@ -13,7 +13,7 @@
 (defn- trim-ms
   [datetime]
   (str/replace datetime #"\.(.+)Z$"
-               #(str "." (->> (% 1) (take 3) (apply str)) "Z")))
+               #(str "." (->> (str (% 1) "00") (take 3) (apply str)) "Z")))
 
 (defn parse
   [datetime]
