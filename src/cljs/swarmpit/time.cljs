@@ -31,4 +31,4 @@
   (->> datetime
        (parse)
        (to-default-time-zone)
-       (format/unparse-local-date simple-format)))
+       (format/unparse simple-format)))
