@@ -8,6 +8,7 @@
                  [org.clojure/core.memoize "0.5.8"]
                  [org.clojure/core.async "0.3.443"]
                  [org.clojure/tools.logging "0.4.0"]
+                 [clojure-humanize "0.2.2"]
                  [cljsjs/react "15.4.2-2"]
                  [cljsjs/react-dom "15.4.2-2"]
                  [cljsjs/material-ui "0.18.1-0"]

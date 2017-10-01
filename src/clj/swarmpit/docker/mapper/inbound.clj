@@ -1,13 +1,6 @@
 (ns swarmpit.docker.mapper.inbound
   "Map docker domain to swarmpit domain"
-  (:import (java.text SimpleDateFormat))
   (:require [clojure.string :as str]))
-
-(def date-format (SimpleDateFormat. "yyyy-MM-dd'T'HH:mm:ss"))
-
-(defn date
-  [date]
-  (str (.parse date-format date)))
 
 (defn ->image-ports
   [image-config]
@@ -25,7 +18,7 @@
     (array-map
       :id (:Id network)
       :networkName (:Name network)
-      :created (some-> network :Created (date))
+      :created (:Created network)
       :scope (:Scope network)
       :driver (:Driver network)
       :internal (:Internal network)
@@ -92,8 +85,8 @@
       :id id
       :taskName task-name
       :version (get-in task [:Version :Index])
-      :createdAt (date (:CreatedAt task))
-      :updatedAt (date (:UpdatedAt task))
+      :createdAt (:CreatedAt task)
+      :updatedAt (:UpdatedAt task)
       :repository {:image       image-name
                    :imageDigest image-digest}
       :state (get-in task [:Status :State])
@@ -260,8 +253,8 @@
     (array-map
       :id service-id
       :version (get-in service [:Version :Index])
-      :createdAt (date (:CreatedAt service))
-      :updatedAt (date (:UpdatedAt service))
+      :createdAt (:CreatedAt service)
+      :updatedAt (:UpdatedAt service)
       :distribution {:id   (:swarmpit.service.distribution.id service-labels)
                      :type (:swarmpit.service.distribution.type service-labels)}
       :repository (merge (->service-image-details image-name)
@@ -322,8 +315,8 @@
     :id (:ID secret)
     :version (get-in secret [:Version :Index])
     :secretName (get-in secret [:Spec :Name])
-    :createdAt (date (:CreatedAt secret))
-    :updatedAt (date (:UpdatedAt secret))))
+    :createdAt (:CreatedAt secret)
+    :updatedAt (:UpdatedAt secret)))
 
 (defn ->secrets
   [secrets]
