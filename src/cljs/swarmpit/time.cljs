@@ -30,5 +30,5 @@
   [datetime]
   (->> datetime
        (parse)
-       (cljs-time.core/to-default-time-zone)
+       (to-default-time-zone)
        (format/unparse-local-date simple-format)))
