@@ -1,17 +1,24 @@
 (ns swarmpit.time
   (:require [clojure.contrib.humanize :as humanize]
+            [clojure.string :as str]
             [cljs-time.core :refer [after? to-default-time-zone now]]
             [cljs-time.format :as format]))
 
 (def docker-format
-  (format/formatter "yyyy-MM-dd'T'HH:mm:ss.SSSSSSSSSZZ"))
+  (format/formatters :date-time))
 
 (def simple-format
   (format/formatters :mysql))
 
+(defn- trim-ms
+  [datetime]
+  (str/replace datetime #"\.(.+)Z$"
+               #(str "." (->> (% 1) (take 3) (apply str)) "Z")))
+
 (defn parse
   [datetime]
-  (format/parse docker-format datetime))
+  (->> (trim-ms datetime)
+       (format/parse docker-format)))
 
 (defn- shift-future-date
   [date]
@@ -21,14 +28,12 @@
 
 (defn humanize
   [datetime]
-  (->> datetime
-       (parse)
+  (->> (parse datetime)
        (shift-future-date)
        (humanize/datetime)))
 
 (defn simplify
   [datetime]
-  (->> datetime
-       (parse)
+  (->> (parse datetime)
        (to-default-time-zone)
        (format/unparse simple-format)))
