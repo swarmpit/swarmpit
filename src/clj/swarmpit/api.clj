@@ -14,7 +14,8 @@
             [swarmpit.registry.mapper.inbound :as rmi]
             [swarmpit.couchdb.client :as cc]
             [swarmpit.couchdb.mapper.inbound :as cmi]
-            [swarmpit.couchdb.mapper.outbound :as cmo]))
+            [swarmpit.couchdb.mapper.outbound :as cmo]
+            [clojure.string :as str]))
 
 ;;; User API
 
@@ -471,6 +472,7 @@
   (->> (services)
        (map #(->> % :labels
                   (map :name)
+                  (map str/trim)
                   (set)))
        (apply clojure.set/union)))
 
