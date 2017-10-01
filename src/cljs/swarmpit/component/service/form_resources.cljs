@@ -12,16 +12,18 @@
 (defn- form-cpu-reservation [value]
   (comp/form-comp
     "CPU"
-    (comp/text-field
-      {:name     "cpu-reservation"
-       :key      "cpu-reservation"
-       :type     "number"
-       :min      0.000
-       :step     0.001
-       :max      1.0
-       :value    value
-       :onChange (fn [_ v]
-                   (state/update-value [:reservation :cpu] (parse-float v) cursor))})))
+    (comp/vtext-field
+      {:name            "cpu-reservation"
+       :key             "cpu-reservation"
+       :type            "number"
+       :min             0.000
+       :step            0.001
+       :max             1.0
+       :validations     "isValidCPUValue"
+       :validationError "Please use maximum of 1.0 (represents a whole CPU) or leave blank for default value"
+       :value           value
+       :onChange        (fn [_ v]
+                          (state/update-value [:reservation :cpu] (parse-float v) cursor))})))
 
 (defn- form-memory-reservation [value]
   (comp/form-comp
@@ -32,7 +34,7 @@
        :type            "number"
        :min             4
        :validations     "isValidMemoryValue"
-       :validationError "Use minimum of 4MB"
+       :validationError "Please use minimum of 4 MB or leave blank for default value"
        :value           value
        :onChange        (fn [_ v]
                           (state/update-value [:reservation :memory] (parse-int v) cursor))})))
@@ -40,16 +42,18 @@
 (defn- form-cpu-limit [value]
   (comp/form-comp
     "CPU"
-    (comp/text-field
-      {:name     "cpu-limit"
-       :key      "cpu-limit"
-       :type     "number"
-       :min      0.000
-       :step     0.001
-       :max      1.0
-       :value    value
-       :onChange (fn [_ v]
-                   (state/update-value [:limit :cpu] (parse-float v) cursor))})))
+    (comp/vtext-field
+      {:name            "cpu-limit"
+       :key             "cpu-limit"
+       :type            "number"
+       :min             0.000
+       :step            0.001
+       :max             1.0
+       :validations     "isValidCPUValue"
+       :validationError "Please use maximum of 1.0 (represents a whole CPU) or leave blank for default value"
+       :value           value
+       :onChange        (fn [_ v]
+                          (state/update-value [:limit :cpu] (parse-float v) cursor))})))
 
 (defn- form-memory-limit [value]
   (comp/form-comp
@@ -60,7 +64,7 @@
        :type            "number"
        :min             4
        :validations     "isValidMemoryValue"
-       :validationError "Use minimum of 4MB"
+       :validationError "Please use minimum of 4 MB or leave blank for default value"
        :value           value
        :onChange        (fn [_ v]
                           (state/update-value [:limit :memory] (parse-int v) cursor))})))
@@ -78,4 +82,4 @@
        (html (comp/form-subsection "Limit"))
        (form-cpu-limit (:cpu limit))
        (form-memory-limit (:memory limit))
-       (html [:div {:style {:height "30px"}}]))]))
+       (html [:div {:style {:height "20px"}}]))]))

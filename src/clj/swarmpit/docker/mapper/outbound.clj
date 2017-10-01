@@ -96,14 +96,8 @@
 
 (defn ->service-resource
   [service-resource]
-  (let [cpu (:cpu service-resource)
-        memory (:memory service-resource)]
-    {:NanoCPUs    (when (some? cpu)
-                    (-> cpu
-                        (* 1000000000)
-                        (long)))
-     :MemoryBytes (when (some? memory)
-                    (as-bytes memory))}))
+  {:NanoCPUs    (:cpu service-resource)
+   :MemoryBytes (as-bytes (:memory service-resource))})
 
 (defn ->service-update-config
   [service]
@@ -164,8 +158,8 @@
                                     :Env     (->service-variables service)}
                     :LogDriver     {:Name    (get-in service [:logdriver :name])
                                     :Options (->service-log-options service)}
-                    :Resources     {:Limits       (->service-resource (get-in service [:resources :limit]))
-                                    :Reservations (->service-resource (get-in service [:resources :reservation]))}
+                    :Resources     {:Limits      (->service-resource (get-in service [:resources :limit]))
+                                    :Reservation (->service-resource (get-in service [:resources :reservation]))}
                     :RestartPolicy (->service-restart-policy service)
                     :Placement     {:Constraints (->service-placement-contraints service)}
                     :ForceUpdate   (get-in service [:deployment :forceUpdate])

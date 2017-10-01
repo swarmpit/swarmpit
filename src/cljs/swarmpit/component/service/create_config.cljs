@@ -158,8 +158,8 @@
        (comp/mui
          (comp/raised-button
            {:label      "Create"
-            :disabled   (and (not (:isValid settings))
-                             (not (:isValid resources)))
+            :disabled   (or (not (:isValid settings))
+                            (not (:isValid resources)))
             :primary    true
             :onTouchTap create-service-handler}))]]
      (comp/mui

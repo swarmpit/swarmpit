@@ -172,13 +172,8 @@
 
 (defn ->service-resource
   [service-resource-category]
-  (let [nano-cpu (:NanoCPUs service-resource-category)
-        memory-bytes (:MemoryBytes service-resource-category)]
-    {:cpu    (when (some? nano-cpu)
-               (-> (/ nano-cpu 1000000000)
-                   (double)))
-     :memory (when (some? memory-bytes)
-               (as-megabytes memory-bytes))}))
+  {:cpu    (or (:NanoCPUs service-resource-category) 0.000)
+   :memory (as-megabytes (or (:MemoryBytes service-resource-category) 0))})
 
 (defn ->service-secrets
   [service-spec]
@@ -293,7 +288,7 @@
       :labels (->service-labels service-labels)
       :logdriver {:name (or (get-in service-task-template [:LogDriver :Name]) "none")
                   :opts (->service-log-options service-task-template)}
-      :resources {:reservation (->service-resource (get-in service-task-template [:Resources :Reservations]))
+      :resources {:reservation (->service-resource (get-in service-task-template [:Resources :Reservation]))
                   :limit       (->service-resource (get-in service-task-template [:Resources :Limits]))}
       :deployment {:update          (->service-deployment-update service-spec)
                    :forceUpdate     (:ForceUpdate service-task-template)
