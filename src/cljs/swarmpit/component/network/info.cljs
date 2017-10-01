@@ -38,7 +38,7 @@
      (comp/form-section "General settings")
      (comp/form-item "ID" (:id item))
      (comp/form-item "NAME" (:networkName item))
-     (comp/form-item "CREATED" (:created item))
+     (comp/form-item-date "CREATED" (:created item))
      (comp/form-item "DRIVER" (:driver item))
      (comp/form-item "INTERNAL" (if (:internal item)
                                   "yes"
