@@ -129,7 +129,6 @@
                             (not isValidIpam))
             :primary    true
             :onTouchTap create-network-handler}))]]
-
      [:div.form-view
       [:div.form-view-group
        (comp/form-section "General settings")

@@ -28,6 +28,7 @@
                                                :secrets    []
                                                :variables  []
                                                :mounts     []
+                                               :resources  {}
                                                :deployment {}}}
                           :task      {:list {}}
                           :registry  {:list {}

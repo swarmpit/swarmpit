@@ -88,7 +88,6 @@
             :disabled   (not isValid)
             :primary    true
             :onTouchTap create-volume-handler}))]]
-
      [:div.form-view
       [:div.form-view-group
        (comp/form

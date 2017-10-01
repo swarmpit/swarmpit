@@ -3,6 +3,10 @@
   (:require [clojure.string :as str]
             [swarmpit.base64 :as base64]))
 
+(defn- as-bytes
+  [megabytes]
+  (* megabytes (* 1024 1024)))
+
 (defn ->auth-config
   "Pass registry or dockeruser entity"
   [auth-entity]
@@ -90,6 +94,17 @@
                                   :UID  "0"}}))
        (into [])))
 
+(defn ->service-resource
+  [service-resource]
+  (let [cpu (:cpu service-resource)
+        memory (:memory service-resource)]
+    {:NanoCPUs    (when (some? cpu)
+                    (-> cpu
+                        (* 1000000000)
+                        (long)))
+     :MemoryBytes (when (some? memory)
+                    (as-bytes memory))}))
+
 (defn ->service-update-config
   [service]
   (let [update (get-in service [:deployment :update])]
@@ -149,6 +164,8 @@
                                     :Env     (->service-variables service)}
                     :LogDriver     {:Name    (get-in service [:logdriver :name])
                                     :Options (->service-log-options service)}
+                    :Resources     {:Limits       (->service-resource (get-in service [:resources :limit]))
+                                    :Reservations (->service-resource (get-in service [:resources :reservation]))}
                     :RestartPolicy (->service-restart-policy service)
                     :Placement     {:Constraints (->service-placement-contraints service)}
                     :ForceUpdate   (get-in service [:deployment :forceUpdate])

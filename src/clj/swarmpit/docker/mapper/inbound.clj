@@ -1,6 +1,11 @@
 (ns swarmpit.docker.mapper.inbound
   "Map docker domain to swarmpit domain"
-  (:require [clojure.string :as str]))
+  (:require [clojure.string :as str]
+            [clojure.tools.logging :as log]))
+
+(defn- as-megabytes
+  [bytes]
+  (quot bytes (* 1024 1024)))
 
 (defn ->image-ports
   [image-config]
@@ -57,7 +62,7 @@
 
 (defn ->task-node
   [node-id nodes]
-  (first (filter #(= (:ID %) node-id) nodes)))
+  (or (first (filter #(= (:ID %) node-id) nodes)) node-id))
 
 (defn ->task-service
   [service-id services]
@@ -165,6 +170,16 @@
   (->> (get-in service-spec [:TaskTemplate :Placement :Constraints])
        (map (fn [v] {:rule v}))
        (into [])))
+
+(defn ->service-resource
+  [service-resource-category]
+  (let [nano-cpu (:NanoCPUs service-resource-category)
+        memory-bytes (:MemoryBytes service-resource-category)]
+    {:cpu    (-> (or nano-cpu 0)
+                 (/ 1000000000)
+                 (double))
+     :memory (-> (or memory-bytes 0)
+                 (as-megabytes))}))
 
 (defn ->service-secrets
   [service-spec]
@@ -279,6 +294,8 @@
       :labels (->service-labels service-labels)
       :logdriver {:name (or (get-in service-task-template [:LogDriver :Name]) "none")
                   :opts (->service-log-options service-task-template)}
+      :resources {:reservation (->service-resource (get-in service-task-template [:Resources :Reservations]))
+                  :limit       (->service-resource (get-in service-task-template [:Resources :Limits]))}
       :deployment {:update          (->service-deployment-update service-spec)
                    :forceUpdate     (:ForceUpdate service-task-template)
                    :restartPolicy   (->service-deployment-restart-policy service-task-template)

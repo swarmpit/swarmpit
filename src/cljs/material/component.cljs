@@ -2,11 +2,11 @@
   (:refer-clojure :exclude [stepper list])
   (:require [material.factory :as factory]
             [material.icon :as icon]
+            [material.validation]
             [sablono.core :refer-macros [html]]
             [swarmpit.time :as time]
             [swarmpit.url :refer [dispatch!]]
-            [swarmpit.utils :refer [select-keys*]]
-            [swarmpit.ip :as ip]))
+            [swarmpit.utils :refer [select-keys*]]))
 
 ;;; Theme components
 
@@ -40,20 +40,6 @@
    (mui-theme-provider
      {:muiTheme (mui-theme theme)}
      comp)])
-
-;;; Custom formsy validation
-
-(.addValidationRule js/Formsy "isValidGateway"
-                    (fn [_ value]
-                      (if (empty? value)
-                        true
-                        (ip/is-valid-gateway value))))
-
-(.addValidationRule js/Formsy "isValidSubnet"
-                    (fn [_ value]
-                      (if (empty? value)
-                        true
-                        (ip/is-valid-subnet value))))
 
 ;;; Single formsy components
 
