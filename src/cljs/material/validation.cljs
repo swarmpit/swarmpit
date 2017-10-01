@@ -19,7 +19,7 @@
                       (let [val (str value)]
                         (if (empty? val)
                           true
-                          (some? (re-matches #"^[4-9][0-9]*$" val))))))
+                          (some? (re-matches #"(([1-4]\d|[4-9])\d*)$" val))))))
 
 (.addValidationRule js/Formsy "isValidCPUValue"
                     (fn [_ value]
