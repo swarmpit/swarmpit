@@ -37,5 +37,5 @@
     [:div.form-view-group
      (comp/form-item "ID" (:id item))
      (comp/form-item "NAME" (:secretName item))
-     (comp/form-item "CREATED" (:createdAt item))
-     (comp/form-item "UPDATED" (:updatedAt item))]]])
+     (comp/form-item-date "CREATED" (:createdAt item))
+     (comp/form-item-date "UPDATED" (:updatedAt item))]]])

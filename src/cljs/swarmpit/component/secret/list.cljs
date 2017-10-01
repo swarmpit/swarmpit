@@ -3,6 +3,7 @@
             [swarmpit.component.mixin :as mixin]
             [swarmpit.component.state :as state]
             [swarmpit.routes :as routes]
+            [swarmpit.time :as time]
             [clojure.string :as string]
             [rum.core :as rum]))
 
@@ -59,7 +60,9 @@
             :label   "New secret"
             :primary true}))]]
      (comp/list-table headers
-                      (sort-by :secretName filtered-items)
+                      (->> filtered-items
+                           (sort-by :secretName)
+                           (map #(update % :createdAt time/simplify)))
                       render-item
                       render-item-keys
                       onclick-handler)]))

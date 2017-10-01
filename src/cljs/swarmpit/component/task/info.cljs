@@ -19,8 +19,8 @@
        (comp/form-section "General settings")
        (comp/form-item "ID" (:id item))
        (comp/form-item "NAME" (:taskName item))
-       (comp/form-item "CREATED" (:createdAt item))
-       (comp/form-item "LAST UPDATE" (:updatedAt item))
+       (comp/form-item-date "CREATED" (:createdAt item))
+       (comp/form-item-date "LAST UPDATE" (:updatedAt item))
        (comp/form-item "IMAGE" (get-in item [:repository :image]))
        (when (some? image-digest)
          (comp/form-item "IMAGE DIGEST" image-digest))]

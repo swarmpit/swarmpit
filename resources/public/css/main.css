@@ -434,3 +434,10 @@ select:-webkit-autofill:focus {
     font-size: 12px;
     color: rgb(158, 158, 158);
 }
+
+.hoverable:after{
+    content: attr(data-1);
+}
+.hoverable:hover:after{
+    content: attr(data-2);
+}

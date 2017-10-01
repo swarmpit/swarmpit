@@ -3,6 +3,7 @@
   (:require [material.factory :as factory]
             [material.icon :as icon]
             [sablono.core :refer-macros [html]]
+            [swarmpit.time :as time]
             [swarmpit.url :refer [dispatch!]]
             [swarmpit.utils :refer [select-keys*]]
             [swarmpit.ip :as ip]))
@@ -415,6 +416,13 @@
   [:div.form-view-row
    [:span.form-row-label label]
    [:div.form-row-value value]])
+
+(defn form-item-date [label date]
+  [:div.form-view-row
+   [:span.form-row-label label]
+   [:div.form-row-value.hoverable
+    {:data-1 (time/humanize date)
+     :data-2 (time/simplify date)}]])
 
 (defn form-value [value]
   [:div.form-view-row
