@@ -130,6 +130,7 @@
       (networks/networks-handler)
       (secrets/secrets-handler)
       (placement/placement-handler)
+      (labels/labels-handler)
       (case distributionType
         "dockerhub" (settings/dockerhub-tags-handler distribution repository)
         "registry" (settings/registry-tags-handler distribution repository)

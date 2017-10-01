@@ -464,6 +464,16 @@
       (-> service
           :PreviousSpec))))
 
+;; Labels API
+
+(defn labels-service
+  []
+  (->> (services)
+       (map #(->> % :labels
+                  (map :name)
+                  (set)))
+       (apply clojure.set/union)))
+
 ;; Plugin API
 
 (defn plugins
