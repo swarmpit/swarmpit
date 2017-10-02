@@ -5,7 +5,8 @@
             [swarmpit.component.handler :as handler]
             [swarmpit.component.message :as message]
             [swarmpit.routes :as routes]
-            [rum.core :as rum]))
+            [rum.core :as rum]
+            [swarmpit.utils :as util]))
 
 (enable-console-print!)
 
@@ -22,20 +23,23 @@
                    (message/error
                      (str "Volume removing failed. Reason: " (:error response))))}))
 
-(rum/defc form < rum/static [item]
-  [:div
-   [:div.form-panel
-    [:div.form-panel-left
-     (comp/panel-info icon/volumes
-                      (:volumeName item))]
-    [:div.form-panel-right
-     (comp/mui
-       (comp/raised-button
-         {:onTouchTap #(delete-volume-handler (:volumeName item))
-          :label      "Delete"}))]]
-   [:div.form-view
-    [:div.form-view-group
-     (comp/form-item "NAME" (:volumeName item))
-     (comp/form-item "DRIVER" (:driver item))
-     (comp/form-item "SCOPE" (:scope item))
-     (comp/form-item "MOUNTPOINT" (:mountpoint item))]]])
+(rum/defc form < rum/static [volume]
+  (let [stack (:stack volume)]
+    [:div
+     [:div.form-panel
+      [:div.form-panel-left
+       (comp/panel-info icon/volumes
+                        (:volumeName volume))]
+      [:div.form-panel-right
+       (comp/mui
+         (comp/raised-button
+           {:onTouchTap #(delete-volume-handler (:volumeName volume))
+            :label      "Delete"}))]]
+     [:div.form-view
+      [:div.form-view-group
+       (if (some? stack)
+         (comp/form-item "STACK" stack))
+       (comp/form-item "NAME" (util/trim-stack stack (:volumeName volume)))
+       (comp/form-item "DRIVER" (:driver volume))
+       (comp/form-item "SCOPE" (:scope volume))
+       (comp/form-item "MOUNTPOINT" (:mountpoint volume))]]]))
