@@ -88,7 +88,12 @@
      [:div.form-panel
       [:div.form-panel-left
        (comp/panel-info icon/services
-                        (:serviceName service))]]
+                        (:serviceName service))]
+      [:div.form-panel-right
+       (comp/mui
+         (comp/raised-button
+           {:href  (routes/path-for-frontend :service-info (select-keys service [:id]))
+            :label "Back"}))]]
      [:div.log-panel
       [:div.form-panel-left
        (comp/panel-text-field
