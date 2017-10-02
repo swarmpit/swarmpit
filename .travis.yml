@@ -25,5 +25,4 @@ install:
   - bash dev/script/start-dind.sh
 script:
   - lein test :all
-after_success:
   - bash dev/script/deploy-image.sh
