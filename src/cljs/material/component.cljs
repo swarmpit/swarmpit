@@ -251,7 +251,8 @@
 (defn autocomplete [props]
   (auto-complete
     (merge props
-           {:listStyle {:maxHeight "230px"}})))
+           {:listStyle {:overflow-y  "scroll"
+                        :maxHeight "230px"}})))
 
 ;; Panel elements
 
