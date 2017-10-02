@@ -1,6 +1,7 @@
 (ns swarmpit.docker.mapper.outbound
   "Map swarmpit domain to docker domain"
   (:require [clojure.string :as str]
+            [swarmpit.docker.client :as docker]
             [swarmpit.base64 :as base64]))
 
 (defn- as-bytes
@@ -61,13 +62,22 @@
        (map (fn [l] {(:name l) (:value l)}))
        (into {})))
 
+(defn- volume-options
+  [mount]
+  (when (= "volume" (:Type mount))
+    (let [volume (docker/volume (:Source mount))]
+      {:VolumeOptions {:Labels       (:Labels volume)
+                       :DriverConfig {:Name    (:Driver volume)
+                                      :Options (:Options volume)}}})))
+
 (defn ->service-mounts
   [service]
   (->> (:mounts service)
-       (map (fn [v] {:ReadOnly (:readOnly v)
-                     :Source   (:host v)
-                     :Target   (:containerPath v)
-                     :Type     (:type v)}))
+       (map #(-> {:ReadOnly (:readOnly %)
+                  :Source   (:host %)
+                  :Target   (:containerPath %)
+                  :Type     (:type %)}))
+       (map #(merge % (volume-options %)))
        (into [])))
 
 (defn- ->service-placement-contraints
