@@ -278,6 +278,7 @@
                           :imageDigest image-digest})
       :serviceName service-name
       :mode service-mode
+      :stack (:com.docker.stack.namespace service-labels)
       :replicas replicas
       :state (if (= service-mode "replicated")
                (->service-state replicas-running replicas)
