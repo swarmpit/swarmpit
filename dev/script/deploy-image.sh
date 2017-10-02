@@ -10,8 +10,8 @@ then
 	exit 0
 fi
 
-lein uberjar
-docker build -t $REPO .
+lein uberjar || exit 1
+docker build -t $REPO . || exit 1
 
 if [ $CONTRIBUTOR == "true" ] 
 then
@@ -32,7 +32,7 @@ then
 		docker tag $REPO "$NAMESPACE:pr-$TRAVIS_PULL_REQUEST"
 	fi
 	
-	docker push "$NAMESPACE"
+	docker push "$NAMESPACE" || exit 1
 else
 	echo "images can be pushed only from base repo"
 fi
