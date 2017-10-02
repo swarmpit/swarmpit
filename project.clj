@@ -9,6 +9,7 @@
                  [org.clojure/core.async "0.3.443"]
                  [org.clojure/tools.logging "0.4.0"]
                  [clojure-humanize "0.2.2"]
+                 [com.andrewmcveigh/cljs-time "0.5.1"]
                  [cljsjs/react "15.4.2-2"]
                  [cljsjs/react-dom "15.4.2-2"]
                  [cljsjs/material-ui "0.18.1-0"]
