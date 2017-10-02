@@ -5,7 +5,8 @@
             [swarmpit.component.handler :as handler]
             [swarmpit.component.message :as message]
             [swarmpit.routes :as routes]
-            [rum.core :as rum]))
+            [rum.core :as rum]
+            [swarmpit.utils :as util]))
 
 (enable-console-print!)
 
@@ -22,28 +23,31 @@
                    (message/error
                      (str "Network removing failed. Reason: " (:error response))))}))
 
-(rum/defc form < rum/static [item]
-  [:div
-   [:div.form-panel
-    [:div.form-panel-left
-     (comp/panel-info icon/networks
-                      (:networkName item))]
-    [:div.form-panel-right
-     (comp/mui
-       (comp/raised-button
-         {:onTouchTap #(delete-network-handler (:id item))
-          :label      "Delete"}))]]
-   [:div.form-view
-    [:div.form-view-group
-     (comp/form-section "General settings")
-     (comp/form-item "ID" (:id item))
-     (comp/form-item "NAME" (:networkName item))
-     (comp/form-item-date "CREATED" (:created item))
-     (comp/form-item "DRIVER" (:driver item))
-     (comp/form-item "INTERNAL" (if (:internal item)
-                                  "yes"
-                                  "no"))]
-    [:div.form-view-group
-     (comp/form-section "IP address management")
-     (comp/form-item "SUBNET" (get-in item [:ipam :subnet]))
-     (comp/form-item "GATEWAY" (get-in item [:ipam :gateway]))]]])
+(rum/defc form < rum/static [network]
+  (let [stack (:stack network)]
+    [:div
+     [:div.form-panel
+      [:div.form-panel-left
+       (comp/panel-info icon/networks
+                        (:networkName network))]
+      [:div.form-panel-right
+       (comp/mui
+         (comp/raised-button
+           {:onTouchTap #(delete-network-handler (:id network))
+            :label      "Delete"}))]]
+     [:div.form-view
+      [:div.form-view-group
+       (comp/form-section "General settings")
+       (comp/form-item "ID" (:id network))
+       (if (some? stack)
+         (comp/form-item "STACK" stack))
+       (comp/form-item "NAME" (util/trim-stack stack (:networkName network)))
+       (comp/form-item-date "CREATED" (:created network))
+       (comp/form-item "DRIVER" (:driver network))
+       (comp/form-item "INTERNAL" (if (:internal network)
+                                    "yes"
+                                    "no"))]
+      [:div.form-view-group
+       (comp/form-section "IP address management")
+       (comp/form-item "SUBNET" (get-in network [:ipam :subnet]))
+       (comp/form-item "GATEWAY" (get-in network [:ipam :gateway]))]]]))

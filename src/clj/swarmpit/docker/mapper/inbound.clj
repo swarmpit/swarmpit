@@ -7,6 +7,8 @@
   [bytes]
   (quot bytes (* 1024 1024)))
 
+(def stack-label :com.docker.stack.namespace)
+
 (defn ->image-ports
   [image-config]
   (let [ports (:ExposedPorts image-config)]
@@ -27,6 +29,8 @@
       :scope (:Scope network)
       :driver (:Driver network)
       :internal (:Internal network)
+      :labels (:Labels network)
+      :stack (-> network :Labels stack-label)
       :ipam {:subnet  (:Subnet config)
              :gateway (:Gateway config)})))
 
@@ -278,7 +282,7 @@
                           :imageDigest image-digest})
       :serviceName service-name
       :mode service-mode
-      :stack (:com.docker.stack.namespace service-labels)
+      :stack (-> service-labels stack-label)
       :replicas replicas
       :state (if (= service-mode "replicated")
                (->service-state replicas-running replicas)
@@ -318,6 +322,9 @@
       :id name
       :volumeName name
       :driver (:Driver volume)
+      :stack (-> volume :Labels stack-label)
+      :labels (:Labels volume)
+      :options (:Options volume)
       :mountpoint (:Mountpoint volume)
       :scope (:Scope volume))))
 

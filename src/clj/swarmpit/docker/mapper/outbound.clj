@@ -1,6 +1,7 @@
 (ns swarmpit.docker.mapper.outbound
   "Map swarmpit domain to docker domain"
   (:require [clojure.string :as str]
+            [swarmpit.docker.client :as docker]
             [swarmpit.base64 :as base64]))
 
 (defn- as-bytes
@@ -194,8 +195,10 @@
 
 (defn ->volume
   [volume]
-  {:Name   (:volumeName volume)
-   :Driver (:driver volume)})
+  {:Name    (:volumeName volume)
+   :Driver  (:driver volume)
+   :Options (:options volume)
+   :Labels  (:labels volume)})
 
 (defn ->secret
   [secret]
