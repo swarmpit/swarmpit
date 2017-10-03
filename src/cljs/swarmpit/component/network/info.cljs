@@ -6,6 +6,7 @@
             [swarmpit.component.message :as message]
             [swarmpit.routes :as routes]
             [rum.core :as rum]
+            [swarmpit.time :as time]
             [swarmpit.utils :as util]))
 
 (enable-console-print!)
@@ -24,7 +25,8 @@
                      (str "Network removing failed. Reason: " (:error response))))}))
 
 (rum/defc form < rum/static [network]
-  (let [stack (:stack network)]
+  (let [stack (:stack network)
+        created (:created network)]
     [:div
      [:div.form-panel
       [:div.form-panel-left
@@ -42,7 +44,8 @@
        (if (some? stack)
          (comp/form-item "STACK" stack))
        (comp/form-item "NAME" (util/trim-stack stack (:networkName network)))
-       (comp/form-item-date "CREATED" (:created network))
+       (when (time/valid? created)
+         (comp/form-item-date "CREATED" created))
        (comp/form-item "DRIVER" (:driver network))
        (comp/form-item "INTERNAL" (if (:internal network)
                                     "yes"

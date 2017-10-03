@@ -5,15 +5,14 @@
             [cljs-time.format :as format]))
 
 (def docker-format
-  (format/formatters :date-time))
+  (format/formatters :date-time-no-ms))
 
 (def simple-format
   (format/formatters :mysql))
 
 (defn- trim-ms
   [datetime]
-  (str/replace datetime #"\.(.+)Z$"
-               #(str "." (->> (str (% 1) "00") (take 3) (apply str)) "Z")))
+  (str/replace datetime #"\.(.+)Z$" "Z"))
 
 (defn parse
   [datetime]
@@ -37,3 +36,12 @@
   (->> (parse datetime)
        (to-default-time-zone)
        (format/unparse simple-format)))
+
+(defn valid?
+  [datetime]
+  (if (= datetime "0001-01-01T00:00:00Z")
+    false
+    (try (do (parse datetime)
+             true)
+         (catch :default e
+           false))))
