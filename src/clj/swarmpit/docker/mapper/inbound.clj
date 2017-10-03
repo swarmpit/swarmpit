@@ -297,7 +297,7 @@
       :secrets (->service-secrets service-spec)
       :variables (->service-variables service-spec)
       :labels (->service-labels service-labels)
-      :logdriver {:name (or (get-in service-task-template [:LogDriver :Name]) "none")
+      :logdriver {:name (or (get-in service-task-template [:LogDriver :Name]) "json-file")
                   :opts (->service-log-options service-task-template)}
       :resources {:reservation (->service-resource (get-in service-task-template [:Resources :Reservations]))
                   :limit       (->service-resource (get-in service-task-template [:Resources :Limits]))}

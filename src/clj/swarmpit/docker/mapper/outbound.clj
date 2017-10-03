@@ -140,25 +140,41 @@
     (str repository ":" tag)))
 
 (defn ->service-metadata
-  [service]
-  (let [autoredeploy (str (get-in service [:deployment :autoredeploy]))
+  [service image]
+  (let [autoredeploy (get-in service [:deployment :autoredeploy])
+        stack (:stack service)
         image-id (get-in service [:repository :imageId])
         distribution-id (get-in service [:distribution :id])
         distribution-type (get-in service [:distribution :type])
-        metadata {:swarmpit.service.deployment.autoredeploy autoredeploy
-                  :swarmpit.service.repository.image.id     image-id}]
-    (if (not-empty distribution-type)
-      (merge {:swarmpit.service.distribution.id   distribution-id
-              :swarmpit.service.distribution.type distribution-type} metadata)
-      metadata)))
+        metadata (volatile! {})]
+    (when (some? stack)
+      (vswap! metadata #(merge {:com.docker.stack.namespace stack
+                                :com.docker.stack.image     image} %)))
+    (when (some? autoredeploy)
+      (vswap! metadata #(merge {:swarmpit.service.deployment.autoredeploy (str autoredeploy)} %)))
+    (when (some? image-id)
+      (vswap! metadata #(merge {:swarmpit.service.repository.image.id image-id} %)))
+    (when (some? distribution-type)
+      (vswap! metadata #(merge {:swarmpit.service.distribution.id   distribution-id
+                                :swarmpit.service.distribution.type distribution-type} %)))
+    @metadata))
+
+(defn ->container-metadata
+  [service]
+  (let [stack (:stack service)
+        metadata (volatile! {})]
+    (when (some? stack)
+      (vswap! metadata #(merge {:com.docker.stack.namespace stack} %)))
+    @metadata))
 
 (defn ->service
   [service image]
   {:Name           (:serviceName service)
    :Labels         (merge
                      (->service-labels service)
-                     (->service-metadata service))
+                     (->service-metadata service image))
    :TaskTemplate   {:ContainerSpec {:Image   image
+                                    :Labels  (->container-metadata service)
                                     :Mounts  (->service-mounts service)
                                     :Secrets (:secrets service)
                                     :Env     (->service-variables service)}
