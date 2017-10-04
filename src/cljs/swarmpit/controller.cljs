@@ -30,12 +30,17 @@
                            401 (dispatch!
                                  (routes/path-for-frontend :login))
                            403 (dispatch {:handler :unauthorized})
+                           404 (dispatch {:handler :not-found})
                            (dispatch {:handler :error})))))
   ([api success-fx error-fx]
    (ajax/GET api
              (execute success-fx error-fx))))
 
 (defmethod dispatch nil
+  [{:keys [handler]}]
+  (state/set-value {:handler handler} cursor))
+
+(defmethod dispatch :not-found
   [{:keys [handler]}]
   (state/set-value {:handler handler} cursor))
 

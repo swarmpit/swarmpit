@@ -41,6 +41,10 @@
   [_]
   (page-404/form))
 
+(defmethod dispatch :not-found
+  [_]
+  (page-404/form))
+
 (defmethod dispatch :unauthorized
   [_]
   (page-401/form))
