@@ -43,7 +43,7 @@
                            volume
                            render-item
                            render-item-keys
-                           onclick-handler)]))
+                           nil)]))
 
 (rum/defc form < rum/static [mounts]
   (when (not-empty mounts)
