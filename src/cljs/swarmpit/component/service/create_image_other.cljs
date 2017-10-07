@@ -28,12 +28,16 @@
   [registry-id]
   (handler/get
     (routes/path-for-backend :registry-repositories {:id registry-id})
-    {:on-call    (state/update-value [:searching] true cursor)
+    {:on-call    (
+                  (state/update-value [:searching] true cursor)
+                  (state/update-value [:search-error] false cursor))
      :on-success (fn [response]
                    (state/update-value [:searching] false cursor)
+                   (state/update-value [:search-error] false cursor)
                    (state/update-value [:data] response cursor))
      :on-error   (fn [_]
-                   (state/update-value [:searching] false cursor))}))
+                   (state/update-value [:searching] false cursor)
+                   (state/update-value [:search-error] true cursor))}))
 
 (defn- form-registry-label
   [registry]
@@ -59,14 +63,14 @@
                       :value       (:_id %)
                       :primaryText (form-registry-label %)})))))))
 
-(defn- form-repository [repository]
+(defn- form-repository [registry repository search-error]
   (comp/form-comp
     "REPOSITORY"
-    (comp/text-field
-      {:hintText "Filter by name"
-       :value    repository
-       :onChange (fn [_ v]
-                   (state/update-value [:repository] v cursor))})))
+      (comp/text-field
+        {:hintText (if search-error "Enter exact name" "Filter by name")
+          :value    repository
+          :onChange (fn [_ v]
+                      (state/update-value [:repository] v cursor))})))
 
 (rum/defc form-loading < rum/static []
   (comp/form-comp-loading true))
@@ -95,6 +99,7 @@
 
 (rum/defc form < rum/reactive [registries]
   (let [{:keys [searching
+                search-error
                 repository
                 registry
                 data]} (state/react cursor)
@@ -102,7 +107,17 @@
     (if (some? registry)
       [:div.form-edit
        (form-registry registry registries)
-       (form-repository repository)
+       (form-repository registry repository search-error)
+       (if search-error
+        (comp/form-icon-value icon/info
+          [:span "Obtaining the registry catalog failed. "
+            (if (empty? repository)
+              "Enter the exact repository name to create service directly."
+              [:a {:href (routes/path-for-frontend :service-create-config
+                          {}
+                          {:repository       repository
+                            :distributionType "registry"
+                            :distribution     (:_id registry)})} "Create service directly."])]))
        [:div.form-edit-loader
         (if searching
           (form-loading)
