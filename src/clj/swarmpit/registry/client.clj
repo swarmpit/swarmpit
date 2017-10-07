@@ -22,25 +22,6 @@
   [token]
   {"Authorization" (str "Bearer " token)})
 
-(defn- get
-  [registry api headers params]
-  (let [url (build-url registry api)
-        options {:timeout      5000
-                 :headers      (merge {"Content-Type" "application/json"}
-                                      headers)
-                 :query-params params
-                 :insecure?    true}]
-    (try
-      (execute @(http/get url options))
-      (catch ExceptionInfo e
-        (if
-          (and
-            (=  (:status (ex-data e)) 401)
-            (some? (:www-authenticate (:headers (ex-data e)))))
-          (let [token (obtain-jwt-token (:www-authenticate (:headers (ex-data e))) registry)]
-            (let [options-with-token (assoc options :headers (merge (:headers options) (bearer-auth-header token)))]
-              (execute @(http/get url options-with-token))))
-          (throw e))))))
 
 (defn- parse-authenticate-header
   [www-authenticate]
@@ -67,6 +48,25 @@
                     :insecure?    true}]
       (:token (execute @(http/get url options))))))
 
+(defn- get
+  [registry api headers params]
+  (let [url (build-url registry api)
+        options {:timeout      5000
+                 :headers      (merge {"Content-Type" "application/json"}
+                                      headers)
+                 :query-params params
+                 :insecure?    true}]
+    (try
+      (execute @(http/get url options))
+      (catch ExceptionInfo e
+        (if
+          (and
+            (=  (:status (ex-data e)) 401)
+            (some? (:www-authenticate (:headers (ex-data e)))))
+          (let [token (obtain-jwt-token (:www-authenticate (:headers (ex-data e))) registry)]
+            (let [options-with-token (assoc options :headers (merge (:headers options) (bearer-auth-header token)))]
+              (execute @(http/get url options-with-token))))
+          (throw e))))))
 
 (defn repositories
   [registry]
