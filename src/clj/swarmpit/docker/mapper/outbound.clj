@@ -61,13 +61,21 @@
        (map (fn [l] {(:name l) (:value l)}))
        (into {})))
 
+(defn ->service-volume-options
+  [service-volume]
+  (when (some? service-volume)
+    {:Labels       (:labels service-volume)
+     :DriverConfig {:Name    (get-in service-volume [:driver :name])
+                    :Options (get-in service-volume [:driver :options])}}))
+
 (defn ->service-mounts
   [service]
   (->> (:mounts service)
-       (map (fn [v] {:ReadOnly (:readOnly v)
-                     :Source   (:host v)
-                     :Target   (:containerPath v)
-                     :Type     (:type v)}))
+       (map (fn [v] {:ReadOnly      (:readOnly v)
+                     :Source        (:host v)
+                     :Target        (:containerPath v)
+                     :Type          (:type v)
+                     :VolumeOptions (->service-volume-options (:volumeOptions v))}))
        (into [])))
 
 (defn- ->service-placement-contraints
@@ -159,7 +167,7 @@
                                 :swarmpit.service.distribution.type distribution-type} %)))
     @metadata))
 
-(defn ->container-metadata
+(defn ->service-container-metadata
   [service]
   (let [stack (:stack service)
         metadata (volatile! {})]
@@ -174,7 +182,7 @@
                      (->service-labels service)
                      (->service-metadata service image))
    :TaskTemplate   {:ContainerSpec {:Image   image
-                                    :Labels  (->container-metadata service)
+                                    :Labels  (->service-container-metadata service)
                                     :Mounts  (->service-mounts service)
                                     :Secrets (:secrets service)
                                     :Env     (->service-variables service)}
