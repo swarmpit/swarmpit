@@ -1,6 +1,6 @@
 (ns swarmpit.component.service.form-resources
   (:require [material.component :as comp]
-            [swarmpit.utils :refer [parse-int parse-float]]
+            [swarmpit.component.parser :refer [parse-int parse-float]]
             [swarmpit.component.state :as state]
             [sablono.core :refer-macros [html]]
             [rum.core :as rum]))

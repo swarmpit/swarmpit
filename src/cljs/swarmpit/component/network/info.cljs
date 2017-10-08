@@ -7,7 +7,7 @@
             [swarmpit.routes :as routes]
             [rum.core :as rum]
             [swarmpit.time :as time]
-            [swarmpit.utils :as util]))
+            [swarmpit.docker-utils :as utils]))
 
 (enable-console-print!)
 
@@ -43,7 +43,7 @@
        (comp/form-item "ID" (:id network))
        (if (some? stack)
          (comp/form-item "STACK" stack))
-       (comp/form-item "NAME" (util/trim-stack stack (:networkName network)))
+       (comp/form-item "NAME" (utils/trim-stack stack (:networkName network)))
        (when (time/valid? created)
          (comp/form-item-date "CREATED" created))
        (comp/form-item "DRIVER" (:driver network))

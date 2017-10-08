@@ -6,7 +6,7 @@
             [swarmpit.component.message :as message]
             [swarmpit.routes :as routes]
             [rum.core :as rum]
-            [swarmpit.utils :as util]))
+            [swarmpit.docker-utils :as utils]))
 
 (enable-console-print!)
 
@@ -39,7 +39,7 @@
       [:div.form-view-group
        (if (some? stack)
          (comp/form-item "STACK" stack))
-       (comp/form-item "NAME" (util/trim-stack stack (:volumeName volume)))
+       (comp/form-item "NAME" (utils/trim-stack stack (:volumeName volume)))
        (comp/form-item "DRIVER" (:driver volume))
        (comp/form-item "SCOPE" (:scope volume))
        (comp/form-item "MOUNTPOINT" (:mountpoint volume))]]]))

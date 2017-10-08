@@ -1,4 +1,4 @@
-(ns swarmpit.repository
+(ns swarmpit.docker-utils
   "Utility ns for docker repository"
   (:require [clojure.string :as str]))
 
@@ -12,5 +12,12 @@
   (if (namespace? repository)
     repository
     (str "library/" repository)))
+
+(defn trim-stack
+  [stack name]
+  "Removes stack name from object name eg. swarmpit_app -> app"
+  (if (some? stack)
+    (str/replace name #"^.*_" "")
+    name))
 
 

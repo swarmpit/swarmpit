@@ -2,8 +2,7 @@
   (:require [material.component :as comp]
             [cljs-time.core]
             [rum.core :as rum]
-            [swarmpit.utils :as util]
-            [clojure.string :as str]))
+            [swarmpit.docker-utils :as utils]))
 
 (enable-console-print!)
 
@@ -15,7 +14,7 @@
      (comp/form-item "ID" (:id service))
      (if (some? stack)
        (comp/form-item "STACK" stack))
-     (comp/form-item "NAME" (util/trim-stack stack (:serviceName service)))
+     (comp/form-item "NAME" (utils/trim-stack stack (:serviceName service)))
      (comp/form-item-date "CREATED" (:createdAt service))
      (comp/form-item-date "LAST UPDATE" (:updatedAt service))
      (comp/form-item "IMAGE" (get-in service [:repository :image]))

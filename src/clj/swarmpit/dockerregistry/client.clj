@@ -2,7 +2,7 @@
   (:refer-clojure :exclude [get])
   (:require [org.httpkit.client :as http]
             [swarmpit.http :refer :all]
-            [swarmpit.repository :as repo]))
+            [swarmpit.docker-utils :as utils]))
 
 (def ^:private base-url "https://index.docker.io/v2")
 
@@ -20,15 +20,15 @@
 
 (defn tags
   [token repository]
-  (let [api (str "/" (repo/add-dockerhub-namespace repository) "/tags/list")]
+  (let [api (str "/" (utils/add-dockerhub-namespace repository) "/tags/list")]
     (get api token {} nil)))
 
 (defn manifest
   [token repository-name repository-tag]
-  (let [api (str "/" (repo/add-dockerhub-namespace repository-name) "/manifests/" repository-tag)]
+  (let [api (str "/" (utils/add-dockerhub-namespace repository-name) "/manifests/" repository-tag)]
     (get api token nil nil)))
 
 (defn distribution
   [token repository-name repository-tag]
-  (let [api (str "/" (repo/add-dockerhub-namespace repository-name) "/manifests/" repository-tag)]
+  (let [api (str "/" (utils/add-dockerhub-namespace repository-name) "/manifests/" repository-tag)]
     (get api token {"Accept" "application/vnd.docker.distribution.manifest.v2+json"} nil)))

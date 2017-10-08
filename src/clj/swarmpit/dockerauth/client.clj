@@ -3,7 +3,7 @@
   (:require [org.httpkit.client :as http]
             [swarmpit.token :as token]
             [swarmpit.http :refer :all]
-            [swarmpit.repository :as repo]))
+            [swarmpit.docker-utils :as utils]))
 
 (def ^:private base-url "https://auth.docker.io")
 
@@ -26,5 +26,5 @@
   [user repository]
   (let [headers (basic-auth user)
         params {:service "registry.docker.io"
-                :scope   (str "repository:" (repo/add-dockerhub-namespace repository) ":pull")}]
+                :scope   (str "repository:" (utils/add-dockerhub-namespace repository) ":pull")}]
     (get "/token" headers params)))
