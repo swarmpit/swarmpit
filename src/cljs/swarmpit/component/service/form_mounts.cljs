@@ -18,6 +18,26 @@
     {:on-success (fn [response]
                    (reset! volumes response))}))
 
+(defn- normalize-volume
+  "Associate volumes with optional data (driver, labels)"
+  [volume]
+  (let [volume-data (first
+                      (filter #(= (:host volume)
+                                  (:volumeName %)) @volumes))]
+    (-> volume
+        (assoc-in [:volumeOptions :labels] (:labels volume-data))
+        (assoc-in [:volumeOptions :driver :name] (:driver volume-data))
+        (assoc-in [:volumeOptions :driver :options] (:options volume-data)))))
+
+(defn normalize
+  "Associate mounts with optional data required for consistency"
+  []
+  (->> (state/get-value cursor)
+       (map (fn [mount] (if (= "volume" (:type mount))
+                          (normalize-volume mount)
+                          mount)))
+       (into [])))
+
 (def headers [{:name  "Type"
                :width "15%"}
               {:name  "Container path"
