@@ -64,7 +64,6 @@
   (let [settings (state/get-value settings/cursor)
         ports (state/get-value ports/cursor)
         networks (state/get-value networks/cursor)
-        mounts (state/get-value mounts/cursor)
         secrets (state/get-value secrets/cursor)
         variables (state/get-value variables/cursor)
         labels (state/get-value labels/cursor)
@@ -76,7 +75,7 @@
       {:params     (-> settings
                        (assoc :ports ports)
                        (assoc :networks networks)
-                       (assoc :mounts mounts)
+                       (assoc :mounts (mounts/normalize))
                        (assoc :secrets secrets)
                        (assoc :variables variables)
                        (assoc :labels labels)
