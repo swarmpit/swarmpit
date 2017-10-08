@@ -1,7 +1,6 @@
 (ns swarmpit.docker.mapper.inbound
   "Map docker domain to swarmpit domain"
-  (:require [clojure.string :as str]
-            [clojure.tools.logging :as log]))
+  (:require [clojure.string :as str]))
 
 (defn- as-megabytes
   [bytes]
