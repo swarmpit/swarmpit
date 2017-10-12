@@ -1,6 +1,6 @@
 (ns swarmpit.registry.client
   (:refer-clojure :exclude [get])
-  (:require [org.httpkit.client :as http]
+  (:require [clj-http.client :as http]
             [swarmpit.http :refer :all]
             [swarmpit.token :as token]))
 
@@ -8,17 +8,21 @@
   [registry api]
   (str (:url registry) "/v2" api))
 
-(defn- execute [call] (execute-in-scope call "Registry" #(-> % :errors (first) :message)))
+(defn- execute
+  [call]
+  (execute-in-scope {:call-fx       call
+                     :scope         "Registry"
+                     :timeout       5000
+                     :error-handler #(-> % :errors (first) :message)}))
 
 (defn- get
   [registry api headers params]
   (let [url (build-url registry api)
-        options {:timeout      5000
-                 :headers      (merge {"Content-Type" "application/json"}
+        options {:headers      (merge {"Content-Type" "application/json"}
                                       headers)
                  :query-params params
                  :insecure?    true}]
-    (execute @(http/get url options))))
+    (execute #(http/get url options))))
 
 (defn- basic-auth
   [registry]

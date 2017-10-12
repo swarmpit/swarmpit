@@ -1,24 +1,28 @@
 (ns swarmpit.dockerhub.client
   (:refer-clojure :exclude [get])
-  (:require [org.httpkit.client :as http]
+  (:require [clj-http.client :as http]
             [swarmpit.http :refer :all]
             [cheshire.core :refer [generate-string]]))
 
 (def ^:private base-url "https://hub.docker.com/v2")
 
-(defn- execute [call] (execute-in-scope call "Dockerhub" #(or (:detail %) %)))
+(defn- execute
+  [call]
+  (execute-in-scope {:call-fx       call
+                     :scope         "Dockerhub"
+                     :error-handler #(or (:detail %) %)}))
 
 (defn- get
   [url headers params]
   (let [options {:headers      headers
                  :query-params params}]
-    (execute @(http/get url options))))
+    (execute #(http/get url options))))
 
 (defn- post
   [url headers body]
   (let [options {:headers (merge headers {"Content-Type" "application/json"})
                  :body    (generate-string body)}]
-    (execute @(http/post url options))))
+    (execute #(http/post url options))))
 
 (defn- jwt-auth
   [token]

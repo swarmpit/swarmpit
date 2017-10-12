@@ -11,9 +11,9 @@
 (defn ->repository-config
   [manifest]
   (-> manifest
-      (get "history")
+      :history
       (first)
-      (get "v1Compatibility")
+      :v1Compatibility
       (parse-string true)))
 
 (defn ->repository-without-prefix

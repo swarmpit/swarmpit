@@ -1,6 +1,6 @@
 (ns swarmpit.couchdb.client
   (:refer-clojure :exclude [get find])
-  (:require [org.httpkit.client :as http]
+  (:require [clj-http.client :as http]
             [swarmpit.http :refer :all]
             [cheshire.core :refer [generate-string]]
             [swarmpit.config :refer [config]]))
@@ -9,34 +9,37 @@
   {"Accept"       "application/json"
    "Content-Type" "application/json"})
 
-(defn- execute [call] (execute-in-scope call "DB"))
+(defn- execute
+  [call]
+  (execute-in-scope {:call-fx call
+                     :scope   "DB"}))
 
 (defn- get
   [api]
   (let [url (str (config :db-url) api)
         options {:headers headers}]
-    (execute @(http/get url options))))
+    (execute #(http/get url options))))
 
 (defn- put
   ([api] (put api {}))
   ([api request] (let [url (str (config :db-url) api)
                        options {:headers headers
                                 :body    (generate-string request)}]
-                   (execute @(http/put url options)))))
+                   (execute #(http/put url options)))))
 
 (defn- post
   [api request]
   (let [url (str (config :db-url) api)
         options {:headers headers
                  :body    (generate-string request)}]
-    (execute @(http/post url options))))
+    (execute #(http/post url options))))
 
 (defn- delete
   [api params]
   (let [url (str (config :db-url) api)
         options {:headers      headers
                  :query-params params}]
-    (execute @(http/delete url options))))
+    (execute #(http/delete url options))))
 
 (defn get-doc
   [id]
@@ -96,8 +99,8 @@
 
 (defn record-migration
   [name result]
-  (create-doc {:type "migration"
-               :name name
+  (create-doc {:type   "migration"
+               :name   name
                :result result}))
 
 ;; Secret

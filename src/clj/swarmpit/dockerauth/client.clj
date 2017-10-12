@@ -1,20 +1,24 @@
 (ns swarmpit.dockerauth.client
   (:refer-clojure :exclude [get])
-  (:require [org.httpkit.client :as http]
+  (:require [clj-http.client :as http]
             [swarmpit.token :as token]
             [swarmpit.http :refer :all]
             [swarmpit.docker-utils :as utils]))
 
 (def ^:private base-url "https://auth.docker.io")
 
-(defn- execute [call] (execute-in-scope call "Docker auth" :details))
+(defn- execute
+  [call]
+  (execute-in-scope {:call-fx       call
+                     :scope         "Docker auth"
+                     :error-handler :details}))
 
 (defn- get
   [api headers params]
   (let [url (str base-url api)
         options {:headers      headers
                  :query-params params}]
-    (execute @(http/get url options))))
+    (execute #(http/get url options))))
 
 (defn- basic-auth
   [user]
