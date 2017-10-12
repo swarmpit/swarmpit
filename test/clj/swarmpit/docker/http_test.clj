@@ -32,14 +32,14 @@
 
   (testing "invalid address"
     (is (thrown-with-msg?
-          ExceptionInfo #"Docker failure: not-existing-dns: Name or service not known"
+          ExceptionInfo #"Docker failure: not-existing-dns:"
           (with-redefs [swarmpit.config/config {:docker-sock "http://not-existing-dns"}]
             (get "/version")))))
 
   (testing "timeout"
     (is (thrown?
           TimeoutException
-          (with-redefs [swarmpit.docker.http/timeout-ms 0]
+          (with-redefs [swarmpit.docker.http/timeout 0]
             (get "/services")))))
 
   (testing "invalid socket"

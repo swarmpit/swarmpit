@@ -1,17 +1,13 @@
 (ns swarmpit.docker.http
   (:refer-clojure :exclude [get])
   (:require [clj-http.conn-mgr :as conn-mgr]
-            [clj-http.client :as client]
+            [clj-http.client :as http]
+            [swarmpit.http :refer :all]
             [cheshire.core :refer [parse-string generate-string]]
-            [swarmpit.config :refer [config]]
-            [swarmpit.http :refer [with-timeout]]
-            [clojure.string :as str]
-            [clojure.tools.logging :as log])
+            [swarmpit.config :refer [config]])
   (:import (org.apache.http.config RegistryBuilder)
            (swarmpit.socket UnixSocketFactory)
-           (org.apache.http.impl.conn BasicHttpClientConnectionManager)
-           (java.io IOException)
-           (clojure.lang ExceptionInfo)))
+           (org.apache.http.impl.conn BasicHttpClientConnectionManager)))
 
 (defn- http?
   [] (not (nil? (re-matches #"^https?:\/\/.*" (config :docker-sock)))))
@@ -38,43 +34,27 @@
     (str server api uri)))
 
 (def ^:private func-map
-  {"GET"    client/get
-   "POST"   client/post
-   "PUT"    client/put
-   "DELETE" client/delete})
+  {"GET"    http/get
+   "POST"   http/post
+   "PUT"    http/put
+   "DELETE" http/delete})
 
-(def timeout-ms 5000)
+(def timeout 5000)
 
 (defn execute
   "Execute docker command and parse result"
   [method uri params headers payload]
-  (try
-    (let [response (->> ((func-map method)
-                          (url uri)
-                          {:connection-manager (make-conn-manager)
-                           :headers            headers
-                           :query-params       params
-                           :body               (generate-string payload)
-                           :retry-handler      (fn [& args] false)})
-                        (with-timeout timeout-ms))
-          response-type (-> response :headers :Content-Type)]
-      (if (str/includes? (or response-type "") "text/plain")
-        (-> response :body)
-        (-> response :body (parse-string true))))
-    (catch IOException exception
-      (throw (let [error (.getMessage exception)]
-               (ex-info (str "Docker failure: " error) {:status 500
-                                                        :body   {:error error}}))))
-    (catch ExceptionInfo exception
-      (throw (let [data (some-> exception (ex-data))
-                   status (:status data)
-                   error (if (= "application/json" ((:headers data) "Content-Type"))
-                           (parse-string (:body data) true)
-                           (:reason-phrase data))]
-               (ex-info
-                 (str "Docker error: " (:message error))
-                 {:status status
-                  :body   {:error error}}))))))
+  (let [call #((func-map method)
+                (url uri)
+                {:connection-manager (make-conn-manager)
+                 :headers            headers
+                 :query-params       params
+                 :body               (generate-string payload)
+                 :retry-handler      (fn [& _] false)})]
+    (execute-in-scope {:call-fx       call
+                       :scope         "Docker"
+                       :timeout       timeout
+                       :error-handler :message})))
 
 (defn get
   ([uri] (get uri nil nil))

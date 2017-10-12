@@ -1,6 +1,6 @@
 (ns swarmpit.dockerregistry.client
   (:refer-clojure :exclude [get])
-  (:require [org.httpkit.client :as http]
+  (:require [clj-http.client :as http]
             [swarmpit.http :refer :all]
             [swarmpit.docker-utils :as utils]))
 
@@ -8,7 +8,9 @@
 
 (defn- execute
   [call]
-  (execute-in-scope call "Docker registry" #(-> % :errors (first) :message)))
+  (execute-in-scope {:call-fx       call
+                     :scope         "Docker registry"
+                     :error-handler #(-> % :errors (first) :message)}))
 
 (defn- get
   [api token headers params]
@@ -16,7 +18,7 @@
         options {:headers      (merge headers
                                       {"Authorization" (str "Bearer " token)})
                  :query-params params}]
-    (execute @(http/get url options))))
+    (execute #(http/get url options))))
 
 (defn tags
   [token repository]
