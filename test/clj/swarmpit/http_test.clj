@@ -1,6 +1,6 @@
 (ns swarmpit.http-test
   (:require [clojure.test :refer :all]
-            [org.httpkit.client :as http]
+            [clj-http.client :as http]
             [swarmpit.http :refer :all])
   (:import (clojure.lang ExceptionInfo)))
 
@@ -9,7 +9,8 @@
   (testing "scope"
     (is (thrown-with-msg?
           ExceptionInfo #"HTTP failure"
-          (execute-in-scope @(http/get "invalid url") nil)))
+          (execute-in-scope {:call-fx #(http/get "invalid url")})))
     (is (thrown-with-msg?
           ExceptionInfo #"Some scope failure"
-          (execute-in-scope @(http/get "invalid url") "Some scope")))))
+          (execute-in-scope {:call-fx #(http/get "invalid url")
+                             :scope   "Some scope"})))))
