@@ -39,6 +39,8 @@
    "PUT"    http/put
    "DELETE" http/delete})
 
+(def timeout 5000)
+
 (defn execute
   "Execute docker command and parse result"
   [method uri params headers payload]
@@ -50,8 +52,8 @@
                  :body               (generate-string payload)
                  :retry-handler      (fn [& _] false)})]
     (execute-in-scope {:call-fx       call
-                       :scope         "Docker client"
-                       :timeout       5000
+                       :scope         "Docker"
+                       :timeout       timeout
                        :error-handler :message})))
 
 (defn get
