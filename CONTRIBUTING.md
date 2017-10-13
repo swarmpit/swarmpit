@@ -37,3 +37,19 @@ and then packed into Docker image
 docker build -t swarmpit .
 ```
 
+## Reporting issues
+
+In case of unexpected swarmpit behaviour, please create well-written issue [here](https://github.com/swarmpit/swarmpit/issues/new). It makes it easier to find & fix the problem accordingly. Please follow the template below, we really appreciate the effort.
+```
+Steps to reproduce:
+1. create a service with any image
+2. add an environment variable with name `MYVAR`
+3. set `MYVAR` value to be `firstpart=second=third`
+4. save the service
+
+What happens:
+- upon viewing the service, `MYVAR` with value `firstpart` 
+
+What should happen:
+- upon viewing the service `MYVAR` should have value `firstpart=second=third`
+```
