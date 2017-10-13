@@ -30,15 +30,15 @@ Swarmpit is published on port `888` by default and you can sign in with user/pas
 
 ## Development
 
-Swarmpit is written purely in Clojure and utilizes React on front-end. CouchDB is just used to store data, that cannot be stored directly in Docker API.
+Swarmpit is written purely in Clojure and utilizes React on front-end. CouchDB is used to store data, that cannot be stored directly in Docker API.
 
-Everything about building Swarmpit and setting up development environment can be found in [CONTRIBUTING.md](CONTRIBUTING.md)
+Everything about building, issue reporting and setting up development environment can be found in [CONTRIBUTING.md](CONTRIBUTING.md)
 
 ## Demo
 
 [![Try in PWD](https://cdn.rawgit.com/play-with-docker/stacks/cff22438/assets/images/button.png)](http://play-with-docker.com?stack=/swarmpit/swarmpit/latest) 
 
-Deploys Swarmpit to play-with-docker sandbox. Use the following credentials for Swarmpit: `admin/admin`
+Deploys Swarmpit to play-with-docker sandbox. Use the following credentials to login: `admin/admin`
 
 <kbd>
   <img src="http://swarmpit.io/img/demo-screen-1.gif?r1">
