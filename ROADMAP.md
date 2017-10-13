@@ -41,13 +41,34 @@ on cluster settings and resource plugins as well.
 
 Also, exposable ports were introduced.
 
-### 1.1 
+### 1.1 Release
 
-Service logs viewer ([#20](https://github.com/swarmpit/swarmpit/issues/20)) was added in this version.
+Service logs viewer was added in this version. Also service rollback and redeploy button has been introduced.
+
+-  [[#20](https://github.com/swarmpit/swarmpit/issues/20)] Add service logging
+-  [[#99](https://github.com/swarmpit/swarmpit/issues/99)] Allow to set services log-driver
+-  [[#111](https://github.com/swarmpit/swarmpit/issues/111)] Add service rollback button
+-  [[#101](https://github.com/swarmpit/swarmpit/issues/101)] Add service redeploy button
+
+### 1.2 Release
+
+This release was mainly aimed for swarmpit stabilization. We fixed couple of issues related to docker client
+and stack inconsistency. Also all backend clients were switched from httpkit to clj-http mainly because SSL
+termination issues. On top of that we introduced suggestable env variables, service resource management and
+humanized time on FE.
+
+- [[#134](https://github.com/swarmpit/swarmpit/issues/134)] Add service resource management
+- [[#90](https://github.com/swarmpit/swarmpit/issues/90)] Suggest environment variables
+- [[#138](https://github.com/swarmpit/swarmpit/issues/138)] Replace httpkit on server by clj-http
+- [[#139](https://github.com/swarmpit/swarmpit/issues/139)] Show local times in FE
 
 ## What we will bring into the game
 
 You can find here our goals and related features for future releases.
+
+### 1.3 Release
+
+- [[#157](https://github.com/swarmpit/swarmpit/issues/157)] Add token auth support for custom docker registry.
 
 ### 2.0 Release
 
