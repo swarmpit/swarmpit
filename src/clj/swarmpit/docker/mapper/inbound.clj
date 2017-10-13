@@ -146,7 +146,7 @@
   [service-spec]
   (->> (get-in service-spec [:TaskTemplate :ContainerSpec :Env])
        (map (fn [p]
-              (let [variable (str/split p #"=")]
+              (let [variable (str/split p #"=" 2)]
                 {:name  (first variable)
                  :value (second variable)})))
        (into [])))
