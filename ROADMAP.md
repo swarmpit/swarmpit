@@ -69,6 +69,9 @@ You can find here our goals and related features for future releases.
 ### 1.3 Release
 
 - [[#157](https://github.com/swarmpit/swarmpit/issues/157)] Add token auth support for custom docker registry.
+- [[#113](https://github.com/swarmpit/swarmpit/issues/113)] Refresh data automatically on service detail page
+- [[#115](https://github.com/swarmpit/swarmpit/issues/115)] Filter by more than just a name (id, node, port ...)
+- [[#105](https://github.com/swarmpit/swarmpit/issues/105)] Show list of linked services in volume/network/secret ...
 
 ### 2.0 Release
 
