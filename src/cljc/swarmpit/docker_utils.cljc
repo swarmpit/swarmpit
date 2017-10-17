@@ -1,5 +1,5 @@
 (ns swarmpit.docker-utils
-  "Utility ns for docker repository"
+  "Utility ns for docker domain"
   (:require [clojure.string :as str]))
 
 (defn namespace?

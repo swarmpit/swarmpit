@@ -37,6 +37,10 @@ select:-webkit-autofill:focus {
     transition: background-color 5000s ease-in-out 0s !important;
 }
 
+input:invalid {
+    box-shadow: none;
+}
+
 /* Header logo */
 
 .logo {
@@ -435,9 +439,10 @@ select:-webkit-autofill:focus {
     color: rgb(158, 158, 158);
 }
 
-.hoverable:after{
+.hoverable:after {
     content: attr(data-1);
 }
-.hoverable:hover:after{
+
+.hoverable:hover:after {
     content: attr(data-2);
 }
