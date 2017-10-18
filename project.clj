@@ -69,7 +69,7 @@
                 :source-paths ["src/cljs" "src/cljc"]
                 :jar          true
                 :compiler     {:main                 swarmpit.app
-                               :externs              ["resources/ext/material-ui.ext.js"]
+                               :externs              ["ext/material-ui.ext.js"]
                                :output-to            "resources/public/js/main.js"
                                :output-dir           "target"
                                :source-map-timestamp true
