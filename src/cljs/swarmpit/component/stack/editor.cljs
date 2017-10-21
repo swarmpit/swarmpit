@@ -17,9 +17,9 @@
     (.getElementById js/document "editor")
     (clj->js
       {:lineNumbers       true
-       :viewportMargin    js/Infinity
+       :viewportMargin    (.-Infinity js/window)
        :matchBrackets     true
-       :value             "test"
+       ;:value             "test"
        :autofocus         true
        :autoCloseBrackets true
        :mode              "yaml"})))
@@ -32,6 +32,19 @@
        :key      "stack-name"
        :required true
        :value    value})))
+
+(defn- form-editor []
+  (comp/mui
+    (comp/text-field
+      {:id            "editor"
+       :name          "data"
+       :key           "data"
+       :multiLine     true
+       :rows          10
+       :underlineShow false
+       :fullWidth     true
+       :onChange      (fn [_ v]
+                        (print v))})))
 
 (rum/defc form < {:did-mount (fn [state] (editor) state)}
                  rum/static [_]
@@ -56,9 +69,10 @@
      (comp/mui
        (comp/raised-button
          {:label   "Create"
+          ;:onTouchTap (fn [] (js/console.log (-> (editor) .getValue)))
           :primary true}))]]
    (comp/form
      {:onValid   #(state/update-value [:isValid] true cursor)
       :onInvalid #(state/update-value [:isValid] false cursor)}
      (form-name "test"))
-   [:textarea#editor]])
+   (form-editor)])
