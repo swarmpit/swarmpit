@@ -139,9 +139,10 @@
    (comp/form-section "Deployment")
    (deployment/form)])
 
-(rum/defc form < rum/static
+(rum/defc form < rum/reactive
                  init-state-mixin [data]
-  (let [{:keys [service]} data]
+  (let [{:keys [service]} data
+        resources (state/react resources/cursor)]
     [:div
      [:div.form-panel
       [:div.form-panel-left
@@ -152,6 +153,7 @@
          (comp/raised-button
            {:onTouchTap #(update-service-handler (:id service))
             :label      "Save"
+            :disabled   (not (:isValid resources))
             :primary    true}))
        [:span.form-panel-delimiter]
        (comp/mui
