@@ -124,7 +124,7 @@
        :key      "replicas"
        :required true
        :type     "number"
-       :min      1
+       :min      0
        :value    value
        :onChange (fn [_ v]
                    (state/update-value [:replicas] (js/parseInt v) cursor))})))
