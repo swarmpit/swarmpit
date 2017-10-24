@@ -50,7 +50,7 @@
   (keyword (first (str/split (name handler) #"-"))))
 
 (def single-pages
-  #{:login :error :unauthorized nil})
+  #{:login :error :unauthorized :not-found nil})
 
 (defn- page-layout?
   [handler]
