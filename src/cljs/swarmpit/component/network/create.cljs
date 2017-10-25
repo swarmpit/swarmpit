@@ -15,7 +15,7 @@
 
 (defonce network-plugins (atom []))
 
-(defn network-plugin-handler
+(defn- network-plugin-handler
   []
   (handler/get
     (routes/path-for-backend :plugin-network)
@@ -106,7 +106,8 @@
 (def init-state-mixin
   (mixin/init
     (fn [_]
-      (init-state))))
+      (init-state)
+      (network-plugin-handler))))
 
 (rum/defc form < rum/reactive
                  init-state-mixin []

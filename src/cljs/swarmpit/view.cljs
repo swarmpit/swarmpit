@@ -73,7 +73,6 @@
 
 (defmethod dispatch :service-log
   [{:keys [data]}]
-  (service-log/log-handler data)
   (service-log/form data))
 
 (defmethod dispatch :service-create-image
@@ -100,7 +99,6 @@
 
 (defmethod dispatch :network-create
   [_]
-  (network-create/network-plugin-handler)
   (network-create/form))
 
 ;;; Node view
@@ -121,7 +119,6 @@
 
 (defmethod dispatch :volume-create
   [_]
-  (volume-create/volume-plugin-handler)
   (volume-create/form))
 
 ;;; Secret view

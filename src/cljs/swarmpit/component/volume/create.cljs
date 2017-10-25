@@ -15,7 +15,7 @@
 
 (defonce volume-plugins (atom []))
 
-(defn volume-plugin-handler
+(defn- volume-plugin-handler
   []
   (handler/get
     (routes/path-for-backend :plugin-volume)
@@ -69,7 +69,8 @@
 (def init-state-mixin
   (mixin/init
     (fn [_]
-      (init-state))))
+      (init-state)
+      (volume-plugin-handler))))
 
 (rum/defc form < rum/reactive
                  init-state-mixin []

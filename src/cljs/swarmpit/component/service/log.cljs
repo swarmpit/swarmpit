@@ -11,7 +11,7 @@
 
 (def cursor [:page :service :log])
 
-(defn auto-scroll!
+(defn- auto-scroll!
   []
   (when (true? (:autoscroll (state/get-value cursor)))
     (let [el (.getElementById js/document "service-log")]
@@ -22,7 +22,7 @@
   [items predicate]
   (filter #(string/includes? (:line %) predicate) items))
 
-(defn log-handler
+(defn- log-handler
   [service]
   (handler/get
     (routes/path-for-backend :service-logs (select-keys service [:id]))
@@ -33,7 +33,7 @@
                    (state/update-value [:data] response cursor))
      :on-error   #(state/update-value [:error] true cursor)}))
 
-(defn log-append-handler
+(defn- log-append-handler
   [service from-timestamp]
   (handler/get
     (routes/path-for-backend :service-logs (select-keys service [:id]))
@@ -66,8 +66,9 @@
 
 (def init-state-mixin
   (mixin/init
-    (fn [_]
-      (init-state))))
+    (fn [service]
+      (init-state)
+      (log-handler service))))
 
 (rum/defc line < rum/static [item timestamp]
   [:div
