@@ -25,6 +25,11 @@
   ([response] {:status 201
                :body   response}))
 
+(defn resp-accepted
+  ([] {:status 202})
+  ([response] {:status 202
+               :body   response}))
+
 ;;; Handler
 
 (defmulti dispatch identity)
