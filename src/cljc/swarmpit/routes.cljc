@@ -4,6 +4,8 @@
 
 (def backend
   ["" {"/"              {:get :index}
+       "/events"        {:get  :events
+                         :post :event-push}
        "/version"       {:get :version}
        "/login"         {:post :login}
        "/password"      {:post :password}
