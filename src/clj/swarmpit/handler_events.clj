@@ -1,4 +1,4 @@
-(ns swarmpit.handler-sse
+(ns swarmpit.handler-events
   (:require [org.httpkit.server :refer [run-server with-channel on-close send! close]]
             [swarmpit.handler :refer [dispatch resp-accepted resp-error]]))
 

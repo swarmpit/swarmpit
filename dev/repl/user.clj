@@ -15,6 +15,7 @@
 (defn- on-startup
   []
   (print (:out (sh "sh" "dev/script/init-db.sh")))
+  (print (:out (sh "sh" "dev/script/init-ec.sh")))
   (install/init)
   (agent/init))
 
