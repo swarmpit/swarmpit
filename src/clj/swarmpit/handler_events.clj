@@ -1,5 +1,6 @@
 (ns swarmpit.handler-events
   (:require [org.httpkit.server :refer [run-server with-channel on-close send! close]]
+            [cheshire.core :refer [generate-string]]
             [swarmpit.handler :refer [dispatch resp-accepted resp-error]]))
 
 (def channel-hub (atom {}))
@@ -9,15 +10,15 @@
     (send! channel message false)))
 
 (defmethod dispatch :events [_]
-  (fn [req]
-    (with-channel req channel
+  (fn [request]
+    (with-channel request channel
                   (send! channel {:status  200
                                   :headers {"Content-Type"                "text/event-stream"
                                             "Access-Control-Allow-Origin" "*"
                                             "Cache-Control"               "no-cache"
                                             "Connection"                  "keep-alive"}
                                   :body    ":ok\n\n"} false)
-                  (swap! channel-hub assoc channel req)
+                  (swap! channel-hub assoc channel request)
                   (on-close channel (fn [_]
                                       (swap! channel-hub dissoc channel))))))
 
@@ -25,6 +26,6 @@
   (fn [{:keys [params]}]
     (if (some? params)
       (do
-        (broadcast (str "data: " params "\n\n"))
+        (broadcast (str "data: " (generate-string params) "\n\n"))
         (resp-accepted (str "Broadcasted to " (count @channel-hub) " clients")))
-      (resp-error 400 "No event data send"))))
+      (resp-error 400 "No data send"))))
