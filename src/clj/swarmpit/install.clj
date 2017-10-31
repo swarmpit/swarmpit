@@ -1,21 +1,22 @@
 (ns swarmpit.install
-  (:require [swarmpit.couchdb.client :as cc]
+  (:require [clojure.tools.logging :as log]
+            [swarmpit.couchdb.client :as cc]
             [swarmpit.couchdb.migration :refer [migrate]]))
 
 (defn- db-ready?
   []
   (try (cc/db-version)
-       (catch Exception ex false)))
+       (catch Exception _ false)))
 
 (defn- wait-for-db
   [sec]
-  (println "Waiting for DB...")
+  (log/info "Waiting for DB...")
   (loop [n sec]
     (if (db-ready?)
-      (println (str "... connected after " (- sec n) " sec"))
+      (log/info "... connected after" (- sec n) "sec")
       (if (zero? n)
         (do
-          (println "... timeout")
+          (log/error "... timeout")
           (throw (ex-info "DB timeout" nil)))
         (do
           (Thread/sleep 1000)
@@ -26,11 +27,11 @@
   (try
     (cc/create-database)
     (catch Exception ex
-      (get-in (ex-data ex) [:body]))))
+      (:body (ex-data ex)))))
 
 (defn init
   []
   (wait-for-db 100)
   (when (not (:error (create-database)))
-    (println "DB schema created"))
+    (log/info "DB schema created"))
   (migrate))
