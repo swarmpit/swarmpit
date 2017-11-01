@@ -91,6 +91,13 @@
        (first)
        :id))
 
+(defn ->secret-target
+  [secret]
+  (let [secret-target (:secretTarget secret)]
+    (if (str/blank? secret-target)
+      (:secretName secret)
+      secret-target)))
+
 (defn ->service-secrets
   [service secrets]
   (->> (:secrets service)
@@ -98,7 +105,7 @@
                      :SecretID   (->secret-id (:secretName s) secrets)
                      :File       {:GID  "0"
                                   :Mode 292
-                                  :Name (:secretName s)
+                                  :Name (->secret-target s)
                                   :UID  "0"}}))
        (into [])))
 

@@ -69,7 +69,7 @@
                         (into [])) networks/cursor)
   (state/set-value (:mounts service) mounts/cursor)
   (state/set-value (->> (:secrets service)
-                        (map #(select-keys % [:secretName]))
+                        (map #(select-keys % [:secretName :secretTarget]))
                         (into [])) secrets/cursor)
   (state/set-value (:variables service) variables/cursor)
   (state/set-value (:labels service) labels/cursor)

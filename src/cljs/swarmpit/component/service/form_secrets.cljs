@@ -4,7 +4,8 @@
             [swarmpit.routes :as routes]
             [swarmpit.component.handler :as handler]
             [swarmpit.component.state :as state]
-            [rum.core :as rum]))
+            [rum.core :as rum]
+            [clojure.string :as str]))
 
 (enable-console-print!)
 
@@ -20,7 +21,9 @@
                    (reset! secrets response))}))
 
 (def headers [{:name  "Name"
-               :width "300px"}])
+               :width "35%"}
+              {:name  "Target"
+               :width "35%"}])
 
 (def empty-info
   (comp/form-value "No secrets defined for the service."))
@@ -45,22 +48,34 @@
                   :value       (:secretName %)
                   :primaryText (:secretName %)})))))
 
+(defn- form-secret-target [value name index]
+  (comp/form-list-textfield
+    {:name     (str "form-secret-target-" index)
+     :key      (str "form-secret-target-" index)
+     :hintText (when (str/blank? value)
+                 name)
+     :value    value
+     :onChange (fn [_ v]
+                 (state/update-item index :secretTarget v cursor))}))
+
 (defn- render-secrets
   [item index data]
-  (let [{:keys [secretName]} item]
-    [(form-secret secretName index data)]))
+  (let [{:keys [secretName secretTarget]} item]
+    [(form-secret secretName index data)
+     (form-secret-target secretTarget secretName index)]))
 
 (defn- form-table
   [secrets secrets-list]
-  (comp/form-table-headless headers
-                            secrets
-                            secrets-list
-                            render-secrets
-                            (fn [index] (state/remove-item index cursor))))
+  (comp/form-table headers
+                   secrets
+                   secrets-list
+                   render-secrets
+                   (fn [index] (state/remove-item index cursor))))
 
 (defn- add-item
   []
-  (state/add-item {:secretName ""} cursor))
+  (state/add-item {:secretName   ""
+                   :secretTarget ""} cursor))
 
 (rum/defc form-create < rum/reactive []
   (let [secrets-list (rum/react secrets)
