@@ -5,10 +5,10 @@
 
 (enable-console-print!)
 
-(def headers ["Name" "UID" "GID" "Mode"])
+(def headers ["Name" "Target" "UID" "GID" "Mode"])
 
 (def render-item-keys
-  [[:secretName] [:uid] [:gid] [:mode]])
+  [[:secretName] [:secretTarget] [:uid] [:gid] [:mode]])
 
 (defn render-item
   [item]
