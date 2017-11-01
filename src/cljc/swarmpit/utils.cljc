@@ -13,3 +13,10 @@
        (map (fn [p]
               [(last p) (get-in m p)]))
        (into {})))
+
+(defn merge-data
+  "Recursively merge delta to current json map structure."
+  [data delta]
+  (cond (and (map? data)
+             (map? delta)) (merge-with merge-data data delta)
+        :else delta))

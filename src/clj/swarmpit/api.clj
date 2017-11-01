@@ -2,6 +2,7 @@
   (:require [clojure.set :refer [rename-keys]]
             [buddy.hashers :as hashers]
             [digest :refer [digest]]
+            [swarmpit.utils :refer [merge-data]]
             [swarmpit.docker.client :as dc]
             [swarmpit.docker.log :as dl]
             [swarmpit.docker.mapper.inbound :as dmi]
@@ -15,6 +16,7 @@
             [swarmpit.couchdb.client :as cc]
             [swarmpit.couchdb.mapper.inbound :as cmi]
             [swarmpit.couchdb.mapper.outbound :as cmo]
+            [clojure.tools.logging :as log]
             [clojure.string :as str]))
 
 ;;; User API
@@ -438,13 +440,20 @@
         "registry" (create-registry-service standardized-service distribution-id)
         (create-public-service standardized-service)) {:ID :id})))
 
+(defn- merge-service
+  [service-origin service-delta]
+  (-> (merge-data service-origin service-delta)
+      (assoc-in [:Labels] (:Labels service-delta))))
+
 (defn update-service
   [service-id service force?]
-  (let [standardized-service (standardize-service service force?)]
+  (let [standardized-service (standardize-service service force?)
+        service-origin (-> (dc/service service-id) :Spec)
+        service-delta (->> (dmo/->service-image standardized-service)
+                           (dmo/->service standardized-service))]
     (dc/update-service service-id
                        (:version service)
-                       (->> (dmo/->service-image standardized-service)
-                            (dmo/->service standardized-service)))))
+                       (merge-service service-origin service-delta))))
 
 (defn redeploy-service
   [service-id]
