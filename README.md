@@ -4,7 +4,6 @@ Lightweight Docker Swarm management UI
 
 [![gitter](https://badges.gitter.im/trezor/community.svg)](https://gitter.im/swarmpit_io/swarmpit) [![Build Status](https://travis-ci.org/swarmpit/swarmpit.svg?branch=master)](https://travis-ci.org/swarmpit/swarmpit)
 
-
 ![screenshot](http://swarmpit.io/img/example.jpg?r1)
 
 Swarmpit provides simple and easy to use interface for your Docker Swarm cluster. You can manage your services, secrets, volumes, networks etc. After linking your Docker Hub account or custom registry, private repositories can be easily deployed on Swarm. Best of all, you can share this management console securely with your whole team.
@@ -12,6 +11,8 @@ Swarmpit provides simple and easy to use interface for your Docker Swarm cluster
 We have more features coming like stack management, monitoring, user permissions constraints and more, so stay tuned or even better help us shape features you would like.
 
 More details about future and past releases can be found in [ROADMAP.md](ROADMAP.md)
+
+[![Twitter URL](https://img.shields.io/twitter/url/https/twitter.com/fold_left.svg?style=social&label=Follow%20%40swarmpit_io)](https://twitter.com/swarmpit_io)
 
 ## Installation
 
