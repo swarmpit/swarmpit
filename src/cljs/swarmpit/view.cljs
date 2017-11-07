@@ -1,6 +1,6 @@
 (ns swarmpit.view
   (:require [swarmpit.component.page-login :as page-login]
-            [swarmpit.component.page-401 :as page-401]
+            [swarmpit.component.page-403 :as page-403]
             [swarmpit.component.page-404 :as page-404]
             [swarmpit.component.page-error :as page-error]
             [swarmpit.component.password :as password]
@@ -47,7 +47,7 @@
 
 (defmethod dispatch :unauthorized
   [_]
-  (page-401/form))
+  (page-403/form))
 
 (defmethod dispatch :error
   [_]

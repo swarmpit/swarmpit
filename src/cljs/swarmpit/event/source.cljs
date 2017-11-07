@@ -1,5 +1,7 @@
-(ns swarmpit.eventsource
+(ns swarmpit.event.source
   (:require [swarmpit.routes :as routes]
+            [swarmpit.component.state :as state]
+            [swarmpit.event.docker :as docker-event]
             [clojure.walk :refer [keywordize-keys]]))
 
 (defn parse-event
@@ -11,11 +13,13 @@
 
 (defn handle-docker-event!
   [event-message]
-  "TODO: Handler docker events"
-  (print event-message))
+  "Handler events from docker server"
+  (let [route (state/get-value [:route])]
+    (docker-event/handle route event-message)))
 
 (defn handle-event!
   [event-data]
+  "Handler events"
   (let [event-source (:From event-data)
         event-message (:Message event-data)]
     (case event-source
@@ -27,6 +31,7 @@
   (let [event-source (js/EventSource. (routes/path-for-backend :events))]
     (.addEventListener event-source "message"
                        (fn [event]
+                         (print (.-origin event))
                          (let [event-data (parse-event event)]
                            (handle-event! event-data))))
     (.addEventListener event-source "open"
@@ -36,5 +41,3 @@
                        (fn [event]
                          (let [state (.-readyState event)]
                            (print state))))))
-
-
