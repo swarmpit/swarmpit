@@ -14,7 +14,7 @@ then
 else
     echo "Creating swarmpit EC"
     docker run -d \
-      --name ec \
+      --name swarmpitec \
       --env EVENT_ENDPOINT=http://192.168.65.1:3449/events \
       --volume /var/run/docker.sock:/var/run/docker.sock \
       swarmpit/swarmpit-ec:latest
