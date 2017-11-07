@@ -2,7 +2,7 @@
   (:require [swarmpit.router :as router]
             [swarmpit.component.layout :as layout]
             [swarmpit.component.message :as message]
-            [swarmpit.eventsource :as eventsource]))
+            [swarmpit.event.source :as eventsource]))
 
 ;; Starting router
 
