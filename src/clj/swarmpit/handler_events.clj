@@ -14,7 +14,6 @@
     (with-channel request channel
                   (send! channel {:status  200
                                   :headers {"Content-Type"                "text/event-stream"
-                                            "Access-Control-Allow-Origin" "*"
                                             "Cache-Control"               "no-cache"
                                             "Connection"                  "keep-alive"}
                                   :body    ":ok\n\n"} false)
@@ -23,7 +22,7 @@
                                       (swap! channel-hub dissoc channel))))))
 
 (defmethod dispatch :event-push [_]
-  (fn [{:keys [params]}]
+  (fn [{:keys [params]} ]
     (if (some? params)
       (do
         (broadcast (str "data: " (generate-string params) "\n\n"))
