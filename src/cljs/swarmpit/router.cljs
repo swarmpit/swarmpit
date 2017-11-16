@@ -7,12 +7,15 @@
 
 (defonce location (atom nil))
 
+(defn- dispatch-login!
+  []
+  (controller/dispatch {:handler :login})
+  (dispatch! (routes/path-for-frontend :login)))
+
 (defn- on-navigate
   [location]
   (if (nil? (storage/get "token"))
-    (do (controller/dispatch {:handler :login})
-        (dispatch!
-          (routes/path-for-frontend :login)))
+    (dispatch-login!)
     ;; Render to service list by default as we don't have any index page right now
     (if (= :index (:handler location))
       (controller/dispatch {:handler :service-list})
