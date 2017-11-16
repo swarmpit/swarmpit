@@ -58,6 +58,8 @@
                 :source-paths ["src/cljs" "src/cljc"]
                 :figwheel     true
                 :compiler     {:main                 swarmpit.app
+                               :foreign-libs         [{:file     "https://raw.githubusercontent.com/Yaffle/EventSource/0.0.11/src/eventsource.js"
+                                                       :provides ["yaffle.es"]}]
                                :preloads             [devtools.preload]
                                :asset-path           "js/out"
                                :output-to            "resources/public/js/main.js"
