@@ -59,8 +59,9 @@
              :handler {:and [authenticated-access admin-access]}}
             {:pattern #"^/login$"
              :handler any-access}
-            {:pattern #"^/events"
-             :handler any-access}
+            {:pattern        #"^/events"
+             :request-method :post
+             :handler        any-access}
             {:pattern #"^/version$"
              :handler any-access}
             {:pattern #"^/$"

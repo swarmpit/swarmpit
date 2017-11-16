@@ -2,6 +2,7 @@
   (:import (clojure.lang ExceptionInfo))
   (:require [immutant.scheduling :refer :all]
             [clojure.tools.logging :as log]
+            [swarmpit.handler-events :as events]
             [swarmpit.api :as api]))
 
 (defn- autoredeploy-job
@@ -24,8 +25,15 @@
           (catch ExceptionInfo e
             (log/error "Service" id "autoredeploy failed! " (ex-data e))))))))
 
+(defn- event-heartbeat-job
+  []
+  (events/broadcast {:From "SWARMPIT" :Message "heartbeat"}))
+
 (defn init
   []
   (schedule autoredeploy-job
             (-> (in 1 :minutes)
-                (every 60 :second))))
+                (every 60 :second)))
+  (schedule event-heartbeat-job
+            (-> (in 30 :seconds)
+                (every 30 :second))))
