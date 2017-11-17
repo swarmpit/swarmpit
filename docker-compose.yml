@@ -15,6 +15,14 @@ services:
       placement:
         constraints:
           - node.role == manager
+  es:
+    image: swarmpit/swarmpit-ec:latest
+    environment:
+      EVENT_ENDPOINT: http://app:8080/events
+    networks:
+      - net
+    deploy:
+      mode: global
   db:
     image: klaemo/couchdb:2.0.0
     volumes:
