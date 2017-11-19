@@ -3,6 +3,7 @@
             [material.icon :as icon]
             [swarmpit.url :refer [dispatch!]]
             [swarmpit.storage :as storage]
+            [swarmpit.event.source :as eventsource]
             [swarmpit.routes :as routes]
             [clojure.string :as string]
             [rum.core :as rum]
@@ -61,6 +62,7 @@
       {:key         "user-menu-logout"
        :onTouchTap  (fn []
                       (storage/remove "token")
+                      (eventsource/close!)
                       (dispatch!
                         (routes/path-for-frontend :login)))
        :primaryText "Log out"})))
