@@ -2,7 +2,7 @@ version: '3'
 
 services:
   app:
-    image: swarmpit/swarmpit:latest
+    image: swarmpit/swarmpit:test
     environment:
       SWARMPIT_DB: http://db:5984
     volumes:
@@ -15,10 +15,12 @@ services:
       placement:
         constraints:
           - node.role == manager
-  es:
+  ec:
     image: swarmpit/swarmpit-ec:latest
     environment:
       EVENT_ENDPOINT: http://app:8080/events
+    volumes:
+      - /var/run/docker.sock:/var/run/docker.sock:ro
     networks:
       - net
     deploy:
