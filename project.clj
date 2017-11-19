@@ -7,6 +7,7 @@
                  [org.clojure/clojurescript "1.9.660"]
                  [org.clojure/core.memoize "0.5.8"]
                  [org.clojure/core.async "0.3.443"]
+                 [org.clojure/core.cache "0.6.5"]
                  [org.clojure/tools.logging "0.4.0"]
                  [cljsjs/react "15.4.2-2"]
                  [cljsjs/react-dom "15.4.2-2"]
@@ -58,8 +59,6 @@
                 :source-paths ["src/cljs" "src/cljc"]
                 :figwheel     true
                 :compiler     {:main                 swarmpit.app
-                               :foreign-libs         [{:file     "https://raw.githubusercontent.com/Yaffle/EventSource/0.0.11/src/eventsource.js"
-                                                       :provides ["yaffle.es"]}]
                                :preloads             [devtools.preload]
                                :asset-path           "js/out"
                                :output-to            "resources/public/js/main.js"
@@ -70,8 +69,6 @@
                 :source-paths ["src/cljs" "src/cljc"]
                 :jar          true
                 :compiler     {:main                 swarmpit.app
-                               :foreign-libs         [{:file     "https://raw.githubusercontent.com/Yaffle/EventSource/0.0.11/src/eventsource.js"
-                                                       :provides ["yaffle.es"]}]
                                :externs              ["ext/material-ui.ext.js"]
                                :output-to            "resources/public/js/main.js"
                                :output-dir           "target"
