@@ -1,8 +1,10 @@
 (ns swarmpit.handler-events
   (:require [org.httpkit.server :refer [run-server with-channel on-close send! close]]
-            [immutant.scheduling :refer :all]
+            [clojure.walk :refer [keywordize-keys]]
             [cheshire.core :refer [generate-string]]
-            [swarmpit.handler :refer [dispatch resp-accepted resp-error]]))
+            [immutant.scheduling :refer :all]
+            [swarmpit.slt :as slt]
+            [swarmpit.handler :refer [dispatch resp-accepted resp-error resp-unauthorized]]))
 
 (def channel-hub (atom {}))
 
@@ -12,16 +14,19 @@
       (send! channel message false))))
 
 (defmethod dispatch :events [_]
-  (fn [request]
-    (with-channel request channel
-                  (send! channel {:status  200
-                                  :headers {"Content-Type"  "text/event-stream"
-                                            "Cache-Control" "no-cache"
-                                            "Connection"    "keep-alive"}
-                                  :body    ":ok\n\n"} false)
-                  (swap! channel-hub assoc channel request)
-                  (on-close channel (fn [_]
-                                      (swap! channel-hub dissoc channel))))))
+  (fn [{:keys [query-params] :as request}]
+    (let [slt (-> (keywordize-keys query-params) :slt)]
+      (if (slt/valid? slt)
+        (with-channel request channel
+                      (send! channel {:status  200
+                                      :headers {"Content-Type"  "text/event-stream"
+                                                "Cache-Control" "no-cache"
+                                                "Connection"    "keep-alive"}
+                                      :body    ":ok\n\n"} false)
+                      (swap! channel-hub assoc channel request)
+                      (on-close channel (fn [_]
+                                          (swap! channel-hub dissoc channel))))
+        (resp-unauthorized "Invalid slt")))))
 
 (defmethod dispatch :event-push [_]
   (fn [{:keys [params]}]
