@@ -39,8 +39,11 @@
   (print "Swarmpit event connection has been opened"))
 
 (defn- on-error!
-  [event]
-  (print "Swarmpit event connection failed. Reconnecting in 5 sec..."))
+  [event error-fx]
+  (when (= (.-readyState @es) 2)
+    (do
+      (print "Swarmpit event connection failed. Reconnecting in 5 sec...")
+      (js/setTimeout #(error-fx) 5000))))
 
 (defn close!
   []
@@ -56,5 +59,5 @@
                          event-source (js/EventSource. event-url)]
                      (.addEventListener event-source "message" on-message!)
                      (.addEventListener event-source "open" on-open!)
-                     (.addEventListener event-source "error" on-error!)
+                     (.addEventListener event-source "error" (fn [e] (on-error! e init!)))
                      (reset! es event-source)))}))
