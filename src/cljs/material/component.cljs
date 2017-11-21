@@ -120,29 +120,6 @@
   ([props] (factory/list-item (clj->js props)))
   ([] (factory/list-item nil)))
 
-(defn card-header
-  ([props] (factory/card-header (clj->js props)))
-  ([] (factory/card-header nil)))
-
-(defn card-title
-  ([props] (factory/card-title (clj->js props)))
-  ([] (factory/card-title nil)))
-
-(defn paper
-  [props & childs] (factory/paper (clj->js props) childs))
-
-(defn chip
-  [props & childs] (factory/chip (clj->js props) childs))
-
-(defn card
-  [props & childs] (factory/card (clj->js props) childs))
-
-(defn card-actions
-  [props & childs] (factory/card-actions (clj->js props) childs))
-
-(defn card-text
-  [props & childs] (factory/card-text (clj->js props) childs))
-
 (defn stepper
   [props & childs]
   (factory/stepper (clj->js props) childs))
@@ -154,10 +131,6 @@
 (defn menu
   [props & childs]
   (factory/menu (clj->js props) childs))
-
-(defn drowdown
-  [props & childs]
-  (factory/dropdown (clj->js props) childs))
 
 (defn icon-menu
   [props & childs]

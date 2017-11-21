@@ -4,8 +4,11 @@
 
 (def backend
   ["" {"/"              {:get :index}
+       "/events"        {:get  :events
+                         :post :event-push}
        "/version"       {:get :version}
        "/login"         {:post :login}
+       "/slt"           {:get :slt}
        "/password"      {:post :password}
        "/distribution/" {"public"     {:get {"/repositories" :public-repositories
                                              "/tags"         :public-repository-tags

@@ -6,12 +6,20 @@
             [cemerick.url :refer [query->map]]
             [swarmpit.url :refer [dispatch!]]
             [swarmpit.storage :as storage]
+            [swarmpit.event.source :as eventsource]
             [swarmpit.routes :as routes]
             [swarmpit.component.state :as state]))
 
 (def cursor [:route])
 
 (defmulti dispatch (fn [location] (:handler location)))
+
+(defn login!
+  "Close event stream and redirect to login page"
+  []
+  (eventsource/close!)
+  (dispatch {:handler :login})
+  (dispatch! (routes/path-for-frontend :login)))
 
 (defn- execute
   ([success-fx error-fx]
@@ -27,8 +35,7 @@
   ([api success-fx]
    (get api success-fx (fn [{:keys [status]}]
                          (case status
-                           401 (dispatch!
-                                 (routes/path-for-frontend :login))
+                           401 (login!)
                            403 (dispatch {:handler :unauthorized})
                            404 (dispatch {:handler :not-found})
                            (dispatch {:handler :error})))))

@@ -16,7 +16,7 @@
                       (-> resp resp-fx)))
    :error-handler (fn [response]
                     (let [resp (:response (keywordize-keys response))
-                          resp-fx (:on-error request)]
+                          resp-fx (or (:on-error request) #())]
                       (-> resp resp-fx)))})
 
 (defn- command-progress
@@ -33,7 +33,7 @@
    :error-handler (fn [response]
                     (progress/unmount!)
                     (let [resp (:response (keywordize-keys response))
-                          resp-fx (:on-error request)]
+                          resp-fx (or (:on-error request) #())]
                       (-> resp resp-fx)))})
 
 (defn get

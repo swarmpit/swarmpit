@@ -10,9 +10,7 @@
 (defn- on-navigate
   [location]
   (if (nil? (storage/get "token"))
-    (do (controller/dispatch {:handler :login})
-        (dispatch!
-          (routes/path-for-frontend :login)))
+    (controller/login!)
     ;; Render to service list by default as we don't have any index page right now
     (if (= :index (:handler location))
       (controller/dispatch {:handler :service-list})

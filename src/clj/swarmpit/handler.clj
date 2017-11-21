@@ -3,6 +3,7 @@
             [clojure.java.io :as io]
             [swarmpit.version :refer [version]]
             [swarmpit.api :as api]
+            [swarmpit.slt :as slt]
             [swarmpit.token :as token]))
 
 (defn resp-error
@@ -25,6 +26,11 @@
   ([response] {:status 201
                :body   response}))
 
+(defn resp-accepted
+  ([] {:status 202})
+  ([response] {:status 202
+               :body   response}))
+
 ;;; Handler
 
 (defmulti dispatch identity)
@@ -42,6 +48,12 @@
 (defmethod dispatch :version [_]
   (fn [_]
     (resp-ok version)))
+
+;; SLT handler
+
+(defmethod dispatch :slt [_]
+  (fn [_]
+    (resp-ok {:slt (slt/create)})))
 
 ;; Login handler
 

@@ -15,6 +15,16 @@ services:
       placement:
         constraints:
           - node.role == manager
+  ec:
+    image: swarmpit/swarmpit-ec:latest
+    environment:
+      EVENT_ENDPOINT: http://app:8080/events
+    volumes:
+      - /var/run/docker.sock:/var/run/docker.sock:ro
+    networks:
+      - net
+    deploy:
+      mode: global
   db:
     image: klaemo/couchdb:2.0.0
     volumes:
