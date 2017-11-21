@@ -37,7 +37,7 @@ Everything about building, issue reporting and setting up development environmen
 
 ## Demo
 
-[![Try in PWD](https://cdn.rawgit.com/play-with-docker/stacks/cff22438/assets/images/button.png)](http://play-with-docker.com?stack=/swarmpit/swarmpit/latest) 
+[![Try in PWD](https://cdn.rawgit.com/play-with-docker/stacks/cff22438/assets/images/button.png)](http://play-with-docker.com?stack=https://raw.githubusercontent.com/swarmpit/swarmpit/master/docker-compose.yml) 
 
 Deploys Swarmpit to play-with-docker sandbox. Use the following credentials to login: `admin/admin`
 
