@@ -85,7 +85,7 @@
     [:div.page-back
      [:div.page
       [:div.page-logo
-       [:img {:src    "/img/logo.svg"
+       [:img {:src    "img/logo.svg"
               :width  "177px"
               :height "90px"}]]
       [:div.page-form
