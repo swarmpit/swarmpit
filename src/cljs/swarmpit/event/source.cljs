@@ -14,20 +14,13 @@
       (js->clj)
       (keywordize-keys)))
 
-(defn handle-docker-event!
-  [event-message]
-  "Handler events from docker server"
-  (let [route (state/get-value [:route])]
-    (docker-event/handle route event-message)))
-
 (defn handle-event!
   [event-data]
-  "Handler events"
-  (let [event-source (:From event-data)
-        event-message (:Message event-data)]
-    (case event-source
-      "DOCKER" (handle-docker-event! event-message)
-      (print (str "Unknown event source: " event-source)))))
+  "Handle docker events. Events are delayed for 1 second due to internal swarm resource state management"
+  (let [route (state/get-value [:route])]
+    (js/setTimeout
+      (fn []
+        (docker-event/handle route event-data)) 1000)))
 
 (defn- on-message!
   [event]

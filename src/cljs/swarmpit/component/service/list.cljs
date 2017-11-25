@@ -92,6 +92,9 @@
                              :unhealthy   false}
                     :data   services} cursor))
 
+(def refresh-state-mixin
+  (mixin/refresh data-handler 10000))
+
 (def init-state-mixin
   (mixin/init
     (fn [data]
@@ -99,6 +102,7 @@
 
 (rum/defc form < rum/reactive
                  init-state-mixin
+                 refresh-state-mixin
                  mixin/focus-filter [_]
   (let [{:keys [filter data]} (state/react cursor)
         filtered-items (filter-items data
