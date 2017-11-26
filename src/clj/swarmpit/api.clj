@@ -211,8 +211,7 @@
          :namespaces
          (map #(:results (dhc/repositories-by-namespace user-token %)))
          (flatten)
-         (dhmi/->user-repositories)
-         (filter #(:private %)))))
+         (dhmi/->user-repositories))))
 
 (defn dockeruser-tags
   [dockeruser-id repository-name]
