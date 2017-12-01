@@ -30,7 +30,7 @@
 
 (defn list
   ([event]
-   "Get subscribed channel list based on given event"
+   "Get subscribed channels based on given event"
    (->> (filter #(rule/match? % event) rule/list)
         (map #(rule/subscription % event))
         (map #(subscribers %))
@@ -38,7 +38,7 @@
         (filter #(some? %))
         (map #(str %))))
   ([]
-   "Get susbcribed channel list"
+   "Get subscribed channels"
    (->> (keys @hub)
         (map #(str %)))))
 
