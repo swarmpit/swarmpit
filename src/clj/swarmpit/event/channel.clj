@@ -1,50 +1,60 @@
 (ns swarmpit.event.channel
+  (:refer-clojure :exclude [list])
   (:require [org.httpkit.server :refer [send!]]
             [clojure.core.async :refer [go <! timeout]]
             [clojure.core.memoize :as memo]
+            [clojure.edn :as edn]
             [clojure.walk :refer [keywordize-keys]]
             [cheshire.core :refer [generate-string]]
             [swarmpit.base64 :as base64]
-            [swarmpit.event.rules :refer :all]))
+            [swarmpit.event.rule :as rule]))
 
-(def channel-hub (atom {}))
+(def hub (atom {}))
 
-(defn- channel-message
+(defn- message
   [data]
   (str "data: " (generate-string data) "\n\n"))
 
-(defn- channel-subscription
+(defn- subscription
   [channel]
   (-> (val channel)
-      (get-in [:query-params "subscription"])))
+      (get-in [:query-params "subscription"])
+      (base64/decode)
+      (edn/read-string)))
 
-(defn- channels
-  [subscription]
-  (let [encoded-suscription (base64/encode subscription)]
-    (->> @channel-hub
-         (filter #(= encoded-suscription (channel-subscription %)))
-         (keys))))
+(defn- subscribers
+  [channel-subscription]
+  (->> @hub
+       (filter #(= channel-subscription (subscription %)))
+       (keys)))
 
-(def rules [service-container-event
-            task-container-event
-            service-event
-            node-event])
+(defn list
+  ([event]
+   "Get subscribed channel list based on given event"
+   (->> (filter #(rule/match? % event) rule/list)
+        (map #(rule/subscription % event))
+        (map #(subscribers %))
+        (flatten)
+        (filter #(some? %))
+        (map #(str %))))
+  ([]
+   "Get susbcribed channel list"
+   (->> (keys @hub)
+        (map #(str %)))))
 
-(defn- event-rules
+(defn broadcast
   [event]
-  (filter #(match? % event) rules))
-
-(defn broadcast [event]
   "Broadcast data to subscribers based on event subscription.
    Broadcast processing is delayed for 1 second due to cluster sync"
   (go
     (<! (timeout 1000))
-    (doseq [rule (event-rules event)]
-      (let [subscriber (subscriber rule event)
-            subscribed-channels (channels subscriber)]
-        (when (not-empty subscribed-channels)
-          (doseq [channel subscribed-channels]
-            (send! channel (channel-message (subscribed-data rule event)) false)))))))
+    (doseq [rule (filter #(rule/match? % event) rule/list)]
+      (let [subscription (rule/subscription rule event)
+            subscribers (subscribers subscription)]
+        (when (not-empty subscribers)
+          (doseq [subscriber subscribers]
+            (let [data (rule/subscribed-data rule event)]
+              (send! subscriber (message data) false))))))))
 
 ;; To prevent duplicity/spam we cache:
 ;;

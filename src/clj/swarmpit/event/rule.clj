@@ -1,9 +1,10 @@
-(ns swarmpit.event.rules
+(ns swarmpit.event.rule
+  (:refer-clojure :exclude [list])
   (:require [swarmpit.api :as api]))
 
 (defprotocol Rule
   (match? [this event])
-  (subscriber [this event])
+  (subscription [this event])
   (subscribed-data [this event]))
 
 (defn- service-container-event?
@@ -18,7 +19,7 @@
   (reify Rule
     (match? [_ event]
       (service-container-event? event))
-    (subscriber [_ event]
+    (subscription [_ event]
       {:handler :service-list})
     (subscribed-data [_ event]
       (api/services-memo))))
@@ -27,7 +28,7 @@
   (reify Rule
     (match? [_ event]
       (service-container-event? event))
-    (subscriber [_ event]
+    (subscription [_ event]
       {:handler :task-list})
     (subscribed-data [_ event]
       (api/tasks-memo))))
@@ -36,7 +37,7 @@
   (reify Rule
     (match? [_ event]
       (= "service" (:Type event)))
-    (subscriber [_ event]
+    (subscription [_ event]
       {:handler :service-list})
     (subscribed-data [_ event]
       (api/services))))
@@ -45,7 +46,12 @@
   (reify Rule
     (match? [_ event]
       (= "node" (:Type event)))
-    (subscriber [_ event]
+    (subscription [_ event]
       {:handler :node-list})
     (subscribed-data [_ event]
       (api/nodes))))
+
+(def list [service-container-event
+           task-container-event
+           service-event
+           node-event])
