@@ -1,41 +1,38 @@
 (ns swarmpit.event.source
   (:require [swarmpit.routes :as routes]
-            [swarmpit.component.state :as state]
             [swarmpit.component.handler :as handler]
-            [swarmpit.event.docker :as docker-event]
+            [swarmpit.event.handler :as event]
+            [goog.crypt.base64 :as b64]
             [clojure.walk :refer [keywordize-keys]]))
 
 (def es (atom nil))
 
-(defn parse-event
+(defn- parse-event
   [event]
   (-> (.-data event)
       (js/JSON.parse)
       (js->clj)
       (keywordize-keys)))
 
-(defn handle-event!
-  [event-data]
-  "Handle docker events. Events are delayed for 1 second due to internal swarm resource state management"
-  (let [route (state/get-value [:route])]
-    (js/setTimeout
-      (fn []
-        (docker-event/handle route event-data)) 1000)))
+(defn- event-source-url
+  [token subscription]
+  (routes/path-for-backend :events {} {:slt          token
+                                       :subscription (b64/encodeString subscription)}))
 
 (defn- on-message!
-  [event]
+  [event handler]
   (let [event-data (parse-event event)]
-    (handle-event! event-data)))
+    (event/handle handler event-data)))
 
 (defn- on-open!
-  [event]
-  (print "Swarmpit event connection has been opened"))
+  [event handler]
+  (print (str "EventSource subscribed for [" handler "]")))
 
 (defn- on-error!
-  [event error-fx]
+  [event handler error-fx]
   (when (= (.-readyState @es) 2)
     (do
-      (print "Swarmpit event connection failed. Reconnecting in 5 sec...")
+      (print (str "EventSource failed subscribe for [" handler "]. Reconnecting in 5 sec..."))
       (js/setTimeout #(error-fx) 5000))))
 
 (defn close!
@@ -43,14 +40,21 @@
   (when (some? @es)
     (.close @es)))
 
-(defn init!
-  []
-  (handler/get
-    (routes/path-for-backend :slt)
-    {:on-success (fn [{:keys [slt]}]
-                   (let [event-url (str (routes/path-for-backend :events) "?slt=" slt)
-                         event-source (js/EventSource. event-url)]
-                     (.addEventListener event-source "message" on-message!)
-                     (.addEventListener event-source "open" on-open!)
-                     (.addEventListener event-source "error" (fn [e] (on-error! e init!)))
-                     (reset! es event-source)))}))
+(defn open!
+  [route]
+  (let [handler (:handler route)
+        subscription (dissoc route :data)]
+    (handler/get
+      (routes/path-for-backend :slt)
+      {:on-success (fn [{:keys [slt]}]
+                     (let [event-source (js/EventSource. (event-source-url slt subscription))]
+                       (.addEventListener event-source "message" (fn [e] (on-message! e handler)))
+                       (.addEventListener event-source "open" (fn [e] (on-open! e handler)))
+                       (.addEventListener event-source "error" (fn [e] (on-error! e handler #(open! handler))))
+                       (reset! es event-source)))})))
+
+(defn subscribe!
+  [route]
+  (close!)
+  (when (contains? event/handlers (:handler route))
+    (open! route)))

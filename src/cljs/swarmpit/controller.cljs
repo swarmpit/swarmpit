@@ -6,7 +6,6 @@
             [cemerick.url :refer [query->map]]
             [swarmpit.url :refer [dispatch!]]
             [swarmpit.storage :as storage]
-            [swarmpit.event.source :as eventsource]
             [swarmpit.routes :as routes]
             [swarmpit.component.state :as state]))
 
@@ -17,7 +16,6 @@
 (defn login!
   "Close event stream and redirect to login page"
   []
-  (eventsource/close!)
   (dispatch {:handler :login})
   (dispatch! (routes/path-for-frontend :login)))
 

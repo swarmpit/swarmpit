@@ -1,44 +1,22 @@
 (ns swarmpit.event.handler
-  (:require [swarmpit.component.service.list :as service-list]
+  (:require [swarmpit.component.state :as state]
+            [swarmpit.component.service.list :as service-list]
             [swarmpit.component.node.list :as node-list]
             [swarmpit.component.task.list :as task-list]))
 
-(def service-container-action #{"start" "die"})
-
-(defn- service-container-event?
-  [event]
-  (and (= "service-container" (:type event))
-       (contains? service-container-action (:action event))))
-
-(defn- service-event?
-  [event]
-  (= "service" (:type event)))
-
-(defn- node-event?
-  [event]
-  (= "node" (:type event)))
-
-(defmulti handle (fn [route event] (:handler route)))
+(defmulti handle (fn [handler event] handler))
 
 (defmethod handle :service-list
   [_ event]
-  (state/update-value [:data] response cursor)
-
-
-  (when (or (service-event? event)
-            (service-container-event? event))
-    (service-list/data-handler)))
+  (print event)
+  (state/update-value [:data] event service-list/cursor))
 
 (defmethod handle :node-list
   [_ event]
-  (when (node-event? event)
-    (node-list/data-handler)))
+  (state/update-value [:data] event node-list/cursor))
 
 (defmethod handle :task-list
   [_ event]
-  (when (service-container-event? event)
-    (task-list/data-handler)))
+  (state/update-value [:data] event task-list/cursor))
 
-;;default handling, do nothing
-(defmethod handle :default
-  [_ _])
+(def handlers (set (keys (methods handle))))
