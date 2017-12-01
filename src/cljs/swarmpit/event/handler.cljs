@@ -8,7 +8,6 @@
 
 (defmethod handle :service-list
   [_ event]
-  (print event)
   (state/update-value [:data] event service-list/cursor))
 
 (defmethod handle :node-list
