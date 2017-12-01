@@ -1,4 +1,4 @@
-(ns swarmpit.event.docker
+(ns swarmpit.event.handler
   (:require [swarmpit.component.service.list :as service-list]
             [swarmpit.component.node.list :as node-list]
             [swarmpit.component.task.list :as task-list]))
@@ -22,6 +22,9 @@
 
 (defmethod handle :service-list
   [_ event]
+  (state/update-value [:data] response cursor)
+
+
   (when (or (service-event? event)
             (service-container-event? event))
     (service-list/data-handler)))
