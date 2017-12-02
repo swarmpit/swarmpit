@@ -1,5 +1,7 @@
 (ns swarmpit.component.registry.info
   (:require [material.component :as comp]
+            [material.component.form :as form]
+            [material.component.panel :as panel]
             [material.icon :as icon]
             [swarmpit.url :refer [dispatch!]]
             [swarmpit.component.handler :as handler]
@@ -26,8 +28,8 @@
   [:div
    [:div.form-panel
     [:div.form-panel-left
-     (comp/panel-info icon/registries
-                      (:name item))]
+     (panel/info icon/registries
+                 (:name item))]
     [:div.form-panel-right
      (comp/mui
        (comp/raised-button
@@ -41,15 +43,15 @@
           :label      "Delete"}))]]
    [:div.form-view
     [:div.form-view-group
-     (comp/form-item "ID" (:_id item))
-     (comp/form-item "NAME" (:name item))
-     (comp/form-item "URL" (:url item))
-     (comp/form-item "PUBLIC" (if (:public item)
+     (form/item "ID" (:_id item))
+     (form/item "NAME" (:name item))
+     (form/item "URL" (:url item))
+     (form/item "PUBLIC" (if (:public item)
                                 "yes"
                                 "no"))
-     (comp/form-item "AUTHENTICATION" (if (:withAuth item)
+     (form/item "AUTHENTICATION" (if (:withAuth item)
                                         "yes"
                                         "no"))
      (if (:withAuth item)
        [:div
-        (comp/form-item "USERNAME" (:username item))])]]])
+        (form/item "USERNAME" (:username item))])]]])

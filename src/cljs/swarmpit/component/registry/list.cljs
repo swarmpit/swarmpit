@@ -1,5 +1,7 @@
 (ns swarmpit.component.registry.list
   (:require [material.component :as comp]
+            [material.component.panel :as panel]
+            [material.component.list-table :as list]
             [material.icon :as icon]
             [swarmpit.component.mixin :as mixin]
             [swarmpit.component.state :as state]
@@ -61,7 +63,7 @@
     [:div
      [:div.form-panel
       [:div.form-panel-left
-       (comp/panel-text-field
+       (panel/text-field
          {:id       "filter"
           :hintText "Filter by name"
           :onChange (fn [_ v]
@@ -72,8 +74,8 @@
            {:href    (routes/path-for-frontend :registry-create)
             :label   "New registry"
             :primary true}))]]
-     (comp/list-table headers
-                      (sort-by :name filtered-items)
-                      render-item
-                      render-item-keys
-                      onclick-handler)]))
+     (list/table headers
+                 (sort-by :name filtered-items)
+                 render-item
+                 render-item-keys
+                 onclick-handler)]))

@@ -1,5 +1,7 @@
 (ns swarmpit.component.registry.create
   (:require [material.component :as comp]
+            [material.component.form :as form]
+            [material.component.panel :as panel]
             [material.icon :as icon]
             [swarmpit.url :refer [dispatch!]]
             [swarmpit.component.handler :as handler]
@@ -14,7 +16,7 @@
 (def cursor [:page :registry :form])
 
 (defn- form-name [value]
-  (comp/form-comp
+  (form/comp
     "NAME"
     (comp/vtext-field
       {:name     "name"
@@ -25,7 +27,7 @@
                    (state/update-value [:name] v cursor))})))
 
 (defn- form-url [value]
-  (comp/form-comp
+  (form/comp
     "URL"
     (comp/vtext-field
       {:name            "url"
@@ -39,16 +41,16 @@
                           (state/update-value [:url] v cursor))})))
 
 (defn- form-auth [value]
-  (comp/form-comp
+  (form/comp
     "AUTHENTICATION"
-    (comp/form-checkbox
+    (form/checkbox
       {:key     "authentication"
        :checked value
        :onCheck (fn [_ v]
                   (state/update-value [:withAuth] v cursor))})))
 
 (defn- form-username [value]
-  (comp/form-comp
+  (form/comp
     "USERNAME"
     (comp/text-field
       {:name     "username"
@@ -58,7 +60,7 @@
                    (state/update-value [:username] v cursor))})))
 
 (defn- form-password [value]
-  (comp/form-comp
+  (form/comp
     "PASSWORD"
     (comp/text-field
       {:name     "password"
@@ -69,9 +71,9 @@
                    (state/update-value [:password] v cursor))})))
 
 (defn- form-public [value]
-  (comp/form-comp
+  (form/comp
     "PUBLIC"
-    (comp/form-checkbox
+    (form/checkbox
       {:checked value
        :onCheck (fn [_ v]
                   (state/update-value [:public] v cursor))})))
@@ -117,7 +119,7 @@
     [:div
      [:div.form-panel
       [:div.form-panel-left
-       (comp/panel-info icon/registries "New registry")]
+       (panel/info icon/registries "New registry")]
       [:div.form-panel-right
        (comp/mui
          (comp/raised-button
@@ -126,7 +128,7 @@
             :primary    true
             :onTouchTap create-registry-handler}))]]
      [:div.form-edit
-      (comp/form
+      (form/form
         {:onValid   #(state/update-value [:isValid] true cursor)
          :onInvalid #(state/update-value [:isValid] false cursor)}
         (form-name name)
@@ -134,6 +136,6 @@
         (form-public public)
         (form-auth withAuth)
         (if withAuth
-          (comp/form-comps
+          (form/comps
             (form-username username)
             (form-password password))))]]))

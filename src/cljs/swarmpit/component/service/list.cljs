@@ -1,5 +1,7 @@
 (ns swarmpit.component.service.list
-  (:require [material.icon :as icon]
+  (:require [material.component.label :as label]
+            [material.component.panel :as panel]
+            [material.component.list-table :as list]
             [material.component :as comp]
             [swarmpit.component.state :as state]
             [swarmpit.component.mixin :as mixin]
@@ -29,14 +31,14 @@
 
 (defn- render-item-update-state [value]
   (case value
-    "rollback_started" (comp/label-update "rollback")
-    (comp/label-update value)))
+    "rollback_started" (label/update "rollback")
+    (label/update value)))
 
 (defn- render-item-state [value]
   (case value
-    "running" (comp/label-green value)
-    "not running" (comp/label-grey value)
-    "partly running" (comp/label-yellow value)))
+    "running" (label/green value)
+    "not running" (label/grey value)
+    "partly running" (label/yellow value)))
 
 (defn- render-item-ports [value]
   (html
@@ -58,7 +60,7 @@
     (case (key item)
       :ports (render-item-ports value)
       :state (render-status value update)
-      :info (comp/label-info value)
+      :info (label/info value)
       value)))
 
 (defn- onclick-handler
@@ -107,13 +109,13 @@
     [:div
      [:div.form-panel
       [:div.form-panel-left
-       (comp/panel-text-field
-         {:id        "filter"
-          :hintText  "Filter by name"
-          :onChange  (fn [_ v]
-                       (state/update-value [:filter :serviceName] v cursor))})
+       (panel/text-field
+         {:id       "filter"
+          :hintText "Filter by name"
+          :onChange (fn [_ v]
+                      (state/update-value [:filter :serviceName] v cursor))})
        [:span.form-panel-space]
-       (comp/panel-checkbox
+       (panel/checkbox
          {:checked (:unhealthy filter)
           :label   "Show unhealthy"
           :onCheck (fn [_ v]
@@ -124,8 +126,8 @@
            {:href    (routes/path-for-frontend :service-create-image)
             :label   "New service"
             :primary true}))]]
-     (comp/list-table headers
-                      (sort-by :serviceName filtered-items)
-                      render-item
-                      render-item-keys
-                      onclick-handler)]))
+     (list/table headers
+                 (sort-by :serviceName filtered-items)
+                 render-item
+                 render-item-keys
+                 onclick-handler)]))

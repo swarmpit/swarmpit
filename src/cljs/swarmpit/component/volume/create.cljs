@@ -1,5 +1,7 @@
 (ns swarmpit.component.volume.create
   (:require [material.component :as comp]
+            [material.component.form :as form]
+            [material.component.panel :as panel]
             [material.icon :as icon]
             [swarmpit.url :refer [dispatch!]]
             [swarmpit.component.handler :as handler]
@@ -23,7 +25,7 @@
                    (reset! volume-plugins response))}))
 
 (defn- form-name [value]
-  (comp/form-comp
+  (form/comp
     "NAME"
     (comp/vtext-field
       {:name     "name"
@@ -34,7 +36,7 @@
                    (state/update-value [:volumeName] v cursor))})))
 
 (defn- form-driver [value plugins]
-  (comp/form-comp
+  (form/comp
     "DRIVER"
     (comp/select-field
       {:value    value
@@ -81,7 +83,7 @@
     [:div
      [:div.form-panel
       [:div.form-panel-left
-       (comp/panel-info icon/networks "New volume")]
+       (panel/info icon/networks "New volume")]
       [:div.form-panel-right
        (comp/mui
          (comp/raised-button
@@ -91,7 +93,7 @@
             :onTouchTap create-volume-handler}))]]
      [:div.form-view
       [:div.form-view-group
-       (comp/form
+       (form/form
          {:onValid   #(state/update-value [:isValid] true cursor)
           :onInvalid #(state/update-value [:isValid] false cursor)}
          (form-name volumeName)

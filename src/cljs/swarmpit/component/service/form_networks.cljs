@@ -1,5 +1,7 @@
 (ns swarmpit.component.service.form-networks
   (:require [material.component :as comp]
+            [material.component.form :as form]
+            [material.component.list-table-form :as list]
             [swarmpit.component.state :as state]
             [swarmpit.component.handler :as handler]
             [swarmpit.routes :as routes]
@@ -33,10 +35,10 @@
                :width "20%"}])
 
 (def empty-info
-  (comp/form-value "Service is not connected to any networks."))
+  (form/value "Service is not connected to any networks."))
 
 (defn- form-network [value index networks-list]
-  (comp/form-list-selectfield
+  (list/selectfield
     {:name     (str "form-network-select-" index)
      :key      (str "form-network-select-" index)
      :value    value
@@ -56,12 +58,12 @@
 
 (defn- form-table
   [networks networks-list]
-  (comp/form-table-headless [{:name  "Name"
-                              :width "300px"}]
-                            networks
-                            networks-list
-                            render-networks
-                            (fn [index] (state/remove-item index cursor))))
+  (list/table-headless [{:name        "Name"
+                               :width "300px"}]
+                       networks
+                       networks-list
+                       render-networks
+                       (fn [index] (state/remove-item index cursor))))
 
 (defn- add-item
   []
@@ -71,7 +73,7 @@
   (let [networks-list (rum/react networks)
         networks (state/react cursor)]
     [:div
-     (comp/form-add-btn "Attach network" add-item)
+     (form/add-btn "Attach network" add-item)
      (if (not (empty? networks))
        (form-table networks networks-list))]))
 

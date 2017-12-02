@@ -1,5 +1,9 @@
 (ns swarmpit.component.service.info
   (:require [material.component :as comp]
+            [material.component.label :as label]
+            [material.component.panel :as panel]
+            [material.component.form :as form]
+            [material.component.list-table-auto :as list]
             [material.icon :as icon]
             [swarmpit.url :refer [dispatch!]]
             [swarmpit.component.handler :as handler]
@@ -26,7 +30,7 @@
 
 (defonce service-networks (atom nil))
 
-(defn- form-panel-label [item]
+(defn- label [item]
   (str (:state item) "  " (get-in item [:status :info])))
 
 (defn- delete-service-handler
@@ -113,12 +117,12 @@
 
 (rum/defc form-tasks < rum/static [tasks]
   [:div.form-service-view-group.form-service-group-border
-   (comp/form-section "Tasks")
-   (comp/list-table-auto ["Name" "Service" "Image" "Node" "Status"]
-                         (filter #(not (= "shutdown" (:state %))) tasks)
-                         tasks/render-item
-                         tasks/render-item-keys
-                         tasks/onclick-handler)])
+   (form/section "Tasks")
+   (list/table ["Name" "Service" "Image" "Node" "Status"]
+               (filter #(not (= "shutdown" (:state %))) tasks)
+               tasks/render-item
+               tasks/render-item-keys
+               tasks/onclick-handler)])
 
 (rum/defc form < rum/reactive
                  rum/static [data]
@@ -136,10 +140,10 @@
     [:div
      [:div.form-panel
       [:div.form-panel-left
-       (comp/panel-info icon/services
-                        (:serviceName service)
-                        (comp/label-info
-                          (form-panel-label service)))]
+       (panel/info icon/services
+                   (:serviceName service)
+                   (label/info
+                           (label service)))]
       [:div.form-panel-right
        (comp/mui
          (comp/raised-button

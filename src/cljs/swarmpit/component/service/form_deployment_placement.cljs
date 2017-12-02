@@ -1,5 +1,6 @@
 (ns swarmpit.component.service.form-deployment-placement
   (:require [material.component :as comp]
+            [material.component.list-table-form :as list]
             [swarmpit.component.state :as state]
             [swarmpit.component.handler :as handler]
             [swarmpit.routes :as routes]
@@ -42,11 +43,11 @@
 
 (defn- form-table
   [placement placement-list]
-  (comp/form-table-headless headers
-                            placement
-                            placement-list
-                            render-placement
-                            (fn [index] (state/remove-item index cursor))))
+  (list/table-headless headers
+                       placement
+                       placement-list
+                       render-placement
+                       (fn [index] (state/remove-item index cursor))))
 
 (defn- add-item
   []

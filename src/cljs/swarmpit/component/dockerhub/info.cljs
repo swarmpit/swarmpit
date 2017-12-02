@@ -1,5 +1,7 @@
 (ns swarmpit.component.dockerhub.info
   (:require [material.component :as comp]
+            [material.component.form :as form]
+            [material.component.panel :as panel]
             [material.icon :as icon]
             [swarmpit.url :refer [dispatch!]]
             [swarmpit.component.handler :as handler]
@@ -26,8 +28,8 @@
   [:div
    [:div.form-panel
     [:div.form-panel-left
-     (comp/panel-info icon/docker
-                      (:username item))]
+     (panel/info icon/docker
+                 (:username item))]
     [:div.form-panel-right
      (comp/mui
        (comp/raised-button
@@ -41,11 +43,11 @@
           :label      "Delete"}))]]
    [:div.form-view
     [:div.form-view-group
-     (comp/form-item "ID" (:_id item))
-     (comp/form-item "NAME" (:name item))
-     (comp/form-item "PUBLIC" (if (:public item)
+     (form/item "ID" (:_id item))
+     (form/item "NAME" (:name item))
+     (form/item "PUBLIC" (if (:public item)
                                 "yes"
                                 "no"))
-     (comp/form-item "USERNAME" (:username item))
-     (comp/form-item "LOCATION" (:location item))
-     (comp/form-item "ROLE" (:role item))]]])
+     (form/item "USERNAME" (:username item))
+     (form/item "LOCATION" (:location item))
+     (form/item "ROLE" (:role item))]]])

@@ -1,5 +1,7 @@
 (ns swarmpit.component.service.create-image-public
   (:require [material.component :as comp]
+            [material.component.form :as form]
+            [material.component.list-table :as list]
             [swarmpit.component.state :as state]
             [swarmpit.component.handler :as handler]
             [swarmpit.url :refer [dispatch!]]
@@ -32,7 +34,7 @@
                    (state/update-value [:searching] false cursor))}))
 
 (defn- form-repository [repository]
-  (comp/form-comp
+  (form/comp
     "REPOSITORY"
     (comp/text-field
       {:hintText "Find repository"
@@ -42,10 +44,10 @@
                    (repository-handler v 1))})))
 
 (rum/defc form-loading < rum/static []
-  (comp/form-comp-loading true))
+  (form/loading true))
 
 (rum/defc form-loaded < rum/static []
-  (comp/form-comp-loading false))
+  (form/loading false))
 
 (defn- repository-list [data]
   (let [{:keys [results page limit total query]} data
@@ -60,17 +62,17 @@
                           (routes/path-for-frontend :service-create-config
                                                     {}
                                                     {:repository (repository i)})))}
-        (comp/list-table-header headers)
-        (comp/list-table-body headers
-                              results
-                              render-item
-                              [[:name] [:description]])
+        (list/table-header headers)
+        (list/table-body headers
+                         results
+                         render-item
+                         [[:name] [:description]])
         (if (not (empty? results))
-          (comp/list-table-paging offset
-                                  total
-                                  limit
-                                  #(repository-handler query (- (js/parseInt page) 1))
-                                  #(repository-handler query (+ (js/parseInt page) 1))))))))
+          (list/table-paging offset
+                             total
+                             limit
+                             #(repository-handler query (- (js/parseInt page) 1))
+                             #(repository-handler query (+ (js/parseInt page) 1))))))))
 
 (rum/defc form < rum/reactive []
   (let [{:keys [searching

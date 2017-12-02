@@ -1,6 +1,7 @@
 (ns swarmpit.component.service.create-config
   (:require [material.icon :as icon]
             [material.component :as comp]
+            [material.component.panel :as panel]
             [swarmpit.url :refer [dispatch!]]
             [swarmpit.component.mixin :as mixin]
             [swarmpit.component.handler :as handler]
@@ -152,7 +153,7 @@
     [:div
      [:div.form-panel
       [:div.form-panel-left
-       (comp/panel-info icon/services "New service")]
+       (panel/info icon/services "New service")]
       [:div.form-panel-right
        (comp/mui
          (comp/raised-button

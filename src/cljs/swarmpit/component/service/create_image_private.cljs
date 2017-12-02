@@ -1,6 +1,8 @@
 (ns swarmpit.component.service.create-image-private
   (:require [material.icon :as icon]
             [material.component :as comp]
+            [material.component.form :as form]
+            [material.component.list-table :as list]
             [swarmpit.component.state :as state]
             [swarmpit.component.handler :as handler]
             [swarmpit.storage :as storage]
@@ -46,7 +48,7 @@
 
 (defn- form-username [user users]
   (let [user-by-id (fn [id] (first (filter #(= id (:_id %)) users)))]
-    (comp/form-comp
+    (form/comp
       "DOCKER USER"
       (comp/select-field
         {:value    (:_id user)
@@ -61,7 +63,7 @@
                       :primaryText (form-username-label %)})))))))
 
 (defn- form-repository [repository]
-  (comp/form-comp
+  (form/comp
     "REPOSITORY"
     (comp/text-field
       {:hintText "Filter by name"
@@ -70,10 +72,10 @@
                    (state/update-value [:repository] v cursor))})))
 
 (rum/defc form-loading < rum/static []
-  (comp/form-comp-loading true))
+  (form/loading true))
 
 (rum/defc form-loaded < rum/static []
-  (comp/form-comp-loading false))
+  (form/loading false))
 
 (defn- repository-list [user data]
   (let [repository (fn [index] (:name (nth data index)))]
@@ -88,11 +90,11 @@
                                                     {:repository       (repository i)
                                                      :distributionType "dockerhub"
                                                      :distribution     (:_id user)})))}
-        (comp/list-table-header headers)
-        (comp/list-table-body headers
-                              data
-                              render-item
-                              [[:name] [:description]])))))
+        (list/table-header headers)
+        (list/table-body headers
+                         data
+                         render-item
+                         [[:name] [:description]])))))
 
 (rum/defc form < rum/reactive [users]
   (let [{:keys [searching
@@ -111,5 +113,5 @@
         (repository-list user filtered-data)]]
       [:div.form-edit
        (if (storage/admin?)
-         (comp/form-icon-value icon/info [:span "No dockerhub users found. Add new " [:a {:href (routes/path-for-frontend :dockerhub-user-create)} "user."]])
-         (comp/form-icon-value icon/info "No dockerhub users found. Please ask your admin to setup."))])))
+         (form/icon-value icon/info [:span "No dockerhub users found. Add new " [:a {:href (routes/path-for-frontend :dockerhub-user-create)} "user."]])
+         (form/icon-value icon/info "No dockerhub users found. Please ask your admin to setup."))])))

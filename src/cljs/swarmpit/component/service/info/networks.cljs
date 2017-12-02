@@ -1,5 +1,6 @@
 (ns swarmpit.component.service.info.networks
-  (:require [material.component :as comp]
+  (:require [material.component.form :as form]
+            [material.component.list-table-auto :as list]
             [swarmpit.routes :as routes]
             [rum.core :as rum]))
 
@@ -21,9 +22,9 @@
 (rum/defc form < rum/static [networks]
   (when (not-empty networks)
     [:div.form-service-view-group.form-service-group-border
-     (comp/form-section "Networks")
-     (comp/list-table-auto headers
-                           networks
-                           render-item
-                           render-item-keys
-                           onclick-handler)]))
+     (form/section "Networks")
+     (list/table headers
+                 networks
+                 render-item
+                 render-item-keys
+                 onclick-handler)]))

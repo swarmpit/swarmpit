@@ -1,6 +1,7 @@
 (ns swarmpit.component.service.create-image
   (:require [material.icon :as icon]
             [material.component :as comp]
+            [material.component.panel :as panel]
             [swarmpit.component.mixin :as mixin]
             [swarmpit.component.state :as state]
             [swarmpit.component.service.create-image-public :as cip]
@@ -60,7 +61,7 @@
     [:div
      [:div.form-panel
       [:div.form-panel-left
-       (comp/panel-info icon/services "New service")]]
+       (panel/info icon/services "New service")]]
      [:div.form-panel-tabs
       (comp/mui
         (comp/tabs

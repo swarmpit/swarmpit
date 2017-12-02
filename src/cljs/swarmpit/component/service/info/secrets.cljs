@@ -1,5 +1,6 @@
 (ns swarmpit.component.service.info.secrets
-  (:require [material.component :as comp]
+  (:require [material.component.form :as form]
+            [material.component.list-table-auto :as list]
             [swarmpit.routes :as routes]
             [rum.core :as rum]))
 
@@ -21,10 +22,10 @@
 (rum/defc form < rum/static [secrets]
   (when (not-empty secrets)
     [:div.form-service-view-group.form-service-group-border
-     (comp/form-section "Secrets")
-     (comp/list-table-auto headers
-                           secrets
-                           render-item
-                           render-item-keys
-                           onclick-handler)]))
+     (form/section "Secrets")
+     (list/table headers
+                 secrets
+                 render-item
+                 render-item-keys
+                 onclick-handler)]))
 

@@ -1,5 +1,7 @@
 (ns swarmpit.component.network.create
   (:require [material.component :as comp]
+            [material.component.form :as form]
+            [material.component.panel :as panel]
             [material.icon :as icon]
             [swarmpit.url :refer [dispatch!]]
             [swarmpit.component.handler :as handler]
@@ -23,7 +25,7 @@
                    (reset! network-plugins response))}))
 
 (defn- form-name [value]
-  (comp/form-comp
+  (form/comp
     "NAME"
     (comp/vtext-field
       {:name     "name"
@@ -34,7 +36,7 @@
                    (state/update-value [:networkName] v cursor))})))
 
 (defn- form-driver [value plugins]
-  (comp/form-comp
+  (form/comp
     "DRIVER"
     (comp/select-field
       {:value    value
@@ -47,15 +49,15 @@
                     :primaryText %}))))))
 
 (defn- form-internal [value]
-  (comp/form-comp
+  (form/comp
     "IS PRIVATE"
-    (comp/form-checkbox
+    (form/checkbox
       {:checked value
        :onCheck (fn [_ v]
                   (state/update-value [:internal] v cursor))})))
 
 (defn- form-subnet [value]
-  (comp/form-comp
+  (form/comp
     "SUBNET"
     (comp/vtext-field
       {:name            "subnet"
@@ -68,7 +70,7 @@
                           (state/update-value [:ipam :subnet] v cursor))})))
 
 (defn- form-gateway [value]
-  (comp/form-comp
+  (form/comp
     "GATEWAY"
     (comp/vtext-field
       {:name            "gateway"
@@ -121,7 +123,7 @@
     [:div
      [:div.form-panel
       [:div.form-panel-left
-       (comp/panel-info icon/networks "New network")]
+       (panel/info icon/networks "New network")]
       [:div.form-panel-right
        (comp/mui
          (comp/raised-button
@@ -132,16 +134,16 @@
             :onTouchTap create-network-handler}))]]
      [:div.form-view
       [:div.form-view-group
-       (comp/form-section "General settings")
-       (comp/form
+       (form/section "General settings")
+       (form/form
          {:onValid   #(state/update-value [:isValid] true cursor)
           :onInvalid #(state/update-value [:isValid] false cursor)}
          (form-name name)
          (form-driver driver plugins)
          (form-internal internal))]
       [:div.form-view-group
-       (comp/form-section "IP address management")
-       (comp/form
+       (form/section "IP address management")
+       (form/form
          {:onValid   #(state/update-value [:isValidIpam] true cursor)
           :onInvalid #(state/update-value [:isValidIpam] false cursor)}
          (form-subnet (:subnet ipam))

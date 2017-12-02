@@ -1,9 +1,11 @@
 (ns swarmpit.component.service.form-labels
   (:require [material.component :as comp]
+            [material.component.form :as form]
+            [material.component.list-table-form :as list]
             [swarmpit.component.state :as state]
-            [rum.core :as rum]
             [swarmpit.component.handler :as handler]
-            [swarmpit.routes :as routes]))
+            [swarmpit.routes :as routes]
+            [rum.core :as rum]))
 
 (enable-console-print!)
 
@@ -15,7 +17,7 @@
                :width "35%"}])
 
 (def empty-info
-  (comp/form-value "No labels defined for the service."))
+  (form/value "No labels defined for the service."))
 
 (defonce label-names (atom []))
 
@@ -37,7 +39,7 @@
      :dataSource    label-names}))
 
 (defn- form-value [value index]
-  (comp/form-list-textfield
+  (list/textfield
     {:name     (str "form-value-text-" index)
      :key      (str "form-value-text-" index)
      :value    value
@@ -53,11 +55,11 @@
 
 (defn- form-table
   [labels label-names]
-  (comp/form-table headers
-                   labels
-                   label-names
-                   render-labels
-                   (fn [index] (state/remove-item index cursor))))
+  (list/table headers
+              labels
+              label-names
+              render-labels
+              (fn [index] (state/remove-item index cursor))))
 
 (defn- add-item
   []
@@ -68,7 +70,7 @@
   (let [labels (state/react cursor)
         label-names (rum/react label-names)]
     [:div
-     (comp/form-add-btn "Add label" add-item)
+     (form/add-btn "Add label" add-item)
      (if (not (empty? labels))
        (form-table labels label-names))]))
 

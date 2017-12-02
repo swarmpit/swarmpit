@@ -1,5 +1,6 @@
 (ns swarmpit.component.node.list
-  (:require [material.component :as comp]
+  (:require [material.component.label :as label]
+            [material.component.panel :as panel]
             [material.icon :as icon]
             [swarmpit.component.mixin :as mixin]
             [swarmpit.component.state :as state]
@@ -20,15 +21,15 @@
 
 (defn- node-item-state [value]
   (case value
-    "ready" (comp/label-green value)
-    "down" (comp/label-red value)))
+    "ready" (label/green value)
+    "down" (label/red value)))
 
 (defn- node-item-states [item]
   [:div.node-item-states
    [:span.node-item-state (node-item-state (:state item))]
    (if (:leader item)
-     [:span.node-item-state (comp/label-blue "leader")])
-   [:span.node-item-state (comp/label-blue (:role item))]])
+     [:span.node-item-state (label/blue "leader")])
+   [:span.node-item-state (label/blue (:role item))]])
 
 (defn- node-item-header [item]
   [:div
@@ -77,7 +78,7 @@
     [:div
      [:div.form-panel
       [:div.form-panel-left
-       (comp/panel-text-field
+       (panel/text-field
          {:id       "filter"
           :hintText "Filter by name"
           :onChange (fn [_ v]

@@ -1,5 +1,8 @@
 (ns swarmpit.component.network.list
   (:require [material.component :as comp]
+            [material.component.label :as label]
+            [material.component.panel :as panel]
+            [material.component.list-table :as list]
             [swarmpit.component.mixin :as mixin]
             [swarmpit.component.state :as state]
             [swarmpit.routes :as routes]
@@ -29,7 +32,7 @@
   (let [value (val item)]
     (case (key item)
       :internal (if value
-                  (comp/label-blue "internal"))
+                  (label/blue "internal"))
       value)))
 
 (defn- onclick-handler
@@ -57,7 +60,7 @@
     [:div
      [:div.form-panel
       [:div.form-panel-left
-       (comp/panel-text-field
+       (panel/text-field
          {:id       "filter"
           :hintText "Filter by name"
           :onChange (fn [_ v]
@@ -68,8 +71,8 @@
            {:href    (routes/path-for-frontend :network-create)
             :label   "New network"
             :primary true}))]]
-     (comp/list-table headers
-                      (sort-by :networkName filtered-items)
-                      render-item
-                      render-item-keys
-                      onclick-handler)]))
+     (list/table headers
+                 (sort-by :networkName filtered-items)
+                 render-item
+                 render-item-keys
+                 onclick-handler)]))

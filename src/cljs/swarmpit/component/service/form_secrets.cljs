@@ -1,5 +1,7 @@
 (ns swarmpit.component.service.form-secrets
   (:require [material.component :as comp]
+            [material.component.form :as form]
+            [material.component.list-table-form :as list]
             [material.icon :as icon]
             [swarmpit.routes :as routes]
             [swarmpit.component.handler :as handler]
@@ -26,16 +28,16 @@
                :width "35%"}])
 
 (def empty-info
-  (comp/form-value "No secrets defined for the service."))
+  (form/value "No secrets defined for the service."))
 
 (def undefined-info
-  (comp/form-icon-value
+  (form/icon-value
     icon/info
     [:span "No secrets found. Create new "
      [:a {:href (routes/path-for-frontend :secret-create)} "secret."]]))
 
 (defn- form-secret [value index secrets-list]
-  (comp/form-list-selectfield
+  (list/selectfield
     {:name     (str "form-secret-select-" index)
      :key      (str "form-secret-select-" index)
      :value    value
@@ -49,7 +51,7 @@
                   :primaryText (:secretName %)})))))
 
 (defn- form-secret-target [value name index]
-  (comp/form-list-textfield
+  (list/textfield
     {:name     (str "form-secret-target-" index)
      :key      (str "form-secret-target-" index)
      :hintText (when (str/blank? value)
@@ -66,11 +68,11 @@
 
 (defn- form-table
   [secrets secrets-list]
-  (comp/form-table headers
-                   secrets
-                   secrets-list
-                   render-secrets
-                   (fn [index] (state/remove-item index cursor))))
+  (list/table headers
+              secrets
+              secrets-list
+              render-secrets
+              (fn [index] (state/remove-item index cursor))))
 
 (defn- add-item
   []
@@ -83,7 +85,7 @@
     [:div
      (if (empty? secrets-list)
        undefined-info
-       (comp/form-add-btn "Expose secrets" add-item))
+       (form/add-btn "Expose secrets" add-item))
      (when (not (empty? secrets))
        (form-table secrets secrets-list))]))
 

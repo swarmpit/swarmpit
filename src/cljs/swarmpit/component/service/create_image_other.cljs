@@ -1,6 +1,8 @@
 (ns swarmpit.component.service.create-image-other
   (:require [material.icon :as icon]
             [material.component :as comp]
+            [material.component.form :as form]
+            [material.component.list-table :as list]
             [swarmpit.component.state :as state]
             [swarmpit.component.handler :as handler]
             [swarmpit.storage :as storage]
@@ -45,7 +47,7 @@
 
 (defn- form-registry [registry registries]
   (let [registry-by-id (fn [id] (first (filter #(= id (:_id %)) registries)))]
-    (comp/form-comp
+    (form/comp
       "REGISTRY"
       (comp/select-field
         {:value    (:_id registry)
@@ -60,7 +62,7 @@
                       :primaryText (form-registry-label %)})))))))
 
 (defn- form-repository [repository]
-  (comp/form-comp
+  (form/comp
     "REPOSITORY"
     (comp/text-field
       {:hintText "Filter by name"
@@ -69,10 +71,10 @@
                    (state/update-value [:repository] v cursor))})))
 
 (rum/defc form-loading < rum/static []
-  (comp/form-comp-loading true))
+  (form/loading true))
 
 (rum/defc form-loaded < rum/static []
-  (comp/form-comp-loading false))
+  (form/loading false))
 
 (defn- repository-list [registry data]
   (let [repository (fn [index] (:name (nth data index)))]
@@ -87,11 +89,11 @@
                                                     {:repository       (repository i)
                                                      :distributionType "registry"
                                                      :distribution     (:_id registry)})))}
-        (comp/list-table-header headers)
-        (comp/list-table-body headers
-                              data
-                              render-item
-                              [[:name]])))))
+        (list/table-header headers)
+        (list/table-body headers
+                         data
+                         render-item
+                         [[:name]])))))
 
 (rum/defc form < rum/reactive [registries]
   (let [{:keys [searching
@@ -110,5 +112,5 @@
         (repository-list registry filtered-data)]]
       [:div.form-edit
        (if (storage/admin?)
-         (comp/form-icon-value icon/info [:span "No custom registries found. Add new " [:a {:href (routes/path-for-frontend :registry-create)} "registry."]])
-         (comp/form-icon-value icon/info "No custom registries found. Please ask your admin to setup."))])))
+         (form/icon-value icon/info [:span "No custom registries found. Add new " [:a {:href (routes/path-for-frontend :registry-create)} "registry."]])
+         (form/icon-value icon/info "No custom registries found. Please ask your admin to setup."))])))

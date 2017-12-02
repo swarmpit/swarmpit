@@ -1,5 +1,7 @@
 (ns swarmpit.component.volume.info
   (:require [material.component :as comp]
+            [material.component.form :as form]
+            [material.component.panel :as panel]
             [material.icon :as icon]
             [swarmpit.url :refer [dispatch!]]
             [swarmpit.component.handler :as handler]
@@ -28,8 +30,8 @@
     [:div
      [:div.form-panel
       [:div.form-panel-left
-       (comp/panel-info icon/volumes
-                        (:volumeName volume))]
+       (panel/info icon/volumes
+                   (:volumeName volume))]
       [:div.form-panel-right
        (comp/mui
          (comp/raised-button
@@ -38,8 +40,8 @@
      [:div.form-view
       [:div.form-view-group
        (if (some? stack)
-         (comp/form-item "STACK" stack))
-       (comp/form-item "NAME" (utils/trim-stack stack (:volumeName volume)))
-       (comp/form-item "DRIVER" (:driver volume))
-       (comp/form-item "SCOPE" (:scope volume))
-       (comp/form-item "MOUNTPOINT" (:mountpoint volume))]]]))
+         (form/item "STACK" stack))
+       (form/item "NAME" (utils/trim-stack stack (:volumeName volume)))
+       (form/item "DRIVER" (:driver volume))
+       (form/item "SCOPE" (:scope volume))
+       (form/item "MOUNTPOINT" (:mountpoint volume))]]]))

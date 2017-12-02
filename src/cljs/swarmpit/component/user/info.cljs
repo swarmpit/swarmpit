@@ -1,5 +1,7 @@
 (ns swarmpit.component.user.info
   (:require [material.component :as comp]
+            [material.component.form :as form]
+            [material.component.panel :as panel]
             [material.icon :as icon]
             [swarmpit.url :refer [dispatch!]]
             [swarmpit.storage :as storage]
@@ -27,8 +29,8 @@
   [:div
    [:div.form-panel
     [:div.form-panel-left
-     (comp/panel-info icon/users
-                      (:username item))]
+     (panel/info icon/users
+                 (:username item))]
     [:div.form-panel-right
      (comp/mui
        (comp/raised-button
@@ -43,9 +45,9 @@
           :label      "Delete"}))]]
    [:div.form-view
     [:div.form-view-group
-     (comp/form-item "ID" (:_id item))
-     (comp/form-item "USERNAME" (:username item))
-     (comp/form-item "EMAIL" (:email item))
-     (comp/form-item "IS ADMIN" (if (= "admin" (:role item))
+     (form/item "ID" (:_id item))
+     (form/item "USERNAME" (:username item))
+     (form/item "EMAIL" (:email item))
+     (form/item "IS ADMIN" (if (= "admin" (:role item))
                                   "yes"
                                   "no"))]]])

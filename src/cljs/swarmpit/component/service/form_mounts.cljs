@@ -1,5 +1,7 @@
 (ns swarmpit.component.service.form-mounts
   (:require [material.component :as comp]
+            [material.component.form :as form]
+            [material.component.list-table-form :as list]
             [swarmpit.component.state :as state]
             [swarmpit.component.handler :as handler]
             [swarmpit.routes :as routes]
@@ -48,10 +50,10 @@
                :width "5%"}])
 
 (def empty-info
-  (comp/form-value "No mounts defined for the service."))
+  (form/value "No mounts defined for the service."))
 
 (defn- form-container [value index]
-  (comp/form-list-textfield
+  (list/textfield
     {:name     (str "form-container-path-text-" index)
      :key      (str "form-container-path-text-" index)
      :value    value
@@ -59,7 +61,7 @@
                  (state/update-item index :containerPath v cursor))}))
 
 (defn- form-host-bind [value index]
-  (comp/form-list-textfield
+  (list/textfield
     {:name     (str "form-bind-path-text-" index)
      :key      (str "form-bind-path-text-" index)
      :value    value
@@ -67,7 +69,7 @@
                  (state/update-item index :host v cursor))}))
 
 (defn- form-host-volume [value index volumes-list]
-  (comp/form-list-selectfield
+  (list/selectfield
     {:name      (str "form-volume-select-" index)
      :key       (str "form-volume-select-" index)
      :value     value
@@ -82,7 +84,7 @@
                   :primaryText (:volumeName %)})))))
 
 (defn- form-type [value index]
-  (comp/form-list-selectfield
+  (list/selectfield
     {:name     (str "form-type-select-" index)
      :key      (str "form-type-select-" index)
      :value    value
@@ -122,11 +124,11 @@
 
 (defn- form-table
   [mounts volumes-list]
-  (comp/form-table headers
-                   mounts
-                   volumes-list
-                   render-mounts
-                   (fn [index] (state/remove-item index cursor))))
+  (list/table headers
+              mounts
+              volumes-list
+              render-mounts
+              (fn [index] (state/remove-item index cursor))))
 
 (defn- add-item
   []
@@ -139,7 +141,7 @@
   (let [volumes-list (rum/react volumes)
         mounts (state/react cursor)]
     [:div
-     (comp/form-add-btn "Mount volume" add-item)
+     (form/add-btn "Mount volume" add-item)
      (when (not (empty? mounts))
        (form-table mounts volumes-list))]))
 

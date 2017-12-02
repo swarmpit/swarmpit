@@ -1,5 +1,7 @@
 (ns swarmpit.component.secret.list
   (:require [material.component :as comp]
+            [material.component.panel :as panel]
+            [material.component.list-table :as list]
             [swarmpit.component.mixin :as mixin]
             [swarmpit.component.state :as state]
             [swarmpit.routes :as routes]
@@ -48,7 +50,7 @@
     [:div
      [:div.form-panel
       [:div.form-panel-left
-       (comp/panel-text-field
+       (panel/text-field
          {:id       "filter"
           :hintText "Filter by name"
           :onChange (fn [_ v]
@@ -59,10 +61,10 @@
            {:href    (routes/path-for-frontend :secret-create)
             :label   "New secret"
             :primary true}))]]
-     (comp/list-table headers
-                      (->> filtered-items
+     (list/table headers
+                 (->> filtered-items
                            (sort-by :secretName)
                            (map #(update % :createdAt time/simplify)))
-                      render-item
-                      render-item-keys
-                      onclick-handler)]))
+                 render-item
+                 render-item-keys
+                 onclick-handler)]))

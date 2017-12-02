@@ -1,5 +1,7 @@
 (ns swarmpit.component.secret.create
   (:require [material.component :as comp]
+            [material.component.form :as form]
+            [material.component.panel :as panel]
             [material.icon :as icon]
             [swarmpit.url :refer [dispatch!]]
             [swarmpit.component.handler :as handler]
@@ -19,7 +21,7 @@
    :minWidth "400px"})
 
 (defn- form-name [value]
-  (comp/form-comp
+  (form/comp
     "NAME"
     (comp/vtext-field
       {:name     "name"
@@ -30,7 +32,7 @@
                    (state/update-value [:secretName] v cursor))})))
 
 (defn- form-data [value]
-  (comp/form-textarea
+  (form/textarea
     "DATA"
     (comp/vtext-field
       {:name          "data"
@@ -45,9 +47,9 @@
                         (state/update-value [:data] v cursor))})))
 
 (defn- form-data-encoder [value]
-  (comp/form-comp
+  (form/comp
     "ENCODE DATA"
-    (comp/form-checkbox
+    (form/checkbox
       {:name    "encoded"
        :key     "encoded"
        :checked value
@@ -89,7 +91,7 @@
     [:div
      [:div.form-panel
       [:div.form-panel-left
-       (comp/panel-info icon/secrets "New secret")]
+       (panel/info icon/secrets "New secret")]
       [:div.form-panel-right
        (comp/mui
          (comp/raised-button
@@ -100,8 +102,8 @@
 
      [:div.form-view
       [:div.form-view-group
-       (comp/form-icon-value icon/info "Data must be base64 encoded. If plain text check please encode data.")
-       (comp/form
+       (form/icon-value icon/info "Data must be base64 encoded. If plain text check please encode data.")
+       (form/form
          {:onValid   #(state/update-value [:isValid] true cursor)
           :onInvalid #(state/update-value [:isValid] false cursor)}
          (form-name secretName)

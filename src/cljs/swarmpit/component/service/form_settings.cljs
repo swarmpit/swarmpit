@@ -1,5 +1,6 @@
 (ns swarmpit.component.service.form-settings
   (:require [material.component :as comp]
+            [material.component.form :as form]
             [swarmpit.component.state :as state]
             [swarmpit.component.handler :as handler]
             [swarmpit.component.service.form-ports :as ports]
@@ -47,7 +48,7 @@
   {:color "rgb(117, 117, 117)"})
 
 (defn- form-image [value]
-  (comp/form-comp
+  (form/comp
     "IMAGE"
     (comp/vtext-field
       {:name          "image"
@@ -60,7 +61,7 @@
 
 (defn- form-image-tag-ac [value tags distribution]
   "Preload tags for services created via swarmpit"
-  (comp/form-comp
+  (form/comp
     "IMAGE TAG"
     (comp/autocomplete {:name          "imageTagAuto"
                         :key           "imageTagAuto"
@@ -71,7 +72,7 @@
 
 (defn- form-image-tag [value]
   "For services created by docker cli there is no preload"
-  (comp/form-comp
+  (form/comp
     "IMAGE TAG"
     (comp/text-field
       {:name     "image-tag"
@@ -81,7 +82,7 @@
                    (state/update-value [:repository :tag] v cursor))})))
 
 (defn- form-name [value update-form?]
-  (comp/form-comp
+  (form/comp
     "SERVICE NAME"
     (comp/vtext-field
       {:name     "service-name"
@@ -93,7 +94,7 @@
                    (state/update-value [:serviceName] v cursor))})))
 
 (defn- form-mode [value update-form?]
-  (comp/form-comp
+  (form/comp
     "MODE"
     (comp/radio-button-group
       {:name          "mode"
@@ -117,7 +118,7 @@
          :value    "global"}))))
 
 (defn- form-replicas [value]
-  (comp/form-comp
+  (form/comp
     "REPLICAS"
     (comp/vtext-field
       {:name     "replicas"
@@ -137,7 +138,7 @@
                 mode
                 replicas]} (state/react cursor)]
     [:div.form-edit
-     (comp/form
+     (form/form
        {:onValid   #(state/update-value [:isValid] true cursor)
         :onInvalid #(state/update-value [:isValid] false cursor)}
        (form-image (:name repository))

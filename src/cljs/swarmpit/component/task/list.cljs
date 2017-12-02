@@ -1,5 +1,7 @@
 (ns swarmpit.component.task.list
-  (:require [material.component :as comp]
+  (:require [material.component.label :as label]
+            [material.component.panel :as panel]
+            [material.component.list-table :as list]
             [swarmpit.component.mixin :as mixin]
             [swarmpit.component.state :as state]
             [swarmpit.component.handler :as handler]
@@ -27,19 +29,19 @@
 
 (defn render-item-state [value]
   (case value
-    "preparing" (comp/label-yellow value)
-    "starting" (comp/label-yellow value)
-    "pending" (comp/label-yellow value)
-    "new" (comp/label-blue value)
-    "ready" (comp/label-blue value)
-    "assigned" (comp/label-blue value)
-    "accepted" (comp/label-blue value)
-    "complete" (comp/label-blue value)
-    "running" (comp/label-green value)
-    "shutdown" (comp/label-grey value)
-    "orphaned" (comp/label-grey value)
-    "rejected" (comp/label-red value)
-    "failed" (comp/label-red value)))
+    "preparing" (label/yellow value)
+    "starting" (label/yellow value)
+    "pending" (label/yellow value)
+    "new" (label/blue value)
+    "ready" (label/blue value)
+    "assigned" (label/blue value)
+    "accepted" (label/blue value)
+    "complete" (label/blue value)
+    "running" (label/green value)
+    "shutdown" (label/grey value)
+    "orphaned" (label/grey value)
+    "rejected" (label/red value)
+    "failed" (label/red value)))
 
 (defn- render-item
   [item _]
@@ -88,19 +90,19 @@
     [:div
      [:div.form-panel
       [:div.form-panel-left
-       (comp/panel-text-field
+       (panel/text-field
          {:id       "filter"
           :hintText "Filter by service name"
           :onChange (fn [_ v]
                       (state/update-value [:filter :serviceName] v cursor))})
        [:span.form-panel-space]
-       (comp/panel-checkbox
+       (panel/checkbox
          {:checked (false? (:running filter))
           :label   "Show all"
           :onCheck (fn [_ v]
                      (state/update-value [:filter :running] (false? v) cursor))})]]
-     (comp/list-table headers
-                      (sort-by :serviceName filtered-items)
-                      render-item
-                      render-item-keys
-                      onclick-handler)]))
+     (list/table headers
+                 (sort-by :serviceName filtered-items)
+                 render-item
+                 render-item-keys
+                 onclick-handler)]))

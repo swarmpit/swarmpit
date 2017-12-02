@@ -1,5 +1,7 @@
 (ns swarmpit.component.service.edit
   (:require [material.component :as comp]
+            [material.component.form :as form]
+            [material.component.panel :as panel]
             [material.icon :as icon]
             [swarmpit.url :refer [dispatch!]]
             [swarmpit.component.mixin :as mixin]
@@ -89,54 +91,54 @@
 
 (rum/defc form-settings < rum/static []
   [:div.form-service-edit-group
-   (comp/form-section "General settings")
+   (form/section "General settings")
    (settings/form true)])
 
 (rum/defc form-ports < rum/static []
   [:div.form-service-edit-group.form-service-group-border
-   (comp/form-section-add "Ports" ports/add-item)
+   (form/section-add "Ports" ports/add-item)
    (ports/form-update)])
 
 (rum/defc form-networks < rum/static []
   [:div.form-service-edit-group.form-service-group-border
-   (comp/form-section-add "Networks" networks/add-item)
+   (form/section-add "Networks" networks/add-item)
    (networks/form-update)])
 
 (rum/defc form-mounts < rum/static []
   [:div.form-service-edit-group.form-service-group-border
-   (comp/form-section-add "Mounts" mounts/add-item)
+   (form/section-add "Mounts" mounts/add-item)
    (mounts/form-update)])
 
 (rum/defc form-secrets < rum/static []
   [:div.form-service-edit-group.form-service-group-border
    (if (empty? @secrets/secrets)
-     (comp/form-section "Secrets")
-     (comp/form-section-add "Secrets" secrets/add-item))
+     (form/section "Secrets")
+     (form/section-add "Secrets" secrets/add-item))
    (secrets/form-update)])
 
 (rum/defc form-variables < rum/static []
   [:div.form-service-edit-group.form-service-group-border
-   (comp/form-section-add "Environment Variables" variables/add-item)
+   (form/section-add "Environment Variables" variables/add-item)
    (variables/form-update)])
 
 (rum/defc form-labels < rum/static []
   [:div.form-service-edit-group.form-service-group-border
-   (comp/form-section-add "Labels" labels/add-item)
+   (form/section-add "Labels" labels/add-item)
    (labels/form-update)])
 
 (rum/defc form-logdriver < rum/static []
   [:div.form-service-edit-group.form-service-group-border
-   (comp/form-section "Logging")
+   (form/section "Logging")
    (logdriver/form)])
 
 (rum/defc form-resources < rum/static []
   [:div.form-service-edit-group.form-service-group-border
-   (comp/form-section "Resources")
+   (form/section "Resources")
    (resources/form)])
 
 (rum/defc form-deployment < rum/static []
   [:div.form-service-edit-group.form-service-group-border
-   (comp/form-section "Deployment")
+   (form/section "Deployment")
    (deployment/form)])
 
 (rum/defc form < rum/reactive
@@ -146,8 +148,8 @@
     [:div
      [:div.form-panel
       [:div.form-panel-left
-       (comp/panel-info icon/services
-                        (:serviceName service))]
+       (panel/info icon/services
+                   (:serviceName service))]
       [:div.form-panel-right
        (comp/mui
          (comp/raised-button
