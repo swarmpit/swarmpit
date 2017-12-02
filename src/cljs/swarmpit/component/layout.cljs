@@ -3,6 +3,7 @@
             [clojure.string :as str]
             [swarmpit.controller :as controller]
             [swarmpit.view :as view]
+            [swarmpit.event.source :as eventsource]
             [swarmpit.component.state :as state]
             [swarmpit.component.menu :as menu]
             [swarmpit.component.header :as header]))
@@ -81,9 +82,11 @@
 (rum/defc layout < rum/reactive []
   (let [{:keys [handler] :as route} (state/react controller/cursor)]
     (when (some? route)
-      (if (page-layout? handler)
-        (page-layout route)
-        (page-single route)))))
+      (do
+        (eventsource/subscribe! route)
+        (if (page-layout? handler)
+          (page-layout route)
+          (page-single route))))))
 
 (defn mount!
   []

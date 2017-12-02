@@ -3,7 +3,6 @@
             [material.icon :as icon]
             [swarmpit.url :refer [dispatch!]]
             [swarmpit.storage :as storage]
-            [swarmpit.event.source :as eventsource]
             [swarmpit.component.handler :as handler]
             [swarmpit.token :as token]
             [swarmpit.routes :as routes]
@@ -28,7 +27,6 @@
      :on-success (fn [response]
                    (reset! local-state)
                    (storage/add "token" (:token response))
-                   (eventsource/init!)
                    (dispatch!
                      (routes/path-for-frontend :service-list)))
      :on-error   (fn [response]

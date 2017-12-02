@@ -1,8 +1,7 @@
 (ns swarmpit.app
   (:require [swarmpit.router :as router]
             [swarmpit.component.layout :as layout]
-            [swarmpit.component.message :as message]
-            [swarmpit.event.source :as eventsource]))
+            [swarmpit.component.message :as message]))
 
 ;; Starting router
 
@@ -15,7 +14,3 @@
 ;; Mounting message
 
 (message/mount!)
-
-;; Subscribe and listen for events
-
-(eventsource/init!)

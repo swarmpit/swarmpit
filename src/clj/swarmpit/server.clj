@@ -8,7 +8,7 @@
             [swarmpit.authentication :refer [wrap-authentication]]
             [swarmpit.authorization :refer [wrap-authorization]]
             [swarmpit.handler :as handler :refer :all]
-            [swarmpit.event-handler :refer :all]
+            [swarmpit.event.handler :refer :all]
             [org.httpkit.server :refer [run-server]]
             [bidi.ring :refer [make-handler]]
             [bidi.bidi :refer [match-pair match-route*]]

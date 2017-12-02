@@ -16,6 +16,7 @@
             [swarmpit.couchdb.client :as cc]
             [swarmpit.couchdb.mapper.inbound :as cmi]
             [swarmpit.couchdb.mapper.outbound :as cmo]
+            [clojure.core.memoize :as memo]
             [clojure.tools.logging :as log]
             [clojure.string :as str]))
 
@@ -331,6 +332,8 @@
                (dc/nodes)
                (dc/services)))
 
+(def tasks-memo (memo/ttl tasks :ttl/threshold 1000))
+
 (defn task
   [task-id]
   (dmi/->task (dc/task task-id)
@@ -343,6 +346,8 @@
   []
   (dmi/->services (dc/services)
                   (dc/tasks)))
+
+(def services-memo (memo/ttl services :ttl/threshold 1000))
 
 (defn service
   [service-id]
