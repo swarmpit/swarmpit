@@ -1,7 +1,5 @@
 (ns swarmpit.view
-  (:require [swarmpit.component.state :as state]
-            [swarmpit.event.source :as eventsource]
-            [swarmpit.component.page-login :as page-login]
+  (:require [swarmpit.component.page-login :as page-login]
             [swarmpit.component.page-403 :as page-403]
             [swarmpit.component.page-404 :as page-404]
             [swarmpit.component.page-error :as page-error]
@@ -37,13 +35,7 @@
             [swarmpit.component.dockerhub.create :as dockerhub-create]
             [swarmpit.component.dockerhub.edit :as dockerhub-edit]))
 
-;; Dispatch to view based on route handler and
-;; 1) reset current form data
-;; 2) subscribe view
-(defmulti dispatch (fn [route]
-                     (eventsource/subscribe! route)
-                     (state/set-value nil [:form])
-                     (:handler route)))
+(defmulti dispatch (fn [route] (:handler route)))
 
 (defmethod dispatch nil
   [_]

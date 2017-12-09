@@ -49,3 +49,8 @@
   [index k v cursor]
   (swap! state update-in cursor
          (fn [vec] (assoc-in vec [index k] v))))
+
+(defn reset-form
+  "Reset state form data"
+  []
+  (set-value nil [:form]))
