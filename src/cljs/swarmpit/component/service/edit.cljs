@@ -156,7 +156,7 @@
    (form/section "Deployment")
    (deployment/form)])
 
-(rum/defc form-edit < rum/reactive [params service]
+(rum/defc form-edit < rum/reactive [id service]
   [:div
    [:div.form-panel
     [:div.form-panel-left
@@ -165,14 +165,14 @@
     [:div.form-panel-right
      (comp/mui
        (comp/raised-button
-         {:onTouchTap #(update-service-handler params)
+         {:onTouchTap #(update-service-handler id)
           :label      "Save"
           :disabled   (not (rum/react resources/isValid))
           :primary    true}))
      [:span.form-panel-delimiter]
      (comp/mui
        (comp/raised-button
-         {:href  (routes/path-for-frontend :service-info params)
+         {:href  (routes/path-for-frontend :service-info {:id id})
           :label "Back"}))]]
    [:div.form-service-edit
     (form-settings)
@@ -187,8 +187,8 @@
     (form-deployment)]])
 
 (rum/defc form < rum/reactive
-                 mixin-init-state [params]
+                 mixin-init-state [{:keys [id]}]
   (let [service (state/react cursor)]
     (progress/form
       (nil? service)
-      (form-edit params service))))
+      (form-edit id service))))
