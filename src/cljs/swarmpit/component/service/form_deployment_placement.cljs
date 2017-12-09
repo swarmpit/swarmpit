@@ -10,14 +10,14 @@
 
 (def cursor [:form :deployment :placement])
 
-(defonce placement (atom []))
+(defonce placement-list (atom []))
 
 (defn placement-handler
   []
   (handler/get
     (routes/path-for-backend :placement)
     {:on-success (fn [response]
-                   (reset! placement response))}))
+                   (reset! placement-list response))}))
 
 (def headers [{:name  "Rule"
                :width "500px"}])
@@ -55,4 +55,4 @@
 
 (rum/defc form < rum/reactive []
   (let [placement (state/react cursor)]
-    (form-table placement (rum/react placement))))
+    (form-table placement (rum/react placement-list))))

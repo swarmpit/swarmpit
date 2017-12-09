@@ -13,14 +13,14 @@
 
 (def cursor [:form :secrets])
 
-(defonce secrets (atom []))
+(defonce secrets-list (atom []))
 
 (defn secrets-handler
   []
   (handler/get
     (routes/path-for-backend :secrets)
     {:on-success (fn [response]
-                   (reset! secrets response))}))
+                   (reset! secrets-list response))}))
 
 (def headers [{:name  "Name"
                :width "35%"}
@@ -80,7 +80,7 @@
                    :secretTarget ""} cursor))
 
 (rum/defc form-create < rum/reactive []
-  (let [secrets-list (rum/react secrets)
+  (let [secrets-list (rum/react secrets-list)
         secrets (state/react cursor)]
     [:div
      (when (empty? secrets-list)
@@ -92,4 +92,4 @@
   (let [secrets (state/react cursor)]
     (if (empty? secrets)
       empty-info
-      (form-table secrets (rum/react secrets)))))
+      (form-table secrets (rum/react secrets-list)))))

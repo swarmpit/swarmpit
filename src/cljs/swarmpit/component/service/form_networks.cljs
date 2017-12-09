@@ -11,14 +11,14 @@
 
 (def cursor [:form :networks])
 
-(defonce networks (atom []))
+(defonce networks-list (atom []))
 
 (defn networks-handler
   []
   (handler/get
     (routes/path-for-backend :networks)
     {:on-success (fn [response]
-                   (reset! networks
+                   (reset! networks-list
                            (->> response
                                 (filter #(= "swarm" (:scope %)))
                                 (into []))))}))
@@ -58,8 +58,8 @@
 
 (defn- form-table
   [networks networks-list]
-  (list/table-headless [{:name        "Name"
-                               :width "300px"}]
+  (list/table-headless [{:name  "Name"
+                         :width "300px"}]
                        networks
                        networks-list
                        render-networks
@@ -72,10 +72,10 @@
 (rum/defc form-create < rum/reactive []
   (let [networks (state/react cursor)]
     (if (not (empty? networks))
-      (form-table networks (rum/react networks)))))
+      (form-table networks (rum/react networks-list)))))
 
 (rum/defc form-update < rum/reactive []
   (let [networks (state/react cursor)]
     (if (empty? networks)
       empty-info
-      (form-table networks (rum/react networks)))))
+      (form-table networks (rum/react networks-list)))))
