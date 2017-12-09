@@ -128,7 +128,7 @@
 
 (rum/defc form-secrets < rum/static []
   [:div.form-service-edit-group.form-service-group-border
-   (if (empty? @secrets/secrets)
+   (if (empty? @secrets/secrets-list)
      (form/section "Secrets")
      (form/section-add "Secrets" secrets/add-item))
    (secrets/form-create)])
@@ -168,8 +168,8 @@
      (comp/mui
        (comp/raised-button
          {:label      "Create"
-          :disabled   (or (not (state/react settings/isValid))
-                          (not (state/react resources/isValid)))
+          :disabled   (or (not (rum/react settings/isValid))
+                          (not (rum/react resources/isValid)))
           :primary    true
           :onTouchTap create-service-handler}))]]
    [:div.form-service-edit

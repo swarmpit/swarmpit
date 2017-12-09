@@ -93,7 +93,7 @@
                      (message/error
                        (str "Service update failed. Reason: " (:error response))))})))
 
-(def init-state-mixin
+(def mixin-init-state
   (mixin/init-state
     (fn [{:keys [id]}]
       (service-handler id)
@@ -126,7 +126,7 @@
 
 (rum/defc form-secrets < rum/static []
   [:div.form-service-edit-group.form-service-group-border
-   (if (empty? @secrets/secrets)
+   (if (empty? @secrets/secrets-list)
      (form/section "Secrets")
      (form/section-add "Secrets" secrets/add-item))
    (secrets/form-update)])
@@ -157,39 +157,38 @@
    (deployment/form)])
 
 (rum/defc form-edit < rum/reactive [params service]
-  (let [resources (state/react resources/cursor)]
-    [:div
-     [:div.form-panel
-      [:div.form-panel-left
-       (panel/info icon/services
-                   (get-in service [:settings :serviceName]))]
-      [:div.form-panel-right
-       (comp/mui
-         (comp/raised-button
-           {:onTouchTap #(update-service-handler params)
-            :label      "Save"
-            :disabled   (not (:isValid resources))
-            :primary    true}))
-       [:span.form-panel-delimiter]
-       (comp/mui
-         (comp/raised-button
-           {:href  (routes/path-for-frontend :service-info params)
-            :label "Back"}))]]
-     [:div.form-service-edit
-      (form-settings)
-      (form-ports)
-      (form-networks)
-      (form-mounts)
-      (form-secrets)
-      (form-variables)
-      (form-labels)
-      (form-logdriver)
-      (form-resources)
-      (form-deployment)]]))
+  [:div
+   [:div.form-panel
+    [:div.form-panel-left
+     (panel/info icon/services
+                 (get-in service [:settings :serviceName]))]
+    [:div.form-panel-right
+     (comp/mui
+       (comp/raised-button
+         {:onTouchTap #(update-service-handler params)
+          :label      "Save"
+          :disabled   (not (rum/react resources/isValid))
+          :primary    true}))
+     [:span.form-panel-delimiter]
+     (comp/mui
+       (comp/raised-button
+         {:href  (routes/path-for-frontend :service-info params)
+          :label "Back"}))]]
+   [:div.form-service-edit
+    (form-settings)
+    (form-ports)
+    (form-networks)
+    (form-mounts)
+    (form-secrets)
+    (form-variables)
+    (form-labels)
+    (form-logdriver)
+    (form-resources)
+    (form-deployment)]])
 
 (rum/defc form < rum/reactive
-                 init-state-mixin [params]
+                 mixin-init-state [params]
   (let [service (state/react cursor)]
     (progress/form
-      (empty? service)
+      (nil? service)
       (form-edit params service))))
