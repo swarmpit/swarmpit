@@ -20,7 +20,8 @@
     (match? [_ event]
       (service-container-event? event))
     (subscription [_ event]
-      {:handler :service-list})
+      {:handler :service-list
+       :params  nil})
     (subscribed-data [_ event]
       (api/services-memo))))
 
@@ -29,7 +30,8 @@
     (match? [_ event]
       (service-container-event? event))
     (subscription [_ event]
-      {:handler :task-list})
+      {:handler :task-list
+       :params  nil})
     (subscribed-data [_ event]
       (api/tasks-memo))))
 
@@ -38,7 +40,8 @@
     (match? [_ event]
       (= "service" (:Type event)))
     (subscription [_ event]
-      {:handler :service-list})
+      {:handler :service-list
+       :params  nil})
     (subscribed-data [_ event]
       (api/services))))
 
@@ -47,7 +50,8 @@
     (match? [_ event]
       (= "node" (:Type event)))
     (subscription [_ event]
-      {:handler :node-list})
+      {:handler :node-list
+       :params  nil})
     (subscribed-data [_ event]
       (api/nodes))))
 
