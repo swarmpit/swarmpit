@@ -8,12 +8,13 @@
             [swarmpit.component.mixin :as mixin]
             [swarmpit.component.state :as state]
             [swarmpit.component.message :as message]
+            [swarmpit.component.progress :as progress]
             [swarmpit.routes :as routes]
             [rum.core :as rum]))
 
 (enable-console-print!)
 
-(def cursor [:page :dockerhub :form])
+(def cursor [:form])
 
 (defn- form-public [value]
   (form/comp
@@ -22,6 +23,13 @@
       {:checked value
        :onCheck (fn [_ v]
                   (state/update-value [:public] v cursor))})))
+
+(defn- user-handler
+  [user-id]
+  (handler/get
+    (routes/path-for-backend :dockerhub-user {:id user-id})
+    {:on-success (fn [response]
+                   (state/set-value response cursor))}))
 
 (defn- update-user-handler
   [user-id]
@@ -37,33 +45,36 @@
                    (message/error
                      (str "User update failed. Reason: " (:error response))))}))
 
-(defn- init-state
-  [user]
-  (state/set-value (select-keys user [:public]) cursor))
+(def mixin-init-state
+  (mixin/init-state
+    (fn [{:keys [id]}]
+      (user-handler id))))
 
-(def init-state-mixin
-  (mixin/init
-    (fn [user]
-      (init-state user))))
+(rum/defc form-edit < rum/static [user]
+  [:div
+   [:div.form-panel
+    [:div.form-panel-left
+     (panel/info icon/docker
+                 (:username user))]
+    [:div.form-panel-right
+     (comp/mui
+       (comp/raised-button
+         {:onTouchTap #(update-user-handler (:_id user))
+          :label      "Save"
+          :primary    true}))
+     [:span.form-panel-delimiter]
+     (comp/mui
+       (comp/raised-button
+         {:href  (routes/path-for-frontend :dockerhub-user-info {:id (:_id user)})
+          :label "Back"}))]]
+   [:div.form-edit
+    (form/form
+      nil
+      (form-public (:public user)))]])
 
 (rum/defc form < rum/reactive
-                 init-state-mixin [user]
-  (let [{:keys [public]} (state/react cursor)]
-    [:div
-     [:div.form-panel
-      [:div.form-panel-left
-       (panel/info icon/docker
-                   (:username user))]
-      [:div.form-panel-right
-       (comp/mui
-         (comp/raised-button
-           {:onTouchTap #(update-user-handler (:_id user))
-            :label      "Save"
-            :primary    true}))
-       [:span.form-panel-delimiter]
-       (comp/mui
-         (comp/raised-button
-           {:href  (routes/path-for-frontend :dockerhub-user-info {:id (:_id user)})
-            :label "Back"}))]]
-     [:div.form-edit
-      (form/form nil (form-public public))]]))
+                 mixin-init-state [_]
+  (let [user (state/react cursor)]
+    (progress/form
+      (nil? user)
+      (form-edit user))))

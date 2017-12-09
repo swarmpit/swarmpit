@@ -1,8 +1,8 @@
 (ns swarmpit.component.volume.create
-  (:require [material.component :as comp]
+  (:require [material.icon :as icon]
+            [material.component :as comp]
             [material.component.form :as form]
             [material.component.panel :as panel]
-            [material.icon :as icon]
             [swarmpit.url :refer [dispatch!]]
             [swarmpit.component.handler :as handler]
             [swarmpit.component.mixin :as mixin]
@@ -13,7 +13,9 @@
 
 (enable-console-print!)
 
-(def cursor [:page :volume :form])
+(def cursor [:form])
+
+(defonce isValid (atom false))
 
 (defonce volume-plugins (atom []))
 
@@ -23,6 +25,20 @@
     (routes/path-for-backend :plugin-volume)
     {:on-success (fn [response]
                    (reset! volume-plugins response))}))
+
+(defn- create-volume-handler
+  []
+  (handler/post
+    (routes/path-for-backend :volume-create)
+    {:params     (state/get-value cursor)
+     :on-success (fn [response]
+                   (dispatch!
+                     (routes/path-for-frontend :volume-info {:name (:volumeName response)}))
+                   (message/info
+                     (str "Volume " (:volumeName response) " has been created.")))
+     :on-error   (fn [response]
+                   (message/error
+                     (str "Volume creation failed. Reason: " (:error response))))}))
 
 (defn- form-name [value]
   (form/comp
@@ -48,38 +64,21 @@
                     :value       %
                     :primaryText %}))))))
 
-(defn- create-volume-handler
-  []
-  (handler/post
-    (routes/path-for-backend :volume-create)
-    {:params     (state/get-value cursor)
-     :on-success (fn [response]
-                   (dispatch!
-                     (routes/path-for-frontend :volume-info {:name (:volumeName response)}))
-                   (message/info
-                     (str "Volume " (:volumeName response) " has been created.")))
-     :on-error   (fn [response]
-                   (message/error
-                     (str "Volume creation failed. Reason: " (:error response))))}))
-
 (defn- init-state
   []
   (state/set-value {:volumeName nil
-                    :driver     "local"
-                    :isValid    false} cursor))
+                    :driver     "local"} cursor))
 
-(def init-state-mixin
-  (mixin/init
-    (fn [_]
+(def mixin-init-state
+  (mixin/init-state
+    (fn []
       (init-state)
       (volume-plugin-handler))))
 
 (rum/defc form < rum/reactive
-                 init-state-mixin []
-  (let [plugins (rum/react volume-plugins)
-        {:keys [volumeName
-                driver
-                isValid]} (state/react cursor)]
+                 mixin-init-state []
+  (let [{:keys [volumeName
+                driver]} (state/react cursor)]
     [:div
      [:div.form-panel
       [:div.form-panel-left
@@ -88,13 +87,13 @@
        (comp/mui
          (comp/raised-button
            {:label      "Create"
-            :disabled   (not isValid)
+            :disabled   (not (rum/react isValid))
             :primary    true
             :onTouchTap create-volume-handler}))]]
      [:div.form-view
       [:div.form-view-group
        (form/form
-         {:onValid   #(state/update-value [:isValid] true cursor)
-          :onInvalid #(state/update-value [:isValid] false cursor)}
+         {:onValid   #(reset! isValid true)
+          :onInvalid #(reset! isValid false)}
          (form-name volumeName)
-         (form-driver driver plugins))]]]))
+         (form-driver driver (rum/react volume-plugins)))]]]))

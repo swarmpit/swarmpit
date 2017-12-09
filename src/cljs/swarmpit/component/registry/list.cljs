@@ -5,12 +5,13 @@
             [material.icon :as icon]
             [swarmpit.component.mixin :as mixin]
             [swarmpit.component.state :as state]
+            [swarmpit.component.handler :as handler]
             [swarmpit.storage :as storage]
             [swarmpit.routes :as routes]
             [clojure.string :as string]
             [rum.core :as rum]))
 
-(def cursor [:page :registry :list])
+(def cursor [:form])
 
 (def headers [{:name  "Name"
                :width "30%"}
@@ -46,20 +47,28 @@
                 (= (:owner %)
                    (storage/user))) items))
 
+(defn- registries-handler
+  []
+  (handler/get
+    (routes/path-for-backend :registries)
+    {:on-success (fn [response]
+                   (state/update-value [:items] response cursor))}))
+
 (defn- init-state
   []
   (state/set-value {:filter {:name ""}} cursor))
 
-(def init-state-mixin
-  (mixin/init
-    (fn [_]
-      (init-state))))
+(def mixin-init-state
+  (mixin/init-state
+    (fn []
+      (init-state)
+      (registries-handler))))
 
 (rum/defc form < rum/reactive
-                 init-state-mixin
-                 mixin/focus-filter [items]
-  (let [{{:keys [name]} :filter} (state/react cursor)
-        filtered-items (filter-items items name)]
+                 mixin-init-state
+                 mixin/focus-filter []
+  (let [{:keys [filter items]} (state/react cursor)
+        filtered-items (filter-items items (:name filter))]
     [:div
      [:div.form-panel
       [:div.form-panel-left
@@ -76,6 +85,7 @@
             :primary true}))]]
      (list/table headers
                  (sort-by :name filtered-items)
+                 (nil? items)
                  render-item
                  render-item-keys
                  onclick-handler)]))

@@ -3,17 +3,21 @@
             [material.component.form :as form]
             [material.component.list-table :as list]
             [swarmpit.component.state :as state]
+            [swarmpit.component.mixin :as mixin]
+            [swarmpit.component.progress :as progress]
             [swarmpit.component.handler :as handler]
             [swarmpit.url :refer [dispatch!]]
             [swarmpit.routes :as routes]
             [rum.core :as rum]))
 
-(def cursor [:page :service :wizard :image :public])
+(def cursor [:form :public])
 
 (def headers [{:name  "Name"
                :width "50%"}
               {:name  "Description"
                :width "50%"}])
+
+(defonce searching? (atom false))
 
 (defn- render-item
   [item]
@@ -26,12 +30,9 @@
     (routes/path-for-backend :public-repositories)
     {:params     {:query query
                   :page  page}
-     :on-call    (state/update-value [:searching] true cursor)
+     :state      searching?
      :on-success (fn [response]
-                   (state/update-value [:searching] false cursor)
-                   (state/update-value [:data] response cursor))
-     :on-error   (fn [_]
-                   (state/update-value [:searching] false cursor))}))
+                   (state/update-value [:repositories] response cursor))}))
 
 (defn- form-repository [repository]
   (form/comp
@@ -43,45 +44,47 @@
                    (state/update-value [:repository] v cursor)
                    (repository-handler v 1))})))
 
-(rum/defc form-loading < rum/static []
-  (form/loading true))
+(defn- init-state
+  []
+  (state/set-value {:repositories []
+                    :repository   ""} cursor))
 
-(rum/defc form-loaded < rum/static []
-  (form/loading false))
+(def init-state-mixin
+  (mixin/init-state
+    (fn []
+      (init-state))))
 
-(defn- repository-list [data]
-  (let [{:keys [results page limit total query]} data
-        offset (* limit (- page 1))
+(rum/defc form-list < rum/static [searching? {:keys [results page limit total query]}]
+  (let [offset (* limit (- page 1))
         repository (fn [index] (:name (nth results index)))]
-    (comp/mui
-      (comp/table
-        {:key         "tbl"
-         :selectable  false
-         :onCellClick (fn [i]
-                        (dispatch!
-                          (routes/path-for-frontend :service-create-config
-                                                    {}
-                                                    {:repository (repository i)})))}
-        (list/table-header headers)
-        (list/table-body headers
-                         results
-                         render-item
-                         [[:name] [:description]])
-        (if (not (empty? results))
-          (list/table-paging offset
-                             total
-                             limit
-                             #(repository-handler query (- (js/parseInt page) 1))
-                             #(repository-handler query (+ (js/parseInt page) 1))))))))
+    [:div.form-edit-loader
+     (if searching?
+       (progress/loading)
+       (progress/loaded))
+     (comp/mui
+       (comp/table
+         {:key         "tbl"
+          :selectable  false
+          :onCellClick (fn [i]
+                         (dispatch!
+                           (routes/path-for-frontend :service-create-config
+                                                     {}
+                                                     {:repository (repository i)})))}
+         (list/table-header headers)
+         (list/table-body headers
+                          results
+                          render-item
+                          [[:name] [:description]])
+         (if (not (empty? results))
+           (list/table-paging offset
+                              total
+                              limit
+                              #(repository-handler query (- (js/parseInt page) 1))
+                              #(repository-handler query (+ (js/parseInt page) 1))))))]))
 
-(rum/defc form < rum/reactive []
-  (let [{:keys [searching
-                repository
-                data]} (state/react cursor)]
+(rum/defc form < rum/reactive
+                 init-state-mixin []
+  (let [{:keys [repository repositories]} (state/react cursor)]
     [:div.form-edit
      (form-repository repository)
-     [:div.form-edit-loader
-      (if searching
-        (form-loading)
-        (form-loaded))
-      (repository-list data)]]))
+     (form-list (rum/react searching?) repositories)]))

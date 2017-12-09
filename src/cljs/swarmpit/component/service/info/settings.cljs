@@ -20,4 +20,3 @@
      (when (some? image-digest)
        (form/item "IMAGE DIGEST" image-digest))
      (form/item "MODE" (:mode service))]))
-

@@ -1,8 +1,8 @@
 (ns swarmpit.component.mixin
   (:require [rum.core :as rum]))
 
-(defn refresh
-  ([handler] (refresh handler 2000))
+(defn refresh-state
+  ([handler] (refresh-state handler 2000))
   ([handler ms]
    {:did-mount    (fn [state]
                     (let [comp (:rum/react-component state)
@@ -14,7 +14,7 @@
                     (js/clearInterval (::interval state))
                     (dissoc state ::interval))}))
 
-(defn init
+(defn init-state
   [handler]
   {:init (fn [state _]
            (handler (first (:rum/args state)))

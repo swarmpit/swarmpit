@@ -71,8 +71,9 @@
   [:div.form-view-row
    [:span.form-row-label label]
    [:div.form-row-value.hoverable
-    {:data-1 (time/humanize date)
-     :data-2 (time/simplify date)}]])
+    (when (some? date)
+      {:data-1 (time/humanize date)
+       :data-2 (time/simplify date)})]])
 
 (defn value [value]
   [:div.form-view-row

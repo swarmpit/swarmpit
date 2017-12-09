@@ -9,7 +9,7 @@
 
 (enable-console-print!)
 
-(def cursor [:page :service :wizard :labels])
+(def cursor [:form :labels])
 
 (def headers [{:name  "Name"
                :width "35%"}
@@ -67,16 +67,12 @@
                    :value ""} cursor))
 
 (rum/defc form-create < rum/reactive []
-  (let [labels (state/react cursor)
-        label-names (rum/react label-names)]
-    [:div
-     (form/add-btn "Add label" add-item)
-     (if (not (empty? labels))
-       (form-table labels label-names))]))
+  (let [labels (state/react cursor)]
+    (if (not (empty? labels))
+      (form-table labels (rum/react label-names)))))
 
 (rum/defc form-update < rum/reactive []
-  (let [labels (state/react cursor)
-        label-names (rum/react label-names)]
+  (let [labels (state/react cursor)]
     (if (empty? labels)
       empty-info
-      (form-table labels label-names))))
+      (form-table labels (rum/react label-names)))))

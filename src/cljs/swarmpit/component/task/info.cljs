@@ -2,12 +2,31 @@
   (:require [material.component.label :as label]
             [material.component.form :as form]
             [material.component.panel :as panel]
+            [swarmpit.component.mixin :as mixin]
+            [swarmpit.component.handler :as handler]
+            [swarmpit.component.state :as state]
+            [swarmpit.component.progress :as progress]
+            [swarmpit.routes :as routes]
             [material.icon :as icon]
             [rum.core :as rum]))
 
 (enable-console-print!)
 
-(rum/defc form < rum/static [item]
+(def cursor [:form])
+
+(defn- task-handler
+  [task-id]
+  (handler/get
+    (routes/path-for-backend :task {:id task-id})
+    {:on-success (fn [response]
+                   (state/set-value response cursor))}))
+
+(def mixin-init-state
+  (mixin/init-state
+    (fn [{:keys [id]}]
+      (task-handler id))))
+
+(rum/defc form-info < rum/static [item]
   (let [error (get-in item [:status :error])
         image-digest (get-in item [:repository :imageDigest])]
     [:div
@@ -34,3 +53,10 @@
         [:div.form-view-group
          (form/section "Error")
          (form/value error)])]]))
+
+(rum/defc form < rum/reactive
+                 mixin-init-state [_]
+  (let [task (state/react cursor)]
+    (progress/form
+      (nil? task)
+      (form-info task))))

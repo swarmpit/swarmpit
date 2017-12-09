@@ -7,6 +7,9 @@
             [material.icon :as icon]
             [swarmpit.url :refer [dispatch!]]
             [swarmpit.component.handler :as handler]
+            [swarmpit.component.state :as state]
+            [swarmpit.component.mixin :as mixin]
+            [swarmpit.component.progress :as progress]
             [swarmpit.component.service.info.settings :as settings]
             [swarmpit.component.service.info.ports :as ports]
             [swarmpit.component.service.info.networks :as networks]
@@ -24,14 +27,33 @@
 
 (enable-console-print!)
 
+(def cursor [:form])
+
 (defonce action-menu (atom false))
-
-(defonce service-tasks (atom nil))
-
-(defonce service-networks (atom nil))
 
 (defn- label [item]
   (str (:state item) "  " (get-in item [:status :info])))
+
+(defn- service-handler
+  [service-id]
+  (handler/get
+    (routes/path-for-backend :service {:id service-id})
+    {:on-success (fn [response]
+                   (state/update-value [:service] response cursor))}))
+
+(defn- service-networks-handler
+  [service-id]
+  (handler/get
+    (routes/path-for-backend :service-networks {:id service-id})
+    {:on-success (fn [response]
+                   (state/update-value [:networks] response cursor))}))
+
+(defn- service-tasks-handler
+  [service-id]
+  (handler/get
+    (routes/path-for-backend :service-tasks {:id service-id})
+    {:on-success (fn [response]
+                   (state/update-value [:tasks] response cursor))}))
 
 (defn- delete-service-handler
   [service-id]
@@ -124,10 +146,23 @@
                tasks/render-item-keys
                tasks/onclick-handler)])
 
-(rum/defc form < rum/reactive
-                 rum/static [data]
+(defn- init-state
+  []
+  (state/set-value {:service  {}
+                    :tasks    []
+                    :networks []} cursor))
+
+(def mixin-init-state
+  (mixin/init-state
+    (fn [{:keys [id]}]
+      (reset! action-menu false)
+      (init-state)
+      (service-handler id)
+      (service-networks-handler id)
+      (service-tasks-handler id))))
+
+(rum/defc form-info < rum/reactive [service networks tasks]
   (let [opened? (rum/react action-menu)
-        {:keys [service networks tasks]} data
         ports (:ports service)
         mounts (:mounts service)
         secrets (:secrets service)
@@ -143,11 +178,12 @@
        (panel/info icon/services
                    (:serviceName service)
                    (label/info
-                           (label service)))]
+                     (label service)))]
       [:div.form-panel-right
        (comp/mui
          (comp/raised-button
-           {:href  (routes/path-for-frontend :service-log {:id id})
+           {
+            :href  (routes/path-for-frontend :service-log {:id id})
             :icon  (comp/button-icon icon/log-18)
             :label "Logs"}))
        [:span.form-panel-delimiter]
@@ -171,3 +207,10 @@
       (resources/form resources)
       (deployment/form deployment)
       (form-tasks tasks)]]))
+
+(rum/defc form < rum/reactive
+                 mixin-init-state [_]
+  (let [{:keys [service networks tasks]} (state/react cursor)]
+    (progress/form
+      (empty? service)
+      (form-info service networks tasks))))

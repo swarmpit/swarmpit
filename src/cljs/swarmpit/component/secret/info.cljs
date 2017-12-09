@@ -4,12 +4,24 @@
             [material.component.panel :as panel]
             [material.icon :as icon]
             [swarmpit.url :refer [dispatch!]]
+            [swarmpit.component.state :as state]
+            [swarmpit.component.mixin :as mixin]
             [swarmpit.component.handler :as handler]
             [swarmpit.component.message :as message]
+            [swarmpit.component.progress :as progress]
             [swarmpit.routes :as routes]
             [rum.core :as rum]))
 
 (enable-console-print!)
+
+(def cursor [:form])
+
+(defn- secret-handler
+  [secret-id]
+  (handler/get
+    (routes/path-for-backend :secret {:id secret-id})
+    {:on-success (fn [response]
+                   (state/set-value response cursor))}))
 
 (defn- delete-secret-handler
   [secret-id]
@@ -24,20 +36,32 @@
                    (message/error
                      (str "Secret removing failed. Reason: " (:error response))))}))
 
-(rum/defc form < rum/static [item]
+(def mixin-init-state
+  (mixin/init-state
+    (fn [{:keys [id]}]
+      (secret-handler id))))
+
+(rum/defc form-info < rum/static [secret]
   [:div
    [:div.form-panel
     [:div.form-panel-left
      (panel/info icon/secrets
-                 (:secretName item))]
+                 (:secretName secret))]
     [:div.form-panel-right
      (comp/mui
        (comp/raised-button
-         {:onTouchTap #(delete-secret-handler (:id item))
+         {:onTouchTap #(delete-secret-handler (:id secret))
           :label      "Delete"}))]]
    [:div.form-view
     [:div.form-view-group
-     (form/item "ID" (:id item))
-     (form/item "NAME" (:secretName item))
-     (form/item-date "CREATED" (:createdAt item))
-     (form/item-date "UPDATED" (:updatedAt item))]]])
+     (form/item "ID" (:id secret))
+     (form/item "NAME" (:secretName secret))
+     (form/item-date "CREATED" (:createdAt secret))
+     (form/item-date "UPDATED" (:updatedAt secret))]]])
+
+(rum/defc form < rum/reactive
+                 mixin-init-state [_]
+  (let [secret (state/react cursor)]
+    (progress/form
+      (nil? secret)
+      (form-info secret))))

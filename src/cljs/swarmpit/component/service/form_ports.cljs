@@ -9,7 +9,7 @@
 
 (enable-console-print!)
 
-(def cursor [:page :service :wizard :ports])
+(def cursor [:form :ports])
 
 (defn- not-suggested?
   [port]
@@ -136,10 +136,8 @@
 
 (rum/defc form-create < rum/reactive []
   (let [ports (state/react cursor)]
-    [:div
-     (form/add-btn "Publish port" add-item)
-     (if (not (empty? ports))
-       (form-table ports))]))
+    (if (not (empty? ports))
+      (form-table ports))))
 
 (rum/defc form-update < rum/reactive []
   (let [ports (state/react cursor)]

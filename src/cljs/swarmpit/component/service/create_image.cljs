@@ -4,10 +4,17 @@
             [material.component.panel :as panel]
             [swarmpit.component.mixin :as mixin]
             [swarmpit.component.state :as state]
+            [swarmpit.component.progress :as progress]
+            [swarmpit.component.handler :as handler]
             [swarmpit.component.service.create-image-public :as cip]
             [swarmpit.component.service.create-image-other :as cio]
             [swarmpit.component.service.create-image-private :as ciu]
+            [swarmpit.routes :as routes]
             [rum.core :as rum]))
+
+(enable-console-print!)
+
+(def cursor [:form])
 
 (def tabs-inkbar-style
   {:backgroundColor "#437f9d"
@@ -21,79 +28,85 @@
   {:color    "rgb(117, 117, 117"
    :minWidth "200px"})
 
-(defn- init-public-tab-state
+(defonce registries (atom []))
+
+(defonce users (atom []))
+
+(defn- registries-handler
   []
-  (state/update-value [:searching] false cip/cursor)
-  (state/update-value [:data] [] cip/cursor)
-  (state/update-value [:repository] "" cip/cursor))
+  (handler/get
+    (routes/path-for-backend :registries)
+    {:on-success (fn [response]
+                   (reset! registries response))}))
 
-(defn- init-private-tab-state
-  [user]
-  (state/update-value [:searching] false ciu/cursor)
-  (state/update-value [:data] [] ciu/cursor)
-  (state/update-value [:repository] "" ciu/cursor)
-  (state/update-value [:user] user ciu/cursor))
-
-(defn- init-other-tab-state
-  [registry]
-  (state/update-value [:searching] false cio/cursor)
-  (state/update-value [:data] [] cio/cursor)
-  (state/update-value [:repository] "" cio/cursor)
-  (state/update-value [:registry] registry cio/cursor))
+(defn- users-handler
+  []
+  (handler/get
+    (routes/path-for-backend :dockerhub-users)
+    {:on-success (fn [response]
+                   (reset! users response))}))
 
 (defn- init-state
-  [registries users]
-  (let [registry (first registries)
-        user (first users)]
-    (init-public-tab-state)
-    (init-private-tab-state user)
-    (init-other-tab-state registry)))
+  []
+  (state/set-value {:public  {}
+                    :private {}
+                    :other   {}} cursor))
 
 (def init-state-mixin
-  (mixin/init
-    (fn [data]
-      (init-state (:registries data)
-                  (:users data)))))
+  (mixin/init-state
+    (fn []
+      (init-state)
+      (registries-handler)
+      (users-handler))))
 
-(rum/defc form < rum/static
-                 init-state-mixin [data]
-  (let [{:keys [users registries]} data]
-    [:div
-     [:div.form-panel
-      [:div.form-panel-left
-       (panel/info icon/services "New service")]]
-     [:div.form-panel-tabs
-      (comp/mui
-        (comp/tabs
-          {:key                   "tabs"
-           :inkBarStyle           tabs-inkbar-style
-           :tabItemContainerStyle tabs-container-style}
-          (comp/tab
-            {:key       "tab1"
-             :label     "SEARCH PUBLIC"
-             :className "service-image-tab"
-             :icon      (comp/svg icon/search)
-             :style     tab-style}
-            (cip/form))
-          (comp/tab
-            {:key       "tab2"
-             :label     "SEARCH PRIVATE"
-             :className "service-image-tab"
-             :icon      (comp/svg icon/docker)
-             :style     tab-style
-             :onActive  (fn [] (let [state (state/get-value ciu/cursor)
-                                     user (:user state)]
-                                 (if (some? user)
-                                   (ciu/repository-handler (:_id user)))))}
-            (ciu/form users))
-          (comp/tab
-            {:key       "tab3"
-             :label     "OTHER REGISTRIES"
-             :className "service-image-tab"
-             :icon      (comp/svg icon/registries)
-             :style     tab-style
-             :onActive  (fn [] (let [state (state/get-value cio/cursor)
-                                     registry (:registry state)]
-                                 (if (some? registry)
-                                   (cio/repository-handler (:_id registry)))))}
-            (cio/form registries))))]]))
+(rum/defc form-tabs < rum/static [registries users]
+  [:div
+   [:div.form-panel
+    [:div.form-panel-left
+     (panel/info icon/services "New service")]]
+   [:div.form-panel-tabs
+    (comp/mui
+      (comp/tabs
+        {:key                   "tabs"
+         :inkBarStyle           tabs-inkbar-style
+         :tabItemContainerStyle tabs-container-style}
+        (comp/tab
+          {:key       "tab1"
+           :label     "SEARCH PUBLIC"
+           :className "service-image-tab"
+           :icon      (comp/svg icon/search)
+           :style     tab-style}
+          (cip/form))
+        (comp/tab
+          {:key       "tab2"
+           :label     "SEARCH PRIVATE"
+           :className "service-image-tab"
+           :icon      (comp/svg icon/docker)
+           :style     tab-style
+           :onActive  (fn []
+                        (let [state (state/get-value ciu/cursor)
+                              user (:user state)]
+                          (when (some? user)
+                            (ciu/repository-handler (:_id user)))))}
+          (ciu/form users))
+        (comp/tab
+          {:key       "tab3"
+           :label     "OTHER REGISTRIES"
+           :className "service-image-tab"
+           :icon      (comp/svg icon/registries)
+           :style     tab-style
+           :onActive  (fn []
+                        (let [state (state/get-value cio/cursor)
+                              registry (:registry state)]
+                          (when (some? registry)
+                            (cio/repository-handler (:_id registry)))))}
+          (cio/form registries))))]])
+
+(rum/defc form < rum/reactive
+                 init-state-mixin []
+  (let [registries (rum/react registries)
+        users (rum/react users)]
+    (progress/form
+      (and (empty? registries)
+           (empty? users))
+      (form-tabs registries users))))

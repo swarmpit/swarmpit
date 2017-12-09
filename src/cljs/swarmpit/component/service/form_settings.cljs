@@ -9,7 +9,9 @@
 
 (enable-console-print!)
 
-(def cursor [:page :service :wizard :settings])
+(def cursor [:form :settings])
+
+(defonce isValid (atom false))
 
 (defonce tags (atom []))
 
@@ -131,20 +133,19 @@
                    (state/update-value [:replicas] (js/parseInt v) cursor))})))
 
 (rum/defc form < rum/reactive [update-form?]
-  (let [tags (rum/react tags)
-        {:keys [distribution
+  (let [{:keys [distribution
                 repository
                 serviceName
                 mode
                 replicas]} (state/react cursor)]
     [:div.form-edit
      (form/form
-       {:onValid   #(state/update-value [:isValid] true cursor)
-        :onInvalid #(state/update-value [:isValid] false cursor)}
+       {:onValid   #(reset! isValid true)
+        :onInvalid #(reset! isValid false)}
        (form-image (:name repository))
        (if update-form?
          (form-image-tag (:tag repository))
-         (form-image-tag-ac repository tags distribution))
+         (form-image-tag-ac repository (rum/react tags) distribution))
        (form-name serviceName update-form?)
        (form-mode mode update-form?)
        (when (= "replicated" mode)

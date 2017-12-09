@@ -13,7 +13,9 @@
 
 (enable-console-print!)
 
-(def cursor [:page :secret :form])
+(def cursor [:form])
+
+(defonce isValid (atom false))
 
 (def form-data-style
   {:padding  "10px"
@@ -74,20 +76,18 @@
   []
   (state/set-value {:secretName nil
                     :data       ""
-                    :encode     false
-                    :isValid    false} cursor))
+                    :encode     false} cursor))
 
-(def init-state-mixin
-  (mixin/init
-    (fn [_]
+(def mixin-init-state
+  (mixin/init-state
+    (fn []
       (init-state))))
 
 (rum/defc form < rum/reactive
-                 init-state-mixin []
+                 mixin-init-state []
   (let [{:keys [secretName
                 data
-                encode
-                isValid]} (state/react cursor)]
+                encode]} (state/react cursor)]
     [:div
      [:div.form-panel
       [:div.form-panel-left
@@ -96,7 +96,7 @@
        (comp/mui
          (comp/raised-button
            {:label      "Create"
-            :disabled   (not isValid)
+            :disabled   (not (rum/react isValid))
             :primary    true
             :onTouchTap create-secret-handler}))]]
 
@@ -104,8 +104,8 @@
       [:div.form-view-group
        (form/icon-value icon/info "Data must be base64 encoded. If plain text check please encode data.")
        (form/form
-         {:onValid   #(state/update-value [:isValid] true cursor)
-          :onInvalid #(state/update-value [:isValid] false cursor)}
+         {:onValid   #(reset! isValid true)
+          :onInvalid #(reset! isValid false)}
          (form-name secretName)
          (form-data-encoder encode)
          (form-data data))]]]))

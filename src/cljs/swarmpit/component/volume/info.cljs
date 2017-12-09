@@ -1,16 +1,29 @@
 (ns swarmpit.component.volume.info
-  (:require [material.component :as comp]
+  (:require [material.icon :as icon]
+            [material.component :as comp]
             [material.component.form :as form]
             [material.component.panel :as panel]
-            [material.icon :as icon]
             [swarmpit.url :refer [dispatch!]]
             [swarmpit.component.handler :as handler]
             [swarmpit.component.message :as message]
+            [swarmpit.component.mixin :as mixin]
+            [swarmpit.component.handler :as handler]
+            [swarmpit.component.state :as state]
+            [swarmpit.component.progress :as progress]
             [swarmpit.routes :as routes]
-            [rum.core :as rum]
-            [swarmpit.docker-utils :as utils]))
+            [swarmpit.docker-utils :as utils]
+            [rum.core :as rum]))
 
 (enable-console-print!)
+
+(def cursor [:form])
+
+(defn- volume-handler
+  [volume-name]
+  (handler/get
+    (routes/path-for-backend :volume {:name volume-name})
+    {:on-success (fn [response]
+                   (state/set-value response cursor))}))
 
 (defn- delete-volume-handler
   [volume-name]
@@ -25,7 +38,12 @@
                    (message/error
                      (str "Volume removing failed. Reason: " (:error response))))}))
 
-(rum/defc form < rum/static [volume]
+(def mixin-init-state
+  (mixin/init-state
+    (fn [{:keys [name]}]
+      (volume-handler name))))
+
+(rum/defc form-info < rum/static [volume]
   (let [stack (:stack volume)]
     [:div
      [:div.form-panel
@@ -45,3 +63,10 @@
        (form/item "DRIVER" (:driver volume))
        (form/item "SCOPE" (:scope volume))
        (form/item "MOUNTPOINT" (:mountpoint volume))]]]))
+
+(rum/defc form < rum/reactive
+                 mixin-init-state [_]
+  (let [volume (state/react cursor)]
+    (progress/form
+      (nil? volume)
+      (form-info volume))))

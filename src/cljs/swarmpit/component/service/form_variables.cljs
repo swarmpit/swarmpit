@@ -6,7 +6,7 @@
 
 (enable-console-print!)
 
-(def cursor [:page :service :wizard :variables])
+(def cursor [:form :variables])
 
 (def headers [{:name  "Name"
                :width "35%"}
@@ -54,10 +54,8 @@
 
 (rum/defc form-create < rum/reactive []
   (let [variables (state/react cursor)]
-    [:div
-     (form/add-btn "Add variable" add-item)
-     (if (not (empty? variables))
-       (form-table variables))]))
+    (if (not (empty? variables))
+      (form-table variables))))
 
 (rum/defc form-update < rum/reactive []
   (let [variables (state/react cursor)]

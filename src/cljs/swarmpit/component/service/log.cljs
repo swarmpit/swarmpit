@@ -10,7 +10,7 @@
             [sablono.core :refer-macros [html]]
             [rum.core :as rum]))
 
-(def cursor [:page :service :log])
+(def cursor [:form])
 
 (defn- auto-scroll!
   []
@@ -23,10 +23,17 @@
   [items predicate]
   (filter #(string/includes? (:line %) predicate) items))
 
-(defn- log-handler
-  [service]
+(defn- service-handler
+  [service-id]
   (handler/get
-    (routes/path-for-backend :service-logs (select-keys service [:id]))
+    (routes/path-for-backend :service {:id service-id})
+    {:on-success (fn [response]
+                   (state/update-value [:service] response cursor))}))
+
+(defn- log-handler
+  [service-id]
+  (handler/get
+    (routes/path-for-backend :service-logs {:id service-id})
     {:on-call    (state/update-value [:fetching] true cursor)
      :on-success (fn [response]
                    (state/update-value [:initialized] true cursor)
@@ -35,9 +42,9 @@
      :on-error   #(state/update-value [:error] true cursor)}))
 
 (defn- log-append-handler
-  [service from-timestamp]
+  [service-id from-timestamp]
   (handler/get
-    (routes/path-for-backend :service-logs (select-keys service [:id]))
+    (routes/path-for-backend :service-logs {:id service-id})
     {:on-call    (state/update-value [:fetching] true cursor)
      :params     {:from from-timestamp}
      :on-success (fn [response]
@@ -56,20 +63,21 @@
                     :timestamp   false
                     :data        []} cursor))
 
-(def refresh-state-mixin
-  (mixin/refresh
-    (fn [service]
+(def mixin-refresh-state
+  (mixin/refresh-state
+    (fn [{:keys [id]}]
       (when (not (:fetching (state/get-value cursor)))
-        (log-append-handler service (-> (state/get-value cursor)
-                                        :data
-                                        (last)
-                                        :timestamp))))))
+        (log-append-handler id (-> (state/get-value cursor)
+                                   :data
+                                   (last)
+                                   :timestamp))))))
 
-(def init-state-mixin
-  (mixin/init
-    (fn [service]
+(def mixin-init-state
+  (mixin/init-state
+    (fn [{:keys [id]}]
       (init-state)
-      (log-handler service))))
+      (service-handler id)
+      (log-handler id))))
 
 (rum/defc line < rum/static [item timestamp]
   [:div
@@ -79,13 +87,12 @@
    [:span.log-body (str " " (:line item))]])
 
 (rum/defc form < rum/reactive
-                 init-state-mixin
-                 refresh-state-mixin
+                 mixin-init-state
+                 mixin-refresh-state
                  {:did-mount  (fn [state] (auto-scroll!) state)
-                  :did-update (fn [state] (auto-scroll!) state)} [service]
-  (let [{:keys [filter data autoscroll timestamp initialized error]} (state/react cursor)
-        filtered-items (filter-items data
-                                     (:predicate filter))]
+                  :did-update (fn [state] (auto-scroll!) state)} [{:keys [id]}]
+  (let [{:keys [filter data autoscroll timestamp initialized error service]} (state/react cursor)
+        filtered-items (filter-items data (:predicate filter))]
     [:div
      [:div.form-panel
       [:div.form-panel-left
@@ -94,7 +101,7 @@
       [:div.form-panel-right
        (comp/mui
          (comp/raised-button
-           {:href  (routes/path-for-frontend :service-info (select-keys service [:id]))
+           {:href  (routes/path-for-frontend :service-info {:id id})
             :label "Back"}))]]
      [:div.log-panel
       [:div.form-panel-left

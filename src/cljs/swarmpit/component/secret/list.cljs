@@ -4,6 +4,7 @@
             [material.component.list-table :as list]
             [swarmpit.component.mixin :as mixin]
             [swarmpit.component.state :as state]
+            [swarmpit.component.handler :as handler]
             [swarmpit.routes :as routes]
             [swarmpit.time :as time]
             [clojure.string :as string]
@@ -11,7 +12,7 @@
 
 (enable-console-print!)
 
-(def cursor [:page :secret :list])
+(def cursor [:form])
 
 (def headers [{:name  "Name"
                :width "50%"}
@@ -33,20 +34,28 @@
   [items predicate]
   (filter #(string/includes? (:secretName %) predicate) items))
 
+(defn- secrets-handler
+  []
+  (handler/get
+    (routes/path-for-backend :secrets)
+    {:on-success (fn [response]
+                   (state/update-value [:items] response cursor))}))
+
 (defn- init-state
   []
   (state/set-value {:filter {:secretName ""}} cursor))
 
-(def init-state-mixin
-  (mixin/init
-    (fn [_]
-      (init-state))))
+(def mixin-init-state
+  (mixin/init-state
+    (fn []
+      (init-state)
+      (secrets-handler))))
 
 (rum/defc form < rum/reactive
-                 init-state-mixin
-                 mixin/focus-filter [items]
-  (let [{{:keys [secretName]} :filter} (state/react cursor)
-        filtered-items (filter-items items secretName)]
+                 mixin-init-state
+                 mixin/focus-filter []
+  (let [{:keys [filter items]} (state/react cursor)
+        filtered-items (filter-items items (:secretName filter))]
     [:div
      [:div.form-panel
       [:div.form-panel-left
@@ -63,8 +72,9 @@
             :primary true}))]]
      (list/table headers
                  (->> filtered-items
-                           (sort-by :secretName)
-                           (map #(update % :createdAt time/simplify)))
+                      (sort-by :secretName)
+                      (map #(update % :createdAt time/simplify)))
+                 (nil? items)
                  render-item
                  render-item-keys
                  onclick-handler)]))

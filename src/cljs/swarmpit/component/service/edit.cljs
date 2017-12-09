@@ -7,6 +7,7 @@
             [swarmpit.component.mixin :as mixin]
             [swarmpit.component.state :as state]
             [swarmpit.component.handler :as handler]
+            [swarmpit.component.progress :as progress]
             [swarmpit.component.service.form-settings :as settings]
             [swarmpit.component.service.form-ports :as ports]
             [swarmpit.component.service.form-networks :as networks]
@@ -24,11 +25,41 @@
 
 (enable-console-print!)
 
+(def cursor [:form])
+
 (defn render-item
   [val]
   (if (boolean? val)
     (comp/checkbox {:checked val})
     val))
+
+(defn- service-handler
+  [service-id]
+  (handler/get
+    (routes/path-for-backend :service {:id service-id})
+    {:on-success
+     (fn [service]
+       (state/set-value (select-keys service [:distribution :repository :version :serviceName :mode :replicas :stack]) settings/cursor)
+       (state/set-value (:ports service) ports/cursor)
+       (state/set-value (:mounts service) mounts/cursor)
+       (state/set-value (->> (:secrets service)
+                             (map #(select-keys % [:secretName :secretTarget]))
+                             (into [])) secrets/cursor)
+       (state/set-value (:variables service) variables/cursor)
+       (state/set-value (:labels service) labels/cursor)
+       (state/set-value (:logdriver service) logdriver/cursor)
+       (state/set-value (:resources service) resources/cursor)
+       (state/set-value (:deployment service) deployment/cursor))}))
+
+(defn- service-networks-handler
+  [service-id]
+  (handler/get
+    (routes/path-for-backend :service-networks {:id service-id})
+    {:on-success
+     (fn [networks]
+       (state/set-value (->> networks
+                             (map #(select-keys % [:networkName]))
+                             (into [])) networks/cursor))}))
 
 (defn- update-service-handler
   [service-id]
@@ -62,27 +93,11 @@
                      (message/error
                        (str "Service update failed. Reason: " (:error response))))})))
 
-(defn- init-state
-  [service networks]
-  (state/set-value (select-keys service [:distribution :repository :version :serviceName :mode :replicas :stack]) settings/cursor)
-  (state/set-value (:ports service) ports/cursor)
-  (state/set-value (->> networks
-                        (map #(select-keys % [:networkName]))
-                        (into [])) networks/cursor)
-  (state/set-value (:mounts service) mounts/cursor)
-  (state/set-value (->> (:secrets service)
-                        (map #(select-keys % [:secretName :secretTarget]))
-                        (into [])) secrets/cursor)
-  (state/set-value (:variables service) variables/cursor)
-  (state/set-value (:labels service) labels/cursor)
-  (state/set-value (:logdriver service) logdriver/cursor)
-  (state/set-value (:resources service) resources/cursor)
-  (state/set-value (:deployment service) deployment/cursor))
-
 (def init-state-mixin
-  (mixin/init
-    (fn [{:keys [service networks]}]
-      (init-state service networks)
+  (mixin/init-state
+    (fn [{:keys [id]}]
+      (service-handler id)
+      (service-networks-handler id)
       (mounts/volumes-handler)
       (networks/networks-handler)
       (secrets/secrets-handler)
@@ -141,26 +156,24 @@
    (form/section "Deployment")
    (deployment/form)])
 
-(rum/defc form < rum/reactive
-                 init-state-mixin [data]
-  (let [{:keys [service]} data
-        resources (state/react resources/cursor)]
+(rum/defc form-edit < rum/reactive [params service]
+  (let [resources (state/react resources/cursor)]
     [:div
      [:div.form-panel
       [:div.form-panel-left
        (panel/info icon/services
-                   (:serviceName service))]
+                   (get-in service [:settings :serviceName]))]
       [:div.form-panel-right
        (comp/mui
          (comp/raised-button
-           {:onTouchTap #(update-service-handler (:id service))
+           {:onTouchTap #(update-service-handler params)
             :label      "Save"
             :disabled   (not (:isValid resources))
             :primary    true}))
        [:span.form-panel-delimiter]
        (comp/mui
          (comp/raised-button
-           {:href  (routes/path-for-frontend :service-info (select-keys service [:id]))
+           {:href  (routes/path-for-frontend :service-info params)
             :label "Back"}))]]
      [:div.form-service-edit
       (form-settings)
@@ -173,3 +186,10 @@
       (form-logdriver)
       (form-resources)
       (form-deployment)]]))
+
+(rum/defc form < rum/reactive
+                 init-state-mixin [params]
+  (let [service (state/react cursor)]
+    (progress/form
+      (empty? service)
+      (form-edit params service))))

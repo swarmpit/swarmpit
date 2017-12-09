@@ -12,7 +12,7 @@
 
 (enable-console-print!)
 
-(def cursor [:page :node :list])
+(def cursor [:form])
 
 (defn- filter-items
   "Filter list items based on given predicate"
@@ -53,28 +53,28 @@
      [:div
       [:span.node-item-secondary "availability: " (:availability item)]]]))
 
-(defn- data-handler
+(defn- nodes-handler
   []
   (handler/get
     (routes/path-for-backend :nodes)
     {:on-success (fn [response]
-                   (state/update-value [:data] response cursor))}))
+                   (state/update-value [:items] response cursor))}))
 
 (defn- init-state
-  [nodes]
-  (state/set-value {:filter {:nodeName ""}
-                    :data   nodes} cursor))
+  []
+  (state/set-value {:filter {:nodeName ""}} cursor))
 
-(def init-state-mixin
-  (mixin/init
-    (fn [data]
-      (init-state data))))
+(def mixin-init-state
+  (mixin/init-state
+    (fn []
+      (init-state)
+      (nodes-handler))))
 
 (rum/defc form < rum/reactive
-                 init-state-mixin
-                 mixin/focus-filter [_]
-  (let [{:keys [filter data]} (state/react cursor)
-        filtered-items (filter-items data (:nodeName filter))]
+                 mixin-init-state
+                 mixin/focus-filter []
+  (let [{:keys [filter items]} (state/react cursor)
+        filtered-items (filter-items items (:nodeName filter))]
     [:div
      [:div.form-panel
       [:div.form-panel-left

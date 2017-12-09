@@ -1,8 +1,8 @@
 (ns swarmpit.component.user.create
-  (:require [material.component :as comp]
+  (:require [material.icon :as icon]
+            [material.component :as comp]
             [material.component.form :as form]
             [material.component.panel :as panel]
-            [material.icon :as icon]
             [swarmpit.url :refer [dispatch!]]
             [swarmpit.component.handler :as handler]
             [swarmpit.component.mixin :as mixin]
@@ -13,7 +13,9 @@
 
 (enable-console-print!)
 
-(def cursor [:page :user :form])
+(def cursor [:form])
+
+(defonce isValid (atom false))
 
 (defn- form-username [value]
   (form/comp
@@ -93,18 +95,17 @@
                     :role     "user"
                     :isValid  false} cursor))
 
-(def init-state-mixin
-  (mixin/init
-    (fn [_]
+(def mixin-init-state
+  (mixin/init-state
+    (fn []
       (init-state))))
 
 (rum/defc form < rum/reactive
-                 init-state-mixin []
+                 mixin-init-state []
   (let [{:keys [username
                 password
                 role
-                email
-                isValid]} (state/react cursor)]
+                email]} (state/react cursor)]
     [:div
      [:div.form-panel
       [:div.form-panel-left
@@ -113,13 +114,13 @@
        (comp/mui
          (comp/raised-button
            {:label      "Create"
-            :disabled   (not isValid)
+            :disabled   (not (rum/react isValid))
             :primary    true
             :onTouchTap create-user-handler}))]]
      [:div.form-edit
       (form/form
-        {:onValid   #(state/update-value [:isValid] true cursor)
-         :onInvalid #(state/update-value [:isValid] false cursor)}
+        {:onValid   #(reset! isValid true)
+         :onInvalid #(reset! isValid false)}
         (form-username username)
         (form-password password)
         (form-role role)

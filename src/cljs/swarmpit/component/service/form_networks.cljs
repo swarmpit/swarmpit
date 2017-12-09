@@ -9,7 +9,7 @@
 
 (enable-console-print!)
 
-(def cursor [:page :service :wizard :networks])
+(def cursor [:form :networks])
 
 (defonce networks (atom []))
 
@@ -70,16 +70,12 @@
   (state/add-item {:networkName ""} cursor))
 
 (rum/defc form-create < rum/reactive []
-  (let [networks-list (rum/react networks)
-        networks (state/react cursor)]
-    [:div
-     (form/add-btn "Attach network" add-item)
-     (if (not (empty? networks))
-       (form-table networks networks-list))]))
+  (let [networks (state/react cursor)]
+    (if (not (empty? networks))
+      (form-table networks (rum/react networks)))))
 
 (rum/defc form-update < rum/reactive []
-  (let [networks-list (rum/react networks)
-        networks (state/react cursor)]
+  (let [networks (state/react cursor)]
     (if (empty? networks)
       empty-info
-      (form-table networks networks-list))))
+      (form-table networks (rum/react networks)))))

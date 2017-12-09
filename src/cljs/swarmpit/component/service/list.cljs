@@ -13,7 +13,7 @@
 
 (enable-console-print!)
 
-(def cursor [:page :service :list])
+(def cursor [:form])
 
 (def headers [{:name  "Name"
                :width "20%"}
@@ -81,29 +81,29 @@
     (filter-unhealthy-items items name)
     (filter #(string/includes? (:serviceName %) name) items)))
 
-(defn- data-handler
+(defn- services-handler
   []
   (handler/get
     (routes/path-for-backend :services)
     {:on-success (fn [response]
-                   (state/update-value [:data] response cursor))}))
+                   (state/update-value [:items] response cursor))}))
 
 (defn- init-state
-  [services]
+  []
   (state/set-value {:filter {:serviceName ""
-                             :unhealthy   false}
-                    :data   services} cursor))
+                             :unhealthy   false}} cursor))
 
-(def init-state-mixin
-  (mixin/init
-    (fn [data]
-      (init-state data))))
+(def mixin-init-state
+  (mixin/init-state
+    (fn [_]
+      (init-state)
+      (services-handler))))
 
 (rum/defc form < rum/reactive
-                 init-state-mixin
+                 mixin-init-state
                  mixin/focus-filter [_]
-  (let [{:keys [filter data]} (state/react cursor)
-        filtered-items (filter-items data
+  (let [{:keys [filter items]} (state/react cursor)
+        filtered-items (filter-items items
                                      (:serviceName filter)
                                      (:unhealthy filter))]
     [:div
@@ -128,6 +128,7 @@
             :primary true}))]]
      (list/table headers
                  (sort-by :serviceName filtered-items)
+                 (nil? items)
                  render-item
                  render-item-keys
                  onclick-handler)]))

@@ -69,18 +69,34 @@
         (str (min (+ offset 1) total) " - "
              (min (+ offset limit) total) " of " total)))))
 
-(defn table
-  [headers items render-item-fn render-items-key onclick-handler-fn]
-  (let [item (fn [index] (nth items index))]
+(defn- table-loading [loading]
+  (let [mode (if loading "indeterminate"
+                         "determinate")]
     (cmp/mui
-      (cmp/table
-        {:key         "tbl"
-         :selectable  false
-         :onCellClick (fn [i]
-                        (dispatch!
-                          (onclick-handler-fn (item i))))}
-        (table-header headers)
-        (table-body headers
-                    items
-                    render-item-fn
-                    render-items-key)))))
+      (cmp/linear-progress
+        {:mode  mode
+         :style {:borderRadius 0
+                 :background   "rgb(224, 228, 231)"
+                 :height       "1px"
+                 :position     "relative"
+                 :top          "59px"}}))))
+
+(defn table
+  ([headers items render-item-fn render-items-key onclick-handler-fn]
+   (table headers items false render-item-fn render-items-key onclick-handler-fn))
+  ([headers items loading? render-item-fn render-items-key onclick-handler-fn]
+   (let [item (fn [index] (nth items index))]
+     [:div
+      (table-loading loading?)
+      (cmp/mui
+        (cmp/table
+          {:key         "tbl"
+           :selectable  false
+           :onCellClick (fn [i]
+                          (dispatch!
+                            (onclick-handler-fn (item i))))}
+          (table-header headers)
+          (table-body headers
+                      items
+                      render-item-fn
+                      render-items-key)))])))

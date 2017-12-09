@@ -13,7 +13,9 @@
 
 (enable-console-print!)
 
-(def cursor [:page :registry :form])
+(def cursor [:form])
+
+(defonce isValid (atom false))
 
 (defn- form-name [value]
   (form/comp
@@ -102,20 +104,19 @@
                     :password ""
                     :isValid  false} cursor))
 
-(def init-state-mixin
-  (mixin/init
-    (fn [_]
+(def mixin-init-state
+  (mixin/init-state
+    (fn []
       (init-state))))
 
 (rum/defc form < rum/reactive
-                 init-state-mixin []
+                 mixin-init-state []
   (let [{:keys [name
                 url
                 public
                 withAuth
                 username
-                password
-                isValid]} (state/react cursor)]
+                password]} (state/react cursor)]
     [:div
      [:div.form-panel
       [:div.form-panel-left
@@ -124,13 +125,13 @@
        (comp/mui
          (comp/raised-button
            {:label      "Save"
-            :disabled   (not isValid)
+            :disabled   (not (rum/react isValid))
             :primary    true
             :onTouchTap create-registry-handler}))]]
      [:div.form-edit
       (form/form
-        {:onValid   #(state/update-value [:isValid] true cursor)
-         :onInvalid #(state/update-value [:isValid] false cursor)}
+        {:onValid   #(reset! isValid true)
+         :onInvalid #(reset! isValid false)}
         (form-name name)
         (form-url url)
         (form-public public)

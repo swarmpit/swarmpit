@@ -6,12 +6,24 @@
             [swarmpit.url :refer [dispatch!]]
             [swarmpit.component.handler :as handler]
             [swarmpit.component.message :as message]
+            [swarmpit.component.state :as state]
+            [swarmpit.component.mixin :as mixin]
+            [swarmpit.component.progress :as progress]
             [swarmpit.routes :as routes]
-            [rum.core :as rum]
             [swarmpit.time :as time]
-            [swarmpit.docker-utils :as utils]))
+            [swarmpit.docker-utils :as utils]
+            [rum.core :as rum]))
 
 (enable-console-print!)
+
+(def cursor [:form])
+
+(defn- network-handler
+  [network-id]
+  (handler/get
+    (routes/path-for-backend :network {:id network-id})
+    {:on-success (fn [response]
+                   (state/set-value response cursor))}))
 
 (defn- delete-network-handler
   [network-id]
@@ -26,7 +38,12 @@
                    (message/error
                      (str "Network removing failed. Reason: " (:error response))))}))
 
-(rum/defc form < rum/static [network]
+(def mixin-init-state
+  (mixin/init-state
+    (fn [{:keys [id]}]
+      (network-handler id))))
+
+(rum/defc form-info < rum/static [network]
   (let [stack (:stack network)
         created (:created network)]
     [:div
@@ -50,9 +67,16 @@
          (form/item-date "CREATED" created))
        (form/item "DRIVER" (:driver network))
        (form/item "INTERNAL" (if (:internal network)
-                                    "yes"
-                                    "no"))]
+                               "yes"
+                               "no"))]
       [:div.form-view-group
        (form/section "IP address management")
        (form/item "SUBNET" (get-in network [:ipam :subnet]))
        (form/item "GATEWAY" (get-in network [:ipam :gateway]))]]]))
+
+(rum/defc form < rum/reactive
+                 mixin-init-state [_]
+  (let [network (state/react cursor)]
+    (progress/form
+      (nil? network)
+      (form-info network))))

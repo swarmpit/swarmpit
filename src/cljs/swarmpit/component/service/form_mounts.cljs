@@ -9,7 +9,7 @@
 
 (enable-console-print!)
 
-(def cursor [:page :service :wizard :mounts])
+(def cursor [:form :mounts])
 
 (defonce volumes (atom []))
 
@@ -138,16 +138,12 @@
                    :readOnly      false} cursor))
 
 (rum/defc form-create < rum/reactive []
-  (let [volumes-list (rum/react volumes)
-        mounts (state/react cursor)]
-    [:div
-     (form/add-btn "Mount volume" add-item)
-     (when (not (empty? mounts))
-       (form-table mounts volumes-list))]))
+  (let [mounts (state/react cursor)]
+    (when (not (empty? mounts))
+      (form-table mounts (rum/react volumes)))))
 
 (rum/defc form-update < rum/reactive []
-  (let [volumes-list (rum/react volumes)
-        mounts (state/react cursor)]
+  (let [mounts (state/react cursor)]
     (if (empty? mounts)
       empty-info
-      (form-table mounts volumes-list))))
+      (form-table mounts (rum/react volumes)))))

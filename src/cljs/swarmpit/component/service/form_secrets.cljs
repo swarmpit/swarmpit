@@ -11,7 +11,7 @@
 
 (enable-console-print!)
 
-(def cursor [:page :service :wizard :secrets])
+(def cursor [:form :secrets])
 
 (defonce secrets (atom []))
 
@@ -83,15 +83,13 @@
   (let [secrets-list (rum/react secrets)
         secrets (state/react cursor)]
     [:div
-     (if (empty? secrets-list)
-       undefined-info
-       (form/add-btn "Expose secrets" add-item))
+     (when (empty? secrets-list)
+       undefined-info)
      (when (not (empty? secrets))
        (form-table secrets secrets-list))]))
 
 (rum/defc form-update < rum/reactive []
-  (let [secrets-list (rum/react secrets)
-        secrets (state/react cursor)]
+  (let [secrets (state/react cursor)]
     (if (empty? secrets)
       empty-info
-      (form-table secrets secrets-list))))
+      (form-table secrets (rum/react secrets)))))

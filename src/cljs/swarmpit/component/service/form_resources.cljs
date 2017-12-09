@@ -9,7 +9,9 @@
 
 (enable-console-print!)
 
-(def cursor [:page :service :wizard :resources])
+(def cursor [:form :resources])
+
+(defonce isValid (atom true))
 
 (defn- cpu-value
   [value]
@@ -70,12 +72,11 @@
                           (state/update-value [:limit :memory] (parse-int v) cursor))})))
 
 (rum/defc form < rum/reactive []
-  (let [{:keys [reservation
-                limit]} (state/react cursor)]
+  (let [{:keys [reservation limit]} (state/react cursor)]
     [:div.form-edit
      (form/form
-       {:onValid   #(state/update-value [:isValid] true cursor)
-        :onInvalid #(state/update-value [:isValid] false cursor)}
+       {:onValid   #(reset! isValid true)
+        :onInvalid #(reset! isValid false)}
        (html (form/subsection "Reservation"))
        (html (form/icon-value icon/info [:span "Minimal resource availablility to run a task. Empty for unlimited."]))
        (form-cpu-reservation (:cpu reservation))

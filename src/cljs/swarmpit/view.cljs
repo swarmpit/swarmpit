@@ -1,5 +1,7 @@
 (ns swarmpit.view
-  (:require [swarmpit.component.page-login :as page-login]
+  (:require [swarmpit.component.state :as state]
+            [swarmpit.event.source :as eventsource]
+            [swarmpit.component.page-login :as page-login]
             [swarmpit.component.page-403 :as page-403]
             [swarmpit.component.page-404 :as page-404]
             [swarmpit.component.page-error :as page-error]
@@ -35,7 +37,13 @@
             [swarmpit.component.dockerhub.create :as dockerhub-create]
             [swarmpit.component.dockerhub.edit :as dockerhub-edit]))
 
-(defmulti dispatch (fn [route] (:handler route)))
+;; Dispatch to view based on route handler and
+;; 1) reset current form data
+;; 2) subscribe view
+(defmulti dispatch (fn [route]
+                     (eventsource/subscribe! route)
+                     (state/set-value nil [:form])
+                     (:handler route)))
 
 (defmethod dispatch nil
   [_]
@@ -64,38 +72,38 @@
 ;;; Service view
 
 (defmethod dispatch :service-list
-  [{:keys [data]}]
-  (service-list/form data))
+  [{:keys [params]}]
+  (service-list/form params))
 
 (defmethod dispatch :service-info
-  [{:keys [data]}]
-  (service-info/form data))
+  [{:keys [params]}]
+  (service-info/form params))
 
 (defmethod dispatch :service-log
-  [{:keys [data]}]
-  (service-log/form data))
+  [{:keys [params]}]
+  (service-log/form params))
 
 (defmethod dispatch :service-create-image
-  [{:keys [data]}]
-  (service-image/form data))
+  [_]
+  (service-image/form))
 
 (defmethod dispatch :service-create-config
-  [{:keys [data]}]
-  (service-config/form data))
+  [{:keys [params]}]
+  (service-config/form params))
 
 (defmethod dispatch :service-edit
-  [{:keys [data]}]
-  (service-edit/form data))
+  [{:keys [params]}]
+  (service-edit/form params))
 
 ;;; Network view
 
 (defmethod dispatch :network-list
-  [{:keys [data]}]
-  (network-list/form data))
+  [_]
+  (network-list/form))
 
 (defmethod dispatch :network-info
-  [{:keys [data]}]
-  (network-info/form data))
+  [{:keys [params]}]
+  (network-info/form params))
 
 (defmethod dispatch :network-create
   [_]
@@ -104,18 +112,18 @@
 ;;; Node view
 
 (defmethod dispatch :node-list
-  [{:keys [data]}]
-  (node-list/form data))
+  [_]
+  (node-list/form))
 
 ;;; Volume view
 
 (defmethod dispatch :volume-list
-  [{:keys [data]}]
-  (volume-list/form data))
+  [_]
+  (volume-list/form))
 
 (defmethod dispatch :volume-info
-  [{:keys [data]}]
-  (volume-info/form data))
+  [{:keys [params]}]
+  (volume-info/form params))
 
 (defmethod dispatch :volume-create
   [_]
@@ -124,12 +132,12 @@
 ;;; Secret view
 
 (defmethod dispatch :secret-list
-  [{:keys [data]}]
-  (secret-list/form data))
+  [_]
+  (secret-list/form))
 
 (defmethod dispatch :secret-info
-  [{:keys [data]}]
-  (secret-info/form data))
+  [{:keys [params]}]
+  (secret-info/form params))
 
 (defmethod dispatch :secret-create
   [_]
@@ -138,63 +146,63 @@
 ;;; Task view
 
 (defmethod dispatch :task-list
-  [{:keys [data]}]
-  (task-list/form data))
+  [_]
+  (task-list/form))
 
 (defmethod dispatch :task-info
-  [{:keys [data]}]
-  (task-info/form data))
+  [{:keys [params]}]
+  (task-info/form params))
 
 ;;; User view
 
 (defmethod dispatch :user-list
-  [{:keys [data]}]
-  (user-list/form data))
+  [_]
+  (user-list/form))
 
 (defmethod dispatch :user-info
-  [{:keys [data]}]
-  (user-info/form data))
+  [{:keys [params]}]
+  (user-info/form params))
 
 (defmethod dispatch :user-create
   [_]
   (user-create/form))
 
 (defmethod dispatch :user-edit
-  [{:keys [data]}]
-  (user-edit/form data))
+  [{:keys [params]}]
+  (user-edit/form params))
 
 ;;; Registry view
 
 (defmethod dispatch :registry-list
-  [{:keys [data]}]
-  (registry-list/form data))
+  [_]
+  (registry-list/form))
 
 (defmethod dispatch :registry-info
-  [{:keys [data]}]
-  (registry-info/form data))
+  [{:keys [params]}]
+  (registry-info/form params))
 
 (defmethod dispatch :registry-create
   [_]
   (registry-create/form))
 
 (defmethod dispatch :registry-edit
-  [{:keys [data]}]
-  (registry-edit/form data))
+  [{:keys [params]}]
+  (registry-edit/form params))
 
 ;;; Dockerhub user view
 
 (defmethod dispatch :dockerhub-user-list
-  [{:keys [data]}]
-  (dockerhub-list/form data))
+  [_]
+  (dockerhub-list/form))
 
 (defmethod dispatch :dockerhub-user-info
-  [{:keys [data]}]
-  (dockerhub-info/form data))
+  [{:keys [params]}]
+  (dockerhub-info/form params))
 
 (defmethod dispatch :dockerhub-user-create
   [_]
   (dockerhub-create/form))
 
 (defmethod dispatch :dockerhub-user-edit
-  [{:keys [data]}]
-  (dockerhub-edit/form data))
+  [{:keys [params]}]
+  (dockerhub-edit/form params))

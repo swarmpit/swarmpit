@@ -13,7 +13,9 @@
 
 (enable-console-print!)
 
-(def cursor [:page :dockerhub :form])
+(def cursor [:form])
+
+(defonce isValid (atom false))
 
 (defn- form-username [value]
   (form/comp
@@ -67,17 +69,16 @@
                     :public   false
                     :isValid  false} cursor))
 
-(def init-state-mixin
-  (mixin/init
-    (fn [_]
+(def mixin-init-state
+  (mixin/init-state
+    (fn []
       (init-state))))
 
 (rum/defc form < rum/reactive
-                 init-state-mixin []
+                 mixin-init-state []
   (let [{:keys [username
                 password
-                public
-                isValid]} (state/react cursor)]
+                public]} (state/react cursor)]
     [:div
      [:div.form-panel
       [:div.form-panel-left
@@ -86,13 +87,13 @@
        (comp/mui
          (comp/raised-button
            {:label      "Save"
-            :disabled   (not isValid)
+            :disabled   (not (rum/react isValid))
             :primary    true
             :onTouchTap add-user-handler}))]]
      [:div.form-edit
       (form/form
-        {:onValid   #(state/update-value [:isValid] true cursor)
-         :onInvalid #(state/update-value [:isValid] false cursor)}
+        {:onValid   #(reset! isValid true)
+         :onInvalid #(reset! isValid false)}
         (form-username username)
         (form-password password)
         (form-public public))]]))

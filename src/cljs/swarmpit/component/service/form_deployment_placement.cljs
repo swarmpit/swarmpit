@@ -8,7 +8,7 @@
 
 (enable-console-print!)
 
-(def cursor [:page :service :wizard :deployment :placement])
+(def cursor [:form :deployment :placement])
 
 (defonce placement (atom []))
 
@@ -54,7 +54,5 @@
   (state/add-item {:rule ""} cursor))
 
 (rum/defc form < rum/reactive []
-  (let [placement-list (rum/react placement)
-        placement (state/react cursor)]
-    [:div
-     (form-table placement placement-list)]))
+  (let [placement (state/react cursor)]
+    (form-table placement (rum/react placement))))

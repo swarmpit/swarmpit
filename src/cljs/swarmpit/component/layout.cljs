@@ -1,9 +1,8 @@
 (ns swarmpit.component.layout
   (:require [rum.core :as rum]
             [clojure.string :as str]
-            [swarmpit.controller :as controller]
             [swarmpit.view :as view]
-            [swarmpit.event.source :as eventsource]
+            [swarmpit.router :as router]
             [swarmpit.component.state :as state]
             [swarmpit.component.menu :as menu]
             [swarmpit.component.header :as header]))
@@ -80,13 +79,11 @@
      [:main (view/dispatch route)]]))
 
 (rum/defc layout < rum/reactive []
-  (let [{:keys [handler] :as route} (state/react controller/cursor)]
+  (let [{:keys [handler] :as route} (state/react router/cursor)]
     (when (some? route)
-      (do
-        (eventsource/subscribe! route)
-        (if (page-layout? handler)
-          (page-layout route)
-          (page-single route))))))
+      (if (page-layout? handler)
+        (page-layout route)
+        (page-single route)))))
 
 (defn mount!
   []

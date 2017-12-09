@@ -4,6 +4,8 @@
             [material.component.form :as form]
             [material.component.list-table :as list]
             [swarmpit.component.state :as state]
+            [swarmpit.component.progress :as progress]
+            [swarmpit.component.mixin :as mixin]
             [swarmpit.component.handler :as handler]
             [swarmpit.storage :as storage]
             [swarmpit.url :refer [dispatch!]]
@@ -12,12 +14,14 @@
             [sablono.core :refer-macros [html]]
             [rum.core :as rum]))
 
-(def cursor [:page :service :wizard :image :private])
+(def cursor [:form :private])
 
 (def headers [{:name  "Name"
                :width "50%"}
               {:name  "Description"
                :width "50%"}])
+
+(defonce searching? (atom false))
 
 (defn- render-item
   [item]
@@ -31,12 +35,9 @@
   [user-id]
   (handler/get
     (routes/path-for-backend :dockerhub-repositories {:id user-id})
-    {:on-call    (state/update-value [:searching] true cursor)
+    {:state      searching?
      :on-success (fn [response]
-                   (state/update-value [:searching] false cursor)
-                   (state/update-value [:data] response cursor))
-     :on-error   (fn [_]
-                   (state/update-value [:searching] false cursor))}))
+                   (state/update-value [:repositories] response cursor))}))
 
 (defn- form-username-label
   [user]
@@ -71,46 +72,49 @@
        :onChange (fn [_ v]
                    (state/update-value [:repository] v cursor))})))
 
-(rum/defc form-loading < rum/static []
-  (form/loading true))
+(defn- init-state
+  [user]
+  (state/set-value {:repositories []
+                    :repository   ""
+                    :user         user} cursor))
 
-(rum/defc form-loaded < rum/static []
-  (form/loading false))
+(def init-state-mixin
+  (mixin/init-state
+    (fn [users]
+      (init-state (first users)))))
 
-(defn- repository-list [user data]
-  (let [repository (fn [index] (:name (nth data index)))]
-    (comp/mui
-      (comp/table
-        {:key         "tbl"
-         :selectable  false
-         :onCellClick (fn [i]
-                        (dispatch!
-                          (routes/path-for-frontend :service-create-config
-                                                    {}
-                                                    {:repository       (repository i)
-                                                     :distributionType "dockerhub"
-                                                     :distribution     (:_id user)})))}
-        (list/table-header headers)
-        (list/table-body headers
-                         data
-                         render-item
-                         [[:name] [:description]])))))
+(rum/defc form-list < rum/static [searching? user repositories]
+  (let [repository (fn [index] (:name (nth repositories index)))]
+    [:div.form-edit-loader
+     (if searching?
+       (progress/loading)
+       (progress/loaded))
+     (comp/mui
+       (comp/table
+         {:key         "tbl"
+          :selectable  false
+          :onCellClick (fn [i]
+                         (dispatch!
+                           (routes/path-for-frontend :service-create-config
+                                                     {}
+                                                     {:repository       (repository i)
+                                                      :distributionType "dockerhub"
+                                                      :distribution     (:_id user)})))}
+         (list/table-header headers)
+         (list/table-body headers
+                          repositories
+                          render-item
+                          [[:name] [:description]])))]))
 
-(rum/defc form < rum/reactive [users]
-  (let [{:keys [searching
-                user
-                data
-                repository]} (state/react cursor)
-        filtered-data (filter-items data repository)]
+(rum/defc form < rum/reactive
+                 init-state-mixin [users]
+  (let [{:keys [user repositories repository]} (state/react cursor)
+        filtered-repositories (filter-items repositories repository)]
     (if (some? user)
       [:div.form-edit
        (form-username user users)
        (form-repository repository)
-       [:div.form-edit-loader
-        (if searching
-          (form-loading)
-          (form-loaded))
-        (repository-list user filtered-data)]]
+       (form-list (rum/react searching?) user filtered-repositories)]
       [:div.form-edit
        (if (storage/admin?)
          (form/icon-value icon/info [:span "No dockerhub users found. Add new " [:a {:href (routes/path-for-frontend :dockerhub-user-create)} "user."]])

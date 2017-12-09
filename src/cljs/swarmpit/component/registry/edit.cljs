@@ -8,12 +8,13 @@
             [swarmpit.component.mixin :as mixin]
             [swarmpit.component.state :as state]
             [swarmpit.component.message :as message]
+            [swarmpit.component.progress :as progress]
             [swarmpit.routes :as routes]
             [rum.core :as rum]))
 
 (enable-console-print!)
 
-(def cursor [:page :registry :form])
+(def cursor [:form])
 
 (defn- form-public [value]
   (form/comp
@@ -22,6 +23,13 @@
       {:checked value
        :onCheck (fn [_ v]
                   (state/update-value [:public] v cursor))})))
+
+(defn- registry-handler
+  [registry-id]
+  (handler/get
+    (routes/path-for-backend :registry {:id registry-id})
+    {:on-success (fn [response]
+                   (state/set-value response cursor))}))
 
 (defn- update-registry-handler
   [registry-id]
@@ -37,33 +45,36 @@
                    (message/error
                      (str "Registry update failed. Reason: " (:error response))))}))
 
-(defn- init-state
-  [registry]
-  (state/set-value (select-keys registry [:public]) cursor))
+(def mixin-init-state
+  (mixin/init-state
+    (fn [{:keys [id]}]
+      (registry-handler id))))
 
-(def init-state-mixin
-  (mixin/init
-    (fn [registry]
-      (init-state registry))))
+(rum/defc form-edit < rum/static [registry]
+  [:div
+   [:div.form-panel
+    [:div.form-panel-left
+     (panel/info icon/registries
+                 (:name registry))]
+    [:div.form-panel-right
+     (comp/mui
+       (comp/raised-button
+         {:onTouchTap #(update-registry-handler (:_id registry))
+          :label      "Save"
+          :primary    true}))
+     [:span.form-panel-delimiter]
+     (comp/mui
+       (comp/raised-button
+         {:href  (routes/path-for-frontend :registry-info {:id (:_id registry)})
+          :label "Back"}))]]
+   [:div.form-edit
+    (form/form
+      nil
+      (form-public (:public registry)))]])
 
 (rum/defc form < rum/reactive
-                 init-state-mixin [registry]
-  (let [{:keys [public]} (state/react cursor)]
-    [:div
-     [:div.form-panel
-      [:div.form-panel-left
-       (panel/info icon/registries
-                   (:name registry))]
-      [:div.form-panel-right
-       (comp/mui
-         (comp/raised-button
-           {:onTouchTap #(update-registry-handler (:_id registry))
-            :label      "Save"
-            :primary    true}))
-       [:span.form-panel-delimiter]
-       (comp/mui
-         (comp/raised-button
-           {:href  (routes/path-for-frontend :registry-info {:id (:_id registry)})
-            :label "Back"}))]]
-     [:div.form-edit
-      (form/form nil (form-public public))]]))
+                 mixin-init-state [_]
+  (let [registry (state/react cursor)]
+    (progress/form
+      (nil? registry)
+      (form-edit registry))))

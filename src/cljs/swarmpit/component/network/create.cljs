@@ -13,7 +13,11 @@
 
 (enable-console-print!)
 
-(def cursor [:page :network :form])
+(def cursor [:form])
+
+(defonce isValid (atom false))
+
+(defonce isValidIpam (atom true))
 
 (defonce network-plugins (atom []))
 
@@ -101,25 +105,20 @@
   (state/set-value {:networkName nil
                     :driver      "overlay"
                     :internal    false
-                    :ipam        nil
-                    :isValid     false
-                    :isValidIpam true} cursor))
+                    :ipam        nil} cursor))
 
-(def init-state-mixin
-  (mixin/init
-    (fn [_]
+(def mixin-init-state
+  (mixin/init-state
+    (fn []
       (init-state)
       (network-plugin-handler))))
 
 (rum/defc form < rum/reactive
-                 init-state-mixin []
-  (let [plugins (rum/react network-plugins)
-        {:keys [name
+                 mixin-init-state []
+  (let [{:keys [name
                 driver
                 internal
-                ipam
-                isValid
-                isValidIpam]} (state/react cursor)]
+                ipam]} (state/react cursor)]
     [:div
      [:div.form-panel
       [:div.form-panel-left
@@ -128,23 +127,23 @@
        (comp/mui
          (comp/raised-button
            {:label      "Create"
-            :disabled   (or (not isValid)
-                            (not isValidIpam))
+            :disabled   (or (not (rum/react isValid))
+                            (not (rum/react isValidIpam)))
             :primary    true
             :onTouchTap create-network-handler}))]]
      [:div.form-view
       [:div.form-view-group
        (form/section "General settings")
        (form/form
-         {:onValid   #(state/update-value [:isValid] true cursor)
-          :onInvalid #(state/update-value [:isValid] false cursor)}
+         {:onValid   #(reset! isValid true)
+          :onInvalid #(reset! isValid false)}
          (form-name name)
-         (form-driver driver plugins)
+         (form-driver driver (rum/react network-plugins))
          (form-internal internal))]
       [:div.form-view-group
        (form/section "IP address management")
        (form/form
-         {:onValid   #(state/update-value [:isValidIpam] true cursor)
-          :onInvalid #(state/update-value [:isValidIpam] false cursor)}
+         {:onValid   #(reset! isValidIpam true)
+          :onInvalid #(reset! isValidIpam false)}
          (form-subnet (:subnet ipam))
          (form-gateway (:gateway ipam)))]]]))

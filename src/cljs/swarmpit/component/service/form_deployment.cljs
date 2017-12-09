@@ -8,7 +8,7 @@
 
 (enable-console-print!)
 
-(def cursor [:page :service :wizard :deployment])
+(def cursor [:form :deployment])
 
 (defn- form-restart-policy-attempts [value]
   (form/comp

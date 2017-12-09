@@ -3,11 +3,12 @@
             [material.component.form :as form]
             [material.component.list-table-form :as list]
             [swarmpit.component.state :as state]
+            [sablono.core :refer-macros [html]]
             [rum.core :as rum]))
 
 (enable-console-print!)
 
-(def cursor [:page :service :wizard :logdriver])
+(def cursor [:form :logdriver])
 
 (def headers [{:name  "Name"
                :width "35%"}
@@ -72,8 +73,9 @@
 
 (rum/defc form < rum/reactive []
   (let [{:keys [name opts]} (state/react cursor)]
-    [:div
-     (comp/mui (form-driver name))
-     (form/subsection-add "Add log driver option" add-item)
-     (if (not (empty? opts))
-       (form-table opts))]))
+    (form/form
+      {}
+      (form-driver name)
+      (html (form/subsection-add "Add log driver option" add-item))
+      (if (not (empty? opts))
+        (form-table opts)))))
