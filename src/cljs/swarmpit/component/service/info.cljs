@@ -73,8 +73,6 @@
   (handler/post
     (routes/path-for-backend :service-redeploy {:id service-id})
     {:on-success (fn [_]
-                   (dispatch!
-                     (routes/path-for-frontend :service-info {:id service-id}))
                    (message/info
                      (str "Service " service-id " redeploy started.")))
      :on-error   (fn [response]
@@ -86,8 +84,6 @@
   (handler/post
     (routes/path-for-backend :service-rollback {:id service-id})
     {:on-success (fn [_]
-                   (dispatch!
-                     (routes/path-for-frontend :service-info {:id service-id}))
                    (message/info
                      (str "Service " service-id " rollback started.")))
      :on-error   (fn [response]
