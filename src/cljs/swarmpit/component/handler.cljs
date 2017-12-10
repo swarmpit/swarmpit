@@ -19,7 +19,7 @@
     400 (message/error (str (:error resp-body)))
     401 (router/set-location {:handler :login})
     403 (router/set-location {:handler :unauthorized})
-    500 (message/error (str (:cause resp-body)))))
+    500 (message/error (str (or (:cause resp-body) "Server request failed")))))
 
 (defn- command
   [request]
