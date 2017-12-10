@@ -34,7 +34,8 @@
 (defn- ->service-networks
   [service]
   (->> (:networks service)
-       (map (fn [n] {:Target (:networkName n)}))
+       (map #(hash-map :Target (:networkName %)
+                       :Aliases (:serviceAliases %)))
        (into [])))
 
 (defn ->service-variables

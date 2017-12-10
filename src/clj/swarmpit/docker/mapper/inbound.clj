@@ -121,17 +121,15 @@
                      :hostPort      (:PublishedPort p)}))
        (into [])))
 
-(defn ->service-network
-  [network-id networks]
-  (first (filter #(= (:Id %)
-                     network-id) networks)))
-
 (defn ->service-networks
   [service networks]
-  (->> (get-in service [:Spec :TaskTemplate :Networks])
-       (map (fn [n] (->service-network (:Target n) networks)))
-       (map (fn [n] (->network n)))
-       (into [])))
+  (let [networks (group-by :Id networks)]
+    (->> (get-in service [:Spec :TaskTemplate :Networks])
+         (map #(->> (get networks (:Target %))
+                    (first)
+                    (->network)
+                    (merge {:serviceAliases (:Aliases %)})))
+         (into []))))
 
 (defn ->service-mounts
   [service-spec]
