@@ -78,8 +78,8 @@
                     :repository   ""
                     :user         user} cursor))
 
-(def init-state-mixin
-  (mixin/init-state
+(def mixin-init-form
+  (mixin/init-form-tab
     (fn [users]
       (init-state (first users)))))
 
@@ -107,7 +107,7 @@
                           [[:name] [:description]])))]))
 
 (rum/defc form < rum/reactive
-                 init-state-mixin [users]
+                 mixin-init-form [users]
   (let [{:keys [user repositories repository]} (state/react cursor)
         filtered-repositories (filter-items repositories repository)]
     (if (some? user)

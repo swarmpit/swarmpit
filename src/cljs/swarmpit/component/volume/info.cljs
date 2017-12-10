@@ -38,9 +38,9 @@
                    (message/error
                      (str "Volume removing failed. Reason: " (:error response))))}))
 
-(def mixin-init-state
-  (mixin/init-state
-    (fn [{:keys [name]}]
+(def mixin-init-form
+  (mixin/init-form
+    (fn [{{:keys [name]} :params}]
       (volume-handler name))))
 
 (rum/defc form-info < rum/static [volume]
@@ -65,7 +65,8 @@
        (form/item "MOUNTPOINT" (:mountpoint volume))]]]))
 
 (rum/defc form < rum/reactive
-                 mixin-init-state [_]
+                 mixin-init-form
+                 mixin/subscribe-form [_]
   (let [volume (state/react cursor)]
     (progress/form
       (nil? volume)

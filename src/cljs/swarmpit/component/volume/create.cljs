@@ -69,14 +69,14 @@
   (state/set-value {:volumeName nil
                     :driver     "local"} cursor))
 
-(def mixin-init-state
-  (mixin/init-state
-    (fn []
+(def mixin-init-form
+  (mixin/init-form
+    (fn [_]
       (init-state)
       (volume-plugin-handler))))
 
 (rum/defc form < rum/reactive
-                 mixin-init-state []
+                 mixin-init-form [_]
   (let [{:keys [volumeName
                 driver]} (state/react cursor)]
     [:div

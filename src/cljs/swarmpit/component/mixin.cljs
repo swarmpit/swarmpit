@@ -1,8 +1,10 @@
 (ns swarmpit.component.mixin
-  (:require [rum.core :as rum]))
+  (:require [rum.core :as rum]
+            [swarmpit.event.source :as event]
+            [swarmpit.component.state :as state]))
 
-(defn refresh-state
-  ([handler] (refresh-state handler 2000))
+(defn refresh-form
+  ([handler] (refresh-form handler 2000))
   ([handler ms]
    {:did-mount    (fn [state]
                     (let [comp (:rum/react-component state)
@@ -14,11 +16,23 @@
                     (js/clearInterval (::interval state))
                     (dissoc state ::interval))}))
 
-(defn init-state
+(defn init-form
+  [handler]
+  {:init (fn [state _]
+           (state/reset-form)
+           (handler (first (:rum/args state)))
+           state)})
+
+(defn init-form-tab
   [handler]
   {:init (fn [state _]
            (handler (first (:rum/args state)))
            state)})
+
+(def subscribe-form
+  {:did-mount (fn [state]
+                (event/open! (first (:rum/args state)))
+                state)})
 
 (def focus-filter
   {:did-mount (fn [state]

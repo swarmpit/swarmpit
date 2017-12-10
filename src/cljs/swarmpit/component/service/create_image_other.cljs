@@ -77,8 +77,8 @@
                     :repository   ""
                     :registry     registry} cursor))
 
-(def init-state-mixin
-  (mixin/init-state
+(def mixin-init-form
+  (mixin/init-form-tab
     (fn [registries]
       (init-state (first registries)))))
 
@@ -106,7 +106,7 @@
                           [[:name]])))]))
 
 (rum/defc form < rum/reactive
-                 init-state-mixin [registries]
+                 mixin-init-form [registries]
   (let [{:keys [repository registry repositories]} (state/react cursor)
         filtered-repositories (filter-items repositories repository)]
     (if (some? registry)

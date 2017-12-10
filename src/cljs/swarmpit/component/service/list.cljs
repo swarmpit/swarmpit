@@ -93,14 +93,15 @@
   (state/set-value {:filter {:serviceName ""
                              :unhealthy   false}} cursor))
 
-(def mixin-init-state
-  (mixin/init-state
+(def mixin-init-form
+  (mixin/init-form
     (fn [_]
       (init-state)
       (services-handler))))
 
 (rum/defc form < rum/reactive
-                 mixin-init-state
+                 mixin-init-form
+                 mixin/subscribe-form
                  mixin/focus-filter [_]
   (let [{:keys [filter items]} (state/react cursor)
         filtered-items (filter-items items

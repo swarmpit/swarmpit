@@ -49,8 +49,8 @@
   (state/set-value {:repositories []
                     :repository   ""} cursor))
 
-(def init-state-mixin
-  (mixin/init-state
+(def mixin-init-form
+  (mixin/init-form-tab
     (fn []
       (init-state))))
 
@@ -83,7 +83,7 @@
                               #(repository-handler query (+ (js/parseInt page) 1))))))]))
 
 (rum/defc form < rum/reactive
-                 init-state-mixin []
+                 mixin-init-form []
   (let [{:keys [repository repositories]} (state/react cursor)]
     [:div.form-edit
      (form-repository repository)

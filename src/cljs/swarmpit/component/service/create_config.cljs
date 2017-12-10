@@ -90,9 +90,9 @@
                                   :memory 0}} resources/cursor)
   (state/set-value [] placement/cursor))
 
-(def init-state-mixin
-  (mixin/init-state
-    (fn [{:keys [repository distribution distributionType]}]
+(def mixin-init-form
+  (mixin/init-form
+    (fn [{{:keys [repository distribution distributionType]} :params}]
       (init-state distribution
                   distributionType
                   repository)
@@ -159,7 +159,7 @@
    (deployment/form)])
 
 (rum/defc form < rum/reactive
-                 init-state-mixin [_]
+                 mixin-init-form [_]
   [:div
    [:div.form-panel
     [:div.form-panel-left

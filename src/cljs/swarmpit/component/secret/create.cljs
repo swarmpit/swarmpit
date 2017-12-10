@@ -78,13 +78,13 @@
                     :data       ""
                     :encode     false} cursor))
 
-(def mixin-init-state
-  (mixin/init-state
-    (fn []
+(def mixin-init-form
+  (mixin/init-form
+    (fn [_]
       (init-state))))
 
 (rum/defc form < rum/reactive
-                 mixin-init-state []
+                 mixin-init-form [_]
   (let [{:keys [secretName
                 data
                 encode]} (state/react cursor)]

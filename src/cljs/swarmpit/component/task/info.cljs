@@ -21,9 +21,9 @@
     {:on-success (fn [response]
                    (state/set-value response cursor))}))
 
-(def mixin-init-state
-  (mixin/init-state
-    (fn [{:keys [id]}]
+(def mixin-init-form
+  (mixin/init-form
+    (fn [{{:keys [id]} :params}]
       (task-handler id))))
 
 (rum/defc form-info < rum/static [item]
@@ -55,7 +55,7 @@
          (form/value error)])]]))
 
 (rum/defc form < rum/reactive
-                 mixin-init-state [_]
+                 mixin-init-form [_]
   (let [task (state/react cursor)]
     (progress/form
       (nil? task)

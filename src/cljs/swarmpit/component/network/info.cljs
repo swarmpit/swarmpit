@@ -38,9 +38,9 @@
                    (message/error
                      (str "Network removing failed. Reason: " (:error response))))}))
 
-(def mixin-init-state
-  (mixin/init-state
-    (fn [{:keys [id]}]
+(def mixin-init-form
+  (mixin/init-form
+    (fn [{{:keys [id]} :params}]
       (network-handler id))))
 
 (rum/defc form-info < rum/static [network]
@@ -75,7 +75,8 @@
        (form/item "GATEWAY" (get-in network [:ipam :gateway]))]]]))
 
 (rum/defc form < rum/reactive
-                 mixin-init-state [_]
+                 mixin-init-form
+                 mixin/subscribe-form [_]
   (let [network (state/react cursor)]
     (progress/form
       (nil? network)

@@ -52,9 +52,9 @@
                     :private {}
                     :other   {}} cursor))
 
-(def init-state-mixin
-  (mixin/init-state
-    (fn []
+(def mixin-init-form
+  (mixin/init-form
+    (fn [_]
       (init-state)
       (registries-handler)
       (users-handler))))
@@ -103,7 +103,7 @@
           (cio/form registries))))]])
 
 (rum/defc form < rum/reactive
-                 init-state-mixin []
+                 mixin-init-form [_]
   (let [registries (rum/react registries)
         users (rum/react users)]
     (progress/form

@@ -93,9 +93,9 @@
                      (message/error
                        (str "Service update failed. Reason: " (:error response))))})))
 
-(def mixin-init-state
-  (mixin/init-state
-    (fn [{:keys [id]}]
+(def mixin-init-form
+  (mixin/init-form
+    (fn [{{:keys [id]} :params}]
       (service-handler id)
       (service-networks-handler id)
       (mounts/volumes-handler)
@@ -187,7 +187,7 @@
     (form-deployment)]])
 
 (rum/defc form < rum/reactive
-                 mixin-init-state [{:keys [id]}]
+                 mixin-init-form [{{:keys [id]} :params}]
   (let [service (state/react cursor)]
     (progress/form
       (nil? service)

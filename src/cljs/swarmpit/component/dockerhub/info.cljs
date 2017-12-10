@@ -36,9 +36,9 @@
                    (message/error
                      (str "User removing failed. Reason: " (:error response))))}))
 
-(def mixin-init-state
-  (mixin/init-state
-    (fn [{:keys [id]}]
+(def mixin-init-form
+  (mixin/init-form
+    (fn [{{:keys [id]} :params}]
       (user-handler id))))
 
 (rum/defc form-info < rum/static [user]
@@ -70,7 +70,8 @@
      (form/item "ROLE" (:role user))]]])
 
 (rum/defc form < rum/reactive
-                 mixin-init-state [_]
+                 mixin-init-form
+                 mixin/subscribe-form [_]
   (let [user (state/react cursor)]
     (progress/form
       (nil? user)

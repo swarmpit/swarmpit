@@ -148,9 +148,10 @@
                     :tasks    []
                     :networks []} cursor))
 
-(def mixin-init-state
-  (mixin/init-state
-    (fn [{:keys [id]}]
+(def mixin-init-form
+  (mixin/init-form
+    (fn [{{:keys [id]} :params}]
+      (print id)
       (reset! action-menu false)
       (init-state)
       (service-handler id)
@@ -205,7 +206,8 @@
       (form-tasks tasks)]]))
 
 (rum/defc form < rum/reactive
-                 mixin-init-state [_]
+                 mixin-init-form
+                 mixin/subscribe-form [_]
   (let [{:keys [service networks tasks]} (state/react cursor)]
     (progress/form
       (empty? service)

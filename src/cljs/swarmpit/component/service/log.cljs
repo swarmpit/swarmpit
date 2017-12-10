@@ -63,18 +63,18 @@
                     :timestamp   false
                     :data        []} cursor))
 
-(def mixin-refresh-state
-  (mixin/refresh-state
-    (fn [{:keys [id]}]
+(def mixin-refresh-form
+  (mixin/refresh-form
+    (fn [{{:keys [id]} :params}]
       (when (not (:fetching (state/get-value cursor)))
         (log-append-handler id (-> (state/get-value cursor)
                                    :data
                                    (last)
                                    :timestamp))))))
 
-(def mixin-init-state
-  (mixin/init-state
-    (fn [{:keys [id]}]
+(def mixin-init-form
+  (mixin/init-form
+    (fn [{{:keys [id]} :params}]
       (init-state)
       (service-handler id)
       (log-handler id))))
@@ -87,10 +87,10 @@
    [:span.log-body (str " " (:line item))]])
 
 (rum/defc form < rum/reactive
-                 mixin-init-state
-                 mixin-refresh-state
+                 mixin-init-form
+                 mixin-refresh-form
                  {:did-mount  (fn [state] (auto-scroll!) state)
-                  :did-update (fn [state] (auto-scroll!) state)} [{:keys [id]}]
+                  :did-update (fn [state] (auto-scroll!) state)} [{{:keys [id]} :params}]
   (let [{:keys [filter data autoscroll timestamp initialized error service]} (state/react cursor)
         filtered-items (filter-items data (:predicate filter))]
     [:div

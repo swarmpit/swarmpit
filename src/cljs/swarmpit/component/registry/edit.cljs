@@ -45,9 +45,9 @@
                    (message/error
                      (str "Registry update failed. Reason: " (:error response))))}))
 
-(def mixin-init-state
-  (mixin/init-state
-    (fn [{:keys [id]}]
+(def mixin-init-form
+  (mixin/init-form
+    (fn [{{:keys [id]} :params}]
       (registry-handler id))))
 
 (rum/defc form-edit < rum/static [registry]
@@ -73,7 +73,7 @@
       (form-public (:public registry)))]])
 
 (rum/defc form < rum/reactive
-                 mixin-init-state [_]
+                 mixin-init-form [_]
   (let [registry (state/react cursor)]
     (progress/form
       (nil? registry)

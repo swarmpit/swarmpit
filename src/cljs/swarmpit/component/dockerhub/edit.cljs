@@ -45,9 +45,9 @@
                    (message/error
                      (str "User update failed. Reason: " (:error response))))}))
 
-(def mixin-init-state
-  (mixin/init-state
-    (fn [{:keys [id]}]
+(def mixin-init-form
+  (mixin/init-form
+    (fn [{{:keys [id]} :params}]
       (user-handler id))))
 
 (rum/defc form-edit < rum/static [user]
@@ -73,7 +73,7 @@
       (form-public (:public user)))]])
 
 (rum/defc form < rum/reactive
-                 mixin-init-state [_]
+                 mixin-init-form [_]
   (let [user (state/react cursor)]
     (progress/form
       (nil? user)
