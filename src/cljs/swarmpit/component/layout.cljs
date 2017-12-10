@@ -81,8 +81,7 @@
 
 (rum/defc layout < rum/reactive []
   (let [{:keys [handler] :as route} (state/react router/cursor)]
-    (state/reset-form)
-    (event/subscribe! route)
+    (event/close!)
     (if (page-layout? handler)
       (page-layout route)
       (page-single route))))
