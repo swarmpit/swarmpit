@@ -151,7 +151,6 @@
 (def mixin-init-form
   (mixin/init-form
     (fn [{{:keys [id]} :params}]
-      (print id)
       (reset! action-menu false)
       (init-state)
       (service-handler id)
