@@ -18,8 +18,7 @@
   (case resp-status
     401 (router/set-location {:handler :login})
     403 (router/set-location {:handler :unauthorized})
-    404 (router/set-route {:handler :not-found})
-    (dispatch! (routes/path-for-frontend :error {} {:stacktrace resp-body}))))
+    500 (dispatch! (routes/path-for-frontend :error {} {:stacktrace resp-body}))))
 
 (defn- command
   [request]
