@@ -30,7 +30,7 @@
           {:title                 "Stacktrace"
            :actions               (comp/flat-button
                                     {:onClick close!
-                                     :label   "Cancel"
+                                     :label   "Close"
                                      :primary false})
            :open                  (rum/react open)
            :autoScrollBodyContent true
