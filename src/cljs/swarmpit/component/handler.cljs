@@ -2,6 +2,8 @@
   (:refer-clojure :exclude [get])
   (:require [ajax.core :as ajax]
             [swarmpit.router :as router]
+            [swarmpit.routes :as routes]
+            [swarmpit.url :refer [dispatch!]]
             [swarmpit.storage :as storage]
             [swarmpit.component.progress :as progress]
             [clojure.walk :refer [keywordize-keys]]))
@@ -12,12 +14,12 @@
     (reset! state loading?)))
 
 (defn- command-error
-  [resp-status]
+  [resp-body resp-status]
   (case resp-status
-    401 (router/navigate! {:handler :login} true)
-    403 (router/navigate! {:handler :unauthorized} true)
-    404 (router/navigate! {:handler :not-found} true)
-    (router/navigate! {:handler :error} true)))
+    401 (router/set-location {:handler :login})
+    403 (router/set-location {:handler :unauthorized})
+    404 (router/set-route {:handler :not-found})
+    (dispatch! (routes/path-for-frontend :error {} {:stacktrace resp-body}))))
 
 (defn- command
   [request]
@@ -37,7 +39,7 @@
                           resp-body (:response resp)
                           resp-status (:status resp)
                           resp-fx (or (:on-error request)
-                                      #(command-error resp-status))]
+                                      #(command-error resp-body resp-status))]
                       (-> resp-body resp-fx)))})
 
 (defn- command-progress
