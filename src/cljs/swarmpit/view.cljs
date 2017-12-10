@@ -50,8 +50,8 @@
   (page-403/form))
 
 (defmethod dispatch :error
-  [_]
-  (page-error/form))
+  [route]
+  (page-error/form route))
 
 (defmethod dispatch :login
   [_]
@@ -64,137 +64,137 @@
 ;;; Service view
 
 (defmethod dispatch :service-list
-  [{:keys [params]}]
-  (service-list/form params))
+  [route]
+  (service-list/form route))
 
 (defmethod dispatch :service-info
-  [{:keys [params]}]
-  (service-info/form params))
+  [route]
+  (service-info/form route))
 
 (defmethod dispatch :service-log
-  [{:keys [params]}]
-  (service-log/form params))
+  [route]
+  (service-log/form route))
 
 (defmethod dispatch :service-create-image
-  [_]
-  (service-image/form))
+  [route]
+  (service-image/form route))
 
 (defmethod dispatch :service-create-config
-  [{:keys [params]}]
-  (service-config/form params))
+  [route]
+  (service-config/form route))
 
 (defmethod dispatch :service-edit
-  [{:keys [params]}]
-  (service-edit/form params))
+  [route]
+  (service-edit/form route))
 
 ;;; Network view
 
 (defmethod dispatch :network-list
-  [_]
-  (network-list/form))
+  [route]
+  (network-list/form route))
 
 (defmethod dispatch :network-info
-  [{:keys [params]}]
-  (network-info/form params))
+  [route]
+  (network-info/form route))
 
 (defmethod dispatch :network-create
-  [_]
-  (network-create/form))
+  [route]
+  (network-create/form route))
 
 ;;; Node view
 
 (defmethod dispatch :node-list
-  [_]
-  (node-list/form))
+  [route]
+  (node-list/form route))
 
 ;;; Volume view
 
 (defmethod dispatch :volume-list
-  [_]
-  (volume-list/form))
+  [route]
+  (volume-list/form route))
 
 (defmethod dispatch :volume-info
-  [{:keys [params]}]
-  (volume-info/form params))
+  [route]
+  (volume-info/form route))
 
 (defmethod dispatch :volume-create
-  [_]
-  (volume-create/form))
+  [route]
+  (volume-create/form route))
 
 ;;; Secret view
 
 (defmethod dispatch :secret-list
-  [_]
-  (secret-list/form))
+  [route]
+  (secret-list/form route))
 
 (defmethod dispatch :secret-info
-  [{:keys [params]}]
-  (secret-info/form params))
+  [route]
+  (secret-info/form route))
 
 (defmethod dispatch :secret-create
-  [_]
-  (secret-create/form))
+  [route]
+  (secret-create/form route))
 
 ;;; Task view
 
 (defmethod dispatch :task-list
-  [_]
-  (task-list/form))
+  [route]
+  (task-list/form route))
 
 (defmethod dispatch :task-info
-  [{:keys [params]}]
-  (task-info/form params))
+  [route]
+  (task-info/form route))
 
 ;;; User view
 
 (defmethod dispatch :user-list
-  [_]
-  (user-list/form))
+  [route]
+  (user-list/form route))
 
 (defmethod dispatch :user-info
-  [{:keys [params]}]
-  (user-info/form params))
+  [route]
+  (user-info/form route))
 
 (defmethod dispatch :user-create
-  [_]
-  (user-create/form))
+  [route]
+  (user-create/form route))
 
 (defmethod dispatch :user-edit
-  [{:keys [params]}]
-  (user-edit/form params))
+  [route]
+  (user-edit/form route))
 
 ;;; Registry view
 
 (defmethod dispatch :registry-list
-  [_]
-  (registry-list/form))
+  [route]
+  (registry-list/form route))
 
 (defmethod dispatch :registry-info
-  [{:keys [params]}]
-  (registry-info/form params))
+  [route]
+  (registry-info/form route))
 
 (defmethod dispatch :registry-create
-  [_]
-  (registry-create/form))
+  [route]
+  (registry-create/form route))
 
 (defmethod dispatch :registry-edit
-  [{:keys [params]}]
-  (registry-edit/form params))
+  [route]
+  (registry-edit/form route))
 
 ;;; Dockerhub user view
 
 (defmethod dispatch :dockerhub-user-list
-  [_]
-  (dockerhub-list/form))
+  [route]
+  (dockerhub-list/form route))
 
 (defmethod dispatch :dockerhub-user-info
-  [{:keys [params]}]
-  (dockerhub-info/form params))
+  [route]
+  (dockerhub-info/form route))
 
 (defmethod dispatch :dockerhub-user-create
-  [_]
-  (dockerhub-create/form))
+  [route]
+  (dockerhub-create/form route))
 
 (defmethod dispatch :dockerhub-user-edit
-  [{:keys [params]}]
-  (dockerhub-edit/form params))
+  [route]
+  (dockerhub-edit/form route))
