@@ -2,9 +2,9 @@
   (:refer-clojure :exclude [get])
   (:require [ajax.core :as ajax]
             [swarmpit.router :as router]
-            [swarmpit.routes :as routes]
             [swarmpit.url :refer [dispatch!]]
             [swarmpit.storage :as storage]
+            [swarmpit.component.message :as message]
             [swarmpit.component.progress :as progress]
             [clojure.walk :refer [keywordize-keys]]))
 
@@ -16,9 +16,10 @@
 (defn- command-error
   [resp-body resp-status]
   (case resp-status
+    400 (message/error (str (:error resp-body)))
     401 (router/set-location {:handler :login})
     403 (router/set-location {:handler :unauthorized})
-    500 (dispatch! (routes/path-for-frontend :error {} {:stacktrace resp-body}))))
+    500 (message/error (str (:cause resp-body)))))
 
 (defn- command
   [request]
