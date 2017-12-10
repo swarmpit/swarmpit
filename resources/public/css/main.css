@@ -285,6 +285,11 @@ input:invalid {
     background-color: #fdfdfd;
 }
 
+.page-code {
+    font-size: 12px;
+    color: rgb(117, 117, 117);
+}
+
 .page-back {
     display: flex;
     justify-content: center;

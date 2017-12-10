@@ -116,9 +116,9 @@
   ([props] (factory/list-item (clj->js props)))
   ([] (factory/list-item nil)))
 
-(defn stepper
+(defn dialog
   [props & childs]
-  (factory/stepper (clj->js props) childs))
+  (factory/dialog (clj->js props) childs))
 
 (defn list
   [props & childs]
@@ -151,18 +151,6 @@
 (defn tabs
   [props & childs]
   (factory/tabs (clj->js props) childs))
-
-(defn step
-  [props & childs]
-  (factory/step (clj->js props) childs))
-
-(defn step-button
-  [props & childs]
-  (factory/step-button (clj->js props) childs))
-
-(defn step-content
-  [props & childs]
-  (factory/step-content (clj->js props) childs))
 
 (defn table
   [props & childs]

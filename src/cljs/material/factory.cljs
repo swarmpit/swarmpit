@@ -9,6 +9,7 @@
 
 ;;; Material-UI
 
+(def dialog (create-factory js/MaterialUI.Dialog))
 (def avatar (create-factory js/MaterialUI.Avatar))
 (def app-bar (create-factory js/MaterialUI.AppBar))
 (def drawer (create-factory js/MaterialUI.Drawer))
@@ -36,10 +37,6 @@
 (def table-footer (create-factory js/MaterialUI.TableFooter))
 (def tab (create-factory js/MaterialUI.Tab))
 (def tabs (create-factory js/MaterialUI.Tabs))
-(def step (create-factory js/MaterialUI.Step))
-(def stepper (create-factory js/MaterialUI.Stepper))
-(def step-button (create-factory js/MaterialUI.StepButton))
-(def step-content (create-factory js/MaterialUI.StepContent))
 (def select-field (create-factory js/MaterialUI.SelectField))
 (def text-field (create-factory js/MaterialUI.TextField))
 (def slider (create-factory js/MaterialUI.Slider))
