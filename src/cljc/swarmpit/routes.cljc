@@ -70,6 +70,8 @@
 
 (def frontend ["" {"/"                        :index
                    "/login"                   :login
+                   "/error"                   :error
+                   "/unauthorized"            :unauthorized
                    "/password"                :password
                    "/services"                {""               :service-list
                                                "/create/wizard" {"/image"  :service-create-image
