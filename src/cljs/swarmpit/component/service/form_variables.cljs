@@ -1,11 +1,12 @@
 (ns swarmpit.component.service.form-variables
-  (:require [material.component :as comp]
+  (:require [material.component.form :as form]
+            [material.component.list-table-form :as list]
             [swarmpit.component.state :as state]
             [rum.core :as rum]))
 
 (enable-console-print!)
 
-(def cursor [:page :service :wizard :variables])
+(def cursor [:form :variables])
 
 (def headers [{:name  "Name"
                :width "35%"}
@@ -13,10 +14,10 @@
                :width "35%"}])
 
 (def empty-info
-  (comp/form-value "No environment variables defined for the service."))
+  (form/value "No environment variables defined for the service."))
 
 (defn- form-name [value index]
-  (comp/form-list-textfield
+  (list/textfield
     {:name     (str "form-name-text-" index)
      :key      (str "form-name-text-" index)
      :value    value
@@ -24,7 +25,7 @@
                  (state/update-item index :name v cursor))}))
 
 (defn- form-value [value index]
-  (comp/form-list-textfield
+  (list/textfield
     {:name     (str "form-value-text-" index)
      :key      (str "form-value-text-" index)
      :value    value
@@ -40,11 +41,11 @@
 
 (defn- form-table
   [variables]
-  (comp/form-table headers
-                   variables
-                   nil
-                   render-variables
-                   (fn [index] (state/remove-item index cursor))))
+  (list/table headers
+              variables
+              nil
+              render-variables
+              (fn [index] (state/remove-item index cursor))))
 
 (defn- add-item
   []
@@ -53,10 +54,8 @@
 
 (rum/defc form-create < rum/reactive []
   (let [variables (state/react cursor)]
-    [:div
-     (comp/form-add-btn "Add variable" add-item)
-     (if (not (empty? variables))
-       (form-table variables))]))
+    (if (not (empty? variables))
+      (form-table variables))))
 
 (rum/defc form-update < rum/reactive []
   (let [variables (state/react cursor)]

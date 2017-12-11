@@ -1,6 +1,8 @@
 (ns swarmpit.storage
   (:refer-clojure :exclude [get remove])
   (:require [swarmpit.token :as token]
+            [swarmpit.routes :as routes]
+            [swarmpit.url :refer [dispatch!]]
             [cognitect.transit :as t]))
 
 (def storage (.-localStorage js/window))
@@ -34,8 +36,9 @@
 
 (defn claims
   []
-  (->> (get "token")
-       (token/decode-jwt)))
+  (try
+    (token/decode-jwt (get "token"))
+    (catch js/Error _ nil)))
 
 (defn user
   []

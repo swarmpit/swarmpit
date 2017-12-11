@@ -1,21 +1,22 @@
 (ns swarmpit.event.handler
-  (:require [swarmpit.component.state :as state]
-            [swarmpit.component.service.list :as service-list]
-            [swarmpit.component.node.list :as node-list]
-            [swarmpit.component.task.list :as task-list]))
+  (:require [swarmpit.component.state :as state]))
+
+(def cursor [:form])
 
 (defmulti handle (fn [handler event] handler))
 
 (defmethod handle :service-list
   [_ event]
-  (state/update-value [:data] event service-list/cursor))
+  (state/update-value [:items] event cursor))
 
 (defmethod handle :node-list
   [_ event]
-  (state/update-value [:data] event node-list/cursor))
+  (state/update-value [:items] event cursor))
 
 (defmethod handle :task-list
   [_ event]
-  (state/update-value [:data] event task-list/cursor))
+  (state/update-value [:items] event cursor))
 
-(def handlers (set (keys (methods handle))))
+(defmethod handle :default
+  [_ event]
+  (state/set-value event cursor))

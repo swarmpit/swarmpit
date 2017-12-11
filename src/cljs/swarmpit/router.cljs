@@ -1,26 +1,45 @@
 (ns swarmpit.router
   (:require [bidi.router :as br]
             [swarmpit.routes :as routes]
-            [swarmpit.storage :as storage]
-            [swarmpit.url :refer [dispatch!]]
-            [swarmpit.controller :as controller]))
+            [swarmpit.component.state :as state]
+            [cemerick.url :refer [query->map]]
+            [swarmpit.url :refer [dispatch! query-string]]
+            [clojure.walk :refer [keywordize-keys]]))
 
-(defonce location (atom nil))
+(def cursor [:route])
+
+(defonce !router (atom nil))
+
+(defonce !route (atom nil))
+
+(defn replace-location
+  [location]
+  (br/replace-location! @!router location))
+
+(defn set-location
+  [location]
+  (br/set-location! @!router location))
+
+(defn set-route
+  [location]
+  (reset! !route location))
+
+(add-watch !route :watcher
+           (fn [key atom old-location new-location]
+             (let [query-params (keywordize-keys (query->map (query-string)))
+                   route-params (:route-params new-location)
+                   handler (:handler new-location)]
+               (state/set-value {:handler handler
+                                 :params  (merge route-params query-params)} cursor))))
 
 (defn- on-navigate
   [location]
-  (if (nil? (storage/get "token"))
-    (controller/login!)
-    ;; Render to service list by default as we don't have any index page right now
-    (if (= :index (:handler location))
-      (controller/dispatch {:handler :service-list})
-      (controller/dispatch location))))
+  ;; Render to service list by default as we don't have any index page right now
+  (if (= :index (:handler location))
+    (set-route {:handler :service-list})
+    (set-route location)))
 
 (defn start
   []
-  (let [router (br/start-router! routes/frontend {:on-navigate on-navigate})
-        route (:handler @location)]
-    (if (some? route)
-      (br/set-location! router @location))))
-
-
+  (let [router (br/start-router! routes/frontend {:on-navigate on-navigate})]
+    (reset! !router router)))

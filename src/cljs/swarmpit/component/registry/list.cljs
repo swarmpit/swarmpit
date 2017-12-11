@@ -1,14 +1,17 @@
 (ns swarmpit.component.registry.list
   (:require [material.component :as comp]
+            [material.component.panel :as panel]
+            [material.component.list-table :as list]
             [material.icon :as icon]
             [swarmpit.component.mixin :as mixin]
             [swarmpit.component.state :as state]
+            [swarmpit.component.handler :as handler]
             [swarmpit.storage :as storage]
             [swarmpit.routes :as routes]
             [clojure.string :as string]
             [rum.core :as rum]))
 
-(def cursor [:page :registry :list])
+(def cursor [:form])
 
 (def headers [{:name  "Name"
                :width "30%"}
@@ -44,24 +47,33 @@
                 (= (:owner %)
                    (storage/user))) items))
 
+(defn- registries-handler
+  []
+  (handler/get
+    (routes/path-for-backend :registries)
+    {:on-success (fn [response]
+                   (state/update-value [:items] response cursor))}))
+
 (defn- init-state
   []
   (state/set-value {:filter {:name ""}} cursor))
 
-(def init-state-mixin
-  (mixin/init
+(def mixin-init-form
+  (mixin/init-form
     (fn [_]
-      (init-state))))
+      (init-state)
+      (registries-handler))))
 
 (rum/defc form < rum/reactive
-                 init-state-mixin
-                 mixin/focus-filter [items]
-  (let [{{:keys [name]} :filter} (state/react cursor)
-        filtered-items (filter-items items name)]
+                 mixin-init-form
+                 mixin/subscribe-form
+                 mixin/focus-filter [_]
+  (let [{:keys [filter items]} (state/react cursor)
+        filtered-items (filter-items items (:name filter))]
     [:div
      [:div.form-panel
       [:div.form-panel-left
-       (comp/panel-text-field
+       (panel/text-field
          {:id       "filter"
           :hintText "Filter by name"
           :onChange (fn [_ v]
@@ -72,8 +84,9 @@
            {:href    (routes/path-for-frontend :registry-create)
             :label   "New registry"
             :primary true}))]]
-     (comp/list-table headers
-                      (sort-by :name filtered-items)
-                      render-item
-                      render-item-keys
-                      onclick-handler)]))
+     (list/table headers
+                 (sort-by :name filtered-items)
+                 (nil? items)
+                 render-item
+                 render-item-keys
+                 onclick-handler)]))

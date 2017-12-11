@@ -31,8 +31,10 @@
 
 (defn user-gravatar-hash [email]
   (let [md5 (Md5.)]
-    (.update md5 (string/trim email))
-    (crypt/byteArrayToHex (.digest md5))))
+    (when (some? email)
+      (do
+        (.update md5 (string/trim email))
+        (crypt/byteArrayToHex (.digest md5))))))
 
 (defn- user-avatar []
   (comp/avatar
@@ -76,8 +78,7 @@
 (rum/defc appbar < rum/static [title]
   (comp/mui
     (comp/app-bar
-      {
-       :title              title
+      {:title              title
        :titleStyle         appbar-title-style
        :style              appbar-style
        :iconElementRight   (userbar)

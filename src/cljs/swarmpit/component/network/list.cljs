@@ -1,14 +1,18 @@
 (ns swarmpit.component.network.list
   (:require [material.component :as comp]
+            [material.component.label :as label]
+            [material.component.panel :as panel]
+            [material.component.list-table :as list]
             [swarmpit.component.mixin :as mixin]
             [swarmpit.component.state :as state]
+            [swarmpit.component.handler :as handler]
             [swarmpit.routes :as routes]
             [clojure.string :as string]
             [rum.core :as rum]))
 
 (enable-console-print!)
 
-(def cursor [:page :network :list])
+(def cursor [:form])
 
 (def headers [{:name  "Name"
                :width "20%"}
@@ -29,7 +33,7 @@
   (let [value (val item)]
     (case (key item)
       :internal (if value
-                  (comp/label-blue "internal"))
+                  (label/blue "internal"))
       value)))
 
 (defn- onclick-handler
@@ -40,24 +44,33 @@
   [items predicate]
   (filter #(string/includes? (:networkName %) predicate) items))
 
+(defn- networks-handler
+  []
+  (handler/get
+    (routes/path-for-backend :networks)
+    {:on-success (fn [response]
+                   (state/update-value [:items] response cursor))}))
+
 (defn- init-state
   []
   (state/set-value {:filter {:networkName ""}} cursor))
 
-(def init-state-mixin
-  (mixin/init
+(def mixin-init-form
+  (mixin/init-form
     (fn [_]
-      (init-state))))
+      (init-state)
+      (networks-handler))))
 
 (rum/defc form < rum/reactive
-                 init-state-mixin
-                 mixin/focus-filter [items]
-  (let [{{:keys [networkName]} :filter} (state/react cursor)
-        filtered-items (filter-items items networkName)]
+                 mixin-init-form
+                 mixin/subscribe-form
+                 mixin/focus-filter [_]
+  (let [{:keys [filter items]} (state/react cursor)
+        filtered-items (filter-items items (:networkName filter))]
     [:div
      [:div.form-panel
       [:div.form-panel-left
-       (comp/panel-text-field
+       (panel/text-field
          {:id       "filter"
           :hintText "Filter by name"
           :onChange (fn [_ v]
@@ -68,8 +81,9 @@
            {:href    (routes/path-for-frontend :network-create)
             :label   "New network"
             :primary true}))]]
-     (comp/list-table headers
-                      (sort-by :networkName filtered-items)
-                      render-item
-                      render-item-keys
-                      onclick-handler)]))
+     (list/table headers
+                 (sort-by :networkName filtered-items)
+                 (nil? items)
+                 render-item
+                 render-item-keys
+                 onclick-handler)]))

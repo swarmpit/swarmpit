@@ -1,9 +1,8 @@
 (ns swarmpit.component.layout
   (:require [rum.core :as rum]
             [clojure.string :as str]
-            [swarmpit.controller :as controller]
             [swarmpit.view :as view]
-            [swarmpit.event.source :as eventsource]
+            [swarmpit.router :as router]
             [swarmpit.component.state :as state]
             [swarmpit.component.menu :as menu]
             [swarmpit.component.header :as header]))
@@ -57,13 +56,13 @@
   [handler]
   (not (contains? single-pages handler)))
 
-(rum/defc page-single < rum/static [route]
-  (view/dispatch route))
-
 (defn- document-title
   [page-title]
   (set! (-> js/document .-title)
         (str page-title " :: swarmpit")))
+
+(rum/defc page-single < rum/static [route]
+  (view/dispatch route))
 
 (rum/defc page-layout < rum/reactive [route]
   (let [{:keys [opened]} (state/react menu/cursor)
@@ -80,13 +79,10 @@
      [:main (view/dispatch route)]]))
 
 (rum/defc layout < rum/reactive []
-  (let [{:keys [handler] :as route} (state/react controller/cursor)]
-    (when (some? route)
-      (do
-        (eventsource/subscribe! route)
-        (if (page-layout? handler)
-          (page-layout route)
-          (page-single route))))))
+  (let [{:keys [handler] :as route} (state/react router/cursor)]
+    (if (page-layout? handler)
+      (page-layout route)
+      (page-single route))))
 
 (defn mount!
   []

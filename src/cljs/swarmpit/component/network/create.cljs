@@ -1,5 +1,7 @@
 (ns swarmpit.component.network.create
   (:require [material.component :as comp]
+            [material.component.form :as form]
+            [material.component.panel :as panel]
             [material.icon :as icon]
             [swarmpit.url :refer [dispatch!]]
             [swarmpit.component.handler :as handler]
@@ -11,7 +13,11 @@
 
 (enable-console-print!)
 
-(def cursor [:page :network :form])
+(def cursor [:form])
+
+(defonce isValid (atom false))
+
+(defonce isValidIpam (atom true))
 
 (defonce network-plugins (atom []))
 
@@ -23,7 +29,7 @@
                    (reset! network-plugins response))}))
 
 (defn- form-name [value]
-  (comp/form-comp
+  (form/comp
     "NAME"
     (comp/vtext-field
       {:name     "name"
@@ -34,7 +40,7 @@
                    (state/update-value [:networkName] v cursor))})))
 
 (defn- form-driver [value plugins]
-  (comp/form-comp
+  (form/comp
     "DRIVER"
     (comp/select-field
       {:value    value
@@ -47,15 +53,15 @@
                     :primaryText %}))))))
 
 (defn- form-internal [value]
-  (comp/form-comp
+  (form/comp
     "IS PRIVATE"
-    (comp/form-checkbox
+    (form/checkbox
       {:checked value
        :onCheck (fn [_ v]
                   (state/update-value [:internal] v cursor))})))
 
 (defn- form-subnet [value]
-  (comp/form-comp
+  (form/comp
     "SUBNET"
     (comp/vtext-field
       {:name            "subnet"
@@ -68,7 +74,7 @@
                           (state/update-value [:ipam :subnet] v cursor))})))
 
 (defn- form-gateway [value]
-  (comp/form-comp
+  (form/comp
     "GATEWAY"
     (comp/vtext-field
       {:name            "gateway"
@@ -99,50 +105,45 @@
   (state/set-value {:networkName nil
                     :driver      "overlay"
                     :internal    false
-                    :ipam        nil
-                    :isValid     false
-                    :isValidIpam true} cursor))
+                    :ipam        nil} cursor))
 
-(def init-state-mixin
-  (mixin/init
+(def mixin-init-form
+  (mixin/init-form
     (fn [_]
       (init-state)
       (network-plugin-handler))))
 
 (rum/defc form < rum/reactive
-                 init-state-mixin []
-  (let [plugins (rum/react network-plugins)
-        {:keys [name
+                 mixin-init-form [_]
+  (let [{:keys [name
                 driver
                 internal
-                ipam
-                isValid
-                isValidIpam]} (state/react cursor)]
+                ipam]} (state/react cursor)]
     [:div
      [:div.form-panel
       [:div.form-panel-left
-       (comp/panel-info icon/networks "New network")]
+       (panel/info icon/networks "New network")]
       [:div.form-panel-right
        (comp/mui
          (comp/raised-button
            {:label      "Create"
-            :disabled   (or (not isValid)
-                            (not isValidIpam))
+            :disabled   (or (not (rum/react isValid))
+                            (not (rum/react isValidIpam)))
             :primary    true
             :onTouchTap create-network-handler}))]]
      [:div.form-view
       [:div.form-view-group
-       (comp/form-section "General settings")
-       (comp/form
-         {:onValid   #(state/update-value [:isValid] true cursor)
-          :onInvalid #(state/update-value [:isValid] false cursor)}
+       (form/section "General settings")
+       (form/form
+         {:onValid   #(reset! isValid true)
+          :onInvalid #(reset! isValid false)}
          (form-name name)
-         (form-driver driver plugins)
+         (form-driver driver (rum/react network-plugins))
          (form-internal internal))]
       [:div.form-view-group
-       (comp/form-section "IP address management")
-       (comp/form
-         {:onValid   #(state/update-value [:isValidIpam] true cursor)
-          :onInvalid #(state/update-value [:isValidIpam] false cursor)}
+       (form/section "IP address management")
+       (form/form
+         {:onValid   #(reset! isValidIpam true)
+          :onInvalid #(reset! isValidIpam false)}
          (form-subnet (:subnet ipam))
          (form-gateway (:gateway ipam)))]]]))

@@ -1,15 +1,29 @@
 (ns swarmpit.component.network.info
   (:require [material.component :as comp]
+            [material.component.form :as form]
+            [material.component.panel :as panel]
             [material.icon :as icon]
             [swarmpit.url :refer [dispatch!]]
             [swarmpit.component.handler :as handler]
             [swarmpit.component.message :as message]
+            [swarmpit.component.state :as state]
+            [swarmpit.component.mixin :as mixin]
+            [swarmpit.component.progress :as progress]
             [swarmpit.routes :as routes]
-            [rum.core :as rum]
             [swarmpit.time :as time]
-            [swarmpit.docker-utils :as utils]))
+            [swarmpit.docker-utils :as utils]
+            [rum.core :as rum]))
 
 (enable-console-print!)
+
+(def cursor [:form])
+
+(defn- network-handler
+  [network-id]
+  (handler/get
+    (routes/path-for-backend :network {:id network-id})
+    {:on-success (fn [response]
+                   (state/set-value response cursor))}))
 
 (defn- delete-network-handler
   [network-id]
@@ -24,14 +38,19 @@
                    (message/error
                      (str "Network removing failed. Reason: " (:error response))))}))
 
-(rum/defc form < rum/static [network]
+(def mixin-init-form
+  (mixin/init-form
+    (fn [{{:keys [id]} :params}]
+      (network-handler id))))
+
+(rum/defc form-info < rum/static [network]
   (let [stack (:stack network)
         created (:created network)]
     [:div
      [:div.form-panel
       [:div.form-panel-left
-       (comp/panel-info icon/networks
-                        (:networkName network))]
+       (panel/info icon/networks
+                   (:networkName network))]
       [:div.form-panel-right
        (comp/mui
          (comp/raised-button
@@ -39,18 +58,26 @@
             :label      "Delete"}))]]
      [:div.form-view
       [:div.form-view-group
-       (comp/form-section "General settings")
-       (comp/form-item "ID" (:id network))
+       (form/section "General settings")
+       (form/item "ID" (:id network))
        (if (some? stack)
-         (comp/form-item "STACK" stack))
-       (comp/form-item "NAME" (utils/trim-stack stack (:networkName network)))
+         (form/item "STACK" stack))
+       (form/item "NAME" (utils/trim-stack stack (:networkName network)))
        (when (time/valid? created)
-         (comp/form-item-date "CREATED" created))
-       (comp/form-item "DRIVER" (:driver network))
-       (comp/form-item "INTERNAL" (if (:internal network)
-                                    "yes"
-                                    "no"))]
+         (form/item-date "CREATED" created))
+       (form/item "DRIVER" (:driver network))
+       (form/item "INTERNAL" (if (:internal network)
+                               "yes"
+                               "no"))]
       [:div.form-view-group
-       (comp/form-section "IP address management")
-       (comp/form-item "SUBNET" (get-in network [:ipam :subnet]))
-       (comp/form-item "GATEWAY" (get-in network [:ipam :gateway]))]]]))
+       (form/section "IP address management")
+       (form/item "SUBNET" (get-in network [:ipam :subnet]))
+       (form/item "GATEWAY" (get-in network [:ipam :gateway]))]]]))
+
+(rum/defc form < rum/reactive
+                 mixin-init-form
+                 mixin/subscribe-form [_]
+  (let [network (state/react cursor)]
+    (progress/form
+      (nil? network)
+      (form-info network))))

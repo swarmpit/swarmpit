@@ -1,5 +1,6 @@
 (ns swarmpit.component.service.info.variables
-  (:require [material.component :as comp]
+  (:require [material.component.form :as form]
+            [material.component.list-table-auto :as list]
             [rum.core :as rum]))
 
 (enable-console-print!)
@@ -16,9 +17,9 @@
 (rum/defc form < rum/static [variables]
   (when (not-empty variables)
     [:div.form-service-view-group.form-service-group-border
-     (comp/form-section "Environment Variables")
-     (comp/list-table-auto headers
-                           variables
-                           render-item
-                           render-item-keys
-                           nil)]))
+     (form/section "Environment Variables")
+     (list/table headers
+                 variables
+                 render-item
+                 render-item-keys
+                 nil)]))

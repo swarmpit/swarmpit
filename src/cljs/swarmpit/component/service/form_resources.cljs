@@ -1,5 +1,6 @@
 (ns swarmpit.component.service.form-resources
   (:require [material.component :as comp]
+            [material.component.form :as form]
             [material.icon :as icon]
             [swarmpit.component.parser :refer [parse-int parse-float]]
             [swarmpit.component.state :as state]
@@ -8,7 +9,9 @@
 
 (enable-console-print!)
 
-(def cursor [:page :service :wizard :resources])
+(def cursor [:form :resources])
+
+(defonce isValid (atom true))
 
 (defn- cpu-value
   [value]
@@ -17,7 +20,7 @@
     value))
 
 (defn- form-cpu-reservation [value]
-  (comp/form-comp
+  (form/comp
     (str "CPU  " "(" (cpu-value value) ")")
     (comp/slider #js {:min          0
                       :max          2
@@ -29,7 +32,7 @@
                       :sliderStyle  #js {:marginTop "14px"}})))
 
 (defn- form-memory-reservation [value]
-  (comp/form-comp
+  (form/comp
     "MEMORY (MB)"
     (comp/vtext-field
       {:name            "memory-reservation"
@@ -43,7 +46,7 @@
                           (state/update-value [:reservation :memory] (parse-int v) cursor))})))
 
 (defn- form-cpu-limit [value]
-  (comp/form-comp
+  (form/comp
     (str "CPU  " "(" (cpu-value value) ")")
     (comp/slider #js {:min          0
                       :max          2
@@ -55,7 +58,7 @@
                       :sliderStyle  #js {:marginTop "14px"}})))
 
 (defn- form-memory-limit [value]
-  (comp/form-comp
+  (form/comp
     "MEMORY (MB)"
     (comp/vtext-field
       {:name            "memory-limit"
@@ -69,18 +72,17 @@
                           (state/update-value [:limit :memory] (parse-int v) cursor))})))
 
 (rum/defc form < rum/reactive []
-  (let [{:keys [reservation
-                limit]} (state/react cursor)]
+  (let [{:keys [reservation limit]} (state/react cursor)]
     [:div.form-edit
-     (comp/form
-       {:onValid   #(state/update-value [:isValid] true cursor)
-        :onInvalid #(state/update-value [:isValid] false cursor)}
-       (html (comp/form-subsection "Reservation"))
-       (html (comp/form-icon-value icon/info [:span "Minimal resource availablility to run a task. Empty for unlimited."]))
+     (form/form
+       {:onValid   #(reset! isValid true)
+        :onInvalid #(reset! isValid false)}
+       (html (form/subsection "Reservation"))
+       (html (form/icon-value icon/info [:span "Minimal resource availablility to run a task. Empty for unlimited."]))
        (form-cpu-reservation (:cpu reservation))
        (form-memory-reservation (:memory reservation))
-       (html (comp/form-subsection "Limit"))
-       (html (comp/form-icon-value icon/info [:span "Maximal resource usage per task. Empty for unlimited."]))
+       (html (form/subsection "Limit"))
+       (html (form/icon-value icon/info [:span "Maximal resource usage per task. Empty for unlimited."]))
        (form-cpu-limit (:cpu limit))
        (form-memory-limit (:memory limit))
        (html [:div {:style {:height "20px"}}]))]))

@@ -1,5 +1,6 @@
 (ns swarmpit.component.service.form-settings
   (:require [material.component :as comp]
+            [material.component.form :as form]
             [swarmpit.component.state :as state]
             [swarmpit.component.handler :as handler]
             [swarmpit.component.service.form-ports :as ports]
@@ -8,7 +9,9 @@
 
 (enable-console-print!)
 
-(def cursor [:page :service :wizard :settings])
+(def cursor [:form :settings])
+
+(defonce isValid (atom false))
 
 (defonce tags (atom []))
 
@@ -47,7 +50,7 @@
   {:color "rgb(117, 117, 117)"})
 
 (defn- form-image [value]
-  (comp/form-comp
+  (form/comp
     "IMAGE"
     (comp/vtext-field
       {:name          "image"
@@ -60,7 +63,7 @@
 
 (defn- form-image-tag-ac [value tags distribution]
   "Preload tags for services created via swarmpit"
-  (comp/form-comp
+  (form/comp
     "IMAGE TAG"
     (comp/autocomplete {:name          "imageTagAuto"
                         :key           "imageTagAuto"
@@ -71,7 +74,7 @@
 
 (defn- form-image-tag [value]
   "For services created by docker cli there is no preload"
-  (comp/form-comp
+  (form/comp
     "IMAGE TAG"
     (comp/text-field
       {:name     "image-tag"
@@ -81,7 +84,7 @@
                    (state/update-value [:repository :tag] v cursor))})))
 
 (defn- form-name [value update-form?]
-  (comp/form-comp
+  (form/comp
     "SERVICE NAME"
     (comp/vtext-field
       {:name     "service-name"
@@ -93,7 +96,7 @@
                    (state/update-value [:serviceName] v cursor))})))
 
 (defn- form-mode [value update-form?]
-  (comp/form-comp
+  (form/comp
     "MODE"
     (comp/radio-button-group
       {:name          "mode"
@@ -117,7 +120,7 @@
          :value    "global"}))))
 
 (defn- form-replicas [value]
-  (comp/form-comp
+  (form/comp
     "REPLICAS"
     (comp/vtext-field
       {:name     "replicas"
@@ -130,20 +133,19 @@
                    (state/update-value [:replicas] (js/parseInt v) cursor))})))
 
 (rum/defc form < rum/reactive [update-form?]
-  (let [tags (rum/react tags)
-        {:keys [distribution
+  (let [{:keys [distribution
                 repository
                 serviceName
                 mode
                 replicas]} (state/react cursor)]
     [:div.form-edit
-     (comp/form
-       {:onValid   #(state/update-value [:isValid] true cursor)
-        :onInvalid #(state/update-value [:isValid] false cursor)}
+     (form/form
+       {:onValid   #(reset! isValid true)
+        :onInvalid #(reset! isValid false)}
        (form-image (:name repository))
        (if update-form?
          (form-image-tag (:tag repository))
-         (form-image-tag-ac repository tags distribution))
+         (form-image-tag-ac repository (rum/react tags) distribution))
        (form-name serviceName update-form?)
        (form-mode mode update-form?)
        (when (= "replicated" mode)
