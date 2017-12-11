@@ -107,6 +107,6 @@
   (let [registries (rum/react registries)
         users (rum/react users)]
     (progress/form
-      (and (empty? registries)
-           (empty? users))
+      (or (empty? registries)
+          (empty? users))
       (form-tabs registries users))))
