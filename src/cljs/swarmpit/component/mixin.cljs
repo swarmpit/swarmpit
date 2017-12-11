@@ -18,10 +18,12 @@
 
 (defn init-form
   [handler]
-  {:init (fn [state _]
-           (state/reset-form)
-           (handler (first (:rum/args state)))
-           state)})
+  {:init         (fn [state _]
+                   (handler (first (:rum/args state)))
+                   state)
+   :will-unmount (fn [state]
+                   (state/reset-form)
+                   state)})
 
 (defn init-form-tab
   [handler]
@@ -30,9 +32,12 @@
            state)})
 
 (def subscribe-form
-  {:did-mount (fn [state]
-                (event/open! (first (:rum/args state)))
-                state)})
+  {:did-mount    (fn [state]
+                   (event/open! (first (:rum/args state)))
+                   state)
+   :will-unmount (fn [state]
+                   (event/close!)
+                   state)})
 
 (def focus-filter
   {:did-mount (fn [state]

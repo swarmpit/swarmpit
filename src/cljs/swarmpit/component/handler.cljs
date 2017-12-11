@@ -2,7 +2,6 @@
   (:refer-clojure :exclude [get])
   (:require [ajax.core :as ajax]
             [swarmpit.router :as router]
-            [swarmpit.url :refer [dispatch!]]
             [swarmpit.storage :as storage]
             [swarmpit.component.message :as message]
             [swarmpit.component.progress :as progress]
