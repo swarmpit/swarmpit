@@ -28,9 +28,9 @@
   {:color    "rgb(117, 117, 117"
    :minWidth "200px"})
 
-(defonce registries (atom []))
+(defonce registries (atom nil))
 
-(defonce users (atom []))
+(defonce users (atom nil))
 
 (defn- registries-handler
   []
@@ -107,6 +107,6 @@
   (let [registries (rum/react registries)
         users (rum/react users)]
     (progress/form
-      (or (empty? registries)
-          (empty? users))
+      (or (nil? registries)
+          (nil? users))
       (form-tabs registries users))))
