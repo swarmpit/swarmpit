@@ -156,12 +156,11 @@
    (form/section "Deployment")
    (deployment/form)])
 
-(rum/defc form-edit < rum/reactive [id service]
+(rum/defc form-edit < rum/reactive [id settings]
   [:div
    [:div.form-panel
     [:div.form-panel-left
-     (panel/info icon/services
-                 (get-in service [:settings :serviceName]))]
+     (panel/info icon/services (:serviceName settings))]
     [:div.form-panel-right
      (comp/mui
        (comp/raised-button
@@ -188,7 +187,9 @@
 
 (rum/defc form < rum/reactive
                  mixin-init-form [{{:keys [id]} :params}]
-  (let [service (state/react cursor)]
+  (let [settings (state/react settings/cursor)
+        networks (state/react networks/cursor)]
     (progress/form
-      (nil? service)
-      (form-edit id service))))
+      (or (nil? settings)
+          (nil? networks))
+      (form-edit id settings))))

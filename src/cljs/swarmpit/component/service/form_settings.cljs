@@ -43,9 +43,6 @@
   {:display   "flex"
    :marginTop "14px"})
 
-(def form-mode-replicated-style
-  {:width "170px"})
-
 (def form-image-style
   {:color "rgb(117, 117, 117)"})
 
@@ -110,8 +107,7 @@
          :key      "replicated-mode"
          :disabled update-form?
          :label    "Replicated"
-         :value    "replicated"
-         :style    form-mode-replicated-style})
+         :value    "replicated"})
       (comp/radio-button
         {:name     "global-mode"
          :key      "global-mode"
