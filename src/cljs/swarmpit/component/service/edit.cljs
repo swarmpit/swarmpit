@@ -124,9 +124,9 @@
    (form/section-add "Mounts" mounts/add-item)
    (mounts/form-update)])
 
-(rum/defc form-secrets < rum/static []
+(rum/defc form-secrets < rum/reactive []
   [:div.form-service-edit-group.form-service-group-border
-   (if (empty? @secrets/secrets-list)
+   (if (empty? (rum/react secrets/secrets-list))
      (form/section "Secrets")
      (form/section-add "Secrets" secrets/add-item))
    (secrets/form-update)])
