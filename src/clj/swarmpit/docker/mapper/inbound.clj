@@ -65,7 +65,7 @@
 
 (defn ->task-node
   [node-id nodes]
-  (or (first (filter #(= (:ID %) node-id) nodes)) node-id))
+  (first (filter #(= (:ID %) node-id) nodes)))
 
 (defn ->task-service
   [service-id services]
@@ -101,7 +101,7 @@
       :status {:error (get-in task [:Status :Err])}
       :desiredState (:DesiredState task)
       :serviceName service-name
-      :nodeName node-name)))
+      :nodeName (or node-name node-id))))
 
 (defn ->tasks
   [tasks nodes services]
