@@ -23,10 +23,7 @@
 (defmethod dispatch :event-push [_]
   (fn [{:keys [params]}]
     (if (some? params)
-      (let [event (-> (keywordize-keys params) :Message)
-            event-channels (channel/list event)]
+      (let [event (-> (keywordize-keys params) :Message)]
         (channel/broadcast-memo event)
-        (if (not-empty event-channels)
-          (resp-accepted (str "Broadcasted to " (count event-channels) " clients"))
-          (resp-accepted "No clients subscribed")))
+        (resp-accepted))
       (resp-error 400 "No data sent"))))
