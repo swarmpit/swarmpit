@@ -58,7 +58,7 @@
     {:on-success
      (fn [networks]
        (state/set-value (->> networks
-                             (map #(select-keys % [:networkName]))
+                             (map #(select-keys % [:networkName :serviceAliases]))
                              (into [])) networks/cursor))}))
 
 (defn- update-service-handler
