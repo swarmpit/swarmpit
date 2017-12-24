@@ -60,5 +60,5 @@
   (install/init)
   (let [port (or port 8080)]
     (run-server app {:port port})
-    (log/info "Server running on port" port))
+    (log/info "Swarmpit running on port" port))
   (agent/init))
