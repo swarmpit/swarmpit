@@ -56,7 +56,9 @@
         (throw
           (let [data (some-> exception (ex-data))
                 status (:status data)
+                headers (:headers data)
                 error (error-response data error-handler)]
             (ex-info (str scope " error: " error)
-                     {:status status
-                      :body   {:error error}})))))))
+                     {:status  status
+                      :headers headers
+                      :body    {:error error}})))))))
