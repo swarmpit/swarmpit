@@ -37,6 +37,10 @@ select:-webkit-autofill:focus {
     transition: background-color 5000s ease-in-out 0s !important;
 }
 
+input:invalid {
+    box-shadow: none;
+}
+
 /* Header logo */
 
 .logo {
@@ -281,6 +285,11 @@ select:-webkit-autofill:focus {
     background-color: #fdfdfd;
 }
 
+.page-code {
+    font-size: 12px;
+    color: rgb(117, 117, 117);
+}
+
 .page-back {
     display: flex;
     justify-content: center;
@@ -435,9 +444,10 @@ select:-webkit-autofill:focus {
     color: rgb(158, 158, 158);
 }
 
-.hoverable:after{
+.hoverable:after {
     content: attr(data-1);
 }
-.hoverable:hover:after{
+
+.hoverable:hover:after {
     content: attr(data-2);
 }

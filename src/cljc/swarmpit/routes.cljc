@@ -1,11 +1,15 @@
 (ns swarmpit.routes
   (:require [bidi.bidi :as b]
-            [cemerick.url :refer [map->query]]))
+            [cemerick.url :refer [map->query]]
+            [clojure.string :as str]))
 
 (def backend
   ["" {"/"              {:get :index}
+       "/events"        {:get  :events
+                         :post :event-push}
        "/version"       {:get :version}
        "/login"         {:post :login}
+       "/slt"           {:get :slt}
        "/password"      {:post :password}
        "/distribution/" {"public"     {:get {"/repositories" :public-repositories
                                              "/tags"         :public-repository-tags
@@ -66,6 +70,8 @@
 
 (def frontend ["" {"/"                        :index
                    "/login"                   :login
+                   "/error"                   :error
+                   "/unauthorized"            :unauthorized
                    "/password"                :password
                    "/services"                {""               :service-list
                                                "/create/wizard" {"/image"  :service-create-image
@@ -109,9 +115,9 @@
 (defn path-for-frontend
   ([handler] (path-for-frontend handler {} nil))
   ([handler params] (path-for-frontend handler params nil))
-  ([handler params query] (path frontend "/#" handler params query)))
+  ([handler params query] (path frontend "#" handler params query)))
 
 (defn path-for-backend
   ([handler] (path-for-backend handler {} nil))
   ([handler params] (path-for-backend handler params nil))
-  ([handler params query] (path backend "" handler params query)))
+  ([handler params query] (str/replace (path backend "" handler params query) #"^/" "")))

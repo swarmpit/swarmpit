@@ -1,6 +1,6 @@
 (ns swarmpit.view
   (:require [swarmpit.component.page-login :as page-login]
-            [swarmpit.component.page-401 :as page-401]
+            [swarmpit.component.page-403 :as page-403]
             [swarmpit.component.page-404 :as page-404]
             [swarmpit.component.page-error :as page-error]
             [swarmpit.component.password :as password]
@@ -47,11 +47,11 @@
 
 (defmethod dispatch :unauthorized
   [_]
-  (page-401/form))
+  (page-403/form))
 
 (defmethod dispatch :error
-  [_]
-  (page-error/form))
+  [route]
+  (page-error/form route))
 
 (defmethod dispatch :login
   [_]
@@ -64,140 +64,137 @@
 ;;; Service view
 
 (defmethod dispatch :service-list
-  [{:keys [data]}]
-  (service-list/form data))
+  [route]
+  (service-list/form route))
 
 (defmethod dispatch :service-info
-  [{:keys [data]}]
-  (service-info/form data))
+  [route]
+  (service-info/form route))
 
 (defmethod dispatch :service-log
-  [{:keys [data]}]
-  (service-log/log-handler data)
-  (service-log/form data))
+  [route]
+  (service-log/form route))
 
 (defmethod dispatch :service-create-image
-  [{:keys [data]}]
-  (service-image/form data))
+  [route]
+  (service-image/form route))
 
 (defmethod dispatch :service-create-config
-  [{:keys [data]}]
-  (service-config/form data))
+  [route]
+  (service-config/form route))
 
 (defmethod dispatch :service-edit
-  [{:keys [data]}]
-  (service-edit/form data))
+  [route]
+  (service-edit/form route))
 
 ;;; Network view
 
 (defmethod dispatch :network-list
-  [{:keys [data]}]
-  (network-list/form data))
+  [route]
+  (network-list/form route))
 
 (defmethod dispatch :network-info
-  [{:keys [data]}]
-  (network-info/form data))
+  [route]
+  (network-info/form route))
 
 (defmethod dispatch :network-create
-  [_]
-  (network-create/network-plugin-handler)
-  (network-create/form))
+  [route]
+  (network-create/form route))
 
 ;;; Node view
 
 (defmethod dispatch :node-list
-  [{:keys [data]}]
-  (node-list/form data))
+  [route]
+  (node-list/form route))
 
 ;;; Volume view
 
 (defmethod dispatch :volume-list
-  [{:keys [data]}]
-  (volume-list/form data))
+  [route]
+  (volume-list/form route))
 
 (defmethod dispatch :volume-info
-  [{:keys [data]}]
-  (volume-info/form data))
+  [route]
+  (volume-info/form route))
 
 (defmethod dispatch :volume-create
-  [_]
-  (volume-create/volume-plugin-handler)
-  (volume-create/form))
+  [route]
+  (volume-create/form route))
 
 ;;; Secret view
 
 (defmethod dispatch :secret-list
-  [{:keys [data]}]
-  (secret-list/form data))
+  [route]
+  (secret-list/form route))
 
 (defmethod dispatch :secret-info
-  [{:keys [data]}]
-  (secret-info/form data))
+  [route]
+  (secret-info/form route))
 
 (defmethod dispatch :secret-create
-  [_]
-  (secret-create/form))
+  [route]
+  (secret-create/form route))
 
 ;;; Task view
 
 (defmethod dispatch :task-list
-  [{:keys [data]}]
-  (task-list/form data))
+  [route]
+  (task-list/form route))
 
 (defmethod dispatch :task-info
-  [{:keys [data]}]
-  (task-info/form data))
+  [route]
+  (task-info/form route))
 
 ;;; User view
 
 (defmethod dispatch :user-list
-  [{:keys [data]}]
-  (user-list/form data))
+  [route]
+  (user-list/form route))
 
 (defmethod dispatch :user-info
-  [{:keys [data]}]
-  (user-info/form data))
+  [route]
+  (user-info/form route))
 
 (defmethod dispatch :user-create
-  [_]
-  (user-create/form))
+  [route]
+  (user-create/form route))
 
 (defmethod dispatch :user-edit
-  [{:keys [data]}]
-  (user-edit/form data))
+  [route]
+  (user-edit/form route))
 
 ;;; Registry view
 
 (defmethod dispatch :registry-list
-  [{:keys [data]}]
-  (registry-list/form data))
+  [route]
+  (registry-list/form route))
 
 (defmethod dispatch :registry-info
-  [{:keys [data]}]
-  (registry-info/form data))
+  [route]
+  (registry-info/form route))
 
 (defmethod dispatch :registry-create
-  [_]
-  (registry-create/form))
+  [route]
+  (registry-create/form route))
 
 (defmethod dispatch :registry-edit
-  [{:keys [data]}]
-  (registry-edit/form data))
+  [route]
+  (registry-edit/form route))
 
 ;;; Dockerhub user view
 
 (defmethod dispatch :dockerhub-user-list
-  [{:keys [data]}]
-  (dockerhub-list/form data))
+  [route]
+  (dockerhub-list/form route))
 
 (defmethod dispatch :dockerhub-user-info
-  [{:keys [data]}]
-  (dockerhub-info/form data))
+  [route]
+  (dockerhub-info/form route))
 
 (defmethod dispatch :dockerhub-user-create
-  [_]
-  (dockerhub-create/form))
+  [route]
+  (dockerhub-create/form route))
 
 (defmethod dispatch :dockerhub-user-edit
-  [{:keys [data]}]
-  (dockerhub-edit/form data))
+  [route]
+  (dockerhub-edit/form route))

@@ -1,5 +1,7 @@
 (ns swarmpit.component.service.form-ports
   (:require [material.component :as comp]
+            [material.component.form :as form]
+            [material.component.list-table-form :as list]
             [swarmpit.component.state :as state]
             [swarmpit.component.handler :as handler]
             [swarmpit.routes :as routes]
@@ -7,7 +9,7 @@
 
 (enable-console-print!)
 
-(def cursor [:page :service :wizard :ports])
+(def cursor [:form :ports])
 
 (defn- not-suggested?
   [port]
@@ -63,14 +65,14 @@
                :width "100px"}])
 
 (def empty-info
-  (comp/form-value "Service has no published ports."))
+  (form/value "Service has no published ports."))
 
 (defn- format-port-value
   [value]
   (if (zero? value) "" value))
 
 (defn- form-container [value index]
-  (comp/form-list-textfield
+  (list/textfield
     {:name     (str "form-container-text-" index)
      :key      (str "form-container-text-" index)
      :type     "number"
@@ -81,7 +83,7 @@
                  (state/update-item index :containerPort (js/parseInt v) cursor))}))
 
 (defn- form-protocol [value index]
-  (comp/form-list-selectfield
+  (list/selectfield
     {:name     (str "form-protocol-select-" index)
      :key      (str "form-protocol-select-" index)
      :value    value
@@ -99,7 +101,7 @@
        :primaryText "UDP"})))
 
 (defn- form-host [value index]
-  (comp/form-list-textfield
+  (list/textfield
     {:name     (str "form-host-text-" index)
      :key      (str "form-host-text-" index)
      :type     "number"
@@ -120,11 +122,11 @@
 
 (defn- form-table
   [ports]
-  (comp/form-table headers
-                   ports
-                   nil
-                   render-ports
-                   (fn [index] (state/remove-item index cursor))))
+  (list/table headers
+              ports
+              nil
+              render-ports
+              (fn [index] (state/remove-item index cursor))))
 
 (defn- add-item
   []
@@ -134,10 +136,8 @@
 
 (rum/defc form-create < rum/reactive []
   (let [ports (state/react cursor)]
-    [:div
-     (comp/form-add-btn "Publish port" add-item)
-     (if (not (empty? ports))
-       (form-table ports))]))
+    (if (not (empty? ports))
+      (form-table ports))))
 
 (rum/defc form-update < rum/reactive []
   (let [ports (state/react cursor)]

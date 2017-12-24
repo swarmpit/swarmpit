@@ -1,7 +1,8 @@
 (ns swarmpit.registry.client
   (:refer-clojure :exclude [get])
-  (:import  (clojure.lang ExceptionInfo))
-  (:require [org.httpkit.client :as http]
+  (:import (clojure.lang ExceptionInfo))
+  (:require [clj-http.client :as http]
+            [clojure.walk :refer [keywordize-keys stringify-keys]]
             [clojure.string :as str]
             [swarmpit.http :refer :all]
             [swarmpit.token :as token]))
@@ -10,63 +11,63 @@
   [registry api]
   (str (:url registry) "/v2" api))
 
-(defn- execute [call] (execute-in-scope call "Registry" #(-> % :errors (first) :message)))
-
 (defn- basic-auth
   [registry]
   (when (:withAuth registry)
     {"Authorization" (token/generate-basic (:username registry)
                                            (:password registry))}))
 
-(defn- bearer-auth-header
-  [token]
-  {"Authorization" (str "Bearer " token)})
+(defn- authenticate-header
+  [headers]
+  (let [www-authenticate (:www-authenticate headers)]
+    (when www-authenticate
+      (keywordize-keys
+        (into (sorted-map)
+              (map #(str/split % #"=")
+                   (-> www-authenticate
+                       (str/split #" ")
+                       (second)
+                       (str/replace "\"" "")
+                       (str/split #","))))))))
 
+(defn- execute
+  [call]
+  (execute-in-scope {:call-fx       call
+                     :scope         "Registry"
+                     :timeout       5000
+                     :error-handler #(-> % :errors (first) :message)}))
 
-(defn- parse-authenticate-header
-  [www-authenticate]
-  (clojure.walk/keywordize-keys
-    (into (sorted-map)
-      (map #(str/split % #"=")
-        (-> www-authenticate
-          (str/split #" ")
-          (second)
-          (str/replace "\"" "")
-          (str/split #","))))))
+(defn- fallback-options
+  [www-auth-header options]
+  (let [www-auth-url (:realm www-auth-header)
+        www-auth-params (dissoc www-auth-header :realm)
+        query-params (merge {"client_id" "swarmpit"} (stringify-keys www-auth-params))
+        options (assoc-in options [:query-params] query-params)
+        token (execute #(http/get www-auth-url options))]
+    (-> options
+        (assoc-in [:headers "Authorization"] (token/bearer (:token token))))))
 
-(defn- obtain-jwt-token
-  [www-authenticate registry]
-  (let [params (parse-authenticate-header www-authenticate)
-        auth-header (basic-auth registry)]
-    (let [url (:realm params)
-          options {
-                    :timeout      5000
-                    :debug true
-                    :headers      (merge {"Content-Type" "application/json"
-                                          "Accept" "application/json"} auth-header)
-                    :query-params (merge {"client_id" "swarmpit"} (clojure.walk/stringify-keys (dissoc params :realm)))
-                    :insecure?    true}]
-      (:token (execute @(http/get url options))))))
+(defn- execute-with-fallback
+  [url options]
+  (try
+    (execute #(http/get url options))
+    (catch ExceptionInfo e
+      (let [status (:status (ex-data e))
+            headers (:headers (ex-data e))
+            www-auth-header (authenticate-header headers)]
+        (if (and (= status 401)
+                 (some? www-auth-header))
+          (execute #(http/get url (fallback-options www-auth-header options)))
+          (throw e))))))
 
 (defn- get
   [registry api headers params]
   (let [url (build-url registry api)
-        options {:timeout      5000
-                 :headers      (merge {"Content-Type" "application/json"}
+        options {:headers      (merge {"Content-Type" "application/json"}
                                       headers)
                  :query-params params
                  :insecure?    true}]
-    (try
-      (execute @(http/get url options))
-      (catch ExceptionInfo e
-        (if
-          (and
-            (=  (:status (ex-data e)) 401)
-            (some? (:www-authenticate (:headers (ex-data e)))))
-          (let [token (obtain-jwt-token (:www-authenticate (:headers (ex-data e))) registry)]
-            (let [options-with-token (assoc options :headers (merge (:headers options) (bearer-auth-header token)))]
-              (execute @(http/get url options-with-token))))
-          (throw e))))))
+    (execute-with-fallback url options)))
 
 (defn repositories
   [registry]
@@ -77,7 +78,7 @@
 (defn info
   [registry]
   (let [headers (basic-auth registry)]
-      (get registry "/" headers nil)))
+    (get registry "/" headers nil)))
 
 (defn tags
   [registry repository-name]

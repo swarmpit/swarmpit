@@ -1,11 +1,14 @@
 (ns swarmpit.component.service.form-logdriver
   (:require [material.component :as comp]
+            [material.component.form :as form]
+            [material.component.list-table-form :as list]
             [swarmpit.component.state :as state]
+            [sablono.core :refer-macros [html]]
             [rum.core :as rum]))
 
 (enable-console-print!)
 
-(def cursor [:page :service :wizard :logdriver])
+(def cursor [:form :logdriver])
 
 (def headers [{:name  "Name"
                :width "35%"}
@@ -13,7 +16,7 @@
                :width "35%"}])
 
 (defn- form-driver [value]
-  (comp/form-comp
+  (form/comp
     "DRIVER"
     (comp/select-field
       {:value    value
@@ -33,7 +36,7 @@
          :primaryText "journald"}))))
 
 (defn- form-name [value index]
-  (comp/form-list-textfield
+  (list/textfield
     {:name     (str "form-name-text-" index)
      :key      (str "form-name-text-" index)
      :value    value
@@ -41,7 +44,7 @@
                  (state/update-item index :name v (conj cursor :opts)))}))
 
 (defn- form-value [value index]
-  (comp/form-list-textfield
+  (list/textfield
     {:name     (str "form-value-text-" index)
      :key      (str "form-value-text-" index)
      :value    value
@@ -57,11 +60,11 @@
 
 (defn- form-table
   [opts]
-  (comp/form-table headers
-                   opts
-                   nil
-                   render-variables
-                   (fn [index] (state/remove-item index (conj cursor :opts)))))
+  (list/table headers
+              opts
+              nil
+              render-variables
+              (fn [index] (state/remove-item index (conj cursor :opts)))))
 
 (defn- add-item
   []
@@ -70,8 +73,9 @@
 
 (rum/defc form < rum/reactive []
   (let [{:keys [name opts]} (state/react cursor)]
-    [:div
-     (comp/mui (form-driver name))
-     (comp/form-subsection-add "Add log driver option" add-item)
-     (if (not (empty? opts))
-       (form-table opts))]))
+    (form/form
+      {}
+      (form-driver name)
+      (html (form/subsection-add "Add log driver option" add-item))
+      (if (not (empty? opts))
+        (form-table opts)))))

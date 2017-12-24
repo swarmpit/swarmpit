@@ -3,6 +3,7 @@
             [material.icon :as icon]
             [swarmpit.url :refer [dispatch!]]
             [swarmpit.storage :as storage]
+            [swarmpit.event.source :as eventsource]
             [swarmpit.routes :as routes]
             [clojure.string :as string]
             [rum.core :as rum]
@@ -30,8 +31,10 @@
 
 (defn user-gravatar-hash [email]
   (let [md5 (Md5.)]
-    (.update md5 (string/trim email))
-    (crypt/byteArrayToHex (.digest md5))))
+    (when (some? email)
+      (do
+        (.update md5 (string/trim email))
+        (crypt/byteArrayToHex (.digest md5))))))
 
 (defn- user-avatar []
   (comp/avatar
@@ -61,6 +64,7 @@
       {:key         "user-menu-logout"
        :onTouchTap  (fn []
                       (storage/remove "token")
+                      (eventsource/close!)
                       (dispatch!
                         (routes/path-for-frontend :login)))
        :primaryText "Log out"})))
@@ -74,8 +78,7 @@
 (rum/defc appbar < rum/static [title]
   (comp/mui
     (comp/app-bar
-      {
-       :title              title
+      {:title              title
        :titleStyle         appbar-title-style
        :style              appbar-style
        :iconElementRight   (userbar)

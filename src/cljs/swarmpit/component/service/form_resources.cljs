@@ -1,32 +1,38 @@
 (ns swarmpit.component.service.form-resources
   (:require [material.component :as comp]
-            [swarmpit.utils :refer [parse-int parse-float]]
+            [material.component.form :as form]
+            [material.icon :as icon]
+            [swarmpit.component.parser :refer [parse-int parse-float]]
             [swarmpit.component.state :as state]
             [sablono.core :refer-macros [html]]
             [rum.core :as rum]))
 
 (enable-console-print!)
 
-(def cursor [:page :service :wizard :resources])
+(def cursor [:form :resources])
+
+(defonce isValid (atom true))
+
+(defn- cpu-value
+  [value]
+  (if (zero? value)
+    "unlimited"
+    value))
 
 (defn- form-cpu-reservation [value]
-  (comp/form-comp
-    "CPU"
-    (comp/vtext-field
-      {:name            "cpu-reservation"
-       :key             "cpu-reservation"
-       :type            "number"
-       :min             0.000
-       :step            0.001
-       :max             1.0
-       :validations     "isValidCPUValue"
-       :validationError "Please use maximum of 1.0 (represents a whole CPU) or leave blank for default value"
-       :value           value
-       :onChange        (fn [_ v]
-                          (state/update-value [:reservation :cpu] (parse-float v) cursor))})))
+  (form/comp
+    (str "CPU  " "(" (cpu-value value) ")")
+    (comp/slider #js {:min          0
+                      :max          2
+                      :step         0.10
+                      :defaultValue 0
+                      :value        value
+                      :onChange     (fn [_ v]
+                                      (state/update-value [:reservation :cpu] (parse-float v) cursor))
+                      :sliderStyle  #js {:marginTop "14px"}})))
 
 (defn- form-memory-reservation [value]
-  (comp/form-comp
+  (form/comp
     "MEMORY (MB)"
     (comp/vtext-field
       {:name            "memory-reservation"
@@ -34,29 +40,25 @@
        :type            "number"
        :min             4
        :validations     "isValidMemoryValue"
-       :validationError "Please use minimum of 4 MB or leave blank for default value"
+       :validationError "Please use minimum of 4 MB or leave blank for unlimited"
        :value           value
        :onChange        (fn [_ v]
                           (state/update-value [:reservation :memory] (parse-int v) cursor))})))
 
 (defn- form-cpu-limit [value]
-  (comp/form-comp
-    "CPU"
-    (comp/vtext-field
-      {:name            "cpu-limit"
-       :key             "cpu-limit"
-       :type            "number"
-       :min             0.000
-       :step            0.001
-       :max             1.0
-       :validations     "isValidCPUValue"
-       :validationError "Please use maximum of 1.0 (represents a whole CPU) or leave blank for default value"
-       :value           value
-       :onChange        (fn [_ v]
-                          (state/update-value [:limit :cpu] (parse-float v) cursor))})))
+  (form/comp
+    (str "CPU  " "(" (cpu-value value) ")")
+    (comp/slider #js {:min          0
+                      :max          2
+                      :step         0.10
+                      :defaultValue 0
+                      :value        value
+                      :onChange     (fn [_ v]
+                                      (state/update-value [:limit :cpu] (parse-float v) cursor))
+                      :sliderStyle  #js {:marginTop "14px"}})))
 
 (defn- form-memory-limit [value]
-  (comp/form-comp
+  (form/comp
     "MEMORY (MB)"
     (comp/vtext-field
       {:name            "memory-limit"
@@ -64,22 +66,23 @@
        :type            "number"
        :min             4
        :validations     "isValidMemoryValue"
-       :validationError "Please use minimum of 4 MB or leave blank for default value"
+       :validationError "Please use minimum of 4 MB or leave blank for unlimited"
        :value           value
        :onChange        (fn [_ v]
                           (state/update-value [:limit :memory] (parse-int v) cursor))})))
 
 (rum/defc form < rum/reactive []
-  (let [{:keys [reservation
-                limit]} (state/react cursor)]
+  (let [{:keys [reservation limit]} (state/react cursor)]
     [:div.form-edit
-     (comp/form
-       {:onValid   #(state/update-value [:isValid] true cursor)
-        :onInvalid #(state/update-value [:isValid] false cursor)}
-       (html (comp/form-subsection "Reservation"))
+     (form/form
+       {:onValid   #(reset! isValid true)
+        :onInvalid #(reset! isValid false)}
+       (html (form/subsection "Reservation"))
+       (html (form/icon-value icon/info [:span "Minimal resource availablility to run a task. Empty for unlimited."]))
        (form-cpu-reservation (:cpu reservation))
        (form-memory-reservation (:memory reservation))
-       (html (comp/form-subsection "Limit"))
+       (html (form/subsection "Limit"))
+       (html (form/icon-value icon/info [:span "Maximal resource usage per task. Empty for unlimited."]))
        (form-cpu-limit (:cpu limit))
        (form-memory-limit (:memory limit))
        (html [:div {:style {:height "20px"}}]))]))

@@ -1,4 +1,4 @@
-(ns swarmpit.component.page-401
+(ns swarmpit.component.page-403
   (:require [swarmpit.routes :as routes]
             [rum.core :as rum]))
 
@@ -7,6 +7,6 @@
    [:div.page
     [:div.page-form
      [:span
-      [:h1 "401"]
+      [:h1 "403"]
       [:p "You are not authorized for selected action"]
       [:p "Go to login " [:a {:href (routes/path-for-frontend :login)} "page"]]]]]])

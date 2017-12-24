@@ -1,5 +1,7 @@
 (ns swarmpit.component.service.list
-  (:require [material.icon :as icon]
+  (:require [material.component.label :as label]
+            [material.component.panel :as panel]
+            [material.component.list-table :as list]
             [material.component :as comp]
             [swarmpit.component.state :as state]
             [swarmpit.component.mixin :as mixin]
@@ -11,7 +13,7 @@
 
 (enable-console-print!)
 
-(def cursor [:page :service :list])
+(def cursor [:form])
 
 (def headers [{:name  "Name"
                :width "20%"}
@@ -29,14 +31,14 @@
 
 (defn- render-item-update-state [value]
   (case value
-    "rollback_started" (comp/label-update "rollback")
-    (comp/label-update value)))
+    "rollback_started" (label/update "rollback")
+    (label/update value)))
 
 (defn- render-item-state [value]
   (case value
-    "running" (comp/label-green value)
-    "not running" (comp/label-grey value)
-    "partly running" (comp/label-yellow value)))
+    "running" (label/green value)
+    "not running" (label/grey value)
+    "partly running" (label/yellow value)))
 
 (defn- render-item-ports [value]
   (html
@@ -58,7 +60,7 @@
     (case (key item)
       :ports (render-item-ports value)
       :state (render-status value update)
-      :info (comp/label-info value)
+      :info (label/info value)
       value)))
 
 (defn- onclick-handler
@@ -79,45 +81,42 @@
     (filter-unhealthy-items items name)
     (filter #(string/includes? (:serviceName %) name) items)))
 
-(defn- data-handler
+(defn- services-handler
   []
   (handler/get
     (routes/path-for-backend :services)
     {:on-success (fn [response]
-                   (state/update-value [:data] response cursor))}))
+                   (state/update-value [:items] response cursor))}))
 
 (defn- init-state
-  [services]
+  []
   (state/set-value {:filter {:serviceName ""
-                             :unhealthy   false}
-                    :data   services} cursor))
+                             :unhealthy   false}} cursor))
 
-(def refresh-state-mixin
-  (mixin/refresh data-handler))
-
-(def init-state-mixin
-  (mixin/init
-    (fn [data]
-      (init-state data))))
+(def mixin-init-form
+  (mixin/init-form
+    (fn [_]
+      (init-state)
+      (services-handler))))
 
 (rum/defc form < rum/reactive
-                 init-state-mixin
-                 refresh-state-mixin
+                 mixin-init-form
+                 mixin/subscribe-form
                  mixin/focus-filter [_]
-  (let [{:keys [filter data]} (state/react cursor)
-        filtered-items (filter-items data
+  (let [{:keys [filter items]} (state/react cursor)
+        filtered-items (filter-items items
                                      (:serviceName filter)
                                      (:unhealthy filter))]
     [:div
      [:div.form-panel
       [:div.form-panel-left
-       (comp/panel-text-field
-         {:id        "filter"
-          :hintText  "Filter by name"
-          :onChange  (fn [_ v]
-                       (state/update-value [:filter :serviceName] v cursor))})
+       (panel/text-field
+         {:id       "filter"
+          :hintText "Filter by name"
+          :onChange (fn [_ v]
+                      (state/update-value [:filter :serviceName] v cursor))})
        [:span.form-panel-space]
-       (comp/panel-checkbox
+       (panel/checkbox
          {:checked (:unhealthy filter)
           :label   "Show unhealthy"
           :onCheck (fn [_ v]
@@ -128,8 +127,9 @@
            {:href    (routes/path-for-frontend :service-create-image)
             :label   "New service"
             :primary true}))]]
-     (comp/list-table headers
-                      (sort-by :serviceName filtered-items)
-                      render-item
-                      render-item-keys
-                      onclick-handler)]))
+     (list/table headers
+                 (sort-by :serviceName filtered-items)
+                 (nil? items)
+                 render-item
+                 render-item-keys
+                 onclick-handler)]))

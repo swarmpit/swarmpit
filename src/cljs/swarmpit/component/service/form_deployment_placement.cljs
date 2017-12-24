@@ -1,5 +1,6 @@
 (ns swarmpit.component.service.form-deployment-placement
   (:require [material.component :as comp]
+            [material.component.list-table-form :as list]
             [swarmpit.component.state :as state]
             [swarmpit.component.handler :as handler]
             [swarmpit.routes :as routes]
@@ -7,16 +8,16 @@
 
 (enable-console-print!)
 
-(def cursor [:page :service :wizard :deployment :placement])
+(def cursor [:form :deployment :placement])
 
-(defonce placement (atom []))
+(defonce placement-list (atom []))
 
 (defn placement-handler
   []
   (handler/get
     (routes/path-for-backend :placement)
     {:on-success (fn [response]
-                   (reset! placement response))}))
+                   (reset! placement-list response))}))
 
 (def headers [{:name  "Rule"
                :width "500px"}])
@@ -42,18 +43,16 @@
 
 (defn- form-table
   [placement placement-list]
-  (comp/form-table-headless headers
-                            placement
-                            placement-list
-                            render-placement
-                            (fn [index] (state/remove-item index cursor))))
+  (list/table-headless headers
+                       placement
+                       placement-list
+                       render-placement
+                       (fn [index] (state/remove-item index cursor))))
 
 (defn- add-item
   []
   (state/add-item {:rule ""} cursor))
 
 (rum/defc form < rum/reactive []
-  (let [placement-list (rum/react placement)
-        placement (state/react cursor)]
-    [:div
-     (form-table placement placement-list)]))
+  (let [placement (state/react cursor)]
+    (form-table placement (rum/react placement-list))))

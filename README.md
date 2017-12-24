@@ -4,7 +4,6 @@ Lightweight Docker Swarm management UI
 
 [![gitter](https://badges.gitter.im/trezor/community.svg)](https://gitter.im/swarmpit_io/swarmpit) [![Build Status](https://travis-ci.org/swarmpit/swarmpit.svg?branch=master)](https://travis-ci.org/swarmpit/swarmpit)
 
-
 ![screenshot](http://swarmpit.io/img/example.jpg?r1)
 
 Swarmpit provides simple and easy to use interface for your Docker Swarm cluster. You can manage your services, secrets, volumes, networks etc. After linking your Docker Hub account or custom registry, private repositories can be easily deployed on Swarm. Best of all, you can share this management console securely with your whole team.
@@ -12,6 +11,8 @@ Swarmpit provides simple and easy to use interface for your Docker Swarm cluster
 We have more features coming like stack management, monitoring, user permissions constraints and more, so stay tuned or even better help us shape features you would like.
 
 More details about future and past releases can be found in [ROADMAP.md](ROADMAP.md)
+
+[![Twitter URL](https://img.shields.io/twitter/url/https/twitter.com/fold_left.svg?style=social&label=Follow%20%40swarmpit_io)](https://twitter.com/swarmpit_io)
 
 ## Installation
 
@@ -30,15 +31,15 @@ Swarmpit is published on port `888` by default and you can sign in with user/pas
 
 ## Development
 
-Swarmpit is written purely in Clojure and utilizes React on front-end. CouchDB is just used to store data, that cannot be stored directly in Docker API.
+Swarmpit is written purely in Clojure and utilizes React on front-end. CouchDB is used to store data, that cannot be stored directly in Docker API.
 
-Everything about building Swarmpit and setting up development environment can be found in [CONTRIBUTING.md](CONTRIBUTING.md)
+Everything about building, issue reporting and setting up development environment can be found in [CONTRIBUTING.md](CONTRIBUTING.md)
 
 ## Demo
 
-[![Try in PWD](https://cdn.rawgit.com/play-with-docker/stacks/cff22438/assets/images/button.png)](http://play-with-docker.com?stack=/swarmpit/swarmpit/latest) 
+[![Try in PWD](https://cdn.rawgit.com/play-with-docker/stacks/cff22438/assets/images/button.png)](http://play-with-docker.com?stack=https://raw.githubusercontent.com/swarmpit/swarmpit/master/docker-compose.yml) 
 
-Deploys Swarmpit to play-with-docker sandbox. Use the following credentials for Swarmpit: `admin/admin`
+Deploys Swarmpit to play-with-docker sandbox. Use the following credentials to login: `admin/admin`
 
 <kbd>
   <img src="http://swarmpit.io/img/demo-screen-1.gif?r1">

@@ -34,7 +34,8 @@
 (defn- ->service-networks
   [service]
   (->> (:networks service)
-       (map (fn [n] {:Target (:networkName n)}))
+       (map #(hash-map :Target (:networkName %)
+                       :Aliases (:serviceAliases %)))
        (into [])))
 
 (defn ->service-variables
@@ -61,13 +62,21 @@
        (map (fn [l] {(:name l) (:value l)}))
        (into {})))
 
+(defn ->service-volume-options
+  [service-volume]
+  (when (some? service-volume)
+    {:Labels       (:labels service-volume)
+     :DriverConfig {:Name    (get-in service-volume [:driver :name])
+                    :Options (get-in service-volume [:driver :options])}}))
+
 (defn ->service-mounts
   [service]
   (->> (:mounts service)
-       (map (fn [v] {:ReadOnly (:readOnly v)
-                     :Source   (:host v)
-                     :Target   (:containerPath v)
-                     :Type     (:type v)}))
+       (map (fn [v] {:ReadOnly      (:readOnly v)
+                     :Source        (:host v)
+                     :Target        (:containerPath v)
+                     :Type          (:type v)
+                     :VolumeOptions (->service-volume-options (:volumeOptions v))}))
        (into [])))
 
 (defn- ->service-placement-contraints
@@ -83,6 +92,13 @@
        (first)
        :id))
 
+(defn ->secret-target
+  [secret]
+  (let [secret-target (:secretTarget secret)]
+    (if (str/blank? secret-target)
+      (:secretName secret)
+      secret-target)))
+
 (defn ->service-secrets
   [service secrets]
   (->> (:secrets service)
@@ -90,7 +106,7 @@
                      :SecretID   (->secret-id (:secretName s) secrets)
                      :File       {:GID  "0"
                                   :Mode 292
-                                  :Name (:secretName s)
+                                  :Name (->secret-target s)
                                   :UID  "0"}}))
        (into [])))
 
@@ -145,27 +161,25 @@
         stack (:stack service)
         image-id (get-in service [:repository :imageId])
         distribution-id (get-in service [:distribution :id])
-        distribution-type (get-in service [:distribution :type])
-        metadata (volatile! {})]
-    (when (some? stack)
-      (vswap! metadata #(merge {:com.docker.stack.namespace stack
-                                :com.docker.stack.image     image} %)))
-    (when (some? autoredeploy)
-      (vswap! metadata #(merge {:swarmpit.service.deployment.autoredeploy (str autoredeploy)} %)))
-    (when (some? image-id)
-      (vswap! metadata #(merge {:swarmpit.service.repository.image.id image-id} %)))
-    (when (some? distribution-type)
-      (vswap! metadata #(merge {:swarmpit.service.distribution.id   distribution-id
-                                :swarmpit.service.distribution.type distribution-type} %)))
-    @metadata))
+        distribution-type (get-in service [:distribution :type])]
+    (merge {}
+           (when (some? stack)
+             {:com.docker.stack.namespace stack
+              :com.docker.stack.image     image})
+           (when (some? autoredeploy)
+             {:swarmpit.service.deployment.autoredeploy (str autoredeploy)})
+           (when (some? image-id)
+             {:swarmpit.service.repository.image.id image-id})
+           (when (some? distribution-type)
+             {:swarmpit.service.distribution.id   distribution-id
+              :swarmpit.service.distribution.type distribution-type}))))
 
-(defn ->container-metadata
+(defn ->service-container-metadata
   [service]
-  (let [stack (:stack service)
-        metadata (volatile! {})]
-    (when (some? stack)
-      (vswap! metadata #(merge {:com.docker.stack.namespace stack} %)))
-    @metadata))
+  (let [stack (:stack service)]
+    (merge {}
+           (when (some? stack)
+             {:com.docker.stack.namespace stack}))))
 
 (defn ->service
   [service image]
@@ -174,7 +188,7 @@
                      (->service-labels service)
                      (->service-metadata service image))
    :TaskTemplate   {:ContainerSpec {:Image   image
-                                    :Labels  (->container-metadata service)
+                                    :Labels  (->service-container-metadata service)
                                     :Mounts  (->service-mounts service)
                                     :Secrets (:secrets service)
                                     :Env     (->service-variables service)}

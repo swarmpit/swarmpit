@@ -1,7 +1,6 @@
 (ns swarmpit.docker.mapper.inbound
   "Map docker domain to swarmpit domain"
-  (:require [clojure.string :as str]
-            [clojure.tools.logging :as log]))
+  (:require [clojure.string :as str]))
 
 (defn- as-megabytes
   [bytes]
@@ -66,7 +65,7 @@
 
 (defn ->task-node
   [node-id nodes]
-  (or (first (filter #(= (:ID %) node-id) nodes)) node-id))
+  (first (filter #(= (:ID %) node-id) nodes)))
 
 (defn ->task-service
   [service-id services]
@@ -102,7 +101,7 @@
       :status {:error (get-in task [:Status :Err])}
       :desiredState (:DesiredState task)
       :serviceName service-name
-      :nodeName node-name)))
+      :nodeName (or node-name node-id))))
 
 (defn ->tasks
   [tasks nodes services]
@@ -122,17 +121,15 @@
                      :hostPort      (:PublishedPort p)}))
        (into [])))
 
-(defn ->service-network
-  [network-id networks]
-  (first (filter #(= (:Id %)
-                     network-id) networks)))
-
 (defn ->service-networks
   [service networks]
-  (->> (get-in service [:Spec :TaskTemplate :Networks])
-       (map (fn [n] (->service-network (:Target n) networks)))
-       (map (fn [n] (->network n)))
-       (into [])))
+  (let [networks (group-by :Id networks)]
+    (->> (get-in service [:Spec :TaskTemplate :Networks])
+         (map #(->> (get networks (:Target %))
+                    (first)
+                    (->network)
+                    (merge {:serviceAliases (:Aliases %)})))
+         (into []))))
 
 (defn ->service-mounts
   [service-spec]
@@ -147,7 +144,7 @@
   [service-spec]
   (->> (get-in service-spec [:TaskTemplate :ContainerSpec :Env])
        (map (fn [p]
-              (let [variable (str/split p #"=")]
+              (let [variable (str/split p #"=" 2)]
                 {:name  (first variable)
                  :value (second variable)})))
        (into [])))
@@ -188,11 +185,12 @@
 (defn ->service-secrets
   [service-spec]
   (->> (get-in service-spec [:TaskTemplate :ContainerSpec :Secrets])
-       (map (fn [s] {:id         (:SecretID s)
-                     :secretName (:SecretName s)
-                     :uid        (get-in s [:File :UID])
-                     :gid        (get-in s [:File :GID])
-                     :mode       (get-in s [:File :Mode])}))
+       (map (fn [s] {:id           (:SecretID s)
+                     :secretName   (:SecretName s)
+                     :secretTarget (get-in s [:File :Name])
+                     :uid          (get-in s [:File :UID])
+                     :gid          (get-in s [:File :GID])
+                     :mode         (get-in s [:File :Mode])}))
        (into [])))
 
 (defn ->service-deployment-update

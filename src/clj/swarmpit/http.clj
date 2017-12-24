@@ -1,32 +1,10 @@
 (ns swarmpit.http
   (:require [cheshire.core :refer [parse-string parse-stream generate-string]])
-  (:import (org.httpkit BytesInputStream)
-           (java.util.concurrent TimeoutException ExecutionException)))
+  (:import (java.util.concurrent TimeoutException ExecutionException)
+           (java.io IOException)
+           (clojure.lang ExceptionInfo)))
 
-(defn parse-response-body
-  [body]
-  (if (instance? BytesInputStream body)
-    (parse-stream (clojure.java.io/reader body))
-    (parse-string body true)))
-
-(defn execute-in-scope
-  ([call-fx scope] (execute-in-scope call-fx scope :error))
-  ([call-fx scope error-message-handler]
-   (let [scope (or scope "HTTP")
-         {:keys [status body error headers]} call-fx]
-     (if error
-       (throw
-         (ex-info (str scope " failure: " (.getMessage error))
-                  {:status 500
-                   :body   {:error (.getMessage error)}}))
-       (let [response (parse-response-body body)]
-         (if (> 400 status)
-           response
-           (throw
-             (ex-info (str scope " error: " (error-message-handler response))
-                      {:status status
-                       :headers headers
-                       :body   response}))))))))
+(def default-timeout 15000)
 
 (defmacro with-timeout
   [ms & body]
@@ -41,3 +19,46 @@
          result#))
      (catch ExecutionException e#
        (throw (.getCause e#)))))
+
+(defn- error-response
+  [response-data error-handler]
+  (let [error-handler (or error-handler :error)]
+    (try
+      (-> (:body response-data)
+          (parse-string true)
+          (error-handler))
+      (catch Exception _
+        (:reason-phrase response-data)))))
+
+(defn- ok-response
+  [response-data]
+  (try
+    (parse-string response-data true)
+    (catch Exception _
+      response-data)))
+
+(defn execute-in-scope
+  "Execute http request and parse result"
+  [{:keys [call-fx scope timeout error-handler]}]
+  (let [scope (or scope "HTTP")
+        timeout (or timeout default-timeout)]
+    (try
+      (let [response (with-timeout timeout (call-fx))
+            response-body (-> response :body)]
+        (ok-response response-body))
+      (catch IOException exception
+        (throw
+          (let [error (.getMessage exception)]
+            (ex-info (str scope " failure: " error)
+                     {:status 500
+                      :body   {:error error}}))))
+      (catch ExceptionInfo exception
+        (throw
+          (let [data (some-> exception (ex-data))
+                status (:status data)
+                headers (:headers data)
+                error (error-response data error-handler)]
+            (ex-info (str scope " error: " error)
+                     {:status  status
+                      :headers headers
+                      :body    {:error error}})))))))

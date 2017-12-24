@@ -1,5 +1,6 @@
 (ns swarmpit.component.node.list
-  (:require [material.component :as comp]
+  (:require [material.component.label :as label]
+            [material.component.panel :as panel]
             [material.icon :as icon]
             [swarmpit.component.mixin :as mixin]
             [swarmpit.component.state :as state]
@@ -11,7 +12,7 @@
 
 (enable-console-print!)
 
-(def cursor [:page :node :list])
+(def cursor [:form])
 
 (defn- filter-items
   "Filter list items based on given predicate"
@@ -20,15 +21,15 @@
 
 (defn- node-item-state [value]
   (case value
-    "ready" (comp/label-green value)
-    "down" (comp/label-red value)))
+    "ready" (label/green value)
+    "down" (label/red value)))
 
 (defn- node-item-states [item]
   [:div.node-item-states
    [:span.node-item-state (node-item-state (:state item))]
    (if (:leader item)
-     [:span.node-item-state (comp/label-blue "leader")])
-   [:span.node-item-state (comp/label-blue (:role item))]])
+     [:span.node-item-state (label/blue "leader")])
+   [:span.node-item-state (label/blue (:role item))]])
 
 (defn- node-item-header [item]
   [:div
@@ -52,36 +53,33 @@
      [:div
       [:span.node-item-secondary "availability: " (:availability item)]]]))
 
-(defn- data-handler
+(defn- nodes-handler
   []
   (handler/get
     (routes/path-for-backend :nodes)
     {:on-success (fn [response]
-                   (state/update-value [:data] response cursor))}))
+                   (state/update-value [:items] response cursor))}))
 
 (defn- init-state
-  [nodes]
-  (state/set-value {:filter {:nodeName ""}
-                    :data   nodes} cursor))
+  []
+  (state/set-value {:filter {:nodeName ""}} cursor))
 
-(def refresh-state-mixin
-  (mixin/refresh data-handler))
-
-(def init-state-mixin
-  (mixin/init
-    (fn [data]
-      (init-state data))))
+(def mixin-init-form
+  (mixin/init-form
+    (fn [_]
+      (init-state)
+      (nodes-handler))))
 
 (rum/defc form < rum/reactive
-                 init-state-mixin
-                 refresh-state-mixin
+                 mixin-init-form
+                 mixin/subscribe-form
                  mixin/focus-filter [_]
-  (let [{:keys [filter data]} (state/react cursor)
-        filtered-items (filter-items data (:nodeName filter))]
+  (let [{:keys [filter items]} (state/react cursor)
+        filtered-items (filter-items items (:nodeName filter))]
     [:div
      [:div.form-panel
       [:div.form-panel-left
-       (comp/panel-text-field
+       (panel/text-field
          {:id       "filter"
           :hintText "Filter by name"
           :onChange (fn [_ v]
