@@ -107,54 +107,54 @@
         (settings/public-tags-handler repository)))))
 
 (rum/defc form-settings < rum/static []
-  [:div.form-service-edit-group
+  [:div.form-layout-group
    (form/section "General settings")
    (settings/form false)])
 
 (rum/defc form-ports < rum/static []
-  [:div.form-service-edit-group.form-service-group-border
+  [:div.form-layout-group.form-layout-group-border
    (form/section-add "Ports" ports/add-item)
    (ports/form-create)])
 
 (rum/defc form-networks < rum/static []
-  [:div.form-service-edit-group.form-service-group-border
+  [:div.form-layout-group.form-layout-group-border
    (form/section-add "Networks" networks/add-item)
    (networks/form-create)])
 
 (rum/defc form-mounts < rum/static []
-  [:div.form-service-edit-group.form-service-group-border
+  [:div.form-layout-group.form-layout-group-border
    (form/section-add "Mounts" mounts/add-item)
    (mounts/form-create)])
 
 (rum/defc form-secrets < rum/reactive []
-  [:div.form-service-edit-group.form-service-group-border
+  [:div.form-layout-group.form-layout-group-border
    (if (empty? (rum/react secrets/secrets-list))
      (form/section "Secrets")
      (form/section-add "Secrets" secrets/add-item))
    (secrets/form-create)])
 
 (rum/defc form-variables < rum/static []
-  [:div.form-service-edit-group.form-service-group-border
+  [:div.form-layout-group.form-layout-group-border
    (form/section-add "Environment Variables" variables/add-item)
    (variables/form-create)])
 
 (rum/defc form-labels < rum/static []
-  [:div.form-service-edit-group.form-service-group-border
+  [:div.form-layout-group.form-layout-group-border
    (form/section-add "Labels" labels/add-item)
    (labels/form-create)])
 
 (rum/defc form-logdriver < rum/static []
-  [:div.form-service-edit-group.form-service-group-border
+  [:div.form-layout-group.form-layout-group-border
    (form/section "Logging")
    (logdriver/form)])
 
 (rum/defc form-resources < rum/static []
-  [:div.form-service-edit-group.form-service-group-border
+  [:div.form-layout-group.form-layout-group-border
    (form/section "Resources")
    (resources/form)])
 
 (rum/defc form-deployment < rum/static []
-  [:div.form-service-edit-group.form-service-group-border
+  [:div.form-layout-group.form-layout-group-border
    (form/section "Deployment")
    (deployment/form)])
 
@@ -172,7 +172,7 @@
                           (not (rum/react resources/isValid)))
           :primary    true
           :onTouchTap create-service-handler}))]]
-   [:div.form-service-edit
+   [:div.form-layout
     (form-settings)
     (form-ports)
     (form-networks)

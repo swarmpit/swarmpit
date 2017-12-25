@@ -21,7 +21,7 @@
 
 (rum/defc form < rum/static [networks]
   (when (not-empty networks)
-    [:div.form-service-view-group.form-service-group-border
+    [:div.form-layout-group.form-layout-group-border
      (form/section "Networks")
      (list/table headers
                  networks

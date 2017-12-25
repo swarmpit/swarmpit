@@ -134,9 +134,9 @@
          :primaryText   "Delete"}))))
 
 (rum/defc form-tasks < rum/static [tasks]
-  [:div.form-service-view-group.form-service-group-border
+  [:div.form-layout-group.form-layout-group-border
    (form/section "Tasks")
-   (list/table ["Name" "Service" "Image" "Node" "Status"]
+   (list/table (map :name tasks/headers)
                (filter #(not (= "shutdown" (:state %))) tasks)
                tasks/render-item
                tasks/render-item-keys
@@ -191,7 +191,7 @@
              :labelPosition "before"
              :label         "Actions"}))
         (form-action-menu id (:rollbackAllowed deployment) opened?)]]]
-     [:div.form-service-view
+     [:div.form-layout
       (settings/form service)
       (ports/form ports)
       (networks/form networks)

@@ -16,7 +16,7 @@
 
 (rum/defc form < rum/static [labels]
   (when (not-empty labels)
-    [:div.form-service-view-group.form-service-group-border
+    [:div.form-layout-group.form-layout-group-border
      (form/section "Labels")
      (alist/table headers
                   labels

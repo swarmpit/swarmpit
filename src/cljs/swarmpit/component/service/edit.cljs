@@ -105,54 +105,54 @@
       (labels/labels-handler))))
 
 (rum/defc form-settings < rum/static []
-  [:div.form-service-edit-group
+  [:div.form-layout-group
    (form/section "General settings")
    (settings/form true)])
 
 (rum/defc form-ports < rum/static []
-  [:div.form-service-edit-group.form-service-group-border
+  [:div.form-layout-group.form-layout-group-border
    (form/section-add "Ports" ports/add-item)
    (ports/form-update)])
 
 (rum/defc form-networks < rum/static []
-  [:div.form-service-edit-group.form-service-group-border
+  [:div.form-layout-group.form-layout-group-border
    (form/section-add "Networks" networks/add-item)
    (networks/form-update)])
 
 (rum/defc form-mounts < rum/static []
-  [:div.form-service-edit-group.form-service-group-border
+  [:div.form-layout-group.form-layout-group-border
    (form/section-add "Mounts" mounts/add-item)
    (mounts/form-update)])
 
 (rum/defc form-secrets < rum/reactive []
-  [:div.form-service-edit-group.form-service-group-border
+  [:div.form-layout-group.form-layout-group-border
    (if (empty? (rum/react secrets/secrets-list))
      (form/section "Secrets")
      (form/section-add "Secrets" secrets/add-item))
    (secrets/form-update)])
 
 (rum/defc form-variables < rum/static []
-  [:div.form-service-edit-group.form-service-group-border
+  [:div.form-layout-group.form-layout-group-border
    (form/section-add "Environment Variables" variables/add-item)
    (variables/form-update)])
 
 (rum/defc form-labels < rum/static []
-  [:div.form-service-edit-group.form-service-group-border
+  [:div.form-layout-group.form-layout-group-border
    (form/section-add "Labels" labels/add-item)
    (labels/form-update)])
 
 (rum/defc form-logdriver < rum/static []
-  [:div.form-service-edit-group.form-service-group-border
+  [:div.form-layout-group.form-layout-group-border
    (form/section "Logging")
    (logdriver/form)])
 
 (rum/defc form-resources < rum/static []
-  [:div.form-service-edit-group.form-service-group-border
+  [:div.form-layout-group.form-layout-group-border
    (form/section "Resources")
    (resources/form)])
 
 (rum/defc form-deployment < rum/static []
-  [:div.form-service-edit-group.form-service-group-border
+  [:div.form-layout-group.form-layout-group-border
    (form/section "Deployment")
    (deployment/form)])
 
@@ -173,7 +173,7 @@
        (comp/raised-button
          {:href  (routes/path-for-frontend :service-info {:id id})
           :label "Back"}))]]
-   [:div.form-service-edit
+   [:div.form-layout
     (form-settings)
     (form-ports)
     (form-networks)

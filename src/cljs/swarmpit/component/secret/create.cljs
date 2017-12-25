@@ -99,13 +99,11 @@
             :disabled   (not (rum/react isValid))
             :primary    true
             :onTouchTap create-secret-handler}))]]
-
-     [:div.form-view
-      [:div.form-view-group
+     [:div.form-edit
        (form/icon-value icon/info "Data must be base64 encoded. If plain text check please encode data.")
        (form/form
          {:onValid   #(reset! isValid true)
           :onInvalid #(reset! isValid false)}
          (form-name secretName)
          (form-data-encoder encode)
-         (form-data data))]]]))
+         (form-data data))]]))

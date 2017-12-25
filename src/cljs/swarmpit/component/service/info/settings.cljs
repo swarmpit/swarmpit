@@ -8,7 +8,7 @@
 (rum/defc form < rum/static [service]
   (let [image-digest (get-in service [:repository :imageDigest])
         stack (:stack service)]
-    [:div.form-service-view-group
+    [:div.form-layout-group
      (form/section "General settings")
      (form/item "ID" (:id service))
      (if (some? stack)

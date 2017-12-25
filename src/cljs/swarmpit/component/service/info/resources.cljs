@@ -19,15 +19,15 @@
   (cond
     (and (provided? reservation)
          (provided? limit))
-    [:div.form-service-view-group.form-service-group-border
+    [:div.form-layout-group.form-layout-group-border
      (form/section "Resource")
      (form-resource reservation "Reservation")
      (form-resource limit "Limit")]
     (provided? reservation)
-    [:div.form-service-view-group.form-service-group-border
+    [:div.form-layout-group.form-layout-group-border
      (form/section "Resource")
      (form-resource reservation "Reservation")]
     (provided? limit)
-    [:div.form-service-view-group.form-service-group-border
+    [:div.form-layout-group.form-layout-group-border
      (form/section "Resource")
      (form-resource limit "Limit")]))
