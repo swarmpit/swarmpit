@@ -118,9 +118,14 @@
 ;; Service handler
 
 (defmethod dispatch :services [_]
-  (fn [_]
-    (->> (api/services)
-         (resp-ok))))
+  (fn [{:keys [query-params]}]
+    (let [query (keywordize-keys query-params)]
+      (resp-ok
+        (case (:filterType query)
+          "network" (api/services-by-network (:filterValue query))
+          "volume" (api/services-by-volume (:filterValue query))
+          "secret" (api/services-by-secret (:filterValue query))
+          (api/services))))))
 
 (defmethod dispatch :service [_]
   (fn [{:keys [route-params]}]
@@ -260,6 +265,11 @@
 (defmethod dispatch :node [_]
   (fn [{:keys [route-params]}]
     (->> (api/node (:id route-params))
+         (resp-ok))))
+
+(defmethod dispatch :node-tasks [_]
+  (fn [{:keys [route-params]}]
+    (->> (api/node-tasks (:id route-params))
          (resp-ok))))
 
 ;; Placement handler

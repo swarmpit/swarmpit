@@ -164,6 +164,12 @@
   (-> (dc/node node-id)
       (dmi/->node)))
 
+(defn node-tasks
+  [node-id]
+  (dmi/->tasks (dc/node-tasks node-id)
+               (dc/nodes)
+               (dc/services)))
+
 ;;; Dockerhub API
 
 (defn dockerusers
@@ -343,11 +349,32 @@
 ;;; Service API
 
 (defn services
-  []
-  (dmi/->services (dc/services)
-                  (dc/tasks)))
+  ([]
+   (dmi/->services (dc/services)
+                   (dc/tasks)))
+  ([service-filter]
+   (dmi/->services (filter #(service-filter %) (dc/services))
+                   (dc/tasks))))
 
 (def services-memo (memo/ttl services :ttl/threshold 1000))
+
+(defn services-by-network
+  [network-name]
+  (services #(contains? (->> (get-in % [:Spec :TaskTemplate :Networks])
+                             (map :Target)
+                             (set)) (:id (network network-name)))))
+
+(defn services-by-volume
+  [volume-name]
+  (services #(contains? (->> (get-in % [:Spec :TaskTemplate :ContainerSpec :Mounts])
+                             (map :Source)
+                             (set)) volume-name)))
+
+(defn services-by-secret
+  [secret-name]
+  (services #(contains? (->> (get-in % [:Spec :TaskTemplate :ContainerSpec :Secrets])
+                             (map :SecretName)
+                             (set)) secret-name)))
 
 (defn service
   [service-id]

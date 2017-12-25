@@ -54,8 +54,9 @@
                          :delete {[:id] :secret-delete}
                          :post   {[:id] :secret-update}}
        "/nodes"         {:get :nodes}
-       "/nodes/"        {:get {"placement" :placement
-                               [:id]       :node}}
+       "/placement"     {:get :placement}
+       "/nodes/"        {:get {[:id] {""       :node
+                                      "/tasks" :node-tasks}}}
        "/tasks"         {:get :tasks}
        "/tasks/"        {:get {[:id] :task}}
        "/plugin/"       {:get {"network" :plugin-network
@@ -88,7 +89,8 @@
                    "/secrets"                 {""        :secret-list
                                                "/create" :secret-create
                                                ["/" :id] :secret-info}
-                   "/nodes"                   {"" :node-list}
+                   "/nodes"                   {""        :node-list
+                                               ["/" :id] :node-info}
                    "/tasks"                   {""        :task-list
                                                ["/" :id] :task-info}
                    "/distribution/registries" {""                :registry-list
