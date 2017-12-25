@@ -28,6 +28,7 @@
    :secret-create         "Secrets / Create"
    :secret-info           "Secrets"
    :node-list             "Nodes"
+   :node-info             "Nodes"
    :task-list             "Tasks"
    :task-info             "Tasks"
    :user-list             "Users"

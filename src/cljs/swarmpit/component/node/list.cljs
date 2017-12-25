@@ -1,7 +1,7 @@
 (ns swarmpit.component.node.list
-  (:require [material.component.label :as label]
+  (:require [material.icon :as icon]
+            [material.component.label :as label]
             [material.component.panel :as panel]
-            [material.icon :as icon]
             [swarmpit.component.mixin :as mixin]
             [swarmpit.component.state :as state]
             [swarmpit.component.handler :as handler]
@@ -27,7 +27,7 @@
 (defn- node-item-states [item]
   [:div.node-item-states
    [:span.node-item-state (node-item-state (:state item))]
-   (if (:leader item)
+   (when (:leader item)
      [:span.node-item-state (label/blue "leader")])
    [:span.node-item-state (label/blue (:role item))]])
 
@@ -44,14 +44,17 @@
   [item]
   (html
     [:div.mdl-cell.node-item {:key (:id item)}
-     (node-item-header item)
-     (node-item-states item)
-     [:div
-      [:span.node-item-secondary "ip: " (:address item)]]
-     [:div
-      [:span.node-item-secondary "version: " (:engine item)]]
-     [:div
-      [:span.node-item-secondary "availability: " (:availability item)]]]))
+     [:a {:href  (str "/#/nodes/" (:id item))
+          :style {:color          "inherit"
+                  :textDecoration "inherit"}}
+      (node-item-header item)
+      (node-item-states item)
+      [:div
+       [:span.node-item-secondary "ip: " (:address item)]]
+      [:div
+       [:span.node-item-secondary "version: " (:engine item)]]
+      [:div
+       [:span.node-item-secondary "availability: " (:availability item)]]]]))
 
 (defn- nodes-handler
   []

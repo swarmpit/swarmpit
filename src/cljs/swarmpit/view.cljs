@@ -20,6 +20,7 @@
             [swarmpit.component.secret.info :as secret-info]
             [swarmpit.component.secret.list :as secret-list]
             [swarmpit.component.node.list :as node-list]
+            [swarmpit.component.node.info :as node-info]
             [swarmpit.component.task.list :as task-list]
             [swarmpit.component.task.info :as task-info]
             [swarmpit.component.user.list :as user-list]
@@ -106,6 +107,10 @@
 (defmethod dispatch :node-list
   [route]
   (node-list/form route))
+
+(defmethod dispatch :node-info
+  [route]
+  (node-info/form route))
 
 ;;; Volume view
 
