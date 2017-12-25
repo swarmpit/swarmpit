@@ -61,7 +61,8 @@
 
 (defn- ->service-mode
   [service-spec]
-  (str/lower-case (name (first (keys (:Mode service-spec))))))
+  (when service-spec
+    (str/lower-case (name (first (keys (:Mode service-spec)))))))
 
 (defn ->task-node
   [node-id nodes]
@@ -70,6 +71,14 @@
 (defn ->task-service
   [service-id services]
   (first (filter #(= (:ID %) service-id) services)))
+
+(defn ->task-name
+  "If there is no matching service for task use task-id as name. Otherwise follow rules"
+  [task-id node-id slot service-name service-mode]
+  (cond
+    (= "replicated" service-mode) (str service-name "." slot)
+    (= "global" service-mode) (str service-name "." node-id)
+    :else task-id))
 
 (defn ->task
   [task nodes services]
@@ -86,9 +95,7 @@
         service (->task-service service-id services)
         service-name (get-in service [:Spec :Name])
         service-mode (->service-mode (:Spec service))
-        task-name (if (= "replicated" service-mode)
-                    (str service-name "." slot)
-                    service-name)]
+        task-name (->task-name id node-id slot service-name service-mode)]
     (array-map
       :id id
       :taskName task-name
@@ -100,7 +107,7 @@
       :state (get-in task [:Status :State])
       :status {:error (get-in task [:Status :Err])}
       :desiredState (:DesiredState task)
-      :serviceName service-name
+      :serviceName (or service-name service-id)
       :nodeName (or node-name node-id))))
 
 (defn ->tasks
