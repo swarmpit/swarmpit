@@ -28,7 +28,7 @@
 
 (defn- onclick-handler
   [item]
-  (routes/path-for-frontend :secret-info (select-keys item [:id])))
+  (routes/path-for-frontend :secret-info {:id (:secretName item)}))
 
 (defn- filter-items
   [items predicate]
