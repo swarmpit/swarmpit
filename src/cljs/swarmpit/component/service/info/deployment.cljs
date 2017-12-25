@@ -24,7 +24,7 @@
         restart-policy-condition (get-in deployment [:restartPolicy :condition])
         restart-policy-delay (get-in deployment [:restartPolicy :delay])
         restart-policy-attempts (get-in deployment [:restartPolicy :attempts])]
-    [:div.form-service-view-group.form-service-group-border
+    [:div.form-layout-group.form-layout-group-border
      (form/section "Deployment")
      (form/item "AUTOREDEPLOY" (if autoredeploy
                                       "on"

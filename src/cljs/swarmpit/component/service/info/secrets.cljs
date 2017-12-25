@@ -21,7 +21,7 @@
 
 (rum/defc form < rum/static [secrets]
   (when (not-empty secrets)
-    [:div.form-service-view-group.form-service-group-border
+    [:div.form-layout-group.form-layout-group-border
      (form/section "Secrets")
      (list/table headers
                  secrets

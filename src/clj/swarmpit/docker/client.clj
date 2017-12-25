@@ -134,6 +134,11 @@
   (-> (str "/nodes/" id)
       (get)))
 
+(defn node-tasks
+  [id]
+  (get "/tasks" {:filters (generate-string {:node          [id]
+                                            :desired-state ["running"]})}))
+
 (defn version
   []
   (get "/version"))

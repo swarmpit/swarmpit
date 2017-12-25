@@ -15,7 +15,7 @@
   (val item))
 
 (rum/defc form < rum/static [{:keys [name opts]}]
-  [:div.form-service-view-group.form-service-group-border
+  [:div.form-layout-group.form-layout-group-border
    (form/section "Logging")
    (form/item "DRIVER" (or name "none"))
    (when (not-empty opts)

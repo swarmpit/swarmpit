@@ -50,7 +50,7 @@
   (when (not-empty mounts)
     (let [bind (filter #(= "bind" (:type %)) mounts)
           volume (filter #(= "volume" (:type %)) mounts)]
-      [:div.form-service-view-group.form-service-group-border
+      [:div.form-layout-group.form-layout-group-border
        (form/section "Mounts")
        (form-bind bind)
        (form-volume volume)])))

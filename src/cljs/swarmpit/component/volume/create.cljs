@@ -90,10 +90,9 @@
             :disabled   (not (rum/react isValid))
             :primary    true
             :onTouchTap create-volume-handler}))]]
-     [:div.form-view
-      [:div.form-view-group
+     [:div.form-edit
        (form/form
          {:onValid   #(reset! isValid true)
           :onInvalid #(reset! isValid false)}
          (form-name volumeName)
-         (form-driver driver (rum/react volume-plugins)))]]]))
+         (form-driver driver (rum/react volume-plugins)))]]))
