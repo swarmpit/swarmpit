@@ -4,20 +4,15 @@
             [material.component.panel :as panel]
             [swarmpit.component.mixin :as mixin]
             [swarmpit.component.state :as state]
+            [material.component.list-table :as list]
             [swarmpit.component.handler :as handler]
             [swarmpit.routes :as routes]
-            [clojure.string :as string]
             [sablono.core :refer-macros [html]]
             [rum.core :as rum]))
 
 (enable-console-print!)
 
 (def cursor [:form])
-
-(defn- filter-items
-  "Filter list items based on given predicate"
-  [items predicate]
-  (filter #(string/includes? (:nodeName %) predicate) items))
 
 (defn- node-item-state [value]
   (case value
@@ -65,7 +60,7 @@
 
 (defn- init-state
   []
-  (state/set-value {:filter {:nodeName ""}} cursor))
+  (state/set-value {:filter {:query ""}} cursor))
 
 (def mixin-init-form
   (mixin/init-form
@@ -78,15 +73,15 @@
                  mixin/subscribe-form
                  mixin/focus-filter [_]
   (let [{:keys [filter items]} (state/react cursor)
-        filtered-items (filter-items items (:nodeName filter))]
+        filtered-items (list/filter items (:query filter))]
     [:div
      [:div.form-panel
       [:div.form-panel-left
        (panel/text-field
          {:id       "filter"
-          :hintText "Filter by name"
+          :hintText "Search nodes"
           :onChange (fn [_ v]
-                      (state/update-value [:filter :nodeName] v cursor))})]]
+                      (state/update-value [:filter :query] v cursor))})]]
      [:div.content-grid.mdl-grid
       (->> (sort-by :nodeName filtered-items)
            (map #(node-item %)))]]))

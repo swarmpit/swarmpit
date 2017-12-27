@@ -7,7 +7,6 @@
             [swarmpit.component.mixin :as mixin]
             [swarmpit.component.handler :as handler]
             [swarmpit.routes :as routes]
-            [clojure.string :as string]
             [sablono.core :refer-macros [html]]
             [rum.core :as rum]))
 
@@ -67,20 +66,6 @@
   [item]
   (routes/path-for-frontend :service-info {:id (:serviceName item)}))
 
-(defn- filter-unhealthy-items
-  [items name]
-  (let [is-running (fn [item] (= "running" (:state item)))
-        is-updating (fn [item] (= "updating" (get-in item [:status :update])))]
-    (filter #(and (string/includes? (:serviceName %) name)
-                  (and (not (is-running %))
-                       (not (is-updating %)))) items)))
-
-(defn- filter-items
-  [items name unhealthy?]
-  (if unhealthy?
-    (filter-unhealthy-items items name)
-    (filter #(string/includes? (:serviceName %) name) items)))
-
 (defn- services-handler
   []
   (handler/get
@@ -90,8 +75,7 @@
 
 (defn- init-state
   []
-  (state/set-value {:filter {:serviceName ""
-                             :unhealthy   false}} cursor))
+  (state/set-value {:filter {:query ""}} cursor))
 
 (def mixin-init-form
   (mixin/init-form
@@ -104,23 +88,15 @@
                  mixin/subscribe-form
                  mixin/focus-filter [_]
   (let [{:keys [filter items]} (state/react cursor)
-        filtered-items (filter-items items
-                                     (:serviceName filter)
-                                     (:unhealthy filter))]
+        filtered-items (list/filter items (:query filter))]
     [:div
      [:div.form-panel
       [:div.form-panel-left
        (panel/text-field
          {:id       "filter"
-          :hintText "Filter by name"
+          :hintText "Search services"
           :onChange (fn [_ v]
-                      (state/update-value [:filter :serviceName] v cursor))})
-       [:span.form-panel-space]
-       (panel/checkbox
-         {:checked (:unhealthy filter)
-          :label   "Show unhealthy"
-          :onCheck (fn [_ v]
-                     (state/update-value [:filter :unhealthy] v cursor))})]
+                      (state/update-value [:filter :query] v cursor))})]
       [:div.form-panel-right
        (comp/mui
          (comp/raised-button

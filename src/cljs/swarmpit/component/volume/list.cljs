@@ -6,7 +6,6 @@
             [swarmpit.component.state :as state]
             [swarmpit.component.handler :as handler]
             [swarmpit.routes :as routes]
-            [clojure.string :as string]
             [rum.core :as rum]))
 
 (enable-console-print!)
@@ -29,10 +28,6 @@
   [item]
   (routes/path-for-frontend :volume-info {:name (:volumeName item)}))
 
-(defn- filter-items
-  [items predicate]
-  (filter #(string/includes? (:volumeName %) predicate) items))
-
 (defn- volumes-handler
   []
   (handler/get
@@ -42,7 +37,7 @@
 
 (defn- init-state
   []
-  (state/set-value {:filter {:volumeName ""}} cursor))
+  (state/set-value {:filter {:query ""}} cursor))
 
 (def mixin-init-form
   (mixin/init-form
@@ -55,15 +50,15 @@
                  mixin/subscribe-form
                  mixin/focus-filter [_]
   (let [{:keys [filter items]} (state/react cursor)
-        filtered-items (filter-items items (:volumeName filter))]
+        filtered-items (list/filter items (:query filter))]
     [:div
      [:div.form-panel
       [:div.form-panel-left
        (panel/text-field
          {:id       "filter"
-          :hintText "Filter by name"
+          :hintText "Search volumes"
           :onChange (fn [_ v]
-                      (state/update-value [:filter :volumeName] v cursor))})]
+                      (state/update-value [:filter :query] v cursor))})]
       [:div.form-panel-right
        (comp/mui
          (comp/raised-button
