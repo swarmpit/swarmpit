@@ -6,7 +6,6 @@
             [swarmpit.component.state :as state]
             [swarmpit.component.handler :as handler]
             [swarmpit.routes :as routes]
-            [clojure.string :as string]
             [rum.core :as rum]))
 
 (enable-console-print!)
@@ -54,14 +53,6 @@
   [item]
   (routes/path-for-frontend :task-info (select-keys item [:id])))
 
-(defn- filter-items
-  [items name running?]
-  (let [is-running (fn [item] (= "running" (:state item)))]
-    (if running?
-      (filter #(and (string/includes? (:serviceName %) name)
-                    (is-running %)) items)
-      (filter #(string/includes? (:serviceName %) name) items))))
-
 (defn- tasks-handler
   []
   (handler/get
@@ -71,8 +62,7 @@
 
 (defn- init-state
   []
-  (state/set-value {:filter {:serviceName ""
-                             :running     true}} cursor))
+  (state/set-value {:filter {:query ""}} cursor))
 
 (def mixin-init-form
   (mixin/init-form
@@ -85,23 +75,15 @@
                  mixin/subscribe-form
                  mixin/focus-filter [_]
   (let [{:keys [filter items]} (state/react cursor)
-        filtered-items (filter-items items
-                                     (:serviceName filter)
-                                     (:running filter))]
+        filtered-items (list/filter items (:query filter))]
     [:div
      [:div.form-panel
       [:div.form-panel-left
        (panel/text-field
          {:id       "filter"
-          :hintText "Filter by service name"
+          :hintText "Search tasks"
           :onChange (fn [_ v]
-                      (state/update-value [:filter :serviceName] v cursor))})
-       [:span.form-panel-space]
-       (panel/checkbox
-         {:checked (false? (:running filter))
-          :label   "Show all"
-          :onCheck (fn [_ v]
-                     (state/update-value [:filter :running] (false? v) cursor))})]]
+                      (state/update-value [:filter :query] v cursor))})]]
      (list/table headers
                  (sort-by :serviceName filtered-items)
                  (nil? items)

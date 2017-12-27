@@ -1,14 +1,12 @@
 (ns swarmpit.component.registry.list
-  (:require [material.component :as comp]
+  (:require [material.icon :as icon]
+            [material.component :as comp]
             [material.component.panel :as panel]
             [material.component.list-table :as list]
-            [material.icon :as icon]
             [swarmpit.component.mixin :as mixin]
             [swarmpit.component.state :as state]
             [swarmpit.component.handler :as handler]
-            [swarmpit.storage :as storage]
             [swarmpit.routes :as routes]
-            [clojure.string :as string]
             [rum.core :as rum]))
 
 (def cursor [:form])
@@ -41,12 +39,6 @@
   [item]
   (routes/path-for-frontend :registry-info {:id (:_id item)}))
 
-(defn- filter-items
-  [items predicate]
-  (filter #(and (string/includes? (:name %) predicate)
-                (= (:owner %)
-                   (storage/user))) items))
-
 (defn- registries-handler
   []
   (handler/get
@@ -56,7 +48,7 @@
 
 (defn- init-state
   []
-  (state/set-value {:filter {:name ""}} cursor))
+  (state/set-value {:filter {:query ""}} cursor))
 
 (def mixin-init-form
   (mixin/init-form
@@ -69,15 +61,15 @@
                  mixin/subscribe-form
                  mixin/focus-filter [_]
   (let [{:keys [filter items]} (state/react cursor)
-        filtered-items (filter-items items (:name filter))]
+        filtered-items (list/filter items (:query filter))]
     [:div
      [:div.form-panel
       [:div.form-panel-left
        (panel/text-field
          {:id       "filter"
-          :hintText "Filter by name"
+          :hintText "Search registries"
           :onChange (fn [_ v]
-                      (state/update-value [:filter :name] v cursor))})]
+                      (state/update-value [:filter :query] v cursor))})]
       [:div.form-panel-right
        (comp/mui
          (comp/raised-button

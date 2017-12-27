@@ -6,8 +6,6 @@
             [swarmpit.component.state :as state]
             [swarmpit.component.handler :as handler]
             [swarmpit.routes :as routes]
-            [clojure.string :as string]
-            [swarmpit.storage :as storage]
             [rum.core :as rum]))
 
 (def cursor [:form])
@@ -37,12 +35,6 @@
   [item]
   (routes/path-for-frontend :dockerhub-user-info {:id (:_id item)}))
 
-(defn- filter-items
-  [items predicate]
-  (filter #(and (string/includes? (:username %) predicate)
-                (= (:owner %)
-                   (storage/user))) items))
-
 (defn- users-handler
   []
   (handler/get
@@ -52,7 +44,7 @@
 
 (defn- init-state
   []
-  (state/set-value {:filter {:username ""}} cursor))
+  (state/set-value {:filter {:query ""}} cursor))
 
 (def mixin-init-form
   (mixin/init-form
@@ -65,15 +57,15 @@
                  mixin/subscribe-form
                  mixin/focus-filter [_]
   (let [{:keys [filter items]} (state/react cursor)
-        filtered-items (filter-items items (:username filter))]
+        filtered-items (list/filter items (:query filter))]
     [:div
      [:div.form-panel
       [:div.form-panel-left
        (panel/text-field
          {:id       "filter"
-          :hintText "Filter by username"
+          :hintText "Search hub users"
           :onChange (fn [_ v]
-                      (state/update-value [:filter :username] v cursor))})]
+                      (state/update-value [:filter :query] v cursor))})]
       [:div.form-panel-right
        (comp/mui
          (comp/raised-button
