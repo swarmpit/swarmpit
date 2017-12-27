@@ -1,7 +1,8 @@
 (ns material.component.list-table
+  (:refer-clojure :exclude [filter])
   (:require [material.component :as cmp]
             [material.icon :as icon]
-            [swarmpit.utils :refer [select-keys*]]
+            [swarmpit.utils :refer [select-keys* map-values]]
             [swarmpit.url :refer [dispatch!]]))
 
 (defn table-header
@@ -100,3 +101,15 @@
                       items
                       render-item-fn
                       render-items-key)))])))
+
+(defn filter
+  [items query]
+  (if (or (empty? query)
+          (< (count query) 2))
+    items
+    (clojure.core/filter
+      (fn [item]
+        (->> (map-values item)
+             (clojure.core/filter #(clojure.string/includes? % query))
+             (empty?)
+             (not))) items)))
