@@ -17,8 +17,8 @@ services:
           cpus: '0.50'
           memory: 1024M
         reservations:
-          cpus: '0.50'
-          memory: 1024M
+          cpus: '0.25'
+          memory: 512M
       placement:
         constraints:
           - node.role == manager
@@ -32,11 +32,11 @@ services:
     deploy:
       resources:
         limits:
-          cpus: '0.10'
+          cpus: '0.20'
           memory: 512M
         reservations:
           cpus: '0.10'
-          memory: 512M
+          memory: 256M
 
   event-collector:
     image: swarmpit/event-collector:latest
@@ -49,10 +49,10 @@ services:
       resources:
         limits:
           cpus: '0.10'
-          memory: 128M
-        reservations:
-          cpus: '0.10'
           memory: 64M
+        reservations:
+          cpus: '0.05'
+          memory: 32M
 
 networks:
   net:
