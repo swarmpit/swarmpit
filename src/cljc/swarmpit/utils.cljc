@@ -32,6 +32,6 @@
                 (fn [x]
                   (cond
                     (map? x) (vals x)
-                    (integer? x) (str x)
+                    (number? x) (str x)
                     (boolean? x) (str x)
                     :else (identity x))) m)))))
