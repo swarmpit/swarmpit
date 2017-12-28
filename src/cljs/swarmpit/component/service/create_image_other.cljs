@@ -7,6 +7,7 @@
             [swarmpit.component.mixin :as mixin]
             [swarmpit.component.progress :as progress]
             [swarmpit.component.handler :as handler]
+            [swarmpit.component.message :as message]
             [swarmpit.storage :as storage]
             [swarmpit.url :refer [dispatch!]]
             [swarmpit.routes :as routes]
@@ -36,7 +37,10 @@
     (routes/path-for-backend :registry-repositories {:id registry-id})
     {:state      searching?
      :on-success (fn [response]
-                   (state/update-value [:repositories] response cursor))}))
+                   (state/update-value [:repositories] response cursor))
+     :on-error   (fn [response]
+                   (message/error
+                     (str "Repositories fetching failed. Reason: " (:error response))))}))
 
 (defn- form-registry-label
   [registry]

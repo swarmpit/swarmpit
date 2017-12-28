@@ -6,6 +6,7 @@
             [swarmpit.component.mixin :as mixin]
             [swarmpit.component.progress :as progress]
             [swarmpit.component.handler :as handler]
+            [swarmpit.component.message :as message]
             [swarmpit.url :refer [dispatch!]]
             [swarmpit.routes :as routes]
             [rum.core :as rum]))
@@ -32,7 +33,10 @@
                   :page  page}
      :state      searching?
      :on-success (fn [response]
-                   (state/update-value [:repositories] response cursor))}))
+                   (state/update-value [:repositories] response cursor))
+     :on-error   (fn [response]
+                   (message/error
+                     (str "Repositories fetching failed. Reason: " (:error response))))}))
 
 (defn- form-repository [repository]
   (form/comp
