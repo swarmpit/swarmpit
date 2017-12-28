@@ -61,4 +61,9 @@
             (ex-info (str scope " error: " error)
                      {:status  status
                       :headers headers
-                      :body    {:error error}})))))))
+                      :body    {:error error}}))))
+      (catch TimeoutException _
+        (throw
+          (ex-info (str scope " error: Request timeout")
+                   {:status 408
+                    :body   {:error "Request timeout"}}))))))

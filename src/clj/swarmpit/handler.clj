@@ -1,7 +1,6 @@
 (ns swarmpit.handler
   (:require [clojure.walk :refer [keywordize-keys]]
             [clojure.java.io :as io]
-            [clojure.tools.logging :as log]
             [swarmpit.version :refer [version]]
             [swarmpit.api :as api]
             [swarmpit.slt :as slt]
