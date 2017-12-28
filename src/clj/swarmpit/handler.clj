@@ -1,6 +1,7 @@
 (ns swarmpit.handler
   (:require [clojure.walk :refer [keywordize-keys]]
             [clojure.java.io :as io]
+            [clojure.tools.logging :as log]
             [swarmpit.version :refer [version]]
             [swarmpit.api :as api]
             [swarmpit.slt :as slt]
@@ -332,12 +333,14 @@
     (let [owner (get-in identity [:usr :username])
           payload (assoc (keywordize-keys params) :owner owner
                                                   :type "registry")]
-      (if (api/registry-valid? payload)
+      (try
+        (api/registry-info payload)
         (let [response (api/create-registry payload)]
           (if (some? response)
             (resp-created (select-keys response [:id]))
             (resp-error 400 "Registry already exist")))
-        (resp-error 400 "Registry credentials does not match any known registry")))))
+        (catch Exception e
+          (resp-error 400 (get-in (ex-data e) [:body :error])))))))
 
 (defmethod dispatch :registry-update [_]
   (fn [{:keys [route-params params]}]

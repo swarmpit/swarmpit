@@ -279,12 +279,9 @@
   [registry]
   (cc/registry-exist? registry))
 
-(defn registry-valid?
+(defn registry-info
   [registry]
-  (some?
-    (try
-      (rc/info registry)
-      (catch Exception _))))
+  (rc/info registry))
 
 (defn delete-registry
   [registry-id]
