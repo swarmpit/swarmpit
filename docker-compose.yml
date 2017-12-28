@@ -32,10 +32,10 @@ services:
     deploy:
       resources:
         limits:
-          cpus: '0.20'
+          cpus: '0.30'
           memory: 512M
         reservations:
-          cpus: '0.10'
+          cpus: '0.15'
           memory: 256M
 
   event-collector:
