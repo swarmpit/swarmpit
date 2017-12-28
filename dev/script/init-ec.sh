@@ -1,21 +1,22 @@
 #!/bin/bash
 
-if [ "$(docker ps -aq -f name=swarmpitec)" ];
+if [ "$(docker ps -aq -f name=event-collector)" ];
 then
-   	echo "Swarmpit EC already exists."
-    if [ "$(docker ps -aq -f status=exited -f name=swarmpitec)" ];
+   	echo "Event collector already exists."
+    if [ "$(docker ps -aq -f status=exited -f name=event-collector)" ];
     then
-        echo "Swarmpit EC down. Starting ..."
-        docker start swarmpitec
+        echo "Event collector down. Starting ..."
+        docker start event-collector
         sleep 5
     else
-        echo "Swarmpit EC running."
+        echo "Event collector running."
     fi
 else
-    echo "Creating swarmpit EC"
+    echo "Creating event collector"
     docker run -d \
-      --name swarmpitec \
+      --name event-collector \
       --env EVENT_ENDPOINT=http://192.168.65.1:3449/events \
+      --env HEALTH_CHECK_ENDPOINT=http://192.168.65.1:3449/version \
       --volume /var/run/docker.sock:/var/run/docker.sock \
-      swarmpit/swarmpit-ec:latest
+      swarmpit/event-collector:latest
 fi
