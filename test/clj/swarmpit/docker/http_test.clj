@@ -3,8 +3,7 @@
   (:require [clojure.test :refer :all]
             [swarmpit.test :refer :all]
             [swarmpit.docker.http :refer :all])
-  (:import (clojure.lang ExceptionInfo)
-           (java.util.concurrent TimeoutException)))
+  (:import (clojure.lang ExceptionInfo)))
 
 (use-fixtures :once dind-socket-fixture)
 
@@ -38,7 +37,7 @@
 
   (testing "timeout"
     (is (thrown?
-          TimeoutException
+          ExceptionInfo #"Docker error: Request timeout"
           (with-redefs [swarmpit.docker.http/timeout 0]
             (get "/services")))))
 
