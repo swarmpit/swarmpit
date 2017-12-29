@@ -78,7 +78,7 @@
        {:onValid   #(reset! isValid true)
         :onInvalid #(reset! isValid false)}
        (html (form/subsection "Reservation"))
-       (html (form/icon-value icon/info [:span "Minimal resource availablility to run a task. Empty for unlimited."]))
+       (html (form/icon-value icon/info [:span "Minimal resource availability to run a task. Empty for unlimited."]))
        (form-cpu-reservation (:cpu reservation))
        (form-memory-reservation (:memory reservation))
        (html (form/subsection "Limit"))
