@@ -235,3 +235,8 @@
    :Data (if (:encode secret)
            (base64/encode (:data secret))
            (:data secret))})
+
+(defn ->config
+  [config]
+  {:Name (:configName config)
+   :Data (:data config)})

@@ -353,3 +353,18 @@
   (->> secrets
        (map ->secret)
        (into [])))
+
+(defn ->config
+  [config]
+  (array-map
+    :id (:ID config)
+    :version (get-in config [:Version :Index])
+    :configName (get-in config [:Spec :Name])
+    :createdAt (:CreatedAt config)
+    :updatedAt (:UpdatedAt config)))
+
+(defn ->configs
+  [configs]
+  (->> configs
+       (map ->config)
+       (into [])))
