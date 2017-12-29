@@ -53,6 +53,10 @@
        "/secrets/"      {:get    {[:id] :secret}
                          :delete {[:id] :secret-delete}
                          :post   {[:id] :secret-update}}
+       "/configs"       {:get  :configs
+                         :post :config-create}
+       "/configs/"      {:get    {[:id] :config}
+                         :delete {[:id] :config-delete}}
        "/nodes"         {:get :nodes}
        "/placement"     {:get :placement}
        "/nodes/"        {:get {[:id] {""       :node
