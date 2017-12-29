@@ -123,6 +123,26 @@
   (let [uri (str "/secrets/" id "/update")]
     (post uri {:version version} secret)))
 
+;; Config
+
+(defn configs
+  []
+  (get "/configs"))
+
+(defn config
+  [id]
+  (-> (str "/configs/" id)
+      (get)))
+
+(defn delete-config
+  [id]
+  (-> (str "/configs/" id)
+      (delete)))
+
+(defn create-config
+  [config]
+  (post "/configs/create" config))
+
 ;; Node
 
 (defn nodes
