@@ -108,6 +108,28 @@
     (->> (dmo/->secret secret)
          (dc/update-secret secret-id secret-version))))
 
+;;; Config API
+
+(defn configs
+  []
+  (-> (dc/configs)
+      (dmi/->configs)))
+
+(defn config
+  [config-id]
+  (-> (dc/config config-id)
+      (dmi/->config)))
+
+(defn delete-config
+  [config-id]
+  (dc/delete-config config-id))
+
+(defn create-config
+  [config]
+  (-> (dmo/->config config)
+      (dc/create-config)
+      (rename-keys {:ID :id})))
+
 ;;; Network API
 
 (defn networks

@@ -255,6 +255,29 @@
       (api/update-secret (:id route-params) payload)
       (resp-ok))))
 
+;; Config handler
+
+(defmethod dispatch :configs [_]
+  (fn [_]
+    (->> (api/configs)
+         (resp-ok))))
+
+(defmethod dispatch :config [_]
+  (fn [{:keys [route-params]}]
+    (->> (api/config (:id route-params))
+         (resp-ok))))
+
+(defmethod dispatch :config-create [_]
+  (fn [{:keys [params]}]
+    (let [payload (keywordize-keys params)]
+      (->> (api/create-config payload)
+           (resp-created)))))
+
+(defmethod dispatch :config-delete [_]
+  (fn [{:keys [route-params]}]
+    (api/delete-config (:id route-params))
+    (resp-ok)))
+
 ;; Node handler
 
 (defmethod dispatch :nodes [_]
