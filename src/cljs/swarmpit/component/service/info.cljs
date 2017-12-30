@@ -15,6 +15,7 @@
             [swarmpit.component.service.info.networks :as networks]
             [swarmpit.component.service.info.mounts :as mounts]
             [swarmpit.component.service.info.secrets :as secrets]
+            [swarmpit.component.service.info.configs :as configs]
             [swarmpit.component.service.info.variables :as variables]
             [swarmpit.component.service.info.labels :as labels]
             [swarmpit.component.service.info.logdriver :as logdriver]
@@ -162,6 +163,7 @@
         ports (:ports service)
         mounts (:mounts service)
         secrets (:secrets service)
+        configs (:configs service)
         variables (:variables service)
         labels (:labels service)
         logdriver (:logdriver service)
@@ -197,6 +199,7 @@
       (networks/form networks)
       (mounts/form mounts)
       (secrets/form secrets)
+      (configs/form configs)
       (variables/form variables)
       (labels/form labels)
       (logdriver/form logdriver)
