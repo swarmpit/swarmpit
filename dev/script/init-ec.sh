@@ -7,7 +7,6 @@ then
     then
         echo "Event collector down. Starting ..."
         docker start event-collector
-        sleep 5
     else
         echo "Event collector running."
     fi
