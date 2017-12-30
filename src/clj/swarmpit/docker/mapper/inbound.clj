@@ -200,6 +200,17 @@
                      :mode         (get-in s [:File :Mode])}))
        (into [])))
 
+(defn ->service-configs
+  [service-spec]
+  (->> (get-in service-spec [:TaskTemplate :ContainerSpec :Configs])
+       (map (fn [s] {:id           (:ConfigID s)
+                     :configName   (:ConfigName s)
+                     :configTarget (get-in s [:File :Name])
+                     :uid          (get-in s [:File :UID])
+                     :gid          (get-in s [:File :GID])
+                     :mode         (get-in s [:File :Mode])}))
+       (into [])))
+
 (defn ->service-deployment-update
   [service-spec]
   (let [update-config (:UpdateConfig service-spec)]
@@ -300,6 +311,7 @@
       :ports (->service-ports service-spec)
       :mounts (->service-mounts service-spec)
       :secrets (->service-secrets service-spec)
+      :configs (->service-configs service-spec)
       :variables (->service-variables service-spec)
       :labels (->service-labels service-labels)
       :logdriver {:name (or (get-in service-task-template [:LogDriver :Name]) "json-file")
