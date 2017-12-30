@@ -469,15 +469,18 @@
   ([service]
    (-> service
        (assoc-in [:secrets] (dmo/->service-secrets service (secrets)))
+       (assoc-in [:configs] (dmo/->service-configs service (configs)))
        (assoc-in [:repository :imageId] (service-image-id service false))))
   ([service force?]
    (if force?
      (-> service
          (assoc-in [:secrets] (dmo/->service-secrets service (secrets)))
+         (assoc-in [:configs] (dmo/->service-configs service (configs)))
          (assoc-in [:repository :imageId] (service-image-id service true))
          (update-in [:deployment :forceUpdate] inc))
      (-> service
-         (assoc-in [:secrets] (dmo/->service-secrets service (secrets)))))))
+         (assoc-in [:secrets] (dmo/->service-secrets service (secrets)))
+         (assoc-in [:configs] (dmo/->service-configs service (configs)))))))
 
 (defn create-service
   [service]
