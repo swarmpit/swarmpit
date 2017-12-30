@@ -13,13 +13,10 @@ env:
   - DOCKER=17.11
   - DOCKER=17.10
   - DOCKER=17.09
-  - DOCKER=17.08
   - DOCKER=17.07
   - DOCKER=17.06
-  - DOCKER=17.05
-  - DOCKER=17.04
   - DOCKER=17.03
-  - DOCKER=1.13.0
+  - DOCKER=1.13
 before_cache:
   - >
     mkdir -p $HOME/docker && docker images -a --filter='dangling=false' --format '{{.Repository}}:{{.Tag}} {{.ID}}'
