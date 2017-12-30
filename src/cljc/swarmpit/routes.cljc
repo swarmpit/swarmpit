@@ -93,6 +93,9 @@
                    "/secrets"                 {""        :secret-list
                                                "/create" :secret-create
                                                ["/" :id] :secret-info}
+                   "/configs"                 {""        :config-list
+                                               "/create" :config-create
+                                               ["/" :id] :config-info}
                    "/nodes"                   {""        :node-list
                                                ["/" :id] :node-info}
                    "/tasks"                   {""        :task-list

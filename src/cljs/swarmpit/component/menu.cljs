@@ -105,6 +105,11 @@
     :handler :secret-list
     :route   "secrets"
     :domain  :secret}
+   {:name    "Configs"
+    :icon    icon/configs2
+    :handler :config-list
+    :route   "configs"
+    :domain  :config}
    {:name "DISTRIBUTION"}
    {:name    "Dockerhub"
     :icon    icon/docker
