@@ -395,6 +395,12 @@
                              (map :SecretName)
                              (set)) secret-name)))
 
+(defn services-by-config
+  [config-name]
+  (services #(contains? (->> (get-in % [:Spec :TaskTemplate :ContainerSpec :Configs])
+                             (map :ConfigName)
+                             (set)) config-name)))
+
 (defn service
   [service-id]
   (dmi/->service (dc/service service-id)

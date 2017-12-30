@@ -55,8 +55,7 @@
   (mixin/init-form
     (fn [{{:keys [id]} :params}]
       (config-handler id)
-      ;(config-services-handler id)
-      )))
+      (config-services-handler id))))
 
 (rum/defc form-info < rum/static [config services]
   [:div

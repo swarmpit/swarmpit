@@ -125,6 +125,7 @@
           "network" (api/services-by-network (:filterValue query))
           "volume" (api/services-by-volume (:filterValue query))
           "secret" (api/services-by-secret (:filterValue query))
+          "config" (api/services-by-config (:filterValue query))
           (api/services))))))
 
 (defmethod dispatch :service [_]
