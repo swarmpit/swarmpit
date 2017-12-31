@@ -39,6 +39,9 @@
     (routes/path-for-backend :service {:id service-id})
     {:on-success
      (fn [service]
+       (settings/tags-handler (-> service :distribution :type)
+                              (-> service :distribution :id)
+                              (-> service :repository :name))
        (state/set-value (select-keys service [:distribution :repository :version :serviceName :mode :replicas :stack]) settings/cursor)
        (state/set-value (:ports service) ports/cursor)
        (state/set-value (:mounts service) mounts/cursor)

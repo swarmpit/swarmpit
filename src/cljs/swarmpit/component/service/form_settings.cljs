@@ -39,6 +39,13 @@
      :on-success (fn [response]
                    (reset! tags response))}))
 
+(defn tags-handler
+  [distributionType distribution repository]
+  (case distributionType
+    "dockerhub" (dockerhub-tags-handler distribution repository)
+    "registry" (registry-tags-handler distribution repository)
+    (public-tags-handler repository)))
+
 (def form-mode-style
   {:display   "flex"
    :marginTop "14px"})
@@ -58,8 +65,8 @@
        :inputStyle    form-image-style
        :value         value})))
 
-(defn- form-image-tag-ac [value tags distribution]
-  "Preload tags for services created via swarmpit"
+(defn- form-image-tag-with-port-load [value tags distribution]
+  "Preload ports for services created via swarmpit"
   (form/comp
     "IMAGE TAG"
     (comp/autocomplete {:name          "imageTagAuto"
@@ -69,16 +76,16 @@
                         :onNewRequest  (fn [_] (ports/load-suggestable-ports distribution value))
                         :dataSource    tags})))
 
-(defn- form-image-tag [value]
-  "For services created by docker cli there is no preload"
+(defn- form-image-tag [value tags]
+  "For services created by docker cli there is no port preload"
   (form/comp
     "IMAGE TAG"
-    (comp/text-field
-      {:name     "image-tag"
-       :key      "image-tag"
-       :value    value
-       :onChange (fn [_ v]
-                   (state/update-value [:repository :tag] v cursor))})))
+    (comp/autocomplete
+      {:name          "image-tag"
+       :key           "image-tag"
+       :searchText    (:tag value)
+       :onUpdateInput (fn [v] (state/update-value [:repository :tag] v cursor))
+       :dataSource    tags})))
 
 (defn- form-name [value update-form?]
   (form/comp
@@ -140,8 +147,8 @@
         :onInvalid #(reset! isValid false)}
        (form-image (:name repository))
        (if update-form?
-         (form-image-tag (:tag repository))
-         (form-image-tag-ac repository (rum/react tags) distribution))
+         (form-image-tag repository (rum/react tags))
+         (form-image-tag-with-port-load repository (rum/react tags) distribution))
        (form-name serviceName update-form?)
        (form-mode mode update-form?)
        (when (= "replicated" mode)

@@ -101,10 +101,7 @@
       (secrets/secrets-handler)
       (placement/placement-handler)
       (labels/labels-handler)
-      (case distributionType
-        "dockerhub" (settings/dockerhub-tags-handler distribution repository)
-        "registry" (settings/registry-tags-handler distribution repository)
-        (settings/public-tags-handler repository)))))
+      (settings/tags-handler distributionType distribution repository))))
 
 (rum/defc form-settings < rum/static []
   [:div.form-layout-group
