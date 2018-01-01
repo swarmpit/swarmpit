@@ -12,6 +12,8 @@
 
 (def cursor [:layout])
 
+(def docker-api-cursor [:docker :api])
+
 (def drawer-style
   {:boxShadow "none"})
 
@@ -131,6 +133,27 @@
   {:height   "100%"
    :overflow "auto"})
 
+(defn- parse-version [version]
+  (clojure.string/replace
+    (:version version)
+    #"SNAPSHOT"
+    (->> (:revision version)
+         (take 7)
+         (apply str))))
+
+(defn- filter-menu [docker-api]
+  (if (<= 1.30 docker-api)
+    menu
+    (filter #(not= :config (:domain %)) menu)))
+
+(defn- version-handler
+  []
+  (handler/get
+    (routes/path-for-backend :version)
+    {:on-success (fn [response]
+                   (state/update-value [:version] (parse-version response) cursor)
+                   (state/set-value response))}))
+
 (rum/defc drawer-category < rum/static [name opened?]
   (let [drawer-category-style (if opened?
                                 drawer-category-style
@@ -162,25 +185,16 @@
          [:div {:style drawer-app-name-style} "swarmpit"]
          [:div {:style drawer-app-version-style} version]]))
 
-(defn parse-version [version]
-  (clojure.string/replace
-    (:version version)
-    #"SNAPSHOT"
-    (->> (:revision version)
-         (take 7)
-         (apply str))))
-
 (def retrieve-version
-  {:will-mount
+  {:init
    (fn [state]
-     (handler/get
-       (routes/path-for-backend :version)
-       {:on-success #(state/update-value [:version] (parse-version %) cursor)})
+     (version-handler)
      state)})
 
 (rum/defc drawer < rum/reactive
                    retrieve-version [page-domain]
   (let [{:keys [opened version]} (state/react cursor)
+        docker-api (state/react docker-api-cursor)
         drawer-container-style (if opened
                                  drawer-container-opened-style
                                  drawer-container-closed-style)]
@@ -209,6 +223,7 @@
                     selected (= page-domain domain)]
                 (if (some? icon)
                   (drawer-item name icon handler opened selected)
-                  (drawer-category name opened)))) (if (storage/admin?)
-                                                     (concat menu admin-menu)
-                                                     menu)))))))
+                  (drawer-category name opened))))
+            (if (storage/admin?)
+              (concat (filter-menu docker-api) admin-menu)
+              (filter-menu docker-api))))))))
