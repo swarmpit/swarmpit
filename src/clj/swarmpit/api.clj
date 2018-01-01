@@ -2,6 +2,7 @@
   (:require [clojure.set :refer [rename-keys]]
             [buddy.hashers :as hashers]
             [digest :refer [digest]]
+            [swarmpit.version :refer [version]]
             [swarmpit.utils :refer [merge-data]]
             [swarmpit.docker.client :as dc]
             [swarmpit.docker.log :as dl]
@@ -471,22 +472,32 @@
          (dmo/->service service)
          (dc/create-service auth-config))))
 
+(defn- standardize-service-configs
+  [service]
+  (if (<= 1.30 (get-in version [:docker :api]))
+    (assoc-in service [:configs] (dmo/->service-configs service (configs)))
+    service))
+
+(defn- standardize-service-secrets
+  [service]
+  (assoc-in service [:secrets] (dmo/->service-secrets service (secrets))))
+
 (defn- standardize-service
   ([service]
    (-> service
-       (assoc-in [:secrets] (dmo/->service-secrets service (secrets)))
-       (assoc-in [:configs] (dmo/->service-configs service (configs)))
+       (standardize-service-secrets)
+       (standardize-service-configs)
        (assoc-in [:repository :imageId] (service-image-id service false))))
   ([service force?]
    (if force?
      (-> service
-         (assoc-in [:secrets] (dmo/->service-secrets service (secrets)))
-         (assoc-in [:configs] (dmo/->service-configs service (configs)))
+         (standardize-service-secrets)
+         (standardize-service-configs)
          (assoc-in [:repository :imageId] (service-image-id service true))
          (update-in [:deployment :forceUpdate] inc))
      (-> service
-         (assoc-in [:secrets] (dmo/->service-secrets service (secrets)))
-         (assoc-in [:configs] (dmo/->service-configs service (configs)))))))
+         (standardize-service-secrets)
+         (standardize-service-configs)))))
 
 (defn create-service
   [service]
