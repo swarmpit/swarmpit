@@ -380,3 +380,8 @@
   (->> configs
        (map ->config)
        (into [])))
+
+(defn ->version
+  [version]
+  {:api    (read-string (:ApiVersion version))
+   :engine (:Version version)})

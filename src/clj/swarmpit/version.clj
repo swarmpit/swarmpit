@@ -1,5 +1,7 @@
 (ns swarmpit.version
-  (:require [clojure.java.io :as io]
+  (:require [swarmpit.docker.client :as dc]
+            [swarmpit.docker.mapper.inbound :as dmi]
+            [clojure.java.io :as io]
             [clojure.walk :refer [keywordize-keys]])
   (:import (java.util Properties)))
 
@@ -12,4 +14,5 @@
 (def version
   {:name     "swarmpit"
    :version  (get pom-properties "version")
-   :revision (get pom-properties "revision")})
+   :revision (get pom-properties "revision")
+   :docker   (dmi/->version (dc/version))})
