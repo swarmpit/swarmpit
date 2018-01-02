@@ -87,7 +87,6 @@
             :primary    true
             :onTouchTap create-config-handler}))]]
      [:div.form-edit
-      (form/icon-value icon/info "Data must be base64 encoded. If plain text check please encode data.")
       (form/form
         {:onValid   #(reset! isValid true)
          :onInvalid #(reset! isValid false)}
