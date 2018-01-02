@@ -62,21 +62,37 @@ humanized time on FE.
 - [[#138](https://github.com/swarmpit/swarmpit/issues/138)] Replace httpkit on server by clj-http
 - [[#139](https://github.com/swarmpit/swarmpit/issues/139)] Show local times in FE
 
+### 1.3 Release
+
+Since 1.3 SSE support and event based rendering is supported. This means that data can be pushed directly
+to FE based on received event immediately (if subscribed). To collect events from cluster nodes new component
+was introduced into stack: event-collector. In order to have always actual data without refreshing please
+do not remove this service from stack. Apart from that full-text search was introduced in list components. We
+also added token registry fallback support so feel free to use your favourite v.2 registry such Gitlab. Finally
+linked services are shown on resource (volume/network/secret/node) info page.
+
+- [[#165](https://github.com/swarmpit/swarmpit/issues/165)] Add SSE support
+- [[#183](https://github.com/swarmpit/swarmpit/issues/183)] Add view subscription for event based rendering
+- [[#180](https://github.com/swarmpit/swarmpit/issues/180)] Add data config
+- [[#157](https://github.com/swarmpit/swarmpit/issues/157)] Add token auth support for custom docker registry
+- [[#113](https://github.com/swarmpit/swarmpit/issues/113)] Refresh data automatically on service detail page
+- [[#115](https://github.com/swarmpit/swarmpit/issues/115)] Filter by more than just a name (id, node, port ...)
+- [[#105](https://github.com/swarmpit/swarmpit/issues/105)] Show list of linked services in volume/network/secret ...
+- [[#186](https://github.com/swarmpit/swarmpit/issues/186)] Material & State cleanup
+
 ## What we will bring into the game
 
 You can find here our goals and related features for future releases.
 
-### 1.3 Release
+### 1.4 Release
 
-- [[#157](https://github.com/swarmpit/swarmpit/issues/157)] Add token auth support for custom docker registry.
-- [[#113](https://github.com/swarmpit/swarmpit/issues/113)] Refresh data automatically on service detail page
-- [[#115](https://github.com/swarmpit/swarmpit/issues/115)] Filter by more than just a name (id, node, port ...)
-- [[#105](https://github.com/swarmpit/swarmpit/issues/105)] Show list of linked services in volume/network/secret ...
+The main goal is to introduce application stacks.
+
+- [[#39](https://github.com/swarmpit/swarmpit/issues/39)] Add application stacks.
 
 ### 2.0 Release
 
-The main goal is to introduce application stacks & resource role management.
+The main goal is to introduce FaaS & resource role management.
 
-- [[#39](https://github.com/swarmpit/swarmpit/issues/39)] Add application stacks.
 - [[#94](https://github.com/swarmpit/swarmpit/issues/94)] Add docker resource role management.
 - [[#57](https://github.com/swarmpit/swarmpit/issues/57)] Integrate FaaS
