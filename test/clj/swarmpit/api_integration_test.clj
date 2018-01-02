@@ -1,10 +1,10 @@
 (ns swarmpit.api-integration-test
-  (:require [clojure.test :refer :all]
-            [swarmpit.test :refer :all]
+  (:require [swarmpit.test :refer :all]
             [swarmpit.api :refer :all]
+            [clojure.test :refer :all]
             [clojure.edn :as edn]))
 
-(use-fixtures :once dind-socket-fixture running-service-fixture db-init-fixture)
+(use-fixtures :once db-init-fixture dind-socket-fixture running-service-fixture)
 
 (defn test-crud
   [crud]

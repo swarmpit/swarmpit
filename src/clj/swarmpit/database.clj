@@ -1,4 +1,4 @@
-(ns swarmpit.install
+(ns swarmpit.database
   (:require [clojure.tools.logging :as log]
             [swarmpit.couchdb.client :as cc]
             [swarmpit.couchdb.migration :refer [migrate]]))

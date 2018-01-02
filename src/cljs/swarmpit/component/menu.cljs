@@ -224,6 +224,7 @@
                 (if (some? icon)
                   (drawer-item name icon handler opened selected)
                   (drawer-category name opened))))
-            (if (storage/admin?)
-              (concat (filter-menu docker-api) admin-menu)
-              (filter-menu docker-api))))))))
+            (let [fmenu (filter-menu docker-api)]
+              (if (storage/admin?)
+                (concat fmenu admin-menu)
+                fmenu))))))))

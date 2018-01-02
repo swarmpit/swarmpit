@@ -1,7 +1,7 @@
 (ns swarmpit.handler
   (:require [clojure.walk :refer [keywordize-keys]]
             [clojure.java.io :as io]
-            [swarmpit.version :refer [version]]
+            [swarmpit.version :as version]
             [swarmpit.api :as api]
             [swarmpit.slt :as slt]
             [swarmpit.token :as token]))
@@ -47,7 +47,8 @@
 
 (defmethod dispatch :version [_]
   (fn [_]
-    (resp-ok version)))
+    (->> (version/info)
+         (resp-ok))))
 
 ;; SLT handler
 

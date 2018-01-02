@@ -2,8 +2,8 @@
   (:require [clojure.set :refer [rename-keys]]
             [buddy.hashers :as hashers]
             [digest :refer [digest]]
-            [swarmpit.version :refer [version]]
             [swarmpit.utils :refer [merge-data]]
+            [swarmpit.config :as cfg]
             [swarmpit.docker.client :as dc]
             [swarmpit.docker.log :as dl]
             [swarmpit.docker.mapper.inbound :as dmi]
@@ -474,7 +474,7 @@
 
 (defn- standardize-service-configs
   [service]
-  (if (<= 1.30 (get-in version [:docker :api]))
+  (if (<= 1.30 (read-string (cfg/config :docker-api)))
     (assoc-in service [:configs] (dmo/->service-configs service (configs)))
     service))
 
