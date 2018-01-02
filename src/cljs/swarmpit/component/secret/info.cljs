@@ -21,8 +21,7 @@
 (defn- secret-services-handler
   [secret-id]
   (handler/get
-    (routes/path-for-backend :services {} {:filterType  "secret"
-                                           :filterValue secret-id})
+    (routes/path-for-backend :secret-services {:id secret-id})
     {:on-success (fn [response]
                    (state/update-value [:services] response cursor))}))
 

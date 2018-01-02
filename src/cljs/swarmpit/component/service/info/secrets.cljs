@@ -17,7 +17,7 @@
 
 (defn onclick-handler
   [item]
-  (routes/path-for-frontend :secret-info (select-keys item [:id])))
+  (routes/path-for-frontend :secret-info {:id (:secretName item)}))
 
 (rum/defc form < rum/static [secrets]
   (when (not-empty secrets)

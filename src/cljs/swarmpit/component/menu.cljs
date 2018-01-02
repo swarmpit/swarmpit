@@ -108,7 +108,7 @@
     :route   "secrets"
     :domain  :secret}
    {:name    "Configs"
-    :icon    icon/configs2
+    :icon    icon/configs
     :handler :config-list
     :route   "configs"
     :domain  :config}

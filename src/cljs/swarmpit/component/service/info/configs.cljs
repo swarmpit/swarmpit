@@ -17,7 +17,7 @@
 
 (defn onclick-handler
   [item]
-  (routes/path-for-frontend :config-info (select-keys item [:id])))
+  (routes/path-for-frontend :config-info {:id (:configName item)}))
 
 (rum/defc form < rum/static [configs]
   (when (not-empty configs)

@@ -42,20 +42,24 @@
                                          "/rollback" :service-rollback}}}
        "/networks"      {:get  :networks
                          :post :network-create}
-       "/networks/"     {:get    {[:id] :network}
+       "/networks/"     {:get    {[:id] {""          :network
+                                         "/services" :network-services}}
                          :delete {[:id] :network-delete}}
        "/volumes"       {:get  :volumes
                          :post :volume-create}
-       "/volumes/"      {:get    {[:name] :volume}
+       "/volumes/"      {:get    {[:name] {""          :volume
+                                           "/services" :volume-services}}
                          :delete {[:name] :volume-delete}}
        "/secrets"       {:get  :secrets
                          :post :secret-create}
-       "/secrets/"      {:get    {[:id] :secret}
+       "/secrets/"      {:get    {[:id] {""          :secret
+                                         "/services" :secret-services}}
                          :delete {[:id] :secret-delete}
                          :post   {[:id] :secret-update}}
        "/configs"       {:get  :configs
                          :post :config-create}
-       "/configs/"      {:get    {[:id] :config}
+       "/configs/"      {:get    {[:id] {""          :config
+                                         "/services" :config-services}}
                          :delete {[:id] :config-delete}}
        "/nodes"         {:get :nodes}
        "/placement"     {:get :placement}

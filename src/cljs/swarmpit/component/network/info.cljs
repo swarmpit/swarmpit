@@ -23,8 +23,7 @@
 (defn- network-services-handler
   [network-id]
   (handler/get
-    (routes/path-for-backend :services {} {:filterType  "network"
-                                           :filterValue network-id})
+    (routes/path-for-backend :network-services {:id network-id})
     {:on-success (fn [response]
                    (state/update-value [:services] response cursor))}))
 

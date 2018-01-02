@@ -23,8 +23,7 @@
 (defn- volume-services-handler
   [volume-name]
   (handler/get
-    (routes/path-for-backend :services {} {:filterType  "volume"
-                                           :filterValue volume-name})
+    (routes/path-for-backend :volume-services {:name volume-name})
     {:on-success (fn [response]
                    (state/update-value [:services] response cursor))}))
 

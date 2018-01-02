@@ -21,8 +21,7 @@
 (defn- config-services-handler
   [config-id]
   (handler/get
-    (routes/path-for-backend :services {} {:filterType  "config"
-                                           :filterValue config-id})
+    (routes/path-for-backend :config-services {:id config-id})
     {:on-success (fn [response]
                    (state/update-value [:services] response cursor))}))
 

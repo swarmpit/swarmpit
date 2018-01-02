@@ -119,15 +119,9 @@
 ;; Service handler
 
 (defmethod dispatch :services [_]
-  (fn [{:keys [query-params]}]
-    (let [query (keywordize-keys query-params)]
-      (resp-ok
-        (case (:filterType query)
-          "network" (api/services-by-network (:filterValue query))
-          "volume" (api/services-by-volume (:filterValue query))
-          "secret" (api/services-by-secret (:filterValue query))
-          "config" (api/services-by-config (:filterValue query))
-          (api/services))))))
+  (fn [_]
+    (->> (api/services)
+         (resp-ok))))
 
 (defmethod dispatch :service [_]
   (fn [{:keys [route-params]}]
@@ -194,6 +188,11 @@
     (->> (api/network (:id route-params))
          (resp-ok))))
 
+(defmethod dispatch :network-services [_]
+  (fn [{:keys [route-params]}]
+    (->> (api/services-by-network (:id route-params))
+         (resp-ok))))
+
 (defmethod dispatch :network-create [_]
   (fn [{:keys [params]}]
     (let [payload (keywordize-keys params)]
@@ -217,6 +216,11 @@
     (->> (api/volume (:name route-params))
          (resp-ok))))
 
+(defmethod dispatch :volume-services [_]
+  (fn [{:keys [route-params]}]
+    (->> (api/services-by-volume (:name route-params))
+         (resp-ok))))
+
 (defmethod dispatch :volume-create [_]
   (fn [{:keys [params]}]
     (let [payload (keywordize-keys params)]
@@ -238,6 +242,11 @@
 (defmethod dispatch :secret [_]
   (fn [{:keys [route-params]}]
     (->> (api/secret (:id route-params))
+         (resp-ok))))
+
+(defmethod dispatch :secret-services [_]
+  (fn [{:keys [route-params]}]
+    (->> (api/services-by-secret (:id route-params))
          (resp-ok))))
 
 (defmethod dispatch :secret-create [_]
@@ -267,6 +276,11 @@
 (defmethod dispatch :config [_]
   (fn [{:keys [route-params]}]
     (->> (api/config (:id route-params))
+         (resp-ok))))
+
+(defmethod dispatch :config-services [_]
+  (fn [{:keys [route-params]}]
+    (->> (api/services-by-config (:id route-params))
          (resp-ok))))
 
 (defmethod dispatch :config-create [_]
