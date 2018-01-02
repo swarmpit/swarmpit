@@ -110,6 +110,31 @@
                                   :UID  "0"}}))
        (into [])))
 
+(defn- ->config-id
+  [config-name configs]
+  (->> configs
+       (filter #(= config-name (:configName %)))
+       (first)
+       :id))
+
+(defn ->config-target
+  [config]
+  (let [config-target (:configTarget config)]
+    (if (str/blank? config-target)
+      (:configName config)
+      config-target)))
+
+(defn ->service-configs
+  [service configs]
+  (->> (:configs service)
+       (map (fn [c] {:ConfigName (:configName c)
+                     :ConfigID   (->config-id (:configName c) configs)
+                     :File       {:GID  "0"
+                                  :Mode 292
+                                  :Name (->config-target c)
+                                  :UID  "0"}}))
+       (into [])))
+
 (defn ->service-resource
   [service-resource]
   (let [cpu (:cpu service-resource)
@@ -191,6 +216,7 @@
                                     :Labels  (->service-container-metadata service)
                                     :Mounts  (->service-mounts service)
                                     :Secrets (:secrets service)
+                                    :Configs (:configs service)
                                     :Env     (->service-variables service)}
                     :LogDriver     {:Name    (get-in service [:logdriver :name])
                                     :Options (->service-log-options service)}
@@ -235,3 +261,8 @@
    :Data (if (:encode secret)
            (base64/encode (:data secret))
            (:data secret))})
+
+(defn ->config
+  [config]
+  {:Name (:configName config)
+   :Data (:data config)})

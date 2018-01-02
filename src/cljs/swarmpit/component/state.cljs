@@ -23,8 +23,10 @@
 
 (defn set-value
   "Set `value` on given `cursor`"
-  [value cursor]
-  (swap! state assoc-in cursor value))
+  ([value cursor]
+   (swap! state assoc-in cursor value))
+  ([value]
+   (swap! state merge value)))
 
 (defn update-value
   "Update value `v` corresponding to key path `p` on given `cursor`"

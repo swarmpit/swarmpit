@@ -1,7 +1,7 @@
 (ns swarmpit.handler
   (:require [clojure.walk :refer [keywordize-keys]]
             [clojure.java.io :as io]
-            [swarmpit.version :refer [version]]
+            [swarmpit.version :as version]
             [swarmpit.api :as api]
             [swarmpit.slt :as slt]
             [swarmpit.token :as token]))
@@ -47,7 +47,8 @@
 
 (defmethod dispatch :version [_]
   (fn [_]
-    (resp-ok version)))
+    (->> (version/info)
+         (resp-ok))))
 
 ;; SLT handler
 
@@ -125,6 +126,7 @@
           "network" (api/services-by-network (:filterValue query))
           "volume" (api/services-by-volume (:filterValue query))
           "secret" (api/services-by-secret (:filterValue query))
+          "config" (api/services-by-config (:filterValue query))
           (api/services))))))
 
 (defmethod dispatch :service [_]
@@ -254,6 +256,29 @@
     (let [payload (keywordize-keys params)]
       (api/update-secret (:id route-params) payload)
       (resp-ok))))
+
+;; Config handler
+
+(defmethod dispatch :configs [_]
+  (fn [_]
+    (->> (api/configs)
+         (resp-ok))))
+
+(defmethod dispatch :config [_]
+  (fn [{:keys [route-params]}]
+    (->> (api/config (:id route-params))
+         (resp-ok))))
+
+(defmethod dispatch :config-create [_]
+  (fn [{:keys [params]}]
+    (let [payload (keywordize-keys params)]
+      (->> (api/create-config payload)
+           (resp-created)))))
+
+(defmethod dispatch :config-delete [_]
+  (fn [{:keys [route-params]}]
+    (api/delete-config (:id route-params))
+    (resp-ok)))
 
 ;; Node handler
 

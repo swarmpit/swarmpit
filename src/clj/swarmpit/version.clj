@@ -1,5 +1,6 @@
 (ns swarmpit.version
-  (:require [clojure.java.io :as io]
+  (:require [swarmpit.config :as cfg]
+            [clojure.java.io :as io]
             [clojure.walk :refer [keywordize-keys]])
   (:import (java.util Properties)))
 
@@ -9,7 +10,10 @@
                (io/resource)
                (io/reader)))))
 
-(def version
+(defn info
+  []
   {:name     "swarmpit"
    :version  (get pom-properties "version")
-   :revision (get pom-properties "revision")})
+   :revision (get pom-properties "revision")
+   :docker   {:api    (read-string (cfg/config :docker-api))
+              :engine (cfg/config :docker-engine)}})

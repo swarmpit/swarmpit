@@ -3,7 +3,6 @@
   (:require [ring.util.codec :refer [form-encode]]
             [cheshire.core :refer [generate-string]]
             [swarmpit.base64 :as base64]
-            [swarmpit.config :refer [config]]
             [swarmpit.docker.http :refer :all]))
 
 (defn- registry-token
@@ -122,6 +121,26 @@
   [id version secret]
   (let [uri (str "/secrets/" id "/update")]
     (post uri {:version version} secret)))
+
+;; Config
+
+(defn configs
+  []
+  (get "/configs"))
+
+(defn config
+  [id]
+  (-> (str "/configs/" id)
+      (get)))
+
+(defn delete-config
+  [id]
+  (-> (str "/configs/" id)
+      (delete)))
+
+(defn create-config
+  [config]
+  (post "/configs/create" config))
 
 ;; Node
 

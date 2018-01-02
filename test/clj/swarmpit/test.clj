@@ -1,13 +1,15 @@
 (ns swarmpit.test
   (:require [clojure.test :refer :all]
             [clojure.edn :as edn]
-            [swarmpit.install :as install]
+            [swarmpit.database :as db]
+            [swarmpit.setup :as setup]
             [swarmpit.config :as config]
             [swarmpit.docker.client :as docker]))
 
 (defn dind-socket-fixture
   [test]
   (config/update! {:docker-sock "http://localhost:12375"})
+  (setup/docker)
   (test)
   (config/update! {}))
 
@@ -23,5 +25,5 @@
 
 (defn db-init-fixture
   [test]
-  (install/init)
+  (db/init)
   (test))

@@ -19,6 +19,9 @@
             [swarmpit.component.secret.create :as secret-create]
             [swarmpit.component.secret.info :as secret-info]
             [swarmpit.component.secret.list :as secret-list]
+            [swarmpit.component.config.create :as config-create]
+            [swarmpit.component.config.info :as config-info]
+            [swarmpit.component.config.list :as config-list]
             [swarmpit.component.node.list :as node-list]
             [swarmpit.component.node.info :as node-info]
             [swarmpit.component.task.list :as task-list]
@@ -139,6 +142,20 @@
 (defmethod dispatch :secret-create
   [route]
   (secret-create/form route))
+
+;;; Config view
+
+(defmethod dispatch :config-list
+  [route]
+  (config-list/form route))
+
+(defmethod dispatch :config-info
+  [route]
+  (config-info/form route))
+
+(defmethod dispatch :config-create
+  [route]
+  (config-create/form route))
 
 ;;; Task view
 

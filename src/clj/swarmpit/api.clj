@@ -3,6 +3,7 @@
             [buddy.hashers :as hashers]
             [digest :refer [digest]]
             [swarmpit.utils :refer [merge-data]]
+            [swarmpit.config :as cfg]
             [swarmpit.docker.client :as dc]
             [swarmpit.docker.log :as dl]
             [swarmpit.docker.mapper.inbound :as dmi]
@@ -107,6 +108,28 @@
   (let [secret-version (:version secret)]
     (->> (dmo/->secret secret)
          (dc/update-secret secret-id secret-version))))
+
+;;; Config API
+
+(defn configs
+  []
+  (-> (dc/configs)
+      (dmi/->configs)))
+
+(defn config
+  [config-id]
+  (-> (dc/config config-id)
+      (dmi/->config)))
+
+(defn delete-config
+  [config-id]
+  (dc/delete-config config-id))
+
+(defn create-config
+  [config]
+  (-> (dmo/->config config)
+      (dc/create-config)
+      (rename-keys {:ID :id})))
 
 ;;; Network API
 
@@ -373,6 +396,12 @@
                              (map :SecretName)
                              (set)) secret-name)))
 
+(defn services-by-config
+  [config-name]
+  (services #(contains? (->> (get-in % [:Spec :TaskTemplate :ContainerSpec :Configs])
+                             (map :ConfigName)
+                             (set)) config-name)))
+
 (defn service
   [service-id]
   (dmi/->service (dc/service service-id)
@@ -443,19 +472,32 @@
          (dmo/->service service)
          (dc/create-service auth-config))))
 
+(defn- standardize-service-configs
+  [service]
+  (if (<= 1.30 (read-string (cfg/config :docker-api)))
+    (assoc-in service [:configs] (dmo/->service-configs service (configs)))
+    service))
+
+(defn- standardize-service-secrets
+  [service]
+  (assoc-in service [:secrets] (dmo/->service-secrets service (secrets))))
+
 (defn- standardize-service
   ([service]
    (-> service
-       (assoc-in [:secrets] (dmo/->service-secrets service (secrets)))
+       (standardize-service-secrets)
+       (standardize-service-configs)
        (assoc-in [:repository :imageId] (service-image-id service false))))
   ([service force?]
    (if force?
      (-> service
-         (assoc-in [:secrets] (dmo/->service-secrets service (secrets)))
+         (standardize-service-secrets)
+         (standardize-service-configs)
          (assoc-in [:repository :imageId] (service-image-id service true))
          (update-in [:deployment :forceUpdate] inc))
      (-> service
-         (assoc-in [:secrets] (dmo/->service-secrets service (secrets)))))))
+         (standardize-service-secrets)
+         (standardize-service-configs)))))
 
 (defn create-service
   [service]

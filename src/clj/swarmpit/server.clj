@@ -14,7 +14,8 @@
             [bidi.bidi :refer [match-pair match-route*]]
             [clojure.tools.logging :as log]
             [swarmpit.routes :as routes]
-            [swarmpit.install :as install]
+            [swarmpit.setup :as setup]
+            [swarmpit.database :as db]
             [swarmpit.agent :as agent]))
 
 (defn wrap-client-exception
@@ -57,8 +58,9 @@
 
 (defn -main [& [port]]
   (log/info "Swarmpit is starting...")
-  (install/init)
+  (db/init)
   (let [port (or port 8080)]
     (run-server app {:port port})
     (log/info "Swarmpit running on port" port))
-  (agent/init))
+  (agent/init)
+  (setup/docker))

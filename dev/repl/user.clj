@@ -2,7 +2,8 @@
   (:require [ring.middleware.reload :refer [wrap-reload]]
             [clojure.java.shell :refer [sh]]
             [figwheel-sidecar.repl-api :as figwheel]
-            [swarmpit.install :as install]
+            [swarmpit.setup :as setup]
+            [swarmpit.database :as db]
             [swarmpit.agent :as agent]
             [swarmpit.server]))
 
@@ -16,8 +17,9 @@
   []
   (print (:out (sh "sh" "dev/script/init-db.sh")))
   (print (:out (sh "sh" "dev/script/init-ec.sh")))
-  (install/init)
-  (agent/init))
+  (db/init)
+  (agent/init)
+  (setup/docker))
 
 (def http-handler
   (wrap-reload #'swarmpit.server/app))

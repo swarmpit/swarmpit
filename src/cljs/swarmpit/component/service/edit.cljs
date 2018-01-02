@@ -1,9 +1,8 @@
 (ns swarmpit.component.service.edit
-  (:require [material.component :as comp]
+  (:require [material.icon :as icon]
+            [material.component :as comp]
             [material.component.form :as form]
             [material.component.panel :as panel]
-            [material.icon :as icon]
-            [swarmpit.url :refer [dispatch!]]
             [swarmpit.component.mixin :as mixin]
             [swarmpit.component.state :as state]
             [swarmpit.component.handler :as handler]
@@ -13,6 +12,7 @@
             [swarmpit.component.service.form-networks :as networks]
             [swarmpit.component.service.form-mounts :as mounts]
             [swarmpit.component.service.form-secrets :as secrets]
+            [swarmpit.component.service.form-configs :as configs]
             [swarmpit.component.service.form-variables :as variables]
             [swarmpit.component.service.form-labels :as labels]
             [swarmpit.component.service.form-logdriver :as logdriver]
@@ -20,6 +20,7 @@
             [swarmpit.component.service.form-deployment :as deployment]
             [swarmpit.component.service.form-deployment-placement :as placement]
             [swarmpit.component.message :as message]
+            [swarmpit.url :refer [dispatch!]]
             [swarmpit.routes :as routes]
             [rum.core :as rum]))
 
@@ -48,6 +49,9 @@
        (state/set-value (->> (:secrets service)
                              (map #(select-keys % [:secretName :secretTarget]))
                              (into [])) secrets/cursor)
+       (state/set-value (->> (:configs service)
+                             (map #(select-keys % [:configName :configTarget]))
+                             (into [])) configs/cursor)
        (state/set-value (:variables service) variables/cursor)
        (state/set-value (:labels service) labels/cursor)
        (state/set-value (:logdriver service) logdriver/cursor)
@@ -70,6 +74,7 @@
         ports (state/get-value ports/cursor)
         networks (state/get-value networks/cursor)
         secrets (state/get-value secrets/cursor)
+        configs (state/get-value configs/cursor)
         variables (state/get-value variables/cursor)
         labels (state/get-value labels/cursor)
         logdriver (state/get-value logdriver/cursor)
@@ -82,6 +87,7 @@
                        (assoc :networks networks)
                        (assoc :mounts (mounts/normalize))
                        (assoc :secrets secrets)
+                       (assoc :configs configs)
                        (assoc :variables variables)
                        (assoc :labels labels)
                        (assoc :logdriver logdriver)
@@ -104,6 +110,8 @@
       (mounts/volumes-handler)
       (networks/networks-handler)
       (secrets/secrets-handler)
+      (when (<= 1.30 (state/get-value [:docker :api]))
+        (configs/configs-handler))
       (placement/placement-handler)
       (labels/labels-handler))))
 
@@ -133,6 +141,13 @@
      (form/section "Secrets")
      (form/section-add "Secrets" secrets/add-item))
    (secrets/form-update)])
+
+(rum/defc form-configs < rum/reactive []
+  [:div.form-layout-group.form-layout-group-border
+   (if (empty? (rum/react configs/configs-list))
+     (form/section "Configs")
+     (form/section-add "Configs" configs/add-item))
+   (configs/form-update)])
 
 (rum/defc form-variables < rum/static []
   [:div.form-layout-group.form-layout-group-border
@@ -182,6 +197,8 @@
     (form-networks)
     (form-mounts)
     (form-secrets)
+    (when (<= 1.30 (state/get-value [:docker :api]))
+      (form-configs))
     (form-variables)
     (form-labels)
     (form-logdriver)

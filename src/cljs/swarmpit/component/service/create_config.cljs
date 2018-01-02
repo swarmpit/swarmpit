@@ -11,6 +11,7 @@
             [swarmpit.component.service.form-networks :as networks]
             [swarmpit.component.service.form-mounts :as mounts]
             [swarmpit.component.service.form-secrets :as secrets]
+            [swarmpit.component.service.form-configs :as configs]
             [swarmpit.component.service.form-variables :as variables]
             [swarmpit.component.service.form-labels :as labels]
             [swarmpit.component.service.form-logdriver :as logdriver]
@@ -30,6 +31,7 @@
         ports (state/get-value ports/cursor)
         networks (state/get-value networks/cursor)
         secrets (state/get-value secrets/cursor)
+        configs (state/get-value configs/cursor)
         variables (state/get-value variables/cursor)
         labels (state/get-value labels/cursor)
         logdriver (state/get-value logdriver/cursor)
@@ -42,6 +44,7 @@
                        (assoc :networks networks)
                        (assoc :mounts (mounts/normalize))
                        (assoc :secrets secrets)
+                       (assoc :configs configs)
                        (assoc :variables variables)
                        (assoc :labels labels)
                        (assoc :logdriver logdriver)
@@ -70,6 +73,7 @@
   (state/set-value [] networks/cursor)
   (state/set-value [] mounts/cursor)
   (state/set-value [] secrets/cursor)
+  (state/set-value [] configs/cursor)
   (state/set-value [] variables/cursor)
   (state/set-value [] labels/cursor)
   (state/set-value {:name "json-file"
@@ -99,6 +103,8 @@
       (mounts/volumes-handler)
       (networks/networks-handler)
       (secrets/secrets-handler)
+      (when (<= 1.30 (state/get-value [:docker :api]))
+        (configs/configs-handler))
       (placement/placement-handler)
       (labels/labels-handler)
       (settings/tags-handler distributionType distribution repository))))
@@ -129,6 +135,13 @@
      (form/section "Secrets")
      (form/section-add "Secrets" secrets/add-item))
    (secrets/form-create)])
+
+(rum/defc form-configs < rum/reactive []
+  [:div.form-layout-group.form-layout-group-border
+   (if (empty? (rum/react configs/configs-list))
+     (form/section "Configs")
+     (form/section-add "Configs" configs/add-item))
+   (configs/form-create)])
 
 (rum/defc form-variables < rum/static []
   [:div.form-layout-group.form-layout-group-border
@@ -175,6 +188,8 @@
     (form-networks)
     (form-mounts)
     (form-secrets)
+    (when (<= 1.30 (state/get-value [:docker :api]))
+      (form-configs))
     (form-variables)
     (form-labels)
     (form-logdriver)
