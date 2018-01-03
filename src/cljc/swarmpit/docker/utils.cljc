@@ -1,4 +1,4 @@
-(ns swarmpit.docker-utils
+(ns swarmpit.docker.utils
   "Utility ns for docker domain"
   (:require [clojure.string :as str]))
 

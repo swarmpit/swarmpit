@@ -2,7 +2,7 @@
   (:refer-clojure :exclude [get])
   (:require [clj-http.client :as http]
             [swarmpit.http :refer :all]
-            [swarmpit.docker-utils :as utils]))
+            [swarmpit.docker.utils :as utils]))
 
 (def ^:private base-url "https://index.docker.io/v2")
 

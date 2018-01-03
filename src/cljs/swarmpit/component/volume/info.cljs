@@ -13,7 +13,7 @@
             [swarmpit.component.progress :as progress]
             [swarmpit.component.service.list :as services]
             [swarmpit.routes :as routes]
-            [swarmpit.docker-utils :as utils]
+            [swarmpit.docker.utils :as utils]
             [rum.core :as rum]))
 
 (enable-console-print!)

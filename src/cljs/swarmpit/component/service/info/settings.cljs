@@ -1,6 +1,6 @@
 (ns swarmpit.component.service.info.settings
   (:require [material.component.form :as form]
-            [swarmpit.docker-utils :as utils]
+            [swarmpit.docker.utils :as utils]
             [rum.core :as rum]))
 
 (enable-console-print!)

@@ -3,7 +3,7 @@
   (:require [clj-http.client :as http]
             [swarmpit.token :as token]
             [swarmpit.http :refer :all]
-            [swarmpit.docker-utils :as utils]))
+            [swarmpit.docker.utils :as utils]))
 
 (def ^:private base-url "https://auth.docker.io")
 
