@@ -20,6 +20,8 @@
 
 (def cursor [:form])
 
+(defonce loading? (atom false))
+
 (defn- network-services-handler
   [network-id]
   (handler/get
@@ -31,7 +33,8 @@
   [network-id]
   (handler/get
     (routes/path-for-backend :network {:id network-id})
-    {:on-success (fn [response]
+    {:state      loading?
+     :on-success (fn [response]
                    (state/update-value [:network] response cursor))}))
 
 (defn- delete-network-handler
@@ -101,5 +104,5 @@
                  mixin/subscribe-form [_]
   (let [{:keys [network services]} (state/react cursor)]
     (progress/form
-      (empty? network)
+      (rum/react loading?)
       (form-info network services))))

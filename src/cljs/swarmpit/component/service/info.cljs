@@ -32,6 +32,8 @@
 
 (defonce action-menu (atom false))
 
+(defonce loading? (atom false))
+
 (defn- label [item]
   (str (:state item) "  " (get-in item [:status :info])))
 
@@ -39,7 +41,8 @@
   [service-id]
   (handler/get
     (routes/path-for-backend :service {:id service-id})
-    {:on-success (fn [response]
+    {:state      loading?
+     :on-success (fn [response]
                    (state/update-value [:service] response cursor))}))
 
 (defn- service-networks-handler
@@ -212,5 +215,5 @@
                  mixin/subscribe-form [_]
   (let [{:keys [service networks tasks]} (state/react cursor)]
     (progress/form
-      (empty? service)
+      (rum/react loading?)
       (form-info service networks tasks))))

@@ -14,11 +14,14 @@
 
 (def cursor [:form])
 
+(defonce loading? (atom false))
+
 (defn- task-handler
   [task-id]
   (handler/get
     (routes/path-for-backend :task {:id task-id})
-    {:on-success (fn [response]
+    {:state      loading?
+     :on-success (fn [response]
                    (state/set-value response cursor))}))
 
 (def mixin-init-form
@@ -58,5 +61,5 @@
                  mixin-init-form [_]
   (let [task (state/react cursor)]
     (progress/form
-      (nil? task)
+      (rum/react loading?)
       (form-info task))))

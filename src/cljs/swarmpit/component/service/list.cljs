@@ -28,6 +28,8 @@
 (def render-item-keys
   [[:serviceName] [:repository :image] [:status :info] [:ports] [:state]])
 
+(defonce loading? (atom false))
+
 (defn- render-item-update-state [value]
   (case value
     "rollback_started" (label/update "rollback")
@@ -70,7 +72,8 @@
   []
   (handler/get
     (routes/path-for-backend :services)
-    {:on-success (fn [response]
+    {:state      loading?
+     :on-success (fn [response]
                    (state/update-value [:items] response cursor))}))
 
 (defn- init-state
@@ -105,7 +108,7 @@
             :primary true}))]]
      (list/table headers
                  (sort-by :serviceName filtered-items)
-                 (nil? items)
+                 (rum/react loading?)
                  render-item
                  render-item-keys
                  onclick-handler)]))

@@ -26,6 +26,8 @@
 (def render-item-keys
   [[:taskName] [:serviceName] [:repository :image] [:nodeName] [:state]])
 
+(defonce loading? (atom false))
+
 (defn render-item-state [value]
   (case value
     "preparing" (label/yellow value)
@@ -57,7 +59,8 @@
   []
   (handler/get
     (routes/path-for-backend :tasks)
-    {:on-success (fn [response]
+    {:state      loading?
+     :on-success (fn [response]
                    (state/update-value [:items] response cursor))}))
 
 (defn- init-state
@@ -86,7 +89,7 @@
                       (state/update-value [:filter :query] v cursor))})]]
      (list/table headers
                  (sort-by :serviceName filtered-items)
-                 (nil? items)
+                 (rum/react loading?)
                  render-item
                  render-item-keys
                  onclick-handler)]))

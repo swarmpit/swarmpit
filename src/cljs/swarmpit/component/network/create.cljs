@@ -15,9 +15,9 @@
 
 (def cursor [:form])
 
-(defonce isValid (atom false))
+(defonce valid? (atom false))
 
-(defonce isValidIpam (atom true))
+(defonce valid-ipam? (atom true))
 
 (defonce network-plugins (atom []))
 
@@ -127,23 +127,23 @@
        (comp/mui
          (comp/raised-button
            {:label      "Create"
-            :disabled   (or (not (rum/react isValid))
-                            (not (rum/react isValidIpam)))
+            :disabled   (or (not (rum/react valid?))
+                            (not (rum/react valid-ipam?)))
             :primary    true
             :onTouchTap create-network-handler}))]]
      [:div.form-view
       [:div.form-view-group
        (form/section "General settings")
        (form/form
-         {:onValid   #(reset! isValid true)
-          :onInvalid #(reset! isValid false)}
+         {:onValid   #(reset! valid? true)
+          :onInvalid #(reset! valid? false)}
          (form-name name)
          (form-driver driver (rum/react network-plugins))
          (form-internal internal))]
       [:div.form-view-group
        (form/section "IP address management")
        (form/form
-         {:onValid   #(reset! isValidIpam true)
-          :onInvalid #(reset! isValidIpam false)}
+         {:onValid   #(reset! valid-ipam? true)
+          :onInvalid #(reset! valid-ipam? false)}
          (form-subnet (:subnet ipam))
          (form-gateway (:gateway ipam)))]]]))

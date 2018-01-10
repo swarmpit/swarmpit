@@ -66,14 +66,18 @@
                 {:hoverColor "rgb(244, 67, 54)"}
                 icon/trash))))) items)))
 
+(defn table-raw
+  [headers items data render-items-fn remove-item-fn]
+  (cmp/table
+    {:key        "tbl"
+     :selectable false}
+    (table-header headers)
+    (table-body headers items data render-items-fn remove-item-fn)))
+
 (defn table
   [headers items data render-items-fn remove-item-fn]
   (cmp/mui
-    (cmp/table
-      {:key        "tbl"
-       :selectable false}
-      (table-header headers)
-      (table-body headers items data render-items-fn remove-item-fn))))
+    (table-raw headers items data render-items-fn remove-item-fn)))
 
 (defn table-headless
   [headers items data render-items-fn remove-item-fn]

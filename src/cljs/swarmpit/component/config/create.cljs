@@ -15,7 +15,7 @@
 
 (def cursor [:form])
 
-(defonce isValid (atom false))
+(defonce valid? (atom false))
 
 (def form-data-style
   {:padding  "10px"
@@ -83,12 +83,12 @@
        (comp/mui
          (comp/raised-button
            {:label      "Create"
-            :disabled   (not (rum/react isValid))
+            :disabled   (not (rum/react valid?))
             :primary    true
             :onTouchTap create-config-handler}))]]
      [:div.form-edit
       (form/form
-        {:onValid   #(reset! isValid true)
-         :onInvalid #(reset! isValid false)}
+        {:onValid   #(reset! valid? true)
+         :onInvalid #(reset! valid? false)}
         (form-name configName)
         (form-data data))]]))

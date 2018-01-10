@@ -18,6 +18,8 @@
 
 (def cursor [:form])
 
+(defonce loading? (atom false))
+
 (defn- secret-services-handler
   [secret-id]
   (handler/get
@@ -29,7 +31,8 @@
   [secret-id]
   (handler/get
     (routes/path-for-backend :secret {:id secret-id})
-    {:on-success (fn [response]
+    {:state      loading?
+     :on-success (fn [response]
                    (state/update-value [:secret] response cursor))}))
 
 (defn- delete-secret-handler
@@ -87,5 +90,5 @@
                  mixin/subscribe-form [_]
   (let [{:keys [secret services]} (state/react cursor)]
     (progress/form
-      (empty? secret)
+      (rum/react loading?)
       (form-info secret services))))

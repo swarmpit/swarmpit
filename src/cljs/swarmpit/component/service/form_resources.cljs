@@ -11,7 +11,7 @@
 
 (def cursor [:form :resources])
 
-(defonce isValid (atom true))
+(defonce valid? (atom true))
 
 (defn- cpu-value
   [value]
@@ -75,8 +75,8 @@
   (let [{:keys [reservation limit]} (state/react cursor)]
     [:div.form-edit
      (form/form
-       {:onValid   #(reset! isValid true)
-        :onInvalid #(reset! isValid false)}
+       {:onValid   #(reset! valid? true)
+        :onInvalid #(reset! valid? false)}
        (html (form/subsection "Reservation"))
        (html (form/icon-value icon/info [:span "Minimal resource availability to run a task. Empty for unlimited."]))
        (form-cpu-reservation (:cpu reservation))

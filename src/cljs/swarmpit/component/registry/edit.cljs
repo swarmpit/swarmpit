@@ -16,6 +16,8 @@
 
 (def cursor [:form])
 
+(defonce loading? (atom false))
+
 (defn- form-public [value]
   (form/comp
     "PUBLIC"
@@ -28,7 +30,8 @@
   [registry-id]
   (handler/get
     (routes/path-for-backend :registry {:id registry-id})
-    {:on-success (fn [response]
+    {:state      loading?
+     :on-success (fn [response]
                    (state/set-value response cursor))}))
 
 (defn- update-registry-handler
@@ -76,5 +79,5 @@
                  mixin-init-form [_]
   (let [registry (state/react cursor)]
     (progress/form
-      (nil? registry)
+      (rum/react loading?)
       (form-edit registry))))

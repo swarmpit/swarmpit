@@ -18,6 +18,8 @@
 
 (def cursor [:form])
 
+(defonce loading? (atom false))
+
 (defn- config-services-handler
   [config-id]
   (handler/get
@@ -29,7 +31,8 @@
   [config-id]
   (handler/get
     (routes/path-for-backend :config {:id config-id})
-    {:on-success (fn [response]
+    {:state      loading?
+     :on-success (fn [response]
                    (state/update-value [:config] response cursor))}))
 
 (defn- delete-config-handler
@@ -87,5 +90,5 @@
                  mixin/subscribe-form [_]
   (let [{:keys [config services]} (state/react cursor)]
     (progress/form
-      (empty? config)
+      (rum/react loading?)
       (form-info config services))))

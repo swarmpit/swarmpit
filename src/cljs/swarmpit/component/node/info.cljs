@@ -17,6 +17,8 @@
 
 (def cursor [:form])
 
+(defonce loading? (atom false))
+
 (defn- node-tasks-handler
   [node-id]
   (handler/get
@@ -28,7 +30,8 @@
   [node-id]
   (handler/get
     (routes/path-for-backend :node {:id node-id})
-    {:on-success (fn [response]
+    {:state      loading?
+     :on-success (fn [response]
                    (state/update-value [:node] response cursor))}))
 
 (defn- init-state
@@ -81,5 +84,5 @@
                  mixin/subscribe-form [_]
   (let [{:keys [node tasks]} (state/react cursor)]
     (progress/form
-      (empty? node)
+      (rum/react loading?)
       (form-info node tasks))))

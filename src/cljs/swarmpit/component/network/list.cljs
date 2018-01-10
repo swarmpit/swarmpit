@@ -27,6 +27,8 @@
 (def render-item-keys
   [[:networkName] [:driver] [:ipam :subnet] [:ipam :gateway] [:internal]])
 
+(defonce loading? (atom false))
+
 (defn- render-item
   [item _]
   (let [value (val item)]
@@ -43,7 +45,8 @@
   []
   (handler/get
     (routes/path-for-backend :networks)
-    {:on-success (fn [response]
+    {:state      loading?
+     :on-success (fn [response]
                    (state/update-value [:items] response cursor))}))
 
 (defn- init-state
@@ -78,7 +81,7 @@
             :primary true}))]]
      (list/table headers
                  (sort-by :networkName filtered-items)
-                 (nil? items)
+                 (rum/react loading?)
                  render-item
                  render-item-keys
                  onclick-handler)]))

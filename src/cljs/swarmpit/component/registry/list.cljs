@@ -23,6 +23,8 @@
 (def render-item-keys
   [[:name] [:url] [:public] [:withAuth]])
 
+(defonce loading? (atom false))
+
 (defn- render-item
   [item _]
   (let [value (val item)]
@@ -43,7 +45,8 @@
   []
   (handler/get
     (routes/path-for-backend :registries)
-    {:on-success (fn [response]
+    {:state      loading?
+     :on-success (fn [response]
                    (state/update-value [:items] response cursor))}))
 
 (defn- init-state
@@ -78,7 +81,7 @@
             :primary true}))]]
      (list/table headers
                  (sort-by :name filtered-items)
-                 (nil? items)
+                 (rum/react loading?)
                  render-item
                  render-item-keys
                  onclick-handler)]))

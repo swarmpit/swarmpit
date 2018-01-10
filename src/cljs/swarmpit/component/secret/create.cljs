@@ -15,7 +15,7 @@
 
 (def cursor [:form])
 
-(defonce isValid (atom false))
+(defonce valid? (atom false))
 
 (def form-data-style
   {:padding  "10px"
@@ -96,14 +96,14 @@
        (comp/mui
          (comp/raised-button
            {:label      "Create"
-            :disabled   (not (rum/react isValid))
+            :disabled   (not (rum/react valid?))
             :primary    true
             :onTouchTap create-secret-handler}))]]
      [:div.form-edit
        (form/icon-value icon/info "Data must be base64 encoded. If plain text check please encode data.")
        (form/form
-         {:onValid   #(reset! isValid true)
-          :onInvalid #(reset! isValid false)}
+         {:onValid   #(reset! valid? true)
+          :onInvalid #(reset! valid? false)}
          (form-name secretName)
          (form-data-encoder encode)
          (form-data data))]]))

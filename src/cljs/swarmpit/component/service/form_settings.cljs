@@ -11,7 +11,7 @@
 
 (def cursor [:form :settings])
 
-(defonce isValid (atom false))
+(defonce valid? (atom false))
 
 (defonce tags (atom []))
 
@@ -143,8 +143,8 @@
                 replicas]} (state/react cursor)]
     [:div.form-edit
      (form/form
-       {:onValid   #(reset! isValid true)
-        :onInvalid #(reset! isValid false)}
+       {:onValid   #(reset! valid? true)
+        :onInvalid #(reset! valid? false)}
        (form-image (:name repository))
        (if update-form?
          (form-image-tag repository (rum/react tags))

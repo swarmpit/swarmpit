@@ -16,11 +16,14 @@
 
 (def cursor [:form])
 
+(defonce loading? (atom false))
+
 (defn- registry-handler
   [registry-id]
   (handler/get
     (routes/path-for-backend :registry {:id registry-id})
-    {:on-success (fn [response]
+    {:state      loading?
+     :on-success (fn [response]
                    (state/set-value response cursor))}))
 
 (defn- delete-registry-handler
@@ -78,5 +81,5 @@
                  mixin/subscribe-form [_]
   (let [registry (state/react cursor)]
     (progress/form
-      (nil? registry)
+      (rum/react loading?)
       (form-info registry))))

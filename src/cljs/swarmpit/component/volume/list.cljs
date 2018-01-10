@@ -20,6 +20,8 @@
 (def render-item-keys
   [[:volumeName] [:driver]])
 
+(defonce loading? (atom false))
+
 (defn- render-item
   [item _]
   (val item))
@@ -32,7 +34,8 @@
   []
   (handler/get
     (routes/path-for-backend :volumes)
-    {:on-success (fn [response]
+    {:state      loading?
+     :on-success (fn [response]
                    (state/update-value [:items] response cursor))}))
 
 (defn- init-state
@@ -67,7 +70,7 @@
             :primary true}))]]
      (list/table headers
                  (sort-by :volumeName filtered-items)
-                 (nil? items)
+                 (rum/react loading?)
                  render-item
                  render-item-keys
                  onclick-handler)]))

@@ -28,22 +28,28 @@
   {:color    "rgb(117, 117, 117"
    :minWidth "200px"})
 
-(defonce registries (atom nil))
+(defonce registries (atom []))
 
-(defonce users (atom nil))
+(defonce registries-loading? (atom false))
+
+(defonce users (atom []))
+
+(defonce users-loading? (atom false))
 
 (defn- registries-handler
   []
   (handler/get
     (routes/path-for-backend :registries)
-    {:on-success (fn [response]
+    {:state      registries-loading?
+     :on-success (fn [response]
                    (reset! registries response))}))
 
 (defn- users-handler
   []
   (handler/get
     (routes/path-for-backend :dockerhub-users)
-    {:on-success (fn [response]
+    {:state      users-loading?
+     :on-success (fn [response]
                    (reset! users response))}))
 
 (defn- init-state
@@ -107,6 +113,6 @@
   (let [registries (rum/react registries)
         users (rum/react users)]
     (progress/form
-      (or (nil? registries)
-          (nil? users))
+      (or (rum/react registries-loading?)
+          (rum/react users-loading?))
       (form-tabs registries users))))

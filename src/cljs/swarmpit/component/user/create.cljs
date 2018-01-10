@@ -15,7 +15,7 @@
 
 (def cursor [:form])
 
-(defonce isValid (atom false))
+(defonce valid? (atom false))
 
 (defn- form-username [value]
   (form/comp
@@ -114,13 +114,13 @@
        (comp/mui
          (comp/raised-button
            {:label      "Create"
-            :disabled   (not (rum/react isValid))
+            :disabled   (not (rum/react valid?))
             :primary    true
             :onTouchTap create-user-handler}))]]
      [:div.form-edit
       (form/form
-        {:onValid   #(reset! isValid true)
-         :onInvalid #(reset! isValid false)}
+        {:onValid   #(reset! valid? true)
+         :onInvalid #(reset! valid? false)}
         (form-username username)
         (form-password password)
         (form-role role)

@@ -16,6 +16,8 @@
 
 (def cursor [:form])
 
+(defonce loading? (atom false))
+
 (defn- form-public [value]
   (form/comp
     "PUBLIC"
@@ -28,7 +30,8 @@
   [user-id]
   (handler/get
     (routes/path-for-backend :dockerhub-user {:id user-id})
-    {:on-success (fn [response]
+    {:state      loading?
+     :on-success (fn [response]
                    (state/set-value response cursor))}))
 
 (defn- update-user-handler
@@ -76,5 +79,5 @@
                  mixin-init-form [_]
   (let [user (state/react cursor)]
     (progress/form
-      (nil? user)
+      (rum/react loading?)
       (form-edit user))))

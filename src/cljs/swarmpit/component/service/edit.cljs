@@ -28,6 +28,8 @@
 
 (def cursor [:form])
 
+(defonce loading? (atom false))
+
 (defn render-item
   [val]
   (if (boolean? val)
@@ -38,25 +40,26 @@
   [service-id]
   (handler/get
     (routes/path-for-backend :service {:id service-id})
-    {:on-success
-     (fn [service]
-       (settings/tags-handler (-> service :distribution :type)
-                              (-> service :distribution :id)
-                              (-> service :repository :name))
-       (state/set-value (select-keys service [:distribution :repository :version :serviceName :mode :replicas :stack]) settings/cursor)
-       (state/set-value (:ports service) ports/cursor)
-       (state/set-value (:mounts service) mounts/cursor)
-       (state/set-value (->> (:secrets service)
-                             (map #(select-keys % [:secretName :secretTarget]))
-                             (into [])) secrets/cursor)
-       (state/set-value (->> (:configs service)
-                             (map #(select-keys % [:configName :configTarget]))
-                             (into [])) configs/cursor)
-       (state/set-value (:variables service) variables/cursor)
-       (state/set-value (:labels service) labels/cursor)
-       (state/set-value (:logdriver service) logdriver/cursor)
-       (state/set-value (:resources service) resources/cursor)
-       (state/set-value (:deployment service) deployment/cursor))}))
+    {:state loading?
+     :on-success
+            (fn [service]
+              (settings/tags-handler (-> service :distribution :type)
+                                     (-> service :distribution :id)
+                                     (-> service :repository :name))
+              (state/set-value (select-keys service [:distribution :repository :version :serviceName :mode :replicas :stack]) settings/cursor)
+              (state/set-value (:ports service) ports/cursor)
+              (state/set-value (:mounts service) mounts/cursor)
+              (state/set-value (->> (:secrets service)
+                                    (map #(select-keys % [:secretName :secretTarget]))
+                                    (into [])) secrets/cursor)
+              (state/set-value (->> (:configs service)
+                                    (map #(select-keys % [:configName :configTarget]))
+                                    (into [])) configs/cursor)
+              (state/set-value (:variables service) variables/cursor)
+              (state/set-value (:labels service) labels/cursor)
+              (state/set-value (:logdriver service) logdriver/cursor)
+              (state/set-value (:resources service) resources/cursor)
+              (state/set-value (:deployment service) deployment/cursor))}))
 
 (defn- service-networks-handler
   [service-id]
@@ -184,7 +187,7 @@
        (comp/raised-button
          {:onTouchTap #(update-service-handler id)
           :label      "Save"
-          :disabled   (not (rum/react resources/isValid))
+          :disabled   (not (rum/react resources/valid?))
           :primary    true}))
      [:span.form-panel-delimiter]
      (comp/mui
@@ -207,9 +210,7 @@
 
 (rum/defc form < rum/reactive
                  mixin-init-form [{{:keys [id]} :params}]
-  (let [settings (state/react settings/cursor)
-        networks (state/react networks/cursor)]
+  (let [settings (state/react settings/cursor)]
     (progress/form
-      (or (nil? settings)
-          (nil? networks))
+      (rum/react loading?)
       (form-edit id settings))))

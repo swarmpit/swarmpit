@@ -16,7 +16,9 @@
 
 (def cursor [:form])
 
-(defonce isValid (atom false))
+(defonce valid? (atom false))
+
+(defonce loading? (atom false))
 
 (defn- form-role [value]
   (form/comp
@@ -51,7 +53,8 @@
   [user-id]
   (handler/get
     (routes/path-for-backend :user {:id user-id})
-    {:on-success (fn [response]
+    {:state      loading?
+     :on-success (fn [response]
                    (state/set-value response cursor))}))
 
 (defn- update-user-handler
@@ -85,7 +88,7 @@
        (comp/raised-button
          {:onTouchTap #(update-user-handler (:_id user))
           :label      "Save"
-          :disabled   (not (rum/react isValid))
+          :disabled   (not (rum/react valid?))
           :primary    true}))
      [:span.form-panel-delimiter]
      (comp/mui
@@ -94,8 +97,8 @@
           :label "Back"}))]]
    [:div.form-edit
     (form/form
-      {:onValid   #(reset! isValid true)
-       :onInvalid #(reset! isValid false)}
+      {:onValid   #(reset! valid? true)
+       :onInvalid #(reset! valid? false)}
       (form-role role)
       (form-email email))]])
 
@@ -103,5 +106,5 @@
                  mixin-init-form [_]
   (let [user (state/react cursor)]
     (progress/form
-      (nil? user)
+      (rum/react loading?)
       (form-edit user))))

@@ -178,8 +178,8 @@
      (comp/mui
        (comp/raised-button
          {:label      "Create"
-          :disabled   (or (not (rum/react settings/isValid))
-                          (not (rum/react resources/isValid)))
+          :disabled   (or (not (rum/react settings/valid?))
+                          (not (rum/react resources/valid?)))
           :primary    true
           :onTouchTap create-service-handler}))]]
    [:div.form-layout

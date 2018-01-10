@@ -15,7 +15,7 @@
 
 (def cursor [:form])
 
-(defonce isValid (atom false))
+(defonce valid? (atom false))
 
 (defn- form-name [value]
   (form/comp
@@ -125,13 +125,13 @@
        (comp/mui
          (comp/raised-button
            {:label      "Save"
-            :disabled   (not (rum/react isValid))
+            :disabled   (not (rum/react valid?))
             :primary    true
             :onTouchTap create-registry-handler}))]]
      [:div.form-edit
       (form/form
-        {:onValid   #(reset! isValid true)
-         :onInvalid #(reset! isValid false)}
+        {:onValid   #(reset! valid? true)
+         :onInvalid #(reset! valid? false)}
         (form-name name)
         (form-url url)
         (form-public public)

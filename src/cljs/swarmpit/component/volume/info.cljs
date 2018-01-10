@@ -20,6 +20,8 @@
 
 (def cursor [:form])
 
+(defonce loading? (atom false))
+
 (defn- volume-services-handler
   [volume-name]
   (handler/get
@@ -31,7 +33,8 @@
   [volume-name]
   (handler/get
     (routes/path-for-backend :volume {:name volume-name})
-    {:on-success (fn [response]
+    {:state      loading?
+     :on-success (fn [response]
                    (state/update-value [:volume] response cursor))}))
 
 (defn- delete-volume-handler
@@ -92,5 +95,5 @@
                  mixin/subscribe-form [_]
   (let [{:keys [volume services]} (state/react cursor)]
     (progress/form
-      (empty? volume)
+      (rum/react loading?)
       (form-info volume services))))

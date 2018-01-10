@@ -18,11 +18,14 @@
 
 (def cursor [:form])
 
+(defonce loading? (atom false))
+
 (defn- user-handler
   [user-id]
   (handler/get
     (routes/path-for-backend :user {:id user-id})
-    {:on-success (fn [response]
+    {:state      loading?
+     :on-success (fn [response]
                    (state/set-value response cursor))}))
 
 (defn- delete-user-handler
@@ -75,5 +78,5 @@
                  mixin/subscribe-form [_]
   (let [user (state/react cursor)]
     (progress/form
-      (nil? user)
+      (rum/react loading?)
       (form-info user))))

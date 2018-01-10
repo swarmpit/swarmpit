@@ -60,11 +60,11 @@
 
 (defn- form-table
   [opts]
-  (list/table headers
-              opts
-              nil
-              render-variables
-              (fn [index] (state/remove-item index (conj cursor :opts)))))
+  (list/table-raw headers
+                  opts
+                  nil
+                  render-variables
+                  (fn [index] (state/remove-item index (conj cursor :opts)))))
 
 (defn- add-item
   []
@@ -77,5 +77,5 @@
       {}
       (form-driver name)
       (html (form/subsection-add "Add log driver option" add-item))
-      (if (not (empty? opts))
+      (when (not (empty? opts))
         (form-table opts)))))
