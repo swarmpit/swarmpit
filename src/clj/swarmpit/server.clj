@@ -24,7 +24,7 @@
     (try
       (handler request)
       (catch ExceptionInfo e
-        (ex-data e)))))
+        (dissoc (ex-data e) :headers)))))
 
 (defn wrap-fallback-exception
   [handler]
