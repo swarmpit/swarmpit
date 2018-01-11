@@ -101,8 +101,7 @@
                     :public   false
                     :withAuth false
                     :username ""
-                    :password ""
-                    :isValid  false} cursor))
+                    :password ""} cursor))
 
 (def mixin-init-form
   (mixin/init-form

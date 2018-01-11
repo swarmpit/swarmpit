@@ -66,8 +66,7 @@
   []
   (state/set-value {:username ""
                     :password ""
-                    :public   false
-                    :isValid  false} cursor))
+                    :public   false} cursor))
 
 (def mixin-init-form
   (mixin/init-form

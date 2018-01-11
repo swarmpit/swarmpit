@@ -92,8 +92,7 @@
   (state/set-value {:username ""
                     :password ""
                     :email    ""
-                    :role     "user"
-                    :isValid  false} cursor))
+                    :role     "user"} cursor))
 
 (def mixin-init-form
   (mixin/init-form
