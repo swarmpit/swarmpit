@@ -1,24 +1,18 @@
 (ns swarmpit.dockerauth.client
-  (:refer-clojure :exclude [get])
-  (:require [clj-http.client :as http]
-            [swarmpit.token :as token]
-            [swarmpit.http :refer :all]
-            [swarmpit.docker.utils :as utils]))
+  (:require [swarmpit.token :as token]
+            [swarmpit.http :refer :all]))
 
 (def ^:private base-url "https://auth.docker.io")
 
 (defn- execute
-  [call]
-  (execute-in-scope {:call-fx       call
-                     :scope         "Docker auth"
-                     :error-handler :details}))
-
-(defn- get
-  [api headers params]
+  [{:keys [method api options]}]
   (let [url (str base-url api)
-        options {:headers      headers
-                 :query-params params}]
-    (execute #(http/get url options))))
+        options (req-options options)]
+    (execute-in-scope {:method        method
+                       :url           url
+                       :options       options
+                       :scope         "Docker auth"
+                       :error-handler :details})))
 
 (defn- basic-auth
   [user]
@@ -28,7 +22,10 @@
 
 (defn token
   [user repository]
-  (let [headers (basic-auth user)
-        params {:service "registry.docker.io"
-                :scope   (str "repository:" (utils/add-dockerhub-namespace repository) ":pull")}]
-    (get "/token" headers params)))
+  (let [query-params {:service "registry.docker.io"
+                      :scope   (str "repository:" repository ":pull")}]
+    (-> (execute {:method  :GET
+                  :api     "/token"
+                  :options {:headers      (basic-auth user)
+                            :query-params query-params}})
+        :body)))

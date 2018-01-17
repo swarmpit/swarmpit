@@ -1,7 +1,5 @@
 (ns swarmpit.couchdb.client
-  (:refer-clojure :exclude [get find])
-  (:require [clj-http.client :as http]
-            [swarmpit.http :refer :all]
+  (:require [swarmpit.http :refer :all]
             [cheshire.core :refer [generate-string]]
             [swarmpit.config :refer [config]]))
 
@@ -10,56 +8,40 @@
    "Content-Type" "application/json"})
 
 (defn- execute
-  [call]
-  (execute-in-scope {:call-fx call
-                     :scope   "DB"}))
-
-(defn- get
-  [api]
+  [{:keys [method api options]}]
   (let [url (str (config :db-url) api)
-        options {:headers headers}]
-    (execute #(http/get url options))))
-
-(defn- put
-  ([api] (put api {}))
-  ([api request] (let [url (str (config :db-url) api)
-                       options {:headers headers
-                                :body    (generate-string request)}]
-                   (execute #(http/put url options)))))
-
-(defn- post
-  [api request]
-  (let [url (str (config :db-url) api)
-        options {:headers headers
-                 :body    (generate-string request)}]
-    (execute #(http/post url options))))
-
-(defn- delete
-  [api params]
-  (let [url (str (config :db-url) api)
-        options {:headers      headers
-                 :query-params params}]
-    (execute #(http/delete url options))))
+        options (req-options options)]
+    (execute-in-scope {:method  method
+                       :url     url
+                       :options options
+                       :scope   "DB"})))
 
 (defn get-doc
   [id]
   (try
-    (if (empty? id)
-      nil
-      (get (str "/swarmpit/" id)))
+    (-> (execute {:method :GET
+                  :api    (str "/swarmpit/" id)})
+        :body)
     (catch Exception _)))
 
 (defn create-doc
   [doc]
-  (post "/swarmpit" doc))
+  (-> (execute {:method  :POST
+                :api     "/swarmpit"
+                :options {:body    doc
+                          :headers headers}})
+      :body))
 
 (defn find-docs
   ([type]
    (find-docs nil type))
   ([query type]
-   (->> {:selector (merge query {:type {"$eq" type}})}
-        (post "/swarmpit/_find")
-        :docs)))
+   (-> (execute {:method  :POST
+                 :api     "/swarmpit/_find"
+                 :options {:body    {:selector (merge query {:type {"$eq" type}})}
+                           :headers headers}})
+       :body
+       :docs)))
 
 (defn find-doc
   [query type]
@@ -67,13 +49,18 @@
 
 (defn delete-doc
   [doc]
-  (let [url (str "/swarmpit/" (:_id doc))]
-    (delete url {:rev (:_rev doc)})))
+  (-> (execute {:method  :DELETE
+                :api     (str "/swarmpit/" (:_id doc))
+                :options {:query-params {:rev (:_rev doc)}}})
+      :body))
 
 (defn update-doc
   ([doc]
-   (let [url (str "/swarmpit/" (:_id doc))]
-     (put url doc)))
+   (-> (execute {:method  :PUT
+                 :api     (str "/swarmpit/" (:_id doc))
+                 :options {:body    doc
+                           :headers headers}})
+       :body))
   ([doc delta]
    (update-doc (merge doc delta)))
   ([doc field value]
@@ -83,13 +70,18 @@
 
 (defn db-version
   []
-  (get "/"))
+  (-> (execute {:method :GET
+                :api    "/"})
+      :body))
 
 (defn create-database
   []
-  (put "/swarmpit"))
+  (-> (execute {:method :PUT
+                :api    "/swarmpit"})
+      :body))
 
 ;; Migration
+
 (defn migrations
   []
   (->> (find-docs "migration")

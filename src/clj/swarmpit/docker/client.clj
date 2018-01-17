@@ -1,5 +1,4 @@
 (ns swarmpit.docker.client
-  (:refer-clojure :exclude [get])
   (:require [ring.util.codec :refer [form-encode]]
             [cheshire.core :refer [generate-string]]
             [swarmpit.base64 :as base64]
@@ -13,158 +12,227 @@
 
 (defn services
   []
-  (get "/services"))
+  (-> (execute {:method :GET
+                :api    "/services"})
+      :body))
 
 (defn service
   [id]
-  (-> (str "/services/" id)
-      (get)))
+  (-> (execute {:method :GET
+                :api    (str "/services/" id)})
+      :body))
 
 (defn service-tasks
   [id]
-  (get "/tasks" {:filters (generate-string {:service [id]})}))
+  (-> (execute {:method  :GET
+                :api     "/tasks"
+                :options {:query-params {:filters (generate-string {:service [id]})}}})
+      :body))
 
 (defn service-logs
   [id opt]
-  (-> (str "/services/" id "/logs")
-      (get opt)))
+  (-> (execute {:method  :GET
+                :api     (str "/services/" id "/logs")
+                :options opt})
+      :body))
 
 (defn delete-service
   [id]
-  (-> (str "/services/" id)
-      (delete)))
+  (-> (execute {:method :DELETE
+                :api    (str "/services/" id)})
+      :body))
 
 (defn create-service
   ([service]
-   (post "/services/create" {} nil service))
+   (-> (execute {:method  :POST
+                 :api     "/services/create"
+                 :options {:body    service
+                           :headers {:Content-Type "application/json"}}})
+       :body))
   ([auth-config service]
-   (let [headers {:X-Registry-Auth (registry-token auth-config)}]
-     (post "/services/create" {} headers service))))
+   (-> (execute {:method  :POST
+                 :api     "/services/create"
+                 :options {:body    service
+                           :headers {:Content-Type    "application/json"
+                                     :X-Registry-Auth (registry-token auth-config)}}})
+       :body)))
 
 (defn update-service
   [id version service]
-  (let [uri (str "/services/" id "/update")]
-    (post uri {:version version} service)))
+  (-> (execute {:method  :POST
+                :api     (str "/services/" id "/update")
+                :options {:body         service
+                          :query-params {:version version}
+                          :headers      {:Content-Type "application/json"}}})
+      :body))
 
 ;; Task
 
 (defn tasks
   []
-  (get "/tasks"))
+  (-> (execute {:method :GET
+                :api    "/tasks"})
+      :body))
 
 (defn task
   [id]
-  (-> (str "/tasks/" id)
-      (get)))
+  (-> (execute {:method :GET
+                :api    (str "/tasks/" id)})
+      :body))
 
 ;; Network
 
 (defn networks
   []
-  (get "/networks"))
+  (-> (execute {:method :GET
+                :api    "/networks"})
+      :body))
 
 (defn network
   [id]
-  (-> (str "/networks/" id)
-      (get)))
+  (-> (execute {:method :GET
+                :api    (str "/networks/" id)})
+      :body))
 
 (defn delete-network
   [id]
-  (-> (str "/networks/" id)
-      (delete)))
+  (-> (execute {:method :DELETE
+                :api    (str "/networks/" id)})
+      :body))
 
 (defn create-network
   [network]
-  (post "/networks/create" network))
+  (-> (execute {:method  :POST
+                :api     "/networks/create"
+                :options {:body    network
+                          :headers {:Content-Type "application/json"}}})
+      :body))
 
 ;; Volume
 
 (defn volumes
   []
-  (get "/volumes"))
+  (-> (execute {:method :GET
+                :api    "/volumes"})
+      :body))
 
 (defn volume
   [name]
-  (-> (str "/volumes/" name)
-      (get)))
+  (-> (execute {:method :GET
+                :api    (str "/volumes/" name)})
+      :body))
 
 (defn delete-volume
   [name]
-  (-> (str "/volumes/" name)
-      (delete)))
+  (-> (execute {:method :DELETE
+                :api    (str "/volumes/" name)})
+      :body))
 
 (defn create-volume
   [volume]
-  (post "/volumes/create" volume))
+  (-> (execute {:method  :POST
+                :api     "/volumes/create"
+                :options {:body    volume
+                          :headers {:Content-Type "application/json"}}})
+      :body))
 
 ;; Secret
 
 (defn secrets
   []
-  (get "/secrets"))
+  (-> (execute {:method :GET
+                :api    "/secrets"})
+      :body))
 
 (defn secret
   [id]
-  (-> (str "/secrets/" id)
-      (get)))
+  (-> (execute {:method :GET
+                :api    (str "/secrets/" id)})
+      :body))
 
 (defn delete-secret
   [id]
-  (-> (str "/secrets/" id)
-      (delete)))
+  (-> (execute {:method :DELETE
+                :api    (str "/secrets/" id)})
+      :body))
 
 (defn create-secret
   [secret]
-  (post "/secrets/create" secret))
+  (-> (execute {:method  :POST
+                :api     "/secrets/create"
+                :options {:body    secret
+                          :headers {:Content-Type "application/json"}}})
+      :body))
 
 (defn update-secret
   [id version secret]
-  (let [uri (str "/secrets/" id "/update")]
-    (post uri {:version version} secret)))
+  (-> (execute {:method  :POST
+                :api     (str "/secrets/" id "/update")
+                :options {:body         secret
+                          :query-params {:version version}
+                          :headers      {:Content-Type "application/json"}}})
+      :body))
 
 ;; Config
 
 (defn configs
   []
-  (get "/configs"))
+  (-> (execute {:method :GET
+                :api    "/configs"})
+      :body))
 
 (defn config
   [id]
-  (-> (str "/configs/" id)
-      (get)))
+  (-> (execute {:method :GET
+                :api    (str "/configs/" id)})
+      :body))
 
 (defn delete-config
   [id]
-  (-> (str "/configs/" id)
-      (delete)))
+  (-> (execute {:method :DELETE
+                :api    (str "/configs/" id)})
+      :body))
 
 (defn create-config
   [config]
-  (post "/configs/create" config))
+  (-> (execute {:method  :POST
+                :api     "/configs/create"
+                :options {:body config}})
+      :body))
 
 ;; Node
 
 (defn nodes
   []
-  (get "/nodes"))
+  (-> (execute {:method :GET
+                :api    "/nodes"})
+      :body))
 
 (defn node
   [id]
-  (-> (str "/nodes/" id)
-      (get)))
+  (-> (execute {:method :GET
+                :api    (str "/nodes/" id)})
+      :body))
 
 (defn node-tasks
   [id]
-  (get "/tasks" {:filters (generate-string {:node          [id]
-                                            :desired-state ["running"]})}))
+  (let [query-params {:filters (generate-string {:node          [id]
+                                                 :desired-state ["running"]})}]
+    (-> (execute {:method  :GET
+                  :api     "/tasks"
+                  :options {:query-params query-params}})
+        :body)))
 
 (defn version
   []
-  (get "/version"))
+  (-> (execute {:method :GET
+                :api    "/version"})
+      :body))
 
 ;; Images
 
 (defn image
   [name]
-  (-> (str "/images/" name "/json")
-      (get)))
+  (-> (execute {:method :GET
+                :api    (str "/images/" name "/json")})
+      :body))
