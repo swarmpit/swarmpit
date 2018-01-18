@@ -44,9 +44,10 @@
         www-auth-params (dissoc www-auth-header :realm)
         query-params (merge {"client_id" "swarmpit"} (stringify-keys www-auth-params))
         options (assoc-in options [:query-params] query-params)
-        token (execute {:method  :GET
-                        :url     www-auth-url
-                        :options options})]
+        token (-> (execute {:method  :GET
+                            :url     www-auth-url
+                            :options options})
+                  :body)]
     (-> options
         (assoc-in [:headers "Authorization"] (token/bearer (:token token))))))
 
@@ -76,7 +77,7 @@
   [registry]
   (-> (execute-with-fallback
         {:method  :GET
-         :url     (build-url registry "/_catalog")
+         :url     (build-url registry "/")
          :options {:headers (basic-auth registry)}})
       :body))
 
