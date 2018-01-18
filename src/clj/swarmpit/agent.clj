@@ -22,7 +22,7 @@
                                          (assoc-in [:networks] (api/service-networks id))) true)
               (log/info "Service" id "has been redeployed! [" current-image-id "] -> [" latest-image-id "]")))
           (catch ExceptionInfo e
-            (log/error "Service" id "autoredeploy failed! " (ex-data e))))))))
+            (log/error "Service" id "autoredeploy failed! " (dissoc (ex-data e) :headers))))))))
 
 (defn init
   []
