@@ -21,7 +21,8 @@
     (routes/path-for-backend :public-repository-tags)
     {:params     {:repository repository}
      :on-success (fn [response]
-                   (reset! tags response))}))
+                   (reset! tags response))
+     :on-error   (fn [_])}))
 
 (defn dockerhub-tags-handler
   [distribution repository]
@@ -29,7 +30,8 @@
     (routes/path-for-backend :dockerhub-repository-tags {:id distribution})
     {:params     {:repository repository}
      :on-success (fn [response]
-                   (reset! tags response))}))
+                   (reset! tags response))
+     :on-error   (fn [_])}))
 
 (defn registry-tags-handler
   [distribution repository]
@@ -37,7 +39,8 @@
     (routes/path-for-backend :registry-repository-tags {:id distribution})
     {:params     {:repository repository}
      :on-success (fn [response]
-                   (reset! tags response))}))
+                   (reset! tags response))
+     :on-error   (fn [_])}))
 
 (defn tags-handler
   [distributionType distribution repository]
