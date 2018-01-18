@@ -26,7 +26,8 @@
      :on-success (fn [response]
                    (doseq [port response]
                      (if (not-suggested? port)
-                       (state/add-item port cursor))))}))
+                       (state/add-item port cursor))))
+     :on-error   (fn [_])}))
 
 (defn- dockerhub-ports-handler
   [distribution-id {:keys [name tag] :as repository}]
@@ -37,7 +38,8 @@
      :on-success (fn [response]
                    (doseq [port response]
                      (if (not-suggested? port)
-                       (state/add-item port cursor))))}))
+                       (state/add-item port cursor))))
+     :on-error   (fn [_])}))
 
 (defn- registry-ports-handler
   [distribution-id {:keys [name tag] :as repository}]
@@ -48,7 +50,8 @@
      :on-success (fn [response]
                    (doseq [port response]
                      (if (not-suggested? port)
-                       (state/add-item port cursor))))}))
+                       (state/add-item port cursor))))
+     :on-error   (fn [_])}))
 
 (defn load-suggestable-ports
   [{:keys [id type] :as distribution} repository]
