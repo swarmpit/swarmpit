@@ -34,13 +34,11 @@
 (def timeout 5000)
 
 (defn execute
-  "Execute docker command and parse result"
   [{:keys [method api options]}]
-  (let [options (req-options options)]
-    (execute-in-scope {:method        method
-                       :url           (url api)
-                       :options       (merge {:connection-manager (make-conn-manager)
-                                              :retry-handler      (fn [& _] false)} options)
-                       :scope         "Docker"
-                       :timeout       timeout
-                       :error-handler :message})))
+  (execute-in-scope {:method        method
+                     :url           (url api)
+                     :options       (merge {:connection-manager (make-conn-manager)
+                                            :retry-handler      (fn [& _] false)} options)
+                     :scope         "Docker"
+                     :timeout       timeout
+                     :error-handler :message}))

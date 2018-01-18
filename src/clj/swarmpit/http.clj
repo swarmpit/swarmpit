@@ -7,22 +7,17 @@
 
 (def default-timeout 15000)
 
-(def req-func
+(def ^:private req-func
   {:GET    http/get
    :POST   http/post
    :PUT    http/put
    :DELETE http/delete})
 
-(defn req-options
-  ([options]
-   (req-options options nil))
-  ([options default-headers]
-   (merge options
-          (when (and (some? (:headers options))
-                     (some? default-headers))
-            {:headers (merge default-headers (:headers options))})
-          (when (some? (:body options))
-            {:body (generate-string (:body options))}))))
+(defn- req-options
+  [options]
+  (merge options
+         (when (some? (:body options))
+           {:body (generate-string (:body options))})))
 
 (defmacro with-timeout
   [ms & body]
@@ -61,7 +56,7 @@
   (let [scope (or scope "HTTP")
         timeout (or timeout default-timeout)]
     (try
-      (let [response (with-timeout timeout ((req-func method) url options))
+      (let [response (with-timeout timeout ((req-func method) url (req-options options)))
             response-body (-> response :body)
             response-headers (-> response :headers)]
         {:headers response-headers

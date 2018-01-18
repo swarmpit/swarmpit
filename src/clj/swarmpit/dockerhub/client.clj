@@ -6,24 +6,22 @@
 
 (defn- execute
   [{:keys [method api options]}]
-  (let [url (str base-url api)
-        options (req-options options)]
-    (execute-in-scope {:method        method
-                       :url           url
-                       :options       options
-                       :scope         "Dockerhub"
-                       :error-handler #(or (:detail %) %)})))
+  (execute-in-scope {:method        method
+                     :url           (str base-url api)
+                     :options       options
+                     :scope         "Dockerhub"
+                     :error-handler #(or (:detail %) %)}))
 
 (defn- jwt-auth
   [token]
-  {"Authorization" (str "JWT " token)})
+  {:Authorization (str "JWT " token)})
 
 (defn login
   [user]
   (-> (execute {:method  :POST
                 :api     "/users/login"
                 :options {:body    user
-                          :headers {"Content-Type" "application/json"}}})
+                          :headers {:Content-Type "application/json"}}})
       :body))
 
 (defn info

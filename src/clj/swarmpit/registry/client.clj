@@ -12,8 +12,8 @@
 (defn- basic-auth
   [registry]
   (when (:withAuth registry)
-    {"Authorization" (token/generate-basic (:username registry)
-                                           (:password registry))}))
+    {:Authorization (token/generate-basic (:username registry)
+                                          (:password registry))}))
 
 (defn- authenticate-header
   [headers]
@@ -30,26 +30,25 @@
 
 (defn- execute
   [{:keys [method url options]}]
-  (let [options (req-options options)]
-    (execute-in-scope {:method        method
-                       :url           url
-                       :options       (merge {:insecure? true} options)
-                       :scope         "Registry"
-                       :timeout       5000
-                       :error-handler #(-> % :errors (first) :message)})))
+  (execute-in-scope {:method        method
+                     :url           url
+                     :options       (merge {:insecure? true} options)
+                     :scope         "Registry"
+                     :timeout       5000
+                     :error-handler #(-> % :errors (first) :message)}))
 
 (defn- fallback-options
   [www-auth-header options]
   (let [www-auth-url (:realm www-auth-header)
         www-auth-params (dissoc www-auth-header :realm)
-        query-params (merge {"client_id" "swarmpit"} (stringify-keys www-auth-params))
+        query-params (merge {:client_id "swarmpit"} www-auth-params)
         options (assoc-in options [:query-params] query-params)
         token (-> (execute {:method  :GET
                             :url     www-auth-url
                             :options options})
                   :body)]
     (-> options
-        (assoc-in [:headers "Authorization"] (token/bearer (:token token))))))
+        (assoc-in [:headers :Authorization] (token/bearer (:token token))))))
 
 (defn- execute-with-fallback
   [{:keys [method url options] :as request}]
@@ -103,5 +102,6 @@
         {:method  :GET
          :url     (build-url registry (str "/" repository-name "/manifests/" repository-tag))
          :options {:headers (merge (basic-auth registry)
-                                   {"Accept" "application/vnd.docker.distribution.manifest.v2+json"})}})
-      :headers))
+                                   {:Accept "application/vnd.docker.distribution.manifest.v2+json"})}})
+      :headers
+      :docker-content-digest))

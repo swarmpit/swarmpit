@@ -3,14 +3,9 @@
             [cheshire.core :refer [generate-string]]
             [swarmpit.config :refer [config]]))
 
-(def ^:private headers
-  {"Accept"       "application/json"
-   "Content-Type" "application/json"})
-
 (defn- execute
   [{:keys [method api options]}]
-  (let [url (str (config :db-url) api)
-        options (req-options options)]
+  (let [url (str (config :db-url) api)]
     (execute-in-scope {:method  method
                        :url     url
                        :options options
@@ -29,7 +24,8 @@
   (-> (execute {:method  :POST
                 :api     "/swarmpit"
                 :options {:body    doc
-                          :headers headers}})
+                          :headers {:Accept       "application/json"
+                                    :Content-Type "application/json"}}})
       :body))
 
 (defn find-docs
@@ -39,7 +35,8 @@
    (-> (execute {:method  :POST
                  :api     "/swarmpit/_find"
                  :options {:body    {:selector (merge query {:type {"$eq" type}})}
-                           :headers headers}})
+                           :headers {:Accept       "application/json"
+                                     :Content-Type "application/json"}}})
        :body
        :docs)))
 
@@ -59,7 +56,8 @@
    (-> (execute {:method  :PUT
                  :api     (str "/swarmpit/" (:_id doc))
                  :options {:body    doc
-                           :headers headers}})
+                           :headers {:Accept       "application/json"
+                                     :Content-Type "application/json"}}})
        :body))
   ([doc delta]
    (update-doc (merge doc delta)))

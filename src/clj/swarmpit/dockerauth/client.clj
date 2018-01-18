@@ -6,19 +6,17 @@
 
 (defn- execute
   [{:keys [method api options]}]
-  (let [url (str base-url api)
-        options (req-options options)]
-    (execute-in-scope {:method        method
-                       :url           url
-                       :options       options
-                       :scope         "Docker auth"
-                       :error-handler :details})))
+  (execute-in-scope {:method        method
+                     :url           (str base-url api)
+                     :options       options
+                     :scope         "Docker auth"
+                     :error-handler :details}))
 
 (defn- basic-auth
   [user]
   (when (some? user)
-    {"Authorization" (token/generate-basic (:username user)
-                                           (:password user))}))
+    {:Authorization (token/generate-basic (:username user)
+                                          (:password user))}))
 
 (defn token
   [user repository]
