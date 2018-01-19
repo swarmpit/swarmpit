@@ -15,11 +15,11 @@
 
 (defn running-service-fixture
   [test]
-  (let [id (-> (slurp "test/clj/swarmpit/docker/service.edn")
-               (edn/read-string)
-               (merge {:Name "test-service"})
-               (docker/create-service)
-               :ID)]
+  (let [id (-> (docker/create-service
+                 nil
+                 (-> (slurp "test/clj/swarmpit/docker/service.edn")
+                     (edn/read-string)
+                     (merge {:Name "test-service"}))) :ID)]
     (test)
     (docker/delete-service id)))
 
