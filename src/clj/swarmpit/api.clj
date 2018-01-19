@@ -4,6 +4,7 @@
             [digest :refer [digest]]
             [swarmpit.utils :refer [merge-data]]
             [swarmpit.config :as cfg]
+            [swarmpit.docker.utils :as du]
             [swarmpit.docker.client :as dc]
             [swarmpit.docker.log :as dl]
             [swarmpit.docker.mapper.inbound :as dmi]
@@ -193,7 +194,7 @@
                (dc/nodes)
                (dc/services)))
 
-;;; Dockerhub API
+;;; Dockerhub distribution API
 
 (defn dockerusers
   [owner]
@@ -203,6 +204,11 @@
 (defn dockeruser-info
   [dockeruser]
   (dhc/info dockeruser))
+
+(defn dockeruser-namespace
+  [dockeruser-token]
+  (-> (dhc/namespaces dockeruser-token)
+      :namespaces))
 
 (defn dockeruser-login
   [dockeruser]
@@ -217,10 +223,16 @@
   (-> (cc/dockeruser dockeruser-id)
       (cmi/->dockeruser)))
 
+(defn- dockeruser-by-namespace
+  [owner dockeruser-namespace]
+  (->> (cc/dockerusers owner)
+       (filter #(contains? (set (:namespaces %)) dockeruser-namespace))
+       (first)))
+
 (defn create-dockeruser
-  [dockeruser dockeruser-info]
+  [dockeruser dockeruser-info dockeruser-namespace]
   (if (not (dockeruser-exist? dockeruser))
-    (->> (cmo/->docker-user dockeruser dockeruser-info)
+    (->> (cmo/->docker-user dockeruser dockeruser-info dockeruser-namespace)
          (cc/create-dockeruser))))
 
 (defn update-dockeruser
@@ -236,57 +248,21 @@
 (defn dockeruser-repositories
   [dockeruser-id]
   (let [dockeruser (cc/dockeruser dockeruser-id)
-        user-token (:token (dhc/login dockeruser))]
-    (->> (dhc/namespaces user-token)
+        dockeruser-token (:token (dhc/login dockeruser))]
+    (->> (dhc/namespaces dockeruser-token)
          :namespaces
-         (map #(:results (dhc/repositories-by-namespace user-token %)))
+         (map #(:results (dhc/repositories-by-namespace dockeruser-token %)))
          (flatten)
          (dhmi/->user-repositories))))
 
-(defn dockeruser-tags
-  [dockeruser-id repository-name]
-  (let [user (cc/dockeruser dockeruser-id)
-        token (:token (dac/token user repository-name))]
-    (->> (drc/tags token repository-name)
-         :tags)))
-
-(defn dockeruser-latest-distribution
-  [{:keys [id] :as distribution}
-   {:keys [name tag] :as repository}]
-  (-> (cc/dockeruser id)
-      (dac/token name)
-      :token
-      (drc/distribution name tag)))
-
-(defn dockeruser-ports
-  [dockeruser-id repository-name repository-tag]
-  (let [user (cc/dockeruser dockeruser-id)
-        token (:token (dac/token user repository-name))]
-    (-> (drc/manifest token repository-name repository-tag)
-        (rmi/->repository-config)
-        :config
-        (dmi/->image-ports))))
-
-;; Public dockerhub API
+;; Public distribution API
 
 (defn public-repositories
   [repository-query repository-page]
   (-> (dhc/repositories repository-query repository-page)
       (dhmi/->repositories repository-query repository-page)))
 
-(defn public-tags
-  [repository-name]
-  (dockeruser-tags nil repository-name))
-
-(defn public-latest-distribution
-  [repository]
-  (dockeruser-latest-distribution nil repository))
-
-(defn public-ports
-  [repository-name repository-tag]
-  (dockeruser-ports nil repository-name repository-tag))
-
-;;; Registry API
+;;; Registry distribution API
 
 (defn registries
   [owner]
@@ -297,6 +273,18 @@
   [registry-id]
   (-> (cc/registry registry-id)
       (cmi/->registry)))
+
+(defn- registry-by-url
+  [owner registry-address]
+  (let [registry (->> (cc/registries owner)
+                      (filter #(.contains (:url %) registry-address))
+                      (first))]
+    (if (nil? registry)
+      (throw
+        (ex-info "Registry error: authentication required"
+                 {:status 400
+                  :body   {:error "authentication required"}}))
+      registry)))
 
 (defn registry-exist?
   [registry]
@@ -328,27 +316,110 @@
        (rc/repositories)
        (rmi/->repositories)))
 
-(defn registry-tags
-  [registry-id repository-name]
-  (-> (cc/registry registry-id)
-      (rc/tags repository-name)
-      :tags))
+;;; Repository Tags API
 
-(defn registry-latest-distribution
-  [{:keys [id] :as distribution}
-   {:keys [name tag] :as repository} service-update?]
-  (-> (cc/registry id)
-      (rc/distribution (if service-update?
-                         (rmi/->repository-without-prefix name)
-                         name) tag)))
+(defn- registry-repository-tags
+  [owner repository-name]
+  (let [registry-address (du/distribution-id repository-name)
+        repository-name (du/registry-repository repository-name registry-address)]
+    (-> (registry-by-url owner registry-address)
+        (rc/tags repository-name)
+        :tags)))
 
-(defn registry-ports
-  [registry-id repository-name repository-tag]
-  (-> (cc/registry registry-id)
-      (rc/manifest repository-name repository-tag)
-      (rmi/->repository-config)
-      :config
-      (dmi/->image-ports)))
+(defn- dockeruser-repository-tags
+  [owner repository-name]
+  (let [dockeruser-namespace (du/distribution-id repository-name)]
+    (-> (dockeruser-by-namespace owner dockeruser-namespace)
+        (dac/token repository-name)
+        :token
+        (drc/tags repository-name)
+        :tags)))
+
+(defn- library-repository-tags
+  [repository-name]
+  (let [repository-name (du/library-repository repository-name)]
+    (-> (dac/token nil repository-name)
+        :token
+        (drc/tags repository-name)
+        :tags)))
+
+(defn repository-tags
+  [owner repository-name]
+  (cond
+    (du/library? repository-name) (library-repository-tags repository-name)
+    (du/dockerhub? repository-name) (dockeruser-repository-tags owner repository-name)
+    :else (registry-repository-tags owner repository-name)))
+
+;;; Repository Ports API
+
+(defn- registry-repository-ports
+  [owner repository-name repository-tag]
+  (let [registry-address (du/distribution-id repository-name)
+        repository-name (du/registry-repository repository-name registry-address)]
+    (-> (registry-by-url owner registry-address)
+        (rc/manifest repository-name repository-tag)
+        (rmi/->repository-config)
+        :config
+        (dmi/->image-ports))))
+
+(defn- dockeruser-repository-ports
+  [owner repository-name repository-tag]
+  (let [dockeruser-namespace (du/distribution-id repository-name)]
+    (-> (dockeruser-by-namespace owner dockeruser-namespace)
+        (dac/token repository-name)
+        :token
+        (drc/manifest repository-name repository-tag)
+        (rmi/->repository-config)
+        :config
+        (dmi/->image-ports))))
+
+(defn- library-repository-ports
+  [repository-name repository-tag]
+  (let [repository-name (du/library-repository repository-name)]
+    (-> (dac/token nil repository-name)
+        :token
+        (drc/manifest repository-name repository-tag)
+        (rmi/->repository-config)
+        :config
+        (dmi/->image-ports))))
+
+(defn repository-ports
+  [owner repository-name repository-tag]
+  (cond
+    (du/library? repository-name) (library-repository-ports repository-name repository-tag)
+    (du/dockerhub? repository-name) (dockeruser-repository-ports owner repository-name repository-tag)
+    :else (registry-repository-ports owner repository-name repository-tag)))
+
+;;; Repository Digest API
+
+(defn- registry-repository-digest
+  [owner repository-name repository-tag]
+  (let [registry-address (du/distribution-id repository-name)
+        repository-name (du/registry-repository repository-name registry-address)]
+    (-> (registry-by-url owner registry-address)
+        (rc/digest repository-name repository-tag))))
+
+(defn- dockeruser-repository-digest
+  [owner repository-name repository-tag]
+  (let [dockeruser-namespace (du/distribution-id repository-name)]
+    (-> (dockeruser-by-namespace owner dockeruser-namespace)
+        (dac/token repository-name)
+        :token
+        (drc/digest repository-name repository-tag))))
+
+(defn- library-repository-digest
+  [repository-name repository-tag]
+  (let [repository-name (du/library-repository repository-name)]
+    (-> (dac/token nil repository-name)
+        :token
+        (drc/digest repository-name repository-tag))))
+
+(defn repository-digest
+  [owner repository-name repository-tag]
+  (cond
+    (du/library? repository-name) (library-repository-digest repository-name repository-tag)
+    (du/dockerhub? repository-name) (dockeruser-repository-digest owner repository-name repository-tag)
+    :else (registry-repository-digest owner repository-name repository-tag)))
 
 ;;; Task API
 
@@ -407,14 +478,6 @@
   (dmi/->service (dc/service service-id)
                  (dc/service-tasks service-id)))
 
-(defn service-image-id
-  [{:keys [distribution repository] :as service} service-update?]
-  (get-in
-    (case (:type distribution)
-      "dockerhub" (dockeruser-latest-distribution distribution repository)
-      "registry" (registry-latest-distribution distribution repository service-update?)
-      (public-latest-distribution repository)) [:config :digest]))
-
 (defn service-networks
   [service-id]
   (dmi/->service-networks (dc/service service-id)
@@ -450,28 +513,6 @@
   [service-id]
   (dc/delete-service service-id))
 
-(defn create-public-service
-  [service]
-  (->> (dmo/->service-image service)
-       (dmo/->service service)
-       (dc/create-service)))
-
-(defn create-dockerhub-service
-  [service dockeruser-id]
-  (let [auth-config (->> (cc/dockeruser dockeruser-id)
-                         (dmo/->auth-config))]
-    (->> (dmo/->service-image service)
-         (dmo/->service service)
-         (dc/create-service auth-config))))
-
-(defn create-registry-service
-  [service registry-id]
-  (let [registry (cc/registry registry-id)
-        auth-config (dmo/->auth-config registry)]
-    (->> (dmo/->service-image-registry service registry)
-         (dmo/->service service)
-         (dc/create-service auth-config))))
-
 (defn- standardize-service-configs
   [service]
   (if (<= 1.30 (read-string (cfg/config :docker-api)))
@@ -483,32 +524,32 @@
   (assoc-in service [:secrets] (dmo/->service-secrets service (secrets))))
 
 (defn- standardize-service
-  ([service]
-   (-> service
-       (standardize-service-secrets)
-       (standardize-service-configs)
-       (assoc-in [:repository :imageId] (service-image-id service false))))
-  ([service force?]
-   (if force?
-     (-> service
-         (standardize-service-secrets)
-         (standardize-service-configs)
-         (assoc-in [:repository :imageId] (service-image-id service true))
-         (update-in [:deployment :forceUpdate] inc))
-     (-> service
-         (standardize-service-secrets)
-         (standardize-service-configs)))))
+  [owner service]
+  (let [repository-name (get-in service [:repository :name])
+        repository-tag (get-in service [:repository :tag])]
+    (-> service
+        (standardize-service-secrets)
+        (standardize-service-configs)
+        (assoc-in [:repository :imageDigest] (repository-digest owner
+                                                                repository-name
+                                                                repository-tag)))))
+
+(defn- service-auth
+  [owner service]
+  (let [repository-name (get-in service [:repository :name])
+        distribution-id (du/distribution-id repository-name)]
+    (dmo/->auth-config
+      (cond
+        (du/library? repository-name) nil
+        (du/dockerhub? repository-name) (dockeruser-by-namespace owner distribution-id)
+        :else (registry-by-url owner distribution-id)))))
 
 (defn create-service
-  [service]
-  (let [distribution-id (get-in service [:distribution :id])
-        distribution-type (get-in service [:distribution :type])
-        standardized-service (standardize-service service)]
-    (rename-keys
-      (case distribution-type
-        "dockerhub" (create-dockerhub-service standardized-service distribution-id)
-        "registry" (create-registry-service standardized-service distribution-id)
-        (create-public-service standardized-service)) {:ID :id})))
+  [owner service]
+  (rename-keys
+    (->> (standardize-service owner service)
+         (dmo/->service)
+         (dc/create-service (service-auth owner service))) {:ID :id}))
 
 (defn- merge-service
   [service-origin service-delta]
@@ -516,32 +557,41 @@
       (assoc-in [:Labels] (:Labels service-delta))))
 
 (defn update-service
-  [service-id service force?]
-  (let [standardized-service (standardize-service service force?)
-        service-origin (-> (dc/service service-id) :Spec)
-        service-delta (->> (dmo/->service-image standardized-service)
-                           (dmo/->service standardized-service))]
-    (dc/update-service service-id
+  [owner service]
+  (let [standardized-service (standardize-service owner service)
+        service-origin (-> (dc/service (:id service)) :Spec)
+        service-delta (dmo/->service standardized-service)]
+    (dc/update-service (service-auth owner service)
+                       (:id service)
                        (:version service)
                        (merge-service service-origin service-delta))))
 
 (defn redeploy-service
-  [service-id]
-  (let [service (dc/service service-id)]
+  [owner service-id]
+  (let [origin-service (dc/service service-id)
+        service (dmi/->service origin-service nil)
+        repository-name (get-in service [:repository :name])
+        repository-tag (get-in service [:repository :tag])
+        image-digest (repository-digest owner repository-name repository-tag)
+        image (str repository-name ":" repository-tag "@" image-digest)]
     (dc/update-service
+      (service-auth owner service)
       service-id
-      (get-in service [:Version :Index])
-      (-> service
+      (get-in origin-service [:Version :Index])
+      (-> origin-service
           :Spec
-          (update-in [:TaskTemplate :ForceUpdate] inc)))))
+          (update-in [:TaskTemplate :ForceUpdate] inc)
+          (assoc-in [:TaskTemplate :ContainerSpec :Image] image)))))
 
 (defn rollback-service
-  [service-id]
-  (let [service (dc/service service-id)]
+  [owner service-id]
+  (let [origin-service (dc/service service-id)
+        service (dmi/->service origin-service nil)]
     (dc/update-service
+      (service-auth owner service)
       service-id
-      (get-in service [:Version :Index])
-      (-> service
+      (get-in origin-service [:Version :Index])
+      (-> origin-service
           :PreviousSpec))))
 
 ;; Labels API

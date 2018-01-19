@@ -96,7 +96,7 @@
          :options {:headers (basic-auth registry)}})
       :body))
 
-(defn distribution
+(defn digest
   [registry repository-name repository-tag]
   (-> (execute-with-fallback
         {:method  :GET

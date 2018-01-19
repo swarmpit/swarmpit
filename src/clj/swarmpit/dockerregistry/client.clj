@@ -25,7 +25,7 @@
                 :options {:headers {:Authorization (str "Bearer " token)}}})
       :body))
 
-(defn distribution
+(defn digest
   [token repository-name repository-tag]
   (-> (execute {:method  :GET
                 :api     (str "/" repository-name "/manifests/" repository-tag)
