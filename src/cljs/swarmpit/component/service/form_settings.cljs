@@ -15,36 +15,13 @@
 
 (defonce tags (atom []))
 
-(defn public-tags-handler
+(defn tags-handler
   [repository]
   (handler/get
-    (routes/path-for-backend :public-repository-tags)
+    (routes/path-for-backend :repository-tags)
     {:params     {:repository repository}
      :on-success (fn [response]
                    (reset! tags response))}))
-
-(defn dockerhub-tags-handler
-  [distribution repository]
-  (handler/get
-    (routes/path-for-backend :dockerhub-repository-tags {:id distribution})
-    {:params     {:repository repository}
-     :on-success (fn [response]
-                   (reset! tags response))}))
-
-(defn registry-tags-handler
-  [distribution repository]
-  (handler/get
-    (routes/path-for-backend :registry-repository-tags {:id distribution})
-    {:params     {:repository repository}
-     :on-success (fn [response]
-                   (reset! tags response))}))
-
-(defn tags-handler
-  [distributionType distribution repository]
-  (case distributionType
-    "dockerhub" (dockerhub-tags-handler distribution repository)
-    "registry" (registry-tags-handler distribution repository)
-    (public-tags-handler repository)))
 
 (def form-mode-style
   {:display   "flex"
@@ -65,19 +42,8 @@
        :inputStyle    form-image-style
        :value         value})))
 
-(defn- form-image-tag-with-port-load [value tags distribution]
-  "Preload ports for services created via swarmpit"
-  (form/comp
-    "IMAGE TAG"
-    (comp/autocomplete {:name          "imageTagAuto"
-                        :key           "imageTagAuto"
-                        :searchText    (:tag value)
-                        :onUpdateInput (fn [v] (state/update-value [:repository :tag] v cursor))
-                        :onNewRequest  (fn [_] (ports/load-suggestable-ports distribution value))
-                        :dataSource    tags})))
-
 (defn- form-image-tag [value tags]
-  "For services created by docker cli there is no port preload"
+  "For update services there is no port preload"
   (form/comp
     "IMAGE TAG"
     (comp/autocomplete
@@ -86,6 +52,17 @@
        :searchText    (:tag value)
        :onUpdateInput (fn [v] (state/update-value [:repository :tag] v cursor))
        :dataSource    tags})))
+
+(defn- form-image-tag-preloaded [value tags]
+  "Preload ports for services created via swarmpit"
+  (form/comp
+    "IMAGE TAG"
+    (comp/autocomplete {:name          "imageTagAuto"
+                        :key           "imageTagAuto"
+                        :searchText    (:tag value)
+                        :onUpdateInput (fn [v] (state/update-value [:repository :tag] v cursor))
+                        :onNewRequest  (fn [_] (ports/load-suggestable-ports value))
+                        :dataSource    tags})))
 
 (defn- form-name [value update-form?]
   (form/comp
@@ -136,8 +113,7 @@
                    (state/update-value [:replicas] (js/parseInt v) cursor))})))
 
 (rum/defc form < rum/reactive [update-form?]
-  (let [{:keys [distribution
-                repository
+  (let [{:keys [repository
                 serviceName
                 mode
                 replicas]} (state/react cursor)]
@@ -148,7 +124,7 @@
        (form-image (:name repository))
        (if update-form?
          (form-image-tag repository (rum/react tags))
-         (form-image-tag-with-port-load repository (rum/react tags) distribution))
+         (form-image-tag-preloaded repository (rum/react tags)))
        (form-name serviceName update-form?)
        (form-mode mode update-form?)
        (when (= "replicated" mode)

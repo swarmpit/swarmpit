@@ -87,7 +87,7 @@
     (fn [users]
       (init-state (first users)))))
 
-(rum/defc form-list < rum/static [searching? user repositories]
+(rum/defc form-list < rum/static [searching? repositories]
   (let [repository (fn [index] (:name (nth repositories index)))]
     [:div.form-edit-loader
      (if searching?
@@ -101,9 +101,7 @@
                          (dispatch!
                            (routes/path-for-frontend :service-create-config
                                                      {}
-                                                     {:repository       (repository i)
-                                                      :distributionType "dockerhub"
-                                                      :distribution     (:_id user)})))}
+                                                     {:repository (repository i)})))}
          (list/table-header headers)
          (list/table-body headers
                           repositories
@@ -118,7 +116,7 @@
       [:div.form-edit
        (form-username user users)
        (form-repository repository)
-       (form-list (rum/react searching?) user filtered-repositories)]
+       (form-list (rum/react searching?) filtered-repositories)]
       [:div.form-edit
        (if (storage/admin?)
          (form/icon-value icon/info [:span "No dockerhub users found. Add new " [:a {:href (routes/path-for-frontend :dockerhub-user-create)} "user."]])

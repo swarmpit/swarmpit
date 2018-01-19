@@ -17,45 +17,16 @@
     (some #(= (:containerPort port)
               (:containerPort %)) (state/get-value cursor))))
 
-(defn- public-ports-handler
-  [{:keys [name tag] :as repository}]
-  (handler/get
-    (routes/path-for-backend :public-repository-ports)
-    {:params     {:repositoryName name
-                  :repositoryTag  tag}
-     :on-success (fn [response]
-                   (doseq [port response]
-                     (if (not-suggested? port)
-                       (state/add-item port cursor))))}))
-
-(defn- dockerhub-ports-handler
-  [distribution-id {:keys [name tag] :as repository}]
-  (handler/get
-    (routes/path-for-backend :dockerhub-repository-ports {:id distribution-id})
-    {:params     {:repositoryName name
-                  :repositoryTag  tag}
-     :on-success (fn [response]
-                   (doseq [port response]
-                     (if (not-suggested? port)
-                       (state/add-item port cursor))))}))
-
-(defn- registry-ports-handler
-  [distribution-id {:keys [name tag] :as repository}]
-  (handler/get
-    (routes/path-for-backend :registry-repository-ports {:id distribution-id})
-    {:params     {:repositoryName name
-                  :repositoryTag  tag}
-     :on-success (fn [response]
-                   (doseq [port response]
-                     (if (not-suggested? port)
-                       (state/add-item port cursor))))}))
-
 (defn load-suggestable-ports
-  [{:keys [id type] :as distribution} repository]
-  (case type
-    "dockerhub" (dockerhub-ports-handler id repository)
-    "registry" (registry-ports-handler id repository)
-    (public-ports-handler repository)))
+  [repository]
+  (handler/get
+    (routes/path-for-backend :repository-ports)
+    {:params     {:repository    (:name repository)
+                  :repositoryTag (:tag repository)}
+     :on-success (fn [response]
+                   (doseq [port response]
+                     (if (not-suggested? port)
+                       (state/add-item port cursor))))}))
 
 (def headers [{:name  "Container port"
                :width "100px"}
