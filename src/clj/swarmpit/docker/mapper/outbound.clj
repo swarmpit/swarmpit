@@ -10,9 +10,10 @@
 (defn ->auth-config
   "Pass registry or dockeruser entity"
   [auth-entity]
-  {:username      (:username auth-entity)
-   :password      (:password auth-entity)
-   :serveraddress (:url auth-entity)})
+  (when (some? auth-entity)
+    {:username      (:username auth-entity)
+     :password      (:password auth-entity)
+     :serveraddress (:url auth-entity)}))
 
 (defn ->service-mode
   [service]
@@ -167,37 +168,25 @@
      :Delay       (* (:delay policy) 1000000000)
      :MaxAttempts (:attempts policy)}))
 
-(defn ->service-image-registry
-  [service registry]
+(defn ->service-image
+  [service digest?]
   (let [repository (get-in service [:repository :name])
         tag (get-in service [:repository :tag])
-        url (second (str/split (:url registry) #"//"))]
-    (str url "/" repository ":" tag)))
-
-(defn ->service-image
-  [service]
-  (let [repository (get-in service [:repository :name])
-        tag (get-in service [:repository :tag])]
-    (str repository ":" tag)))
+        digest (get-in service [:repository :imageDigest])]
+    (if digest?
+      (str repository ":" tag "@" digest)
+      (str repository ":" tag))))
 
 (defn ->service-metadata
   [service image]
   (let [autoredeploy (get-in service [:deployment :autoredeploy])
-        stack (:stack service)
-        image-id (get-in service [:repository :imageId])
-        distribution-id (get-in service [:distribution :id])
-        distribution-type (get-in service [:distribution :type])]
+        stack (:stack service)]
     (merge {}
            (when (some? stack)
              {:com.docker.stack.namespace stack
               :com.docker.stack.image     image})
            (when (some? autoredeploy)
-             {:swarmpit.service.deployment.autoredeploy (str autoredeploy)})
-           (when (some? image-id)
-             {:swarmpit.service.repository.image.id image-id})
-           (when (some? distribution-type)
-             {:swarmpit.service.distribution.id   distribution-id
-              :swarmpit.service.distribution.type distribution-type}))))
+             {:swarmpit.service.deployment.autoredeploy (str autoredeploy)}))))
 
 (defn ->service-container-metadata
   [service]
@@ -207,12 +196,12 @@
              {:com.docker.stack.namespace stack}))))
 
 (defn ->service
-  [service image]
+  [service]
   {:Name           (:serviceName service)
    :Labels         (merge
                      (->service-labels service)
-                     (->service-metadata service image))
-   :TaskTemplate   {:ContainerSpec {:Image   image
+                     (->service-metadata service (->service-image service false)))
+   :TaskTemplate   {:ContainerSpec {:Image   (->service-image service true)
                                     :Labels  (->service-container-metadata service)
                                     :Mounts  (->service-mounts service)
                                     :Secrets (:secrets service)

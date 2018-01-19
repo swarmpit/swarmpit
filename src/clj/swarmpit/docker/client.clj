@@ -42,28 +42,28 @@
                 :api    (str "/services/" id)})
       :body))
 
+(defn- x-auth
+  [auth-config]
+  (when (some? auth-config)
+    {:X-Registry-Auth (registry-token auth-config)}))
+
 (defn create-service
-  ([service]
-   (-> (execute {:method  :POST
-                 :api     "/services/create"
-                 :options {:body    service
-                           :headers {:Content-Type "application/json"}}})
-       :body))
-  ([auth-config service]
-   (-> (execute {:method  :POST
-                 :api     "/services/create"
-                 :options {:body    service
-                           :headers {:Content-Type    "application/json"
-                                     :X-Registry-Auth (registry-token auth-config)}}})
-       :body)))
+  [auth-config service]
+  (-> (execute {:method  :POST
+                :api     "/services/create"
+                :options {:body    service
+                          :headers (merge {:Content-Type "application/json"}
+                                          (x-auth auth-config))}})
+      :body))
 
 (defn update-service
-  [id version service]
+  [auth-config id version service]
   (-> (execute {:method  :POST
                 :api     (str "/services/" id "/update")
                 :options {:body         service
                           :query-params {:version version}
-                          :headers      {:Content-Type "application/json"}}})
+                          :headers      (merge {:Content-Type "application/json"}
+                                               (x-auth auth-config))}})
       :body))
 
 ;; Task
