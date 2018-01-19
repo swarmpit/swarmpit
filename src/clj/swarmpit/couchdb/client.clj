@@ -107,8 +107,10 @@
 
 (defn dockerusers
   [owner]
-  (find-docs {"$or" [{:owner {"$eq" owner}}
-                     {:public {"$eq" true}}]} "dockeruser"))
+  (if (nil? owner)
+    (find-docs "dockeruser")
+    (find-docs {"$or" [{:owner {"$eq" owner}}
+                       {:public {"$eq" true}}]} "dockeruser")))
 
 (defn dockeruser
   ([id]
@@ -139,8 +141,10 @@
 
 (defn registries
   [owner]
-  (find-docs {"$or" [{:owner {"$eq" owner}}
-                     {:public {"$eq" true}}]} "registry"))
+  (if (nil? owner)
+    (find-docs "registry")
+    (find-docs {"$or" [{:owner {"$eq" owner}}
+                       {:public {"$eq" true}}]} "registry")))
 
 (defn registry
   [id]
