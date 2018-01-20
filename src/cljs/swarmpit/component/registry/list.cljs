@@ -7,6 +7,8 @@
             [swarmpit.component.state :as state]
             [swarmpit.component.handler :as handler]
             [swarmpit.routes :as routes]
+            [swarmpit.storage :as storage]
+            [cljs.core :as core]
             [rum.core :as rum]))
 
 (def cursor [:form])
@@ -64,7 +66,8 @@
                  mixin/subscribe-form
                  mixin/focus-filter [_]
   (let [{:keys [filter items]} (state/react cursor)
-        filtered-items (list/filter items (:query filter))]
+        filtered-items (-> (core/filter #(= (:owner %) (storage/user)) items)
+                           (list/filter (:query filter)))]
     [:div
      [:div.form-panel
       [:div.form-panel-left
