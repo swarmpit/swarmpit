@@ -568,8 +568,8 @@
 
 (defn redeploy-service
   [owner service-id]
-  (let [origin-service (dc/service service-id)
-        service (dmi/->service origin-service nil)
+  (let [service-origin (dc/service service-id)
+        service (dmi/->service service-origin nil)
         repository-name (get-in service [:repository :name])
         repository-tag (get-in service [:repository :tag])
         image-digest (repository-digest owner repository-name repository-tag)
@@ -577,21 +577,21 @@
     (dc/update-service
       (service-auth owner service)
       service-id
-      (get-in origin-service [:Version :Index])
-      (-> origin-service
+      (get-in service-origin [:Version :Index])
+      (-> service-origin
           :Spec
           (update-in [:TaskTemplate :ForceUpdate] inc)
           (assoc-in [:TaskTemplate :ContainerSpec :Image] image)))))
 
 (defn rollback-service
   [owner service-id]
-  (let [origin-service (dc/service service-id)
-        service (dmi/->service origin-service nil)]
+  (let [service-origin (dc/service service-id)
+        service (dmi/->service service-origin nil)]
     (dc/update-service
       (service-auth owner service)
       service-id
-      (get-in origin-service [:Version :Index])
-      (-> origin-service
+      (get-in service-origin [:Version :Index])
+      (-> service-origin
           :PreviousSpec))))
 
 ;; Labels API

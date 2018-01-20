@@ -33,7 +33,7 @@
     (is (some? (tasks))))
 
   (testing "create and delete service"
-    (let [service (create-service service-def)]
+    (let [service (create-service nil service-def)]
       (is (some? service))
       (delete-service (:ID service))
       (is (empty? (->> (services)
