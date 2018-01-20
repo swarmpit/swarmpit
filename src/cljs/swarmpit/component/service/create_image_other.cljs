@@ -10,6 +10,7 @@
             [swarmpit.component.message :as message]
             [swarmpit.storage :as storage]
             [swarmpit.url :refer [dispatch!]]
+            [swarmpit.docker.utils :as du]
             [swarmpit.routes :as routes]
             [clojure.string :as string]
             [sablono.core :refer-macros [html]]
@@ -100,9 +101,9 @@
                          (dispatch!
                            (routes/path-for-frontend :service-create-config
                                                      {}
-                                                     {:repository       (repository i)
-                                                      :distributionType "registry"
-                                                      :distribution     (:_id registry)})))}
+                                                     {:repository (du/repository
+                                                                    (:url registry)
+                                                                    (repository i))})))}
          (list/table-header headers)
          (list/table-body headers
                           repositories

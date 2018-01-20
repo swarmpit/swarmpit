@@ -290,11 +290,8 @@
       :version (get-in service [:Version :Index])
       :createdAt (:CreatedAt service)
       :updatedAt (:UpdatedAt service)
-      :distribution {:id   (:swarmpit.service.distribution.id service-labels)
-                     :type (:swarmpit.service.distribution.type service-labels)}
       :repository (merge (->service-image-details image-name)
                          {:image       image-name
-                          :imageId     (:swarmpit.service.repository.image.id service-labels)
                           :imageDigest image-digest})
       :serviceName service-name
       :mode service-mode

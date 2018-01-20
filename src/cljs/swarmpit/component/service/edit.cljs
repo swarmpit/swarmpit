@@ -43,10 +43,8 @@
     {:state loading?
      :on-success
             (fn [service]
-              (settings/tags-handler (-> service :distribution :type)
-                                     (-> service :distribution :id)
-                                     (-> service :repository :name))
-              (state/set-value (select-keys service [:distribution :repository :version :serviceName :mode :replicas :stack]) settings/cursor)
+              (settings/tags-handler (-> service :repository :name))
+              (state/set-value (select-keys service [:repository :version :serviceName :mode :replicas :stack]) settings/cursor)
               (state/set-value (:ports service) ports/cursor)
               (state/set-value (:mounts service) mounts/cursor)
               (state/set-value (->> (:secrets service)

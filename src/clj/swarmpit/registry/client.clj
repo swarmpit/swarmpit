@@ -1,8 +1,6 @@
 (ns swarmpit.registry.client
-  (:refer-clojure :exclude [get])
   (:import (clojure.lang ExceptionInfo))
-  (:require [clj-http.client :as http]
-            [clojure.walk :refer [keywordize-keys stringify-keys]]
+  (:require [clojure.walk :refer [keywordize-keys stringify-keys]]
             [clojure.string :as str]
             [swarmpit.http :refer :all]
             [swarmpit.token :as token]))
@@ -14,8 +12,8 @@
 (defn- basic-auth
   [registry]
   (when (:withAuth registry)
-    {"Authorization" (token/generate-basic (:username registry)
-                                           (:password registry))}))
+    {:Authorization (token/generate-basic (:username registry)
+                                          (:password registry))}))
 
 (defn- authenticate-header
   [headers]
@@ -31,8 +29,10 @@
                        (str/split #","))))))))
 
 (defn- execute
-  [call]
-  (execute-in-scope {:call-fx       call
+  [{:keys [method url options]}]
+  (execute-in-scope {:method        method
+                     :url           url
+                     :options       (merge {:insecure? true} options)
                      :scope         "Registry"
                      :timeout       5000
                      :error-handler #(-> % :errors (first) :message)}))
@@ -41,60 +41,67 @@
   [www-auth-header options]
   (let [www-auth-url (:realm www-auth-header)
         www-auth-params (dissoc www-auth-header :realm)
-        query-params (merge {"client_id" "swarmpit"} (stringify-keys www-auth-params))
+        query-params (merge {:client_id "swarmpit"} www-auth-params)
         options (assoc-in options [:query-params] query-params)
-        token (execute #(http/get www-auth-url options))]
+        token (-> (execute {:method  :GET
+                            :url     www-auth-url
+                            :options options})
+                  :body)]
     (-> options
-        (assoc-in [:headers "Authorization"] (token/bearer (:token token))))))
+        (assoc-in [:headers :Authorization] (token/bearer (:token token))))))
 
 (defn- execute-with-fallback
-  [url options]
+  [{:keys [method url options] :as request}]
   (try
-    (execute #(http/get url options))
+    (execute request)
     (catch ExceptionInfo e
       (let [status (:status (ex-data e))
             headers (:headers (ex-data e))
             www-auth-header (authenticate-header headers)]
         (if (and (= status 401)
                  (some? www-auth-header))
-          (execute #(http/get url (fallback-options www-auth-header options)))
+          (execute (assoc request :options (fallback-options www-auth-header options)))
           (throw e))))))
-
-(defn- get
-  [registry api headers params]
-  (let [url (build-url registry api)
-        options {:headers      (merge {"Content-Type" "application/json"}
-                                      headers)
-                 :query-params params
-                 :insecure?    true}]
-    (execute-with-fallback url options)))
 
 (defn repositories
   [registry]
-  (let [headers (basic-auth registry)]
-    (->> (get registry "/_catalog" headers nil)
-         :repositories)))
+  (-> (execute-with-fallback
+        {:method  :GET
+         :url     (build-url registry "/_catalog")
+         :options {:headers (basic-auth registry)}})
+      :body
+      :repositories))
 
 (defn info
   [registry]
-  (let [headers (basic-auth registry)]
-    (get registry "/" headers nil)))
+  (-> (execute-with-fallback
+        {:method  :GET
+         :url     (build-url registry "/")
+         :options {:headers (basic-auth registry)}})
+      :body))
 
 (defn tags
   [registry repository-name]
-  (let [headers (basic-auth registry)
-        api (str "/" repository-name "/tags/list")]
-    (get registry api headers nil)))
+  (-> (execute-with-fallback
+        {:method  :GET
+         :url     (build-url registry (str "/" repository-name "/tags/list"))
+         :options {:headers (basic-auth registry)}})
+      :body))
 
 (defn manifest
   [registry repository-name repository-tag]
-  (let [headers (basic-auth registry)
-        api (str "/" repository-name "/manifests/" repository-tag)]
-    (get registry api headers nil)))
+  (-> (execute-with-fallback
+        {:method  :GET
+         :url     (build-url registry (str "/" repository-name "/manifests/" repository-tag))
+         :options {:headers (basic-auth registry)}})
+      :body))
 
-(defn distribution
+(defn digest
   [registry repository-name repository-tag]
-  (let [headers (basic-auth registry)
-        api (str "/" repository-name "/manifests/" repository-tag)]
-    (get registry api (merge headers
-                             {"Accept" "application/vnd.docker.distribution.manifest.v2+json"}) nil)))
+  (-> (execute-with-fallback
+        {:method  :GET
+         :url     (build-url registry (str "/" repository-name "/manifests/" repository-tag))
+         :options {:headers (merge (basic-auth registry)
+                                   {:Accept "application/vnd.docker.distribution.manifest.v2+json"})}})
+      :headers
+      :docker-content-digest))

@@ -65,28 +65,16 @@
              :handler any-access}
             {:pattern #"^/$"
              :handler any-access}
-            {:pattern        #"^/distribution/registries/[a-zA-Z0-9]*/repositories$"
+            {:pattern        #"^/distribution/(dockerhub|registry)/[a-zA-Z0-9]*/repositories$"
              :request-method :get
              :handler        {:and [authenticated-access distribution-access]}}
-            {:pattern        #"^/distribution/registries/[a-zA-Z0-9]*/tags$"
+            {:pattern        #"^/distribution/(dockerhub|registry)/[a-zA-Z0-9]*/tags$"
              :request-method :get
              :handler        {:and [authenticated-access distribution-access]}}
-            {:pattern        #"^/distribution/registries/[a-zA-Z0-9]*/ports$"
+            {:pattern        #"^/distribution/(dockerhub|registry)/[a-zA-Z0-9]*/ports$"
              :request-method :get
              :handler        {:and [authenticated-access distribution-access]}}
-            {:pattern        #"^/distribution/registries/[a-zA-Z0-9]*$"
-             :request-method #{:get :delete :post}
-             :handler        {:and [authenticated-access owner-access]}}
-            {:pattern        #"^/distribution/dockerhub/[a-zA-Z0-9]*/repositories$"
-             :request-method :get
-             :handler        {:and [authenticated-access distribution-access]}}
-            {:pattern        #"^/distribution/dockerhub/[a-zA-Z0-9]*/tags$"
-             :request-method :get
-             :handler        {:and [authenticated-access distribution-access]}}
-            {:pattern        #"^/distribution/dockerhub/[a-zA-Z0-9]*/ports$"
-             :request-method :get
-             :handler        {:and [authenticated-access distribution-access]}}
-            {:pattern        #"^/distribution/dockerhub/[a-zA-Z0-9]*$"
+            {:pattern        #"^/distribution/(dockerhub|registry)/[a-zA-Z0-9]*$"
              :request-method #{:get :delete :post}
              :handler        {:and [authenticated-access owner-access]}}
             {:pattern        #"^/services$"

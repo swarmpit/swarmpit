@@ -30,7 +30,6 @@
                  [digest "1.4.5"]
                  [environ "1.1.0"]
                  [me.raynes/conch "0.8.0"]
-                 [org.immutant/scheduling "2.1.9"]
                  [com.andrewmcveigh/cljs-time "0.5.1"]
                  [com.cemerick/url "0.1.1"]
                  [com.cemerick/friend "0.2.3"]

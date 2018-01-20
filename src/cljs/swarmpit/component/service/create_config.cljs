@@ -60,10 +60,8 @@
                        (str "Service creation failed. Reason: " (:error response))))})))
 
 (defn init-state
-  [distribution distributionType repository]
-  (state/set-value {:distribution {:id   distribution
-                                   :type distributionType}
-                    :repository   {:name repository
+  [repository]
+  (state/set-value {:repository   {:name repository
                                    :tag  ""
                                    :tags []}
                     :serviceName  ""
@@ -96,10 +94,8 @@
 
 (def mixin-init-form
   (mixin/init-form
-    (fn [{{:keys [repository distribution distributionType]} :params}]
-      (init-state distribution
-                  distributionType
-                  repository)
+    (fn [{{:keys [repository]} :params}]
+      (init-state repository)
       (mounts/volumes-handler)
       (networks/networks-handler)
       (secrets/secrets-handler)
@@ -107,7 +103,7 @@
         (configs/configs-handler))
       (placement/placement-handler)
       (labels/labels-handler)
-      (settings/tags-handler distributionType distribution repository))))
+      (settings/tags-handler repository))))
 
 (rum/defc form-settings < rum/static []
   [:div.form-layout-group

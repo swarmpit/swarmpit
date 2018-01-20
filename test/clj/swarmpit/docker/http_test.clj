@@ -9,40 +9,53 @@
 
 (deftest ^:integration http
   (testing "execute"
-    (let [response (execute "GET" "/version" nil nil nil)]
-      (is (some? response))
-      (is (= response (get "/version")))))
+    (let [response (-> (execute {:method :GET
+                                 :api    "/version"})
+                       :body)]
+      (is (some? response))))
 
   (testing "object not found"
     (is (thrown-with-msg?
           ExceptionInfo #"not-existing-service"
-          (get "/services/not-existing-service"))))
+          (-> (execute {:method :GET
+                        :api    "/services/not-existing-service"})
+              :body))))
 
   (testing "page not found"
     (is (thrown-with-msg?
           ExceptionInfo #"Docker error: page not found"
-          (get "/not-existing-page"))))
+          (-> (execute {:method :GET
+                        :api    "/not-existing-page"})
+              :body))))
 
   (testing "connection refused"
     (is (thrown-with-msg?
           ExceptionInfo #"Connection refused"
           (with-redefs [swarmpit.config/config {:docker-sock "http://localhost:23095"}]
-            (get "/version")))))
+            (-> (execute {:method :GET
+                          :api    "/version"})
+                :body)))))
 
   (testing "invalid address"
     (is (thrown-with-msg?
           ExceptionInfo #"Docker failure: not-existing-dns:"
           (with-redefs [swarmpit.config/config {:docker-sock "http://not-existing-dns"}]
-            (get "/version")))))
+            (-> (execute {:method :GET
+                          :api    "/version"})
+                :body)))))
 
   (testing "timeout"
     (is (thrown?
           ExceptionInfo #"Docker error: Request timeout"
           (with-redefs [swarmpit.docker.http/timeout 0]
-            (get "/services")))))
+            (-> (execute {:method :GET
+                          :api    "/services"})
+                :body)))))
 
   (testing "invalid socket"
     (is (thrown-with-msg?
           ExceptionInfo #"Docker failure: No such file or directory"
           (with-redefs [swarmpit.config/config {:docker-sock "/not/existing/socket.sock"}]
-            (get "/version"))))))
+            (-> (execute {:method :GET
+                          :api    "/version"})
+                :body))))))

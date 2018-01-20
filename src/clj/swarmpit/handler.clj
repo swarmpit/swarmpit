@@ -146,26 +146,30 @@
          (resp-ok))))
 
 (defmethod dispatch :service-create [_]
-  (fn [{:keys [params]}]
-    (let [payload (keywordize-keys params)]
-      (->> (api/create-service payload)
+  (fn [{:keys [params identity]}]
+    (let [owner (get-in identity [:usr :username])
+          payload (keywordize-keys params)]
+      (->> (api/create-service owner payload)
            (resp-created)))))
 
 (defmethod dispatch :service-update [_]
-  (fn [{:keys [route-params params]}]
-    (let [payload (keywordize-keys params)]
-      (api/update-service (:id route-params) payload false)
+  (fn [{:keys [params identity]}]
+    (let [owner (get-in identity [:usr :username])
+          payload (keywordize-keys params)]
+      (api/update-service owner payload)
       (resp-ok))))
 
 (defmethod dispatch :service-redeploy [_]
-  (fn [{:keys [route-params]}]
-    (api/redeploy-service (:id route-params))
-    (resp-ok)))
+  (fn [{:keys [route-params identity]}]
+    (let [owner (get-in identity [:usr :username])]
+      (api/redeploy-service owner (:id route-params))
+      (resp-ok))))
 
 (defmethod dispatch :service-rollback [_]
-  (fn [{:keys [route-params]}]
-    (api/rollback-service (:id route-params))
-    (resp-ok)))
+  (fn [{:keys [route-params identity]}]
+    (let [owner (get-in identity [:usr :username])]
+      (api/rollback-service owner (:id route-params))
+      (resp-ok))))
 
 (defmethod dispatch :service-delete [_]
   (fn [{:keys [route-params]}]
@@ -392,28 +396,6 @@
       (->> (api/registry-repositories registry-id)
            (resp-ok)))))
 
-(defmethod dispatch :registry-repository-tags [_]
-  (fn [{:keys [route-params query-params]}]
-    (let [query-params (keywordize-keys query-params)
-          repository-name (:repository query-params)
-          registry-id (:id route-params)]
-      (if (nil? repository-name)
-        (resp-error 400 "Parameter repository missing")
-        (->> (api/registry-tags registry-id repository-name)
-             (resp-ok))))))
-
-(defmethod dispatch :registry-repository-ports [_]
-  (fn [{:keys [route-params query-params]}]
-    (let [query-params (keywordize-keys query-params)
-          repository-name (:repositoryName query-params)
-          repository-tag (:repositoryTag query-params)
-          registry-id (:id route-params)]
-      (if (or (nil? repository-name)
-              (nil? repository-tag))
-        (resp-error 400 "Parameter repositoryName or repositoryTag missing")
-        (->> (api/registry-ports registry-id repository-name repository-tag)
-             (resp-ok))))))
-
 ;; Dockerhub handler
 
 (defmethod dispatch :dockerhub-users [_]
@@ -432,12 +414,13 @@
     (let [owner (get-in identity [:usr :username])
           payload (assoc (keywordize-keys params) :owner owner
                                                   :type "dockeruser")
-          dockeruser-info (api/dockeruser-info payload)]
-      (api/dockeruser-login payload)
-      (let [response (api/create-dockeruser payload dockeruser-info)]
-        (if (some? response)
-          (resp-created (select-keys response [:id]))
-          (resp-error 400 "Docker user already exist"))))))
+          dockeruser-token (:token (api/dockeruser-login payload))
+          dockeruser-info (api/dockeruser-info payload)
+          dockeruser-namespace (api/dockeruser-namespace dockeruser-token)
+          response (api/create-dockeruser payload dockeruser-info dockeruser-namespace)]
+      (if (some? response)
+        (resp-created (select-keys response [:id]))
+        (resp-error 400 "Docker user already exist")))))
 
 (defmethod dispatch :dockerhub-user-update [_]
   (fn [{:keys [route-params params]}]
@@ -456,28 +439,6 @@
       (->> (api/dockeruser-repositories dockeruser-id)
            (resp-ok)))))
 
-(defmethod dispatch :dockerhub-repository-tags [_]
-  (fn [{:keys [route-params query-params]}]
-    (let [query-params (keywordize-keys query-params)
-          repository-name (:repository query-params)
-          dockeruser-id (:id route-params)]
-      (if (nil? repository-name)
-        (resp-error 400 "Parameter repository missing")
-        (->> (api/dockeruser-tags dockeruser-id repository-name)
-             (resp-ok))))))
-
-(defmethod dispatch :dockerhub-repository-ports [_]
-  (fn [{:keys [route-params query-params]}]
-    (let [query-params (keywordize-keys query-params)
-          repository-name (:repositoryName query-params)
-          repository-tag (:repositoryTag query-params)
-          dockeruser-id (:id route-params)]
-      (if (or (nil? repository-name)
-              (nil? repository-tag))
-        (resp-error 400 "Parameter repositoryName or repositoryTag missing")
-        (->> (api/dockeruser-ports dockeruser-id repository-name repository-tag)
-             (resp-ok))))))
-
 ;; Public dockerhub handler
 
 (defmethod dispatch :public-repositories [_]
@@ -488,22 +449,26 @@
       (->> (api/public-repositories repository-query repository-page)
            (resp-ok)))))
 
-(defmethod dispatch :public-repository-tags [_]
-  (fn [{:keys [query-params]}]
-    (let [query-params (keywordize-keys query-params)
+;; Repository handler
+
+(defmethod dispatch :repository-tags [_]
+  (fn [{:keys [query-params identity]}]
+    (let [owner (get-in identity [:usr :username])
+          query-params (keywordize-keys query-params)
           repository-name (:repository query-params)]
       (if (nil? repository-name)
-        (resp-error 400 "Parameter repository missing")
-        (->> (api/public-tags repository-name)
+        (resp-error 400 "Parameter name missing")
+        (->> (api/repository-tags owner repository-name)
              (resp-ok))))))
 
-(defmethod dispatch :public-repository-ports [_]
-  (fn [{:keys [query-params]}]
-    (let [query-params (keywordize-keys query-params)
-          repository-name (:repositoryName query-params)
+(defmethod dispatch :repository-ports [_]
+  (fn [{:keys [query-params identity]}]
+    (let [owner (get-in identity [:usr :username])
+          query-params (keywordize-keys query-params)
+          repository-name (:repository query-params)
           repository-tag (:repositoryTag query-params)]
       (if (or (nil? repository-name)
               (nil? repository-tag))
-        (resp-error 400 "Parameter repositoryName or repositoryTag missing")
-        (->> (api/public-ports repository-name repository-tag)
+        (resp-error 400 "Parameter name or tag missing")
+        (->> (api/repository-ports owner repository-name repository-tag)
              (resp-ok))))))

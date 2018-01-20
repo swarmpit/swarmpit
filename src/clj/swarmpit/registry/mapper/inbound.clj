@@ -1,6 +1,5 @@
 (ns swarmpit.registry.mapper.inbound
-  (:require [cheshire.core :refer [parse-string]]
-            [clojure.string :as str]))
+  (:require [cheshire.core :refer [parse-string]]))
 
 (defn ->repositories
   [repositories]
@@ -15,9 +14,3 @@
       (first)
       :v1Compatibility
       (parse-string true)))
-
-(defn ->repository-without-prefix
-  [image-name]
-  (let [separator-pos (str/index-of image-name "/")
-        length (count image-name)]
-    (subs image-name (inc separator-pos) length)))

@@ -17,7 +17,7 @@
   (assoc registry :type "registry"))
 
 (defn ->docker-user
-  [docker-user docker-user-info]
+  [docker-user docker-user-info dockeruser-namespace]
   (let [full-name (:full_name docker-user-info)
         org-name (:orgname docker-user-info)]
     (assoc docker-user :type "dockeruser"
@@ -26,4 +26,5 @@
                                full-name)
                        :role (:type docker-user-info)
                        :location (:location docker-user-info)
-                       :company (:company docker-user-info))))
+                       :company (:company docker-user-info)
+                       :namespaces dockeruser-namespace)))

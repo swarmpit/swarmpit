@@ -1,62 +1,55 @@
 (ns swarmpit.dockerhub.client
-  (:refer-clojure :exclude [get])
-  (:require [clj-http.client :as http]
-            [swarmpit.http :refer :all]
+  (:require [swarmpit.http :refer :all]
             [cheshire.core :refer [generate-string]]))
 
 (def ^:private base-url "https://hub.docker.com/v2")
 
 (defn- execute
-  [call]
-  (execute-in-scope {:call-fx       call
+  [{:keys [method api options]}]
+  (execute-in-scope {:method        method
+                     :url           (str base-url api)
+                     :options       options
                      :scope         "Dockerhub"
                      :error-handler #(or (:detail %) %)}))
 
-(defn- get
-  [url headers params]
-  (let [options {:headers      headers
-                 :query-params params}]
-    (execute #(http/get url options))))
-
-(defn- post
-  [url headers body]
-  (let [options {:headers (merge headers {"Content-Type" "application/json"})
-                 :body    (generate-string body)}]
-    (execute #(http/post url options))))
-
 (defn- jwt-auth
   [token]
-  {"Authorization" (str "JWT " token)})
+  {:Authorization (str "JWT " token)})
 
 (defn login
   [user]
-  (let [api "/users/login"
-        url (str base-url api)]
-    (post url nil user)))
+  (-> (execute {:method  :POST
+                :api     "/users/login"
+                :options {:body    user
+                          :headers {:Content-Type "application/json"}}})
+      :body))
 
 (defn info
   [user]
-  (let [api (str "/users/" (:username user))
-        url (str base-url api)]
-    (get url nil nil)))
+  (-> (execute {:method :GET
+                :api    (str "/users/" (:username user))})
+      :body))
 
 (defn repositories-by-namespace
   [token namespace]
-  (let [api (str "/repositories/" namespace)
-        url (str base-url api)]
-    (get url (jwt-auth token) {:page_size 1000})))
+  (-> (execute {:method  :GET
+                :api     (str "/repositories/" namespace)
+                :options {:query-params {:page_size 1000}
+                          :headers      (jwt-auth token)}})
+      :body))
 
 (defn namespaces
   [token]
-  (let [api "/repositories/namespaces"
-        url (str base-url api)]
-    (get url (jwt-auth token) nil)))
+  (-> (execute {:method  :GET
+                :api     "/repositories/namespaces"
+                :options {:headers (jwt-auth token)}})
+      :body))
 
 (defn repositories
   [query page]
-  (let [api "/search/repositories"
-        url (str base-url api)
-        params {:query     query
-                :page      page
-                :page_size 20}]
-    (get url nil params)))
+  (-> (execute {:method  :GET
+                :api     "/search/repositories"
+                :options {:query-params {:query     query
+                                         :page      page
+                                         :page_size 20}}})
+      :body))

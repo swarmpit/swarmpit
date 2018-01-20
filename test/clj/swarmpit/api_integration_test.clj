@@ -36,13 +36,13 @@
       (is (some? (service-tasks service-id))))
 
     (testing "scale service"
-      (let [id (-> (edn/read-string (slurp "test/clj/swarmpit/create-service.edn"))
-                   (create-service)
-                   :id)
+      (let [id (->> (edn/read-string (slurp "test/clj/swarmpit/create-service.edn"))
+                    (create-service nil)
+                    :id)
             created (service id)]
         (is (= "nginx" (-> created :repository :name)))
         (is (= 1 (-> created :replicas)))
-        (update-service id (merge created {:replicas 2}) false)
+        (update-service id (merge created {:replicas 2}))
         (is (= 2 (-> id (service) :replicas)))
         (delete-service id)))
 
@@ -51,10 +51,10 @@
                   :spec   (-> "test/clj/swarmpit/create-service.edn"
                               (slurp)
                               (edn/read-string))
-                  :create create-service
+                  :create (fn [spec] (create-service nil spec))
                   :read   service
                   :list   services
-                  :update (fn [id spec] (update-service id spec true))
+                  :update (fn [_ spec] (update-service nil spec))
                   :delete delete-service}))
 
     (testing "secrets"

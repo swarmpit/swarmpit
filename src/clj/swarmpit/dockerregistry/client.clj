@@ -1,36 +1,35 @@
 (ns swarmpit.dockerregistry.client
-  (:refer-clojure :exclude [get])
-  (:require [clj-http.client :as http]
-            [swarmpit.http :refer :all]
-            [swarmpit.docker.utils :as utils]))
+  (:require [swarmpit.http :refer :all]))
 
 (def ^:private base-url "https://index.docker.io/v2")
 
 (defn- execute
-  [call]
-  (execute-in-scope {:call-fx       call
+  [{:keys [method api options]}]
+  (execute-in-scope {:method        method
+                     :url           (str base-url api)
+                     :options       options
                      :scope         "Docker registry"
                      :error-handler #(-> % :errors (first) :message)}))
 
-(defn- get
-  [api token headers params]
-  (let [url (str base-url api)
-        options {:headers      (merge headers
-                                      {"Authorization" (str "Bearer " token)})
-                 :query-params params}]
-    (execute #(http/get url options))))
-
 (defn tags
-  [token repository]
-  (let [api (str "/" (utils/add-dockerhub-namespace repository) "/tags/list")]
-    (get api token {} nil)))
+  [token repository-name]
+  (-> (execute {:method  :GET
+                :api     (str "/" repository-name "/tags/list")
+                :options {:headers {:Authorization (str "Bearer " token)}}})
+      :body))
 
 (defn manifest
   [token repository-name repository-tag]
-  (let [api (str "/" (utils/add-dockerhub-namespace repository-name) "/manifests/" repository-tag)]
-    (get api token nil nil)))
+  (-> (execute {:method  :GET
+                :api     (str "/" repository-name "/manifests/" repository-tag)
+                :options {:headers {:Authorization (str "Bearer " token)}}})
+      :body))
 
-(defn distribution
+(defn digest
   [token repository-name repository-tag]
-  (let [api (str "/" (utils/add-dockerhub-namespace repository-name) "/manifests/" repository-tag)]
-    (get api token {"Accept" "application/vnd.docker.distribution.manifest.v2+json"} nil)))
+  (-> (execute {:method  :GET
+                :api     (str "/" repository-name "/manifests/" repository-tag)
+                :options {:headers {:Authorization (str "Bearer " token)
+                                    :Accept        "application/vnd.docker.distribution.manifest.v2+json"}}})
+      :headers
+      :docker-content-digest))
