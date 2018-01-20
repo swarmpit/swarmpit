@@ -78,7 +78,7 @@
     (routes/path-for-backend :service-redeploy {:id service-id})
     {:on-success (fn [_]
                    (message/info
-                     (str "Service " service-id " redeploy started.")))
+                     (str "Service " service-id " redeploy triggered.")))
      :on-error   (fn [response]
                    (message/error
                      (str "Service redeploy failed. Reason: " (:error response))))}))
@@ -89,7 +89,7 @@
     (routes/path-for-backend :service-rollback {:id service-id})
     {:on-success (fn [_]
                    (message/info
-                     (str "Service " service-id " rollback started.")))
+                     (str "Service " service-id " rollback triggered.")))
      :on-error   (fn [response]
                    (message/error
                      (str "Service rollback failed. Reason: " (:error response))))}))
