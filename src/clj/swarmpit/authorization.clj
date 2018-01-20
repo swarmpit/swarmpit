@@ -42,19 +42,6 @@
       (error {:code    403
               :message "Unauthorized distribution access"}))))
 
-(defn- service-distribution-access
-  [{:keys [json-params identity]}]
-  (let [user (get-in identity [:usr :username])
-        distribution-id (get-in json-params ["distribution" "id"])]
-    (if (nil? distribution-id)
-      true
-      (let [entity (cc/get-doc distribution-id)]
-        (if (or (= (:owner entity) user)
-                (:public entity))
-          true
-          (error {:code    403
-                  :message "Unauthorized distribution access"}))))))
-
 (def rules [{:pattern #"^/admin/.*"
              :handler {:and [authenticated-access admin-access]}}
             {:pattern #"^/login$"
@@ -77,16 +64,14 @@
             {:pattern        #"^/distribution/(dockerhub|registry)/[a-zA-Z0-9]*$"
              :request-method #{:get :delete :post}
              :handler        {:and [authenticated-access owner-access]}}
-            {:pattern        #"^/services$"
-             :request-method :post
-             :handler        {:and [authenticated-access service-distribution-access]}}
             {:pattern #"^/.*"
              :handler {:and [authenticated-access]}}])
 
 (defn- rules-error
   [_ val]
-  (resp-error (:code val)
-              (:message val)))
+  (-> (resp-error (:code val)
+                  (:message val))
+      (assoc :headers {"X-Backend-Server" "swarmpit"})))
 
 (defn wrap-authorization
   [handler]

@@ -282,7 +282,7 @@
     (if (nil? registry)
       (throw
         (ex-info "Registry error: authentication required"
-                 {:status 400
+                 {:status 401
                   :body   {:error "authentication required"}}))
       registry)))
 
