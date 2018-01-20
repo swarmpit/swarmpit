@@ -26,7 +26,8 @@
      :on-success (fn [response]
                    (doseq [port response]
                      (if (not-suggested? port)
-                       (state/add-item port cursor))))}))
+                       (state/add-item port cursor))))
+     :on-error   (fn [_])}))
 
 (def headers [{:name  "Container port"
                :width "100px"}

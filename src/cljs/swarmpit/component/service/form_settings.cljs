@@ -17,11 +17,12 @@
 
 (defn tags-handler
   [repository]
-  (handler/get
+  (handler/get 
     (routes/path-for-backend :repository-tags)
     {:params     {:repository repository}
      :on-success (fn [response]
-                   (reset! tags response))}))
+                   (reset! tags response))
+     :on-error   (fn [_])}))
 
 (def form-mode-style
   {:display   "flex"
