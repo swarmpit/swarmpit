@@ -519,13 +519,20 @@
   [service]
   (assoc-in service [:secrets] (dmo/->service-secrets service (secrets))))
 
+(defn- standardize-repository-tag
+  [repository-tag]
+  (if (str/blank? repository-tag)
+    "latest"
+    repository-tag))
+
 (defn- standardize-service
   [owner service]
   (let [repository-name (get-in service [:repository :name])
-        repository-tag (get-in service [:repository :tag])]
+        repository-tag (standardize-repository-tag (get-in service [:repository :tag]))]
     (-> service
         (standardize-service-secrets)
         (standardize-service-configs)
+        (assoc-in [:repository :tag] repository-tag)
         (assoc-in [:repository :imageDigest] (repository-digest owner
                                                                 repository-name
                                                                 repository-tag)))))
