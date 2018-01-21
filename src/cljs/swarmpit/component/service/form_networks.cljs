@@ -34,9 +34,6 @@
               {:name  ""
                :width "20%"}])
 
-(def empty-info
-  (form/value "Service is not connected to any networks."))
-
 (defn- form-network [value index networks-list]
   (list/selectfield
     {:name     (str "form-network-select-" index)
@@ -69,13 +66,8 @@
   []
   (state/add-item {:networkName ""} cursor))
 
-(rum/defc form-create < rum/reactive []
-  (let [networks (state/react cursor)]
-    (if (not (empty? networks))
-      (form-table networks (rum/react networks-list)))))
-
-(rum/defc form-update < rum/reactive []
+(rum/defc form < rum/reactive []
   (let [networks (state/react cursor)]
     (if (empty? networks)
-      empty-info
+      (form/value "Service is not connected to any networks.")
       (form-table networks (rum/react networks-list)))))

@@ -49,9 +49,6 @@
               {:name  "Read only"
                :width "5%"}])
 
-(def empty-info
-  (form/value "No mounts defined for the service."))
-
 (defn- form-container [value index]
   (list/textfield
     {:name     (str "form-container-path-text-" index)
@@ -137,13 +134,8 @@
                    :host          ""
                    :readOnly      false} cursor))
 
-(rum/defc form-create < rum/reactive []
-  (let [mounts (state/react cursor)]
-    (when (not (empty? mounts))
-      (form-table mounts (rum/react volumes)))))
-
-(rum/defc form-update < rum/reactive []
+(rum/defc form < rum/reactive []
   (let [mounts (state/react cursor)]
     (if (empty? mounts)
-      empty-info
+      (form/value "No mounts defined for the service.")
       (form-table mounts (rum/react volumes)))))

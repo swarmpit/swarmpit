@@ -16,9 +16,6 @@
               {:name  "Value"
                :width "35%"}])
 
-(def empty-info
-  (form/value "No labels defined for the service."))
-
 (defonce label-names (atom []))
 
 (defn labels-handler
@@ -66,13 +63,8 @@
   (state/add-item {:name  ""
                    :value ""} cursor))
 
-(rum/defc form-create < rum/reactive []
-  (let [labels (state/react cursor)]
-    (if (not (empty? labels))
-      (form-table labels (rum/react label-names)))))
-
-(rum/defc form-update < rum/reactive []
+(rum/defc form < rum/reactive []
   (let [labels (state/react cursor)]
     (if (empty? labels)
-      empty-info
+      (form/value "No labels defined for the service.")
       (form-table labels (rum/react label-names)))))

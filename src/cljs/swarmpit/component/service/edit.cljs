@@ -87,8 +87,8 @@
                        (assoc :ports ports)
                        (assoc :networks networks)
                        (assoc :mounts (mounts/normalize))
-                       (assoc :secrets secrets)
-                       (assoc :configs configs)
+                       (assoc :secrets (when (not (empty? @secrets/secrets-list)) secrets))
+                       (assoc :configs (when (not (empty? @configs/configs-list)) configs))
                        (assoc :variables variables)
                        (assoc :labels labels)
                        (assoc :logdriver logdriver)
@@ -124,41 +124,37 @@
 (rum/defc form-ports < rum/static []
   [:div.form-layout-group.form-layout-group-border
    (form/section-add "Ports" ports/add-item)
-   (ports/form-update)])
+   (ports/form)])
 
 (rum/defc form-networks < rum/static []
   [:div.form-layout-group.form-layout-group-border
    (form/section-add "Networks" networks/add-item)
-   (networks/form-update)])
+   (networks/form)])
 
 (rum/defc form-mounts < rum/static []
   [:div.form-layout-group.form-layout-group-border
    (form/section-add "Mounts" mounts/add-item)
-   (mounts/form-update)])
+   (mounts/form)])
 
 (rum/defc form-secrets < rum/reactive []
   [:div.form-layout-group.form-layout-group-border
-   (if (empty? (rum/react secrets/secrets-list))
-     (form/section "Secrets")
-     (form/section-add "Secrets" secrets/add-item))
-   (secrets/form-update)])
+   (form/section-add "Secrets" secrets/add-item)
+   (secrets/form)])
 
 (rum/defc form-configs < rum/reactive []
   [:div.form-layout-group.form-layout-group-border
-   (if (empty? (rum/react configs/configs-list))
-     (form/section "Configs")
-     (form/section-add "Configs" configs/add-item))
-   (configs/form-update)])
+   (form/section-add "Configs" configs/add-item)
+   (configs/form)])
 
 (rum/defc form-variables < rum/static []
   [:div.form-layout-group.form-layout-group-border
    (form/section-add "Environment Variables" variables/add-item)
-   (variables/form-update)])
+   (variables/form)])
 
 (rum/defc form-labels < rum/static []
   [:div.form-layout-group.form-layout-group-border
    (form/section-add "Labels" labels/add-item)
-   (labels/form-update)])
+   (labels/form)])
 
 (rum/defc form-logdriver < rum/static []
   [:div.form-layout-group.form-layout-group-border

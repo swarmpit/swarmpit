@@ -1,6 +1,5 @@
 (ns swarmpit.component.service.form-configs
-  (:require [material.icon :as icon]
-            [material.component :as comp]
+  (:require [material.component :as comp]
             [material.component.form :as form]
             [material.component.list-table-form :as list]
             [swarmpit.component.handler :as handler]
@@ -27,12 +26,8 @@
               {:name  "Target"
                :width "35%"}])
 
-(def empty-info
-  (form/value "No configs defined for the service."))
-
 (def undefined-info
-  (form/icon-value
-    icon/info
+  (form/value
     [:span "No configs found. Create new "
      [:a {:href (routes/path-for-frontend :config-create)} "config."]]))
 
@@ -79,17 +74,12 @@
   (state/add-item {:configName   ""
                    :configTarget ""} cursor))
 
-(rum/defc form-create < rum/reactive []
+(rum/defc form < rum/reactive []
   (let [configs-list (rum/react configs-list)
         configs (state/react cursor)]
-    [:div
-     (when (empty? configs-list)
-       undefined-info)
-     (when (not (empty? configs))
-       (form-table configs configs-list))]))
 
-(rum/defc form-update < rum/reactive []
-  (let [configs (state/react cursor)]
     (if (empty? configs)
-      empty-info
-      (form-table configs (rum/react configs-list)))))
+      (form/value "No configs defined for the service.")
+      (if (empty? configs-list)
+        undefined-info
+        (form-table configs configs-list)))))

@@ -2,10 +2,9 @@
   (:require [material.component :as comp]
             [material.component.form :as form]
             [material.component.list-table-form :as list]
-            [material.icon :as icon]
-            [swarmpit.routes :as routes]
             [swarmpit.component.handler :as handler]
             [swarmpit.component.state :as state]
+            [swarmpit.routes :as routes]
             [rum.core :as rum]
             [clojure.string :as str]))
 
@@ -27,12 +26,8 @@
               {:name  "Target"
                :width "35%"}])
 
-(def empty-info
-  (form/value "No secrets defined for the service."))
-
 (def undefined-info
-  (form/icon-value
-    icon/info
+  (form/value
     [:span "No secrets found. Create new "
      [:a {:href (routes/path-for-frontend :secret-create)} "secret."]]))
 
@@ -79,17 +74,11 @@
   (state/add-item {:secretName   ""
                    :secretTarget ""} cursor))
 
-(rum/defc form-create < rum/reactive []
+(rum/defc form < rum/reactive []
   (let [secrets-list (rum/react secrets-list)
         secrets (state/react cursor)]
-    [:div
-     (when (empty? secrets-list)
-       undefined-info)
-     (when (not (empty? secrets))
-       (form-table secrets secrets-list))]))
-
-(rum/defc form-update < rum/reactive []
-  (let [secrets (state/react cursor)]
     (if (empty? secrets)
-      empty-info
-      (form-table secrets (rum/react secrets-list)))))
+      (form/value "No secrets defined for the service.")
+      (if (empty? secrets-list)
+        undefined-info
+        (form-table secrets secrets-list)))))

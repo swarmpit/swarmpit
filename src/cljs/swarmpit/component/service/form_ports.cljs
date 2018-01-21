@@ -36,9 +36,6 @@
               {:name  "Host port"
                :width "100px"}])
 
-(def empty-info
-  (form/value "Service has no published ports."))
-
 (defn- format-port-value
   [value]
   (if (zero? value) "" value))
@@ -106,13 +103,8 @@
                    :protocol      "tcp"
                    :hostPort      0} cursor))
 
-(rum/defc form-create < rum/reactive []
-  (let [ports (state/react cursor)]
-    (if (not (empty? ports))
-      (form-table ports))))
-
-(rum/defc form-update < rum/reactive []
+(rum/defc form < rum/reactive []
   (let [ports (state/react cursor)]
     (if (empty? ports)
-      empty-info
+      (form/value "Service has no published ports.")
       (form-table ports))))

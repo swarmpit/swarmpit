@@ -13,9 +13,6 @@
               {:name  "Value"
                :width "35%"}])
 
-(def empty-info
-  (form/value "No environment variables defined for the service."))
-
 (defn- form-name [value index]
   (list/textfield
     {:name     (str "form-name-text-" index)
@@ -52,13 +49,8 @@
   (state/add-item {:name  ""
                    :value ""} cursor))
 
-(rum/defc form-create < rum/reactive []
-  (let [variables (state/react cursor)]
-    (if (not (empty? variables))
-      (form-table variables))))
-
-(rum/defc form-update < rum/reactive []
+(rum/defc form < rum/reactive []
   (let [variables (state/react cursor)]
     (if (empty? variables)
-      empty-info
+      (form/value "No environment variables defined for the service.")
       (form-table variables))))
