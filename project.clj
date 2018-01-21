@@ -1,4 +1,4 @@
-(defproject swarmpit "1.4-SNAPSHOT"
+(defproject swarmpit "1.3.1"
   :description "Docker swarm management UI"
   :url "http://swarmpit.io"
   :license {:name "Eclipse Public License"
