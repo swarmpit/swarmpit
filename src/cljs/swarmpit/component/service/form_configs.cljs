@@ -1,11 +1,11 @@
 (ns swarmpit.component.service.form-configs
-  (:require [material.component :as comp]
+  (:require [material.icon :as icon]
+            [material.component :as comp]
             [material.component.form :as form]
             [material.component.list-table-form :as list]
-            [material.icon :as icon]
-            [swarmpit.routes :as routes]
             [swarmpit.component.handler :as handler]
             [swarmpit.component.state :as state]
+            [swarmpit.routes :as routes]
             [rum.core :as rum]
             [clojure.string :as str]))
 

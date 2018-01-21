@@ -30,10 +30,14 @@
       :body))
 
 (defn service-logs
-  [id opt]
+  [id]
   (-> (execute {:method  :GET
                 :api     (str "/services/" id "/logs")
-                :options opt})
+                :options {:query-params {:details    true
+                                         :stdout     true
+                                         :stderr     true
+                                         :timestamps true
+                                         :tail       2000}}})
       :body))
 
 (defn delete-service

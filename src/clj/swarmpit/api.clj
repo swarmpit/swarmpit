@@ -495,12 +495,8 @@
                                      (filter #(= (:task log) (:id %)))
                                      (first)))]
     (let [tasks (tasks)]
-      (->> (dl/parse-log
-             (dc/service-logs service-id {:details    true
-                                          :stdout     true
-                                          :stderr     true
-                                          :timestamps true
-                                          :tail       2000}))
+      (->> (dc/service-logs service-id)
+           (dl/parse-log)
            (filter #(= 1 (compare (:timestamp %) from-timestamp)))
            (map
              (fn [i]
