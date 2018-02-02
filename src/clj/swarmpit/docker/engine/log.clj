@@ -1,4 +1,4 @@
-(ns swarmpit.docker.log
+(ns swarmpit.docker.engine.log
   (:require [clojure.string :refer [split-lines trim split join]]))
 
 (defn- parse-log-line

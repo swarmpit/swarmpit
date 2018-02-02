@@ -1,9 +1,9 @@
-(ns swarmpit.dockerregistry.client-test
+(ns swarmpit.docker.registry.client-test
   (:require [clojure.test :refer :all]
-            [swarmpit.dockerregistry.client :refer :all])
+            [swarmpit.docker.registry.client :refer :all])
   (:import (clojure.lang ExceptionInfo)))
 
-(deftest ^:integration dockerregistry-test
+(deftest ^:integration docker-registry-test
 
   (testing "error"
     (is (thrown-with-msg?

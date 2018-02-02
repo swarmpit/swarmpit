@@ -1,4 +1,4 @@
-(ns swarmpit.dockerregistry.client
+(ns swarmpit.docker.registry.client
   (:require [swarmpit.http :refer :all]))
 
 (def ^:private base-url "https://index.docker.io/v2")

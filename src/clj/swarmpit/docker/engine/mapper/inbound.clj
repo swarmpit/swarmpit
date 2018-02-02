@@ -1,4 +1,4 @@
-(ns swarmpit.docker.mapper.inbound
+(ns swarmpit.docker.engine.mapper.inbound
   "Map docker domain to swarmpit domain"
   (:require [clojure.string :as str]))
 

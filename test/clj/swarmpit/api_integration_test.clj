@@ -1,6 +1,7 @@
 (ns swarmpit.api-integration-test
   (:require [swarmpit.test :refer :all]
             [swarmpit.api :refer :all]
+            [swarmpit.docker.engine.client :as client]
             [clojure.test :refer :all]
             [clojure.edn :as edn]))
 
@@ -23,7 +24,7 @@
       (is (thrown? Exception (read id))))))
 
 (deftest ^:integration docker
-  (let [service-id (-> (swarmpit.docker.client/services) first :ID)]
+  (let [service-id (-> (client/services) first :ID)]
 
     (testing "services"
       (is (some? (services))))

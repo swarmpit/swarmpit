@@ -1,8 +1,8 @@
-(ns swarmpit.docker.client
+(ns swarmpit.docker.engine.client
   (:require [ring.util.codec :refer [form-encode]]
             [cheshire.core :refer [generate-string]]
             [swarmpit.base64 :as base64]
-            [swarmpit.docker.http :refer :all]))
+            [swarmpit.docker.engine.http :refer :all]))
 
 (defn- registry-token
   [auth]

@@ -1,4 +1,4 @@
-(ns swarmpit.dockerhub.client
+(ns swarmpit.docker.hub.client
   (:require [swarmpit.http :refer :all]
             [cheshire.core :refer [generate-string]]))
 

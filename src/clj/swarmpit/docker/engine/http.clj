@@ -1,4 +1,4 @@
-(ns swarmpit.docker.http
+(ns swarmpit.docker.engine.http
   (:require [clj-http.conn-mgr :as conn-mgr]
             [swarmpit.http :refer :all]
             [cheshire.core :refer [parse-string generate-string]]

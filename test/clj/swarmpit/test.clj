@@ -4,7 +4,7 @@
             [swarmpit.database :as db]
             [swarmpit.setup :as setup]
             [swarmpit.config :as config]
-            [swarmpit.docker.client :as docker]))
+            [swarmpit.docker.engine.client :as docker]))
 
 (defn dind-socket-fixture
   [test]
@@ -17,7 +17,7 @@
   [test]
   (let [id (-> (docker/create-service
                  nil
-                 (-> (slurp "test/clj/swarmpit/docker/service.edn")
+                 (-> (slurp "test/clj/swarmpit/docker/engine/service.edn")
                      (edn/read-string)
                      (merge {:Name "test-service"}))) :ID)]
     (test)

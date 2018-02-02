@@ -1,4 +1,4 @@
-(ns swarmpit.dockerhub.mapper.inbound)
+(ns swarmpit.docker.hub.mapper.inbound)
 
 (defn ->repository
   [repository]

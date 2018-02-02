@@ -1,7 +1,7 @@
 (ns swarmpit.setup
   (:require [clojure.tools.logging :as log]
             [swarmpit.config :as cfg]
-            [swarmpit.docker.client :as dc]))
+            [swarmpit.docker.engine.client :as dc]))
 
 (defn docker
   []

@@ -1,6 +1,6 @@
-(ns swarmpit.dockerhub.client-test
+(ns swarmpit.docker.hub.client-test
   (:require [clojure.test :refer :all]
-            [swarmpit.dockerhub.client :refer :all])
+            [swarmpit.docker.hub.client :refer :all])
   (:import (clojure.lang ExceptionInfo)))
 
 (deftest ^:integration dockerhub-test

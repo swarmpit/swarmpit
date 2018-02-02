@@ -1,13 +1,13 @@
-(ns swarmpit.docker.client-test
+(ns swarmpit.docker.engine.client-test
   (:require [clojure.test :refer :all]
             [swarmpit.test :refer :all]
             [clojure.edn :as edn]
-            [swarmpit.docker.client :refer :all])
+            [swarmpit.docker.engine.client :refer :all])
   (:import (clojure.lang ExceptionInfo)))
 
 (use-fixtures :once dind-socket-fixture)
 
-(def service-def (edn/read-string (slurp "test/clj/swarmpit/docker/service.edn")))
+(def service-def (edn/read-string (slurp "test/clj/swarmpit/docker/engine/service.edn")))
 
 (deftest ^:integration docker-client
 

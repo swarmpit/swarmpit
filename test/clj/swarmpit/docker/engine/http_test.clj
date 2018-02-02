@@ -1,8 +1,8 @@
-(ns swarmpit.docker.http-test
+(ns swarmpit.docker.engine.http-test
   (:refer-clojure :exclude [get])
   (:require [clojure.test :refer :all]
             [swarmpit.test :refer :all]
-            [swarmpit.docker.http :refer :all])
+            [swarmpit.docker.engine.http :refer :all])
   (:import (clojure.lang ExceptionInfo)))
 
 (use-fixtures :once dind-socket-fixture)
@@ -47,7 +47,7 @@
   (testing "timeout"
     (is (thrown?
           ExceptionInfo #"Docker error: Request timeout"
-          (with-redefs [swarmpit.docker.http/timeout 0]
+          (with-redefs [swarmpit.docker.engine.http/timeout 0]
             (-> (execute {:method :GET
                           :api    "/services"})
                 :body)))))

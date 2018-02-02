@@ -1,4 +1,4 @@
-(ns swarmpit.dockerauth.client
+(ns swarmpit.docker.auth.client
   (:require [swarmpit.token :as token]
             [swarmpit.http :refer :all]))
 
