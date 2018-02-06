@@ -1,6 +1,8 @@
 (ns swarmpit.component.user.create
-  (:require [material.component :as comp]
-            [material.icon :as icon]
+  (:require [material.icon :as icon]
+            [material.component :as comp]
+            [material.component.form :as form]
+            [material.component.panel :as panel]
             [swarmpit.url :refer [dispatch!]]
             [swarmpit.component.handler :as handler]
             [swarmpit.component.mixin :as mixin]
@@ -11,10 +13,12 @@
 
 (enable-console-print!)
 
-(def cursor [:page :user :form])
+(def cursor [:form])
+
+(defonce valid? (atom false))
 
 (defn- form-username [value]
-  (comp/form-comp
+  (form/comp
     "USERNAME"
     (comp/vtext-field
       {:name            "username"
@@ -27,7 +31,7 @@
                           (state/update-value [:username] v cursor))})))
 
 (defn- form-password [value]
-  (comp/form-comp
+  (form/comp
     "PASSWORD"
     (comp/vtext-field
       {:name            "password"
@@ -41,7 +45,7 @@
                           (state/update-value [:password] v cursor))})))
 
 (defn- form-role [value]
-  (comp/form-comp
+  (form/comp
     "ROLE"
     (comp/select-field
       {:value    value
@@ -57,7 +61,7 @@
          :primaryText "user"}))))
 
 (defn- form-email [value]
-  (comp/form-comp
+  (form/comp
     "EMAIL"
     (comp/vtext-field
       {:name            "email"
@@ -88,36 +92,34 @@
   (state/set-value {:username ""
                     :password ""
                     :email    ""
-                    :role     "user"
-                    :isValid  false} cursor))
+                    :role     "user"} cursor))
 
-(def init-state-mixin
-  (mixin/init
+(def mixin-init-form
+  (mixin/init-form
     (fn [_]
       (init-state))))
 
 (rum/defc form < rum/reactive
-                 init-state-mixin []
+                 mixin-init-form [_]
   (let [{:keys [username
                 password
                 role
-                email
-                isValid]} (state/react cursor)]
+                email]} (state/react cursor)]
     [:div
      [:div.form-panel
       [:div.form-panel-left
-       (comp/panel-info icon/users "New user")]
+       (panel/info icon/users "New user")]
       [:div.form-panel-right
        (comp/mui
          (comp/raised-button
            {:label      "Create"
-            :disabled   (not isValid)
+            :disabled   (not (rum/react valid?))
             :primary    true
             :onTouchTap create-user-handler}))]]
      [:div.form-edit
-      (comp/form
-        {:onValid   #(state/update-value [:isValid] true cursor)
-         :onInvalid #(state/update-value [:isValid] false cursor)}
+      (form/form
+        {:onValid   #(reset! valid? true)
+         :onInvalid #(reset! valid? false)}
         (form-username username)
         (form-password password)
         (form-role role)

@@ -1,6 +1,8 @@
 (ns swarmpit.component.volume.create
-  (:require [material.component :as comp]
-            [material.icon :as icon]
+  (:require [material.icon :as icon]
+            [material.component :as comp]
+            [material.component.form :as form]
+            [material.component.panel :as panel]
             [swarmpit.url :refer [dispatch!]]
             [swarmpit.component.handler :as handler]
             [swarmpit.component.mixin :as mixin]
@@ -11,40 +13,18 @@
 
 (enable-console-print!)
 
-(def cursor [:page :volume :form])
+(def cursor [:form])
+
+(defonce valid? (atom false))
 
 (defonce volume-plugins (atom []))
 
-(defn volume-plugin-handler
+(defn- volume-plugin-handler
   []
   (handler/get
     (routes/path-for-backend :plugin-volume)
     {:on-success (fn [response]
                    (reset! volume-plugins response))}))
-
-(defn- form-name [value]
-  (comp/form-comp
-    "NAME"
-    (comp/vtext-field
-      {:name     "name"
-       :key      "name"
-       :required true
-       :value    value
-       :onChange (fn [_ v]
-                   (state/update-value [:volumeName] v cursor))})))
-
-(defn- form-driver [value plugins]
-  (comp/form-comp
-    "DRIVER"
-    (comp/select-field
-      {:value    value
-       :onChange (fn [_ _ v]
-                   (state/update-value [:driver] v cursor))}
-      (->> plugins
-           (map #(comp/menu-item
-                   {:key         %
-                    :value       %
-                    :primaryText %}))))))
 
 (defn- create-volume-handler
   []
@@ -60,38 +40,59 @@
                    (message/error
                      (str "Volume creation failed. Reason: " (:error response))))}))
 
+(defn- form-name [value]
+  (form/comp
+    "NAME"
+    (comp/vtext-field
+      {:name     "name"
+       :key      "name"
+       :required true
+       :value    value
+       :onChange (fn [_ v]
+                   (state/update-value [:volumeName] v cursor))})))
+
+(defn- form-driver [value plugins]
+  (form/comp
+    "DRIVER"
+    (comp/select-field
+      {:value    value
+       :onChange (fn [_ _ v]
+                   (state/update-value [:driver] v cursor))}
+      (->> plugins
+           (map #(comp/menu-item
+                   {:key         %
+                    :value       %
+                    :primaryText %}))))))
+
 (defn- init-state
   []
   (state/set-value {:volumeName nil
-                    :driver     "local"
-                    :isValid    false} cursor))
+                    :driver     "local"} cursor))
 
-(def init-state-mixin
-  (mixin/init
+(def mixin-init-form
+  (mixin/init-form
     (fn [_]
-      (init-state))))
+      (init-state)
+      (volume-plugin-handler))))
 
 (rum/defc form < rum/reactive
-                 init-state-mixin []
-  (let [plugins (rum/react volume-plugins)
-        {:keys [volumeName
-                driver
-                isValid]} (state/react cursor)]
+                 mixin-init-form [_]
+  (let [{:keys [volumeName
+                driver]} (state/react cursor)]
     [:div
      [:div.form-panel
       [:div.form-panel-left
-       (comp/panel-info icon/networks "New volume")]
+       (panel/info icon/networks "New volume")]
       [:div.form-panel-right
        (comp/mui
          (comp/raised-button
            {:label      "Create"
-            :disabled   (not isValid)
+            :disabled   (not (rum/react valid?))
             :primary    true
             :onTouchTap create-volume-handler}))]]
-     [:div.form-view
-      [:div.form-view-group
-       (comp/form
-         {:onValid   #(state/update-value [:isValid] true cursor)
-          :onInvalid #(state/update-value [:isValid] false cursor)}
+     [:div.form-edit
+       (form/form
+         {:onValid   #(reset! valid? true)
+          :onInvalid #(reset! valid? false)}
          (form-name volumeName)
-         (form-driver driver plugins))]]]))
+         (form-driver driver (rum/react volume-plugins)))]]))

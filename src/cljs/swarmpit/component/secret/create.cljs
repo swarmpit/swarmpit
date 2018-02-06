@@ -1,5 +1,7 @@
 (ns swarmpit.component.secret.create
   (:require [material.component :as comp]
+            [material.component.form :as form]
+            [material.component.panel :as panel]
             [material.icon :as icon]
             [swarmpit.url :refer [dispatch!]]
             [swarmpit.component.handler :as handler]
@@ -11,7 +13,9 @@
 
 (enable-console-print!)
 
-(def cursor [:page :secret :form])
+(def cursor [:form])
+
+(defonce valid? (atom false))
 
 (def form-data-style
   {:padding  "10px"
@@ -19,7 +23,7 @@
    :minWidth "400px"})
 
 (defn- form-name [value]
-  (comp/form-comp
+  (form/comp
     "NAME"
     (comp/vtext-field
       {:name     "name"
@@ -30,7 +34,7 @@
                    (state/update-value [:secretName] v cursor))})))
 
 (defn- form-data [value]
-  (comp/form-textarea
+  (form/textarea
     "DATA"
     (comp/vtext-field
       {:name          "data"
@@ -45,9 +49,9 @@
                         (state/update-value [:data] v cursor))})))
 
 (defn- form-data-encoder [value]
-  (comp/form-comp
+  (form/comp
     "ENCODE DATA"
-    (comp/form-checkbox
+    (form/checkbox
       {:name    "encoded"
        :key     "encoded"
        :checked value
@@ -72,38 +76,34 @@
   []
   (state/set-value {:secretName nil
                     :data       ""
-                    :encode     false
-                    :isValid    false} cursor))
+                    :encode     false} cursor))
 
-(def init-state-mixin
-  (mixin/init
+(def mixin-init-form
+  (mixin/init-form
     (fn [_]
       (init-state))))
 
 (rum/defc form < rum/reactive
-                 init-state-mixin []
+                 mixin-init-form [_]
   (let [{:keys [secretName
                 data
-                encode
-                isValid]} (state/react cursor)]
+                encode]} (state/react cursor)]
     [:div
      [:div.form-panel
       [:div.form-panel-left
-       (comp/panel-info icon/secrets "New secret")]
+       (panel/info icon/secrets "New secret")]
       [:div.form-panel-right
        (comp/mui
          (comp/raised-button
            {:label      "Create"
-            :disabled   (not isValid)
+            :disabled   (not (rum/react valid?))
             :primary    true
             :onTouchTap create-secret-handler}))]]
-
-     [:div.form-view
-      [:div.form-view-group
-       (comp/form-icon-value icon/info "Data must be base64 encoded. If plain text check please encode data.")
-       (comp/form
-         {:onValid   #(state/update-value [:isValid] true cursor)
-          :onInvalid #(state/update-value [:isValid] false cursor)}
+     [:div.form-edit
+       (form/icon-value icon/info "Data must be base64 encoded. If plain text check please encode data.")
+       (form/form
+         {:onValid   #(reset! valid? true)
+          :onInvalid #(reset! valid? false)}
          (form-name secretName)
          (form-data-encoder encode)
-         (form-data data))]]]))
+         (form-data data))]]))

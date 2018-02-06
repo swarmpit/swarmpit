@@ -1,5 +1,7 @@
 (ns swarmpit.component.dockerhub.create
   (:require [material.component :as comp]
+            [material.component.form :as form]
+            [material.component.panel :as panel]
             [material.icon :as icon]
             [swarmpit.url :refer [dispatch!]]
             [swarmpit.component.handler :as handler]
@@ -11,10 +13,12 @@
 
 (enable-console-print!)
 
-(def cursor [:page :dockerhub :form])
+(def cursor [:form])
+
+(defonce valid? (atom false))
 
 (defn- form-username [value]
-  (comp/form-comp
+  (form/comp
     "USERNAME"
     (comp/vtext-field
       {:name     "username"
@@ -25,7 +29,7 @@
                    (state/update-value [:username] v cursor))})))
 
 (defn- form-password [value]
-  (comp/form-comp
+  (form/comp
     "PASSWORD"
     (comp/vtext-field
       {:name     "password"
@@ -37,9 +41,9 @@
                    (state/update-value [:password] v cursor))})))
 
 (defn- form-public [value]
-  (comp/form-comp
+  (form/comp
     "PUBLIC"
-    (comp/form-checkbox
+    (form/checkbox
       {:checked value
        :onCheck (fn [_ v]
                   (state/update-value [:public] v cursor))})))
@@ -62,35 +66,33 @@
   []
   (state/set-value {:username ""
                     :password ""
-                    :public   false
-                    :isValid  false} cursor))
+                    :public   false} cursor))
 
-(def init-state-mixin
-  (mixin/init
+(def mixin-init-form
+  (mixin/init-form
     (fn [_]
       (init-state))))
 
 (rum/defc form < rum/reactive
-                 init-state-mixin []
+                 mixin-init-form [_]
   (let [{:keys [username
                 password
-                public
-                isValid]} (state/react cursor)]
+                public]} (state/react cursor)]
     [:div
      [:div.form-panel
       [:div.form-panel-left
-       (comp/panel-info icon/docker "New user")]
+       (panel/info icon/docker "New user")]
       [:div.form-panel-right
        (comp/mui
          (comp/raised-button
            {:label      "Save"
-            :disabled   (not isValid)
+            :disabled   (not (rum/react valid?))
             :primary    true
             :onTouchTap add-user-handler}))]]
      [:div.form-edit
-      (comp/form
-        {:onValid   #(state/update-value [:isValid] true cursor)
-         :onInvalid #(state/update-value [:isValid] false cursor)}
+      (form/form
+        {:onValid   #(reset! valid? true)
+         :onInvalid #(reset! valid? false)}
         (form-username username)
         (form-password password)
         (form-public public))]]))

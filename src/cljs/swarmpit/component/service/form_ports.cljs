@@ -1,5 +1,7 @@
 (ns swarmpit.component.service.form-ports
   (:require [material.component :as comp]
+            [material.component.form :as form]
+            [material.component.list-table-form :as list]
             [swarmpit.component.state :as state]
             [swarmpit.component.handler :as handler]
             [swarmpit.routes :as routes]
@@ -7,7 +9,7 @@
 
 (enable-console-print!)
 
-(def cursor [:page :service :wizard :ports])
+(def cursor [:form :ports])
 
 (defn- not-suggested?
   [port]
@@ -15,45 +17,17 @@
     (some #(= (:containerPort port)
               (:containerPort %)) (state/get-value cursor))))
 
-(defn- public-ports-handler
-  [{:keys [name tag] :as repository}]
-  (handler/get
-    (routes/path-for-backend :public-repository-ports)
-    {:params     {:repositoryName name
-                  :repositoryTag  tag}
-     :on-success (fn [response]
-                   (doseq [port response]
-                     (if (not-suggested? port)
-                       (state/add-item port cursor))))}))
-
-(defn- dockerhub-ports-handler
-  [distribution-id {:keys [name tag] :as repository}]
-  (handler/get
-    (routes/path-for-backend :dockerhub-repository-ports {:id distribution-id})
-    {:params     {:repositoryName name
-                  :repositoryTag  tag}
-     :on-success (fn [response]
-                   (doseq [port response]
-                     (if (not-suggested? port)
-                       (state/add-item port cursor))))}))
-
-(defn- registry-ports-handler
-  [distribution-id {:keys [name tag] :as repository}]
-  (handler/get
-    (routes/path-for-backend :registry-repository-ports {:id distribution-id})
-    {:params     {:repositoryName name
-                  :repositoryTag  tag}
-     :on-success (fn [response]
-                   (doseq [port response]
-                     (if (not-suggested? port)
-                       (state/add-item port cursor))))}))
-
 (defn load-suggestable-ports
-  [{:keys [id type] :as distribution} repository]
-  (case type
-    "dockerhub" (dockerhub-ports-handler id repository)
-    "registry" (registry-ports-handler id repository)
-    (public-ports-handler repository)))
+  [repository]
+  (handler/get
+    (routes/path-for-backend :repository-ports)
+    {:params     {:repository    (:name repository)
+                  :repositoryTag (:tag repository)}
+     :on-success (fn [response]
+                   (doseq [port response]
+                     (if (not-suggested? port)
+                       (state/add-item port cursor))))
+     :on-error   (fn [_])}))
 
 (def headers [{:name  "Container port"
                :width "100px"}
@@ -62,15 +36,12 @@
               {:name  "Host port"
                :width "100px"}])
 
-(def empty-info
-  (comp/form-value "Service has no published ports."))
-
 (defn- format-port-value
   [value]
   (if (zero? value) "" value))
 
 (defn- form-container [value index]
-  (comp/form-list-textfield
+  (list/textfield
     {:name     (str "form-container-text-" index)
      :key      (str "form-container-text-" index)
      :type     "number"
@@ -81,7 +52,7 @@
                  (state/update-item index :containerPort (js/parseInt v) cursor))}))
 
 (defn- form-protocol [value index]
-  (comp/form-list-selectfield
+  (list/selectfield
     {:name     (str "form-protocol-select-" index)
      :key      (str "form-protocol-select-" index)
      :value    value
@@ -99,7 +70,7 @@
        :primaryText "UDP"})))
 
 (defn- form-host [value index]
-  (comp/form-list-textfield
+  (list/textfield
     {:name     (str "form-host-text-" index)
      :key      (str "form-host-text-" index)
      :type     "number"
@@ -120,11 +91,11 @@
 
 (defn- form-table
   [ports]
-  (comp/form-table headers
-                   ports
-                   nil
-                   render-ports
-                   (fn [index] (state/remove-item index cursor))))
+  (list/table headers
+              ports
+              nil
+              render-ports
+              (fn [index] (state/remove-item index cursor))))
 
 (defn- add-item
   []
@@ -132,15 +103,8 @@
                    :protocol      "tcp"
                    :hostPort      0} cursor))
 
-(rum/defc form-create < rum/reactive []
-  (let [ports (state/react cursor)]
-    [:div
-     (comp/form-add-btn "Publish port" add-item)
-     (if (not (empty? ports))
-       (form-table ports))]))
-
-(rum/defc form-update < rum/reactive []
+(rum/defc form < rum/reactive []
   (let [ports (state/react cursor)]
     (if (empty? ports)
-      empty-info
+      (form/value "Service has no published ports.")
       (form-table ports))))

@@ -5,7 +5,7 @@
 #?(:clj
    (defn encode
      [data]
-     (let [credentials-bytes (.getBytes data)]
+     (let [credentials-bytes (.getBytes (str data))]
        (.encodeToString (Base64/getEncoder) credentials-bytes))))
 
 #?(:clj

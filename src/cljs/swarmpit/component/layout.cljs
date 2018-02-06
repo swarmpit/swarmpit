@@ -1,8 +1,8 @@
 (ns swarmpit.component.layout
   (:require [rum.core :as rum]
             [clojure.string :as str]
-            [swarmpit.controller :as controller]
             [swarmpit.view :as view]
+            [swarmpit.router :as router]
             [swarmpit.component.state :as state]
             [swarmpit.component.menu :as menu]
             [swarmpit.component.header :as header]))
@@ -28,7 +28,11 @@
    :secret-list           "Secrets"
    :secret-create         "Secrets / Create"
    :secret-info           "Secrets"
+   :config-list           "Configs"
+   :config-create         "Configs / Create"
+   :config-info           "Configs"
    :node-list             "Nodes"
+   :node-info             "Nodes"
    :task-list             "Tasks"
    :task-info             "Tasks"
    :user-list             "Users"
@@ -51,19 +55,19 @@
   (keyword (first (str/split (name handler) #"-"))))
 
 (def single-pages
-  #{:login :error :unauthorized nil})
+  #{:login :error :unauthorized :not-found nil})
 
 (defn- page-layout?
   [handler]
   (not (contains? single-pages handler)))
 
-(rum/defc page-single < rum/static [route]
-  (view/dispatch route))
-
 (defn- document-title
   [page-title]
   (set! (-> js/document .-title)
         (str page-title " :: swarmpit")))
+
+(rum/defc page-single < rum/static [route]
+  (view/dispatch route))
 
 (rum/defc page-layout < rum/reactive [route]
   (let [{:keys [opened]} (state/react menu/cursor)
@@ -80,11 +84,10 @@
      [:main (view/dispatch route)]]))
 
 (rum/defc layout < rum/reactive []
-  (let [{:keys [handler] :as route} (state/react controller/cursor)]
-    (when (some? route)
-      (if (page-layout? handler)
-        (page-layout route)
-        (page-single route)))))
+  (let [{:keys [handler] :as route} (state/react router/cursor)]
+    (if (page-layout? handler)
+      (page-layout route)
+      (page-single route))))
 
 (defn mount!
   []

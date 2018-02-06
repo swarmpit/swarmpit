@@ -10,10 +10,13 @@ jdk:
 env:
   - DOCKER=test
   - DOCKER=stable
-  - DOCKER=17.05
-  - DOCKER=17.04
+  - DOCKER=17.11
+  - DOCKER=17.10
+  - DOCKER=17.09
+  - DOCKER=17.07
+  - DOCKER=17.06
   - DOCKER=17.03
-  - DOCKER=1.13.0
+  - DOCKER=1.13
 before_cache:
   - >
     mkdir -p $HOME/docker && docker images -a --filter='dangling=false' --format '{{.Repository}}:{{.Tag}} {{.ID}}'
@@ -22,6 +25,7 @@ before_install:
   - if [[ -d $HOME/docker ]]; then ls $HOME/docker/*.tar.gz | xargs -I {file} sh -c "zcat {file} | docker load"; fi
 install:
   - bash dev/script/init-db.sh
+  - bash dev/script/init-ec.sh
   - bash dev/script/start-dind.sh
 script:
   - lein test :all

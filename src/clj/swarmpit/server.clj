@@ -8,12 +8,14 @@
             [swarmpit.authentication :refer [wrap-authentication]]
             [swarmpit.authorization :refer [wrap-authorization]]
             [swarmpit.handler :as handler :refer :all]
+            [swarmpit.event.handler :refer :all]
             [org.httpkit.server :refer [run-server]]
             [bidi.ring :refer [make-handler]]
             [bidi.bidi :refer [match-pair match-route*]]
             [clojure.tools.logging :as log]
             [swarmpit.routes :as routes]
-            [swarmpit.install :as install]
+            [swarmpit.setup :as setup]
+            [swarmpit.database :as db]
             [swarmpit.agent :as agent]))
 
 (defn wrap-client-exception
@@ -22,7 +24,7 @@
     (try
       (handler request)
       (catch ExceptionInfo e
-        (ex-data e)))))
+        (dissoc (ex-data e) :headers)))))
 
 (defn wrap-fallback-exception
   [handler]
@@ -55,9 +57,10 @@
       wrap-gzip))
 
 (defn -main [& [port]]
-  (println "Swarmpit is starting...")
-  (install/init)
+  (log/info "Swarmpit is starting...")
+  (db/init)
   (let [port (or port 8080)]
     (run-server app {:port port})
-    (log/info "Server running on port" port))
-  (agent/init))
+    (log/info "Swarmpit running on port" port))
+  (agent/init)
+  (setup/docker))

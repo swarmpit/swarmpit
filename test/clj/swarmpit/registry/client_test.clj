@@ -7,5 +7,5 @@
 
   (testing "dns error"
     (is (thrown-with-msg?
-          ExceptionInfo #"Registry failure: .* Name or service"
+          ExceptionInfo #"Registry failure: .*"
           (repositories {:url (str "http://not-existing-addr-" (swarmpit.uuid/uuid))})))))

@@ -92,16 +92,43 @@ input:invalid {
     flex-wrap: nowrap;
 }
 
-/* Form service edit layout */
+.form-edit-row {
+    margin: 0 24px 0 24px;
+}
 
-.form-service-view,
-.form-service-edit {
+.form-view-row {
+    margin: 10px 24px 10px 24px;
+}
+
+/* Form basic edit layout */
+
+.form-edit {
+    margin-top: 10px;
+}
+
+.form-edit-loader {
+    margin-top: 12px;
+}
+
+/* Form basic view layout */
+
+.form-view {
+    margin-top: 20px;
+    min-width: 500px;
+}
+
+.form-view-group {
+    margin-bottom: 20px;
+}
+
+/* Form component view layout */
+
+.form-layout {
     height: 100%;
     background-color: rgb(245, 245, 245);
 }
 
-.form-service-view-group,
-.form-service-edit-group {
+.form-layout-group {
     margin-bottom: 20px;
     padding-top: 10px;
     padding-bottom: 10px;
@@ -109,41 +136,12 @@ input:invalid {
     min-width: 600px;
 }
 
-.form-service-group-border {
+.form-layout-group-border {
     border-top: 1px solid rgb(224, 228, 231);
     border-bottom: 1px solid rgb(224, 228, 231);
 }
 
-/* Form edit layout */
-
-.form-edit {
-    margin-top: 10px;
-}
-
-.form-edit-row {
-    margin: 0 24px 0 24px;
-}
-
-.form-edit-loader {
-    margin-top: 12px;
-}
-
-/* Form view layout */
-
-.form-view {
-    margin-top: 20px;
-    min-width: 500px;
-}
-
-.form-view-row {
-    margin: 10px 24px 10px 24px;
-}
-
-.form-view-group {
-    margin-bottom: 20px;
-}
-
-/* Form row entries */
+/* Form layout row entries */
 
 .form-row-label {
     align-self: center;
@@ -285,6 +283,11 @@ input:invalid {
     background-color: #fdfdfd;
 }
 
+.page-code {
+    font-size: 12px;
+    color: rgb(117, 117, 117);
+}
+
 .page-back {
     display: flex;
     justify-content: center;
@@ -347,7 +350,7 @@ input:invalid {
 /* Node grid layout */
 
 .node-item {
-    border: 1px solid rgb(117, 117, 117);
+    border: 1px solid rgba(0, 0, 0, 0.2);
     padding: 10px;
     text-align: center;
     background: rgb(245, 245, 245);
@@ -422,14 +425,6 @@ input:invalid {
 
 .log-body {
     margin-left: 5px;
-}
-
-/* Custom step label */
-
-.step-label > span {
-    font-weight: 300 !important;
-    font-size: 18px !important;
-    color: rgb(117, 117, 117) !important;
 }
 
 /* Custom owner label */

@@ -9,33 +9,7 @@
                           :time nil
                           :type :info
                           :open false}
-                :page    {:network   {:list {}
-                                      :form {}}
-                          :volume    {:list {}
-                                      :form {}}
-                          :secret    {:list {}
-                                      :form {}}
-                          :node      {:list {}}
-                          :service   {:list   {}
-                                      :log    {}
-                                      :wizard {:image      {:public  {}
-                                                            :private {}
-                                                            :other   {}}
-                                               :settings   {}
-                                               :logdriver  {}
-                                               :ports      []
-                                               :networks   []
-                                               :secrets    []
-                                               :variables  []
-                                               :mounts     []
-                                               :resources  {}
-                                               :deployment {}}}
-                          :task      {:list {}}
-                          :registry  {:list {}
-                                      :form {}}
-                          :dockerhub {:list {}}
-                          :user      {:list {}
-                                      :form {}}}}))
+                :form    nil}))
 
 (defn react
   [cursor]
@@ -49,8 +23,10 @@
 
 (defn set-value
   "Set `value` on given `cursor`"
-  [value cursor]
-  (swap! state assoc-in cursor value))
+  ([value cursor]
+   (swap! state assoc-in cursor value))
+  ([value]
+   (swap! state merge value)))
 
 (defn update-value
   "Update value `v` corresponding to key path `p` on given `cursor`"
@@ -75,3 +51,8 @@
   [index k v cursor]
   (swap! state update-in cursor
          (fn [vec] (assoc-in vec [index k] v))))
+
+(defn reset-form
+  "Reset state form data"
+  []
+  (set-value nil [:form]))

@@ -14,19 +14,19 @@
 #?(:cljs
    (def r (t/reader :json)))
 
-(defn- token-value
+(defn token-value
   [token]
   (second (str/split token #" ")))
 
-(defn- credentials
+(defn credentials
   [username password]
   (str username ":" password))
 
-(defn- bearer
+(defn bearer
   [token]
   (str "Bearer " token))
 
-(defn- basic
+(defn basic
   [token]
   (str "Basic " token))
 

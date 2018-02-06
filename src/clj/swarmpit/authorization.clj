@@ -42,61 +42,36 @@
       (error {:code    403
               :message "Unauthorized distribution access"}))))
 
-(defn- service-distribution-access
-  [{:keys [json-params identity]}]
-  (let [user (get-in identity [:usr :username])
-        distribution-id (get-in json-params ["distribution" "id"])]
-    (if (nil? distribution-id)
-      true
-      (let [entity (cc/get-doc distribution-id)]
-        (if (or (= (:owner entity) user)
-                (:public entity))
-          true
-          (error {:code    403
-                  :message "Unauthorized distribution access"}))))))
-
 (def rules [{:pattern #"^/admin/.*"
              :handler {:and [authenticated-access admin-access]}}
             {:pattern #"^/login$"
+             :handler any-access}
+            {:pattern #"^/events"
              :handler any-access}
             {:pattern #"^/version$"
              :handler any-access}
             {:pattern #"^/$"
              :handler any-access}
-            {:pattern        #"^/distribution/registries/[a-zA-Z0-9]*/repositories$"
+            {:pattern        #"^/distribution/(dockerhub|registry)/[a-zA-Z0-9]*/repositories$"
              :request-method :get
              :handler        {:and [authenticated-access distribution-access]}}
-            {:pattern        #"^/distribution/registries/[a-zA-Z0-9]*/tags$"
+            {:pattern        #"^/distribution/(dockerhub|registry)/[a-zA-Z0-9]*/tags$"
              :request-method :get
              :handler        {:and [authenticated-access distribution-access]}}
-            {:pattern        #"^/distribution/registries/[a-zA-Z0-9]*/ports$"
+            {:pattern        #"^/distribution/(dockerhub|registry)/[a-zA-Z0-9]*/ports$"
              :request-method :get
              :handler        {:and [authenticated-access distribution-access]}}
-            {:pattern        #"^/distribution/registries/[a-zA-Z0-9]*$"
+            {:pattern        #"^/distribution/(dockerhub|registry)/[a-zA-Z0-9]*$"
              :request-method #{:get :delete :post}
              :handler        {:and [authenticated-access owner-access]}}
-            {:pattern        #"^/distribution/dockerhub/[a-zA-Z0-9]*/repositories$"
-             :request-method :get
-             :handler        {:and [authenticated-access distribution-access]}}
-            {:pattern        #"^/distribution/dockerhub/[a-zA-Z0-9]*/tags$"
-             :request-method :get
-             :handler        {:and [authenticated-access distribution-access]}}
-            {:pattern        #"^/distribution/dockerhub/[a-zA-Z0-9]*/ports$"
-             :request-method :get
-             :handler        {:and [authenticated-access distribution-access]}}
-            {:pattern        #"^/distribution/dockerhub/[a-zA-Z0-9]*$"
-             :request-method #{:get :delete :post}
-             :handler        {:and [authenticated-access owner-access]}}
-            {:pattern        #"^/services$"
-             :request-method :post
-             :handler        {:and [authenticated-access service-distribution-access]}}
             {:pattern #"^/.*"
              :handler {:and [authenticated-access]}}])
 
 (defn- rules-error
   [_ val]
-  (resp-error (:code val)
-              (:message val)))
+  (-> (resp-error (:code val)
+                  (:message val))
+      (assoc :headers {"X-Backend-Server" "swarmpit"})))
 
 (defn wrap-authorization
   [handler]

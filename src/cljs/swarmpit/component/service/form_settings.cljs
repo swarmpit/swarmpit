@@ -1,5 +1,6 @@
 (ns swarmpit.component.service.form-settings
   (:require [material.component :as comp]
+            [material.component.form :as form]
             [swarmpit.component.state :as state]
             [swarmpit.component.handler :as handler]
             [swarmpit.component.service.form-ports :as ports]
@@ -8,46 +9,30 @@
 
 (enable-console-print!)
 
-(def cursor [:page :service :wizard :settings])
+(def cursor [:form :settings])
+
+(defonce valid? (atom false))
 
 (defonce tags (atom []))
 
-(defn public-tags-handler
+(defn tags-handler
   [repository]
-  (handler/get
-    (routes/path-for-backend :public-repository-tags)
+  (handler/get 
+    (routes/path-for-backend :repository-tags)
     {:params     {:repository repository}
      :on-success (fn [response]
-                   (reset! tags response))}))
-
-(defn dockerhub-tags-handler
-  [distribution repository]
-  (handler/get
-    (routes/path-for-backend :dockerhub-repository-tags {:id distribution})
-    {:params     {:repository repository}
-     :on-success (fn [response]
-                   (reset! tags response))}))
-
-(defn registry-tags-handler
-  [distribution repository]
-  (handler/get
-    (routes/path-for-backend :registry-repository-tags {:id distribution})
-    {:params     {:repository repository}
-     :on-success (fn [response]
-                   (reset! tags response))}))
+                   (reset! tags response))
+     :on-error   (fn [_])}))
 
 (def form-mode-style
   {:display   "flex"
    :marginTop "14px"})
 
-(def form-mode-replicated-style
-  {:width "170px"})
-
 (def form-image-style
   {:color "rgb(117, 117, 117)"})
 
 (defn- form-image [value]
-  (comp/form-comp
+  (form/comp
     "IMAGE"
     (comp/vtext-field
       {:name          "image"
@@ -58,30 +43,30 @@
        :inputStyle    form-image-style
        :value         value})))
 
-(defn- form-image-tag-ac [value tags distribution]
-  "Preload tags for services created via swarmpit"
-  (comp/form-comp
+(defn- form-image-tag [value tags]
+  "For update services there is no port preload"
+  (form/comp
+    "IMAGE TAG"
+    (comp/autocomplete
+      {:name          "image-tag"
+       :key           "image-tag"
+       :searchText    (:tag value)
+       :onUpdateInput (fn [v] (state/update-value [:repository :tag] v cursor))
+       :dataSource    tags})))
+
+(defn- form-image-tag-preloaded [value tags]
+  "Preload ports for services created via swarmpit"
+  (form/comp
     "IMAGE TAG"
     (comp/autocomplete {:name          "imageTagAuto"
                         :key           "imageTagAuto"
                         :searchText    (:tag value)
                         :onUpdateInput (fn [v] (state/update-value [:repository :tag] v cursor))
-                        :onNewRequest  (fn [_] (ports/load-suggestable-ports distribution value))
+                        :onNewRequest  (fn [_] (ports/load-suggestable-ports value))
                         :dataSource    tags})))
 
-(defn- form-image-tag [value]
-  "For services created by docker cli there is no preload"
-  (comp/form-comp
-    "IMAGE TAG"
-    (comp/text-field
-      {:name     "image-tag"
-       :key      "image-tag"
-       :value    value
-       :onChange (fn [_ v]
-                   (state/update-value [:repository :tag] v cursor))})))
-
 (defn- form-name [value update-form?]
-  (comp/form-comp
+  (form/comp
     "SERVICE NAME"
     (comp/vtext-field
       {:name     "service-name"
@@ -93,7 +78,7 @@
                    (state/update-value [:serviceName] v cursor))})))
 
 (defn- form-mode [value update-form?]
-  (comp/form-comp
+  (form/comp
     "MODE"
     (comp/radio-button-group
       {:name          "mode"
@@ -107,8 +92,7 @@
          :key      "replicated-mode"
          :disabled update-form?
          :label    "Replicated"
-         :value    "replicated"
-         :style    form-mode-replicated-style})
+         :value    "replicated"})
       (comp/radio-button
         {:name     "global-mode"
          :key      "global-mode"
@@ -117,33 +101,31 @@
          :value    "global"}))))
 
 (defn- form-replicas [value]
-  (comp/form-comp
+  (form/comp
     "REPLICAS"
     (comp/vtext-field
       {:name     "replicas"
        :key      "replicas"
        :required true
        :type     "number"
-       :min      1
+       :min      0
        :value    value
        :onChange (fn [_ v]
                    (state/update-value [:replicas] (js/parseInt v) cursor))})))
 
 (rum/defc form < rum/reactive [update-form?]
-  (let [tags (rum/react tags)
-        {:keys [distribution
-                repository
+  (let [{:keys [repository
                 serviceName
                 mode
                 replicas]} (state/react cursor)]
     [:div.form-edit
-     (comp/form
-       {:onValid   #(state/update-value [:isValid] true cursor)
-        :onInvalid #(state/update-value [:isValid] false cursor)}
+     (form/form
+       {:onValid   #(reset! valid? true)
+        :onInvalid #(reset! valid? false)}
        (form-image (:name repository))
        (if update-form?
-         (form-image-tag (:tag repository))
-         (form-image-tag-ac repository tags distribution))
+         (form-image-tag repository (rum/react tags))
+         (form-image-tag-preloaded repository (rum/react tags)))
        (form-name serviceName update-form?)
        (form-mode mode update-form?)
        (when (= "replicated" mode)

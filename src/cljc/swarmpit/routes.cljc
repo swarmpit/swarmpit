@@ -1,28 +1,28 @@
 (ns swarmpit.routes
   (:require [bidi.bidi :as b]
-            [cemerick.url :refer [map->query]]))
+            [cemerick.url :refer [map->query]]
+            [clojure.string :as str]))
 
 (def backend
   ["" {"/"              {:get :index}
+       "/events"        {:get  :events
+                         :post :event-push}
        "/version"       {:get :version}
        "/login"         {:post :login}
+       "/slt"           {:get :slt}
        "/password"      {:post :password}
-       "/distribution/" {"public"     {:get {"/repositories" :public-repositories
-                                             "/tags"         :public-repository-tags
-                                             "/ports"        :public-repository-ports}}
+       "/repository/"   {:get {"tags"  :repository-tags
+                               "ports" :repository-ports}}
+       "/distribution/" {"public"     {:get {"/repositories" :public-repositories}}
                          "dockerhub"  {""  {:get  :dockerhub-users
                                             :post :dockerhub-user-create}
                                        "/" {:get    {[:id "/repositories"] :dockerhub-repositories
-                                                     [:id "/tags"]         :dockerhub-repository-tags
-                                                     [:id "/ports"]        :dockerhub-repository-ports
                                                      [:id]                 :dockerhub-user}
                                             :delete {[:id] :dockerhub-user-delete}
                                             :post   {[:id] :dockerhub-user-update}}}
                          "registries" {""  {:get  :registries
                                             :post :registry-create}
                                        "/" {:get    {[:id "/repositories"] :registry-repositories
-                                                     [:id "/tags"]         :registry-repository-tags
-                                                     [:id "/ports"]        :registry-repository-ports
                                                      [:id]                 :registry}
                                             :delete {[:id] :registry-delete}
                                             :post   {[:id] :registry-update}}}}
@@ -38,20 +38,29 @@
                                          "/rollback" :service-rollback}}}
        "/networks"      {:get  :networks
                          :post :network-create}
-       "/networks/"     {:get    {[:id] :network}
+       "/networks/"     {:get    {[:id] {""          :network
+                                         "/services" :network-services}}
                          :delete {[:id] :network-delete}}
        "/volumes"       {:get  :volumes
                          :post :volume-create}
-       "/volumes/"      {:get    {[:name] :volume}
+       "/volumes/"      {:get    {[:name] {""          :volume
+                                           "/services" :volume-services}}
                          :delete {[:name] :volume-delete}}
        "/secrets"       {:get  :secrets
                          :post :secret-create}
-       "/secrets/"      {:get    {[:id] :secret}
+       "/secrets/"      {:get    {[:id] {""          :secret
+                                         "/services" :secret-services}}
                          :delete {[:id] :secret-delete}
                          :post   {[:id] :secret-update}}
+       "/configs"       {:get  :configs
+                         :post :config-create}
+       "/configs/"      {:get    {[:id] {""          :config
+                                         "/services" :config-services}}
+                         :delete {[:id] :config-delete}}
        "/nodes"         {:get :nodes}
-       "/nodes/"        {:get {"placement" :placement
-                               [:id]       :node}}
+       "/placement"     {:get :placement}
+       "/nodes/"        {:get {[:id] {""       :node
+                                      "/tasks" :node-tasks}}}
        "/tasks"         {:get :tasks}
        "/tasks/"        {:get {[:id] :task}}
        "/plugin/"       {:get {"network" :plugin-network
@@ -66,6 +75,8 @@
 
 (def frontend ["" {"/"                        :index
                    "/login"                   :login
+                   "/error"                   :error
+                   "/unauthorized"            :unauthorized
                    "/password"                :password
                    "/services"                {""               :service-list
                                                "/create/wizard" {"/image"  :service-create-image
@@ -84,7 +95,11 @@
                    "/secrets"                 {""        :secret-list
                                                "/create" :secret-create
                                                ["/" :id] :secret-info}
-                   "/nodes"                   {"" :node-list}
+                   "/configs"                 {""        :config-list
+                                               "/create" :config-create
+                                               ["/" :id] :config-info}
+                   "/nodes"                   {""        :node-list
+                                               ["/" :id] :node-info}
                    "/tasks"                   {""        :task-list
                                                ["/" :id] :task-info}
                    "/distribution/registries" {""                :registry-list
@@ -111,9 +126,9 @@
 (defn path-for-frontend
   ([handler] (path-for-frontend handler {} nil))
   ([handler params] (path-for-frontend handler params nil))
-  ([handler params query] (path frontend "/#" handler params query)))
+  ([handler params query] (path frontend "#" handler params query)))
 
 (defn path-for-backend
   ([handler] (path-for-backend handler {} nil))
   ([handler params] (path-for-backend handler params nil))
-  ([handler params query] (path backend "" handler params query)))
+  ([handler params query] (str/replace (path backend "" handler params query) #"^/" "")))

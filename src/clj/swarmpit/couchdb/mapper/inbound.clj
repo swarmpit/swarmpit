@@ -17,7 +17,7 @@
 (defn ->users
   [users]
   (->> users
-       (map ->registry)
+       (map ->user)
        (into [])))
 
 (defn ->dockeruser

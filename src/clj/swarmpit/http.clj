@@ -1,10 +1,23 @@
 (ns swarmpit.http
-  (:require [cheshire.core :refer [parse-string parse-stream generate-string]])
+  (:require [cheshire.core :refer [parse-string parse-stream generate-string]]
+            [clj-http.client :as http])
   (:import (java.util.concurrent TimeoutException ExecutionException)
            (java.io IOException)
            (clojure.lang ExceptionInfo)))
 
 (def default-timeout 15000)
+
+(def ^:private req-func
+  {:GET    http/get
+   :POST   http/post
+   :PUT    http/put
+   :DELETE http/delete})
+
+(defn- req-options
+  [options]
+  (merge options
+         (when (some? (:body options))
+           {:body (generate-string (:body options))})))
 
 (defmacro with-timeout
   [ms & body]
@@ -39,13 +52,15 @@
 
 (defn execute-in-scope
   "Execute http request and parse result"
-  [{:keys [call-fx scope timeout error-handler]}]
+  [{:keys [method url options scope timeout error-handler]}]
   (let [scope (or scope "HTTP")
         timeout (or timeout default-timeout)]
     (try
-      (let [response (with-timeout timeout (call-fx))
-            response-body (-> response :body)]
-        (ok-response response-body))
+      (let [response (with-timeout timeout ((req-func method) url (req-options options)))
+            response-body (-> response :body)
+            response-headers (-> response :headers)]
+        {:headers response-headers
+         :body    (ok-response response-body)})
       (catch IOException exception
         (throw
           (let [error (.getMessage exception)]
@@ -56,7 +71,14 @@
         (throw
           (let [data (some-> exception (ex-data))
                 status (:status data)
+                headers (:headers data)
                 error (error-response data error-handler)]
             (ex-info (str scope " error: " error)
-                     {:status status
-                      :body   {:error error}})))))))
+                     {:status  status
+                      :headers headers
+                      :body    {:error error}}))))
+      (catch TimeoutException _
+        (throw
+          (ex-info (str scope " error: Request timeout")
+                   {:status 408
+                    :body   {:error "Request timeout"}}))))))

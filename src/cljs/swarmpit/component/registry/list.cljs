@@ -1,14 +1,17 @@
 (ns swarmpit.component.registry.list
-  (:require [material.component :as comp]
-            [material.icon :as icon]
+  (:require [material.icon :as icon]
+            [material.component :as comp]
+            [material.component.panel :as panel]
+            [material.component.list-table :as list]
             [swarmpit.component.mixin :as mixin]
             [swarmpit.component.state :as state]
-            [swarmpit.storage :as storage]
+            [swarmpit.component.handler :as handler]
             [swarmpit.routes :as routes]
-            [clojure.string :as string]
+            [swarmpit.storage :as storage]
+            [cljs.core :as core]
             [rum.core :as rum]))
 
-(def cursor [:page :registry :list])
+(def cursor [:form])
 
 (def headers [{:name  "Name"
                :width "30%"}
@@ -21,6 +24,8 @@
 
 (def render-item-keys
   [[:name] [:url] [:public] [:withAuth]])
+
+(defonce loading? (atom false))
 
 (defn- render-item
   [item _]
@@ -38,42 +43,48 @@
   [item]
   (routes/path-for-frontend :registry-info {:id (:_id item)}))
 
-(defn- filter-items
-  [items predicate]
-  (filter #(and (string/includes? (:name %) predicate)
-                (= (:owner %)
-                   (storage/user))) items))
+(defn- registries-handler
+  []
+  (handler/get
+    (routes/path-for-backend :registries)
+    {:state      loading?
+     :on-success (fn [response]
+                   (state/update-value [:items] response cursor))}))
 
 (defn- init-state
   []
-  (state/set-value {:filter {:name ""}} cursor))
+  (state/set-value {:filter {:query ""}} cursor))
 
-(def init-state-mixin
-  (mixin/init
+(def mixin-init-form
+  (mixin/init-form
     (fn [_]
-      (init-state))))
+      (init-state)
+      (registries-handler))))
 
 (rum/defc form < rum/reactive
-                 init-state-mixin
-                 mixin/focus-filter [items]
-  (let [{{:keys [name]} :filter} (state/react cursor)
-        filtered-items (filter-items items name)]
+                 mixin-init-form
+                 mixin/subscribe-form
+                 mixin/focus-filter [_]
+  (let [{:keys [filter items]} (state/react cursor)
+        filtered-items (-> (core/filter #(= (:owner %) (storage/user)) items)
+                           (list/filter (:query filter)))]
     [:div
      [:div.form-panel
       [:div.form-panel-left
-       (comp/panel-text-field
+       (panel/text-field
          {:id       "filter"
-          :hintText "Filter by name"
+          :hintText "Search registries"
           :onChange (fn [_ v]
-                      (state/update-value [:filter :name] v cursor))})]
+                      (state/update-value [:filter :query] v cursor))})]
       [:div.form-panel-right
        (comp/mui
          (comp/raised-button
            {:href    (routes/path-for-frontend :registry-create)
             :label   "New registry"
             :primary true}))]]
-     (comp/list-table headers
-                      (sort-by :name filtered-items)
-                      render-item
-                      render-item-keys
-                      onclick-handler)]))
+     (list/table headers
+                 (sort-by :name filtered-items)
+                 (rum/react loading?)
+                 render-item
+                 render-item-keys
+                 onclick-handler)]))

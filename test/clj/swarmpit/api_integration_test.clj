@@ -1,10 +1,11 @@
 (ns swarmpit.api-integration-test
-  (:require [clojure.test :refer :all]
-            [swarmpit.test :refer :all]
+  (:require [swarmpit.test :refer :all]
             [swarmpit.api :refer :all]
+            [swarmpit.docker.engine.client :as client]
+            [clojure.test :refer :all]
             [clojure.edn :as edn]))
 
-(use-fixtures :once dind-socket-fixture running-service-fixture db-init-fixture)
+(use-fixtures :once db-init-fixture dind-socket-fixture running-service-fixture)
 
 (defn test-crud
   [crud]
@@ -23,7 +24,7 @@
       (is (thrown? Exception (read id))))))
 
 (deftest ^:integration docker
-  (let [service-id (-> (swarmpit.docker.client/services) first :ID)]
+  (let [service-id (-> (client/services) first :ID)]
 
     (testing "services"
       (is (some? (services))))
@@ -36,13 +37,13 @@
       (is (some? (service-tasks service-id))))
 
     (testing "scale service"
-      (let [id (-> (edn/read-string (slurp "test/clj/swarmpit/create-service.edn"))
-                   (create-service)
-                   :id)
+      (let [id (->> (edn/read-string (slurp "test/clj/swarmpit/create-service.edn"))
+                    (create-service nil)
+                    :id)
             created (service id)]
         (is (= "nginx" (-> created :repository :name)))
         (is (= 1 (-> created :replicas)))
-        (update-service id (merge created {:replicas 2}) false)
+        (update-service id (merge created {:replicas 2}))
         (is (= 2 (-> id (service) :replicas)))
         (delete-service id)))
 
@@ -51,10 +52,10 @@
                   :spec   (-> "test/clj/swarmpit/create-service.edn"
                               (slurp)
                               (edn/read-string))
-                  :create create-service
+                  :create (fn [spec] (create-service nil spec))
                   :read   service
                   :list   services
-                  :update (fn [id spec] (update-service id spec true))
+                  :update (fn [_ spec] (update-service nil spec))
                   :delete delete-service}))
 
     (testing "secrets"

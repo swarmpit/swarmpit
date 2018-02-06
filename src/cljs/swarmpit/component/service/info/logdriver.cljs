@@ -1,5 +1,6 @@
 (ns swarmpit.component.service.info.logdriver
-  (:require [material.component :as comp]
+  (:require [material.component.form :as form]
+            [material.component.list-table-auto :as list]
             [rum.core :as rum]))
 
 (enable-console-print!)
@@ -14,14 +15,14 @@
   (val item))
 
 (rum/defc form < rum/static [{:keys [name opts]}]
-  [:div.form-service-view-group.form-service-group-border
-   (comp/form-section "Logging")
-   (comp/form-item "DRIVER" (or name "none"))
+  [:div.form-layout-group.form-layout-group-border
+   (form/section "Logging")
+   (form/item "DRIVER" (or name "none"))
    (when (not-empty opts)
      [:div
-      (comp/form-subsection "Log driver options")
-      (comp/list-table-auto headers
-                            opts
-                            render-item
-                            render-item-keys
-                            nil)])])
+      (form/subsection "Log driver options")
+      (list/table headers
+                  opts
+                  render-item
+                  render-item-keys
+                  nil)])])

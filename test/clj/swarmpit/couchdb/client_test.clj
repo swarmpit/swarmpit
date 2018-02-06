@@ -17,7 +17,7 @@
   (testing "dns error"
     (with-redefs [swarmpit.config/config {:db-url "http://invalid-url:23333"}]
       (is (thrown-with-msg?
-            ExceptionInfo #"DB failure: invalid-url: Name or service not known"
+            ExceptionInfo #"DB failure: invalid-url: .*"
             (db-version)))))
 
   (testing "404 error swallowing"

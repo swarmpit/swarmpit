@@ -1,8 +1,9 @@
 (ns swarmpit.handler
   (:require [clojure.walk :refer [keywordize-keys]]
             [clojure.java.io :as io]
-            [swarmpit.version :refer [version]]
+            [swarmpit.version :as version]
             [swarmpit.api :as api]
+            [swarmpit.slt :as slt]
             [swarmpit.token :as token]))
 
 (defn resp-error
@@ -25,6 +26,11 @@
   ([response] {:status 201
                :body   response}))
 
+(defn resp-accepted
+  ([] {:status 202})
+  ([response] {:status 202
+               :body   response}))
+
 ;;; Handler
 
 (defmulti dispatch identity)
@@ -41,7 +47,14 @@
 
 (defmethod dispatch :version [_]
   (fn [_]
-    (resp-ok version)))
+    (->> (version/info)
+         (resp-ok))))
+
+;; SLT handler
+
+(defmethod dispatch :slt [_]
+  (fn [_]
+    (resp-ok {:slt (slt/create)})))
 
 ;; Login handler
 
@@ -133,26 +146,30 @@
          (resp-ok))))
 
 (defmethod dispatch :service-create [_]
-  (fn [{:keys [params]}]
-    (let [payload (keywordize-keys params)]
-      (->> (api/create-service payload)
+  (fn [{:keys [params identity]}]
+    (let [owner (get-in identity [:usr :username])
+          payload (keywordize-keys params)]
+      (->> (api/create-service owner payload)
            (resp-created)))))
 
 (defmethod dispatch :service-update [_]
-  (fn [{:keys [route-params params]}]
-    (let [payload (keywordize-keys params)]
-      (api/update-service (:id route-params) payload false)
+  (fn [{:keys [params identity]}]
+    (let [owner (get-in identity [:usr :username])
+          payload (keywordize-keys params)]
+      (api/update-service owner payload)
       (resp-ok))))
 
 (defmethod dispatch :service-redeploy [_]
-  (fn [{:keys [route-params]}]
-    (api/redeploy-service (:id route-params))
-    (resp-ok)))
+  (fn [{:keys [route-params identity]}]
+    (let [owner (get-in identity [:usr :username])]
+      (api/redeploy-service owner (:id route-params))
+      (resp-ok))))
 
 (defmethod dispatch :service-rollback [_]
-  (fn [{:keys [route-params]}]
-    (api/rollback-service (:id route-params))
-    (resp-ok)))
+  (fn [{:keys [route-params identity]}]
+    (let [owner (get-in identity [:usr :username])]
+      (api/rollback-service owner (:id route-params))
+      (resp-ok))))
 
 (defmethod dispatch :service-delete [_]
   (fn [{:keys [route-params]}]
@@ -173,6 +190,11 @@
 (defmethod dispatch :network [_]
   (fn [{:keys [route-params]}]
     (->> (api/network (:id route-params))
+         (resp-ok))))
+
+(defmethod dispatch :network-services [_]
+  (fn [{:keys [route-params]}]
+    (->> (api/services-by-network (:id route-params))
          (resp-ok))))
 
 (defmethod dispatch :network-create [_]
@@ -198,6 +220,11 @@
     (->> (api/volume (:name route-params))
          (resp-ok))))
 
+(defmethod dispatch :volume-services [_]
+  (fn [{:keys [route-params]}]
+    (->> (api/services-by-volume (:name route-params))
+         (resp-ok))))
+
 (defmethod dispatch :volume-create [_]
   (fn [{:keys [params]}]
     (let [payload (keywordize-keys params)]
@@ -221,6 +248,11 @@
     (->> (api/secret (:id route-params))
          (resp-ok))))
 
+(defmethod dispatch :secret-services [_]
+  (fn [{:keys [route-params]}]
+    (->> (api/services-by-secret (:id route-params))
+         (resp-ok))))
+
 (defmethod dispatch :secret-create [_]
   (fn [{:keys [params]}]
     (let [payload (keywordize-keys params)]
@@ -238,6 +270,34 @@
       (api/update-secret (:id route-params) payload)
       (resp-ok))))
 
+;; Config handler
+
+(defmethod dispatch :configs [_]
+  (fn [_]
+    (->> (api/configs)
+         (resp-ok))))
+
+(defmethod dispatch :config [_]
+  (fn [{:keys [route-params]}]
+    (->> (api/config (:id route-params))
+         (resp-ok))))
+
+(defmethod dispatch :config-services [_]
+  (fn [{:keys [route-params]}]
+    (->> (api/services-by-config (:id route-params))
+         (resp-ok))))
+
+(defmethod dispatch :config-create [_]
+  (fn [{:keys [params]}]
+    (let [payload (keywordize-keys params)]
+      (->> (api/create-config payload)
+           (resp-created)))))
+
+(defmethod dispatch :config-delete [_]
+  (fn [{:keys [route-params]}]
+    (api/delete-config (:id route-params))
+    (resp-ok)))
+
 ;; Node handler
 
 (defmethod dispatch :nodes [_]
@@ -248,6 +308,11 @@
 (defmethod dispatch :node [_]
   (fn [{:keys [route-params]}]
     (->> (api/node (:id route-params))
+         (resp-ok))))
+
+(defmethod dispatch :node-tasks [_]
+  (fn [{:keys [route-params]}]
+    (->> (api/node-tasks (:id route-params))
          (resp-ok))))
 
 ;; Placement handler
@@ -310,12 +375,14 @@
     (let [owner (get-in identity [:usr :username])
           payload (assoc (keywordize-keys params) :owner owner
                                                   :type "registry")]
-      (if (api/registry-valid? payload)
+      (try
+        (api/registry-info payload)
         (let [response (api/create-registry payload)]
           (if (some? response)
             (resp-created (select-keys response [:id]))
             (resp-error 400 "Registry already exist")))
-        (resp-error 400 "Registry credentials does not match any known registry")))))
+        (catch Exception e
+          (resp-error 400 (get-in (ex-data e) [:body :error])))))))
 
 (defmethod dispatch :registry-update [_]
   (fn [{:keys [route-params params]}]
@@ -328,28 +395,6 @@
     (let [registry-id (:id route-params)]
       (->> (api/registry-repositories registry-id)
            (resp-ok)))))
-
-(defmethod dispatch :registry-repository-tags [_]
-  (fn [{:keys [route-params query-params]}]
-    (let [query-params (keywordize-keys query-params)
-          repository-name (:repository query-params)
-          registry-id (:id route-params)]
-      (if (nil? repository-name)
-        (resp-error 400 "Parameter repository missing")
-        (->> (api/registry-tags registry-id repository-name)
-             (resp-ok))))))
-
-(defmethod dispatch :registry-repository-ports [_]
-  (fn [{:keys [route-params query-params]}]
-    (let [query-params (keywordize-keys query-params)
-          repository-name (:repositoryName query-params)
-          repository-tag (:repositoryTag query-params)
-          registry-id (:id route-params)]
-      (if (or (nil? repository-name)
-              (nil? repository-tag))
-        (resp-error 400 "Parameter repositoryName or repositoryTag missing")
-        (->> (api/registry-ports registry-id repository-name repository-tag)
-             (resp-ok))))))
 
 ;; Dockerhub handler
 
@@ -369,12 +414,13 @@
     (let [owner (get-in identity [:usr :username])
           payload (assoc (keywordize-keys params) :owner owner
                                                   :type "dockeruser")
-          dockeruser-info (api/dockeruser-info payload)]
-      (api/dockeruser-login payload)
-      (let [response (api/create-dockeruser payload dockeruser-info)]
-        (if (some? response)
-          (resp-created (select-keys response [:id]))
-          (resp-error 400 "Docker user already exist"))))))
+          dockeruser-token (:token (api/dockeruser-login payload))
+          dockeruser-info (api/dockeruser-info payload)
+          dockeruser-namespace (api/dockeruser-namespace dockeruser-token)
+          response (api/create-dockeruser payload dockeruser-info dockeruser-namespace)]
+      (if (some? response)
+        (resp-created (select-keys response [:id]))
+        (resp-error 400 "Docker user already exist")))))
 
 (defmethod dispatch :dockerhub-user-update [_]
   (fn [{:keys [route-params params]}]
@@ -393,28 +439,6 @@
       (->> (api/dockeruser-repositories dockeruser-id)
            (resp-ok)))))
 
-(defmethod dispatch :dockerhub-repository-tags [_]
-  (fn [{:keys [route-params query-params]}]
-    (let [query-params (keywordize-keys query-params)
-          repository-name (:repository query-params)
-          dockeruser-id (:id route-params)]
-      (if (nil? repository-name)
-        (resp-error 400 "Parameter repository missing")
-        (->> (api/dockeruser-tags dockeruser-id repository-name)
-             (resp-ok))))))
-
-(defmethod dispatch :dockerhub-repository-ports [_]
-  (fn [{:keys [route-params query-params]}]
-    (let [query-params (keywordize-keys query-params)
-          repository-name (:repositoryName query-params)
-          repository-tag (:repositoryTag query-params)
-          dockeruser-id (:id route-params)]
-      (if (or (nil? repository-name)
-              (nil? repository-tag))
-        (resp-error 400 "Parameter repositoryName or repositoryTag missing")
-        (->> (api/dockeruser-ports dockeruser-id repository-name repository-tag)
-             (resp-ok))))))
-
 ;; Public dockerhub handler
 
 (defmethod dispatch :public-repositories [_]
@@ -425,22 +449,26 @@
       (->> (api/public-repositories repository-query repository-page)
            (resp-ok)))))
 
-(defmethod dispatch :public-repository-tags [_]
-  (fn [{:keys [query-params]}]
-    (let [query-params (keywordize-keys query-params)
+;; Repository handler
+
+(defmethod dispatch :repository-tags [_]
+  (fn [{:keys [query-params identity]}]
+    (let [owner (get-in identity [:usr :username])
+          query-params (keywordize-keys query-params)
           repository-name (:repository query-params)]
       (if (nil? repository-name)
-        (resp-error 400 "Parameter repository missing")
-        (->> (api/public-tags repository-name)
+        (resp-error 400 "Parameter name missing")
+        (->> (api/repository-tags owner repository-name)
              (resp-ok))))))
 
-(defmethod dispatch :public-repository-ports [_]
-  (fn [{:keys [query-params]}]
-    (let [query-params (keywordize-keys query-params)
-          repository-name (:repositoryName query-params)
+(defmethod dispatch :repository-ports [_]
+  (fn [{:keys [query-params identity]}]
+    (let [owner (get-in identity [:usr :username])
+          query-params (keywordize-keys query-params)
+          repository-name (:repository query-params)
           repository-tag (:repositoryTag query-params)]
       (if (or (nil? repository-name)
               (nil? repository-tag))
-        (resp-error 400 "Parameter repositoryName or repositoryTag missing")
-        (->> (api/public-ports repository-name repository-tag)
+        (resp-error 400 "Parameter name or tag missing")
+        (->> (api/repository-ports owner repository-name repository-tag)
              (resp-ok))))))

@@ -12,15 +12,47 @@ services:
     networks:
       - net
     deploy:
+      resources:
+        limits:
+          cpus: '0.50'
+          memory: 1024M
+        reservations:
+          cpus: '0.25'
+          memory: 512M
       placement:
         constraints:
           - node.role == manager
+
   db:
     image: klaemo/couchdb:2.0.0
     volumes:
       - db-data:/opt/couchdb/data
     networks:
       - net
+    deploy:
+      resources:
+        limits:
+          cpus: '0.30'
+          memory: 512M
+        reservations:
+          cpus: '0.15'
+          memory: 256M
+
+  event-collector:
+    image: swarmpit/event-collector:latest
+    volumes:
+      - /var/run/docker.sock:/var/run/docker.sock:ro
+    networks:
+      - net
+    deploy:
+      mode: global
+      resources:
+        limits:
+          cpus: '0.10'
+          memory: 64M
+        reservations:
+          cpus: '0.05'
+          memory: 32M
 
 networks:
   net:

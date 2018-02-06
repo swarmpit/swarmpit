@@ -24,4 +24,5 @@
                         :exp "Token expired"
                         :signature "Token invalid"
                         (Throwable->map ex))]
-            (resp-unauthorized error)))))))
+            (-> (resp-unauthorized error)
+                (assoc :headers {"X-Backend-Server" "swarmpit"}))))))))

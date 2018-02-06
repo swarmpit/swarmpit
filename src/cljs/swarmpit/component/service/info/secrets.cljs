@@ -1,14 +1,15 @@
 (ns swarmpit.component.service.info.secrets
-  (:require [material.component :as comp]
+  (:require [material.component.form :as form]
+            [material.component.list-table-auto :as list]
             [swarmpit.routes :as routes]
             [rum.core :as rum]))
 
 (enable-console-print!)
 
-(def headers ["Name" "UID" "GID" "Mode"])
+(def headers ["Name" "Target" "UID" "GID" "Mode"])
 
 (def render-item-keys
-  [[:secretName] [:uid] [:gid] [:mode]])
+  [[:secretName] [:secretTarget] [:uid] [:gid] [:mode]])
 
 (defn render-item
   [item]
@@ -16,15 +17,15 @@
 
 (defn onclick-handler
   [item]
-  (routes/path-for-frontend :secret-info (select-keys item [:id])))
+  (routes/path-for-frontend :secret-info {:id (:secretName item)}))
 
 (rum/defc form < rum/static [secrets]
   (when (not-empty secrets)
-    [:div.form-service-view-group.form-service-group-border
-     (comp/form-section "Secrets")
-     (comp/list-table-auto headers
-                           secrets
-                           render-item
-                           render-item-keys
-                           onclick-handler)]))
+    [:div.form-layout-group.form-layout-group-border
+     (form/section "Secrets")
+     (list/table headers
+                 secrets
+                 render-item
+                 render-item-keys
+                 onclick-handler)]))
 

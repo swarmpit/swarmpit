@@ -1,5 +1,7 @@
 (ns swarmpit.component.service.form-networks
   (:require [material.component :as comp]
+            [material.component.form :as form]
+            [material.component.list-table-form :as list]
             [swarmpit.component.state :as state]
             [swarmpit.component.handler :as handler]
             [swarmpit.routes :as routes]
@@ -7,16 +9,16 @@
 
 (enable-console-print!)
 
-(def cursor [:page :service :wizard :networks])
+(def cursor [:form :networks])
 
-(defonce networks (atom []))
+(defonce networks-list (atom []))
 
 (defn networks-handler
   []
   (handler/get
     (routes/path-for-backend :networks)
     {:on-success (fn [response]
-                   (reset! networks
+                   (reset! networks-list
                            (->> response
                                 (filter #(= "swarm" (:scope %)))
                                 (into []))))}))
@@ -32,11 +34,8 @@
               {:name  ""
                :width "20%"}])
 
-(def empty-info
-  (comp/form-value "Service is not connected to any networks."))
-
 (defn- form-network [value index networks-list]
-  (comp/form-list-selectfield
+  (list/selectfield
     {:name     (str "form-network-select-" index)
      :key      (str "form-network-select-" index)
      :value    value
@@ -56,28 +55,19 @@
 
 (defn- form-table
   [networks networks-list]
-  (comp/form-table-headless [{:name  "Name"
-                              :width "300px"}]
-                            networks
-                            networks-list
-                            render-networks
-                            (fn [index] (state/remove-item index cursor))))
+  (list/table-headless [{:name  "Name"
+                         :width "300px"}]
+                       networks
+                       networks-list
+                       render-networks
+                       (fn [index] (state/remove-item index cursor))))
 
 (defn- add-item
   []
   (state/add-item {:networkName ""} cursor))
 
-(rum/defc form-create < rum/reactive []
-  (let [networks-list (rum/react networks)
-        networks (state/react cursor)]
-    [:div
-     (comp/form-add-btn "Attach network" add-item)
-     (if (not (empty? networks))
-       (form-table networks networks-list))]))
-
-(rum/defc form-update < rum/reactive []
-  (let [networks-list (rum/react networks)
-        networks (state/react cursor)]
+(rum/defc form < rum/reactive []
+  (let [networks (state/react cursor)]
     (if (empty? networks)
-      empty-info
-      (form-table networks networks-list))))
+      (form/value "Service is not connected to any networks.")
+      (form-table networks (rum/react networks-list)))))

@@ -1,5 +1,6 @@
 (ns swarmpit.component.service.info.ports
-  (:require [material.component :as comp]
+  (:require [material.component.form :as form]
+            [material.component.list-table-auto :as list]
             [rum.core :as rum]))
 
 (enable-console-print!)
@@ -15,10 +16,10 @@
 
 (rum/defc form < rum/static [ports]
   (when (not-empty ports)
-    [:div.form-service-view-group.form-service-group-border
-     (comp/form-section "Ports")
-     (comp/list-table-auto headers
-                           ports
-                           render-item
-                           render-item-keys
-                           nil)]))
+    [:div.form-layout-group.form-layout-group-border
+     (form/section "Ports")
+     (list/table headers
+                 ports
+                 render-item
+                 render-item-keys
+                 nil)]))

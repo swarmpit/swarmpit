@@ -1,7 +1,8 @@
 (ns swarmpit.component.service.create-config
   (:require [material.icon :as icon]
             [material.component :as comp]
-            [swarmpit.url :refer [dispatch!]]
+            [material.component.form :as form]
+            [material.component.panel :as panel]
             [swarmpit.component.mixin :as mixin]
             [swarmpit.component.handler :as handler]
             [swarmpit.component.state :as state]
@@ -10,6 +11,7 @@
             [swarmpit.component.service.form-networks :as networks]
             [swarmpit.component.service.form-mounts :as mounts]
             [swarmpit.component.service.form-secrets :as secrets]
+            [swarmpit.component.service.form-configs :as configs]
             [swarmpit.component.service.form-variables :as variables]
             [swarmpit.component.service.form-labels :as labels]
             [swarmpit.component.service.form-logdriver :as logdriver]
@@ -17,47 +19,11 @@
             [swarmpit.component.service.form-deployment :as deployment]
             [swarmpit.component.service.form-deployment-placement :as placement]
             [swarmpit.component.message :as message]
+            [swarmpit.url :refer [dispatch!]]
             [swarmpit.routes :as routes]
             [rum.core :as rum]))
 
 (enable-console-print!)
-
-(defonce step-index (atom 0))
-
-(def steps ["General settings"
-            "Ports"
-            "Networks"
-            "Mounts"
-            "Secrets"
-            "Environment variables"
-            "Labels"
-            "Logging"
-            "Resources"
-            "Deployment"])
-
-(def step-style
-  {:backgroundColor "transparent"})
-
-(def step-content-style
-  {:minWidth "800px"})
-
-(def stepper-style
-  {:height "60px"})
-
-(defn- step-item [index form]
-  (comp/step
-    {:key (str "step-" index)}
-    (comp/step-button
-      {:key                (str "step-btn-" index)
-       :disableTouchRipple true
-       :style              step-style
-       :className          "step-label"
-       :onClick            (fn [] (reset! step-index index))}
-      (nth steps index))
-    (comp/step-content
-      {:key   (str "step-context-" index)
-       :style step-content-style}
-      form)))
 
 (defn- create-service-handler
   []
@@ -65,6 +31,7 @@
         ports (state/get-value ports/cursor)
         networks (state/get-value networks/cursor)
         secrets (state/get-value secrets/cursor)
+        configs (state/get-value configs/cursor)
         variables (state/get-value variables/cursor)
         labels (state/get-value labels/cursor)
         logdriver (state/get-value logdriver/cursor)
@@ -76,7 +43,8 @@
                        (assoc :ports ports)
                        (assoc :networks networks)
                        (assoc :mounts (mounts/normalize))
-                       (assoc :secrets secrets)
+                       (assoc :secrets (when (not (empty? @secrets/secrets-list)) secrets))
+                       (assoc :configs (when (not (empty? @configs/configs-list)) configs))
                        (assoc :variables variables)
                        (assoc :labels labels)
                        (assoc :logdriver logdriver)
@@ -92,21 +60,18 @@
                        (str "Service creation failed. Reason: " (:error response))))})))
 
 (defn init-state
-  [distribution distributionType repository]
-  (reset! step-index 0)
-  (state/set-value {:distribution {:id   distribution
-                                   :type distributionType}
-                    :repository   {:name repository
-                                   :tag  ""
-                                   :tags []}
-                    :serviceName  ""
-                    :mode         "replicated"
-                    :replicas     1
-                    :isValid      false} settings/cursor)
+  [repository]
+  (state/set-value {:repository  {:name repository
+                                  :tag  ""
+                                  :tags []}
+                    :serviceName ""
+                    :mode        "replicated"
+                    :replicas    1} settings/cursor)
   (state/set-value [] ports/cursor)
   (state/set-value [] networks/cursor)
   (state/set-value [] mounts/cursor)
   (state/set-value [] secrets/cursor)
+  (state/set-value [] configs/cursor)
   (state/set-value [] variables/cursor)
   (state/set-value [] labels/cursor)
   (state/set-value {:name "json-file"
@@ -124,56 +89,101 @@
   (state/set-value {:reservation {:cpu    0.000
                                   :memory 0}
                     :limit       {:cpu    0.000
-                                  :memory 0}
-                    :isValid     true} resources/cursor)
+                                  :memory 0}} resources/cursor)
   (state/set-value [] placement/cursor))
 
-(def init-state-mixin
-  (mixin/init
-    (fn [{:keys [repository distribution distributionType]}]
-      (init-state distribution
-                  distributionType
-                  repository)
+(def mixin-init-form
+  (mixin/init-form
+    (fn [{{:keys [repository]} :params}]
+      (init-state repository)
       (mounts/volumes-handler)
       (networks/networks-handler)
       (secrets/secrets-handler)
+      (when (<= 1.30 (state/get-value [:docker :api]))
+        (configs/configs-handler))
       (placement/placement-handler)
       (labels/labels-handler)
-      (case distributionType
-        "dockerhub" (settings/dockerhub-tags-handler distribution repository)
-        "registry" (settings/registry-tags-handler distribution repository)
-        (settings/public-tags-handler repository)))))
+      (settings/tags-handler repository))))
+
+(rum/defc form-settings < rum/static []
+  [:div.form-layout-group
+   (form/section "General settings")
+   (settings/form false)])
+
+(rum/defc form-ports < rum/static []
+  [:div.form-layout-group.form-layout-group-border
+   (form/section-add "Ports" ports/add-item)
+   (ports/form)])
+
+(rum/defc form-networks < rum/static []
+  [:div.form-layout-group.form-layout-group-border
+   (form/section-add "Networks" networks/add-item)
+   (networks/form)])
+
+(rum/defc form-mounts < rum/static []
+  [:div.form-layout-group.form-layout-group-border
+   (form/section-add "Mounts" mounts/add-item)
+   (mounts/form)])
+
+(rum/defc form-secrets < rum/reactive []
+  [:div.form-layout-group.form-layout-group-border
+   (form/section-add "Secrets" secrets/add-item)
+   (secrets/form)])
+
+(rum/defc form-configs < rum/reactive []
+  [:div.form-layout-group.form-layout-group-border
+   (form/section-add "Configs" configs/add-item)
+   (configs/form)])
+
+(rum/defc form-variables < rum/static []
+  [:div.form-layout-group.form-layout-group-border
+   (form/section-add "Environment Variables" variables/add-item)
+   (variables/form)])
+
+(rum/defc form-labels < rum/static []
+  [:div.form-layout-group.form-layout-group-border
+   (form/section-add "Labels" labels/add-item)
+   (labels/form)])
+
+(rum/defc form-logdriver < rum/static []
+  [:div.form-layout-group.form-layout-group-border
+   (form/section "Logging")
+   (logdriver/form)])
+
+(rum/defc form-resources < rum/static []
+  [:div.form-layout-group.form-layout-group-border
+   (form/section "Resources")
+   (resources/form)])
+
+(rum/defc form-deployment < rum/static []
+  [:div.form-layout-group.form-layout-group-border
+   (form/section "Deployment")
+   (deployment/form)])
 
 (rum/defc form < rum/reactive
-                 init-state-mixin [_]
-  (let [index (rum/react step-index)
-        settings (state/react settings/cursor)
-        resources (state/react resources/cursor)]
-    [:div
-     [:div.form-panel
-      [:div.form-panel-left
-       (comp/panel-info icon/services "New service")]
-      [:div.form-panel-right
-       (comp/mui
-         (comp/raised-button
-           {:label      "Create"
-            :disabled   (or (not (:isValid settings))
-                            (not (:isValid resources)))
-            :primary    true
-            :onTouchTap create-service-handler}))]]
+                 mixin-init-form [_]
+  [:div
+   [:div.form-panel
+    [:div.form-panel-left
+     (panel/info icon/services "New service")]
+    [:div.form-panel-right
      (comp/mui
-       (comp/stepper
-         {:activeStep  index
-          :linear      false
-          :style       stepper-style
-          :orientation "vertical"}
-         (step-item 0 (settings/form false))
-         (step-item 1 (ports/form-create))
-         (step-item 2 (networks/form-create))
-         (step-item 3 (mounts/form-create))
-         (step-item 4 (secrets/form-create))
-         (step-item 5 (variables/form-create))
-         (step-item 6 (labels/form-create))
-         (step-item 7 (logdriver/form))
-         (step-item 8 (resources/form))
-         (step-item 9 (deployment/form))))]))
+       (comp/raised-button
+         {:label      "Create"
+          :disabled   (or (not (rum/react settings/valid?))
+                          (not (rum/react resources/valid?)))
+          :primary    true
+          :onTouchTap create-service-handler}))]]
+   [:div.form-layout
+    (form-settings)
+    (form-ports)
+    (form-networks)
+    (form-mounts)
+    (form-secrets)
+    (when (<= 1.30 (state/get-value [:docker :api]))
+      (form-configs))
+    (form-variables)
+    (form-labels)
+    (form-logdriver)
+    (form-resources)
+    (form-deployment)]])

@@ -1,24 +1,22 @@
 (ns swarmpit.component.service.info.settings
-  (:require [material.component :as comp]
-            [cljs-time.core]
-            [rum.core :as rum]
-            [swarmpit.docker-utils :as utils]))
+  (:require [material.component.form :as form]
+            [swarmpit.docker.utils :as utils]
+            [rum.core :as rum]))
 
 (enable-console-print!)
 
 (rum/defc form < rum/static [service]
   (let [image-digest (get-in service [:repository :imageDigest])
         stack (:stack service)]
-    [:div.form-service-view-group
-     (comp/form-section "General settings")
-     (comp/form-item "ID" (:id service))
+    [:div.form-layout-group
+     (form/section "General settings")
+     (form/item "ID" (:id service))
      (if (some? stack)
-       (comp/form-item "STACK" stack))
-     (comp/form-item "NAME" (utils/trim-stack stack (:serviceName service)))
-     (comp/form-item-date "CREATED" (:createdAt service))
-     (comp/form-item-date "LAST UPDATE" (:updatedAt service))
-     (comp/form-item "IMAGE" (get-in service [:repository :image]))
+       (form/item "STACK" stack))
+     (form/item "NAME" (utils/trim-stack stack (:serviceName service)))
+     (form/item-date "CREATED" (:createdAt service))
+     (form/item-date "LAST UPDATE" (:updatedAt service))
+     (form/item "IMAGE" (get-in service [:repository :image]))
      (when (some? image-digest)
-       (comp/form-item "IMAGE DIGEST" image-digest))
-     (comp/form-item "MODE" (:mode service))]))
-
+       (form/item "IMAGE DIGEST" image-digest))
+     (form/item "MODE" (:mode service))]))

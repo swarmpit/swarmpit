@@ -1,21 +1,21 @@
 (ns swarmpit.api-test
-    (:require [clojure.test :refer :all]
-              [digest :refer [digest]]
-              [swarmpit.api :refer :all]
-              [swarmpit.config :refer [config]]
-              [swarmpit.couchdb.mapper.outbound :refer [->password]]))
+  (:require [clojure.test :refer :all]
+            [digest :refer [digest]]
+            [swarmpit.api :refer :all]
+            [swarmpit.config :as cfg]
+            [swarmpit.couchdb.mapper.outbound :refer [->password]]))
 
 (deftest password-check-test
   (let [pass "heslo"
         hashed (->password pass)]
 
     (testing "speed"
-      (swarmpit.config/update! {:password-hashing
-                                {:alg :pbkdf2+sha512 :iterations 100000}})
-      (println "Evaluating baseline" (config :password-hashing))
+      (cfg/update! {:password-hashing
+                    {:alg :pbkdf2+sha512 :iterations 100000}})
+      (println "Evaluating baseline" (cfg/config :password-hashing))
       (time (is (some? (->password pass))))
-      (swarmpit.config/update! {})
-      (println "Evaluating defaults" (config :password-hashing))
+      (cfg/update! {})
+      (println "Evaluating defaults" (cfg/config :password-hashing))
       (time (is (some? (->password pass)))))
 
     (testing "check"

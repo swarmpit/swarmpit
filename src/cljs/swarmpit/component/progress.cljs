@@ -1,5 +1,6 @@
 (ns swarmpit.component.progress
   (:require [material.component :as comp]
+            [material.component.form :as form]
             [rum.core :as rum]))
 
 (enable-console-print!)
@@ -28,6 +29,17 @@
        :style      progress-style
        :innerStyle progress-inner-style})))
 
+(rum/defc form < rum/static [loading? comp]
+  (if loading?
+    (progress)
+    comp))
+
+(rum/defc loading < rum/static []
+  (form/loading true))
+
+(rum/defc loaded < rum/static []
+  (form/loading false))
+
 (defn mount!
   []
   (rum/mount (progress) (.getElementById js/document "progress")))
@@ -35,4 +47,3 @@
 (defn unmount!
   []
   (rum/unmount (.getElementById js/document "progress")))
-

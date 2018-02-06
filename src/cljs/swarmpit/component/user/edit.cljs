@@ -1,20 +1,27 @@
 (ns swarmpit.component.user.edit
-  (:require [material.component :as comp]
-            [material.icon :as icon]
+  (:require [material.icon :as icon]
+            [material.component :as comp]
+            [material.component.form :as form]
+            [material.component.panel :as panel]
             [swarmpit.url :refer [dispatch!]]
             [swarmpit.component.handler :as handler]
             [swarmpit.component.mixin :as mixin]
             [swarmpit.component.state :as state]
             [swarmpit.component.message :as message]
+            [swarmpit.component.progress :as progress]
             [swarmpit.routes :as routes]
             [rum.core :as rum]))
 
 (enable-console-print!)
 
-(def cursor [:page :user :form])
+(def cursor [:form])
+
+(defonce valid? (atom false))
+
+(defonce loading? (atom false))
 
 (defn- form-role [value]
-  (comp/form-comp
+  (form/comp
     "ROLE"
     (comp/select-field
       {:value    value
@@ -30,7 +37,7 @@
          :primaryText "user"}))))
 
 (defn- form-email [value]
-  (comp/form-comp
+  (form/comp
     "EMAIL"
     (comp/vtext-field
       {:name            "email"
@@ -41,6 +48,14 @@
        :value           value
        :onChange        (fn [_ v]
                           (state/update-value [:email] v cursor))})))
+
+(defn- user-handler
+  [user-id]
+  (handler/get
+    (routes/path-for-backend :user {:id user-id})
+    {:state      loading?
+     :on-success (fn [response]
+                   (state/set-value response cursor))}))
 
 (defn- update-user-handler
   [user-id]
@@ -56,42 +71,40 @@
                    (message/error
                      (str "User update failed. Reason: " (:error response))))}))
 
-(defn- init-state
-  [user]
-  (state/set-value {:email   (:email user)
-                    :role    (:role user)
-                    :isValid true} cursor))
+(def mixin-init-form
+  (mixin/init-form
+    (fn [{{:keys [id]} :params}]
+      (user-handler id))))
 
-(def init-state-mixin
-  (mixin/init
-    (fn [user]
-      (init-state user))))
+(rum/defc form-edit < rum/reactive
+                      rum/static [{:keys [role email] :as user}]
+  [:div
+   [:div.form-panel
+    [:div.form-panel-left
+     (panel/info icon/users
+                 (:username user))]
+    [:div.form-panel-right
+     (comp/mui
+       (comp/raised-button
+         {:onTouchTap #(update-user-handler (:_id user))
+          :label      "Save"
+          :disabled   (not (rum/react valid?))
+          :primary    true}))
+     [:span.form-panel-delimiter]
+     (comp/mui
+       (comp/raised-button
+         {:href  (routes/path-for-frontend :user-info {:id (:_id user)})
+          :label "Back"}))]]
+   [:div.form-edit
+    (form/form
+      {:onValid   #(reset! valid? true)
+       :onInvalid #(reset! valid? false)}
+      (form-role role)
+      (form-email email))]])
 
 (rum/defc form < rum/reactive
-                 init-state-mixin [user]
-  (let [{:keys [role
-                email
-                isValid]} (state/react cursor)]
-    [:div
-     [:div.form-panel
-      [:div.form-panel-left
-       (comp/panel-info icon/users
-                        (:username user))]
-      [:div.form-panel-right
-       (comp/mui
-         (comp/raised-button
-           {:onTouchTap #(update-user-handler (:_id user))
-            :label      "Save"
-            :disabled   (not isValid)
-            :primary    true}))
-       [:span.form-panel-delimiter]
-       (comp/mui
-         (comp/raised-button
-           {:href  (routes/path-for-frontend :user-info {:id (:_id user)})
-            :label "Back"}))]]
-     [:div.form-edit
-      (comp/form
-        {:onValid   #(state/update-value [:isValid] true cursor)
-         :onInvalid #(state/update-value [:isValid] false cursor)}
-        (form-role role)
-        (form-email email))]]))
+                 mixin-init-form [_]
+  (let [user (state/react cursor)]
+    (progress/form
+      (rum/react loading?)
+      (form-edit user))))

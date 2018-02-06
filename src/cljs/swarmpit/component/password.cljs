@@ -1,6 +1,8 @@
 (ns swarmpit.component.password
-  (:require [material.component :as comp]
-            [material.icon :as icon]
+  (:require [material.icon :as icon]
+            [material.component :as comp]
+            [material.component.form :as form]
+            [material.component.panel :as panel]
             [swarmpit.url :refer [dispatch!]]
             [swarmpit.component.handler :as handler]
             [swarmpit.component.message :as message]
@@ -10,7 +12,7 @@
 (enable-console-print!)
 
 (defn- form-password [local-state]
-  (comp/form-comp
+  (form/comp
     "OLD PASSWORD"
     (comp/vtext-field
       {:name     "password"
@@ -22,7 +24,7 @@
                    (swap! local-state assoc :password v))})))
 
 (defn- form-new-password [local-state]
-  (comp/form-comp
+  (form/comp
     "NEW PASSWORD"
     (comp/vtext-field
       {:name            "new-password"
@@ -36,7 +38,7 @@
                           (swap! local-state assoc :new-password v))})))
 
 (defn- form-confirm-password [local-state]
-  (comp/form-comp
+  (form/comp
     "CONFIRM PASSWORD"
     (comp/vtext-field
       {:name            "confirm-password"
@@ -72,7 +74,7 @@
     [:div
      [:div.form-panel
       [:div.form-panel-left
-       (comp/panel-info icon/password "New password")]
+       (panel/info icon/password "New password")]
       [:div.form-panel-right
        (comp/mui
          (comp/raised-button
@@ -81,7 +83,7 @@
             :primary    true
             :onTouchTap #(change-password-handler local-state)}))]]
      [:div.form-edit
-      (comp/form
+      (form/form
         {:onValid   #(swap! local-state assoc :canSubmit true)
          :onInvalid #(swap! local-state assoc :canSubmit false)}
         (form-password local-state)
