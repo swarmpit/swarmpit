@@ -85,9 +85,11 @@
 ;;; Secret API
 
 (defn secrets
-  []
-  (-> (dc/secrets)
-      (dmi/->secrets)))
+  ([]
+   (secrets nil))
+  ([label]
+   (-> (dc/secrets label)
+       (dmi/->secrets))))
 
 (defn secret
   [secret-id]
@@ -113,9 +115,11 @@
 ;;; Config API
 
 (defn configs
-  []
-  (-> (dc/configs)
-      (dmi/->configs)))
+  ([]
+   (configs nil))
+  ([label]
+   (-> (dc/configs label)
+       (dmi/->configs))))
 
 (defn config
   [config-id]
@@ -135,9 +139,11 @@
 ;;; Network API
 
 (defn networks
-  []
-  (-> (dc/networks)
-      (dmi/->networks)))
+  ([]
+   (networks nil))
+  ([label]
+   (-> (dc/networks label)
+       (dmi/->networks))))
 
 (defn network
   [network-id]
@@ -157,9 +163,11 @@
 ;;; Volume API
 
 (defn volumes
-  []
-  (-> (dc/volumes)
-      (dmi/->volumes)))
+  ([]
+   (volumes nil))
+  ([label]
+   (-> (dc/volumes label)
+       (dmi/->volumes))))
 
 (defn volume
   [volume-name]
@@ -441,37 +449,41 @@
 
 (defn services
   ([]
-   (dmi/->services (dc/services)
-                   (dc/tasks)))
-  ([service-filter]
-   (dmi/->services (filter #(service-filter %) (dc/services))
+   (services nil))
+  ([label]
+   (dmi/->services (dc/services label)
                    (dc/tasks))))
 
 (def services-memo (memo/ttl services :ttl/threshold 1000))
 
+(defn- services-by
+  [service-filter]
+  (dmi/->services (filter #(service-filter %) (dc/services))
+                  (dc/tasks)))
+
 (defn services-by-network
   [network-name]
-  (services #(contains? (->> (get-in % [:Spec :TaskTemplate :Networks])
-                             (map :Target)
-                             (set)) (:id (network network-name)))))
+  (services-by #(contains? (->> (get-in % [:Spec :TaskTemplate :Networks])
+                                (map :Target)
+                                (set)) (:id (network network-name)))))
 
 (defn services-by-volume
   [volume-name]
-  (services #(contains? (->> (get-in % [:Spec :TaskTemplate :ContainerSpec :Mounts])
-                             (map :Source)
-                             (set)) volume-name)))
+  (services-by #(contains? (->> (get-in % [:Spec :TaskTemplate :ContainerSpec :Mounts])
+                                (map :Source)
+                                (set)) volume-name)))
 
 (defn services-by-secret
   [secret-name]
-  (services #(contains? (->> (get-in % [:Spec :TaskTemplate :ContainerSpec :Secrets])
-                             (map :SecretName)
-                             (set)) secret-name)))
+  (services-by #(contains? (->> (get-in % [:Spec :TaskTemplate :ContainerSpec :Secrets])
+                                (map :SecretName)
+                                (set)) secret-name)))
 
 (defn services-by-config
   [config-name]
-  (services #(contains? (->> (get-in % [:Spec :TaskTemplate :ContainerSpec :Configs])
-                             (map :ConfigName)
-                             (set)) config-name)))
+  (services-by #(contains? (->> (get-in % [:Spec :TaskTemplate :ContainerSpec :Configs])
+                                (map :ConfigName)
+                                (set)) config-name)))
 
 (defn service
   [service-id]
@@ -657,3 +669,18 @@
         nodes-label
         (fn [matcher item]
           (str "node.labels." (name (key item)) matcher (val item)))))))
+
+;; Stack API
+
+(defn stacks
+  []
+  (->> (dissoc (group-by :stack (services)) nil)
+       (map #(key %))
+       (map #(hash-map (keyword %)
+                       (let [label (str "com.docker.stack.namespace=" %)]
+                         {:services (services label)
+                          :networks (networks label)
+                          :volumes  (volumes label)
+                          :configs  (configs label)
+                          :secrets  (secrets label)})))))
+
