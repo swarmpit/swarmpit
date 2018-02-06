@@ -1,7 +1,8 @@
 (ns swarmpit.component.stack.editor
-  (:require [material.component :as comp]
-            [material.icon :as icon]
-            [swarmpit.component.mixin :as mixin]
+  (:require [material.icon :as icon]
+            [material.component :as comp]
+            [material.component.form :as form]
+            [material.component.panel :as panel]
             [swarmpit.component.state :as state]
             [sablono.core :refer-macros [html]]
             [cljsjs.codemirror]
@@ -25,7 +26,7 @@
        :mode              "yaml"})))
 
 (defn- form-name [value]
-  (comp/form-comp
+  (form/comp
     "STACK NAME"
     (comp/vtext-field
       {:name     "stack-name"
@@ -51,7 +52,7 @@
   [:div
    [:div.form-panel
     [:div.form-panel-left
-     (comp/panel-info icon/stacks "New stack")]
+     (panel/info icon/stacks "New stack")]
     [:div.form-panel-right
      (comp/mui
        (comp/raised-button
@@ -71,7 +72,7 @@
          {:label   "Create"
           ;:onTouchTap (fn [] (js/console.log (-> (editor) .getValue)))
           :primary true}))]]
-   (comp/form
+   (form/form
      {:onValid   #(state/update-value [:isValid] true cursor)
       :onInvalid #(state/update-value [:isValid] false cursor)}
      (form-name "test"))
