@@ -14,8 +14,8 @@ else
     echo "Creating event collector"
     docker run -d \
       --name swarmpitec \
-      --env EVENT_ENDPOINT=http://192.168.65.1:3449/events \
-      --env HEALTH_CHECK_ENDPOINT=http://192.168.65.1:3449/version \
+      --env EVENT_ENDPOINT=http://192.168.65.2:3449/events \
+      --env HEALTH_CHECK_ENDPOINT=http://192.168.65.2:3449/version \
       --volume /var/run/docker.sock:/var/run/docker.sock \
       swarmpit/event-collector:latest
 fi
