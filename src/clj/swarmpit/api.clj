@@ -676,11 +676,11 @@
   []
   (->> (dissoc (group-by :stack (services)) nil)
        (map #(key %))
-       (map #(hash-map (keyword %)
-                       (let [label (str "com.docker.stack.namespace=" %)]
-                         {:services (services label)
-                          :networks (networks label)
-                          :volumes  (volumes label)
-                          :configs  (configs label)
-                          :secrets  (secrets label)})))))
+       (map #(let [label (str "com.docker.stack.namespace=" %)]
+               {:stackName %
+                :services (services label)
+                :networks (networks label)
+                :volumes  (volumes label)
+                :configs  (configs label)
+                :secrets  (secrets label)}))))
 

@@ -26,6 +26,14 @@
                                                      [:id]                 :registry}
                                             :delete {[:id] :registry-delete}
                                             :post   {[:id] :registry-update}}}}
+       "/compose"       {:get {""          :stack-files
+                               ["/" :name] :stack-file}}
+       "/stacks"        {:get :stacks}
+       "/stacks/"       {:get {[:name] {"/services" :stack-services
+                                        "/networks" :stack-networks
+                                        "/volumes"  :stack-volumes
+                                        "/configs"  :stack-configs
+                                        "/secrets"  :stack-secrets}}}
        "/services"      {:get  :services
                          :post :service-create}
        "/services/"     {:get    {[:id] {""          :service
@@ -84,8 +92,10 @@
                                                ["/" :id]        {""      :service-info
                                                                  "/edit" :service-edit
                                                                  "/log"  :service-log}}
-                   "/stacks"                  {""        :stack-list
-                                               "/create" :stack-create}
+                   "/stacks"                  {""               :stack-list
+                                               "/create/wizard" {"/compose" :stack-create-compose
+                                                                 "/config"  :stack-create-config}
+                                               ["/" :name]      :stack-info}
                    "/networks"                {""        :network-list
                                                "/create" :network-create
                                                ["/" :id] :network-info}

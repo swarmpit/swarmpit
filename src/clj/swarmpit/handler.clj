@@ -472,3 +472,48 @@
         (resp-error 400 "Parameter name or tag missing")
         (->> (api/repository-ports owner repository-name repository-tag)
              (resp-ok))))))
+
+;; Stack handler
+
+(defmethod dispatch :stacks [_]
+  (fn [_]
+    (->> (api/stacks)
+         (resp-ok))))
+
+(defmethod dispatch :stack-services [_]
+  (fn [{:keys [route-params]}]
+    (let [label (str "com.docker.stack.namespace=" (:name route-params))]
+      (->> (api/services label)
+           (resp-ok)))))
+
+(defmethod dispatch :stack-networks [_]
+  (fn [{:keys [route-params]}]
+    (let [label (str "com.docker.stack.namespace=" (:name route-params))]
+      (->> (api/networks label)
+           (resp-ok)))))
+
+(defmethod dispatch :stack-volumes [_]
+  (fn [{:keys [route-params]}]
+    (let [label (str "com.docker.stack.namespace=" (:name route-params))]
+      (->> (api/volumes label)
+           (resp-ok)))))
+
+(defmethod dispatch :stack-configs [_]
+  (fn [{:keys [route-params]}]
+    (let [label (str "com.docker.stack.namespace=" (:name route-params))]
+      (->> (api/configs label)
+           (resp-ok)))))
+
+(defmethod dispatch :stack-secrets [_]
+  (fn [{:keys [route-params]}]
+    (let [label (str "com.docker.stack.namespace=" (:name route-params))]
+      (->> (api/secrets label)
+           (resp-ok)))))
+
+(defmethod dispatch :stack-files [_]
+  (fn [{:keys [route-params]}]
+    (resp-ok [])))
+
+(defmethod dispatch :stack-file [_]
+  (fn [{:keys [route-params]}]
+    (resp-ok {})))
