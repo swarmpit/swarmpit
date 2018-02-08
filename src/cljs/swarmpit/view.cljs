@@ -4,11 +4,12 @@
             [swarmpit.component.page-404 :as page-404]
             [swarmpit.component.page-error :as page-error]
             [swarmpit.component.password :as password]
+            [swarmpit.component.stack.create-compose :as stack-compose]
+            [swarmpit.component.stack.create-config :as stack-config]
+            [swarmpit.component.stack.info :as stack-info]
+            [swarmpit.component.stack.list :as stack-list]
             [swarmpit.component.service.create-config :as service-config]
             [swarmpit.component.service.create-image :as service-image]
-
-            [swarmpit.component.stack.editor :as stack-editor]
-
             [swarmpit.component.service.edit :as service-edit]
             [swarmpit.component.service.info :as service-info]
             [swarmpit.component.service.log :as service-log]
@@ -70,9 +71,21 @@
 
 ;;; Stack view
 
-(defmethod dispatch :stack-create
-  [{:keys [data]}]
-  (stack-editor/form data))
+(defmethod dispatch :stack-list
+  [route]
+  (stack-list/form route))
+
+(defmethod dispatch :stack-info
+  [route]
+  (stack-info/form route))
+
+(defmethod dispatch :stack-create-compose
+  [route]
+  (stack-compose/form route))
+
+(defmethod dispatch :stack-create-config
+  [route]
+  (stack-config/form route))
 
 ;;; Service view
 
