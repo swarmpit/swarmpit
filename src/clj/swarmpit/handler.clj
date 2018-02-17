@@ -480,6 +480,30 @@
     (->> (api/stacks)
          (resp-ok))))
 
+(defmethod dispatch :stack-create [_]
+  (fn [{:keys [params]}]
+    (let [payload (keywordize-keys params)]
+      (-> (api/create-stack payload)
+          (resp-ok)))))
+
+(defmethod dispatch :stack-update [_]
+  (fn [{:keys [route-params params]}]
+    (let [payload (keywordize-keys params)]
+      (api/update-stack (:name route-params) payload)
+      (resp-ok))))
+
+(defmethod dispatch :stack-delete [_]
+  (fn [{:keys [route-params]}]
+    (-> (api/delete-stack (:name route-params))
+        (resp-ok))))
+
+(defmethod dispatch :stack-file [_]
+  (fn [{:keys [route-params]}]
+    (let [response (api/stackfile (:name route-params))]
+      (if (some? response)
+        (resp-ok response)
+        (resp-error 400 "Stackfile not found")))))
+
 (defmethod dispatch :stack-services [_]
   (fn [{:keys [route-params]}]
     (let [label (str "com.docker.stack.namespace=" (:name route-params))]
@@ -509,11 +533,3 @@
     (let [label (str "com.docker.stack.namespace=" (:name route-params))]
       (->> (api/secrets label)
            (resp-ok)))))
-
-(defmethod dispatch :stack-files [_]
-  (fn [{:keys [route-params]}]
-    (resp-ok [])))
-
-(defmethod dispatch :stack-file [_]
-  (fn [{:keys [route-params]}]
-    (resp-ok {})))

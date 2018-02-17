@@ -26,14 +26,16 @@
                                                      [:id]                 :registry}
                                             :delete {[:id] :registry-delete}
                                             :post   {[:id] :registry-update}}}}
-       "/compose"       {:get {""          :stack-files
-                               ["/" :name] :stack-file}}
-       "/stacks"        {:get :stacks}
-       "/stacks/"       {:get {[:name] {"/services" :stack-services
-                                        "/networks" :stack-networks
-                                        "/volumes"  :stack-volumes
-                                        "/configs"  :stack-configs
-                                        "/secrets"  :stack-secrets}}}
+       "/stacks"        {:get  :stacks
+                         :post :stack-create}
+       "/stacks/"       {:get    {[:name] {"/file"     :stack-file
+                                           "/services" :stack-services
+                                           "/networks" :stack-networks
+                                           "/volumes"  :stack-volumes
+                                           "/configs"  :stack-configs
+                                           "/secrets"  :stack-secrets}}
+                         :delete {[:name] :stack-delete}
+                         :post   {[:name] :stack-update}}
        "/services"      {:get  :services
                          :post :service-create}
        "/services/"     {:get    {[:id] {""          :service
@@ -92,10 +94,10 @@
                                                ["/" :id]        {""      :service-info
                                                                  "/edit" :service-edit
                                                                  "/log"  :service-log}}
-                   "/stacks"                  {""               :stack-list
-                                               "/create/wizard" {"/compose" :stack-create-compose
-                                                                 "/config"  :stack-create-config}
-                                               ["/" :name]      :stack-info}
+                   "/stacks"                  {""                  :stack-list
+                                               "/create"           :stack-create
+                                               ["/" :name]         :stack-info
+                                               ["/" :name "/edit"] :stack-edit}
                    "/networks"                {""        :network-list
                                                "/create" :network-create
                                                ["/" :id] :network-info}

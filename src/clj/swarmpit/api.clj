@@ -6,6 +6,7 @@
             [swarmpit.config :as cfg]
             [swarmpit.docker.utils :as du]
             [swarmpit.docker.engine.client :as dc]
+            [swarmpit.docker.engine.cli :as dcli]
             [swarmpit.docker.engine.log :as dl]
             [swarmpit.docker.engine.mapper.inbound :as dmi]
             [swarmpit.docker.engine.mapper.outbound :as dmo]
@@ -156,9 +157,9 @@
 
 (defn create-network
   [network]
-  (->> (dmo/->network network)
-       (dc/create-network)
-       ((fn [net] {:id (:Id net)}))))
+  (-> (dmo/->network network)
+      (dc/create-network)
+      (rename-keys {:Id :id})))
 
 ;;; Volume API
 
@@ -309,9 +310,8 @@
 
 (defn create-registry
   [registry]
-  (if (not (registry-exist? registry))
-    (->> (cmo/->registry registry)
-         (cc/create-registry))))
+  (when (not (registry-exist? registry))
+    (cc/create-registry registry)))
 
 (defn update-registry
   [registry-id registry-delta]
@@ -678,9 +678,33 @@
        (map #(key %))
        (map #(let [label (str "com.docker.stack.namespace=" %)]
                {:stackName %
-                :services (services label)
-                :networks (networks label)
-                :volumes  (volumes label)
-                :configs  (configs label)
-                :secrets  (secrets label)}))))
+                :stackFile (if (some? (cc/stackfile %)) true false)
+                :services  (services label)
+                :networks  (networks label)
+                :volumes   (volumes label)
+                :configs   (configs label)
+                :secrets   (secrets label)}))))
 
+(defn create-stack
+  [stackfile]
+  (let [response (dcli/stack-deploy stackfile)]
+    (cc/create-stackfile stackfile)
+    response))
+
+(defn update-stack
+  [stack-name stackfile]
+  (let [response (dcli/stack-deploy stackfile)]
+    (-> (cc/stackfile stack-name)
+        (cc/update-stackfile stackfile))
+    response))
+
+(defn delete-stack
+  [stack-name]
+  (let [response (dcli/stack-remove stack-name)]
+    (-> (cc/stackfile stack-name)
+        (cc/delete-stackfile))
+    response))
+
+(defn stackfile
+  [stack-name]
+  (cc/stackfile stack-name))
