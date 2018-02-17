@@ -63,7 +63,7 @@
   [:div
    [:div.form-panel
     [:div.form-panel-left
-     (panel/info icon/secrets
+     (panel/info icon/configs
                  (:configName config))]
     [:div.form-panel-right
      (comp/mui

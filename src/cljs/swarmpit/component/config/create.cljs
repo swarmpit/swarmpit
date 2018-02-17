@@ -78,7 +78,7 @@
     [:div
      [:div.form-panel
       [:div.form-panel-left
-       (panel/info icon/secrets "New config")]
+       (panel/info icon/configs "New config")]
       [:div.form-panel-right
        (comp/mui
          (comp/raised-button
