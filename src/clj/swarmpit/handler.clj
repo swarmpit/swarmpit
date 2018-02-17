@@ -1,6 +1,7 @@
 (ns swarmpit.handler
   (:require [clojure.walk :refer [keywordize-keys]]
             [clojure.java.io :as io]
+            [clojure.string :as str]
             [swarmpit.version :as version]
             [swarmpit.api :as api]
             [swarmpit.slt :as slt]
@@ -483,14 +484,18 @@
 (defmethod dispatch :stack-create [_]
   (fn [{:keys [params]}]
     (let [payload (keywordize-keys params)]
-      (-> (api/create-stack payload)
-          (resp-ok)))))
+      (if (str/blank? (:compose payload))
+        (resp-error 400 "Compose file empty")
+        (-> (api/create-stack payload)
+            (resp-created))))))
 
 (defmethod dispatch :stack-update [_]
   (fn [{:keys [route-params params]}]
     (let [payload (keywordize-keys params)]
-      (api/update-stack (:name route-params) payload)
-      (resp-ok))))
+      (if (str/blank? (:compose payload))
+        (resp-error 400 "Compose file empty")
+        (-> (api/update-stack (:name route-params) payload)
+            (resp-ok))))))
 
 (defmethod dispatch :stack-delete [_]
   (fn [{:keys [route-params]}]
