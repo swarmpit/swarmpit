@@ -8,7 +8,6 @@
             [swarmpit.component.mixin :as mixin]
             [swarmpit.component.handler :as handler]
             [swarmpit.component.message :as message]
-            [swarmpit.component.parser :refer [yaml->json json->yaml]]
             [swarmpit.routes :as routes]
             [sablono.core :refer-macros [html]]
             [rum.core :as rum]))
@@ -35,16 +34,16 @@
                    (state/update-value [:name] v cursor))})))
 
 (defn- form-editor [value]
-  (comp/mui
-    (comp/text-field
-      {:id            editor-id
-       :name          "stack-editor"
-       :key           "stack-editor"
-       :multiLine     true
-       :rows          10
-       :value         value
-       :underlineShow false
-       :fullWidth     true})))
+  (comp/vtext-field
+    {:id            editor-id
+     :name          "stack-editor"
+     :key           "stack-editor"
+     :validations   "isValidCompose"
+     :multiLine     true
+     :rows          10
+     :value         value
+     :underlineShow false
+     :fullWidth     true}))
 
 (defn- create-stack-handler
   []
@@ -95,5 +94,5 @@
      (form/form
        {:onValid   #(reset! valid? true)
         :onInvalid #(reset! valid? false)}
-       (form-name name))
-     (form-editor compose)]))
+       (form-name name)
+       (form-editor compose))]))

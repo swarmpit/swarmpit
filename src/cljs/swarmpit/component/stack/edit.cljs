@@ -9,7 +9,6 @@
             [swarmpit.component.handler :as handler]
             [swarmpit.component.message :as message]
             [swarmpit.component.progress :as progress]
-            [swarmpit.component.parser :refer [yaml->json json->yaml]]
             [swarmpit.routes :as routes]
             [sablono.core :refer-macros [html]]
             [rum.core :as rum]))
@@ -20,32 +19,33 @@
 
 (defonce cm (atom nil))
 
+(defonce valid? (atom false))
+
 (defonce loading? (atom false))
 
 (def editor-id "compose")
 
 (defn- form-name [value]
-  (comp/mui
-    (form/comp
-      "STACK NAME"
-      (comp/text-field
-        {:name          "stack-name"
-         :key           "stack-name"
-         :underlineShow false
-         :disabled      true
-         :value         value}))))
+  (form/comp
+    "STACK NAME"
+    (comp/vtext-field
+      {:name     "stack-name"
+       :key      "stack-name"
+       :required true
+       :disabled true
+       :value    value})))
 
 (defn- form-editor [value]
-  (comp/mui
-    (comp/text-field
-      {:id            editor-id
-       :name          "stack-editor"
-       :key           "stack-editor"
-       :multiLine     true
-       :rows          10
-       :value         value
-       :underlineShow false
-       :fullWidth     true})))
+  (comp/vtext-field
+    {:id            editor-id
+     :name          "stack-editor"
+     :key           "stack-editor"
+     :validations   "isValidCompose"
+     :multiLine     true
+     :rows          10
+     :value         value
+     :underlineShow false
+     :fullWidth     true}))
 
 (defn- update-stack-handler
   [name]
@@ -63,7 +63,7 @@
     (routes/path-for-backend :stack-file {:name name})
     {:state      loading?
      :on-success (fn [response]
-                   (state/set-value response cursor))}))
+                   (state/update-value [:compose] response cursor))}))
 
 (defn- on-change!
   [cm]
@@ -76,12 +76,18 @@
        (.on editor "change" (fn [cm] (on-change! cm)))
        (reset! cm editor)) state)})
 
+(defn- init-state
+  [name]
+  (state/set-value {:name    name
+                    :compose ""} cursor))
+
 (def mixin-init-form
   (mixin/init-form
     (fn [{{:keys [name]} :params}]
+      (init-state name)
       (stackfile-handler name))))
 
-(rum/defc form-edit < rum/static
+(rum/defc form-edit < rum/reactive
                       mixin-init-editor [{:keys [name compose]}]
   [:div
    [:div.form-panel
@@ -92,9 +98,13 @@
        (comp/raised-button
          {:label      "Redeploy"
           :onTouchTap #(update-stack-handler name)
+          :disabled   (not (rum/react valid?))
           :primary    true}))]]
-   (form-name name)
-   (form-editor compose)])
+   (form/form
+     {:onValid   #(reset! valid? true)
+      :onInvalid #(reset! valid? false)}
+     (form-name name)
+     (form-editor compose))])
 
 (rum/defc form < rum/reactive
                  mixin-init-form [_]

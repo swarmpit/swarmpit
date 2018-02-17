@@ -25,8 +25,6 @@
 
 (defonce loading? (atom false))
 
-(defonce editable? (atom false))
-
 (defn- stack-services-handler
   [stack-name]
   (handler/get
@@ -63,27 +61,18 @@
     {:on-success (fn [response]
                    (state/update-value [:secrets] response cursor))}))
 
-(defn- stackfile-handler
-  [stack-name]
-  (handler/get
-    (routes/path-for-backend :stack-file {:name stack-name})
-    {:on-success (fn [_]
-                   (reset! editable? true))
-     :on-error   (fn [_]
-                   (reset! editable? false))}))
-
 (defn- delete-stack-handler
   [stack-name]
   (handler/delete
     (routes/path-for-backend :stack-delete {:name stack-name})
     {:on-success (fn [_]
                    (dispatch!
-                     (routes/path-for-frontend :registry-list))
+                     (routes/path-for-frontend :stack-list))
                    (message/info
                      (str "Stack " stack-name " has been removed.")))
      :on-error   (fn [response]
                    (message/error
-                     (str "Stack removing failed. Reason: " (:error response))))}))
+                     (str "Stack removing failed. " (:error response))))}))
 
 (rum/defc form-services < rum/static [services]
   (tlist/table services/headers
@@ -139,8 +128,7 @@
       (stack-networks-handler name)
       (stack-volumes-handler name)
       (stack-configs-handler name)
-      (stack-secrets-handler name)
-      (stackfile-handler name))))
+      (stack-secrets-handler name))))
 
 (rum/defc form-info < rum/reactive [stack-name {:keys [services networks volumes configs secrets]}]
   [:div
@@ -150,10 +138,9 @@
     [:div.form-panel-right
      (comp/mui
        (comp/raised-button
-         {:href     (routes/path-for-frontend :stack-edit {:name stack-name})
-          :label    "Edit"
-          :disabled (not (rum/react editable?))
-          :primary  true}))
+         {:href    (routes/path-for-frontend :stack-edit {:name stack-name})
+          :label   "Edit"
+          :primary true}))
      [:span.form-panel-delimiter]
      (comp/mui
        (comp/raised-button
