@@ -16,8 +16,6 @@
 
 (def cursor [:form])
 
-(defonce cm (atom nil))
-
 (defonce valid? (atom false))
 
 (def editor-id "compose")
@@ -55,16 +53,12 @@
      :on-error   (fn [response]
                    (message/error (:error response)))}))
 
-(defn- on-change!
-  [cm]
-  (state/update-value [:compose] (-> cm .getValue) cursor))
-
 (def mixin-init-editor
   {:did-mount
    (fn [state]
      (let [editor (editor/yaml editor-id)]
-       (.on editor "change" (fn [cm] (on-change! cm)))
-       (reset! cm editor)) state)})
+       (.on editor "change" (fn [cm] (state/update-value [:compose] (-> cm .getValue) cursor))))
+     state)})
 
 (defn- init-state
   []

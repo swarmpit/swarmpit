@@ -22,4 +22,3 @@
   [editor-id]
   (factory "yaml" editor-id))
 
-
