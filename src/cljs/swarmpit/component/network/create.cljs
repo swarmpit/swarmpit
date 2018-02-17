@@ -95,7 +95,7 @@
                    (dispatch!
                      (routes/path-for-frontend :network-info {:id (:id response)}))
                    (message/info
-                     (str "Network " (:Id response) " has been added.")))
+                     (str "Network " (:id response) " has been added.")))
      :on-error   (fn [response]
                    (message/error
                      (str "Network creation failed. Reason: " (:error response))))}))

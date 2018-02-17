@@ -1,5 +1,6 @@
 (ns swarmpit.component.parser
-  "FE component data parser")
+  "FE component data parser"
+  (:require [cljsjs.js-yaml]))
 
 (defn parse-int
   [value]
@@ -14,3 +15,13 @@
   (let [parsed (js/parseFloat value)]
     (when (not (js/isNaN parsed))
       parsed)))
+
+(defn yaml->json
+  [yaml]
+  "Parse YAML to JSON format"
+  (js->clj (.load js/jsyaml yaml)))
+
+(defn json->yaml
+  [json]
+  "Parse JSON to YAML format"
+  (.dump js/jsyaml (clj->js json)))

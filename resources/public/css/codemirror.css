@@ -1,6 +1,6 @@
 .CodeMirror {
     font-family: Droid Sans Mono, monospace;
-    max-height: calc(100vh - 200px);
+    height: auto;
     color: rgb(117, 117, 117);
     position: relative;
     min-height: 300px;
@@ -235,7 +235,7 @@ div.CodeMirror span.CodeMirror-nonmatchingbracket {
     margin-right: -30px;
     padding-bottom: 30px;
     min-height: 300px;
-    height: 100%;
+    max-height: calc(100vh - 210px);
     outline: none;
     position: relative
 }

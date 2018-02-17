@@ -14,6 +14,7 @@
                  [cljsjs/formsy-react "0.19.0-0"]
                  [cljsjs/formsy-material-ui "0.5.3-0"]
                  [cljsjs/codemirror "5.24.0-1"]
+                 [cljsjs/js-yaml "3.3.1-0"]
                  [rum "0.10.8" :exclusions [cljsjs/react cljsjs/react-dom]]
                  [ring "1.5.1" :exclusions [ring/ring-jetty-adapter]]
                  [ring/ring-json "0.4.0"]

@@ -25,6 +25,8 @@
 
 (defonce loading? (atom false))
 
+(defonce editable? (atom false))
+
 (defn- stack-services-handler
   [stack-name]
   (handler/get
@@ -60,6 +62,15 @@
     (routes/path-for-backend :stack-secrets {:name stack-name})
     {:on-success (fn [response]
                    (state/update-value [:secrets] response cursor))}))
+
+(defn- stackfile-handler
+  [stack-name]
+  (handler/get
+    (routes/path-for-backend :stack-file {:name stack-name})
+    {:on-success (fn [_]
+                   (reset! editable? true))
+     :on-error   (fn [_]
+                   (reset! editable? false))}))
 
 (defn- delete-stack-handler
   [stack-name]
@@ -128,14 +139,22 @@
       (stack-networks-handler name)
       (stack-volumes-handler name)
       (stack-configs-handler name)
-      (stack-secrets-handler name))))
+      (stack-secrets-handler name)
+      (stackfile-handler name))))
 
-(rum/defc form-info < rum/static [stack-name {:keys [services networks volumes configs secrets]}]
+(rum/defc form-info < rum/reactive [stack-name {:keys [services networks volumes configs secrets]}]
   [:div
    [:div.form-panel
     [:div.form-panel-left
      (panel/info icon/stacks stack-name)]
     [:div.form-panel-right
+     (comp/mui
+       (comp/raised-button
+         {:href     (routes/path-for-frontend :stack-edit {:name stack-name})
+          :label    "Edit"
+          :disabled (not (rum/react editable?))
+          :primary  true}))
+     [:span.form-panel-delimiter]
      (comp/mui
        (comp/raised-button
          {:onTouchTap #(delete-stack-handler stack-name)

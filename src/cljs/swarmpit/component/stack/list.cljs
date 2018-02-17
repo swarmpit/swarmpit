@@ -1,5 +1,6 @@
 (ns swarmpit.component.stack.list
-  (:require [material.component :as comp]
+  (:require [material.icon :as icon]
+            [material.component :as comp]
             [material.component.panel :as panel]
             [material.component.list-table :as list]
             [swarmpit.component.mixin :as mixin]
@@ -13,7 +14,7 @@
 (def cursor [:form])
 
 (def headers [{:name  "Name"
-               :width "50%"}
+               :width "40%"}
               {:name  "Services"
                :width "10%"}
               {:name  "Networks"
@@ -23,6 +24,8 @@
               {:name  "Configs"
                :width "10%"}
               {:name  "Secrets"
+               :width "10%"}
+              {:name  ""
                :width "10%"}])
 
 (def render-item-keys
@@ -31,13 +34,18 @@
    [:stackStats :networks]
    [:stackStats :volumes]
    [:stackStats :configs]
-   [:stackStats :secrets]])
+   [:stackStats :secrets]
+   [:stackFile]])
 
 (defonce loading? (atom false))
 
 (defn- render-item
   [item _]
-  (val item))
+  (let [value (val item)]
+    (case (key item)
+      :stackFile (when value
+                   (comp/svg icon/compose-18))
+      value)))
 
 (defn- onclick-handler
   [item]
@@ -47,6 +55,7 @@
   [response]
   (map #(hash-map
           :stackName (:stackName %)
+          :stackFile (:stackFile %)
           :stackStats {:services (count (:services %))
                        :networks (count (:networks %))
                        :volumes  (count (:volumes %))
@@ -88,7 +97,7 @@
       [:div.form-panel-right
        (comp/mui
          (comp/raised-button
-           {:href    (routes/path-for-frontend :stack-create-compose)
+           {:href    (routes/path-for-frontend :stack-create)
             :label   "New stack"
             :primary true}))]]
      (list/table headers

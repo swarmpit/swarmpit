@@ -3,12 +3,12 @@
             [material.component :as comp]
             [material.component.form :as form]
             [material.component.panel :as panel]
-            [swarmpit.url :refer [dispatch!]]
             [swarmpit.component.handler :as handler]
             [swarmpit.component.mixin :as mixin]
             [swarmpit.component.state :as state]
             [swarmpit.component.message :as message]
             [swarmpit.routes :as routes]
+            [swarmpit.url :refer [dispatch!]]
             [rum.core :as rum]))
 
 (enable-console-print!)
