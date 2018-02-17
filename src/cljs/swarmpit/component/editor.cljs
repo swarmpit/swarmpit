@@ -1,5 +1,6 @@
 (ns swarmpit.component.editor
   (:require [cljsjs.codemirror]
+            [cljsjs.codemirror.addon.lint.lint]
             [cljsjs.codemirror.addon.lint.yaml-lint]
             [cljsjs.codemirror.mode.yaml]))
 
@@ -13,6 +14,8 @@
        :matchBrackets     true
        :autofocus         true
        :autoCloseBrackets true
+       :gutters           ["CodeMirror-lint-markers"]
+       :lint              true
        :mode              editor-mode})))
 
 (defn yaml

@@ -25,3 +25,10 @@
   [json]
   "Parse JSON to YAML format"
   (.dump js/jsyaml (clj->js json)))
+
+(defn yaml-valid?
+  [yaml]
+  "Check if valid yaml"
+  (try
+    (some? (yaml->json yaml))
+    (catch :default _ false)))
