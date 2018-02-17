@@ -1,14 +1,15 @@
 (ns swarmpit.component.secret.create
-  (:require [material.component :as comp]
+  (:require [material.icon :as icon]
+            [material.component :as comp]
             [material.component.form :as form]
             [material.component.panel :as panel]
-            [material.icon :as icon]
-            [swarmpit.url :refer [dispatch!]]
             [swarmpit.component.handler :as handler]
             [swarmpit.component.mixin :as mixin]
             [swarmpit.component.state :as state]
             [swarmpit.component.message :as message]
             [swarmpit.routes :as routes]
+            [sablono.core :refer-macros [html]]
+            [swarmpit.url :refer [dispatch!]]
             [rum.core :as rum]))
 
 (enable-console-print!)
@@ -100,10 +101,10 @@
             :primary    true
             :onTouchTap create-secret-handler}))]]
      [:div.form-edit
-       (form/icon-value icon/info "Data must be base64 encoded. If plain text check please encode data.")
-       (form/form
-         {:onValid   #(reset! valid? true)
-          :onInvalid #(reset! valid? false)}
-         (form-name secretName)
-         (form-data-encoder encode)
-         (form-data data))]]))
+      (form/form
+        {:onValid   #(reset! valid? true)
+         :onInvalid #(reset! valid? false)}
+        (html (form/icon-value icon/info "Data must be base64 encoded. If plain text check please encode data."))
+        (form-name secretName)
+        (form-data-encoder encode)
+        (form-data data))]]))

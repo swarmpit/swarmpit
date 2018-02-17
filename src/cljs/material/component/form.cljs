@@ -81,7 +81,7 @@
 
 (defn icon-value [icon value]
   [:div.form-view-row
-   [:div.form-row-icon-field (cmp/mui (cmp/svg icon))]
+   [:div.form-row-icon-field (cmp/svg icon)]
    [:div.form-row-value value]])
 
 (defn section [label]
