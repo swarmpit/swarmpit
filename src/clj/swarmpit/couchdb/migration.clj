@@ -5,8 +5,7 @@
 
 (defn- create-secret
   []
-  (db/create-secret {:secret (uuid)
-                     :type   "secret"})
+  (db/create-secret {:secret (uuid)})
   (println "Default token secret created"))
 
 (defn- create-admin

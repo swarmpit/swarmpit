@@ -9,19 +9,13 @@
 
 (defn ->user
   [user]
-  (-> (assoc user :password (->password (:password user))
-                  :type "user")))
-
-(defn ->registry
-  [registry]
-  (assoc registry :type "registry"))
+  (assoc user :password (->password (:password user))))
 
 (defn ->docker-user
   [docker-user docker-user-info dockeruser-namespace]
   (let [full-name (:full_name docker-user-info)
         org-name (:orgname docker-user-info)]
-    (assoc docker-user :type "dockeruser"
-                       :name (if (empty? full-name)
+    (assoc docker-user :name (if (empty? full-name)
                                org-name
                                full-name)
                        :role (:type docker-user-info)
