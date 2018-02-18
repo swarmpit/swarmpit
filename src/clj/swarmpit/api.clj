@@ -675,7 +675,7 @@
 (defn stacks
   []
   (->> (dissoc (group-by :stack (services)) nil)
-       (map #(key %))
+       (map key)
        (map #(let [label (str "com.docker.stack.namespace=" %)]
                {:stackName %
                 :stackFile (if (some? (cc/stackfile %)) true false)
@@ -685,10 +685,26 @@
                 :configs   (configs label)
                 :secrets   (secrets label)}))))
 
+(defn stack
+  [stack-name]
+  (let [label (str "com.docker.stack.namespace=" stack-name)
+        services (services label)]
+    (when (not-empty services)
+      {:stackName stack-name
+       :stackFile (if (some? (cc/stackfile stack-name)) true false)
+       :services  services
+       :networks  (networks label)
+       :volumes   (volumes label)
+       :configs   (configs label)
+       :secrets   (secrets label)})))
+
 (defn create-stack
-  [stackfile]
-  (let [response (dcli/stack-deploy stackfile)]
-    (cc/create-stackfile stackfile)
+  [{:keys [name] :as stackfile}]
+  (let [response (dcli/stack-deploy stackfile)
+        stackfile-origin (cc/stackfile name)]
+    (if (some? stackfile-origin)
+      (cc/update-stackfile stackfile-origin stackfile)
+      (cc/create-stackfile stackfile))
     response))
 
 (defn update-stack

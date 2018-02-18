@@ -484,10 +484,12 @@
 (defmethod dispatch :stack-create [_]
   (fn [{:keys [params]}]
     (let [payload (keywordize-keys params)]
-      (if (str/blank? (:compose payload))
-        (resp-error 400 "Compose file empty")
-        (-> (api/create-stack payload)
-            (resp-created))))))
+      (if (some? (api/stack (:name payload)))
+        (resp-error 400 "Stack already exist.")
+        (if (str/blank? (:compose payload))
+          (resp-error 400 "Compose file empty")
+          (-> (api/create-stack payload)
+              (resp-created)))))))
 
 (defmethod dispatch :stack-update [_]
   (fn [{:keys [route-params params]}]
