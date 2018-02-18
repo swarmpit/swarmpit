@@ -10,6 +10,7 @@
             [swarmpit.component.message :as message]
             [swarmpit.component.progress :as progress]
             [swarmpit.routes :as routes]
+            [swarmpit.url :refer [dispatch!]]
             [sablono.core :refer-macros [html]]
             [rum.core :as rum]))
 
@@ -51,7 +52,9 @@
     (routes/path-for-backend :stack-update {:name name})
     {:params     (state/get-value cursor)
      :on-success (fn [response]
-                   (message/info response))
+                   (dispatch!
+                     (routes/path-for-frontend :stack-info {:name name}))
+                   (message/info (:result response)))
      :on-error   (fn [response]
                    (message/error (:error response)))}))
 
@@ -61,7 +64,7 @@
     (routes/path-for-backend :stack-file {:name name})
     {:state      loading?
      :on-success (fn [response]
-                   (state/update-value [:compose] response cursor))}))
+                   (state/set-value response cursor))}))
 
 (def mixin-init-editor
   {:did-mount
@@ -106,4 +109,3 @@
     (progress/form
       (rum/react loading?)
       (form-edit stackfile))))
-

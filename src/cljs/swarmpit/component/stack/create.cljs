@@ -9,6 +9,7 @@
             [swarmpit.component.handler :as handler]
             [swarmpit.component.message :as message]
             [swarmpit.routes :as routes]
+            [swarmpit.url :refer [dispatch!]]
             [sablono.core :refer-macros [html]]
             [rum.core :as rum]))
 
@@ -45,13 +46,16 @@
 
 (defn- create-stack-handler
   []
-  (handler/post
-    (routes/path-for-backend :stack-create)
-    {:params     (state/get-value cursor)
-     :on-success (fn [response]
-                   (message/info response))
-     :on-error   (fn [response]
-                   (message/error (:error response)))}))
+  (let [state (state/get-value cursor)]
+    (handler/post
+      (routes/path-for-backend :stack-create)
+      {:params     state
+       :on-success (fn [response]
+                     (dispatch!
+                       (routes/path-for-frontend :stack-info (select-keys state [:name])))
+                     (message/info (:result response)))
+       :on-error   (fn [response]
+                     (message/error (:error response)))})))
 
 (def mixin-init-editor
   {:did-mount

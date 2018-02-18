@@ -65,12 +65,13 @@
   [stack-name]
   (handler/delete
     (routes/path-for-backend :stack-delete {:name stack-name})
-    {:on-success (fn [_]
+    {:on-success (fn [response]
                    (dispatch!
                      (routes/path-for-frontend :stack-list))
-                   (message/info
-                     (str "Stack " stack-name " has been removed.")))
+                   (message/info (:result response)))
      :on-error   (fn [response]
+                   (dispatch!
+                     (routes/path-for-frontend :stack-list))
                    (message/error
                      (str "Stack removing failed. " (:error response))))}))
 
