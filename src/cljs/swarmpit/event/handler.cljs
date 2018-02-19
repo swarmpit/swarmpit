@@ -17,6 +17,10 @@
   [_ event]
   (state/update-value [:items] event cursor))
 
+(defmethod handle :stack-list
+  [_ event]
+  (state/update-value [:items] event cursor))
+
 (defmethod handle :default
   [_ event]
   (state/set-value event cursor))

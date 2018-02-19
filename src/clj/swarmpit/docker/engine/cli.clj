@@ -9,7 +9,7 @@
   [cmd]
   (let [result (apply shell/sh cmd)]
     (if (= 0 (:exit result))
-      (:result (:out result))
+      {:result (:out result)}
       (throw
         (let [error (:err result)]
           (ex-info (str "Docker error: " error)
