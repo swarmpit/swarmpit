@@ -76,11 +76,13 @@
                      (str "Stack removing failed. " (:error response))))}))
 
 (rum/defc form-services < rum/static [services]
-  (tlist/table services/headers
-               (sort-by :serviceName services)
+  [:div.form-layout-group
+   (form/section "Services")
+   (list/table (map :name services/headers)
+               services
                services/render-item
                services/render-item-keys
-               services/onclick-handler))
+               services/onclick-handler)])
 
 (rum/defc form-networks < rum/static [networks]
   (when (not-empty networks)
@@ -147,9 +149,8 @@
        (comp/raised-button
          {:onTouchTap #(delete-stack-handler stack-name)
           :label      "Delete"}))]]
-   (form-services services)
    [:div.form-layout
-    [:div.form-layout-group]
+    (form-services services)
     (form-networks networks)
     (form-volumes volumes)
     (form-configs configs)
