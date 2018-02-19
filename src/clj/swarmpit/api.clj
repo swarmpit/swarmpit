@@ -698,20 +698,13 @@
        :configs   (configs label)
        :secrets   (secrets label)})))
 
-(defn create-stack
+(defn deploy-stack
   [{:keys [name] :as stackfile}]
   (let [response (dcli/stack-deploy stackfile)
         stackfile-origin (cc/stackfile name)]
     (if (some? stackfile-origin)
       (cc/update-stackfile stackfile-origin stackfile)
       (cc/create-stackfile stackfile))
-    response))
-
-(defn update-stack
-  [stack-name stackfile]
-  (let [response (dcli/stack-deploy stackfile)]
-    (-> (cc/stackfile stack-name)
-        (cc/update-stackfile stackfile))
     response))
 
 (defn delete-stack
