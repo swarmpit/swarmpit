@@ -25,8 +25,10 @@
 (defn ->service-ports
   [service]
   (->> (:ports service)
-       (filter #(and (> (:hostPort %) 0)
-                     (> (:containerPort %) 0)))
+       (filter #(and (some? (:containerPort %))
+                     (some? (:hostPort %))
+                     (> (:containerPort %) 0)
+                     (> (:hostPort %) 0)))
        (map (fn [p] {:Protocol      (:protocol p)
                      :PublishedPort (:hostPort p)
                      :TargetPort    (:containerPort p)}))

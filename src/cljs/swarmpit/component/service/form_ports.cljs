@@ -38,7 +38,8 @@
 
 (defn- format-port-value
   [value]
-  (if (zero? value) "" value))
+  (if (or (zero? value)
+          (js/isNaN value)) "" value))
 
 (defn- form-container [value index]
   (list/textfield
