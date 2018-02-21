@@ -270,3 +270,14 @@
   (-> (execute {:method :GET
                 :api    (str "/images/" name "/json")})
       :body))
+
+;; Auth
+
+(defn auth
+  [distribution]
+  (-> (execute {:method  :POST
+                :api     "/auth"
+                :options {:body {:username      (:username distribution)
+                                 :password      (:password distribution)
+                                 :serveraddress (or (:url distribution) "https://index.docker.io/v2")}}})
+      :body))

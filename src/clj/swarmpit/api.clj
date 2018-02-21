@@ -21,7 +21,8 @@
             [swarmpit.couchdb.mapper.outbound :as cmo]
             [clojure.core.memoize :as memo]
             [clojure.tools.logging :as log]
-            [clojure.string :as str]))
+            [clojure.string :as str]
+            [clj-yaml.core :as yaml]))
 
 ;;; User API
 
@@ -237,6 +238,20 @@
   (->> (cc/dockerusers owner)
        (filter #(contains? (set (:namespaces %)) dockeruser-namespace))
        (first)))
+
+(defn- dockeruser-by-stackfile
+  "Return best matching dockeruser by given stackfile"
+  [owner stackfile]
+  (let [yaml (try
+               (yaml/parse-string (:compose stackfile))
+               (catch Exception _ nil))]
+    (->> yaml
+         :services
+         (vals)
+         (map #(dmi/->service-image-details (:image %)))
+         (filter #(du/dockerhub? (:name %)))
+         (map #(first (str/split (:name %) #"/")))
+         (into (hash-set)))))
 
 (defn create-dockeruser
   [dockeruser dockeruser-info dockeruser-namespace]
@@ -670,6 +685,16 @@
         (fn [matcher item]
           (str "node.labels." (name (key item)) matcher (val item)))))))
 
+;; Login API
+
+(defn login
+  [owner]
+  (->> (concat (cc/dockerusers owner)
+               (cc/registries owner))
+       (map #(dcli/login (:username %)
+                         (:password %)
+                         (:url %)))))
+
 ;; Stack API
 
 (defn stacks
@@ -699,7 +724,7 @@
        :secrets   (secrets label)})))
 
 (defn deploy-stack
-  [{:keys [name] :as stackfile}]
+  [owner {:keys [name] :as stackfile}]
   (let [response (dcli/stack-deploy stackfile)
         stackfile-origin (cc/stackfile name)]
     (if (some? stackfile-origin)

@@ -482,20 +482,22 @@
          (resp-ok))))
 
 (defmethod dispatch :stack-create [_]
-  (fn [{:keys [params]}]
-    (let [payload (keywordize-keys params)]
+  (fn [{:keys [identity params]}]
+    (let [owner (get-in identity [:usr :username])
+          payload (keywordize-keys params)]
       (if (some? (api/stack (:name payload)))
         (resp-error 400 "Stack already exist.")
-        (-> (api/deploy-stack payload)
+        (-> (api/deploy-stack owner payload)
             (resp-created))))))
 
 (defmethod dispatch :stack-update [_]
-  (fn [{:keys [route-params params]}]
-    (let [payload (keywordize-keys params)]
+  (fn [{:keys [identity route-params params]}]
+    (let [owner (get-in identity [:usr :username])
+          payload (keywordize-keys params)]
       (if (not= (:name route-params)
                 (:name payload))
         (resp-error 400 "Stack invalid.")
-        (-> (api/deploy-stack payload)
+        (-> (api/deploy-stack owner payload)
             (resp-ok))))))
 
 (defmethod dispatch :stack-delete [_]

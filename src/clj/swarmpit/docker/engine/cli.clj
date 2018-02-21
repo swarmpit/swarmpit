@@ -17,8 +17,8 @@
                     :body   {:error error}}))))))
 
 (defn- login-cmd
-  [username password]
-  ["docker" "login" "--username" username "--password" password])
+  [username password server]
+  ["docker" "login" "--username" username "--password" password (or server "")])
 
 (defn- stack-deploy-cmd
   [name file]
@@ -33,8 +33,8 @@
   (str (config :work-dir) "/" name ".yml"))
 
 (defn login
-  [username password]
-  (-> (login-cmd username password)
+  [username password server]
+  (-> (login-cmd username password server)
       (execute)))
 
 (defn stack-deploy
