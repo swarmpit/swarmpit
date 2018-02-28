@@ -1,9 +1,9 @@
 (ns swarmpit.handler
   (:require [clojure.walk :refer [keywordize-keys]]
             [clojure.java.io :as io]
-            [clojure.string :as str]
             [swarmpit.version :as version]
             [swarmpit.api :as api]
+            [swarmpit.async-api :as async-api]
             [swarmpit.slt :as slt]
             [swarmpit.token :as token]))
 
@@ -487,8 +487,8 @@
           payload (keywordize-keys params)]
       (if (some? (api/stack (:name payload)))
         (resp-error 400 "Stack already exist.")
-        (-> (api/deploy-stack owner payload)
-            (resp-created))))))
+        (do (async-api/create-stack owner payload)
+            (resp-accepted))))))
 
 (defmethod dispatch :stack-update [_]
   (fn [{:keys [identity route-params params]}]
@@ -497,8 +497,20 @@
       (if (not= (:name route-params)
                 (:name payload))
         (resp-error 400 "Stack invalid.")
-        (-> (api/deploy-stack owner payload)
-            (resp-ok))))))
+        (do (async-api/update-stack owner payload)
+            (resp-accepted))))))
+
+(defmethod dispatch :stack-redeploy [_]
+  (fn [{:keys [route-params identity]}]
+    (let [owner (get-in identity [:usr :username])]
+      (async-api/redeploy-stack owner (:name route-params))
+      (resp-accepted))))
+
+(defmethod dispatch :stack-rollback [_]
+  (fn [{:keys [route-params identity]}]
+    (let [owner (get-in identity [:usr :username])]
+      (async-api/rollback-stack owner (:name route-params))
+      (resp-accepted))))
 
 (defmethod dispatch :stack-delete [_]
   (fn [{:keys [route-params]}]

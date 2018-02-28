@@ -24,6 +24,12 @@
          (not (.contains repository-name ":"))
          (not (.contains repository-name "localhost")))))
 
+(defn registry?
+  "Check whether repository is registry"
+  [repository-name]
+  (and (false? (library? repository-name))
+       (false? (dockerhub? repository-name))))
+
 (defn distribution-id
   [repository-name]
   "Return distribution identificator based on repository name. In case of dockerhub
@@ -46,3 +52,11 @@
   (-> (str/split registry-url #"//")
       (second)
       (str "/" repository-name)))
+
+(defn hypothetical-stack
+  [service-name]
+  "Return hypothetical stack name from canonical service name"
+  (when (some? service-name)
+    (let [seg (str/split service-name #"_")]
+      (when (< 1 (count seg))
+        (first seg)))))

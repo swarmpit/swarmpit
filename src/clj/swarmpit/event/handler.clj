@@ -3,6 +3,7 @@
             [clojure.walk :refer [keywordize-keys]]
             [swarmpit.handler :refer [dispatch resp-accepted resp-error resp-unauthorized]]
             [swarmpit.event.channel :as channel]
+            [swarmpit.event.processor :as processor]
             [swarmpit.slt :as slt]))
 
 (defmethod dispatch :events [_]
@@ -24,6 +25,7 @@
   (fn [{:keys [params]}]
     (if (some? params)
       (let [event (-> (keywordize-keys params) :Message)]
-        (channel/broadcast-memo event)
+        (channel/broadcast-data-memo event)
+        (processor/process event)
         (resp-accepted))
       (resp-error 400 "No data sent"))))

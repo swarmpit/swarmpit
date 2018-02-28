@@ -266,8 +266,11 @@
   [image-name]
   (let [separator-pos (str/last-index-of image-name ":")
         length (count image-name)]
-    {:name (subs image-name 0 separator-pos)
-     :tag  (subs image-name (inc separator-pos) length)}))
+    (if (some? separator-pos)
+      {:name (subs image-name 0 separator-pos)
+       :tag  (subs image-name (inc separator-pos) length)}
+      {:name (subs image-name 0 length)
+       :tag  ""})))
 
 (defn ->service
   [service tasks]

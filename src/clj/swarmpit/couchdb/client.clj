@@ -1,7 +1,8 @@
 (ns swarmpit.couchdb.client
   (:require [swarmpit.http :refer :all]
             [cheshire.core :refer [generate-string]]
-            [swarmpit.config :refer [config]]))
+            [swarmpit.config :refer [config]]
+            [clojure.string :as str]))
 
 (defn- execute
   [{:keys [method api options]}]
@@ -13,11 +14,12 @@
 
 (defn get-doc
   [id]
-  (try
-    (-> (execute {:method :GET
-                  :api    (str "/swarmpit/" id)})
-        :body)
-    (catch Exception _)))
+  (when (not (str/blank? id))
+    (try
+      (-> (execute {:method :GET
+                    :api    (str "/swarmpit/" id)})
+          :body)
+      (catch Exception _))))
 
 (defn create-doc
   [doc]
@@ -227,7 +229,7 @@
 
 (defn update-stackfile
   [stackfile delta]
-  (let [allowed-delta (select-keys delta [:compose])]
+  (let [allowed-delta (select-keys delta [:spec :previousSpec])]
     (update-doc stackfile allowed-delta)))
 
 (defn delete-stackfile

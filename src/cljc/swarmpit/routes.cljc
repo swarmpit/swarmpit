@@ -35,7 +35,9 @@
                                            "/configs"  :stack-configs
                                            "/secrets"  :stack-secrets}}
                          :delete {[:name] :stack-delete}
-                         :post   {[:name] :stack-update}}
+                         :post   {[:name] {""          :stack-update
+                                           "/redeploy" :stack-redeploy
+                                           "/rollback" :stack-rollback}}}
        "/services"      {:get  :services
                          :post :service-create}
        "/services/"     {:get    {[:id] {""          :service

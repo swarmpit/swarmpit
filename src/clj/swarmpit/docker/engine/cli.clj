@@ -38,7 +38,7 @@
       (execute)))
 
 (defn stack-deploy
-  [{:keys [name compose] :as stackfile}]
+  [name compose]
   (let [file (stack-file name)
         cmd (stack-deploy-cmd name file)]
     (try

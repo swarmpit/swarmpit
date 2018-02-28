@@ -1,4 +1,4 @@
-(ns swarmpit.event.handler
+(ns swarmpit.event.data
   (:require [swarmpit.component.state :as state]))
 
 (def cursor [:form])

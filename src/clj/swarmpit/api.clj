@@ -4,6 +4,7 @@
             [digest :refer [digest]]
             [swarmpit.utils :refer [merge-data]]
             [swarmpit.config :as cfg]
+            [swarmpit.yaml :as yaml]
             [swarmpit.docker.utils :as du]
             [swarmpit.docker.engine.client :as dc]
             [swarmpit.docker.engine.cli :as dcli]
@@ -22,7 +23,7 @@
             [clojure.core.memoize :as memo]
             [clojure.tools.logging :as log]
             [clojure.string :as str]
-            [clj-yaml.core :as yaml]))
+            [cemerick.url :refer [url]]))
 
 ;;; User API
 
@@ -204,6 +205,49 @@
                (dc/nodes)
                (dc/services)))
 
+;;; Stackfile API
+
+(defn stackfiles
+  []
+  (cc/stackfiles))
+
+(defn stackfile
+  [stack-name]
+  (cc/stackfile stack-name))
+
+(defn delete-stackfile
+  [stack-name]
+  (-> (cc/stackfile stack-name)
+      (cc/delete-stackfile)))
+
+(defn- stackfile-json
+  [stackfile-spec]
+  (try
+    (yaml/->json (:compose stackfile-spec))
+    (catch Exception _ nil)))
+
+(defn- stackfile-services
+  [stackfile-spec]
+  (->> (stackfile-json stackfile-spec)
+       :services
+       (vals)
+       (map #(dmi/->service-image-details (:image %)))))
+
+(defn- stackfile-distibutions
+  [stackfile-spec filter-fx]
+  (->> (stackfile-services stackfile-spec)
+       (filter #(filter-fx (:name %)))
+       (map #(du/distribution-id (:name %)))
+       (into (hash-set))))
+
+(defn- stackfile-dockerhub-distributions
+  [stackfile-spec]
+  (stackfile-distibutions stackfile-spec du/dockerhub?))
+
+(defn- stackfile-registry-distributions
+  [stackfile-spec]
+  (stackfile-distibutions stackfile-spec du/registry?))
+
 ;;; Dockerhub distribution API
 
 (defn dockerusers
@@ -240,18 +284,22 @@
        (first)))
 
 (defn- dockeruser-by-stackfile
-  "Return best matching dockeruser by given stackfile"
-  [owner stackfile]
-  (let [yaml (try
-               (yaml/parse-string (:compose stackfile))
-               (catch Exception _ nil))]
-    (->> yaml
-         :services
-         (vals)
-         (map #(dmi/->service-image-details (:image %)))
-         (filter #(du/dockerhub? (:name %)))
-         (map #(first (str/split (:name %) #"/")))
-         (into (hash-set)))))
+  "Return best matching dockerhub account for given stackfile spec"
+  [owner stackfile-spec]
+  (let [namespaces (stackfile-dockerhub-distributions stackfile-spec)]
+    (->> (cc/dockerusers owner)
+         (map #(hash-map
+                 :user-id (:_id %)
+                 :matches (get
+                            (->> (:namespaces %)
+                                 (map (fn [ns] (contains? namespaces ns)))
+                                 (frequencies))
+                            true)))
+         (filter #(some? (:matches %)))
+         (sort-by :matches)
+         (last)
+         :user-id
+         (cc/dockeruser))))
 
 (defn create-dockeruser
   [dockeruser dockeruser-info dockeruser-namespace]
@@ -292,6 +340,13 @@
   [owner]
   (-> (cc/registries owner)
       (cmi/->registries)))
+
+(defn- registries-by-stackfile
+  "Return registry accounts for given stackfile spec"
+  [owner stackfile-spec]
+  (let [urls (stackfile-registry-distributions stackfile-spec)]
+    (->> (cc/registries owner)
+         (filter #(contains? urls (-> % :url url :host))))))
 
 (defn registry
   [registry-id]
@@ -685,16 +740,6 @@
         (fn [matcher item]
           (str "node.labels." (name (key item)) matcher (val item)))))))
 
-;; Login API
-
-(defn login
-  [owner]
-  (->> (concat (cc/dockerusers owner)
-               (cc/registries owner))
-       (map #(dcli/login (:username %)
-                         (:password %)
-                         (:url %)))))
-
 ;; Stack API
 
 (defn stacks
@@ -723,22 +768,15 @@
        :configs   (configs label)
        :secrets   (secrets label)})))
 
-(defn deploy-stack
-  [owner {:keys [name] :as stackfile}]
-  (let [response (dcli/stack-deploy stackfile)
-        stackfile-origin (cc/stackfile name)]
-    (if (some? stackfile-origin)
-      (cc/update-stackfile stackfile-origin stackfile)
-      (cc/create-stackfile stackfile))
-    response))
+(defn stack-login
+  [owner stackfile-spec]
+  (->> (remove nil?
+               (conj (registries-by-stackfile owner stackfile-spec)
+                     (dockeruser-by-stackfile owner stackfile-spec)))
+       (map #(dcli/login (:username %)
+                         (:password %)
+                         (:url %)))))
 
 (defn delete-stack
   [stack-name]
-  (let [response (dcli/stack-remove stack-name)]
-    (-> (cc/stackfile stack-name)
-        (cc/delete-stackfile))
-    response))
-
-(defn stackfile
-  [stack-name]
-  (cc/stackfile stack-name))
+  (dcli/stack-remove stack-name))

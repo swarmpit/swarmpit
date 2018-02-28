@@ -1,15 +1,9 @@
-(ns swarmpit.event.rule
+(ns swarmpit.event.rules.subscription
   (:refer-clojure :exclude [list])
   (:require [swarmpit.api :as api]
-            [clojure.string :as str]))
+            [swarmpit.docker.utils :as du]))
 
-(defn- possible-stack-name
-  [service-name]
-  "Return possible stack name as there are no stack metadata within event api"
-  (when (some? service-name)
-    (let [seg (str/split service-name #"_")]
-      (when (< 1 (count seg))
-        (first seg)))))
+;; Rule Predicates
 
 (defn- service-container-event?
   [event]
@@ -19,7 +13,7 @@
          (some? service-id)
          (contains? supported-actions (:Action event)))))
 
-;; Data
+;; Subscribed Data
 
 (defn- service-info-data
   [service-event]
@@ -36,7 +30,7 @@
   [service-event]
   (let [service-name (or (get-in service-event [:Actor :Attributes :com.docker.swarm.service.name])
                          (get-in service-event [:Actor :Attributes :name]))
-        stack-name (possible-stack-name service-name)
+        stack-name (du/hypothetical-stack service-name)
         stack-label (str "com.docker.stack.namespace=" stack-name)
         stack-services (api/services stack-label)
         stack-networks (api/networks stack-label)
@@ -56,7 +50,7 @@
   (subscription [this event])
   (subscribed-data [this event]))
 
-(def service-list-event
+(def refresh-service-list
   (reify Rule
     (match? [_ event]
       (or (= "service" (:Type event))
@@ -67,7 +61,7 @@
     (subscribed-data [_ event]
       (api/services))))
 
-(def service-info-by-name-event
+(def refresh-service-info-by-name
   (reify Rule
     (match? [_ event]
       (or (= "service" (:Type event))
@@ -80,7 +74,7 @@
     (subscribed-data [_ event]
       (service-info-data event))))
 
-(def service-info-by-id-event
+(def refresh-service-info-by-id
   (reify Rule
     (match? [_ event]
       (or (= "service" (:Type event))
@@ -93,7 +87,7 @@
     (subscribed-data [_ event]
       (service-info-data event))))
 
-(def task-list-event
+(def refresh-task-list
   (reify Rule
     (match? [_ event]
       (service-container-event? event))
@@ -103,7 +97,7 @@
     (subscribed-data [_ event]
       (api/tasks-memo))))
 
-(def node-list-event
+(def refresh-node-list
   (reify Rule
     (match? [_ event]
       (= "node" (:Type event)))
@@ -113,7 +107,7 @@
     (subscribed-data [_ event]
       (api/nodes))))
 
-(def stack-list-event
+(def refresh-stack-list
   (reify Rule
     (match? [_ event]
       (= "service" (:Type event)))
@@ -123,7 +117,7 @@
     (subscribed-data [_ event]
       (api/stacks))))
 
-(def stack-info-event
+(def refresh-stack-info
   (reify Rule
     (match? [_ event]
       (or (= "service" (:Type event))
@@ -131,16 +125,16 @@
     (subscription [_ event]
       (let [service-name (or (get-in event [:Actor :Attributes :com.docker.swarm.service.name])
                              (get-in event [:Actor :Attributes :name]))
-            stack-name (possible-stack-name service-name)]
+            stack-name (du/hypothetical-stack service-name)]
         {:handler :stack-info
          :params  {:name stack-name}}))
     (subscribed-data [_ event]
       (stack-info-data event))))
 
-(def list [service-list-event
-           service-info-by-name-event
-           service-info-by-id-event
-           task-list-event
-           node-list-event
-           stack-list-event
-           stack-info-event])
+(def list [refresh-service-list
+           refresh-service-info-by-name
+           refresh-service-info-by-id
+           refresh-task-list
+           refresh-node-list
+           refresh-stack-list
+           refresh-stack-info])
