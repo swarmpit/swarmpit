@@ -40,6 +40,7 @@
      :validations   "isValidCompose"
      :multiLine     true
      :rows          10
+     :rowsMax       10
      :value         value
      :underlineShow false
      :fullWidth     true}))
@@ -50,24 +51,24 @@
     (handler/post
       (routes/path-for-backend :stack-create)
       {:params     state
-       :on-success (fn [response]
-                     (dispatch!
-                       (routes/path-for-frontend :stack-info (select-keys state [:name])))
-                     (message/info (:result response)))
+       :on-success (fn [_]
+                     (message/info
+                       (str "Stack " (:name state) " deployment started.")))
        :on-error   (fn [response]
-                     (message/error (:error response)))})))
+                     (message/error
+                       (str "Stack deployment failed. " (:error response))))})))
 
 (def mixin-init-editor
   {:did-mount
    (fn [state]
      (let [editor (editor/yaml editor-id)]
-       (.on editor "change" (fn [cm] (state/update-value [:compose] (-> cm .getValue) cursor))))
+       (.on editor "change" (fn [cm] (state/update-value [:spec :compose] (-> cm .getValue) cursor))))
      state)})
 
 (defn- init-state
   []
-  (state/set-value {:name    ""
-                    :compose ""} cursor))
+  (state/set-value {:name ""
+                    :spec {:compose ""}} cursor))
 
 (def mixin-init-form
   (mixin/init-form
@@ -77,7 +78,7 @@
 (rum/defc form < rum/reactive
                  mixin-init-form
                  mixin-init-editor [_]
-  (let [{:keys [compose name]} (state/react cursor)]
+  (let [{:keys [spec name]} (state/react cursor)]
     [:div
      [:div.form-panel
       [:div.form-panel-left
@@ -93,4 +94,5 @@
        {:onValid   #(reset! valid? true)
         :onInvalid #(reset! valid? false)}
        (form-name name)
-       (form-editor compose))]))
+       (html (form/icon-value icon/info "Please drag & drop or paste a compose file."))
+       (form-editor (:compose spec)))]))

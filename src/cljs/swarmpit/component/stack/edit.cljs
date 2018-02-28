@@ -42,6 +42,7 @@
      :validations   "isValidCompose"
      :multiLine     true
      :rows          10
+     :rowsMax       10
      :value         value
      :underlineShow false
      :fullWidth     true}))
@@ -51,12 +52,14 @@
   (handler/post
     (routes/path-for-backend :stack-update {:name name})
     {:params     (state/get-value cursor)
-     :on-success (fn [response]
+     :on-success (fn [_]
                    (dispatch!
                      (routes/path-for-frontend :stack-info {:name name}))
-                   (message/info (:result response)))
+                   (message/info
+                     (str "Stack " name " update started.")))
      :on-error   (fn [response]
-                   (message/error (:error response)))}))
+                   (message/error
+                     (str "Stack update failed. " (:error response))))}))
 
 (defn- stackfile-handler
   [name]
@@ -70,13 +73,13 @@
   {:did-mount
    (fn [state]
      (let [editor (editor/yaml editor-id)]
-       (.on editor "change" (fn [cm] (state/update-value [:compose] (-> cm .getValue) cursor))))
+       (.on editor "change" (fn [cm] (state/update-value [:spec :compose] (-> cm .getValue) cursor))))
      state)})
 
 (defn- init-state
   [name]
-  (state/set-value {:name    name
-                    :compose ""} cursor))
+  (state/set-value {:name name
+                    :spec {:compose ""}} cursor))
 
 (def mixin-init-form
   (mixin/init-form
@@ -85,7 +88,7 @@
       (stackfile-handler name))))
 
 (rum/defc form-edit < rum/reactive
-                      mixin-init-editor [{:keys [name compose]}]
+                      mixin-init-editor [{:keys [name spec]}]
   [:div
    [:div.form-panel
     [:div.form-panel-left
@@ -101,7 +104,7 @@
      {:onValid   #(reset! valid? true)
       :onInvalid #(reset! valid? false)}
      (form-name name)
-     (form-editor compose))])
+     (form-editor (:compose spec)))])
 
 (rum/defc form < rum/reactive
                  mixin-init-form [_]

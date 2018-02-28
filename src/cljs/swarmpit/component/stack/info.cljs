@@ -3,7 +3,6 @@
             [material.component :as comp]
             [material.component.form :as form]
             [material.component.panel :as panel]
-            [material.component.list-table :as tlist]
             [material.component.list-table-auto :as list]
             [swarmpit.component.handler :as handler]
             [swarmpit.component.message :as message]
@@ -22,6 +21,8 @@
 (enable-console-print!)
 
 (def cursor [:form])
+
+(defonce action-menu (atom false))
 
 (defonce loading? (atom false))
 
@@ -61,6 +62,13 @@
     {:on-success (fn [response]
                    (state/update-value [:secrets] response cursor))}))
 
+(defn- stackfile-handler
+  [stack-name]
+  (handler/get
+    (routes/path-for-backend :stack-file {:name stack-name})
+    {:on-success (fn [response]
+                   (state/update-value [:stackfile] response cursor))}))
+
 (defn- delete-stack-handler
   [stack-name]
   (handler/delete
@@ -70,10 +78,73 @@
                      (routes/path-for-frontend :stack-list))
                    (message/info (:result response)))
      :on-error   (fn [response]
-                   (dispatch!
-                     (routes/path-for-frontend :stack-list))
                    (message/error
                      (str "Stack removing failed. " (:error response))))}))
+
+(defn- redeploy-stack-handler
+  [stack-name]
+  (handler/post
+    (routes/path-for-backend :stack-redeploy {:name stack-name})
+    {:on-success (fn [_]
+                   (message/info
+                     (str "Stack " stack-name " redeploy triggered.")))
+     :on-error   (fn [response]
+                   (message/error
+                     (str "Stack rollback failed. " (:error response))))}))
+
+(defn- rollback-stack-handler
+  [stack-name]
+  (handler/post
+    (routes/path-for-backend :stack-rollback {:name stack-name})
+    {:on-success (fn [_]
+                   (message/info
+                     (str "Stack " stack-name " rollback triggered.")))
+     :on-error   (fn [response]
+                   (message/error
+                     (str "Stack rollback failed. " (:error response))))}))
+
+(def action-menu-style
+  {:position   "relative"
+   :marginTop  "13px"
+   :marginLeft "66px"})
+
+(def action-menu-item-style
+  {:padding "0px 10px 0px 52px"})
+
+(defn- form-action-menu [stack-name stack-rollback-allowed opened?]
+  (comp/mui
+    (comp/icon-menu
+      {:iconButtonElement (comp/icon-button nil nil)
+       :open              opened?
+       :style             action-menu-style
+       :onRequestChange   (fn [state] (reset! action-menu state))}
+      (comp/menu-item
+        {:key           "action-edit"
+         :innerDivStyle action-menu-item-style
+         :leftIcon      (comp/svg nil icon/edit)
+         :onClick       (fn []
+                          (dispatch!
+                            (routes/path-for-frontend :stack-edit {:name stack-name})))
+         :primaryText   "Edit"})
+      (comp/menu-item
+        {:key           "action-redeploy"
+         :innerDivStyle action-menu-item-style
+         :leftIcon      (comp/svg nil icon/redeploy)
+         :onClick       #(redeploy-stack-handler stack-name)
+         :primaryText   "Redeploy"})
+      (comp/menu-item
+        {:key           "action-rollback"
+         :innerDivStyle action-menu-item-style
+         :leftIcon      (comp/svg nil icon/rollback)
+         :onClick       #(rollback-stack-handler stack-name)
+         :disabled      (not stack-rollback-allowed)
+         :primaryText   "Rollback"})
+      (comp/menu-item
+        {:key           "action-delete"
+         :innerDivStyle action-menu-item-style
+         :leftIcon      (comp/svg nil icon/trash)
+         :onClick       #(delete-stack-handler stack-name)
+         :primaryText   "Delete"}))))
 
 (rum/defc form-services < rum/static [services]
   [:div.form-layout-group
@@ -127,34 +198,35 @@
 (def mixin-init-form
   (mixin/init-form
     (fn [{{:keys [name]} :params}]
+      (reset! action-menu false)
       (stack-services-handler name)
       (stack-networks-handler name)
       (stack-volumes-handler name)
       (stack-configs-handler name)
-      (stack-secrets-handler name))))
+      (stack-secrets-handler name)
+      (stackfile-handler name))))
 
-(rum/defc form-info < rum/reactive [stack-name {:keys [services networks volumes configs secrets]}]
-  [:div
-   [:div.form-panel
-    [:div.form-panel-left
-     (panel/info icon/stacks stack-name)]
-    [:div.form-panel-right
-     (comp/mui
-       (comp/raised-button
-         {:href    (routes/path-for-frontend :stack-edit {:name stack-name})
-          :label   "Edit"
-          :primary true}))
-     [:span.form-panel-delimiter]
-     (comp/mui
-       (comp/raised-button
-         {:onTouchTap #(delete-stack-handler stack-name)
-          :label      "Delete"}))]]
-   [:div.form-layout
-    (form-services services)
-    (form-networks networks)
-    (form-volumes volumes)
-    (form-configs configs)
-    (form-secrets secrets)]])
+(rum/defc form-info < rum/reactive [stack-name {:keys [services networks volumes configs secrets stackfile]}]
+  (let [opened? (rum/react action-menu)]
+    [:div
+     [:div.form-panel
+      [:div.form-panel-left
+       (panel/info icon/stacks stack-name)]
+      [:div.form-panel-right
+       [:div
+        (comp/mui
+          (comp/raised-button
+            {:onClick       (fn [_] (reset! action-menu true))
+             :icon          (comp/button-icon icon/expand-18)
+             :labelPosition "before"
+             :label         "Actions"}))
+        (form-action-menu stack-name (some? (:previousSpec stackfile)) opened?)]]]
+     [:div.form-layout
+      (form-services services)
+      (form-networks networks)
+      (form-volumes volumes)
+      (form-configs configs)
+      (form-secrets secrets)]]))
 
 (rum/defc form < rum/reactive
                  mixin-init-form
