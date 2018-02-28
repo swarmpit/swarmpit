@@ -1,7 +1,8 @@
 (ns swarmpit.event.source
   (:require [swarmpit.routes :as routes]
             [swarmpit.component.handler :as handler]
-            [swarmpit.event.handler :as event]
+            [swarmpit.event.handler.data :as data]
+            [swarmpit.event.handler.message :as message]
             [goog.crypt.base64 :as b64]
             [clojure.walk :refer [keywordize-keys]]))
 
@@ -21,8 +22,13 @@
 
 (defn- on-message!
   [event route]
-  (let [event-data (parse-event event)]
-    (event/handle (:handler route) event-data)))
+  (let [event-data (parse-event event)
+        event-type (-> event-data keys first)]
+    (case event-type
+      :data (data/handle (:handler route)
+                         (:data event-data))
+      :message (message/handle (:message event-data))
+      (print (str "Event type [" event-type "] invalid.")))))
 
 (defn- on-open!
   [event route]
