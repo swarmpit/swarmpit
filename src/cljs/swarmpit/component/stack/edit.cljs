@@ -53,10 +53,8 @@
     (routes/path-for-backend :stack-update {:name name})
     {:params     (state/get-value cursor)
      :on-success (fn [_]
-                   (dispatch!
-                     (routes/path-for-frontend :stack-info {:name name}))
                    (message/info
-                     (str "Stack " name " update started.")))
+                     (str "Stack " name " update triggered.")))
      :on-error   (fn [response]
                    (message/error
                      (str "Stack update failed. " (:error response))))}))
@@ -96,7 +94,7 @@
     [:div.form-panel-right
      (comp/mui
        (comp/raised-button
-         {:label      "Redeploy"
+         {:label      "Deploy"
           :onTouchTap #(update-stack-handler name)
           :disabled   (not (rum/react valid?))
           :primary    true}))]]

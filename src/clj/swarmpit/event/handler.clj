@@ -12,9 +12,10 @@
       (if (slt/valid? slt)
         (with-channel request channel
                       (send! channel {:status  200
-                                      :headers {"Content-Type"  "text/event-stream"
-                                                "Cache-Control" "no-cache"
-                                                "Connection"    "keep-alive"}
+                                      :headers {"Content-Type"                "text/event-stream"
+                                                "Access-Control-Allow-Origin" "*"
+                                                "Cache-Control"               "no-cache"
+                                                "Connection"                  "keep-alive"}
                                       :body    ":ok\n\n"} false)
                       (swap! channel/hub assoc channel request)
                       (on-close channel (fn [_]

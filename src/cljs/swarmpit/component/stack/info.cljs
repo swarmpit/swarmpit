@@ -111,7 +111,7 @@
 (def action-menu-item-style
   {:padding "0px 10px 0px 52px"})
 
-(defn- form-action-menu [stack-name stack-rollback-allowed opened?]
+(defn- form-action-menu [stack-name stackfile opened?]
   (comp/mui
     (comp/icon-menu
       {:iconButtonElement (comp/icon-button nil nil)
@@ -131,13 +131,14 @@
          :innerDivStyle action-menu-item-style
          :leftIcon      (comp/svg nil icon/redeploy)
          :onClick       #(redeploy-stack-handler stack-name)
+         :disabled      (not (some? (:spec stackfile)))
          :primaryText   "Redeploy"})
       (comp/menu-item
         {:key           "action-rollback"
          :innerDivStyle action-menu-item-style
          :leftIcon      (comp/svg nil icon/rollback)
          :onClick       #(rollback-stack-handler stack-name)
-         :disabled      (not stack-rollback-allowed)
+         :disabled      (not (some? (:previousSpec stackfile)))
          :primaryText   "Rollback"})
       (comp/menu-item
         {:key           "action-delete"
@@ -220,7 +221,7 @@
              :icon          (comp/button-icon icon/expand-18)
              :labelPosition "before"
              :label         "Actions"}))
-        (form-action-menu stack-name (some? (:previousSpec stackfile)) opened?)]]]
+        (form-action-menu stack-name stackfile opened?)]]]
      [:div.form-layout
       (form-services services)
       (form-networks networks)

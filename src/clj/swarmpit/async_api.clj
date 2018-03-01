@@ -25,16 +25,22 @@
 
 (defn update-stack
   "Update stack asynchronously and notify owner abount progress"
-  [owner {:keys [name spec]}]
+  [owner {:keys [name spec] :as stackfile}]
   (let [stackfile-origin (cc/stackfile name)]
     (go
       (try
+        (log/info "started")
         (api/stack-login owner spec)
+        (log/info "logged")
         (dcli/stack-deploy name (:compose spec))
-        (cc/update-stackfile stackfile-origin {:spec         spec
-                                               :previousSpec (:spec stackfile-origin)})
+        (log/info "deployed")
+        (if (some? stackfile-origin)
+          (cc/update-stackfile stackfile-origin {:spec         spec
+                                                 :previousSpec (:spec stackfile-origin)})
+          (cc/create-stackfile stackfile))
         (channel/broadcast-info owner (str "Stack " name " update finished."))
         (catch Exception ex
+          (log/info ex)
           (channel/broadcast-error owner (str "Stack " name " update failed.") ex))))))
 
 (defn redeploy-stack

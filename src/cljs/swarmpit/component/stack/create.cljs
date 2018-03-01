@@ -53,7 +53,7 @@
       {:params     state
        :on-success (fn [_]
                      (message/info
-                       (str "Stack " (:name state) " deployment started.")))
+                       (str "Stack " (:name state) " deployment triggered.")))
        :on-error   (fn [response]
                      (message/error
                        (str "Stack deployment failed. " (:error response))))})))
