@@ -2,8 +2,8 @@
   (:require [material.component :as comp]
             [material.component.form :as form]
             [swarmpit.component.state :as state]
-            [swarmpit.component.handler :as handler]
             [swarmpit.component.service.form-ports :as ports]
+            [swarmpit.ajax :as ajax]
             [swarmpit.routes :as routes]
             [rum.core :as rum]))
 
@@ -17,7 +17,7 @@
 
 (defn tags-handler
   [repository]
-  (handler/get 
+  (ajax/get
     (routes/path-for-backend :repository-tags)
     {:params     {:repository repository}
      :on-success (fn [response]

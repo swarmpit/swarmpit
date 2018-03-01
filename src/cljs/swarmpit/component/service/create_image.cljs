@@ -5,10 +5,10 @@
             [swarmpit.component.mixin :as mixin]
             [swarmpit.component.state :as state]
             [swarmpit.component.progress :as progress]
-            [swarmpit.component.handler :as handler]
             [swarmpit.component.service.create-image-public :as cip]
             [swarmpit.component.service.create-image-other :as cio]
             [swarmpit.component.service.create-image-private :as ciu]
+            [swarmpit.ajax :as ajax]
             [swarmpit.routes :as routes]
             [rum.core :as rum]))
 
@@ -38,7 +38,7 @@
 
 (defn- registries-handler
   []
-  (handler/get
+  (ajax/get
     (routes/path-for-backend :registries)
     {:state      registries-loading?
      :on-success (fn [response]
@@ -46,7 +46,7 @@
 
 (defn- users-handler
   []
-  (handler/get
+  (ajax/get
     (routes/path-for-backend :dockerhub-users)
     {:state      users-loading?
      :on-success (fn [response]

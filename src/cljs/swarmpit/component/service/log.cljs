@@ -4,7 +4,7 @@
             [material.component.panel :as panel]
             [swarmpit.component.state :as state]
             [swarmpit.component.mixin :as mixin]
-            [swarmpit.component.handler :as handler]
+            [swarmpit.ajax :as ajax]
             [swarmpit.routes :as routes]
             [clojure.string :as string]
             [sablono.core :refer-macros [html]]
@@ -25,14 +25,14 @@
 
 (defn- service-handler
   [service-id]
-  (handler/get
+  (ajax/get
     (routes/path-for-backend :service {:id service-id})
     {:on-success (fn [response]
                    (state/update-value [:service] response cursor))}))
 
 (defn- log-handler
   [service-id]
-  (handler/get
+  (ajax/get
     (routes/path-for-backend :service-logs {:id service-id})
     {:on-call    (state/update-value [:fetching] true cursor)
      :on-success (fn [response]
@@ -43,7 +43,7 @@
 
 (defn- log-append-handler
   [service-id from-timestamp]
-  (handler/get
+  (ajax/get
     (routes/path-for-backend :service-logs {:id service-id})
     {:on-call    (state/update-value [:fetching] true cursor)
      :params     {:from from-timestamp}

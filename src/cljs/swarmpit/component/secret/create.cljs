@@ -1,13 +1,13 @@
 (ns swarmpit.component.secret.create
-  (:require [material.component :as comp]
+  (:require [material.icon :as icon]
+            [material.component :as comp]
             [material.component.form :as form]
             [material.component.panel :as panel]
-            [material.icon :as icon]
-            [swarmpit.url :refer [dispatch!]]
-            [swarmpit.component.handler :as handler]
             [swarmpit.component.mixin :as mixin]
             [swarmpit.component.state :as state]
             [swarmpit.component.message :as message]
+            [swarmpit.url :refer [dispatch!]]
+            [swarmpit.ajax :as ajax]
             [swarmpit.routes :as routes]
             [rum.core :as rum]))
 
@@ -60,7 +60,7 @@
 
 (defn- create-secret-handler
   []
-  (handler/post
+  (ajax/post
     (routes/path-for-backend :secret-create)
     {:params     (state/get-value cursor)
      :on-success (fn [response]
@@ -100,10 +100,10 @@
             :primary    true
             :onTouchTap create-secret-handler}))]]
      [:div.form-edit
-       (form/icon-value icon/info "Data must be base64 encoded. If plain text check please encode data.")
-       (form/form
-         {:onValid   #(reset! valid? true)
-          :onInvalid #(reset! valid? false)}
-         (form-name secretName)
-         (form-data-encoder encode)
-         (form-data data))]]))
+      (form/icon-value icon/info "Data must be base64 encoded. If plain text check please encode data.")
+      (form/form
+        {:onValid   #(reset! valid? true)
+         :onInvalid #(reset! valid? false)}
+        (form-name secretName)
+        (form-data-encoder encode)
+        (form-data data))]]))

@@ -1,6 +1,6 @@
 (ns swarmpit.event.source
   (:require [swarmpit.routes :as routes]
-            [swarmpit.component.handler :as handler]
+            [swarmpit.ajax :as ajax]
             [swarmpit.event.handler :as event]
             [goog.crypt.base64 :as b64]
             [clojure.walk :refer [keywordize-keys]]))
@@ -42,7 +42,7 @@
 
 (defn open!
   [route]
-  (handler/get
+  (ajax/get
     (routes/path-for-backend :slt)
     {:on-success (fn [{:keys [slt]}]
                    (let [event-source (js/EventSource. (event-source-url slt route))]

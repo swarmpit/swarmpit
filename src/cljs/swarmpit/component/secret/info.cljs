@@ -4,13 +4,13 @@
             [material.component.form :as form]
             [material.component.panel :as panel]
             [material.component.list-table-auto :as list]
-            [swarmpit.url :refer [dispatch!]]
             [swarmpit.component.state :as state]
             [swarmpit.component.mixin :as mixin]
-            [swarmpit.component.handler :as handler]
             [swarmpit.component.message :as message]
             [swarmpit.component.progress :as progress]
             [swarmpit.component.service.list :as services]
+            [swarmpit.url :refer [dispatch!]]
+            [swarmpit.ajax :as ajax]
             [swarmpit.routes :as routes]
             [rum.core :as rum]))
 
@@ -22,14 +22,14 @@
 
 (defn- secret-services-handler
   [secret-id]
-  (handler/get
+  (ajax/get
     (routes/path-for-backend :secret-services {:id secret-id})
     {:on-success (fn [response]
                    (state/update-value [:services] response cursor))}))
 
 (defn- secret-handler
   [secret-id]
-  (handler/get
+  (ajax/get
     (routes/path-for-backend :secret {:id secret-id})
     {:state      loading?
      :on-success (fn [response]
@@ -37,7 +37,7 @@
 
 (defn- delete-secret-handler
   [secret-id]
-  (handler/delete
+  (ajax/delete
     (routes/path-for-backend :secret-delete {:id secret-id})
     {:on-success (fn [_]
                    (dispatch!

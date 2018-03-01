@@ -1,13 +1,13 @@
 (ns swarmpit.component.network.create
-  (:require [material.component :as comp]
+  (:require [material.icon :as icon]
+            [material.component :as comp]
             [material.component.form :as form]
             [material.component.panel :as panel]
-            [material.icon :as icon]
-            [swarmpit.url :refer [dispatch!]]
-            [swarmpit.component.handler :as handler]
             [swarmpit.component.mixin :as mixin]
             [swarmpit.component.state :as state]
             [swarmpit.component.message :as message]
+            [swarmpit.url :refer [dispatch!]]
+            [swarmpit.ajax :as ajax]
             [swarmpit.routes :as routes]
             [rum.core :as rum]))
 
@@ -23,7 +23,7 @@
 
 (defn- network-plugin-handler
   []
-  (handler/get
+  (ajax/get
     (routes/path-for-backend :plugin-network)
     {:on-success (fn [response]
                    (reset! network-plugins response))}))
@@ -88,7 +88,7 @@
 
 (defn- create-network-handler
   []
-  (handler/post
+  (ajax/post
     (routes/path-for-backend :network-create)
     {:params     (state/get-value cursor)
      :on-success (fn [response]

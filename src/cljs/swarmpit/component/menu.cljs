@@ -1,11 +1,11 @@
 (ns swarmpit.component.menu
   (:require [material.component :as comp]
             [material.icon :as icon]
-            [sablono.core :refer-macros [html]]
-            [swarmpit.component.handler :as handler]
             [swarmpit.component.state :as state]
             [swarmpit.storage :as storage]
+            [swarmpit.ajax :as ajax]
             [swarmpit.routes :as routes]
+            [sablono.core :refer-macros [html]]
             [rum.core :as rum]))
 
 (enable-console-print!)
@@ -148,7 +148,7 @@
 
 (defn- version-handler
   []
-  (handler/get
+  (ajax/get
     (routes/path-for-backend :version)
     {:on-success (fn [response]
                    (state/update-value [:version] (parse-version response) cursor)

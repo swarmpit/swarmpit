@@ -6,11 +6,11 @@
             [swarmpit.component.state :as state]
             [swarmpit.component.mixin :as mixin]
             [swarmpit.component.progress :as progress]
-            [swarmpit.component.handler :as handler]
             [swarmpit.component.message :as message]
+            [swarmpit.docker.utils :as du]
             [swarmpit.storage :as storage]
             [swarmpit.url :refer [dispatch!]]
-            [swarmpit.docker.utils :as du]
+            [swarmpit.ajax :as ajax]
             [swarmpit.routes :as routes]
             [clojure.string :as string]
             [sablono.core :refer-macros [html]]
@@ -34,7 +34,7 @@
 
 (defn- repository-handler
   [registry-id]
-  (handler/get
+  (ajax/get
     (routes/path-for-backend :registry-repositories {:id registry-id})
     {:state      searching?
      :on-success (fn [response]

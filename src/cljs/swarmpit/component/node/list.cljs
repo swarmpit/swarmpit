@@ -5,7 +5,7 @@
             [swarmpit.component.mixin :as mixin]
             [swarmpit.component.state :as state]
             [material.component.list-table :as list]
-            [swarmpit.component.handler :as handler]
+            [swarmpit.ajax :as ajax]
             [swarmpit.routes :as routes]
             [sablono.core :refer-macros [html]]
             [rum.core :as rum]))
@@ -53,7 +53,7 @@
 
 (defn- nodes-handler
   []
-  (handler/get
+  (ajax/get
     (routes/path-for-backend :nodes)
     {:on-success (fn [response]
                    (state/update-value [:items] response cursor))}))

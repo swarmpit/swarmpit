@@ -2,11 +2,11 @@
   (:require [material.component :as comp]
             [material.component.form :as form]
             [material.component.list-table-form :as list]
-            [swarmpit.component.handler :as handler]
             [swarmpit.component.state :as state]
             [swarmpit.routes :as routes]
-            [rum.core :as rum]
-            [clojure.string :as str]))
+            [swarmpit.ajax :as ajax]
+            [clojure.string :as str]
+            [rum.core :as rum]))
 
 (enable-console-print!)
 
@@ -16,7 +16,7 @@
 
 (defn secrets-handler
   []
-  (handler/get
+  (ajax/get
     (routes/path-for-backend :secrets)
     {:on-success (fn [response]
                    (reset! secrets-list response))}))

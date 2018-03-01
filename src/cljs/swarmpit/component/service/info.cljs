@@ -1,12 +1,10 @@
 (ns swarmpit.component.service.info
-  (:require [material.component :as comp]
+  (:require [material.icon :as icon]
+            [material.component :as comp]
             [material.component.label :as label]
             [material.component.panel :as panel]
             [material.component.form :as form]
             [material.component.list-table-auto :as list]
-            [material.icon :as icon]
-            [swarmpit.url :refer [dispatch!]]
-            [swarmpit.component.handler :as handler]
             [swarmpit.component.state :as state]
             [swarmpit.component.mixin :as mixin]
             [swarmpit.component.progress :as progress]
@@ -23,6 +21,8 @@
             [swarmpit.component.service.info.deployment :as deployment]
             [swarmpit.component.task.list :as tasks]
             [swarmpit.component.message :as message]
+            [swarmpit.url :refer [dispatch!]]
+            [swarmpit.ajax :as ajax]
             [swarmpit.routes :as routes]
             [rum.core :as rum]))
 
@@ -39,7 +39,7 @@
 
 (defn- service-handler
   [service-id]
-  (handler/get
+  (ajax/get
     (routes/path-for-backend :service {:id service-id})
     {:state      loading?
      :on-success (fn [response]
@@ -47,21 +47,21 @@
 
 (defn- service-networks-handler
   [service-id]
-  (handler/get
+  (ajax/get
     (routes/path-for-backend :service-networks {:id service-id})
     {:on-success (fn [response]
                    (state/update-value [:networks] response cursor))}))
 
 (defn- service-tasks-handler
   [service-id]
-  (handler/get
+  (ajax/get
     (routes/path-for-backend :service-tasks {:id service-id})
     {:on-success (fn [response]
                    (state/update-value [:tasks] response cursor))}))
 
 (defn- delete-service-handler
   [service-id]
-  (handler/delete
+  (ajax/delete
     (routes/path-for-backend :service-delete {:id service-id})
     {:on-success (fn [_]
                    (dispatch!
@@ -74,7 +74,7 @@
 
 (defn- redeploy-service-handler
   [service-id]
-  (handler/post
+  (ajax/post
     (routes/path-for-backend :service-redeploy {:id service-id})
     {:on-success (fn [_]
                    (message/info
@@ -85,7 +85,7 @@
 
 (defn- rollback-service-handler
   [service-id]
-  (handler/post
+  (ajax/post
     (routes/path-for-backend :service-rollback {:id service-id})
     {:on-success (fn [_]
                    (message/info

@@ -4,16 +4,15 @@
             [material.component.form :as form]
             [material.component.panel :as panel]
             [material.component.list-table-auto :as list]
-            [swarmpit.url :refer [dispatch!]]
-            [swarmpit.component.handler :as handler]
             [swarmpit.component.message :as message]
             [swarmpit.component.mixin :as mixin]
-            [swarmpit.component.handler :as handler]
             [swarmpit.component.state :as state]
             [swarmpit.component.progress :as progress]
             [swarmpit.component.service.list :as services]
-            [swarmpit.routes :as routes]
             [swarmpit.docker.utils :as utils]
+            [swarmpit.url :refer [dispatch!]]
+            [swarmpit.ajax :as ajax]
+            [swarmpit.routes :as routes]
             [rum.core :as rum]))
 
 (enable-console-print!)
@@ -24,14 +23,14 @@
 
 (defn- volume-services-handler
   [volume-name]
-  (handler/get
+  (ajax/get
     (routes/path-for-backend :volume-services {:name volume-name})
     {:on-success (fn [response]
                    (state/update-value [:services] response cursor))}))
 
 (defn- volume-handler
   [volume-name]
-  (handler/get
+  (ajax/get
     (routes/path-for-backend :volume {:name volume-name})
     {:state      loading?
      :on-success (fn [response]
@@ -39,7 +38,7 @@
 
 (defn- delete-volume-handler
   [volume-name]
-  (handler/delete
+  (ajax/delete
     (routes/path-for-backend :volume-delete {:name volume-name})
     {:on-success (fn [_]
                    (dispatch!

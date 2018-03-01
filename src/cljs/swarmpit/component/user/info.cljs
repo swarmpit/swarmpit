@@ -3,14 +3,13 @@
             [material.component :as comp]
             [material.component.form :as form]
             [material.component.panel :as panel]
-            [swarmpit.url :refer [dispatch!]]
-            [swarmpit.storage :as storage]
-            [swarmpit.component.handler :as handler]
             [swarmpit.component.message :as message]
             [swarmpit.component.mixin :as mixin]
-            [swarmpit.component.handler :as handler]
             [swarmpit.component.state :as state]
             [swarmpit.component.progress :as progress]
+            [swarmpit.url :refer [dispatch!]]
+            [swarmpit.storage :as storage]
+            [swarmpit.ajax :as ajax]
             [swarmpit.routes :as routes]
             [rum.core :as rum]))
 
@@ -22,7 +21,7 @@
 
 (defn- user-handler
   [user-id]
-  (handler/get
+  (ajax/get
     (routes/path-for-backend :user {:id user-id})
     {:state      loading?
      :on-success (fn [response]
@@ -30,7 +29,7 @@
 
 (defn- delete-user-handler
   [user-id]
-  (handler/delete
+  (ajax/delete
     (routes/path-for-backend :user-delete {:id user-id})
     {:on-success (fn [_]
                    (dispatch!

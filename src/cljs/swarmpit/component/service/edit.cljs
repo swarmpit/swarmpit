@@ -5,7 +5,6 @@
             [material.component.panel :as panel]
             [swarmpit.component.mixin :as mixin]
             [swarmpit.component.state :as state]
-            [swarmpit.component.handler :as handler]
             [swarmpit.component.progress :as progress]
             [swarmpit.component.service.form-settings :as settings]
             [swarmpit.component.service.form-ports :as ports]
@@ -20,6 +19,7 @@
             [swarmpit.component.service.form-deployment :as deployment]
             [swarmpit.component.service.form-deployment-placement :as placement]
             [swarmpit.component.message :as message]
+            [swarmpit.ajax :as ajax]
             [swarmpit.url :refer [dispatch!]]
             [swarmpit.routes :as routes]
             [rum.core :as rum]))
@@ -38,7 +38,7 @@
 
 (defn- service-handler
   [service-id]
-  (handler/get
+  (ajax/get
     (routes/path-for-backend :service {:id service-id})
     {:state loading?
      :on-success
@@ -61,7 +61,7 @@
 
 (defn- service-networks-handler
   [service-id]
-  (handler/get
+  (ajax/get
     (routes/path-for-backend :service-networks {:id service-id})
     {:on-success
      (fn [networks]
@@ -81,7 +81,7 @@
         logdriver (state/get-value logdriver/cursor)
         resources (state/get-value resources/cursor)
         deployment (state/get-value deployment/cursor)]
-    (handler/post
+    (ajax/post
       (routes/path-for-backend :service-update {:id service-id})
       {:params     (-> settings
                        (assoc :ports ports)

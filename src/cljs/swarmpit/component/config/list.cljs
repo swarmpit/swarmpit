@@ -4,7 +4,7 @@
             [material.component.list-table :as list]
             [swarmpit.component.mixin :as mixin]
             [swarmpit.component.state :as state]
-            [swarmpit.component.handler :as handler]
+            [swarmpit.ajax :as ajax]
             [swarmpit.routes :as routes]
             [swarmpit.time :as time]
             [rum.core :as rum]))
@@ -33,7 +33,7 @@
 
 (defn- configs-handler
   []
-  (handler/get
+  (ajax/get
     (routes/path-for-backend :configs)
     {:state      loading?
      :on-success (fn [response]

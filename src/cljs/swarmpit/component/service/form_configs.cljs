@@ -2,11 +2,11 @@
   (:require [material.component :as comp]
             [material.component.form :as form]
             [material.component.list-table-form :as list]
-            [swarmpit.component.handler :as handler]
             [swarmpit.component.state :as state]
+            [swarmpit.ajax :as ajax]
             [swarmpit.routes :as routes]
-            [rum.core :as rum]
-            [clojure.string :as str]))
+            [clojure.string :as str]
+            [rum.core :as rum]))
 
 (enable-console-print!)
 
@@ -16,7 +16,7 @@
 
 (defn configs-handler
   []
-  (handler/get
+  (ajax/get
     (routes/path-for-backend :configs)
     {:on-success (fn [response]
                    (reset! configs-list response))}))

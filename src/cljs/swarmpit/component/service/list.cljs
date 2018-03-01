@@ -1,11 +1,11 @@
 (ns swarmpit.component.service.list
-  (:require [material.component.label :as label]
+  (:require [material.component :as comp]
+            [material.component.label :as label]
             [material.component.panel :as panel]
             [material.component.list-table :as list]
-            [material.component :as comp]
             [swarmpit.component.state :as state]
             [swarmpit.component.mixin :as mixin]
-            [swarmpit.component.handler :as handler]
+            [swarmpit.ajax :as ajax]
             [swarmpit.routes :as routes]
             [sablono.core :refer-macros [html]]
             [rum.core :as rum]))
@@ -70,7 +70,7 @@
 
 (defn- services-handler
   []
-  (handler/get
+  (ajax/get
     (routes/path-for-backend :services)
     {:state      loading?
      :on-success (fn [response]

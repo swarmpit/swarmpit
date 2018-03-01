@@ -4,12 +4,12 @@
             [material.component.form :as form]
             [material.component.panel :as panel]
             [material.component.list-table-auto :as list]
-            [swarmpit.url :refer [dispatch!]]
             [swarmpit.component.state :as state]
             [swarmpit.component.mixin :as mixin]
-            [swarmpit.component.handler :as handler]
             [swarmpit.component.progress :as progress]
             [swarmpit.component.task.list :as tasks]
+            [swarmpit.url :refer [dispatch!]]
+            [swarmpit.ajax :as ajax]
             [swarmpit.routes :as routes]
             [rum.core :as rum]))
 
@@ -21,14 +21,14 @@
 
 (defn- node-tasks-handler
   [node-id]
-  (handler/get
+  (ajax/get
     (routes/path-for-backend :node-tasks {:id node-id})
     {:on-success (fn [response]
                    (state/update-value [:tasks] response cursor))}))
 
 (defn- node-handler
   [node-id]
-  (handler/get
+  (ajax/get
     (routes/path-for-backend :node {:id node-id})
     {:state      loading?
      :on-success (fn [response]

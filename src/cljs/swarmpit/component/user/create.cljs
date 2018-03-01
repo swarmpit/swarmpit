@@ -3,11 +3,11 @@
             [material.component :as comp]
             [material.component.form :as form]
             [material.component.panel :as panel]
-            [swarmpit.url :refer [dispatch!]]
-            [swarmpit.component.handler :as handler]
             [swarmpit.component.mixin :as mixin]
             [swarmpit.component.state :as state]
             [swarmpit.component.message :as message]
+            [swarmpit.url :refer [dispatch!]]
+            [swarmpit.ajax :as ajax]
             [swarmpit.routes :as routes]
             [rum.core :as rum]))
 
@@ -75,7 +75,7 @@
 
 (defn- create-user-handler
   []
-  (handler/post
+  (ajax/post
     (routes/path-for-backend :user-create)
     {:params     (state/get-value cursor)
      :on-success (fn [response]

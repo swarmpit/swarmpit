@@ -1,14 +1,14 @@
 (ns swarmpit.component.registry.info
-  (:require [material.component :as comp]
+  (:require [material.icon :as icon]
+            [material.component :as comp]
             [material.component.form :as form]
             [material.component.panel :as panel]
-            [material.icon :as icon]
-            [swarmpit.url :refer [dispatch!]]
-            [swarmpit.component.handler :as handler]
             [swarmpit.component.message :as message]
             [swarmpit.component.state :as state]
             [swarmpit.component.mixin :as mixin]
             [swarmpit.component.progress :as progress]
+            [swarmpit.url :refer [dispatch!]]
+            [swarmpit.ajax :as ajax]
             [swarmpit.routes :as routes]
             [rum.core :as rum]))
 
@@ -20,7 +20,7 @@
 
 (defn- registry-handler
   [registry-id]
-  (handler/get
+  (ajax/get
     (routes/path-for-backend :registry {:id registry-id})
     {:state      loading?
      :on-success (fn [response]
@@ -28,7 +28,7 @@
 
 (defn- delete-registry-handler
   [registry-id]
-  (handler/delete
+  (ajax/delete
     (routes/path-for-backend :registry-delete {:id registry-id})
     {:on-success (fn [_]
                    (dispatch!

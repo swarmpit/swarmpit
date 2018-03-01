@@ -3,7 +3,7 @@
             [material.icon :as icon]
             [swarmpit.url :refer [dispatch!]]
             [swarmpit.storage :as storage]
-            [swarmpit.component.handler :as handler]
+            [swarmpit.ajax :as ajax]
             [swarmpit.token :as token]
             [swarmpit.routes :as routes]
             [rum.core :as rum]))
@@ -21,7 +21,7 @@
 
 (defn- login-handler
   [local-state]
-  (handler/post
+  (ajax/post
     (routes/path-for-backend :login)
     {:headers    (login-headers local-state)
      :on-success (fn [response]

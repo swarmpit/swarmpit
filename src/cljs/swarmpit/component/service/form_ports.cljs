@@ -3,7 +3,7 @@
             [material.component.form :as form]
             [material.component.list-table-form :as list]
             [swarmpit.component.state :as state]
-            [swarmpit.component.handler :as handler]
+            [swarmpit.ajax :as ajax]
             [swarmpit.routes :as routes]
             [rum.core :as rum]))
 
@@ -19,7 +19,7 @@
 
 (defn load-suggestable-ports
   [repository]
-  (handler/get
+  (ajax/get
     (routes/path-for-backend :repository-ports)
     {:params     {:repository    (:name repository)
                   :repositoryTag (:tag repository)}

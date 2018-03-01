@@ -3,9 +3,9 @@
             [material.component.form :as form]
             [material.component.panel :as panel]
             [swarmpit.component.mixin :as mixin]
-            [swarmpit.component.handler :as handler]
             [swarmpit.component.state :as state]
             [swarmpit.component.progress :as progress]
+            [swarmpit.ajax :as ajax]
             [swarmpit.routes :as routes]
             [material.icon :as icon]
             [rum.core :as rum]))
@@ -18,7 +18,7 @@
 
 (defn- task-handler
   [task-id]
-  (handler/get
+  (ajax/get
     (routes/path-for-backend :task {:id task-id})
     {:state      loading?
      :on-success (fn [response]

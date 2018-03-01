@@ -5,8 +5,8 @@
             [swarmpit.component.state :as state]
             [swarmpit.component.mixin :as mixin]
             [swarmpit.component.progress :as progress]
-            [swarmpit.component.handler :as handler]
             [swarmpit.component.message :as message]
+            [swarmpit.ajax :as ajax]
             [swarmpit.url :refer [dispatch!]]
             [swarmpit.routes :as routes]
             [rum.core :as rum]))
@@ -27,7 +27,7 @@
 
 (defn- repository-handler
   [query page]
-  (handler/get
+  (ajax/get
     (routes/path-for-backend :public-repositories)
     {:params     {:query query
                   :page  page}

@@ -6,9 +6,9 @@
             [swarmpit.component.state :as state]
             [swarmpit.component.progress :as progress]
             [swarmpit.component.mixin :as mixin]
-            [swarmpit.component.handler :as handler]
             [swarmpit.component.message :as message]
             [swarmpit.storage :as storage]
+            [swarmpit.ajax :as ajax]
             [swarmpit.url :refer [dispatch!]]
             [swarmpit.routes :as routes]
             [clojure.string :as string]
@@ -34,7 +34,7 @@
 
 (defn- repository-handler
   [user-id]
-  (handler/get
+  (ajax/get
     (routes/path-for-backend :dockerhub-repositories {:id user-id})
     {:state      searching?
      :on-success (fn [response]

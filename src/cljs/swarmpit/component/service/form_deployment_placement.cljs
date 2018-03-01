@@ -2,7 +2,7 @@
   (:require [material.component :as comp]
             [material.component.list-table-form :as list]
             [swarmpit.component.state :as state]
-            [swarmpit.component.handler :as handler]
+            [swarmpit.ajax :as ajax]
             [swarmpit.routes :as routes]
             [rum.core :as rum]))
 
@@ -14,7 +14,7 @@
 
 (defn placement-handler
   []
-  (handler/get
+  (ajax/get
     (routes/path-for-backend :placement)
     {:on-success (fn [response]
                    (reset! placement-list response))}))
