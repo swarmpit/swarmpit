@@ -15,14 +15,23 @@
        (map #(response-header %))
        (into {})))
 
+(defn- parse-headers
+  [xhrio]
+  (try
+    (-> (.getAllResponseHeaders xhrio)
+        (response-headers)
+        (keywordize-keys))
+    (catch js/Error _ {})))
+
+(defn- parse-body
+  [xhrio]
+  (try
+    (-> (.getResponseJson xhrio)
+        (js->clj)
+        (keywordize-keys))
+    (catch js/Error _ {})))
+
 (defn response
   [xhrio]
-  {:headers (-> (.getAllResponseHeaders xhrio)
-                (response-headers)
-                (keywordize-keys))
-   :body    (try
-              (-> (.getResponseJson xhrio)
-                  (js->clj)
-                  (keywordize-keys))
-              (catch js/Error _
-                {}))})
+  {:headers (parse-headers xhrio)
+   :body    (parse-body xhrio)})

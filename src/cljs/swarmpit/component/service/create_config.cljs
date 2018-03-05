@@ -27,29 +27,30 @@
 
 (defn- create-service-handler
   []
-  (let [settings (state/get-value settings/cursor)
-        ports (state/get-value ports/cursor)
-        networks (state/get-value networks/cursor)
-        secrets (state/get-value secrets/cursor)
-        configs (state/get-value configs/cursor)
-        variables (state/get-value variables/cursor)
-        labels (state/get-value labels/cursor)
-        logdriver (state/get-value logdriver/cursor)
-        resources (state/get-value resources/cursor)
-        deployment (state/get-value deployment/cursor)]
+  (let [settings (state/get-value settings/form-value-cursor)
+        ports (state/get-value ports/form-value-cursor)
+        networks (state/get-value networks/form-value-cursor)
+        secrets (state/get-value secrets/form-value-cursor)
+        configs (state/get-value configs/form-value-cursor)
+        variables (state/get-value variables/form-value-cursor)
+        labels (state/get-value labels/form-value-cursor)
+        logdriver (state/get-value logdriver/form-value-cursor)
+        resources (state/get-value resources/form-value-cursor)
+        deployment (state/get-value deployment/form-value-cursor)]
     (ajax/post
       (routes/path-for-backend :service-create)
       {:params     (-> settings
                        (assoc :ports ports)
                        (assoc :networks networks)
                        (assoc :mounts (mounts/normalize))
-                       (assoc :secrets (when (not (empty? @secrets/secrets-list)) secrets))
-                       (assoc :configs (when (not (empty? @configs/configs-list)) configs))
+                       (assoc :secrets (when-not (empty? (state/get-value (conj secrets/form-state-cursor :list))) secrets))
+                       (assoc :configs (when-not (empty? (state/get-value (conj configs/form-state-cursor :list))) configs))
                        (assoc :variables variables)
                        (assoc :labels labels)
                        (assoc :logdriver logdriver)
                        (assoc :resources resources)
                        (assoc :deployment deployment))
+       :progress   [:processing?]
        :on-success (fn [response]
                      (dispatch!
                        (routes/path-for-frontend :service-info (select-keys response [:id])))
@@ -59,23 +60,34 @@
                      (message/error
                        (str "Service creation failed. Reason: " (:error response))))})))
 
-(defn init-state
+(defn- init-form-state
+  []
+  (state/set-value {:processing? false} state/form-state-cursor)
+  (state/set-value {:valid? false
+                    :tags   []} settings/form-state-cursor)
+  (state/set-value {:volumes []} mounts/form-state-cursor)
+  (state/set-value {:list []} secrets/form-state-cursor)
+  (state/set-value {:list []} networks/form-state-cursor)
+  (state/set-value {:list []} placement/form-state-cursor)
+  (state/set-value {:names []} labels/form-state-cursor)
+  (state/set-value {:valid? true} resources/form-state-cursor))
+
+(defn- init-form-value
   [repository]
   (state/set-value {:repository  {:name repository
-                                  :tag  ""
-                                  :tags []}
+                                  :tag  ""}
                     :serviceName ""
                     :mode        "replicated"
-                    :replicas    1} settings/cursor)
-  (state/set-value [] ports/cursor)
-  (state/set-value [] networks/cursor)
-  (state/set-value [] mounts/cursor)
-  (state/set-value [] secrets/cursor)
-  (state/set-value [] configs/cursor)
-  (state/set-value [] variables/cursor)
-  (state/set-value [] labels/cursor)
+                    :replicas    1} settings/form-value-cursor)
+  (state/set-value [] ports/form-value-cursor)
+  (state/set-value [] networks/form-value-cursor)
+  (state/set-value [] mounts/form-value-cursor)
+  (state/set-value [] secrets/form-value-cursor)
+  (state/set-value [] configs/form-value-cursor)
+  (state/set-value [] variables/form-value-cursor)
+  (state/set-value [] labels/form-value-cursor)
   (state/set-value {:name "json-file"
-                    :opts []} logdriver/cursor)
+                    :opts []} logdriver/form-value-cursor)
   (state/set-value {:autoredeploy  false
                     :restartPolicy {:condition "any"
                                     :delay     5
@@ -85,17 +97,18 @@
                                     :failureAction "pause"}
                     :rollback      {:parallelism   1
                                     :delay         0
-                                    :failureAction "pause"}} deployment/cursor)
+                                    :failureAction "pause"}} deployment/form-value-cursor)
   (state/set-value {:reservation {:cpu    0.000
                                   :memory 0}
                     :limit       {:cpu    0.000
-                                  :memory 0}} resources/cursor)
-  (state/set-value [] placement/cursor))
+                                  :memory 0}} resources/form-value-cursor)
+  (state/set-value [] placement/form-value-cursor))
 
 (def mixin-init-form
   (mixin/init-form
     (fn [{{:keys [repository]} :params}]
-      (init-state repository)
+      (init-form-state)
+      (init-form-value repository)
       (mounts/volumes-handler)
       (networks/networks-handler)
       (secrets/secrets-handler)
@@ -162,28 +175,30 @@
 
 (rum/defc form < rum/reactive
                  mixin-init-form [_]
-  [:div
-   [:div.form-panel
-    [:div.form-panel-left
-     (panel/info icon/services "New service")]
-    [:div.form-panel-right
-     (comp/mui
-       (comp/raised-button
+  (let [settings-state (state/react settings/form-state-cursor)
+        resources-state (state/react resources/form-state-cursor)
+        {:keys [processing?]} (state/react state/form-state-cursor)]
+    [:div
+     [:div.form-panel
+      [:div.form-panel-left
+       (panel/info icon/services "New service")]
+      [:div.form-panel-right
+       (comp/progress-button
          {:label      "Create"
-          :disabled   (or (not (rum/react settings/valid?))
-                          (not (rum/react resources/valid?)))
+          :disabled   (or (not (:valid? settings-state))
+                          (not (:valid? resources-state)))
           :primary    true
-          :onTouchTap create-service-handler}))]]
-   [:div.form-layout
-    (form-settings)
-    (form-ports)
-    (form-networks)
-    (form-mounts)
-    (form-secrets)
-    (when (<= 1.30 (state/get-value [:docker :api]))
-      (form-configs))
-    (form-variables)
-    (form-labels)
-    (form-logdriver)
-    (form-resources)
-    (form-deployment)]])
+          :onTouchTap create-service-handler} processing?)]]
+     [:div.form-layout
+      (form-settings)
+      (form-ports)
+      (form-networks)
+      (form-mounts)
+      (form-secrets)
+      (when (<= 1.30 (state/get-value [:docker :api]))
+        (form-configs))
+      (form-variables)
+      (form-labels)
+      (form-logdriver)
+      (form-resources)
+      (form-deployment)]]))

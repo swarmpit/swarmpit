@@ -14,17 +14,13 @@
 
 (enable-console-print!)
 
-(def cursor [:form])
-
-(defonce loading? (atom false))
-
 (defn- registry-handler
   [registry-id]
   (ajax/get
     (routes/path-for-backend :registry {:id registry-id})
-    {:state      loading?
+    {:progress   [:loading?]
      :on-success (fn [response]
-                   (state/set-value response cursor))}))
+                   (state/set-value response state/form-value-cursor))}))
 
 (defn- delete-registry-handler
   [registry-id]
@@ -39,27 +35,31 @@
                    (message/error
                      (str "Registry removing failed. Reason: " (:error response))))}))
 
+(defn- init-form-state
+  []
+  (state/set-value {:loading? true} state/form-state-cursor))
+
 (def mixin-init-form
   (mixin/init-form
     (fn [{{:keys [id]} :params}]
+      (init-form-state)
       (registry-handler id))))
 
-(rum/defc form-info < rum/static [registry]
+(rum/defc form-info < rum/static [{:keys [_id name] :as registry}]
   [:div
    [:div.form-panel
     [:div.form-panel-left
-     (panel/info icon/registries
-                 (:name registry))]
+     (panel/info icon/registries name)]
     [:div.form-panel-right
      (comp/mui
        (comp/raised-button
-         {:href    (routes/path-for-frontend :registry-edit {:id (:_id registry)})
+         {:href    (routes/path-for-frontend :registry-edit {:id _id})
           :label   "Edit"
           :primary true}))
      [:span.form-panel-delimiter]
      (comp/mui
        (comp/raised-button
-         {:onTouchTap #(delete-registry-handler (:_id registry))
+         {:onTouchTap #(delete-registry-handler _id)
           :label      "Delete"}))]]
    [:div.form-view
     [:div.form-view-group
@@ -72,14 +72,15 @@
      (form/item "AUTHENTICATION" (if (:withAuth registry)
                                    "yes"
                                    "no"))
-     (if (:withAuth registry)
+     (when (:withAuth registry)
        [:div
         (form/item "USERNAME" (:username registry))])]]])
 
 (rum/defc form < rum/reactive
                  mixin-init-form
                  mixin/subscribe-form [_]
-  (let [registry (state/react cursor)]
+  (let [state (state/react state/form-state-cursor)
+        registry (state/react state/form-value-cursor)]
     (progress/form
-      (rum/react loading?)
+      (:loading? state)
       (form-info registry))))

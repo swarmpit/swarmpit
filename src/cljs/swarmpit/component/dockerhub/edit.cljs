@@ -14,31 +14,28 @@
 
 (enable-console-print!)
 
-(def cursor [:form])
-
-(defonce loading? (atom false))
-
 (defn- form-public [value]
   (form/comp
     "PUBLIC"
     (form/checkbox
       {:checked value
        :onCheck (fn [_ v]
-                  (state/update-value [:public] v cursor))})))
+                  (state/update-value [:public] v state/form-value-cursor))})))
 
 (defn- user-handler
   [user-id]
   (ajax/get
     (routes/path-for-backend :dockerhub-user {:id user-id})
-    {:state      loading?
+    {:progress   [:loading?]
      :on-success (fn [response]
-                   (state/set-value response cursor))}))
+                   (state/set-value response state/form-value-cursor))}))
 
 (defn- update-user-handler
   [user-id]
   (ajax/post
     (routes/path-for-backend :dockerhub-user-update {:id user-id})
-    {:params     (state/get-value cursor)
+    {:params     (state/get-value state/form-value-cursor)
+     :progress   [:processing?]
      :on-success (fn [_]
                    (dispatch!
                      (routes/path-for-frontend :dockerhub-user-info {:id user-id}))
@@ -48,36 +45,42 @@
                    (message/error
                      (str "User update failed. Reason: " (:error response))))}))
 
+(defn- init-form-state
+  []
+  (state/set-value {:loading?    true
+                    :processing? false} state/form-state-cursor))
+
 (def mixin-init-form
   (mixin/init-form
     (fn [{{:keys [id]} :params}]
+      (init-form-state)
       (user-handler id))))
 
-(rum/defc form-edit < rum/static [user]
+(rum/defc form-edit < rum/static [{:keys [_id username public]}
+                                  {:keys [processing?]}]
   [:div
    [:div.form-panel
     [:div.form-panel-left
-     (panel/info icon/docker
-                 (:username user))]
+     (panel/info icon/docker username)]
     [:div.form-panel-right
-     (comp/mui
-       (comp/raised-button
-         {:onTouchTap #(update-user-handler (:_id user))
-          :label      "Save"
-          :primary    true}))
+     (comp/progress-button
+       {:label      "Save"
+        :primary    true
+        :onTouchTap #(update-user-handler _id)} processing?)
      [:span.form-panel-delimiter]
      (comp/mui
        (comp/raised-button
-         {:href  (routes/path-for-frontend :dockerhub-user-info {:id (:_id user)})
+         {:href  (routes/path-for-frontend :dockerhub-user-info {:id _id})
           :label "Back"}))]]
    [:div.form-edit
     (form/form
       nil
-      (form-public (:public user)))]])
+      (form-public public))]])
 
 (rum/defc form < rum/reactive
                  mixin-init-form [_]
-  (let [user (state/react cursor)]
+  (let [state (state/react state/form-state-cursor)
+        user (state/react state/form-value-cursor)]
     (progress/form
-      (rum/react loading?)
-      (form-edit user))))
+      (:loading? state)
+      (form-edit user state))))

@@ -15,17 +15,13 @@
 
 (enable-console-print!)
 
-(def cursor [:form])
-
-(defonce loading? (atom false))
-
 (defn- user-handler
   [user-id]
   (ajax/get
     (routes/path-for-backend :user {:id user-id})
-    {:state      loading?
+    {:progress   [:loading?]
      :on-success (fn [response]
-                   (state/set-value response cursor))}))
+                   (state/set-value response state/form-value-cursor))}))
 
 (defn- delete-user-handler
   [user-id]
@@ -40,12 +36,17 @@
                    (message/error
                      (str "User removing failed. Reason: " (:error response))))}))
 
+(defn- init-form-state
+  []
+  (state/set-value {:loading? true} state/form-state-cursor))
+
 (def mixin-init-form
   (mixin/init-form
     (fn [{{:keys [id]} :params}]
+      (init-form-state)
       (user-handler id))))
 
-(rum/defc form-info < rum/static [item]
+(rum/defc form-info < rum/static [{:keys [_id] :as item}]
   [:div
    [:div.form-panel
     [:div.form-panel-left
@@ -54,13 +55,13 @@
     [:div.form-panel-right
      (comp/mui
        (comp/raised-button
-         {:href    (routes/path-for-frontend :user-edit {:id (:_id item)})
+         {:href    (routes/path-for-frontend :user-edit {:id _id})
           :label   "Edit"
           :primary true}))
      [:span.form-panel-delimiter]
      (comp/mui
        (comp/raised-button
-         {:onTouchTap #(delete-user-handler (:_id item))
+         {:onTouchTap #(delete-user-handler _id)
           :disabled   (= (storage/user) (:username item))
           :label      "Delete"}))]]
    [:div.form-view
@@ -75,7 +76,8 @@
 (rum/defc form < rum/reactive
                  mixin-init-form
                  mixin/subscribe-form [_]
-  (let [user (state/react cursor)]
+  (let [state (state/react state/form-state-cursor)
+        item (state/react state/form-value-cursor)]
     (progress/form
-      (rum/react loading?)
-      (form-info user))))
+      (:loading? state)
+      (form-info item))))

@@ -8,16 +8,9 @@
 
 (enable-console-print!)
 
-(def cursor [:form :deployment :placement])
+(def form-value-cursor (into state/form-value-cursor [:deployment :placement]))
 
-(defonce placement-list (atom []))
-
-(defn placement-handler
-  []
-  (ajax/get
-    (routes/path-for-backend :placement)
-    {:on-success (fn [response]
-                   (reset! placement-list response))}))
+(def form-state-cursor (conj state/form-state-cursor :placement))
 
 (def headers [{:name  "Rule"
                :width "500px"}])
@@ -33,7 +26,7 @@
                       :fullWidth     true
                       :searchText    value
                       :onUpdateInput (fn [v]
-                                       (state/update-item index :rule v cursor))
+                                       (state/update-item index :rule v form-value-cursor))
                       :dataSource    placement-list}))
 
 (defn- render-placement
@@ -47,12 +40,20 @@
                        placement
                        placement-list
                        render-placement
-                       (fn [index] (state/remove-item index cursor))))
+                       (fn [index] (state/remove-item index form-value-cursor))))
 
 (defn- add-item
   []
-  (state/add-item {:rule ""} cursor))
+  (state/add-item {:rule ""} form-value-cursor))
+
+(defn placement-handler
+  []
+  (ajax/get
+    (routes/path-for-backend :placement)
+    {:on-success (fn [response]
+                   (state/update-value [:list] response form-state-cursor))}))
 
 (rum/defc form < rum/reactive []
-  (let [placement (state/react cursor)]
-    (form-table placement (rum/react placement-list))))
+  (let [{:keys [list]} (state/react form-state-cursor)
+        placement (state/react form-value-cursor)]
+    (form-table placement list)))

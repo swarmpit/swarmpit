@@ -4,18 +4,18 @@
             [swarmpit.router :as router]
             [swarmpit.xhrio :as xhrio]
             [swarmpit.storage :as storage]
+            [swarmpit.component.state :as state]
             [swarmpit.component.message :as message]
             [clojure.walk :refer [keywordize-keys]]))
 
 (defn- command-state
-  [request loading?]
-  (when-let [state (:state request)]
-    (reset! state loading?)))
+  [request progress?]
+  (when-let [progress-cursor (:progress request)]
+    (state/update-value progress-cursor progress? state/form-state-cursor)))
 
 (defn- command-error
   [{:keys [body headers]} status]
   (cond
-    (= 400 status) (str (:error body))
     (and (= 401 status)
          (= "swarmpit" (:x-backend-server headers))) (router/set-location {:handler :login})
     (and (= 403 status)
@@ -25,14 +25,29 @@
     :else (message/error body)))
 
 (defn- command
+  "Customized ajax command:
+
+   params :- req body in case of POST/PUT
+   headers :- req headers
+   progress :- cursor of form progress
+   on-success :- on success handler
+   on-error :- on error handler, if missing default error handling used. Check command-error.
+
+   Example usage:
+
+   {:params     {:test 123}
+    :headers    {:header true}
+    :progress   [:processing?]
+    :on-success (fn [response]
+                   (print response))
+    :on-error   (fn [response]
+                   (print response))}"
   [request]
   {:response-format {:read        identity
                      :description "raw"}
    :params          (:params request)
    :headers         (merge {"Authorization" (storage/get "token")} (:headers request))
-   :finally         (do
-                      (command-state request true)
-                      (:on-call request))
+   :finally         (command-state request true)
    :handler         (fn [xhrio]
                       (command-state request false)
                       (let [resp-body (:body (xhrio/response xhrio))
@@ -57,5 +72,6 @@
 
 (defn post
   [api request]
-  (ajax/POST api (command request)))
+  (ajax/POST api (merge (command request)
+                        {:format :json})))
 

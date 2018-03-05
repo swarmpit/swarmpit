@@ -13,21 +13,6 @@
 
 (enable-console-print!)
 
-(def cursor [:form])
-
-(defonce valid? (atom false))
-
-(defonce valid-ipam? (atom true))
-
-(defonce network-plugins (atom []))
-
-(defn- network-plugin-handler
-  []
-  (ajax/get
-    (routes/path-for-backend :plugin-network)
-    {:on-success (fn [response]
-                   (reset! network-plugins response))}))
-
 (defn- form-name [value]
   (form/comp
     "NAME"
@@ -37,7 +22,7 @@
        :required true
        :value    value
        :onChange (fn [_ v]
-                   (state/update-value [:networkName] v cursor))})))
+                   (state/update-value [:networkName] v state/form-value-cursor))})))
 
 (defn- form-driver [value plugins]
   (form/comp
@@ -45,7 +30,7 @@
     (comp/select-field
       {:value    value
        :onChange (fn [_ _ v]
-                   (state/update-value [:driver] v cursor))}
+                   (state/update-value [:driver] v state/form-value-cursor))}
       (->> plugins
            (map #(comp/menu-item
                    {:key         %
@@ -58,7 +43,7 @@
     (form/checkbox
       {:checked value
        :onCheck (fn [_ v]
-                  (state/update-value [:internal] v cursor))})))
+                  (state/update-value [:internal] v state/form-value-cursor))})))
 
 (defn- form-subnet [value]
   (form/comp
@@ -71,7 +56,7 @@
        :hintText        "e.g. 10.0.0.0/24"
        :value           value
        :onChange        (fn [_ v]
-                          (state/update-value [:ipam :subnet] v cursor))})))
+                          (state/update-value [:ipam :subnet] v state/form-value-cursor))})))
 
 (defn- form-gateway [value]
   (form/comp
@@ -84,66 +69,79 @@
        :hintText        "e.g. 10.0.0.1"
        :value           value
        :onChange        (fn [_ v]
-                          (state/update-value [:ipam :gateway] v cursor))})))
+                          (state/update-value [:ipam :gateway] v state/form-value-cursor))})))
+
+(defn- network-plugin-handler
+  []
+  (ajax/get
+    (routes/path-for-backend :plugin-network)
+    {:on-success (fn [response]
+                   (state/update-value [:plugins] response state/form-state-cursor))}))
 
 (defn- create-network-handler
   []
   (ajax/post
     (routes/path-for-backend :network-create)
-    {:params     (state/get-value cursor)
+    {:params     (state/get-value state/form-value-cursor)
+     :progress   [:processing?]
      :on-success (fn [response]
                    (dispatch!
-                     (routes/path-for-frontend :network-info {:id (:id response)}))
+                     (routes/path-for-frontend :network-info (select-keys response [:id])))
                    (message/info
                      (str "Network " (:Id response) " has been added.")))
      :on-error   (fn [response]
                    (message/error
                      (str "Network creation failed. Reason: " (:error response))))}))
 
-(defn- init-state
+(defn- init-form-state
+  []
+  (state/set-value {:valid?      false
+                    :valid-ipam? true
+                    :processing? false
+                    :plugins     []} state/form-state-cursor))
+
+(defn- init-form-value
   []
   (state/set-value {:networkName nil
                     :driver      "overlay"
                     :internal    false
-                    :ipam        nil} cursor))
+                    :ipam        nil} state/form-value-cursor))
 
 (def mixin-init-form
   (mixin/init-form
     (fn [_]
-      (init-state)
+      (init-form-state)
+      (init-form-value)
       (network-plugin-handler))))
 
 (rum/defc form < rum/reactive
                  mixin-init-form [_]
-  (let [{:keys [name
-                driver
-                internal
-                ipam]} (state/react cursor)]
+  (let [{:keys [name driver internal ipam]} (state/react state/form-value-cursor)
+        {:keys [valid? valid-ipam? processing? plugins]} (state/react state/form-state-cursor)]
     [:div
      [:div.form-panel
       [:div.form-panel-left
        (panel/info icon/networks "New network")]
       [:div.form-panel-right
-       (comp/mui
-         (comp/raised-button
-           {:label      "Create"
-            :disabled   (or (not (rum/react valid?))
-                            (not (rum/react valid-ipam?)))
-            :primary    true
-            :onTouchTap create-network-handler}))]]
+       (comp/progress-button
+         {:label      "Create"
+          :disabled   (or (not valid?)
+                          (not valid-ipam?))
+          :primary    true
+          :onTouchTap create-network-handler} processing?)]]
      [:div.form-view
       [:div.form-view-group
        (form/section "General settings")
        (form/form
-         {:onValid   #(reset! valid? true)
-          :onInvalid #(reset! valid? false)}
+         {:onValid   #(state/update-value [:valid?] true state/form-state-cursor)
+          :onInvalid #(state/update-value [:valid?] false state/form-state-cursor)}
          (form-name name)
-         (form-driver driver (rum/react network-plugins))
+         (form-driver driver plugins)
          (form-internal internal))]
       [:div.form-view-group
        (form/section "IP address management")
        (form/form
-         {:onValid   #(reset! valid-ipam? true)
-          :onInvalid #(reset! valid-ipam? false)}
+         {:onValid   #(state/update-value [:valid-ipam?] true state/form-state-cursor)
+          :onInvalid #(state/update-value [:valid-ipam?] false state/form-state-cursor)}
          (form-subnet (:subnet ipam))
          (form-gateway (:gateway ipam)))]]]))

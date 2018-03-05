@@ -1,6 +1,6 @@
 (ns swarmpit.component.menu
-  (:require [material.component :as comp]
-            [material.icon :as icon]
+  (:require [material.icon :as icon]
+            [material.component :as comp]
             [swarmpit.component.state :as state]
             [swarmpit.storage :as storage]
             [swarmpit.ajax :as ajax]
@@ -9,10 +9,6 @@
             [rum.core :as rum]))
 
 (enable-console-print!)
-
-(def cursor [:layout])
-
-(def docker-api-cursor [:docker :api])
 
 (def drawer-style
   {:boxShadow "none"})
@@ -151,8 +147,7 @@
   (ajax/get
     (routes/path-for-backend :version)
     {:on-success (fn [response]
-                   (state/update-value [:version] (parse-version response) cursor)
-                   (state/set-value response))}))
+                   (state/update-value [:version] (parse-version response) state/layout-cursor))}))
 
 (rum/defc drawer-category < rum/static [name opened?]
   (let [drawer-category-style (if opened?
@@ -193,8 +188,8 @@
 
 (rum/defc drawer < rum/reactive
                    retrieve-version [page-domain]
-  (let [{:keys [opened version]} (state/react cursor)
-        docker-api (state/react docker-api-cursor)
+  (let [{:keys [opened version]} (state/react state/layout-cursor)
+        docker-api (state/react state/docker-api-cursor)
         drawer-container-style (if opened
                                  drawer-container-opened-style
                                  drawer-container-closed-style)]
@@ -210,7 +205,7 @@
            :style                    drawer-style
            :iconElementLeft          drawer-icon
            :onLeftIconButtonTouchTap (fn []
-                                       (state/update-value [:opened] (not opened) cursor))})
+                                       (state/update-value [:opened] (not opened) state/layout-cursor))})
         (comp/menu
           {:key   "menu"
            :style menu-style}

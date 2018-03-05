@@ -10,8 +10,6 @@
 
 (enable-console-print!)
 
-(def cursor [:form])
-
 (def headers [{:name  "Name"
                :width "20%"}
               {:name  "Service"
@@ -25,8 +23,6 @@
 
 (def render-item-keys
   [[:taskName] [:serviceName] [:repository :image] [:nodeName] [:state]])
-
-(defonce loading? (atom false))
 
 (defn render-item-state [value]
   (case value
@@ -59,25 +55,27 @@
   []
   (ajax/get
     (routes/path-for-backend :tasks)
-    {:state      loading?
+    {:progress   [:loading?]
      :on-success (fn [response]
-                   (state/update-value [:items] response cursor))}))
+                   (state/update-value [:items] response state/form-value-cursor))}))
 
-(defn- init-state
+(defn- init-form-state
   []
-  (state/set-value {:filter {:query ""}} cursor))
+  (state/set-value {:loading? false
+                    :filter   {:query ""}} state/form-state-cursor))
 
 (def mixin-init-form
   (mixin/init-form
     (fn [_]
-      (init-state)
+      (init-form-state)
       (tasks-handler))))
 
 (rum/defc form < rum/reactive
                  mixin-init-form
                  mixin/subscribe-form
                  mixin/focus-filter [_]
-  (let [{:keys [filter items]} (state/react cursor)
+  (let [{:keys [items]} (state/react state/form-value-cursor)
+        {:keys [loading? filter]} (state/react state/form-state-cursor)
         filtered-items (list/filter items (:query filter))]
     [:div
      [:div.form-panel
@@ -86,10 +84,10 @@
          {:id       "filter"
           :hintText "Search tasks"
           :onChange (fn [_ v]
-                      (state/update-value [:filter :query] v cursor))})]]
+                      (state/update-value [:filter :query] v state/form-state-cursor))})]]
      (list/table headers
                  (sort-by :serviceName filtered-items)
-                 (rum/react loading?)
+                 loading?
                  render-item
                  render-item-keys
                  onclick-handler)]))

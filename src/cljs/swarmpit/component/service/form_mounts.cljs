@@ -9,23 +9,16 @@
 
 (enable-console-print!)
 
-(def cursor [:form :mounts])
+(def form-value-cursor (conj state/form-value-cursor :mounts))
 
-(defonce volumes (atom []))
-
-(defn volumes-handler
-  []
-  (ajax/get
-    (routes/path-for-backend :volumes)
-    {:on-success (fn [response]
-                   (reset! volumes response))}))
+(def form-state-cursor (conj state/form-state-cursor :mounts))
 
 (defn- normalize-volume
   "Associate volumes with optional data (driver, labels)"
   [volume]
   (let [volume-data (first
                       (filter #(= (:host volume)
-                                  (:volumeName %)) @volumes))]
+                                  (:volumeName %)) (:volumes (state/get-value form-state-cursor))))]
     (-> volume
         (assoc-in [:volumeOptions :labels] (:labels volume-data))
         (assoc-in [:volumeOptions :driver :name] (:driver volume-data))
@@ -34,7 +27,7 @@
 (defn normalize
   "Associate mounts with optional data required for consistency"
   []
-  (->> (state/get-value cursor)
+  (->> (state/get-value form-value-cursor)
        (map (fn [mount] (if (= "volume" (:type mount))
                           (normalize-volume mount)
                           mount)))
@@ -55,7 +48,7 @@
      :key      (str "form-container-path-text-" index)
      :value    value
      :onChange (fn [_ v]
-                 (state/update-item index :containerPath v cursor))}))
+                 (state/update-item index :containerPath v form-value-cursor))}))
 
 (defn- form-host-bind [value index]
   (list/textfield
@@ -63,7 +56,7 @@
      :key      (str "form-bind-path-text-" index)
      :value    value
      :onChange (fn [_ v]
-                 (state/update-item index :host v cursor))}))
+                 (state/update-item index :host v form-value-cursor))}))
 
 (defn- form-host-volume [value index volumes-list]
   (list/selectfield
@@ -72,7 +65,7 @@
      :value     value
      :autoWidth true
      :onChange  (fn [_ _ v]
-                  (state/update-item index :host v cursor))}
+                  (state/update-item index :host v form-value-cursor))}
     (->> volumes-list
          (map #(comp/menu-item
                  {:name        (str "form-volume-item-" (:volumeName %))
@@ -86,7 +79,7 @@
      :key      (str "form-type-select-" index)
      :value    value
      :onChange (fn [_ _ v]
-                 (state/update-item index :type v cursor))}
+                 (state/update-item index :type v form-value-cursor))}
     (comp/menu-item
       {:name        (str "form-type-bind-" index)
        :key         (str "form-type-bind-" index)
@@ -104,7 +97,7 @@
      :key     (str "form-readonly-box-" index)
      :checked value
      :onCheck (fn [_ v]
-                (state/update-item index :readOnly v cursor))}))
+                (state/update-item index :readOnly v form-value-cursor))}))
 
 (defn- render-mounts
   [item index data]
@@ -125,17 +118,25 @@
               mounts
               volumes-list
               render-mounts
-              (fn [index] (state/remove-item index cursor))))
+              (fn [index] (state/remove-item index form-value-cursor))))
 
 (defn- add-item
   []
   (state/add-item {:type          "bind"
                    :containerPath ""
                    :host          ""
-                   :readOnly      false} cursor))
+                   :readOnly      false} form-value-cursor))
+
+(defn volumes-handler
+  []
+  (ajax/get
+    (routes/path-for-backend :volumes)
+    {:on-success (fn [response]
+                   (state/update-value [:volumes] response form-state-cursor))}))
 
 (rum/defc form < rum/reactive []
-  (let [mounts (state/react cursor)]
+  (let [{:keys [volumes]} (state/react form-state-cursor)
+        mounts (state/react form-value-cursor)]
     (if (empty? mounts)
       (form/value "No mounts defined for the service.")
-      (form-table mounts (rum/react volumes)))))
+      (form-table mounts volumes))))

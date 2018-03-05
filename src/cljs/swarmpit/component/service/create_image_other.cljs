@@ -16,12 +16,12 @@
             [sablono.core :refer-macros [html]]
             [rum.core :as rum]))
 
-(def cursor [:form :other])
+(def form-value-cursor (conj state/form-value-cursor :other))
+
+(def form-state-cursor (conj state/form-state-cursor :other))
 
 (def headers [{:name  "Name"
                :width "100%"}])
-
-(defonce searching? (atom false))
 
 (defn- render-item
   [item]
@@ -32,13 +32,27 @@
   [items predicate]
   (filter #(string/includes? (:name %) predicate) items))
 
+(defn- selected-registry
+  [registry-id registries]
+  (-> (filter #(= registry-id (:_id %)) registries)
+      (first)))
+
+(defn- onclick-handler
+  [index registry repositories]
+  (let [repository (fn [index] (:name (nth repositories index)))]
+    (dispatch!
+      (routes/path-for-frontend :service-create-config
+                                {}
+                                {:repository (du/repository (:url registry)
+                                                            (repository index))}))))
+
 (defn- repository-handler
   [registry-id]
   (ajax/get
     (routes/path-for-backend :registry-repositories {:id registry-id})
-    {:state      searching?
+    {:progress   [:other :searching?]
      :on-success (fn [response]
-                   (state/update-value [:repositories] response cursor))
+                   (state/set-value response form-value-cursor))
      :on-error   (fn [response]
                    (message/error
                      (str "Repositories fetching failed. Reason: " (:error response))))}))
@@ -52,20 +66,18 @@
            [:span.owner-item (str " [" (:owner registry) "]")]])))
 
 (defn- form-registry [registry registries]
-  (let [registry-by-id (fn [id] (first (filter #(= id (:_id %)) registries)))]
-    (form/comp
-      "REGISTRY"
-      (comp/select-field
-        {:value    (:_id registry)
-         :onChange (fn [_ _ v]
-                     (state/update-value [:data] [] cursor)
-                     (state/update-value [:registry] (registry-by-id v) cursor)
-                     (repository-handler v))}
-        (->> registries
-             (map #(comp/menu-item
-                     {:key         (:_id %)
-                      :value       (:_id %)
-                      :primaryText (form-registry-label %)})))))))
+  (form/comp
+    "REGISTRY"
+    (comp/select-field
+      {:value    (:_id registry)
+       :onChange (fn [_ _ v]
+                   (state/update-value [:registry] (selected-registry v registries) form-state-cursor)
+                   (repository-handler v))}
+      (->> registries
+           (map #(comp/menu-item
+                   {:key         (:_id %)
+                    :value       (:_id %)
+                    :primaryText (form-registry-label %)}))))))
 
 (defn- form-repository [repository]
   (form/comp
@@ -74,51 +86,45 @@
       {:hintText "Filter by name"
        :value    repository
        :onChange (fn [_ v]
-                   (state/update-value [:repository] v cursor))})))
+                   (state/update-value [:repository] v form-state-cursor))})))
 
-(defn- init-state
+(defn- init-form-state
   [registry]
-  (state/set-value {:repositories []
-                    :repository   ""
-                    :registry     registry} cursor))
+  (state/set-value {:searching? false
+                    :repository ""
+                    :registry   registry} form-state-cursor))
 
 (def mixin-init-form
-  (mixin/init-form-tab
+  (mixin/init-tab
     (fn [registries]
-      (init-state (first registries)))))
+      (init-form-state (first registries)))))
 
 (rum/defc form-list < rum/static [searching? registry repositories]
-  (let [repository (fn [index] (:name (nth repositories index)))]
-    [:div.form-edit-loader
-     (if searching?
-       (progress/loading)
-       (progress/loaded))
-     (comp/mui
-       (comp/table
-         {:key         "tbl"
-          :selectable  false
-          :onCellClick (fn [i]
-                         (dispatch!
-                           (routes/path-for-frontend :service-create-config
-                                                     {}
-                                                     {:repository (du/repository
-                                                                    (:url registry)
-                                                                    (repository i))})))}
-         (list/table-header headers)
-         (list/table-body headers
-                          repositories
-                          render-item
-                          [[:name]])))]))
+  [:div.form-edit-loader
+   (if searching?
+     (progress/loading)
+     (progress/loaded))
+   (comp/mui
+     (comp/table
+       {:key         "tbl"
+        :selectable  false
+        :onCellClick (fn [i] (onclick-handler i registry repositories))}
+       (list/table-header headers)
+       (list/table-body headers
+                        repositories
+                        render-item
+                        [[:name]])))])
 
 (rum/defc form < rum/reactive
                  mixin-init-form [registries]
-  (let [{:keys [repository registry repositories]} (state/react cursor)
+  (let [{:keys [repository registry searching?]} (state/react form-state-cursor)
+        repositories (state/react form-value-cursor)
         filtered-repositories (filter-items repositories repository)]
     (if (some? registry)
       [:div.form-edit
        (form-registry registry registries)
        (form-repository repository)
-       (form-list (rum/react searching?) registry filtered-repositories)]
+       (form-list searching? registry filtered-repositories)]
       [:div.form-edit
        (if (storage/admin?)
          (form/icon-value icon/info [:span "No custom registries found. Add new " [:a {:href (routes/path-for-frontend :registry-create)} "registry."]])

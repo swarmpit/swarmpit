@@ -10,11 +10,9 @@
             [sablono.core :refer-macros [html]]
             [rum.core :as rum]))
 
-(def cursor [:form])
-
 (defn- auto-scroll!
   []
-  (when (true? (:autoscroll (state/get-value cursor)))
+  (when (true? (:autoscroll (state/get-value state/form-state-cursor)))
     (let [el (.getElementById js/document "service-log")]
       (set! (.-scrollTop el)
             (.-scrollHeight el)))))
@@ -28,54 +26,51 @@
   (ajax/get
     (routes/path-for-backend :service {:id service-id})
     {:on-success (fn [response]
-                   (state/update-value [:service] response cursor))}))
+                   (state/update-value [:service] response state/form-state-cursor))}))
 
 (defn- log-handler
   [service-id]
+  (state/update-value [:fetching] true state/form-state-cursor)
   (ajax/get
     (routes/path-for-backend :service-logs {:id service-id})
-    {:on-call    (state/update-value [:fetching] true cursor)
-     :on-success (fn [response]
-                   (state/update-value [:initialized] true cursor)
-                   (state/update-value [:fetching] false cursor)
-                   (state/update-value [:data] response cursor))
-     :on-error   #(state/update-value [:error] true cursor)}))
+    {:on-success (fn [response]
+                   (state/update-value [:initialized] true state/form-state-cursor)
+                   (state/update-value [:fetching] false state/form-state-cursor)
+                   (state/set-value response state/form-value-cursor))
+     :on-error   #(state/update-value [:error] true state/form-state-cursor)}))
 
 (defn- log-append-handler
   [service-id from-timestamp]
+  (state/update-value [:fetching] true state/form-state-cursor)
   (ajax/get
     (routes/path-for-backend :service-logs {:id service-id})
-    {:on-call    (state/update-value [:fetching] true cursor)
-     :params     {:from from-timestamp}
+    {:params     {:from from-timestamp}
      :on-success (fn [response]
-                   (state/update-value [:fetching] false cursor)
-                   (state/update-value [:data] (-> (state/get-value cursor)
-                                                   :data
-                                                   (concat response)) cursor))}))
+                   (state/update-value [:fetching] false state/form-state-cursor)
+                   (state/set-value (-> (state/get-value state/form-value-cursor)
+                                        (concat response)) state/form-value-cursor))}))
 
-(defn- init-state
+(defn- init-form-state
   []
   (state/set-value {:filter      {:predicate ""}
                     :initialized false
                     :fetching    false
                     :autoscroll  false
                     :error       false
-                    :timestamp   false
-                    :data        []} cursor))
+                    :timestamp   false}))
 
 (def mixin-refresh-form
   (mixin/refresh-form
     (fn [{{:keys [id]} :params}]
-      (when (not (:fetching (state/get-value cursor)))
-        (log-append-handler id (-> (state/get-value cursor)
-                                   :data
+      (when (not (:fetching (state/get-value state/form-state-cursor)))
+        (log-append-handler id (-> (state/get-value state/form-value-cursor)
                                    (last)
                                    :timestamp))))))
 
 (def mixin-init-form
   (mixin/init-form
     (fn [{{:keys [id]} :params}]
-      (init-state)
+      (init-form-state)
       (service-handler id)
       (log-handler id))))
 
@@ -91,8 +86,9 @@
                  mixin-refresh-form
                  {:did-mount  (fn [state] (auto-scroll!) state)
                   :did-update (fn [state] (auto-scroll!) state)} [{{:keys [id]} :params}]
-  (let [{:keys [filter data autoscroll timestamp initialized error service]} (state/react cursor)
-        filtered-items (filter-items data (:predicate filter))]
+  (let [{:keys [filter autoscroll timestamp initialized error service]} (state/react state/form-state-cursor)
+        logs (state/react state/form-value-cursor)
+        filtered-logs (filter-items logs (:predicate filter))]
     [:div
      [:div.form-panel
       [:div.form-panel-left
@@ -108,24 +104,24 @@
        (panel/text-field
          {:hintText "Search in log"
           :onChange (fn [_ v]
-                      (state/update-value [:filter :predicate] v cursor))})
+                      (state/update-value [:filter :predicate] v state/form-state-cursor))})
        [:span.form-panel-space]
        (panel/checkbox
          {:checked timestamp
           :label   "Show timestamp"
           :onCheck (fn [_ v]
-                     (state/update-value [:timestamp] v cursor))})]
+                     (state/update-value [:timestamp] v state/form-state-cursor))})]
       [:div.form-panel-right
        (panel/checkbox
          {:checked autoscroll
           :label   "Auto-scroll logs"
           :onCheck (fn [_ v]
-                     (state/update-value [:autoscroll] v cursor))})]]
+                     (state/update-value [:autoscroll] v state/form-state-cursor))})]]
      [:div.log#service-log
       (cond
         error [:span "Logs for this service couldn't be fetched."]
-        (and (empty? filtered-items) initialized) [:span "Log is empty in this service."]
+        (and (empty? filtered-logs) initialized) [:span "Log is empty in this service."]
         (not initialized) [:span "Loading..."]
         :else (map
                 (fn [item]
-                  (line item timestamp)) filtered-items))]]))
+                  (line item timestamp)) filtered-logs))]]))

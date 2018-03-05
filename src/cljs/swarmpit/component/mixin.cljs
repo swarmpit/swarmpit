@@ -25,7 +25,7 @@
                    (state/reset-form)
                    state)})
 
-(defn init-form-tab
+(defn init-tab
   [handler]
   {:init (fn [state _]
            (handler (first (:rum/args state)))

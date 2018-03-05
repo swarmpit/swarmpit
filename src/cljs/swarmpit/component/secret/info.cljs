@@ -16,24 +16,20 @@
 
 (enable-console-print!)
 
-(def cursor [:form])
-
-(defonce loading? (atom false))
-
 (defn- secret-services-handler
   [secret-id]
   (ajax/get
     (routes/path-for-backend :secret-services {:id secret-id})
     {:on-success (fn [response]
-                   (state/update-value [:services] response cursor))}))
+                   (state/update-value [:services] response state/form-value-cursor))}))
 
 (defn- secret-handler
   [secret-id]
   (ajax/get
     (routes/path-for-backend :secret {:id secret-id})
-    {:state      loading?
+    {:progress   [:loading?]
      :on-success (fn [response]
-                   (state/update-value [:secret] response cursor))}))
+                   (state/update-value [:secret] response state/form-value-cursor))}))
 
 (defn- delete-secret-handler
   [secret-id]
@@ -48,18 +44,18 @@
                    (message/error
                      (str "Secret removing failed. Reason: " (:error response))))}))
 
-(defn- init-state
+(defn- init-form-state
   []
-  (state/set-value {:secret   {}
-                    :services []} cursor))
+  (state/set-value {:loading? true} state/form-state-cursor))
 
 (def mixin-init-form
   (mixin/init-form
     (fn [{{:keys [id]} :params}]
+      (init-form-state)
       (secret-handler id)
       (secret-services-handler id))))
 
-(rum/defc form-info < rum/static [secret services]
+(rum/defc form-info < rum/static [{:keys [secret services]}]
   [:div
    [:div.form-panel
     [:div.form-panel-left
@@ -88,7 +84,8 @@
 (rum/defc form < rum/reactive
                  mixin-init-form
                  mixin/subscribe-form [_]
-  (let [{:keys [secret services]} (state/react cursor)]
+  (let [state (state/react state/form-state-cursor)
+        item (state/react state/form-value-cursor)]
     (progress/form
-      (rum/react loading?)
-      (form-info secret services))))
+      (:loading? state)
+      (form-info item))))

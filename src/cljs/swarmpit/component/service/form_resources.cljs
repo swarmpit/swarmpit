@@ -1,7 +1,7 @@
 (ns swarmpit.component.service.form-resources
-  (:require [material.component :as comp]
+  (:require [material.icon :as icon]
+            [material.component :as comp]
             [material.component.form :as form]
-            [material.icon :as icon]
             [swarmpit.component.parser :refer [parse-int parse-float]]
             [swarmpit.component.state :as state]
             [sablono.core :refer-macros [html]]
@@ -9,9 +9,9 @@
 
 (enable-console-print!)
 
-(def cursor [:form :resources])
+(def form-value-cursor (conj state/form-value-cursor :resources))
 
-(defonce valid? (atom true))
+(def form-state-cursor (conj state/form-state-cursor :resources))
 
 (defn- cpu-value
   [value]
@@ -28,7 +28,7 @@
                       :defaultValue 0
                       :value        value
                       :onChange     (fn [_ v]
-                                      (state/update-value [:reservation :cpu] (parse-float v) cursor))
+                                      (state/update-value [:reservation :cpu] (parse-float v) form-value-cursor))
                       :sliderStyle  #js {:marginTop "14px"}})))
 
 (defn- form-memory-reservation [value]
@@ -43,7 +43,7 @@
        :validationError "Please use minimum of 4 MB or leave blank for unlimited"
        :value           value
        :onChange        (fn [_ v]
-                          (state/update-value [:reservation :memory] (parse-int v) cursor))})))
+                          (state/update-value [:reservation :memory] (parse-int v) form-value-cursor))})))
 
 (defn- form-cpu-limit [value]
   (form/comp
@@ -54,7 +54,7 @@
                       :defaultValue 0
                       :value        value
                       :onChange     (fn [_ v]
-                                      (state/update-value [:limit :cpu] (parse-float v) cursor))
+                                      (state/update-value [:limit :cpu] (parse-float v) form-value-cursor))
                       :sliderStyle  #js {:marginTop "14px"}})))
 
 (defn- form-memory-limit [value]
@@ -69,14 +69,14 @@
        :validationError "Please use minimum of 4 MB or leave blank for unlimited"
        :value           value
        :onChange        (fn [_ v]
-                          (state/update-value [:limit :memory] (parse-int v) cursor))})))
+                          (state/update-value [:limit :memory] (parse-int v) form-value-cursor))})))
 
 (rum/defc form < rum/reactive []
-  (let [{:keys [reservation limit]} (state/react cursor)]
+  (let [{:keys [reservation limit]} (state/react form-value-cursor)]
     [:div.form-edit
      (form/form
-       {:onValid   #(reset! valid? true)
-        :onInvalid #(reset! valid? false)}
+       {:onValid   #(state/update-value [:valid?] true form-state-cursor)
+        :onInvalid #(state/update-value [:valid?] false form-state-cursor)}
        (html (form/subsection "Reservation"))
        (html (form/icon-value icon/info [:span "Minimal resource availability to run a task. Empty for unlimited."]))
        (form-cpu-reservation (:cpu reservation))

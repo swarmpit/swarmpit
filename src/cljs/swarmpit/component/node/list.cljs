@@ -12,8 +12,6 @@
 
 (enable-console-print!)
 
-(def cursor [:form])
-
 (defn- node-item-state [value]
   (case value
     "ready" (label/green value)
@@ -56,23 +54,24 @@
   (ajax/get
     (routes/path-for-backend :nodes)
     {:on-success (fn [response]
-                   (state/update-value [:items] response cursor))}))
+                   (state/update-value [:items] response state/form-value-cursor))}))
 
-(defn- init-state
+(defn- init-form-state
   []
-  (state/set-value {:filter {:query ""}} cursor))
+  (state/set-value {:filter {:query ""}} state/form-state-cursor))
 
 (def mixin-init-form
   (mixin/init-form
     (fn [_]
-      (init-state)
+      (init-form-state)
       (nodes-handler))))
 
 (rum/defc form < rum/reactive
                  mixin-init-form
                  mixin/subscribe-form
                  mixin/focus-filter [_]
-  (let [{:keys [filter items]} (state/react cursor)
+  (let [{:keys [items]} (state/react state/form-value-cursor)
+        {:keys [filter]} (state/react state/form-state-cursor)
         filtered-items (list/filter items (:query filter))]
     [:div
      [:div.form-panel
@@ -81,7 +80,7 @@
          {:id       "filter"
           :hintText "Search nodes"
           :onChange (fn [_ v]
-                      (state/update-value [:filter :query] v cursor))})]]
+                      (state/update-value [:filter :query] v state/form-state-cursor))})]]
      [:div.content-grid.mdl-grid
       (->> (sort-by :nodeName filtered-items)
            (map #(node-item %)))]]))

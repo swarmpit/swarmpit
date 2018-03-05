@@ -10,16 +10,9 @@
 
 (enable-console-print!)
 
-(def cursor [:form :secrets])
+(def form-value-cursor (conj state/form-value-cursor :secrets))
 
-(defonce secrets-list (atom []))
-
-(defn secrets-handler
-  []
-  (ajax/get
-    (routes/path-for-backend :secrets)
-    {:on-success (fn [response]
-                   (reset! secrets-list response))}))
+(def form-state-cursor (conj state/form-state-cursor :secrets))
 
 (def headers [{:name  "Name"
                :width "35%"}
@@ -37,7 +30,7 @@
      :key      (str "form-secret-select-" index)
      :value    value
      :onChange (fn [_ _ v]
-                 (state/update-item index :secretName v cursor))}
+                 (state/update-item index :secretName v form-value-cursor))}
     (->> secrets-list
          (map #(comp/menu-item
                  {:name        (str "form-secret-item-" (:secretName %))
@@ -53,7 +46,7 @@
                  name)
      :value    value
      :onChange (fn [_ v]
-                 (state/update-item index :secretTarget v cursor))}))
+                 (state/update-item index :secretTarget v form-value-cursor))}))
 
 (defn- render-secrets
   [item index data]
@@ -67,18 +60,25 @@
               secrets
               secrets-list
               render-secrets
-              (fn [index] (state/remove-item index cursor))))
+              (fn [index] (state/remove-item index form-value-cursor))))
 
 (defn- add-item
   []
   (state/add-item {:secretName   ""
-                   :secretTarget ""} cursor))
+                   :secretTarget ""} form-value-cursor))
+
+(defn secrets-handler
+  []
+  (ajax/get
+    (routes/path-for-backend :secrets)
+    {:on-success (fn [response]
+                   (state/update-value [:list] response form-state-cursor))}))
 
 (rum/defc form < rum/reactive []
-  (let [secrets-list (rum/react secrets-list)
-        secrets (state/react cursor)]
+  (let [{:keys [list]} (state/react form-state-cursor)
+        secrets (state/react form-value-cursor)]
     (if (empty? secrets)
       (form/value "No secrets defined for the service.")
-      (if (empty? secrets-list)
+      (if (empty? list)
         undefined-info
-        (form-table secrets secrets-list)))))
+        (form-table secrets list)))))

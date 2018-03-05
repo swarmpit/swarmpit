@@ -9,20 +9,9 @@
 
 (enable-console-print!)
 
-(def cursor [:form :settings])
+(def form-value-cursor (conj state/form-value-cursor :settings))
 
-(defonce valid? (atom false))
-
-(defonce tags (atom []))
-
-(defn tags-handler
-  [repository]
-  (ajax/get
-    (routes/path-for-backend :repository-tags)
-    {:params     {:repository repository}
-     :on-success (fn [response]
-                   (reset! tags response))
-     :on-error   (fn [_])}))
+(def form-state-cursor (conj state/form-state-cursor :settings))
 
 (def form-mode-style
   {:display   "flex"
@@ -51,7 +40,7 @@
       {:name          "image-tag"
        :key           "image-tag"
        :searchText    (:tag value)
-       :onUpdateInput (fn [v] (state/update-value [:repository :tag] v cursor))
+       :onUpdateInput (fn [v] (state/update-value [:repository :tag] v form-value-cursor))
        :dataSource    tags})))
 
 (defn- form-image-tag-preloaded [value tags]
@@ -61,7 +50,7 @@
     (comp/autocomplete {:name          "imageTagAuto"
                         :key           "imageTagAuto"
                         :searchText    (:tag value)
-                        :onUpdateInput (fn [v] (state/update-value [:repository :tag] v cursor))
+                        :onUpdateInput (fn [v] (state/update-value [:repository :tag] v form-value-cursor))
                         :onNewRequest  (fn [_] (ports/load-suggestable-ports value))
                         :dataSource    tags})))
 
@@ -75,7 +64,7 @@
        :disabled update-form?
        :value    value
        :onChange (fn [_ v]
-                   (state/update-value [:serviceName] v cursor))})))
+                   (state/update-value [:serviceName] v form-value-cursor))})))
 
 (defn- form-mode [value update-form?]
   (form/comp
@@ -86,7 +75,7 @@
        :style         form-mode-style
        :valueSelected value
        :onChange      (fn [_ v]
-                        (state/update-value [:mode] v cursor))}
+                        (state/update-value [:mode] v form-value-cursor))}
       (comp/radio-button
         {:name     "replicated-mode"
          :key      "replicated-mode"
@@ -111,21 +100,28 @@
        :min      0
        :value    value
        :onChange (fn [_ v]
-                   (state/update-value [:replicas] (js/parseInt v) cursor))})))
+                   (state/update-value [:replicas] (js/parseInt v) form-value-cursor))})))
+
+(defn tags-handler
+  [repository]
+  (ajax/get
+    (routes/path-for-backend :repository-tags)
+    {:params     {:repository repository}
+     :on-success (fn [response]
+                   (state/update-value [:tags] response form-state-cursor))
+     :on-error   (fn [_])}))
 
 (rum/defc form < rum/reactive [update-form?]
-  (let [{:keys [repository
-                serviceName
-                mode
-                replicas]} (state/react cursor)]
+  (let [{:keys [repository serviceName mode replicas]} (state/react form-value-cursor)
+        {:keys [tags]} (state/react form-state-cursor)]
     [:div.form-edit
      (form/form
-       {:onValid   #(reset! valid? true)
-        :onInvalid #(reset! valid? false)}
+       {:onValid   #(state/update-value [:valid?] true form-state-cursor)
+        :onInvalid #(state/update-value [:valid?] false form-state-cursor)}
        (form-image (:name repository))
        (if update-form?
-         (form-image-tag repository (rum/react tags))
-         (form-image-tag-preloaded repository (rum/react tags)))
+         (form-image-tag repository tags)
+         (form-image-tag-preloaded repository tags))
        (form-name serviceName update-form?)
        (form-mode mode update-form?)
        (when (= "replicated" mode)

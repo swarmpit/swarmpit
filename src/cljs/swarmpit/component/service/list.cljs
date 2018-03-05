@@ -12,8 +12,6 @@
 
 (enable-console-print!)
 
-(def cursor [:form])
-
 (def headers [{:name  "Name"
                :width "20%"}
               {:name  "Image"
@@ -74,24 +72,26 @@
     (routes/path-for-backend :services)
     {:state      loading?
      :on-success (fn [response]
-                   (state/update-value [:items] response cursor))}))
+                   (state/update-value [:items] response state/form-value-cursor))}))
 
-(defn- init-state
+(defn- init-form-state
   []
-  (state/set-value {:filter {:query ""}} cursor))
+  (state/set-value {:loading? false
+                    :filter   {:query ""}} state/form-state-cursor))
 
 (def mixin-init-form
   (mixin/init-form
     (fn [_]
-      (init-state)
+      (init-form-state)
       (services-handler))))
 
 (rum/defc form < rum/reactive
                  mixin-init-form
                  mixin/subscribe-form
                  mixin/focus-filter [_]
-  (let [{:keys [filter items]} (state/react cursor)
-        filtered-items (list/filter items (:query filter))]
+  (let [{:keys [items]} (state/react state/form-value-cursor)
+        {:keys [loading? filter]} (state/react state/form-state-cursor)
+        filtered-items (list/filter items (:query filter))]services-handler
     [:div
      [:div.form-panel
       [:div.form-panel-left
@@ -99,7 +99,7 @@
          {:id       "filter"
           :hintText "Search services"
           :onChange (fn [_ v]
-                      (state/update-value [:filter :query] v cursor))})]
+                      (state/update-value [:filter :query] v state/form-state-cursor))})]
       [:div.form-panel-right
        (comp/mui
          (comp/raised-button
@@ -108,7 +108,7 @@
             :primary true}))]]
      (list/table headers
                  (sort-by :serviceName filtered-items)
-                 (rum/react loading?)
+                 loading?
                  render-item
                  render-item-keys
                  onclick-handler)]))

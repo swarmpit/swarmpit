@@ -9,19 +9,9 @@
 
 (enable-console-print!)
 
-(def cursor [:form :networks])
+(def form-value-cursor (conj state/form-value-cursor :networks))
 
-(defonce networks-list (atom []))
-
-(defn networks-handler
-  []
-  (ajax/get
-    (routes/path-for-backend :networks)
-    {:on-success (fn [response]
-                   (reset! networks-list
-                           (->> response
-                                (filter #(= "swarm" (:scope %)))
-                                (into []))))}))
+(def form-state-cursor (conj state/form-state-cursor :networks))
 
 (def headers [{:name  "Name"
                :width "20%"}
@@ -40,7 +30,7 @@
      :key      (str "form-network-select-" index)
      :value    value
      :onChange (fn [_ _ v]
-                 (state/update-item index :networkName v cursor))}
+                 (state/update-item index :networkName v form-value-cursor))}
     (->> networks-list
          (map #(comp/menu-item
                  {:name        (str "form-network-item-" (:networkName %))
@@ -60,14 +50,25 @@
                        networks
                        networks-list
                        render-networks
-                       (fn [index] (state/remove-item index cursor))))
+                       (fn [index] (state/remove-item index form-value-cursor))))
 
 (defn- add-item
   []
-  (state/add-item {:networkName ""} cursor))
+  (state/add-item {:networkName ""} form-value-cursor))
+
+(defn networks-handler
+  []
+  (ajax/get
+    (routes/path-for-backend :networks)
+    {:on-success (fn [response]
+                   (let [resp (->> response
+                                   (filter #(= "swarm" (:scope %)))
+                                   (into []))]
+                     (state/update-value [:list] resp form-state-cursor)))}))
 
 (rum/defc form < rum/reactive []
-  (let [networks (state/react cursor)]
+  (let [{:keys [list]} (state/react form-state-cursor)
+        networks (state/react form-value-cursor)]
     (if (empty? networks)
       (form/value "Service is not connected to any networks.")
-      (form-table networks (rum/react networks-list)))))
+      (form-table networks list))))

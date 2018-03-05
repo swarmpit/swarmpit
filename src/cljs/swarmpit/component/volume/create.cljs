@@ -13,24 +13,19 @@
 
 (enable-console-print!)
 
-(def cursor [:form])
-
-(defonce valid? (atom false))
-
-(defonce volume-plugins (atom []))
-
 (defn- volume-plugin-handler
   []
   (ajax/get
     (routes/path-for-backend :plugin-volume)
     {:on-success (fn [response]
-                   (reset! volume-plugins response))}))
+                   (state/update-value [:plugins] response state/form-state-cursor))}))
 
 (defn- create-volume-handler
   []
   (ajax/post
     (routes/path-for-backend :volume-create)
-    {:params     (state/get-value cursor)
+    {:params     (state/get-value state/form-value-cursor)
+     :progress   [:processing?]
      :on-success (fn [response]
                    (dispatch!
                      (routes/path-for-frontend :volume-info {:name (:volumeName response)}))
@@ -49,7 +44,7 @@
        :required true
        :value    value
        :onChange (fn [_ v]
-                   (state/update-value [:volumeName] v cursor))})))
+                   (state/update-value [:volumeName] v state/form-value-cursor))})))
 
 (defn- form-driver [value plugins]
   (form/comp
@@ -57,42 +52,48 @@
     (comp/select-field
       {:value    value
        :onChange (fn [_ _ v]
-                   (state/update-value [:driver] v cursor))}
+                   (state/update-value [:driver] v state/form-value-cursor))}
       (->> plugins
            (map #(comp/menu-item
                    {:key         %
                     :value       %
                     :primaryText %}))))))
 
-(defn- init-state
+(defn- init-form-state
+  []
+  (state/set-value {:valid?      false
+                    :processing? false
+                    :plugins     []} state/form-state-cursor))
+
+(defn- init-form-value
   []
   (state/set-value {:volumeName nil
-                    :driver     "local"} cursor))
+                    :driver     "local"} state/form-value-cursor))
 
 (def mixin-init-form
   (mixin/init-form
     (fn [_]
-      (init-state)
+      (init-form-state)
+      (init-form-value)
       (volume-plugin-handler))))
 
 (rum/defc form < rum/reactive
                  mixin-init-form [_]
-  (let [{:keys [volumeName
-                driver]} (state/react cursor)]
+  (let [{:keys [volumeName driver]} (state/react state/form-value-cursor)
+        {:keys [valid? processing? plugins]} (state/react state/form-state-cursor)]
     [:div
      [:div.form-panel
       [:div.form-panel-left
        (panel/info icon/networks "New volume")]
       [:div.form-panel-right
-       (comp/mui
-         (comp/raised-button
-           {:label      "Create"
-            :disabled   (not (rum/react valid?))
-            :primary    true
-            :onTouchTap create-volume-handler}))]]
+       (comp/progress-button
+         {:label      "Create"
+          :disabled   (not valid?)
+          :primary    true
+          :onTouchTap create-volume-handler} processing?)]]
      [:div.form-edit
-       (form/form
-         {:onValid   #(reset! valid? true)
-          :onInvalid #(reset! valid? false)}
-         (form-name volumeName)
-         (form-driver driver (rum/react volume-plugins)))]]))
+      (form/form
+        {:onValid   #(state/update-value [:valid?] true state/form-state-cursor)
+         :onInvalid #(state/update-value [:valid?] false state/form-state-cursor)}
+        (form-name volumeName)
+        (form-driver driver plugins))]]))

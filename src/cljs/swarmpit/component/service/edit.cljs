@@ -26,10 +26,6 @@
 
 (enable-console-print!)
 
-(def cursor [:form])
-
-(defonce loading? (atom false))
-
 (defn render-item
   [val]
   (if (boolean? val)
@@ -40,24 +36,24 @@
   [service-id]
   (ajax/get
     (routes/path-for-backend :service {:id service-id})
-    {:state loading?
+    {:progress [:loading?]
      :on-success
-            (fn [service]
-              (settings/tags-handler (-> service :repository :name))
-              (state/set-value (select-keys service [:repository :version :serviceName :mode :replicas :stack]) settings/cursor)
-              (state/set-value (:ports service) ports/cursor)
-              (state/set-value (:mounts service) mounts/cursor)
-              (state/set-value (->> (:secrets service)
-                                    (map #(select-keys % [:secretName :secretTarget]))
-                                    (into [])) secrets/cursor)
-              (state/set-value (->> (:configs service)
-                                    (map #(select-keys % [:configName :configTarget]))
-                                    (into [])) configs/cursor)
-              (state/set-value (:variables service) variables/cursor)
-              (state/set-value (:labels service) labels/cursor)
-              (state/set-value (:logdriver service) logdriver/cursor)
-              (state/set-value (:resources service) resources/cursor)
-              (state/set-value (:deployment service) deployment/cursor))}))
+               (fn [service]
+                 (settings/tags-handler (-> service :repository :name))
+                 (state/set-value (select-keys service [:repository :version :serviceName :mode :replicas :stack]) settings/form-value-cursor)
+                 (state/set-value (:ports service) ports/form-value-cursor)
+                 (state/set-value (:mounts service) mounts/form-value-cursor)
+                 (state/set-value (->> (:secrets service)
+                                       (map #(select-keys % [:secretName :secretTarget]))
+                                       (into [])) secrets/form-value-cursor)
+                 (state/set-value (->> (:configs service)
+                                       (map #(select-keys % [:configName :configTarget]))
+                                       (into [])) configs/form-value-cursor)
+                 (state/set-value (:variables service) variables/form-value-cursor)
+                 (state/set-value (:labels service) labels/form-value-cursor)
+                 (state/set-value (:logdriver service) logdriver/form-value-cursor)
+                 (state/set-value (:resources service) resources/form-value-cursor)
+                 (state/set-value (:deployment service) deployment/form-value-cursor))}))
 
 (defn- service-networks-handler
   [service-id]
@@ -67,33 +63,34 @@
      (fn [networks]
        (state/set-value (->> networks
                              (map #(select-keys % [:networkName :serviceAliases]))
-                             (into [])) networks/cursor))}))
+                             (into [])) networks/form-value-cursor))}))
 
 (defn- update-service-handler
   [service-id]
-  (let [settings (state/get-value settings/cursor)
-        ports (state/get-value ports/cursor)
-        networks (state/get-value networks/cursor)
-        secrets (state/get-value secrets/cursor)
-        configs (state/get-value configs/cursor)
-        variables (state/get-value variables/cursor)
-        labels (state/get-value labels/cursor)
-        logdriver (state/get-value logdriver/cursor)
-        resources (state/get-value resources/cursor)
-        deployment (state/get-value deployment/cursor)]
+  (let [settings (state/get-value settings/form-value-cursor)
+        ports (state/get-value ports/form-value-cursor)
+        networks (state/get-value networks/form-value-cursor)
+        secrets (state/get-value secrets/form-value-cursor)
+        configs (state/get-value configs/form-value-cursor)
+        variables (state/get-value variables/form-value-cursor)
+        labels (state/get-value labels/form-value-cursor)
+        logdriver (state/get-value logdriver/form-value-cursor)
+        resources (state/get-value resources/form-value-cursor)
+        deployment (state/get-value deployment/form-value-cursor)]
     (ajax/post
       (routes/path-for-backend :service-update {:id service-id})
       {:params     (-> settings
                        (assoc :ports ports)
                        (assoc :networks networks)
                        (assoc :mounts (mounts/normalize))
-                       (assoc :secrets (when (not (empty? @secrets/secrets-list)) secrets))
-                       (assoc :configs (when (not (empty? @configs/configs-list)) configs))
+                       (assoc :secrets (when-not (empty? (state/get-value (conj secrets/form-state-cursor :list))) secrets))
+                       (assoc :configs (when-not (empty? (state/get-value (conj configs/form-state-cursor :list))) configs))
                        (assoc :variables variables)
                        (assoc :labels labels)
                        (assoc :logdriver logdriver)
                        (assoc :resources resources)
                        (assoc :deployment deployment))
+       :progress   [:processing?]
        :on-success (fn [_]
                      (dispatch!
                        (routes/path-for-frontend :service-info {:id service-id}))
@@ -103,9 +100,23 @@
                      (message/error
                        (str "Service update failed. Reason: " (:error response))))})))
 
+(defn- init-form-state
+  []
+  (state/set-value {:processing? false
+                    :loading?    true} state/form-state-cursor)
+  (state/set-value {:valid? true
+                    :tags   []} settings/form-state-cursor)
+  (state/set-value {:volumes []} mounts/form-state-cursor)
+  (state/set-value {:list []} secrets/form-state-cursor)
+  (state/set-value {:list []} networks/form-state-cursor)
+  (state/set-value {:list []} placement/form-state-cursor)
+  (state/set-value {:names []} labels/form-state-cursor)
+  (state/set-value {:valid? true} resources/form-state-cursor))
+
 (def mixin-init-form
   (mixin/init-form
     (fn [{{:keys [id]} :params}]
+      (init-form-state)
       (service-handler id)
       (service-networks-handler id)
       (mounts/volumes-handler)
@@ -171,40 +182,43 @@
    (form/section "Deployment")
    (deployment/form)])
 
-(rum/defc form-edit < rum/reactive [id settings]
-  [:div
-   [:div.form-panel
-    [:div.form-panel-left
-     (panel/info icon/services (:serviceName settings))]
-    [:div.form-panel-right
-     (comp/mui
-       (comp/raised-button
-         {:onTouchTap #(update-service-handler id)
-          :label      "Save"
-          :disabled   (not (rum/react resources/valid?))
-          :primary    true}))
-     [:span.form-panel-delimiter]
-     (comp/mui
-       (comp/raised-button
-         {:href  (routes/path-for-frontend :service-info {:id id})
-          :label "Back"}))]]
-   [:div.form-layout
-    (form-settings)
-    (form-ports)
-    (form-networks)
-    (form-mounts)
-    (form-secrets)
-    (when (<= 1.30 (state/get-value [:docker :api]))
-      (form-configs))
-    (form-variables)
-    (form-labels)
-    (form-logdriver)
-    (form-resources)
-    (form-deployment)]])
+(rum/defc form-edit < rum/reactive [id
+                                    {:keys [settings]}
+                                    {:keys [processing?]}]
+  (let [resources-state (state/react resources/form-state-cursor)]
+    [:div
+     [:div.form-panel
+      [:div.form-panel-left
+       (panel/info icon/services (:serviceName settings))]
+      [:div.form-panel-right
+       (comp/progress-button
+         {:label      "Save"
+          :disabled   (not (:valid? resources-state))
+          :primary    true
+          :onTouchTap #(update-service-handler id)} processing?)
+       [:span.form-panel-delimiter]
+       (comp/mui
+         (comp/raised-button
+           {:href  (routes/path-for-frontend :service-info {:id id})
+            :label "Back"}))]]
+     [:div.form-layout
+      (form-settings)
+      (form-ports)
+      (form-networks)
+      (form-mounts)
+      (form-secrets)
+      (when (<= 1.30 (state/get-value [:docker :api]))
+        (form-configs))
+      (form-variables)
+      (form-labels)
+      (form-logdriver)
+      (form-resources)
+      (form-deployment)]]))
 
 (rum/defc form < rum/reactive
                  mixin-init-form [{{:keys [id]} :params}]
-  (let [settings (state/react settings/cursor)]
+  (let [state (state/react state/form-state-cursor)
+        service (state/react state/form-value-cursor)]
     (progress/form
-      (rum/react loading?)
-      (form-edit id settings))))
+      (:loading? state)
+      (form-edit id service state))))

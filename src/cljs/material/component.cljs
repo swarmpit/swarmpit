@@ -210,3 +210,19 @@
     (merge props
            {:listStyle {:overflow-y "scroll"
                         :maxHeight  "230px"}})))
+
+(defn progress-button [props progress?]
+  (let [disabled? (:disabled props)]
+    [:div {:style {:position "relative"}}
+     (mui
+       (raised-button
+         (assoc props :disabled (or disabled? progress?))))
+     (when progress?
+       (mui
+         (circular-progress {:size  24
+                             :style {:zIndex     1000
+                                     :position   "absolute"
+                                     :top        "50%"
+                                     :left       "50%"
+                                     :marginTop  -12
+                                     :marginLeft -12}})))]))

@@ -11,19 +11,27 @@
             [swarmpit.routes :as routes]
             [rum.core :as rum]))
 
-(def cursor [:form :public])
+(def form-value-cursor (conj state/form-value-cursor :public))
+
+(def form-state-cursor (conj state/form-state-cursor :public))
 
 (def headers [{:name  "Name"
                :width "50%"}
               {:name  "Description"
                :width "50%"}])
 
-(defonce searching? (atom false))
-
 (defn- render-item
   [item]
   (let [value (val item)]
     value))
+
+(defn- onclick-handler
+  [index repositories]
+  (let [repository (fn [index] (:name (nth repositories index)))]
+    (dispatch!
+      (routes/path-for-frontend :service-create-config
+                                {}
+                                {:repository (repository index)}))))
 
 (defn- repository-handler
   [query page]
@@ -31,9 +39,9 @@
     (routes/path-for-backend :public-repositories)
     {:params     {:query query
                   :page  page}
-     :state      searching?
+     :progress   [:public :searching?]
      :on-success (fn [response]
-                   (state/update-value [:repositories] response cursor))
+                   (state/set-value response form-value-cursor))
      :on-error   (fn [response]
                    (message/error
                      (str "Repositories fetching failed. Reason: " (:error response))))}))
@@ -45,50 +53,45 @@
       {:hintText "Find repository"
        :value    repository
        :onChange (fn [_ v]
-                   (state/update-value [:repository] v cursor)
+                   (state/update-value [:repository] v form-state-cursor)
                    (repository-handler v 1))})))
 
-(defn- init-state
+(defn- init-form-state
   []
-  (state/set-value {:repositories []
-                    :repository   ""} cursor))
+  (state/set-value {:searching? false
+                    :repository ""} form-state-cursor))
 
 (def mixin-init-form
-  (mixin/init-form-tab
+  (mixin/init-tab
     (fn []
-      (init-state))))
+      (init-form-state))))
 
 (rum/defc form-list < rum/static [searching? {:keys [results page limit total query]}]
-  (let [offset (* limit (- page 1))
-        repository (fn [index] (:name (nth results index)))]
-    [:div.form-edit-loader
-     (if searching?
-       (progress/loading)
-       (progress/loaded))
-     (comp/mui
-       (comp/table
-         {:key         "tbl"
-          :selectable  false
-          :onCellClick (fn [i]
-                         (dispatch!
-                           (routes/path-for-frontend :service-create-config
-                                                     {}
-                                                     {:repository (repository i)})))}
-         (list/table-header headers)
-         (list/table-body headers
-                          results
-                          render-item
-                          [[:name] [:description]])
-         (if (not (empty? results))
-           (list/table-paging offset
-                              total
-                              limit
-                              #(repository-handler query (- (js/parseInt page) 1))
-                              #(repository-handler query (+ (js/parseInt page) 1))))))]))
+  [:div.form-edit-loader
+   (if searching?
+     (progress/loading)
+     (progress/loaded))
+   (comp/mui
+     (comp/table
+       {:key         "tbl"
+        :selectable  false
+        :onCellClick (fn [i] (onclick-handler i results))}
+       (list/table-header headers)
+       (list/table-body headers
+                        results
+                        render-item
+                        [[:name] [:description]])
+       (if (not (empty? results))
+         (list/table-paging (* limit (- page 1))
+                            total
+                            limit
+                            #(repository-handler query (- (js/parseInt page) 1))
+                            #(repository-handler query (+ (js/parseInt page) 1))))))])
 
 (rum/defc form < rum/reactive
                  mixin-init-form []
-  (let [{:keys [repository repositories]} (state/react cursor)]
+  (let [{:keys [repository searching?]} (state/react form-state-cursor)
+        repositories (state/react form-value-cursor)]
     [:div.form-edit
      (form-repository repository)
-     (form-list (rum/react searching?) repositories)]))
+     (form-list searching? repositories)]))

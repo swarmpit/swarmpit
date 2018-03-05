@@ -28,12 +28,6 @@
 
 (enable-console-print!)
 
-(def cursor [:form])
-
-(defonce action-menu (atom false))
-
-(defonce loading? (atom false))
-
 (defn- label [item]
   (str (:state item) "  " (get-in item [:status :info])))
 
@@ -41,23 +35,23 @@
   [service-id]
   (ajax/get
     (routes/path-for-backend :service {:id service-id})
-    {:state      loading?
+    {:progress   [:loading?]
      :on-success (fn [response]
-                   (state/update-value [:service] response cursor))}))
+                   (state/update-value [:service] response state/form-value-cursor))}))
 
 (defn- service-networks-handler
   [service-id]
   (ajax/get
     (routes/path-for-backend :service-networks {:id service-id})
     {:on-success (fn [response]
-                   (state/update-value [:networks] response cursor))}))
+                   (state/update-value [:networks] response state/form-value-cursor))}))
 
 (defn- service-tasks-handler
   [service-id]
   (ajax/get
     (routes/path-for-backend :service-tasks {:id service-id})
     {:on-success (fn [response]
-                   (state/update-value [:tasks] response cursor))}))
+                   (state/update-value [:tasks] response state/form-value-cursor))}))
 
 (defn- delete-service-handler
   [service-id]
@@ -108,7 +102,7 @@
       {:iconButtonElement (comp/icon-button nil nil)
        :open              opened?
        :style             action-menu-style
-       :onRequestChange   (fn [state] (reset! action-menu state))}
+       :onRequestChange   (fn [state] (state/update-value [:menu?] state state/form-state-cursor))}
       (comp/menu-item
         {:key           "action-edit"
          :innerDivStyle action-menu-item-style
@@ -146,24 +140,29 @@
                tasks/render-item-keys
                tasks/onclick-handler)])
 
-(defn- init-state
+(defn- init-form-state
+  []
+  (state/set-value {:menu?    false
+                    :loading? true} state/form-state-cursor))
+
+(defn- init-form-value
   []
   (state/set-value {:service  {}
                     :tasks    []
-                    :networks []} cursor))
+                    :networks []} state/form-value-cursor))
 
 (def mixin-init-form
   (mixin/init-form
     (fn [{{:keys [id]} :params}]
-      (reset! action-menu false)
-      (init-state)
+      (init-form-state)
+      (init-form-value)
       (service-handler id)
       (service-networks-handler id)
       (service-tasks-handler id))))
 
-(rum/defc form-info < rum/reactive [service networks tasks]
-  (let [opened? (rum/react action-menu)
-        ports (:ports service)
+(rum/defc form-info < rum/reactive [{:keys [service networks tasks]}
+                                    {:keys [menu?]}]
+  (let [ports (:ports service)
         mounts (:mounts service)
         secrets (:secrets service)
         configs (:configs service)
@@ -183,19 +182,18 @@
       [:div.form-panel-right
        (comp/mui
          (comp/raised-button
-           {
-            :href  (routes/path-for-frontend :service-log {:id id})
+           {:href  (routes/path-for-frontend :service-log {:id id})
             :icon  (comp/button-icon icon/log-18)
             :label "Logs"}))
        [:span.form-panel-delimiter]
        [:div
         (comp/mui
           (comp/raised-button
-            {:onClick       (fn [_] (reset! action-menu true))
+            {:onClick       (fn [_] (state/update-value [:menu?] true state/form-state-cursor))
              :icon          (comp/button-icon icon/expand-18)
              :labelPosition "before"
              :label         "Actions"}))
-        (form-action-menu id (:rollbackAllowed deployment) opened?)]]]
+        (form-action-menu id (:rollbackAllowed deployment) menu?)]]]
      [:div.form-layout
       (settings/form service)
       (ports/form ports)
@@ -213,7 +211,8 @@
 (rum/defc form < rum/reactive
                  mixin-init-form
                  mixin/subscribe-form [_]
-  (let [{:keys [service networks tasks]} (state/react cursor)]
+  (let [state (state/react state/form-state-cursor)
+        item (state/react state/form-value-cursor)]
     (progress/form
-      (rum/react loading?)
-      (form-info service networks tasks))))
+      (:loading? state)
+      (form-info item state))))
