@@ -11,8 +11,10 @@
 (defn- command-state
   "Update given form state if form origin."
   [request form-id progress?]
-  (when (state/form-origin? form-id)
-    (state/update-value (:state request) progress? state/form-state-cursor)))
+  (let [state-cursor (:state request)]
+    (when (and (some? state-cursor)
+               (state/form-origin? form-id))
+      (state/update-value state-cursor progress? state/form-state-cursor))))
 
 (defn- command-error
   [{:keys [body headers]} status]
