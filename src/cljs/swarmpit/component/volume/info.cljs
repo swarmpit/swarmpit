@@ -21,15 +21,15 @@
   [volume-name]
   (ajax/get
     (routes/path-for-backend :volume-services {:name volume-name})
-    {:on-success (fn [response]
+    {:on-success (fn [{:keys [response]}]
                    (state/update-value [:services] response state/form-value-cursor))}))
 
 (defn- volume-handler
   [volume-name]
   (ajax/get
     (routes/path-for-backend :volume {:name volume-name})
-    {:progress   [:loading?]
-     :on-success (fn [response]
+    {:state      [:loading?]
+     :on-success (fn [{:keys [response]}]
                    (state/update-value [:volume] response state/form-value-cursor))}))
 
 (defn- delete-volume-handler
@@ -41,7 +41,7 @@
                      (routes/path-for-frontend :volume-list))
                    (message/info
                      (str "Volume " volume-name " has been removed.")))
-     :on-error   (fn [response]
+     :on-error   (fn [{:keys [response]}]
                    (message/error
                      (str "Volume removing failed. Reason: " (:error response))))}))
 

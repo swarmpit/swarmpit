@@ -16,8 +16,8 @@
   [task-id]
   (ajax/get
     (routes/path-for-backend :task {:id task-id})
-    {:progress   [:loading?]
-     :on-success (fn [response]
+    {:state      [:loading?]
+     :on-success (fn [{:keys [response]}]
                    (state/set-value response state/form-value-cursor))}))
 
 (defn- init-form-state

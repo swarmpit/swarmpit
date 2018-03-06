@@ -26,8 +26,8 @@
   [user-id]
   (ajax/get
     (routes/path-for-backend :dockerhub-user {:id user-id})
-    {:progress   [:loading?]
-     :on-success (fn [response]
+    {:state      [:loading?]
+     :on-success (fn [{:keys [response]}]
                    (state/set-value response state/form-value-cursor))}))
 
 (defn- update-user-handler
@@ -35,13 +35,14 @@
   (ajax/post
     (routes/path-for-backend :dockerhub-user-update {:id user-id})
     {:params     (state/get-value state/form-value-cursor)
-     :progress   [:processing?]
-     :on-success (fn [_]
-                   (dispatch!
-                     (routes/path-for-frontend :dockerhub-user-info {:id user-id}))
+     :state      [:processing?]
+     :on-success (fn [{:keys [origin?]}]
+                   (when origin?
+                     (dispatch!
+                       (routes/path-for-frontend :dockerhub-user-info {:id user-id})))
                    (message/info
                      (str "User " user-id " has been updated.")))
-     :on-error   (fn [response]
+     :on-error   (fn [{:keys [response]}]
                    (message/error
                      (str "User update failed. Reason: " (:error response))))}))
 

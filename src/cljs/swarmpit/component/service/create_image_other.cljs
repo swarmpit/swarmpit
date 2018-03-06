@@ -50,10 +50,10 @@
   [registry-id]
   (ajax/get
     (routes/path-for-backend :registry-repositories {:id registry-id})
-    {:progress   [:other :searching?]
-     :on-success (fn [response]
+    {:state      [:other :searching?]
+     :on-success (fn [{:keys [response]}]
                    (state/set-value response form-value-cursor))
-     :on-error   (fn [response]
+     :on-error   (fn [{:keys [response]}]
                    (message/error
                      (str "Repositories fetching failed. Reason: " (:error response))))}))
 

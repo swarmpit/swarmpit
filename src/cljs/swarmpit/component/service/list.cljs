@@ -26,8 +26,6 @@
 (def render-item-keys
   [[:serviceName] [:repository :image] [:status :info] [:ports] [:state]])
 
-(defonce loading? (atom false))
-
 (defn- render-item-update-state [value]
   (case value
     "rollback_started" (label/update "rollback")
@@ -70,8 +68,8 @@
   []
   (ajax/get
     (routes/path-for-backend :services)
-    {:state      loading?
-     :on-success (fn [response]
+    {:state      [:loading?]
+     :on-success (fn [{:keys [response]}]
                    (state/update-value [:items] response state/form-value-cursor))}))
 
 (defn- init-form-state
@@ -91,7 +89,7 @@
                  mixin/focus-filter [_]
   (let [{:keys [items]} (state/react state/form-value-cursor)
         {:keys [loading? filter]} (state/react state/form-state-cursor)
-        filtered-items (list/filter items (:query filter))]services-handler
+        filtered-items (list/filter items (:query filter))]
     [:div
      [:div.form-panel
       [:div.form-panel-left

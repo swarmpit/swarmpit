@@ -20,15 +20,15 @@
   [config-id]
   (ajax/get
     (routes/path-for-backend :config-services {:id config-id})
-    {:on-success (fn [response]
+    {:on-success (fn [{:keys [response]}]
                    (state/update-value [:services] response state/form-value-cursor))}))
 
 (defn- config-handler
   [config-id]
   (ajax/get
     (routes/path-for-backend :config {:id config-id})
-    {:progress   [:loading?]
-     :on-success (fn [response]
+    {:state      [:loading?]
+     :on-success (fn [{:keys [response]}]
                    (state/update-value [:config] response state/form-value-cursor))}))
 
 (defn- delete-config-handler
@@ -40,7 +40,7 @@
                      (routes/path-for-frontend :config-list))
                    (message/info
                      (str "Config " config-id " has been removed.")))
-     :on-error   (fn [response]
+     :on-error   (fn [{:keys [response]}]
                    (message/error
                      (str "Config removing failed. Reason: " (:error response))))}))
 

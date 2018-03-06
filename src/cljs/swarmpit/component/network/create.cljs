@@ -75,7 +75,7 @@
   []
   (ajax/get
     (routes/path-for-backend :plugin-network)
-    {:on-success (fn [response]
+    {:on-success (fn [{:keys [response]}]
                    (state/update-value [:plugins] response state/form-state-cursor))}))
 
 (defn- create-network-handler
@@ -83,13 +83,14 @@
   (ajax/post
     (routes/path-for-backend :network-create)
     {:params     (state/get-value state/form-value-cursor)
-     :progress   [:processing?]
-     :on-success (fn [response]
-                   (dispatch!
-                     (routes/path-for-frontend :network-info (select-keys response [:id])))
+     :state      [:processing?]
+     :on-success (fn [{:keys [response origin?]}]
+                   (when origin?
+                     (dispatch!
+                       (routes/path-for-frontend :network-info (select-keys response [:id]))))
                    (message/info
                      (str "Network " (:Id response) " has been added.")))
-     :on-error   (fn [response]
+     :on-error   (fn [{:keys [response]}]
                    (message/error
                      (str "Network creation failed. Reason: " (:error response))))}))
 

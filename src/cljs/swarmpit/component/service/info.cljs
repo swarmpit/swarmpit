@@ -35,22 +35,22 @@
   [service-id]
   (ajax/get
     (routes/path-for-backend :service {:id service-id})
-    {:progress   [:loading?]
-     :on-success (fn [response]
+    {:state      [:loading?]
+     :on-success (fn [{:keys [response]}]
                    (state/update-value [:service] response state/form-value-cursor))}))
 
 (defn- service-networks-handler
   [service-id]
   (ajax/get
     (routes/path-for-backend :service-networks {:id service-id})
-    {:on-success (fn [response]
+    {:on-success (fn [{:keys [response]}]
                    (state/update-value [:networks] response state/form-value-cursor))}))
 
 (defn- service-tasks-handler
   [service-id]
   (ajax/get
     (routes/path-for-backend :service-tasks {:id service-id})
-    {:on-success (fn [response]
+    {:on-success (fn [{:keys [response]}]
                    (state/update-value [:tasks] response state/form-value-cursor))}))
 
 (defn- delete-service-handler
@@ -62,7 +62,7 @@
                      (routes/path-for-frontend :service-list))
                    (message/info
                      (str "Service " service-id " has been removed.")))
-     :on-error   (fn [response]
+     :on-error   (fn [{:keys [response]}]
                    (message/error
                      (str "Service removing failed. Reason: " (:error response))))}))
 
@@ -73,7 +73,7 @@
     {:on-success (fn [_]
                    (message/info
                      (str "Service " service-id " redeploy triggered.")))
-     :on-error   (fn [response]
+     :on-error   (fn [{:keys [response]}]
                    (message/error
                      (str "Service redeploy failed. Reason: " (:error response))))}))
 
@@ -84,7 +84,7 @@
     {:on-success (fn [_]
                    (message/info
                      (str "Service " service-id " rollback triggered.")))
-     :on-error   (fn [response]
+     :on-error   (fn [{:keys [response]}]
                    (message/error
                      (str "Service rollback failed. Reason: " (:error response))))}))
 

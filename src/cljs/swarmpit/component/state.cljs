@@ -56,10 +56,21 @@
 
 ;; Form domain
 
+(defn form-id
+  "Get current form id"
+  []
+  (get-value [:form :id]))
+
+(defn form-origin?
+  "Check whether form origin."
+  [origin-form-id]
+  (= (form-id) origin-form-id))
+
 (defn reset-form
   "Reset state form data"
   []
-  (set-value {:state nil
+  (set-value {:id    (str (random-uuid))
+              :state nil
               :value nil} [:form]))
 
 ;; Common cursors

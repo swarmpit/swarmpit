@@ -22,15 +22,15 @@
   [network-id]
   (ajax/get
     (routes/path-for-backend :network-services {:id network-id})
-    {:on-success (fn [response]
+    {:on-success (fn [{:keys [response]}]
                    (state/update-value [:services] response state/form-value-cursor))}))
 
 (defn- network-handler
   [network-id]
   (ajax/get
     (routes/path-for-backend :network {:id network-id})
-    {:progress   [:loading?]
-     :on-success (fn [response]
+    {:state      [:loading?]
+     :on-success (fn [{:keys [response]}]
                    (state/update-value [:network] response state/form-value-cursor))}))
 
 (defn- delete-network-handler
@@ -42,7 +42,7 @@
                      (routes/path-for-frontend :network-list))
                    (message/info
                      (str "Network " network-id " has been removed.")))
-     :on-error   (fn [response]
+     :on-error   (fn [{:keys [response]}]
                    (message/error
                      (str "Network removing failed. Reason: " (:error response))))}))
 

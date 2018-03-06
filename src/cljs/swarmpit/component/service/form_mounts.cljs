@@ -131,7 +131,7 @@
   []
   (ajax/get
     (routes/path-for-backend :volumes)
-    {:on-success (fn [response]
+    {:on-success (fn [{:keys [response]}]
                    (state/update-value [:volumes] response form-state-cursor))}))
 
 (rum/defc form < rum/reactive []

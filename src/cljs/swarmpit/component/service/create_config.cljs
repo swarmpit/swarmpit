@@ -50,13 +50,14 @@
                        (assoc :logdriver logdriver)
                        (assoc :resources resources)
                        (assoc :deployment deployment))
-       :progress   [:processing?]
-       :on-success (fn [response]
-                     (dispatch!
-                       (routes/path-for-frontend :service-info (select-keys response [:id])))
+       :state      [:processing?]
+       :on-success (fn [{:keys [response origin?]}]
+                     (when origin?
+                       (dispatch!
+                         (routes/path-for-frontend :service-info (select-keys response [:id]))))
                      (message/info
                        (str "Service " (:id response) " has been created.")))
-       :on-error   (fn [response]
+       :on-error   (fn [{:keys [response]}]
                      (message/error
                        (str "Service creation failed. Reason: " (:error response))))})))
 

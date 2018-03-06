@@ -18,8 +18,8 @@
   [user-id]
   (ajax/get
     (routes/path-for-backend :dockerhub-user {:id user-id})
-    {:progress   [:loading?]
-     :on-success (fn [response]
+    {:state      [:loading?]
+     :on-success (fn [{:keys [response]}]
                    (state/set-value response state/form-value-cursor))}))
 
 (defn- delete-user-handler
@@ -31,7 +31,7 @@
                      (routes/path-for-frontend :dockerhub-user-list))
                    (message/info
                      (str "User " user-id " has been removed.")))
-     :on-error   (fn [response]
+     :on-error   (fn [{:keys [response]}]
                    (message/error
                      (str "User removing failed. Reason: " (:error response))))}))
 

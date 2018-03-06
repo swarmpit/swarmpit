@@ -146,8 +146,9 @@
   []
   (ajax/get
     (routes/path-for-backend :version)
-    {:on-success (fn [response]
-                   (state/update-value [:version] (parse-version response) state/layout-cursor))}))
+    {:on-success (fn [{:keys [response]}]
+                   (state/update-value [:version] (parse-version response) state/layout-cursor)
+                   (state/set-value response))}))
 
 (rum/defc drawer-category < rum/static [name opened?]
   (let [drawer-category-style (if opened?

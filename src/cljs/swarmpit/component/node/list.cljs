@@ -53,7 +53,7 @@
   []
   (ajax/get
     (routes/path-for-backend :nodes)
-    {:on-success (fn [response]
+    {:on-success (fn [{:keys [response]}]
                    (state/update-value [:items] response state/form-value-cursor))}))
 
 (defn- init-form-state

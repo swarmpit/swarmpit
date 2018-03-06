@@ -17,7 +17,7 @@
   []
   (ajax/get
     (routes/path-for-backend :plugin-volume)
-    {:on-success (fn [response]
+    {:on-success (fn [{:keys [response]}]
                    (state/update-value [:plugins] response state/form-state-cursor))}))
 
 (defn- create-volume-handler
@@ -25,13 +25,14 @@
   (ajax/post
     (routes/path-for-backend :volume-create)
     {:params     (state/get-value state/form-value-cursor)
-     :progress   [:processing?]
-     :on-success (fn [response]
-                   (dispatch!
-                     (routes/path-for-frontend :volume-info {:name (:volumeName response)}))
+     :state      [:processing?]
+     :on-success (fn [{:keys [response origin?]}]
+                   (when origin?
+                     (dispatch!
+                       (routes/path-for-frontend :volume-info {:name (:volumeName response)})))
                    (message/info
                      (str "Volume " (:volumeName response) " has been created.")))
-     :on-error   (fn [response]
+     :on-error   (fn [{:keys [response]}]
                    (message/error
                      (str "Volume creation failed. Reason: " (:error response))))}))
 

@@ -23,7 +23,7 @@
     (routes/path-for-backend :repository-ports)
     {:params     {:repository    (:name repository)
                   :repositoryTag (:tag repository)}
-     :on-success (fn [response]
+     :on-success (fn [{:keys [response]}]
                    (doseq [port response]
                      (if (not-suggested? port)
                        (state/add-item port form-value-cursor))))

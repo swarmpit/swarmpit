@@ -60,7 +60,7 @@
   []
   (ajax/get
     (routes/path-for-backend :networks)
-    {:on-success (fn [response]
+    {:on-success (fn [{:keys [response]}]
                    (let [resp (->> response
                                    (filter #(= "swarm" (:scope %)))
                                    (into []))]

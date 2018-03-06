@@ -41,8 +41,8 @@
   []
   (ajax/get
     (routes/path-for-backend :networks)
-    {:progress   [:loading?]
-     :on-success (fn [response]
+    {:state      [:loading?]
+     :on-success (fn [{:keys [response]}]
                    (state/update-value [:items] response state/form-value-cursor))}))
 
 (defn- init-form-state

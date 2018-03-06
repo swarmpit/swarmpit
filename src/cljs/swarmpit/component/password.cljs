@@ -62,7 +62,7 @@
                      (routes/path-for-frontend :index))
                    (message/info
                      "Password has been changed"))
-     :on-error   (fn [response]
+     :on-error   (fn [{:keys [response]}]
                    (message/error
                      (str "Can't update password: " (:error response))))}))
 

@@ -19,15 +19,15 @@
   [node-id]
   (ajax/get
     (routes/path-for-backend :node-tasks {:id node-id})
-    {:on-success (fn [response]
+    {:on-success (fn [{:keys [response]}]
                    (state/update-value [:tasks] response state/form-value-cursor))}))
 
 (defn- node-handler
   [node-id]
   (ajax/get
     (routes/path-for-backend :node {:id node-id})
-    {:progress   [:loading?]
-     :on-success (fn [response]
+    {:state      [:loading?]
+     :on-success (fn [{:keys [response]}]
                    (state/update-value [:node] response state/form-value-cursor))}))
 
 (defn- init-form-state

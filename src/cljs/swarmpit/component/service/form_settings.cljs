@@ -107,7 +107,7 @@
   (ajax/get
     (routes/path-for-backend :repository-tags)
     {:params     {:repository repository}
-     :on-success (fn [response]
+     :on-success (fn [{:keys [response]}]
                    (state/update-value [:tags] response form-state-cursor))
      :on-error   (fn [_])}))
 

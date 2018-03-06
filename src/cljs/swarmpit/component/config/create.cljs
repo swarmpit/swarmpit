@@ -49,13 +49,14 @@
   (ajax/post
     (routes/path-for-backend :config-create)
     {:params     (state/get-value state/form-value-cursor)
-     :progress   [:processing?]
-     :on-success (fn [response]
-                   (dispatch!
-                     (routes/path-for-frontend :config-info (select-keys response [:id])))
+     :state      [:processing?]
+     :on-success (fn [{:keys [response origin?]}]
+                   (when origin?
+                     (dispatch!
+                       (routes/path-for-frontend :config-info (select-keys response [:id]))))
                    (message/info
                      (str "Config " (:id response) " has been created.")))
-     :on-error   (fn [response]
+     :on-error   (fn [{:keys [response]}]
                    (message/error
                      (str "Config creation failed. Reason: " (:error response))))}))
 

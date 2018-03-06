@@ -30,16 +30,16 @@
   []
   (ajax/get
     (routes/path-for-backend :registries)
-    {:progress   [:registries :loading?]
-     :on-success (fn [response]
+    {:state      [:registries :loading?]
+     :on-success (fn [{:keys [response]}]
                    (state/update-value [:registries :list] response state/form-state-cursor))}))
 
 (defn- users-handler
   []
   (ajax/get
     (routes/path-for-backend :dockerhub-users)
-    {:progress   [:users :loading?]
-     :on-success (fn [response]
+    {:state      [:users :loading?]
+     :on-success (fn [{:keys [response]}]
                    (state/update-value [:users :list] response state/form-state-cursor))}))
 
 (defn- init-form-state

@@ -60,7 +60,7 @@
   []
   (ajax/get
     (routes/path-for-backend :labels-service)
-    {:on-success (fn [response]
+    {:on-success (fn [{:keys [response]}]
                    (state/update-value [:names] response form-state-cursor))}))
 
 (rum/defc form < rum/reactive []

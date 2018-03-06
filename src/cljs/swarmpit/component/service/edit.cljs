@@ -36,32 +36,32 @@
   [service-id]
   (ajax/get
     (routes/path-for-backend :service {:id service-id})
-    {:progress [:loading?]
+    {:state [:loading?]
      :on-success
-               (fn [service]
-                 (settings/tags-handler (-> service :repository :name))
-                 (state/set-value (select-keys service [:repository :version :serviceName :mode :replicas :stack]) settings/form-value-cursor)
-                 (state/set-value (:ports service) ports/form-value-cursor)
-                 (state/set-value (:mounts service) mounts/form-value-cursor)
-                 (state/set-value (->> (:secrets service)
-                                       (map #(select-keys % [:secretName :secretTarget]))
-                                       (into [])) secrets/form-value-cursor)
-                 (state/set-value (->> (:configs service)
-                                       (map #(select-keys % [:configName :configTarget]))
-                                       (into [])) configs/form-value-cursor)
-                 (state/set-value (:variables service) variables/form-value-cursor)
-                 (state/set-value (:labels service) labels/form-value-cursor)
-                 (state/set-value (:logdriver service) logdriver/form-value-cursor)
-                 (state/set-value (:resources service) resources/form-value-cursor)
-                 (state/set-value (:deployment service) deployment/form-value-cursor))}))
+            (fn [{:keys [response]}]
+              (settings/tags-handler (-> response :repository :name))
+              (state/set-value (select-keys response [:repository :version :serviceName :mode :replicas :stack]) settings/form-value-cursor)
+              (state/set-value (:ports response) ports/form-value-cursor)
+              (state/set-value (:mounts response) mounts/form-value-cursor)
+              (state/set-value (->> (:secrets response)
+                                    (map #(select-keys % [:secretName :secretTarget]))
+                                    (into [])) secrets/form-value-cursor)
+              (state/set-value (->> (:configs response)
+                                    (map #(select-keys % [:configName :configTarget]))
+                                    (into [])) configs/form-value-cursor)
+              (state/set-value (:variables response) variables/form-value-cursor)
+              (state/set-value (:labels response) labels/form-value-cursor)
+              (state/set-value (:logdriver response) logdriver/form-value-cursor)
+              (state/set-value (:resources response) resources/form-value-cursor)
+              (state/set-value (:deployment response) deployment/form-value-cursor))}))
 
 (defn- service-networks-handler
   [service-id]
   (ajax/get
     (routes/path-for-backend :service-networks {:id service-id})
     {:on-success
-     (fn [networks]
-       (state/set-value (->> networks
+     (fn [{:keys [response]}]
+       (state/set-value (->> response
                              (map #(select-keys % [:networkName :serviceAliases]))
                              (into [])) networks/form-value-cursor))}))
 
@@ -90,13 +90,14 @@
                        (assoc :logdriver logdriver)
                        (assoc :resources resources)
                        (assoc :deployment deployment))
-       :progress   [:processing?]
-       :on-success (fn [_]
-                     (dispatch!
-                       (routes/path-for-frontend :service-info {:id service-id}))
+       :state      [:processing?]
+       :on-success (fn [{:keys [origin?]}]
+                     (when origin?
+                       (dispatch!
+                         (routes/path-for-frontend :service-info {:id service-id})))
                      (message/info
                        (str "Service " service-id " has been updated.")))
-       :on-error   (fn [response]
+       :on-error   (fn [{:keys [response]}]
                      (message/error
                        (str "Service update failed. Reason: " (:error response))))})))
 

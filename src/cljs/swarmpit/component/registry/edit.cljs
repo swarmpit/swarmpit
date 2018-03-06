@@ -26,8 +26,8 @@
   [registry-id]
   (ajax/get
     (routes/path-for-backend :registry {:id registry-id})
-    {:progress   [:loading?]
-     :on-success (fn [response]
+    {:state      [:loading?]
+     :on-success (fn [{:keys [response]}]
                    (state/set-value response state/form-value-cursor))}))
 
 (defn- update-registry-handler
@@ -35,13 +35,14 @@
   (ajax/post
     (routes/path-for-backend :registry-update {:id registry-id})
     {:params     (state/get-value state/form-value-cursor)
-     :progress   [:processing?]
-     :on-success (fn [_]
-                   (dispatch!
-                     (routes/path-for-frontend :registry-info {:id registry-id}))
+     :state      [:processing?]
+     :on-success (fn [{:keys [origin?]}]
+                   (when origin?
+                     (dispatch!
+                       (routes/path-for-frontend :registry-info {:id registry-id})))
                    (message/info
                      (str "Registry " registry-id " has been updated.")))
-     :on-error   (fn [response]
+     :on-error   (fn [{:keys [response]}]
                    (message/error
                      (str "Registry update failed. Reason: " (:error response))))}))
 

@@ -44,8 +44,8 @@
   [route]
   (ajax/get
     (routes/path-for-backend :slt)
-    {:on-success (fn [{:keys [slt]}]
-                   (let [event-source (js/EventSource. (event-source-url slt route))]
+    {:on-success (fn [{:keys [response]}]
+                   (let [event-source (js/EventSource. (event-source-url (:slt response) route))]
                      (.addEventListener event-source "message" (fn [e] (on-message! e route)))
                      (.addEventListener event-source "open" (fn [e] (on-open! e route)))
                      (.addEventListener event-source "error" (fn [e] (on-error! e route #(open! route))))

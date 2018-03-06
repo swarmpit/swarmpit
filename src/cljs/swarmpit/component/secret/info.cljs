@@ -20,15 +20,15 @@
   [secret-id]
   (ajax/get
     (routes/path-for-backend :secret-services {:id secret-id})
-    {:on-success (fn [response]
+    {:on-success (fn [{:keys [response]}]
                    (state/update-value [:services] response state/form-value-cursor))}))
 
 (defn- secret-handler
   [secret-id]
   (ajax/get
     (routes/path-for-backend :secret {:id secret-id})
-    {:progress   [:loading?]
-     :on-success (fn [response]
+    {:state      [:loading?]
+     :on-success (fn [{:keys [response]}]
                    (state/update-value [:secret] response state/form-value-cursor))}))
 
 (defn- delete-secret-handler
@@ -40,7 +40,7 @@
                      (routes/path-for-frontend :secret-list))
                    (message/info
                      (str "Secret " secret-id " has been removed.")))
-     :on-error   (fn [response]
+     :on-error   (fn [{:keys [response]}]
                    (message/error
                      (str "Secret removing failed. Reason: " (:error response))))}))
 

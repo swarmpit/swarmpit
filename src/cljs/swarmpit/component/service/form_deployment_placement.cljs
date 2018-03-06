@@ -50,7 +50,7 @@
   []
   (ajax/get
     (routes/path-for-backend :placement)
-    {:on-success (fn [response]
+    {:on-success (fn [{:keys [response]}]
                    (state/update-value [:list] response form-state-cursor))}))
 
 (rum/defc form < rum/reactive []

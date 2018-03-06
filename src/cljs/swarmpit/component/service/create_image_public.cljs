@@ -39,10 +39,10 @@
     (routes/path-for-backend :public-repositories)
     {:params     {:query query
                   :page  page}
-     :progress   [:public :searching?]
-     :on-success (fn [response]
+     :state      [:public :searching?]
+     :on-success (fn [{:keys [response]}]
                    (state/set-value response form-value-cursor))
-     :on-error   (fn [response]
+     :on-error   (fn [{:keys [response]}]
                    (message/error
                      (str "Repositories fetching failed. Reason: " (:error response))))}))
 

@@ -25,28 +25,26 @@
   [service-id]
   (ajax/get
     (routes/path-for-backend :service {:id service-id})
-    {:on-success (fn [response]
+    {:on-success (fn [{:keys [response]}]
                    (state/update-value [:service] response state/form-state-cursor))}))
 
 (defn- log-handler
   [service-id]
-  (state/update-value [:fetching] true state/form-state-cursor)
   (ajax/get
     (routes/path-for-backend :service-logs {:id service-id})
-    {:on-success (fn [response]
+    {:state      [:fetching]
+     :on-success (fn [{:keys [response]}]
                    (state/update-value [:initialized] true state/form-state-cursor)
-                   (state/update-value [:fetching] false state/form-state-cursor)
                    (state/set-value response state/form-value-cursor))
      :on-error   #(state/update-value [:error] true state/form-state-cursor)}))
 
 (defn- log-append-handler
   [service-id from-timestamp]
-  (state/update-value [:fetching] true state/form-state-cursor)
   (ajax/get
     (routes/path-for-backend :service-logs {:id service-id})
-    {:params     {:from from-timestamp}
-     :on-success (fn [response]
-                   (state/update-value [:fetching] false state/form-state-cursor)
+    {:state      [:fetching]
+     :params     {:from from-timestamp}
+     :on-success (fn [{:keys [response]}]
                    (state/set-value (-> (state/get-value state/form-value-cursor)
                                         (concat response)) state/form-value-cursor))}))
 
@@ -57,7 +55,7 @@
                     :fetching    false
                     :autoscroll  false
                     :error       false
-                    :timestamp   false}))
+                    :timestamp   false} state/form-state-cursor))
 
 (def mixin-refresh-form
   (mixin/refresh-form

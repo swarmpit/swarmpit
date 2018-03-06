@@ -74,13 +74,14 @@
   (ajax/post
     (routes/path-for-backend :user-create)
     {:params     (state/get-value state/form-value-cursor)
-     :progress   [:processing?]
-     :on-success (fn [response]
-                   (dispatch!
-                     (routes/path-for-frontend :user-info (select-keys response [:id])))
+     :state      [:processing?]
+     :on-success (fn [{:keys [response origin?]}]
+                   (when origin?
+                     (dispatch!
+                       (routes/path-for-frontend :user-info (select-keys response [:id]))))
                    (message/info
                      (str "User " (:id response) " has been created.")))
-     :on-error   (fn [response]
+     :on-error   (fn [{:keys [response]}]
                    (message/error
                      (str "User creation failed. Reason: " (:error response))))}))
 

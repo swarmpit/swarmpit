@@ -18,12 +18,10 @@
 
 (defn init-form
   [handler]
-  {:init         (fn [state _]
-                   (handler (first (:rum/args state)))
-                   state)
-   :will-unmount (fn [state]
-                   (state/reset-form)
-                   state)})
+  {:init (fn [state _]
+           (state/reset-form)
+           (handler (first (:rum/args state)))
+           state)})
 
 (defn init-tab
   [handler]

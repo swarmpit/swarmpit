@@ -9,9 +9,10 @@
             [clojure.walk :refer [keywordize-keys]]))
 
 (defn- command-state
-  [request progress?]
-  (when-let [progress-cursor (:progress request)]
-    (state/update-value progress-cursor progress? state/form-state-cursor)))
+  "Update given form state if form origin."
+  [request form-id progress?]
+  (when (state/form-origin? form-id)
+    (state/update-value (:state request) progress? state/form-state-cursor)))
 
 (defn- command-error
   [{:keys [body headers]} status]
@@ -29,7 +30,7 @@
 
    params :- req body in case of POST/PUT
    headers :- req headers
-   progress :- cursor of form progress
+   state :- request processing form state cursor
    on-success :- on success handler
    on-error :- on error handler, if missing default error handling used. Check command-error.
 
@@ -37,30 +38,33 @@
 
    {:params     {:test 123}
     :headers    {:header true}
-    :progress   [:processing?]
+    :state      [:processing?]
     :on-success (fn [response]
                    (print response))
     :on-error   (fn [response]
                    (print response))}"
   [request]
-  {:response-format {:read        identity
-                     :description "raw"}
-   :params          (:params request)
-   :headers         (merge {"Authorization" (storage/get "token")} (:headers request))
-   :finally         (command-state request true)
-   :handler         (fn [xhrio]
-                      (command-state request false)
-                      (let [resp-body (:body (xhrio/response xhrio))
-                            resp-fx (:on-success request)]
-                        (-> resp-body resp-fx)))
-   :error-handler   (fn [response]
-                      (command-state request false)
-                      (let [response (keywordize-keys response)
-                            resp (xhrio/response (:response response))
-                            resp-status (:status response)
-                            resp-fx (or (:on-error request)
-                                        #(command-error resp resp-status))]
-                        (-> (:body resp) resp-fx)))})
+  (let [form-id (state/form-id)]
+    {:response-format {:read        identity
+                       :description "raw"}
+     :params          (:params request)
+     :headers         (merge {"Authorization" (storage/get "token")} (:headers request))
+     :finally         (command-state request form-id true)
+     :handler         (fn [xhrio]
+                        (command-state request form-id false)
+                        (let [resp-body (:body (xhrio/response xhrio))
+                              resp-fx (:on-success request)]
+                          (resp-fx {:response resp-body
+                                    :origin?  (state/form-origin? form-id)})))
+     :error-handler   (fn [response]
+                        (command-state request form-id false)
+                        (let [response (keywordize-keys response)
+                              resp (xhrio/response (:response response))
+                              resp-status (:status response)
+                              resp-fx (or (:on-error request)
+                                          #(command-error resp resp-status))]
+                          (resp-fx {:response (:body resp)
+                                    :origin?  (state/form-origin? form-id)})))}))
 
 (defn get
   [api request]
