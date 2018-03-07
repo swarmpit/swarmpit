@@ -1,18 +1,16 @@
 (ns swarmpit.component.service.list
-  (:require [material.component.label :as label]
+  (:require [material.component :as comp]
+            [material.component.label :as label]
             [material.component.panel :as panel]
             [material.component.list-table :as list]
-            [material.component :as comp]
             [swarmpit.component.state :as state]
             [swarmpit.component.mixin :as mixin]
-            [swarmpit.component.handler :as handler]
+            [swarmpit.ajax :as ajax]
             [swarmpit.routes :as routes]
             [sablono.core :refer-macros [html]]
             [rum.core :as rum]))
 
 (enable-console-print!)
-
-(def cursor [:form])
 
 (def headers [{:name  "Name"
                :width "20%"}
@@ -27,8 +25,6 @@
 
 (def render-item-keys
   [[:serviceName] [:repository :image] [:status :info] [:ports] [:state]])
-
-(defonce loading? (atom false))
 
 (defn- render-item-update-state [value]
   (case value
@@ -70,27 +66,29 @@
 
 (defn- services-handler
   []
-  (handler/get
+  (ajax/get
     (routes/path-for-backend :services)
-    {:state      loading?
-     :on-success (fn [response]
-                   (state/update-value [:items] response cursor))}))
+    {:state      [:loading?]
+     :on-success (fn [{:keys [response]}]
+                   (state/update-value [:items] response state/form-value-cursor))}))
 
-(defn- init-state
+(defn- init-form-state
   []
-  (state/set-value {:filter {:query ""}} cursor))
+  (state/set-value {:loading? false
+                    :filter   {:query ""}} state/form-state-cursor))
 
 (def mixin-init-form
   (mixin/init-form
     (fn [_]
-      (init-state)
+      (init-form-state)
       (services-handler))))
 
 (rum/defc form < rum/reactive
                  mixin-init-form
                  mixin/subscribe-form
                  mixin/focus-filter [_]
-  (let [{:keys [filter items]} (state/react cursor)
+  (let [{:keys [items]} (state/react state/form-value-cursor)
+        {:keys [loading? filter]} (state/react state/form-state-cursor)
         filtered-items (list/filter items (:query filter))]
     [:div
      [:div.form-panel
@@ -99,7 +97,7 @@
          {:id       "filter"
           :hintText "Search services"
           :onChange (fn [_ v]
-                      (state/update-value [:filter :query] v cursor))})]
+                      (state/update-value [:filter :query] v state/form-state-cursor))})]
       [:div.form-panel-right
        (comp/mui
          (comp/raised-button
@@ -108,7 +106,7 @@
             :primary true}))]]
      (list/table headers
                  (sort-by :serviceName filtered-items)
-                 (rum/react loading?)
+                 loading?
                  render-item
                  render-item-keys
                  onclick-handler)]))

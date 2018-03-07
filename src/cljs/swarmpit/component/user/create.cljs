@@ -3,19 +3,15 @@
             [material.component :as comp]
             [material.component.form :as form]
             [material.component.panel :as panel]
-            [swarmpit.url :refer [dispatch!]]
-            [swarmpit.component.handler :as handler]
             [swarmpit.component.mixin :as mixin]
             [swarmpit.component.state :as state]
             [swarmpit.component.message :as message]
+            [swarmpit.url :refer [dispatch!]]
+            [swarmpit.ajax :as ajax]
             [swarmpit.routes :as routes]
             [rum.core :as rum]))
 
 (enable-console-print!)
-
-(def cursor [:form])
-
-(defonce valid? (atom false))
 
 (defn- form-username [value]
   (form/comp
@@ -28,7 +24,7 @@
        :validationError "Username must be at least 4 characters long"
        :value           value
        :onChange        (fn [_ v]
-                          (state/update-value [:username] v cursor))})))
+                          (state/update-value [:username] v state/form-value-cursor))})))
 
 (defn- form-password [value]
   (form/comp
@@ -42,7 +38,7 @@
        :type            "password"
        :value           value
        :onChange        (fn [_ v]
-                          (state/update-value [:password] v cursor))})))
+                          (state/update-value [:password] v state/form-value-cursor))})))
 
 (defn- form-role [value]
   (form/comp
@@ -50,7 +46,7 @@
     (comp/select-field
       {:value    value
        :onChange (fn [_ _ v]
-                   (state/update-value [:role] v cursor))}
+                   (state/update-value [:role] v state/form-value-cursor))}
       (comp/menu-item
         {:key         "fru"
          :value       "admin"
@@ -71,55 +67,60 @@
        :validationError "Please provide a valid Email"
        :value           value
        :onChange        (fn [_ v]
-                          (state/update-value [:email] v cursor))})))
+                          (state/update-value [:email] v state/form-value-cursor))})))
 
 (defn- create-user-handler
   []
-  (handler/post
+  (ajax/post
     (routes/path-for-backend :user-create)
-    {:params     (state/get-value cursor)
-     :on-success (fn [response]
-                   (dispatch!
-                     (routes/path-for-frontend :user-info (select-keys response [:id])))
+    {:params     (state/get-value state/form-value-cursor)
+     :state      [:processing?]
+     :on-success (fn [{:keys [response origin?]}]
+                   (when origin?
+                     (dispatch!
+                       (routes/path-for-frontend :user-info (select-keys response [:id]))))
                    (message/info
                      (str "User " (:id response) " has been created.")))
-     :on-error   (fn [response]
+     :on-error   (fn [{:keys [response]}]
                    (message/error
                      (str "User creation failed. Reason: " (:error response))))}))
 
-(defn- init-state
+(defn- init-form-state
+  []
+  (state/set-value {:valid?      false
+                    :processing? false} state/form-state-cursor))
+
+(defn- init-form-value
   []
   (state/set-value {:username ""
                     :password ""
                     :email    ""
-                    :role     "user"} cursor))
+                    :role     "user"} state/form-value-cursor))
 
 (def mixin-init-form
   (mixin/init-form
     (fn [_]
-      (init-state))))
+      (init-form-state)
+      (init-form-value))))
 
 (rum/defc form < rum/reactive
                  mixin-init-form [_]
-  (let [{:keys [username
-                password
-                role
-                email]} (state/react cursor)]
+  (let [{:keys [username password role email]} (state/react state/form-state-cursor)
+        {:keys [valid? processing?]} (state/react state/form-state-cursor)]
     [:div
      [:div.form-panel
       [:div.form-panel-left
        (panel/info icon/users "New user")]
       [:div.form-panel-right
-       (comp/mui
-         (comp/raised-button
-           {:label      "Create"
-            :disabled   (not (rum/react valid?))
-            :primary    true
-            :onTouchTap create-user-handler}))]]
+       (comp/progress-button
+         {:label      "Create"
+          :disabled   (not valid?)
+          :primary    true
+          :onTouchTap create-user-handler} processing?)]]
      [:div.form-edit
       (form/form
-        {:onValid   #(reset! valid? true)
-         :onInvalid #(reset! valid? false)}
+        {:onValid   #(state/update-value [:valid?] true state/form-state-cursor)
+         :onInvalid #(state/update-value [:valid?] false state/form-state-cursor)}
         (form-username username)
         (form-password password)
         (form-role role)

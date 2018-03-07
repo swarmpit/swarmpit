@@ -1,12 +1,10 @@
 (ns swarmpit.component.service.info
-  (:require [material.component :as comp]
+  (:require [material.icon :as icon]
+            [material.component :as comp]
             [material.component.label :as label]
             [material.component.panel :as panel]
             [material.component.form :as form]
             [material.component.list-table-auto :as list]
-            [material.icon :as icon]
-            [swarmpit.url :refer [dispatch!]]
-            [swarmpit.component.handler :as handler]
             [swarmpit.component.state :as state]
             [swarmpit.component.mixin :as mixin]
             [swarmpit.component.progress :as progress]
@@ -23,74 +21,70 @@
             [swarmpit.component.service.info.deployment :as deployment]
             [swarmpit.component.task.list :as tasks]
             [swarmpit.component.message :as message]
+            [swarmpit.url :refer [dispatch!]]
+            [swarmpit.ajax :as ajax]
             [swarmpit.routes :as routes]
             [rum.core :as rum]))
 
 (enable-console-print!)
-
-(def cursor [:form])
-
-(defonce action-menu (atom false))
-
-(defonce loading? (atom false))
 
 (defn- label [item]
   (str (:state item) "  " (get-in item [:status :info])))
 
 (defn- service-handler
   [service-id]
-  (handler/get
+  (ajax/get
     (routes/path-for-backend :service {:id service-id})
-    {:state      loading?
-     :on-success (fn [response]
-                   (state/update-value [:service] response cursor))}))
+    {:state      [:loading?]
+     :on-success (fn [{:keys [response]}]
+                   (state/update-value [:service] response state/form-value-cursor))}))
 
 (defn- service-networks-handler
   [service-id]
-  (handler/get
+  (ajax/get
     (routes/path-for-backend :service-networks {:id service-id})
-    {:on-success (fn [response]
-                   (state/update-value [:networks] response cursor))}))
+    {:on-success (fn [{:keys [response]}]
+                   (state/update-value [:networks] response state/form-value-cursor))}))
 
 (defn- service-tasks-handler
   [service-id]
-  (handler/get
+  (ajax/get
     (routes/path-for-backend :service-tasks {:id service-id})
-    {:on-success (fn [response]
-                   (state/update-value [:tasks] response cursor))}))
+    {:on-success (fn [{:keys [response]}]
+                   (state/update-value [:tasks] response state/form-value-cursor))}))
 
 (defn- delete-service-handler
   [service-id]
-  (handler/delete
+  (ajax/delete
     (routes/path-for-backend :service-delete {:id service-id})
     {:on-success (fn [_]
                    (dispatch!
                      (routes/path-for-frontend :service-list))
                    (message/info
                      (str "Service " service-id " has been removed.")))
-     :on-error   (fn [response]
+     :on-error   (fn [{:keys [response]}]
                    (message/error
                      (str "Service removing failed. Reason: " (:error response))))}))
 
 (defn- redeploy-service-handler
   [service-id]
-  (handler/post
+  (ajax/post
     (routes/path-for-backend :service-redeploy {:id service-id})
     {:on-success (fn [_]
                    (message/info
                      (str "Service " service-id " redeploy triggered.")))
-     :on-error   (fn [response]
+     :on-error   (fn [{:keys [response]}]
                    (message/error
                      (str "Service redeploy failed. Reason: " (:error response))))}))
 
 (defn- rollback-service-handler
   [service-id]
-  (handler/post
+  (ajax/post
     (routes/path-for-backend :service-rollback {:id service-id})
     {:on-success (fn [_]
                    (message/info
                      (str "Service " service-id " rollback triggered.")))
-     :on-error   (fn [response]
+     :on-error   (fn [{:keys [response]}]
                    (message/error
                      (str "Service rollback failed. Reason: " (:error response))))}))
 
@@ -108,7 +102,7 @@
       {:iconButtonElement (comp/icon-button nil nil)
        :open              opened?
        :style             action-menu-style
-       :onRequestChange   (fn [state] (reset! action-menu state))}
+       :onRequestChange   (fn [state] (state/update-value [:menu?] state state/form-state-cursor))}
       (comp/menu-item
         {:key           "action-edit"
          :innerDivStyle action-menu-item-style
@@ -146,24 +140,29 @@
                tasks/render-item-keys
                tasks/onclick-handler)])
 
-(defn- init-state
+(defn- init-form-state
+  []
+  (state/set-value {:menu?    false
+                    :loading? true} state/form-state-cursor))
+
+(defn- init-form-value
   []
   (state/set-value {:service  {}
                     :tasks    []
-                    :networks []} cursor))
+                    :networks []} state/form-value-cursor))
 
 (def mixin-init-form
   (mixin/init-form
     (fn [{{:keys [id]} :params}]
-      (reset! action-menu false)
-      (init-state)
+      (init-form-state)
+      (init-form-value)
       (service-handler id)
       (service-networks-handler id)
       (service-tasks-handler id))))
 
-(rum/defc form-info < rum/reactive [service networks tasks]
-  (let [opened? (rum/react action-menu)
-        ports (:ports service)
+(rum/defc form-info < rum/reactive [{:keys [service networks tasks]}
+                                    {:keys [menu?]}]
+  (let [ports (:ports service)
         mounts (:mounts service)
         secrets (:secrets service)
         configs (:configs service)
@@ -183,19 +182,18 @@
       [:div.form-panel-right
        (comp/mui
          (comp/raised-button
-           {
-            :href  (routes/path-for-frontend :service-log {:id id})
+           {:href  (routes/path-for-frontend :service-log {:id id})
             :icon  (comp/button-icon icon/log-18)
             :label "Logs"}))
        [:span.form-panel-delimiter]
        [:div
         (comp/mui
           (comp/raised-button
-            {:onClick       (fn [_] (reset! action-menu true))
+            {:onClick       (fn [_] (state/update-value [:menu?] true state/form-state-cursor))
              :icon          (comp/button-icon icon/expand-18)
              :labelPosition "before"
              :label         "Actions"}))
-        (form-action-menu id (:rollbackAllowed deployment) opened?)]]]
+        (form-action-menu id (:rollbackAllowed deployment) menu?)]]]
      [:div.form-layout
       (settings/form service)
       (ports/form ports)
@@ -213,7 +211,8 @@
 (rum/defc form < rum/reactive
                  mixin-init-form
                  mixin/subscribe-form [_]
-  (let [{:keys [service networks tasks]} (state/react cursor)]
+  (let [state (state/react state/form-state-cursor)
+        item (state/react state/form-value-cursor)]
     (progress/form
-      (rum/react loading?)
-      (form-info service networks tasks))))
+      (:loading? state)
+      (form-info item state))))

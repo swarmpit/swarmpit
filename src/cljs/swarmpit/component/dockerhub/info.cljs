@@ -1,65 +1,65 @@
 (ns swarmpit.component.dockerhub.info
-  (:require [material.component :as comp]
+  (:require [material.icon :as icon]
+            [material.component :as comp]
             [material.component.form :as form]
             [material.component.panel :as panel]
-            [material.icon :as icon]
-            [swarmpit.url :refer [dispatch!]]
-            [swarmpit.component.handler :as handler]
             [swarmpit.component.message :as message]
             [swarmpit.component.state :as state]
             [swarmpit.component.mixin :as mixin]
             [swarmpit.component.progress :as progress]
+            [swarmpit.url :refer [dispatch!]]
+            [swarmpit.ajax :as ajax]
             [swarmpit.routes :as routes]
             [rum.core :as rum]))
 
 (enable-console-print!)
 
-(def cursor [:form])
-
-(defonce loading? (atom false))
-
 (defn- user-handler
   [user-id]
-  (handler/get
+  (ajax/get
     (routes/path-for-backend :dockerhub-user {:id user-id})
-    {:state      loading?
-     :on-success (fn [response]
-                   (state/set-value response cursor))}))
+    {:state      [:loading?]
+     :on-success (fn [{:keys [response]}]
+                   (state/set-value response state/form-value-cursor))}))
 
 (defn- delete-user-handler
   [user-id]
-  (handler/delete
+  (ajax/delete
     (routes/path-for-backend :dockerhub-user-delete {:id user-id})
     {:on-success (fn [_]
                    (dispatch!
                      (routes/path-for-frontend :dockerhub-user-list))
                    (message/info
                      (str "User " user-id " has been removed.")))
-     :on-error   (fn [response]
+     :on-error   (fn [{:keys [response]}]
                    (message/error
                      (str "User removing failed. Reason: " (:error response))))}))
+
+(defn- init-form-state
+  []
+  (state/set-value {:loading? true} state/form-state-cursor))
 
 (def mixin-init-form
   (mixin/init-form
     (fn [{{:keys [id]} :params}]
+      (init-form-state)
       (user-handler id))))
 
-(rum/defc form-info < rum/static [user]
+(rum/defc form-info < rum/static [{:keys [_id username] :as user}]
   [:div
    [:div.form-panel
     [:div.form-panel-left
-     (panel/info icon/docker
-                 (:username user))]
+     (panel/info icon/docker username)]
     [:div.form-panel-right
      (comp/mui
        (comp/raised-button
-         {:href    (routes/path-for-frontend :dockerhub-user-edit {:id (:_id user)})
+         {:href    (routes/path-for-frontend :dockerhub-user-edit {:id _id})
           :label   "Edit"
           :primary true}))
      [:span.form-panel-delimiter]
      (comp/mui
        (comp/raised-button
-         {:onTouchTap #(delete-user-handler (:_id user))
+         {:onTouchTap #(delete-user-handler _id)
           :label      "Delete"}))]]
    [:div.form-view
     [:div.form-view-group
@@ -75,7 +75,8 @@
 (rum/defc form < rum/reactive
                  mixin-init-form
                  mixin/subscribe-form [_]
-  (let [user (state/react cursor)]
+  (let [state (state/react state/form-state-cursor)
+        user (state/react state/form-value-cursor)]
     (progress/form
-      (rum/react loading?)
+      (:loading? state)
       (form-info user))))

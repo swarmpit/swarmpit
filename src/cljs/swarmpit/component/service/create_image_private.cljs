@@ -6,23 +6,23 @@
             [swarmpit.component.state :as state]
             [swarmpit.component.progress :as progress]
             [swarmpit.component.mixin :as mixin]
-            [swarmpit.component.handler :as handler]
             [swarmpit.component.message :as message]
             [swarmpit.storage :as storage]
+            [swarmpit.ajax :as ajax]
             [swarmpit.url :refer [dispatch!]]
             [swarmpit.routes :as routes]
             [clojure.string :as string]
             [sablono.core :refer-macros [html]]
             [rum.core :as rum]))
 
-(def cursor [:form :private])
+(def form-value-cursor (conj state/form-value-cursor :private))
+
+(def form-state-cursor (conj state/form-state-cursor :private))
 
 (def headers [{:name  "Name"
                :width "50%"}
               {:name  "Description"
                :width "50%"}])
-
-(defonce searching? (atom false))
 
 (defn- render-item
   [item]
@@ -32,14 +32,27 @@
   [items predicate]
   (filter #(string/includes? (:name %) predicate) items))
 
+(defn- selected-user
+  [user-id users]
+  (-> (filter #(= user-id (:_id %)) users)
+      (first)))
+
+(defn- onclick-handler
+  [index repositories]
+  (let [repository (fn [index] (:name (nth repositories index)))]
+    (dispatch!
+      (routes/path-for-frontend :service-create-config
+                                {}
+                                {:repository (repository index)}))))
+
 (defn- repository-handler
   [user-id]
-  (handler/get
+  (ajax/get
     (routes/path-for-backend :dockerhub-repositories {:id user-id})
-    {:state      searching?
-     :on-success (fn [response]
-                   (state/update-value [:repositories] response cursor))
-     :on-error   (fn [response]
+    {:state      [:private :searching?]
+     :on-success (fn [{:keys [response]}]
+                   (state/set-value response form-value-cursor))
+     :on-error   (fn [{:keys [response]}]
                    (message/error
                      (str "Repositories fetching failed. Reason: " (:error response))))}))
 
@@ -52,20 +65,18 @@
            [:span.owner-item (str " [" (:owner user) "]")]])))
 
 (defn- form-username [user users]
-  (let [user-by-id (fn [id] (first (filter #(= id (:_id %)) users)))]
-    (form/comp
-      "DOCKER USER"
-      (comp/select-field
-        {:value    (:_id user)
-         :onChange (fn [_ _ v]
-                     (state/update-value [:data] [] cursor)
-                     (state/update-value [:user] (user-by-id v) cursor)
-                     (repository-handler v))}
-        (->> users
-             (map #(comp/menu-item
-                     {:key         (:_id %)
-                      :value       (:_id %)
-                      :primaryText (form-username-label %)})))))))
+  (form/comp
+    "DOCKER USER"
+    (comp/select-field
+      {:value    (:_id user)
+       :onChange (fn [_ _ v]
+                   (state/update-value [:user] (selected-user v users) form-state-cursor)
+                   (repository-handler v))}
+      (->> users
+           (map #(comp/menu-item
+                   {:key         (:_id %)
+                    :value       (:_id %)
+                    :primaryText (form-username-label %)}))))))
 
 (defn- form-repository [repository]
   (form/comp
@@ -74,49 +85,45 @@
       {:hintText "Filter by name"
        :value    repository
        :onChange (fn [_ v]
-                   (state/update-value [:repository] v cursor))})))
+                   (state/update-value [:repository] v form-state-cursor))})))
 
-(defn- init-state
+(defn- init-form-state
   [user]
-  (state/set-value {:repositories []
-                    :repository   ""
-                    :user         user} cursor))
+  (state/set-value {:searching? false
+                    :repository ""
+                    :user       user} form-state-cursor))
 
 (def mixin-init-form
-  (mixin/init-form-tab
+  (mixin/init-tab
     (fn [users]
-      (init-state (first users)))))
+      (init-form-state (first users)))))
 
 (rum/defc form-list < rum/static [searching? repositories]
-  (let [repository (fn [index] (:name (nth repositories index)))]
-    [:div.form-edit-loader
-     (if searching?
-       (progress/loading)
-       (progress/loaded))
-     (comp/mui
-       (comp/table
-         {:key         "tbl"
-          :selectable  false
-          :onCellClick (fn [i]
-                         (dispatch!
-                           (routes/path-for-frontend :service-create-config
-                                                     {}
-                                                     {:repository (repository i)})))}
-         (list/table-header headers)
-         (list/table-body headers
-                          repositories
-                          render-item
-                          [[:name] [:description]])))]))
+  [:div.form-edit-loader
+   (if searching?
+     (progress/loading)
+     (progress/loaded))
+   (comp/mui
+     (comp/table
+       {:key         "tbl"
+        :selectable  false
+        :onCellClick (fn [i] (onclick-handler i repositories))}
+       (list/table-header headers)
+       (list/table-body headers
+                        repositories
+                        render-item
+                        [[:name] [:description]])))])
 
 (rum/defc form < rum/reactive
                  mixin-init-form [users]
-  (let [{:keys [user repositories repository]} (state/react cursor)
+  (let [{:keys [user repository searching?]} (state/react form-state-cursor)
+        repositories (state/react form-value-cursor)
         filtered-repositories (filter-items repositories repository)]
     (if (some? user)
       [:div.form-edit
        (form-username user users)
        (form-repository repository)
-       (form-list (rum/react searching?) filtered-repositories)]
+       (form-list searching? filtered-repositories)]
       [:div.form-edit
        (if (storage/admin?)
          (form/icon-value icon/info [:span "No dockerhub users found. Add new " [:a {:href (routes/path-for-frontend :dockerhub-user-create)} "user."]])

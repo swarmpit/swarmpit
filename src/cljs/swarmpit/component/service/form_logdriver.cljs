@@ -8,7 +8,9 @@
 
 (enable-console-print!)
 
-(def cursor [:form :logdriver])
+(def form-value-cursor (conj state/form-value-cursor :logdriver))
+
+(def form-value-opts-cursor (conj form-value-cursor :opts))
 
 (def headers [{:name  "Name"
                :width "35%"}
@@ -21,7 +23,7 @@
     (comp/select-field
       {:value    value
        :onChange (fn [_ _ v]
-                   (state/update-value [:name] v cursor))}
+                   (state/update-value [:name] v form-value-cursor))}
       (comp/menu-item
         {:key         "none"
          :value       "none"
@@ -41,7 +43,7 @@
      :key      (str "form-name-text-" index)
      :value    value
      :onChange (fn [_ v]
-                 (state/update-item index :name v (conj cursor :opts)))}))
+                 (state/update-item index :name v form-value-opts-cursor))}))
 
 (defn- form-value [value index]
   (list/textfield
@@ -49,7 +51,7 @@
      :key      (str "form-value-text-" index)
      :value    value
      :onChange (fn [_ v]
-                 (state/update-item index :value v (conj cursor :opts)))}))
+                 (state/update-item index :value v form-value-opts-cursor))}))
 
 (defn- render-variables
   [item index]
@@ -64,15 +66,15 @@
                   opts
                   nil
                   render-variables
-                  (fn [index] (state/remove-item index (conj cursor :opts)))))
+                  (fn [index] (state/remove-item index form-value-opts-cursor))))
 
 (defn- add-item
   []
   (state/add-item {:name  ""
-                   :value ""} (conj cursor :opts)))
+                   :value ""} form-value-opts-cursor))
 
 (rum/defc form < rum/reactive []
-  (let [{:keys [name opts]} (state/react cursor)]
+  (let [{:keys [name opts]} (state/react form-value-cursor)]
     (form/form
       {}
       (form-driver name)

@@ -39,11 +39,3 @@
 
 (rum/defc loaded < rum/static []
   (form/loading false))
-
-(defn mount!
-  []
-  (rum/mount (progress) (.getElementById js/document "progress")))
-
-(defn unmount!
-  []
-  (rum/unmount (.getElementById js/document "progress")))

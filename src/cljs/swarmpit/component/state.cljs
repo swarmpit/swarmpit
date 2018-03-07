@@ -9,7 +9,9 @@
                           :time nil
                           :type :info
                           :open false}
-                :form    nil}))
+                :form    {:id    nil
+                          :state nil
+                          :value nil}}))
 
 (defn react
   [cursor]
@@ -52,7 +54,33 @@
   (swap! state update-in cursor
          (fn [vec] (assoc-in vec [index k] v))))
 
+;; Form domain
+
+(defn form-id
+  "Get current form id"
+  []
+  (get-value [:form :id]))
+
+(defn form-origin?
+  "Check whether form origin."
+  [origin-form-id]
+  (= (form-id) origin-form-id))
+
 (defn reset-form
   "Reset state form data"
   []
-  (set-value nil [:form]))
+  (set-value {:id    (str (random-uuid))
+              :state nil
+              :value nil} [:form]))
+
+;; Common cursors
+
+(def form-value-cursor [:form :value])
+
+(def form-state-cursor [:form :state])
+
+(def docker-api-cursor [:docker :api])
+
+(def layout-cursor [:layout])
+
+(def route-cursor [:route])

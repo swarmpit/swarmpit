@@ -1,21 +1,17 @@
 (ns swarmpit.component.registry.create
-  (:require [material.component :as comp]
+  (:require [material.icon :as icon]
+            [material.component :as comp]
             [material.component.form :as form]
             [material.component.panel :as panel]
-            [material.icon :as icon]
-            [swarmpit.url :refer [dispatch!]]
-            [swarmpit.component.handler :as handler]
             [swarmpit.component.mixin :as mixin]
             [swarmpit.component.state :as state]
             [swarmpit.component.message :as message]
+            [swarmpit.url :refer [dispatch!]]
+            [swarmpit.ajax :as ajax]
             [swarmpit.routes :as routes]
             [rum.core :as rum]))
 
 (enable-console-print!)
-
-(def cursor [:form])
-
-(defonce valid? (atom false))
 
 (defn- form-name [value]
   (form/comp
@@ -26,7 +22,7 @@
        :required true
        :value    value
        :onChange (fn [_ v]
-                   (state/update-value [:name] v cursor))})))
+                   (state/update-value [:name] v state/form-value-cursor))})))
 
 (defn- form-url [value]
   (form/comp
@@ -40,7 +36,7 @@
        :hintText        "e.g. https://my.registry.io"
        :value           value
        :onChange        (fn [_ v]
-                          (state/update-value [:url] v cursor))})))
+                          (state/update-value [:url] v state/form-value-cursor))})))
 
 (defn- form-auth [value]
   (form/comp
@@ -49,7 +45,7 @@
       {:key     "authentication"
        :checked value
        :onCheck (fn [_ v]
-                  (state/update-value [:withAuth] v cursor))})))
+                  (state/update-value [:withAuth] v state/form-value-cursor))})))
 
 (defn- form-username [value]
   (form/comp
@@ -59,7 +55,7 @@
        :key      "username"
        :value    value
        :onChange (fn [_ v]
-                   (state/update-value [:username] v cursor))})))
+                   (state/update-value [:username] v state/form-value-cursor))})))
 
 (defn- form-password [value]
   (form/comp
@@ -70,7 +66,7 @@
        :type     "password"
        :value    value
        :onChange (fn [_ v]
-                   (state/update-value [:password] v cursor))})))
+                   (state/update-value [:password] v state/form-value-cursor))})))
 
 (defn- form-public [value]
   (form/comp
@@ -78,59 +74,62 @@
     (form/checkbox
       {:checked value
        :onCheck (fn [_ v]
-                  (state/update-value [:public] v cursor))})))
+                  (state/update-value [:public] v state/form-value-cursor))})))
 
 (defn- create-registry-handler
   []
-  (handler/post
+  (ajax/post
     (routes/path-for-backend :registry-create)
-    {:params     (state/get-value cursor)
-     :on-success (fn [response]
-                   (dispatch!
-                     (routes/path-for-frontend :registry-info (select-keys response [:id])))
+    {:params     (state/get-value state/form-value-cursor)
+     :state      [:processing?]
+     :on-success (fn [{:keys [response origin?]}]
+                   (when origin?
+                     (dispatch!
+                       (routes/path-for-frontend :registry-info (select-keys response [:id]))))
                    (message/info
                      (str "Registry " (:id response) " has been created.")))
-     :on-error   (fn [response]
+     :on-error   (fn [{:keys [response]}]
                    (message/error
                      (str "Registry creation failed. Reason: " (:error response))))}))
 
-(defn- init-state
+(defn- init-form-state
+  []
+  (state/set-value {:valid?      false
+                    :processing? false} state/form-state-cursor))
+
+(defn- init-form-value
   []
   (state/set-value {:name     ""
                     :url      ""
                     :public   false
                     :withAuth false
                     :username ""
-                    :password ""} cursor))
+                    :password ""} state/form-value-cursor))
 
 (def mixin-init-form
   (mixin/init-form
     (fn [_]
-      (init-state))))
+      (init-form-state)
+      (init-form-value))))
 
 (rum/defc form < rum/reactive
                  mixin-init-form [_]
-  (let [{:keys [name
-                url
-                public
-                withAuth
-                username
-                password]} (state/react cursor)]
+  (let [{:keys [name url public withAuth username password]} (state/react state/form-value-cursor)
+        {:keys [valid? processing?]} (state/react state/form-state-cursor)]
     [:div
      [:div.form-panel
       [:div.form-panel-left
        (panel/info icon/registries "New registry")]
       [:div.form-panel-right
-       (comp/mui
-         (comp/raised-button
-           {:label      "Save"
-            :disabled   (not (rum/react valid?))
-            :primary    true
-            :onTouchTap create-registry-handler}))]]
+       (comp/progress-button
+         {:label      "Save"
+          :disabled   (not valid?)
+          :primary    true
+          :onTouchTap create-registry-handler} processing?)]]
      [:div.form-edit
       (form/form
-        {:onValid   #(reset! valid? true)
-         :onInvalid #(reset! valid? false)}
+        {:onValid   #(state/update-value [:valid?] true state/form-state-cursor)
+         :onInvalid #(state/update-value [:valid?] false state/form-state-cursor)}
         (form-name name)
         (form-url url)
         (form-public public)

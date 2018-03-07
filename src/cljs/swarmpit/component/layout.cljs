@@ -2,7 +2,6 @@
   (:require [rum.core :as rum]
             [clojure.string :as str]
             [swarmpit.view :as view]
-            [swarmpit.router :as router]
             [swarmpit.component.state :as state]
             [swarmpit.component.menu :as menu]
             [swarmpit.component.header :as header]))
@@ -40,10 +39,12 @@
    :user-info             "Users"
    :registry-info         "Registries"
    :registry-list         "Registries"
-   :registry-create       "Registries / Add"
+   :registry-create       "Registries / Create"
+   :registry-edit         "Registries / Edit"
    :dockerhub-user-info   "Dockerhub"
    :dockerhub-user-list   "Dockerhub"
-   :dockerhub-user-create "Dockerhub / Add"})
+   :dockerhub-user-create "Dockerhub / Create"
+   :dockerhub-user-edit   "Dockerhub / Edit"})
 
 (defn- page-title
   [handler]
@@ -69,7 +70,7 @@
   (view/dispatch route))
 
 (rum/defc page-layout < rum/reactive [route]
-  (let [{:keys [opened]} (state/react menu/cursor)
+  (let [{:keys [opened]} (state/react state/layout-cursor)
         {:keys [handler]} route
         layout-type (if opened
                       "layout-opened"
@@ -83,7 +84,7 @@
      [:main (view/dispatch route)]]))
 
 (rum/defc layout < rum/reactive []
-  (let [{:keys [handler] :as route} (state/react router/cursor)]
+  (let [{:keys [handler] :as route} (state/react state/route-cursor)]
     (if (page-layout? handler)
       (page-layout route)
       (page-single route))))

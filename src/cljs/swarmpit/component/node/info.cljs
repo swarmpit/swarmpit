@@ -4,48 +4,44 @@
             [material.component.form :as form]
             [material.component.panel :as panel]
             [material.component.list-table-auto :as list]
-            [swarmpit.url :refer [dispatch!]]
             [swarmpit.component.state :as state]
             [swarmpit.component.mixin :as mixin]
-            [swarmpit.component.handler :as handler]
             [swarmpit.component.progress :as progress]
             [swarmpit.component.task.list :as tasks]
+            [swarmpit.url :refer [dispatch!]]
+            [swarmpit.ajax :as ajax]
             [swarmpit.routes :as routes]
             [rum.core :as rum]))
 
 (enable-console-print!)
 
-(def cursor [:form])
-
-(defonce loading? (atom false))
-
 (defn- node-tasks-handler
   [node-id]
-  (handler/get
+  (ajax/get
     (routes/path-for-backend :node-tasks {:id node-id})
-    {:on-success (fn [response]
-                   (state/update-value [:tasks] response cursor))}))
+    {:on-success (fn [{:keys [response]}]
+                   (state/update-value [:tasks] response state/form-value-cursor))}))
 
 (defn- node-handler
   [node-id]
-  (handler/get
+  (ajax/get
     (routes/path-for-backend :node {:id node-id})
-    {:state      loading?
-     :on-success (fn [response]
-                   (state/update-value [:node] response cursor))}))
+    {:state      [:loading?]
+     :on-success (fn [{:keys [response]}]
+                   (state/update-value [:node] response state/form-value-cursor))}))
 
-(defn- init-state
+(defn- init-form-state
   []
-  (state/set-value {:secret   {}
-                    :services []} cursor))
+  (state/set-value {:loading? true} state/form-state-cursor))
 
 (def mixin-init-form
   (mixin/init-form
     (fn [{{:keys [id]} :params}]
+      (init-form-state)
       (node-handler id)
       (node-tasks-handler id))))
 
-(rum/defc form-info < rum/static [node tasks]
+(rum/defc form-info < rum/static [{:keys [node tasks]}]
   [:div
    [:div.form-panel
     [:div.form-panel-left
@@ -82,7 +78,8 @@
 (rum/defc form < rum/reactive
                  mixin-init-form
                  mixin/subscribe-form [_]
-  (let [{:keys [node tasks]} (state/react cursor)]
+  (let [state (state/react state/form-state-cursor)
+        item (state/react state/form-value-cursor)]
     (progress/form
-      (rum/react loading?)
-      (form-info node tasks))))
+      (:loading? state)
+      (form-info item))))

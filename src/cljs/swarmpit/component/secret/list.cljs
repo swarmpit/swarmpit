@@ -4,14 +4,12 @@
             [material.component.list-table :as list]
             [swarmpit.component.mixin :as mixin]
             [swarmpit.component.state :as state]
-            [swarmpit.component.handler :as handler]
+            [swarmpit.ajax :as ajax]
             [swarmpit.routes :as routes]
             [swarmpit.time :as time]
             [rum.core :as rum]))
 
 (enable-console-print!)
-
-(def cursor [:form])
 
 (def headers [{:name  "Name"
                :width "50%"}
@@ -20,8 +18,6 @@
 
 (def render-item-keys
   [[:secretName] [:createdAt]])
-
-(defonce loading? (atom false))
 
 (defn- render-item
   [item _]
@@ -33,28 +29,29 @@
 
 (defn- secrets-handler
   []
-  (handler/get
+  (ajax/get
     (routes/path-for-backend :secrets)
-    {:state      loading?
-     :on-success (fn [response]
-                   (state/update-value [:items] response cursor))}))
+    {:state      [:loading?]
+     :on-success (fn [{:keys [response]}]
+                   (state/update-value [:items] response state/form-value-cursor))}))
 
-(defn- init-state
+(defn- init-form-state
   []
-  (state/set-value {:filter {:query ""}} cursor))
+  (state/set-value {:loading? false
+                    :filter   {:query ""}} state/form-state-cursor))
 
 (def mixin-init-form
   (mixin/init-form
     (fn [_]
-      (init-state)
+      (init-form-state)
       (secrets-handler))))
 
 (rum/defc form < rum/reactive
                  mixin-init-form
                  mixin/subscribe-form
                  mixin/focus-filter [_]
-  (let [{:keys [filter items]} (state/react cursor)
-        filtered-items (list/filter items (:query filter))]
+  (let [{:keys [items]} (state/react state/form-value-cursor)
+        {:keys [loading? filter]} (state/react state/form-state-cursor)]
     [:div
      [:div.form-panel
       [:div.form-panel-left
@@ -62,7 +59,7 @@
          {:id       "filter"
           :hintText "Search secrets"
           :onChange (fn [_ v]
-                      (state/update-value [:filter :query] v cursor))})]
+                      (state/update-value [:filter :query] v state/form-state-cursor))})]
       [:div.form-panel-right
        (comp/mui
          (comp/raised-button
@@ -70,10 +67,10 @@
             :label   "New secret"
             :primary true}))]]
      (list/table headers
-                 (->> filtered-items
+                 (->> (list/filter items (:query filter))
                       (sort-by :secretName)
                       (map #(update % :createdAt time/simplify)))
-                 (rum/react loading?)
+                 loading?
                  render-item
                  render-item-keys
                  onclick-handler)]))
