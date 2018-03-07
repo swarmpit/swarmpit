@@ -8,7 +8,7 @@
 
 (enable-console-print!)
 
-(def cursor [:form :deployment])
+(def form-value-cursor (conj state/form-value-cursor :deployment))
 
 (defn- form-restart-policy-attempts [value]
   (form/comp
@@ -20,7 +20,7 @@
        :min      0
        :value    value
        :onChange (fn [_ v]
-                   (state/update-value [:restartPolicy :attempts] (js/parseInt v) cursor))})))
+                   (state/update-value [:restartPolicy :attempts] (js/parseInt v) form-value-cursor))})))
 
 (defn- form-restart-policy-delay [value]
   (form/comp
@@ -32,7 +32,7 @@
        :min      0
        :value    value
        :onChange (fn [_ v]
-                   (state/update-value [:restartPolicy :delay] (js/parseInt v) cursor))})))
+                   (state/update-value [:restartPolicy :delay] (js/parseInt v) form-value-cursor))})))
 
 (defn- form-restart-policy-condition [value]
   (form/comp
@@ -40,7 +40,7 @@
     (comp/select-field
       {:value    value
        :onChange (fn [_ _ v]
-                   (state/update-value [:restartPolicy :condition] v cursor))}
+                   (state/update-value [:restartPolicy :condition] v form-value-cursor))}
       (comp/menu-item
         {:key         "frpc1"
          :value       "any"
@@ -64,7 +64,7 @@
        :min      0
        :value    value
        :onChange (fn [_ v]
-                   (state/update-value [:update :parallelism] (js/parseInt v) cursor))})))
+                   (state/update-value [:update :parallelism] (js/parseInt v) form-value-cursor))})))
 
 (defn- form-update-delay [value]
   (form/comp
@@ -76,7 +76,7 @@
        :min      0
        :value    value
        :onChange (fn [_ v]
-                   (state/update-value [:update :delay] (js/parseInt v) cursor))})))
+                   (state/update-value [:update :delay] (js/parseInt v) form-value-cursor))})))
 
 (defn- form-update-failure-action [value]
   (form/comp
@@ -84,7 +84,7 @@
     (comp/select-field
       {:value    value
        :onChange (fn [_ _ v]
-                   (state/update-value [:update :failureAction] v cursor))}
+                   (state/update-value [:update :failureAction] v form-value-cursor))}
       (comp/menu-item
         {:key         "fdiu1"
          :value       "pause"
@@ -108,7 +108,7 @@
        :min      0
        :value    value
        :onChange (fn [_ v]
-                   (state/update-value [:rollback :parallelism] (js/parseInt v) cursor))})))
+                   (state/update-value [:rollback :parallelism] (js/parseInt v) form-value-cursor))})))
 
 (defn- form-rollback-delay [value]
   (form/comp
@@ -120,7 +120,7 @@
        :min      0
        :value    value
        :onChange (fn [_ v]
-                   (state/update-value [:rollback :delay] (js/parseInt v) cursor))})))
+                   (state/update-value [:rollback :delay] (js/parseInt v) form-value-cursor))})))
 
 (defn- form-rollback-failure-action [value]
   (form/comp
@@ -128,7 +128,7 @@
     (comp/select-field
       {:value    value
        :onChange (fn [_ _ v]
-                   (state/update-value [:rollback :failureAction] v cursor))}
+                   (state/update-value [:rollback :failureAction] v form-value-cursor))}
       (comp/menu-item
         {:key         "fdir1"
          :value       "pause"
@@ -147,13 +147,13 @@
        :disabled (nil? value)
        :toggled  value
        :onToggle (fn [_ v]
-                   (state/update-value [:autoredeploy] v cursor))})))
+                   (state/update-value [:autoredeploy] v form-value-cursor))})))
 
 (rum/defc form < rum/reactive []
   (let [{:keys [autoredeploy
                 update
                 rollback
-                restartPolicy]} (state/react cursor)]
+                restartPolicy]} (state/react form-value-cursor)]
     [:div.form-edit
      (form/form
        {}

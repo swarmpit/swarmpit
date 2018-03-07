@@ -121,8 +121,8 @@
   (filter #(= (:ServiceID %) service-id) tasks))
 
 (defn ->service-ports
-  [service-spec]
-  (->> (get-in service-spec [:EndpointSpec :Ports])
+  [service]
+  (->> (get-in service [:Endpoint :Ports])
        (map (fn [p] {:containerPort (:TargetPort p)
                      :protocol      (:Protocol p)
                      :hostPort      (:PublishedPort p)}))
@@ -309,7 +309,7 @@
                           (->service-info-status replicas-running replicas-no-shutdown))
                :update  (get-in service [:UpdateStatus :State])
                :message (get-in service [:UpdateStatus :Message])}
-      :ports (->service-ports service-spec)
+      :ports (->service-ports service)
       :mounts (->service-mounts service-spec)
       :secrets (->service-secrets service-spec)
       :configs (->service-configs service-spec)

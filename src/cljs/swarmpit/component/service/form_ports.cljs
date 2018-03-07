@@ -3,30 +3,30 @@
             [material.component.form :as form]
             [material.component.list-table-form :as list]
             [swarmpit.component.state :as state]
-            [swarmpit.component.handler :as handler]
+            [swarmpit.ajax :as ajax]
             [swarmpit.routes :as routes]
             [rum.core :as rum]))
 
 (enable-console-print!)
 
-(def cursor [:form :ports])
+(def form-value-cursor (conj state/form-value-cursor :ports))
 
 (defn- not-suggested?
   [port]
   (not
     (some #(= (:containerPort port)
-              (:containerPort %)) (state/get-value cursor))))
+              (:containerPort %)) (state/get-value form-value-cursor))))
 
 (defn load-suggestable-ports
   [repository]
-  (handler/get
+  (ajax/get
     (routes/path-for-backend :repository-ports)
     {:params     {:repository    (:name repository)
                   :repositoryTag (:tag repository)}
-     :on-success (fn [response]
+     :on-success (fn [{:keys [response]}]
                    (doseq [port response]
                      (if (not-suggested? port)
-                       (state/add-item port cursor))))
+                       (state/add-item port form-value-cursor))))
      :on-error   (fn [_])}))
 
 (def headers [{:name  "Container port"
@@ -38,7 +38,8 @@
 
 (defn- format-port-value
   [value]
-  (if (zero? value) "" value))
+  (if (or (zero? value)
+          (js/isNaN value)) "" value))
 
 (defn- form-container [value index]
   (list/textfield
@@ -49,7 +50,7 @@
      :max      65535
      :value    (format-port-value value)
      :onChange (fn [_ v]
-                 (state/update-item index :containerPort (js/parseInt v) cursor))}))
+                 (state/update-item index :containerPort (js/parseInt v) form-value-cursor))}))
 
 (defn- form-protocol [value index]
   (list/selectfield
@@ -57,7 +58,7 @@
      :key      (str "form-protocol-select-" index)
      :value    value
      :onChange (fn [_ _ v]
-                 (state/update-item index :protocol v cursor))}
+                 (state/update-item index :protocol v form-value-cursor))}
     (comp/menu-item
       {:name        (str "form-protocol-tcp-" index)
        :key         (str "form-protocol-tcp-" index)
@@ -78,7 +79,7 @@
      :max      65535
      :value    (format-port-value value)
      :onChange (fn [_ v]
-                 (state/update-item index :hostPort (js/parseInt v) cursor))}))
+                 (state/update-item index :hostPort (js/parseInt v) form-value-cursor))}))
 
 (defn- render-ports
   [item index _]
@@ -95,16 +96,16 @@
               ports
               nil
               render-ports
-              (fn [index] (state/remove-item index cursor))))
+              (fn [index] (state/remove-item index form-value-cursor))))
 
 (defn- add-item
   []
   (state/add-item {:containerPort 0
                    :protocol      "tcp"
-                   :hostPort      0} cursor))
+                   :hostPort      0} form-value-cursor))
 
 (rum/defc form < rum/reactive []
-  (let [ports (state/react cursor)]
+  (let [ports (state/react form-value-cursor)]
     (if (empty? ports)
       (form/value "Service has no published ports.")
       (form-table ports))))

@@ -2,24 +2,17 @@
   (:require [material.component :as comp]
             [material.component.form :as form]
             [material.component.list-table-form :as list]
-            [swarmpit.component.handler :as handler]
             [swarmpit.component.state :as state]
+            [swarmpit.ajax :as ajax]
             [swarmpit.routes :as routes]
-            [rum.core :as rum]
-            [clojure.string :as str]))
+            [clojure.string :as str]
+            [rum.core :as rum]))
 
 (enable-console-print!)
 
-(def cursor [:form :configs])
+(def form-value-cursor (conj state/form-value-cursor :configs))
 
-(defonce configs-list (atom []))
-
-(defn configs-handler
-  []
-  (handler/get
-    (routes/path-for-backend :configs)
-    {:on-success (fn [response]
-                   (reset! configs-list response))}))
+(def form-state-cursor (conj state/form-state-cursor :configs))
 
 (def headers [{:name  "Name"
                :width "35%"}
@@ -37,7 +30,7 @@
      :key      (str "form-config-select-" index)
      :value    value
      :onChange (fn [_ _ v]
-                 (state/update-item index :configName v cursor))}
+                 (state/update-item index :configName v form-value-cursor))}
     (->> configs-list
          (map #(comp/menu-item
                  {:name        (str "form-config-item-" (:configName %))
@@ -53,7 +46,7 @@
                  name)
      :value    value
      :onChange (fn [_ v]
-                 (state/update-item index :configTarget v cursor))}))
+                 (state/update-item index :configTarget v form-value-cursor))}))
 
 (defn- render-configs
   [item index data]
@@ -67,19 +60,25 @@
               configs
               configs-list
               render-configs
-              (fn [index] (state/remove-item index cursor))))
+              (fn [index] (state/remove-item index form-value-cursor))))
 
 (defn- add-item
   []
   (state/add-item {:configName   ""
-                   :configTarget ""} cursor))
+                   :configTarget ""} form-value-cursor))
+
+(defn configs-handler
+  []
+  (ajax/get
+    (routes/path-for-backend :configs)
+    {:on-success (fn [{:keys [response]}]
+                   (state/update-value [:list] response form-state-cursor))}))
 
 (rum/defc form < rum/reactive []
-  (let [configs-list (rum/react configs-list)
-        configs (state/react cursor)]
-
+  (let [{:keys [list]} (state/react form-state-cursor)
+        configs (state/react form-value-cursor)]
     (if (empty? configs)
       (form/value "No configs defined for the service.")
-      (if (empty? configs-list)
+      (if (empty? list)
         undefined-info
-        (form-table configs configs-list)))))
+        (form-table configs list)))))

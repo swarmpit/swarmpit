@@ -6,8 +6,6 @@
             [swarmpit.url :refer [dispatch! query-string]]
             [clojure.walk :refer [keywordize-keys]]))
 
-(def cursor [:route])
-
 (defonce !router (atom nil))
 
 (defonce !route (atom nil))
@@ -30,7 +28,7 @@
                    route-params (:route-params new-location)
                    handler (:handler new-location)]
                (state/set-value {:handler handler
-                                 :params  (merge route-params query-params)} cursor))))
+                                 :params  (merge route-params query-params)} state/route-cursor))))
 
 (defn- on-navigate
   [location]

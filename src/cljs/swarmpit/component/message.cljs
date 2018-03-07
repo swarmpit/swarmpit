@@ -5,7 +5,7 @@
 
 (enable-console-print!)
 
-(def cursor [:message])
+(def message-cursor [:message])
 
 (def message-body-style
   {:backgroundColor "#fff"
@@ -34,7 +34,7 @@
   (state/set-value {:text text
                     :time (.getTime (js/Date.))
                     :type type
-                    :open true} cursor))
+                    :open true} message-cursor))
 
 (defn info
   [text]
@@ -61,7 +61,7 @@
                     :open             opened?})))
 
 (rum/defc message < rum/reactive []
-  (let [{:keys [open type text]} (state/react cursor)]
+  (let [{:keys [open type text]} (state/react message-cursor)]
     (case type
       :info (info-message text open)
       :error (error-message text open))))

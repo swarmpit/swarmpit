@@ -5,16 +5,14 @@
             [swarmpit.component.mixin :as mixin]
             [swarmpit.component.state :as state]
             [swarmpit.component.progress :as progress]
-            [swarmpit.component.handler :as handler]
             [swarmpit.component.service.create-image-public :as cip]
             [swarmpit.component.service.create-image-other :as cio]
             [swarmpit.component.service.create-image-private :as ciu]
+            [swarmpit.ajax :as ajax]
             [swarmpit.routes :as routes]
             [rum.core :as rum]))
 
 (enable-console-print!)
-
-(def cursor [:form])
 
 (def tabs-inkbar-style
   {:backgroundColor "#437f9d"
@@ -28,40 +26,40 @@
   {:color    "rgb(117, 117, 117"
    :minWidth "200px"})
 
-(defonce registries (atom []))
-
-(defonce registries-loading? (atom false))
-
-(defonce users (atom []))
-
-(defonce users-loading? (atom false))
-
 (defn- registries-handler
   []
-  (handler/get
+  (ajax/get
     (routes/path-for-backend :registries)
-    {:state      registries-loading?
-     :on-success (fn [response]
-                   (reset! registries response))}))
+    {:state      [:registries :loading?]
+     :on-success (fn [{:keys [response]}]
+                   (state/update-value [:registries :list] response state/form-state-cursor))}))
 
 (defn- users-handler
   []
-  (handler/get
+  (ajax/get
     (routes/path-for-backend :dockerhub-users)
-    {:state      users-loading?
-     :on-success (fn [response]
-                   (reset! users response))}))
+    {:state      [:users :loading?]
+     :on-success (fn [{:keys [response]}]
+                   (state/update-value [:users :list] response state/form-state-cursor))}))
 
-(defn- init-state
+(defn- init-form-state
+  []
+  (state/set-value {:registries {:loading? true
+                                 :list     []}
+                    :users      {:loading? true
+                                 :list     []}} state/form-state-cursor))
+
+(defn- init-form-value
   []
   (state/set-value {:public  {}
                     :private {}
-                    :other   {}} cursor))
+                    :other   {}} state/form-value-cursor))
 
 (def mixin-init-form
   (mixin/init-form
     (fn [_]
-      (init-state)
+      (init-form-state)
+      (init-form-value)
       (registries-handler)
       (users-handler))))
 
@@ -90,7 +88,7 @@
            :icon      (comp/svg icon/docker)
            :style     tab-style
            :onActive  (fn []
-                        (let [state (state/get-value ciu/cursor)
+                        (let [state (state/get-value ciu/form-state-cursor)
                               user (:user state)]
                           (when (some? user)
                             (ciu/repository-handler (:_id user)))))}
@@ -102,7 +100,7 @@
            :icon      (comp/svg icon/registries)
            :style     tab-style
            :onActive  (fn []
-                        (let [state (state/get-value cio/cursor)
+                        (let [state (state/get-value cio/form-state-cursor)
                               registry (:registry state)]
                           (when (some? registry)
                             (cio/repository-handler (:_id registry)))))}
@@ -110,9 +108,9 @@
 
 (rum/defc form < rum/reactive
                  mixin-init-form [_]
-  (let [registries (rum/react registries)
-        users (rum/react users)]
+  (let [{:keys [registries users]} (state/react state/form-state-cursor)]
     (progress/form
-      (or (rum/react registries-loading?)
-          (rum/react users-loading?))
-      (form-tabs registries users))))
+      (or (:loading? registries)
+          (:loading? users))
+      (form-tabs (:list registries)
+                 (:list users)))))
