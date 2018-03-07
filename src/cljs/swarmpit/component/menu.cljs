@@ -76,14 +76,18 @@
 
 (def menu
   [{:name "APPLICATIONS"}
-   {:name    "Services"
-    :icon    icon/services
-    :handler :service-list
-    :domain  :service}
    {:name    "Stacks"
     :icon    icon/stacks
     :handler :stack-list
     :domain  :stack}
+   {:name    "Services"
+    :icon    icon/services
+    :handler :service-list
+    :domain  :service}
+   {:name    "Tasks"
+    :icon    icon/tasks
+    :handler :task-list
+    :domain  :task}
    {:name "INFRASTRUCTURE"}
    {:name    "Networks"
     :icon    icon/networks
