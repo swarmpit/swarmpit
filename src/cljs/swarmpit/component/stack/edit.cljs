@@ -63,7 +63,8 @@
     (routes/path-for-backend :stack-file {:name name})
     {:state      [:loading?]
      :on-success (fn [{:keys [response]}]
-                   (state/set-value response state/form-value-cursor))}))
+                   (state/set-value response state/form-value-cursor))
+     :on-error   (fn [_])}))
 
 (def mixin-init-editor
   {:did-mount

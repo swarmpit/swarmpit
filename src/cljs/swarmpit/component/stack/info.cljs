@@ -61,7 +61,8 @@
   (ajax/get
     (routes/path-for-backend :stack-file {:name stack-name})
     {:on-success (fn [{:keys [response]}]
-                   (state/update-value [:stackfile] response state/form-value-cursor))}))
+                   (state/update-value [:stackfile] response state/form-value-cursor))
+     :on-error   (fn [_])}))
 
 (defn- delete-stack-handler
   [stack-name]
