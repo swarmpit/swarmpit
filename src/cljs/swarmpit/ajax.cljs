@@ -42,9 +42,9 @@
    {:params     {:test 123}
     :headers    {:header true}
     :state      [:processing?]
-    :on-success (fn [response]
+    :on-success (fn [{:keys [response origin?]}]
                    (print response))
-    :on-error   (fn [response]
+    :on-error   (fn [{:keys [response]}]
                    (print response))}"
   [request]
   (let [form-id (state/form-id)]
