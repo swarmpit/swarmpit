@@ -6,18 +6,14 @@
             [swarmpit.component.editor :as editor]
             [swarmpit.component.state :as state]
             [swarmpit.component.mixin :as mixin]
-            [swarmpit.component.handler :as handler]
             [swarmpit.component.message :as message]
+            [swarmpit.ajax :as ajax]
             [swarmpit.routes :as routes]
             [swarmpit.url :refer [dispatch!]]
             [sablono.core :refer-macros [html]]
             [rum.core :as rum]))
 
 (enable-console-print!)
-
-(def cursor [:form])
-
-(defonce valid? (atom false))
 
 (def editor-id "compose")
 
@@ -30,7 +26,7 @@
        :required true
        :value    value
        :onChange (fn [_ v]
-                   (state/update-value [:name] v cursor))})))
+                   (state/update-value [:name] v state/form-value-cursor))})))
 
 (defn- form-editor [value]
   (comp/vtext-field
@@ -47,14 +43,18 @@
 
 (defn- create-stack-handler
   []
-  (let [state (state/get-value cursor)]
-    (handler/post
+  (let [{:keys [name] :as form-value} (state/get-value state/form-value-cursor)]
+    (ajax/post
       (routes/path-for-backend :stack-create)
-      {:params     state
-       :on-success (fn [_]
+      {:params     form-value
+       :state      [:processing?]
+       :on-success (fn [{:keys [origin?]}]
+                     (when origin?
+                       (dispatch!
+                         (routes/path-for-frontend :stack-info {:name name})))
                      (message/info
-                       (str "Stack " (:name state) " deployment triggered.")))
-       :on-error   (fn [response]
+                       (str "Stack " name " succesfully deployed.")))
+       :on-error   (fn [{:keys [response]}]
                      (message/error
                        (str "Stack deployment failed. " (:error response))))})))
 
@@ -62,37 +62,43 @@
   {:did-mount
    (fn [state]
      (let [editor (editor/yaml editor-id)]
-       (.on editor "change" (fn [cm] (state/update-value [:spec :compose] (-> cm .getValue) cursor))))
+       (.on editor "change" (fn [cm] (state/update-value [:spec :compose] (-> cm .getValue) state/form-value-cursor))))
      state)})
 
-(defn- init-state
+(defn- init-form-state
+  []
+  (state/set-value {:valid?      false
+                    :processing? false} state/form-state-cursor))
+
+(defn- init-form-value
   []
   (state/set-value {:name ""
-                    :spec {:compose ""}} cursor))
+                    :spec {:compose ""}} state/form-value-cursor))
 
 (def mixin-init-form
   (mixin/init-form
     (fn [_]
-      (init-state))))
+      (init-form-state)
+      (init-form-value))))
 
 (rum/defc form < rum/reactive
                  mixin-init-form
                  mixin-init-editor [_]
-  (let [{:keys [spec name]} (state/react cursor)]
+  (let [{:keys [spec name]} (state/react state/form-value-cursor)
+        {:keys [valid? processing?]} (state/react state/form-state-cursor)]
     [:div
      [:div.form-panel
       [:div.form-panel-left
        (panel/info icon/stacks "New stack")]
       [:div.form-panel-right
-       (comp/mui
-         (comp/raised-button
-           {:label      "Deploy"
-            :onTouchTap #(create-stack-handler)
-            :disabled   (not (rum/react valid?))
-            :primary    true}))]]
+       (comp/progress-button
+         {:label      "Deploy"
+          :disabled   (not valid?)
+          :primary    true
+          :onTouchTap create-stack-handler} processing?)]]
      (form/form
-       {:onValid   #(reset! valid? true)
-        :onInvalid #(reset! valid? false)}
+       {:onValid   #(state/update-value [:valid?] true state/form-state-cursor)
+        :onInvalid #(state/update-value [:valid?] false state/form-state-cursor)}
        (form-name name)
        (html (form/icon-value icon/info "Please drag & drop or paste a compose file."))
        (form-editor (:compose spec)))]))

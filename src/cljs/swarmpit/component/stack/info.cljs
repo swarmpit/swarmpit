@@ -4,7 +4,6 @@
             [material.component.form :as form]
             [material.component.panel :as panel]
             [material.component.list-table-auto :as list]
-            [swarmpit.component.handler :as handler]
             [swarmpit.component.message :as message]
             [swarmpit.component.state :as state]
             [swarmpit.component.mixin :as mixin]
@@ -14,92 +13,92 @@
             [swarmpit.component.volume.list :as volumes]
             [swarmpit.component.config.list :as configs]
             [swarmpit.component.secret.list :as secrets]
+            [swarmpit.ajax :as ajax]
             [swarmpit.url :refer [dispatch!]]
             [swarmpit.routes :as routes]
             [rum.core :as rum]))
 
 (enable-console-print!)
 
-(def cursor [:form])
-
-(defonce action-menu (atom false))
-
-(defonce loading? (atom false))
-
 (defn- stack-services-handler
   [stack-name]
-  (handler/get
+  (ajax/get
     (routes/path-for-backend :stack-services {:name stack-name})
-    {:state      loading?
-     :on-success (fn [response]
-                   (state/update-value [:services] response cursor))}))
+    {:state      [:loading?]
+     :on-success (fn [{:keys [response]}]
+                   (state/update-value [:services] response state/form-value-cursor))}))
 
 (defn- stack-networks-handler
   [stack-name]
-  (handler/get
+  (ajax/get
     (routes/path-for-backend :stack-networks {:name stack-name})
-    {:on-success (fn [response]
-                   (state/update-value [:networks] response cursor))}))
+    {:on-success (fn [{:keys [response]}]
+                   (state/update-value [:networks] response state/form-value-cursor))}))
 
 (defn- stack-volumes-handler
   [stack-name]
-  (handler/get
+  (ajax/get
     (routes/path-for-backend :stack-volumes {:name stack-name})
-    {:on-success (fn [response]
-                   (state/update-value [:volumes] response cursor))}))
+    {:on-success (fn [{:keys [response]}]
+                   (state/update-value [:volumes] response state/form-value-cursor))}))
 
 (defn- stack-configs-handler
   [stack-name]
-  (handler/get
+  (ajax/get
     (routes/path-for-backend :stack-configs {:name stack-name})
-    {:on-success (fn [response]
-                   (state/update-value [:configs] response cursor))}))
+    {:on-success (fn [{:keys [response]}]
+                   (state/update-value [:configs] response state/form-value-cursor))}))
 
 (defn- stack-secrets-handler
   [stack-name]
-  (handler/get
+  (ajax/get
     (routes/path-for-backend :stack-secrets {:name stack-name})
-    {:on-success (fn [response]
-                   (state/update-value [:secrets] response cursor))}))
+    {:on-success (fn [{:keys [response]}]
+                   (state/update-value [:secrets] response state/form-value-cursor))}))
 
 (defn- stackfile-handler
   [stack-name]
-  (handler/get
+  (ajax/get
     (routes/path-for-backend :stack-file {:name stack-name})
-    {:on-success (fn [response]
-                   (state/update-value [:stackfile] response cursor))}))
+    {:on-success (fn [{:keys [response]}]
+                   (state/update-value [:stackfile] response state/form-value-cursor))}))
 
 (defn- delete-stack-handler
   [stack-name]
-  (handler/delete
+  (ajax/delete
     (routes/path-for-backend :stack-delete {:name stack-name})
-    {:on-success (fn [response]
+    {:on-success (fn [_]
                    (dispatch!
                      (routes/path-for-frontend :stack-list))
-                   (message/info (:result response)))
-     :on-error   (fn [response]
+                   (message/info
+                     (str "Stack " stack-name " has been removed.")))
+     :on-error   (fn [{:keys [response]}]
                    (message/error
                      (str "Stack removing failed. " (:error response))))}))
 
 (defn- redeploy-stack-handler
   [stack-name]
-  (handler/post
+  (message/info
+    (str "Stack " stack-name " redeploy triggered."))
+  (ajax/post
     (routes/path-for-backend :stack-redeploy {:name stack-name})
     {:on-success (fn [_]
                    (message/info
-                     (str "Stack " stack-name " redeploy triggered.")))
-     :on-error   (fn [response]
+                     (str "Stack " stack-name " redeploy finished.")))
+     :on-error   (fn [{:keys [response]}]
                    (message/error
-                     (str "Stack rollback failed. " (:error response))))}))
+                     (str "Stack redeploy failed. " (:error response))))}))
 
 (defn- rollback-stack-handler
   [stack-name]
-  (handler/post
+  (message/info
+    (str "Stack " stack-name " rollback triggered."))
+  (ajax/post
     (routes/path-for-backend :stack-rollback {:name stack-name})
     {:on-success (fn [_]
                    (message/info
-                     (str "Stack " stack-name " rollback triggered.")))
-     :on-error   (fn [response]
+                     (str "Stack " stack-name " rollback finished.")))
+     :on-error   (fn [{:keys [response]}]
                    (message/error
                      (str "Stack rollback failed. " (:error response))))}))
 
@@ -117,7 +116,7 @@
       {:iconButtonElement (comp/icon-button nil nil)
        :open              opened?
        :style             action-menu-style
-       :onRequestChange   (fn [state] (reset! action-menu state))}
+       :onRequestChange   (fn [state] (state/update-value [:menu?] state state/form-state-cursor))}
       (comp/menu-item
         {:key           "action-edit"
          :innerDivStyle action-menu-item-style
@@ -196,10 +195,15 @@
                  secrets/render-item-keys
                  secrets/onclick-handler)]))
 
+(defn- init-form-state
+  []
+  (state/set-value {:menu?    false
+                    :loading? true} state/form-state-cursor))
+
 (def mixin-init-form
   (mixin/init-form
     (fn [{{:keys [name]} :params}]
-      (reset! action-menu false)
+      (init-form-state)
       (stack-services-handler name)
       (stack-networks-handler name)
       (stack-volumes-handler name)
@@ -207,32 +211,34 @@
       (stack-secrets-handler name)
       (stackfile-handler name))))
 
-(rum/defc form-info < rum/reactive [stack-name {:keys [services networks volumes configs secrets stackfile]}]
-  (let [opened? (rum/react action-menu)]
-    [:div
-     [:div.form-panel
-      [:div.form-panel-left
-       (panel/info icon/stacks stack-name)]
-      [:div.form-panel-right
-       [:div
-        (comp/mui
-          (comp/raised-button
-            {:onClick       (fn [_] (reset! action-menu true))
-             :icon          (comp/button-icon icon/expand-18)
-             :labelPosition "before"
-             :label         "Actions"}))
-        (form-action-menu stack-name stackfile opened?)]]]
-     [:div.form-layout
-      (form-services services)
-      (form-networks networks)
-      (form-volumes volumes)
-      (form-configs configs)
-      (form-secrets secrets)]]))
+(rum/defc form-info < rum/static [stack-name
+                                  {:keys [services networks volumes configs secrets stackfile]}
+                                  {:keys [menu?]}]
+  [:div
+   [:div.form-panel
+    [:div.form-panel-left
+     (panel/info icon/stacks stack-name)]
+    [:div.form-panel-right
+     [:div
+      (comp/mui
+        (comp/raised-button
+          {:onClick       (fn [_] (state/update-value [:menu?] true state/form-state-cursor))
+           :icon          (comp/button-icon icon/expand-18)
+           :labelPosition "before"
+           :label         "Actions"}))
+      (form-action-menu stack-name stackfile menu?)]]]
+   [:div.form-layout
+    (form-services services)
+    (form-networks networks)
+    (form-volumes volumes)
+    (form-configs configs)
+    (form-secrets secrets)]])
 
 (rum/defc form < rum/reactive
                  mixin-init-form
                  mixin/subscribe-form [{{:keys [name]} :params}]
-  (let [stack (state/react cursor)]
+  (let [state (state/react state/form-state-cursor)
+        item (state/react state/form-value-cursor)]
     (progress/form
-      (rum/react loading?)
-      (form-info name stack))))
+      (:loading? state)
+      (form-info name item state))))

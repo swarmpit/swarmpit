@@ -57,31 +57,10 @@
             subscribers (subscribers subscription)]
         (doseq [subscriber subscribers]
           (let [data (rule/subscribed-data rule event)]
-            (send! subscriber (event-data {:data data}) false)))))))
+            (send! subscriber (event-data data) false)))))))
 
 ;; To prevent data duplicity/spam we cache:
 ;;
 ;; 1) Swarm scoped events that are received from each manager at the same time
 ;; 2) Same local scoped events that occured within 1 second
 (def broadcast-data-memo (memo/ttl broadcast-data :ttl/threshold 1000))
-
-(defn broadcast-message
-  [message]
-  "Broadcast message to all subscribers."
-  (go
-    (doseq [subscriber (subscribers)]
-      (send! subscriber (event-data {:message message}) false))))
-
-(defn broadcast-info
-  [target text]
-  "Broadcast `text` message for action initiated by `target` user"
-  (broadcast-message {:type   :info
-                      :text   text
-                      :target target}))
-
-(defn broadcast-error
-  [target text ex]
-  "Broadcast `text` message for action initiated by `target` user"
-  (broadcast-message {:type   :error
-                      :text   (str text " " (get-in (ex-data ex) [:body :error]))
-                      :target target}))

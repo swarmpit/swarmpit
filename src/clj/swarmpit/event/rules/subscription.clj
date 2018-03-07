@@ -36,12 +36,14 @@
         stack-networks (api/networks stack-label)
         stack-volumes (api/volumes stack-label)
         stack-secrets (api/secrets stack-label)
-        stack-configs (api/configs stack-label)]
-    {:services stack-services
-     :networks stack-networks
-     :volumes  stack-volumes
-     :secrets  stack-secrets
-     :configs  stack-configs}))
+        stack-configs (api/configs stack-label)
+        stackfile (api/stackfile stack-name)]
+    {:services  stack-services
+     :networks  stack-networks
+     :volumes   stack-volumes
+     :secrets   stack-secrets
+     :configs   stack-configs
+     :stackfile stackfile}))
 
 ;; Rules
 
