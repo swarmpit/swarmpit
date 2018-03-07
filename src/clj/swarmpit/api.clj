@@ -777,6 +777,43 @@
                          (:password %)
                          (:url %)))))
 
+(defn create-stack
+  "Create application stack and link stackfile"
+  [owner {:keys [name spec] :as stackfile}]
+  (let [stackfile-origin (cc/stackfile name)]
+    (stack-login owner spec)
+    (dcli/stack-deploy name (:compose spec))
+    (if (some? stackfile-origin)
+      (cc/update-stackfile stackfile-origin stackfile)
+      (cc/create-stackfile stackfile))))
+
+(defn update-stack
+  "Update application stack and stackfile accordingly"
+  [owner {:keys [name spec] :as stackfile}]
+  (let [stackfile-origin (cc/stackfile name)]
+    (stack-login owner spec)
+    (dcli/stack-deploy name (:compose spec))
+    (if (some? stackfile-origin)
+      (cc/update-stackfile stackfile-origin {:spec         spec
+                                             :previousSpec (:spec stackfile-origin)})
+      (cc/create-stackfile stackfile))))
+
+(defn redeploy-stack
+  "Redeploy application stack"
+  [owner name]
+  (let [{:keys [name spec]} (cc/stackfile name)]
+    (stack-login owner spec)
+    (dcli/stack-deploy name (:compose spec))))
+
+(defn rollback-stack
+  "Rollback application stack and update stackfile accordingly"
+  [owner name]
+  (let [{:keys [name spec previousSpec] :as stackfile-origin} (cc/stackfile name)]
+    (stack-login owner previousSpec)
+    (dcli/stack-deploy name (:compose previousSpec))
+    (cc/update-stackfile stackfile-origin {:spec         previousSpec
+                                           :previousSpec spec})))
+
 (defn delete-stack
   [stack-name]
   (dcli/stack-remove stack-name))

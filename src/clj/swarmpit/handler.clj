@@ -3,7 +3,6 @@
             [clojure.java.io :as io]
             [swarmpit.version :as version]
             [swarmpit.api :as api]
-            [swarmpit.async-api :as async-api]
             [swarmpit.slt :as slt]
             [swarmpit.token :as token]))
 
@@ -164,13 +163,13 @@
   (fn [{:keys [route-params identity]}]
     (let [owner (get-in identity [:usr :username])]
       (api/redeploy-service owner (:id route-params))
-      (resp-ok))))
+      (resp-accepted))))
 
 (defmethod dispatch :service-rollback [_]
   (fn [{:keys [route-params identity]}]
     (let [owner (get-in identity [:usr :username])]
       (api/rollback-service owner (:id route-params))
-      (resp-ok))))
+      (resp-accepted))))
 
 (defmethod dispatch :service-delete [_]
   (fn [{:keys [route-params]}]
@@ -487,8 +486,8 @@
           payload (keywordize-keys params)]
       (if (some? (api/stack (:name payload)))
         (resp-error 400 "Stack already exist.")
-        (do (async-api/create-stack owner payload)
-            (resp-accepted))))))
+        (do (api/create-stack owner payload)
+            (resp-created))))))
 
 (defmethod dispatch :stack-update [_]
   (fn [{:keys [identity route-params params]}]
@@ -497,25 +496,27 @@
       (if (not= (:name route-params)
                 (:name payload))
         (resp-error 400 "Stack invalid.")
-        (do (async-api/update-stack owner payload)
-            (resp-accepted))))))
+        (do (api/update-stack owner payload)
+            (resp-ok))))))
 
 (defmethod dispatch :stack-redeploy [_]
   (fn [{:keys [route-params identity]}]
     (let [owner (get-in identity [:usr :username])]
-      (async-api/redeploy-stack owner (:name route-params))
-      (resp-accepted))))
+      (api/redeploy-stack owner (:name route-params))
+      (resp-ok))))
 
 (defmethod dispatch :stack-rollback [_]
   (fn [{:keys [route-params identity]}]
     (let [owner (get-in identity [:usr :username])]
-      (async-api/rollback-stack owner (:name route-params))
-      (resp-accepted))))
+      (api/rollback-stack owner (:name route-params))
+      (resp-ok))))
 
 (defmethod dispatch :stack-delete [_]
   (fn [{:keys [route-params]}]
-    (-> (api/delete-stack (:name route-params))
-        (resp-ok))))
+    (let [{:keys [result]} (api/delete-stack (:name route-params))]
+      (if (nil? (api/stack (:name route-params)))
+        (resp-ok)
+        (resp-error 400 result)))))
 
 (defmethod dispatch :stack-file [_]
   (fn [{:keys [route-params]}]
