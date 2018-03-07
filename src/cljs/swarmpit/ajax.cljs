@@ -19,14 +19,13 @@
 (defn- command-error
   [{:keys [body headers]} status]
   (cond
-    (= 400 status) (message/error (str (or (:error body) body)))
     (and (= 401 status)
          (= "swarmpit" (:x-backend-server headers))) (router/set-location {:handler :login})
     (and (= 403 status)
          (= "swarmpit" (:x-backend-server headers))) (router/set-location {:handler :unauthorized})
     (= 404 status) (router/set-route {:handler :not-found})
     (= 500 status) (message/error (str (or (:cause body) "Server request failed")))
-    :else (message/error (str (or body "Server request failed")))))
+    :else (message/error (str (or (:error body) body "Server request failed")))))
 
 (defn- command
   "Customized ajax command:
