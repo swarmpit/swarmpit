@@ -198,6 +198,13 @@
 
 ;;; Composite components
 
+(defn vtextfield [props]
+  (vtext-field
+    (merge props
+           {:required      true
+            :underlineShow false
+            :inputStyle    {:color "rgb(117, 117, 117)"}})))
+
 (defn loader [props]
   (refresh-indicator
     (merge props

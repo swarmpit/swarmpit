@@ -64,7 +64,8 @@
     {:state      [:loading?]
      :on-success (fn [{:keys [response]}]
                    (state/set-value response state/form-value-cursor))
-     :on-error   (fn [_])}))
+     :on-error   (fn [_]
+                   (state/update-value [:external?] true state/form-state-cursor))}))
 
 (def mixin-init-editor
   {:did-mount
@@ -76,6 +77,7 @@
 (defn- init-form-state
   []
   (state/set-value {:valid?      false
+                    :external?   false
                     :loading?    true
                     :processing? false} state/form-state-cursor))
 
@@ -92,7 +94,7 @@
       (stackfile-handler name))))
 
 (rum/defc form-edit < mixin-init-editor [{:keys [name spec]}
-                                         {:keys [processing? valid?]}]
+                                         {:keys [processing? valid? external?]}]
   [:div
    [:div.form-panel
     [:div.form-panel-left
@@ -107,6 +109,8 @@
      {:onValid   #(state/update-value [:valid?] true state/form-state-cursor)
       :onInvalid #(state/update-value [:valid?] false state/form-state-cursor)}
      (form-name name)
+     (when external?
+       (html (form/icon-value icon/warn "You are trying to edit external stack. Please drag & drop or paste matching compose file to link.")))
      (form-editor (:compose spec)))])
 
 (rum/defc form < rum/reactive
