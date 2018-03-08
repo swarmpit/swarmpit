@@ -3,6 +3,10 @@
 
 (defmulti handle (fn [handler event] handler))
 
+(defmethod handle :stack-list
+  [_ event]
+  (state/update-value [:items] event state/form-value-cursor))
+
 (defmethod handle :service-list
   [_ event]
   (state/update-value [:items] event state/form-value-cursor))
