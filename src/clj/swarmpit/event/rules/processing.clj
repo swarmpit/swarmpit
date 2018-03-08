@@ -15,8 +15,9 @@
            (= "remove" (:Action event))))
     (process [_ event]
       (doseq [{:keys [name]} (api/stackfiles)]
-        (when (and (nil? (api/stack name))
-                   (some? (api/stackfile name)))
-          (api/delete-stackfile name))))))
+        (when (nil? (api/stack name))
+          (try
+            (api/delete-stackfile name)
+            (catch Exception _)))))))
 
 (def list [cleanup-stackfiles])
