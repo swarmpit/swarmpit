@@ -8,13 +8,23 @@
   [auth]
   (base64/encode (generate-string auth)))
 
+(defn- label-query
+  [label]
+  (when (some? label)
+    {:filters (generate-string {:label [label]})}))
+
 ;; Service
 
 (defn services
-  []
-  (-> (execute {:method :GET
-                :api    "/services"})
-      :body))
+  ([]
+   (-> (execute {:method :GET
+                 :api    "/services"})
+       :body))
+  ([label]
+   (-> (execute {:method  :GET
+                 :api     "/services"
+                 :options {:query-params (label-query label)}})
+       :body)))
 
 (defn service
   [id]
@@ -87,10 +97,15 @@
 ;; Network
 
 (defn networks
-  []
-  (-> (execute {:method :GET
-                :api    "/networks"})
-      :body))
+  ([]
+   (-> (execute {:method :GET
+                 :api    "/networks"})
+       :body))
+  ([label]
+   (-> (execute {:method  :GET
+                 :api     "/networks"
+                 :options {:query-params (label-query label)}})
+       :body)))
 
 (defn network
   [id]
@@ -115,10 +130,15 @@
 ;; Volume
 
 (defn volumes
-  []
-  (-> (execute {:method :GET
-                :api    "/volumes"})
-      :body))
+  ([]
+   (-> (execute {:method :GET
+                 :api    "/volumes"})
+       :body))
+  ([label]
+   (-> (execute {:method  :GET
+                 :api     "/volumes"
+                 :options {:query-params (label-query label)}})
+       :body)))
 
 (defn volume
   [name]
@@ -143,10 +163,15 @@
 ;; Secret
 
 (defn secrets
-  []
-  (-> (execute {:method :GET
-                :api    "/secrets"})
-      :body))
+  ([]
+   (-> (execute {:method :GET
+                 :api    "/secrets"})
+       :body))
+  ([label]
+   (-> (execute {:method  :GET
+                 :api     "/secrets"
+                 :options {:query-params (label-query label)}})
+       :body)))
 
 (defn secret
   [id]
@@ -180,10 +205,15 @@
 ;; Config
 
 (defn configs
-  []
-  (-> (execute {:method :GET
-                :api    "/configs"})
-      :body))
+  ([]
+   (-> (execute {:method :GET
+                 :api    "/configs"})
+       :body))
+  ([label]
+   (-> (execute {:method  :GET
+                 :api     "/configs"
+                 :options {:query-params (label-query label)}})
+       :body)))
 
 (defn config
   [id]
@@ -239,4 +269,15 @@
   [name]
   (-> (execute {:method :GET
                 :api    (str "/images/" name "/json")})
+      :body))
+
+;; Auth
+
+(defn auth
+  [distribution]
+  (-> (execute {:method  :POST
+                :api     "/auth"
+                :options {:body {:username      (:username distribution)
+                                 :password      (:password distribution)
+                                 :serveraddress (or (:url distribution) "https://index.docker.io/v2")}}})
       :body))

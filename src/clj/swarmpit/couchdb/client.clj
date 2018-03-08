@@ -1,7 +1,8 @@
 (ns swarmpit.couchdb.client
   (:require [swarmpit.http :refer :all]
             [cheshire.core :refer [generate-string]]
-            [swarmpit.config :refer [config]]))
+            [swarmpit.config :refer [config]]
+            [clojure.string :as str]))
 
 (defn- execute
   [{:keys [method api options]}]
@@ -13,11 +14,12 @@
 
 (defn get-doc
   [id]
-  (try
-    (-> (execute {:method :GET
-                  :api    (str "/swarmpit/" id)})
-        :body)
-    (catch Exception _)))
+  (when (not (str/blank? id))
+    (try
+      (-> (execute {:method :GET
+                    :api    (str "/swarmpit/" id)})
+          :body)
+      (catch Exception _))))
 
 (defn create-doc
   [doc]
@@ -97,7 +99,8 @@
 
 (defn create-secret
   [secret]
-  (create-doc secret))
+  (-> (assoc secret :type "secret")
+      (create-doc)))
 
 (defn get-secret
   []
@@ -126,7 +129,8 @@
 
 (defn create-dockeruser
   [docker-user]
-  (create-doc docker-user))
+  (-> (assoc docker-user :type "dockeruser")
+      (create-doc)))
 
 (defn update-dockeruser
   [docker-user delta]
@@ -164,7 +168,8 @@
 
 (defn create-registry
   [registry]
-  (create-doc registry))
+  (-> (assoc registry :type "registry")
+      (create-doc)))
 
 (defn update-registry
   [user delta]
@@ -191,7 +196,8 @@
 
 (defn create-user
   [user]
-  (create-doc user))
+  (-> (assoc user :type "user")
+      (create-doc)))
 
 (defn delete-user
   [user]
@@ -205,3 +211,27 @@
 (defn change-password
   [user encrypted-password]
   (update-doc user :password encrypted-password))
+
+;; Stackfile
+
+(defn stackfiles
+  []
+  (find-docs "stackfile"))
+
+(defn stackfile
+  [name]
+  (find-doc {:name {"$eq" name}} "stackfile"))
+
+(defn create-stackfile
+  [stackfile]
+  (-> (assoc stackfile :type "stackfile")
+      (create-doc)))
+
+(defn update-stackfile
+  [stackfile delta]
+  (let [allowed-delta (select-keys delta [:spec :previousSpec])]
+    (update-doc stackfile allowed-delta)))
+
+(defn delete-stackfile
+  [stackfile]
+  (delete-doc stackfile))

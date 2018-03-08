@@ -25,7 +25,7 @@
          (= "swarmpit" (:x-backend-server headers))) (router/set-location {:handler :unauthorized})
     (= 404 status) (router/set-route {:handler :not-found})
     (= 500 status) (message/error (str (or (:cause body) "Server request failed")))
-    :else (message/error body)))
+    :else (message/error (str (or (:error body) body "Server request failed")))))
 
 (defn- command
   "Customized ajax command:
@@ -41,9 +41,9 @@
    {:params     {:test 123}
     :headers    {:header true}
     :state      [:processing?]
-    :on-success (fn [response]
+    :on-success (fn [{:keys [response origin?]}]
                    (print response))
-    :on-error   (fn [response]
+    :on-error   (fn [{:keys [response]}]
                    (print response))}"
   [request]
   (let [form-id (state/form-id)]

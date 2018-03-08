@@ -163,13 +163,13 @@
   (fn [{:keys [route-params identity]}]
     (let [owner (get-in identity [:usr :username])]
       (api/redeploy-service owner (:id route-params))
-      (resp-ok))))
+      (resp-accepted))))
 
 (defmethod dispatch :service-rollback [_]
   (fn [{:keys [route-params identity]}]
     (let [owner (get-in identity [:usr :username])]
       (api/rollback-service owner (:id route-params))
-      (resp-ok))))
+      (resp-accepted))))
 
 (defmethod dispatch :service-delete [_]
   (fn [{:keys [route-params]}]
@@ -472,3 +472,85 @@
         (resp-error 400 "Parameter name or tag missing")
         (->> (api/repository-ports owner repository-name repository-tag)
              (resp-ok))))))
+
+;; Stack handler
+
+(defmethod dispatch :stacks [_]
+  (fn [_]
+    (->> (api/stacks)
+         (resp-ok))))
+
+(defmethod dispatch :stack-create [_]
+  (fn [{:keys [identity params]}]
+    (let [owner (get-in identity [:usr :username])
+          payload (keywordize-keys params)]
+      (if (some? (api/stack (:name payload)))
+        (resp-error 400 "Stack already exist.")
+        (do (api/create-stack owner payload)
+            (resp-created))))))
+
+(defmethod dispatch :stack-update [_]
+  (fn [{:keys [identity route-params params]}]
+    (let [owner (get-in identity [:usr :username])
+          payload (keywordize-keys params)]
+      (if (not= (:name route-params)
+                (:name payload))
+        (resp-error 400 "Stack invalid.")
+        (do (api/update-stack owner payload)
+            (resp-ok))))))
+
+(defmethod dispatch :stack-redeploy [_]
+  (fn [{:keys [route-params identity]}]
+    (let [owner (get-in identity [:usr :username])]
+      (api/redeploy-stack owner (:name route-params))
+      (resp-ok))))
+
+(defmethod dispatch :stack-rollback [_]
+  (fn [{:keys [route-params identity]}]
+    (let [owner (get-in identity [:usr :username])]
+      (api/rollback-stack owner (:name route-params))
+      (resp-ok))))
+
+(defmethod dispatch :stack-delete [_]
+  (fn [{:keys [route-params]}]
+    (let [{:keys [result]} (api/delete-stack (:name route-params))]
+      (if (nil? (api/stack (:name route-params)))
+        (resp-ok)
+        (resp-error 400 result)))))
+
+(defmethod dispatch :stack-file [_]
+  (fn [{:keys [route-params]}]
+    (let [response (api/stackfile (:name route-params))]
+      (if (some? response)
+        (resp-ok response)
+        (resp-error 400 "Stackfile not found")))))
+
+(defmethod dispatch :stack-services [_]
+  (fn [{:keys [route-params]}]
+    (let [label (str "com.docker.stack.namespace=" (:name route-params))]
+      (->> (api/services label)
+           (resp-ok)))))
+
+(defmethod dispatch :stack-networks [_]
+  (fn [{:keys [route-params]}]
+    (let [label (str "com.docker.stack.namespace=" (:name route-params))]
+      (->> (api/networks label)
+           (resp-ok)))))
+
+(defmethod dispatch :stack-volumes [_]
+  (fn [{:keys [route-params]}]
+    (let [label (str "com.docker.stack.namespace=" (:name route-params))]
+      (->> (api/volumes label)
+           (resp-ok)))))
+
+(defmethod dispatch :stack-configs [_]
+  (fn [{:keys [route-params]}]
+    (let [label (str "com.docker.stack.namespace=" (:name route-params))]
+      (->> (api/configs label)
+           (resp-ok)))))
+
+(defmethod dispatch :stack-secrets [_]
+  (fn [{:keys [route-params]}]
+    (let [label (str "com.docker.stack.namespace=" (:name route-params))]
+      (->> (api/secrets label)
+           (resp-ok)))))

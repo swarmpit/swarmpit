@@ -11,7 +11,8 @@
   {:backgroundColor "#fff"
    :maxWidth        "100%"
    :height          "100%"
-   :lineHeight      "30px"
+   :lineHeight      "24px"
+   :whiteSpace      "pre-line"
    :minWidth        0})
 
 (def message-info-body-style

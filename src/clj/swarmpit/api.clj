@@ -4,8 +4,10 @@
             [digest :refer [digest]]
             [swarmpit.utils :refer [merge-data]]
             [swarmpit.config :as cfg]
+            [swarmpit.yaml :as yaml]
             [swarmpit.docker.utils :as du]
             [swarmpit.docker.engine.client :as dc]
+            [swarmpit.docker.engine.cli :as dcli]
             [swarmpit.docker.engine.log :as dl]
             [swarmpit.docker.engine.mapper.inbound :as dmi]
             [swarmpit.docker.engine.mapper.outbound :as dmo]
@@ -20,7 +22,8 @@
             [swarmpit.couchdb.mapper.outbound :as cmo]
             [clojure.core.memoize :as memo]
             [clojure.tools.logging :as log]
-            [clojure.string :as str]))
+            [clojure.string :as str]
+            [cemerick.url :refer [url]]))
 
 ;;; User API
 
@@ -85,9 +88,11 @@
 ;;; Secret API
 
 (defn secrets
-  []
-  (-> (dc/secrets)
-      (dmi/->secrets)))
+  ([]
+   (secrets nil))
+  ([label]
+   (-> (dc/secrets label)
+       (dmi/->secrets))))
 
 (defn secret
   [secret-id]
@@ -113,9 +118,11 @@
 ;;; Config API
 
 (defn configs
-  []
-  (-> (dc/configs)
-      (dmi/->configs)))
+  ([]
+   (configs nil))
+  ([label]
+   (-> (dc/configs label)
+       (dmi/->configs))))
 
 (defn config
   [config-id]
@@ -135,9 +142,11 @@
 ;;; Network API
 
 (defn networks
-  []
-  (-> (dc/networks)
-      (dmi/->networks)))
+  ([]
+   (networks nil))
+  ([label]
+   (-> (dc/networks label)
+       (dmi/->networks))))
 
 (defn network
   [network-id]
@@ -150,16 +159,18 @@
 
 (defn create-network
   [network]
-  (->> (dmo/->network network)
-       (dc/create-network)
-       ((fn [net] {:id (:Id net)}))))
+  (-> (dmo/->network network)
+      (dc/create-network)
+      (rename-keys {:Id :id})))
 
 ;;; Volume API
 
 (defn volumes
-  []
-  (-> (dc/volumes)
-      (dmi/->volumes)))
+  ([]
+   (volumes nil))
+  ([label]
+   (-> (dc/volumes label)
+       (dmi/->volumes))))
 
 (defn volume
   [volume-name]
@@ -193,6 +204,49 @@
   (dmi/->tasks (dc/node-tasks node-id)
                (dc/nodes)
                (dc/services)))
+
+;;; Stackfile API
+
+(defn stackfiles
+  []
+  (cc/stackfiles))
+
+(defn stackfile
+  [stack-name]
+  (cc/stackfile stack-name))
+
+(defn delete-stackfile
+  [stack-name]
+  (-> (cc/stackfile stack-name)
+      (cc/delete-stackfile)))
+
+(defn- stackfile-json
+  [stackfile-spec]
+  (try
+    (yaml/->json (:compose stackfile-spec))
+    (catch Exception _ nil)))
+
+(defn- stackfile-services
+  [stackfile-spec]
+  (->> (stackfile-json stackfile-spec)
+       :services
+       (vals)
+       (map #(dmi/->service-image-details (:image %)))))
+
+(defn- stackfile-distibutions
+  [stackfile-spec filter-fx]
+  (->> (stackfile-services stackfile-spec)
+       (filter #(filter-fx (:name %)))
+       (map #(du/distribution-id (:name %)))
+       (into (hash-set))))
+
+(defn- stackfile-dockerhub-distributions
+  [stackfile-spec]
+  (stackfile-distibutions stackfile-spec du/dockerhub?))
+
+(defn- stackfile-registry-distributions
+  [stackfile-spec]
+  (stackfile-distibutions stackfile-spec du/registry?))
 
 ;;; Dockerhub distribution API
 
@@ -228,6 +282,24 @@
   (->> (cc/dockerusers owner)
        (filter #(contains? (set (:namespaces %)) dockeruser-namespace))
        (first)))
+
+(defn- dockeruser-by-stackfile
+  "Return best matching dockerhub account for given stackfile spec"
+  [owner stackfile-spec]
+  (let [namespaces (stackfile-dockerhub-distributions stackfile-spec)]
+    (->> (cc/dockerusers owner)
+         (map #(hash-map
+                 :user-id (:_id %)
+                 :matches (get
+                            (->> (:namespaces %)
+                                 (map (fn [ns] (contains? namespaces ns)))
+                                 (frequencies))
+                            true)))
+         (filter #(some? (:matches %)))
+         (sort-by :matches)
+         (last)
+         :user-id
+         (cc/dockeruser))))
 
 (defn create-dockeruser
   [dockeruser dockeruser-info dockeruser-namespace]
@@ -269,6 +341,13 @@
   (-> (cc/registries owner)
       (cmi/->registries)))
 
+(defn- registries-by-stackfile
+  "Return registry accounts for given stackfile spec"
+  [owner stackfile-spec]
+  (let [urls (stackfile-registry-distributions stackfile-spec)]
+    (->> (cc/registries owner)
+         (filter #(contains? urls (-> % :url url :host))))))
+
 (defn registry
   [registry-id]
   (-> (cc/registry registry-id)
@@ -301,9 +380,8 @@
 
 (defn create-registry
   [registry]
-  (if (not (registry-exist? registry))
-    (->> (cmo/->registry registry)
-         (cc/create-registry))))
+  (when (not (registry-exist? registry))
+    (cc/create-registry registry)))
 
 (defn update-registry
   [registry-id registry-delta]
@@ -441,37 +519,41 @@
 
 (defn services
   ([]
-   (dmi/->services (dc/services)
-                   (dc/tasks)))
-  ([service-filter]
-   (dmi/->services (filter #(service-filter %) (dc/services))
+   (services nil))
+  ([label]
+   (dmi/->services (dc/services label)
                    (dc/tasks))))
 
 (def services-memo (memo/ttl services :ttl/threshold 1000))
 
+(defn- services-by
+  [service-filter]
+  (dmi/->services (filter #(service-filter %) (dc/services))
+                  (dc/tasks)))
+
 (defn services-by-network
   [network-name]
-  (services #(contains? (->> (get-in % [:Spec :TaskTemplate :Networks])
-                             (map :Target)
-                             (set)) (:id (network network-name)))))
+  (services-by #(contains? (->> (get-in % [:Spec :TaskTemplate :Networks])
+                                (map :Target)
+                                (set)) (:id (network network-name)))))
 
 (defn services-by-volume
   [volume-name]
-  (services #(contains? (->> (get-in % [:Spec :TaskTemplate :ContainerSpec :Mounts])
-                             (map :Source)
-                             (set)) volume-name)))
+  (services-by #(contains? (->> (get-in % [:Spec :TaskTemplate :ContainerSpec :Mounts])
+                                (map :Source)
+                                (set)) volume-name)))
 
 (defn services-by-secret
   [secret-name]
-  (services #(contains? (->> (get-in % [:Spec :TaskTemplate :ContainerSpec :Secrets])
-                             (map :SecretName)
-                             (set)) secret-name)))
+  (services-by #(contains? (->> (get-in % [:Spec :TaskTemplate :ContainerSpec :Secrets])
+                                (map :SecretName)
+                                (set)) secret-name)))
 
 (defn services-by-config
   [config-name]
-  (services #(contains? (->> (get-in % [:Spec :TaskTemplate :ContainerSpec :Configs])
-                             (map :ConfigName)
-                             (set)) config-name)))
+  (services-by #(contains? (->> (get-in % [:Spec :TaskTemplate :ContainerSpec :Configs])
+                                (map :ConfigName)
+                                (set)) config-name)))
 
 (defn service
   [service-id]
@@ -657,3 +739,81 @@
         nodes-label
         (fn [matcher item]
           (str "node.labels." (name (key item)) matcher (val item)))))))
+
+;; Stack API
+
+(defn stacks
+  []
+  (->> (dissoc (group-by :stack (services)) nil)
+       (map key)
+       (map #(let [label (str "com.docker.stack.namespace=" %)]
+               {:stackName %
+                :stackFile (if (some? (cc/stackfile %)) true false)
+                :services  (services label)
+                :networks  (networks label)
+                :volumes   (volumes label)
+                :configs   (configs label)
+                :secrets   (secrets label)}))))
+
+(defn stack
+  [stack-name]
+  (let [label (str "com.docker.stack.namespace=" stack-name)
+        services (services label)]
+    (when (not-empty services)
+      {:stackName stack-name
+       :stackFile (if (some? (cc/stackfile stack-name)) true false)
+       :services  services
+       :networks  (networks label)
+       :volumes   (volumes label)
+       :configs   (configs label)
+       :secrets   (secrets label)})))
+
+(defn stack-login
+  [owner stackfile-spec]
+  (->> (remove nil?
+               (conj (registries-by-stackfile owner stackfile-spec)
+                     (dockeruser-by-stackfile owner stackfile-spec)))
+       (map #(dcli/login (:username %)
+                         (:password %)
+                         (:url %)))))
+
+(defn create-stack
+  "Create application stack and link stackfile"
+  [owner {:keys [name spec] :as stackfile}]
+  (let [stackfile-origin (cc/stackfile name)]
+    (stack-login owner spec)
+    (dcli/stack-deploy name (:compose spec))
+    (if (some? stackfile-origin)
+      (cc/update-stackfile stackfile-origin stackfile)
+      (cc/create-stackfile stackfile))))
+
+(defn update-stack
+  "Update application stack and stackfile accordingly"
+  [owner {:keys [name spec] :as stackfile}]
+  (let [stackfile-origin (cc/stackfile name)]
+    (stack-login owner spec)
+    (dcli/stack-deploy name (:compose spec))
+    (if (some? stackfile-origin)
+      (cc/update-stackfile stackfile-origin {:spec         spec
+                                             :previousSpec (:spec stackfile-origin)})
+      (cc/create-stackfile stackfile))))
+
+(defn redeploy-stack
+  "Redeploy application stack"
+  [owner name]
+  (let [{:keys [name spec]} (cc/stackfile name)]
+    (stack-login owner spec)
+    (dcli/stack-deploy name (:compose spec))))
+
+(defn rollback-stack
+  "Rollback application stack and update stackfile accordingly"
+  [owner name]
+  (let [{:keys [name spec previousSpec] :as stackfile-origin} (cc/stackfile name)]
+    (stack-login owner previousSpec)
+    (dcli/stack-deploy name (:compose previousSpec))
+    (cc/update-stackfile stackfile-origin {:spec         previousSpec
+                                           :previousSpec spec})))
+
+(defn delete-stack
+  [stack-name]
+  (dcli/stack-remove stack-name))

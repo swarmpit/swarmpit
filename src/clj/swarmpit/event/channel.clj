@@ -7,11 +7,11 @@
             [clojure.walk :refer [keywordize-keys]]
             [cheshire.core :refer [generate-string]]
             [swarmpit.base64 :as base64]
-            [swarmpit.event.rule :as rule]))
+            [swarmpit.event.rules.subscription :as rule]))
 
 (def hub (atom {}))
 
-(defn- message
+(defn- event-data
   [data]
   (str "data: " (generate-string data) "\n\n"))
 
@@ -23,10 +23,14 @@
       (edn/read-string)))
 
 (defn- subscribers
-  [channel-subscription]
-  (->> @hub
-       (filter #(= channel-subscription (subscription %)))
-       (keys)))
+  ([channel-subscription]
+   "Get subscribers based on given subscription"
+   (->> @hub
+        (filter #(= channel-subscription (subscription %)))
+        (keys)))
+  ([]
+   "Get all subscribers"
+   (-> @hub (keys))))
 
 (defn list
   ([event]
@@ -42,7 +46,7 @@
    (->> (keys @hub)
         (map #(str %)))))
 
-(defn broadcast
+(defn broadcast-data
   [event]
   "Broadcast data to subscribers based on event subscription.
    Broadcast processing is delayed for 1 second due to cluster sync"
@@ -51,13 +55,12 @@
     (doseq [rule (filter #(rule/match? % event) rule/list)]
       (let [subscription (rule/subscription rule event)
             subscribers (subscribers subscription)]
-        (when (not-empty subscribers)
-          (doseq [subscriber subscribers]
-            (let [data (rule/subscribed-data rule event)]
-              (send! subscriber (message data) false))))))))
+        (doseq [subscriber subscribers]
+          (let [data (rule/subscribed-data rule event)]
+            (send! subscriber (event-data data) false)))))))
 
-;; To prevent duplicity/spam we cache:
+;; To prevent data duplicity/spam we cache:
 ;;
 ;; 1) Swarm scoped events that are received from each manager at the same time
 ;; 2) Same local scoped events that occured within 1 second
-(def broadcast-memo (memo/ttl broadcast :ttl/threshold 1000))
+(def broadcast-data-memo (memo/ttl broadcast-data :ttl/threshold 1000))

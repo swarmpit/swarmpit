@@ -1,6 +1,7 @@
 (ns material.validation
   (:require [material.factory]
-            [swarmpit.ip :as ip]))
+            [swarmpit.ip :as ip]
+            [swarmpit.yaml :as yaml]))
 
 (.addValidationRule js/Formsy "isValidGateway"
                     (fn [_ value]
@@ -27,3 +28,9 @@
                         (if (empty? val)
                           true
                           (some? (re-matches #"^(0(\.\d+)?|1(\.0+)?)$" val))))))
+
+(.addValidationRule js/Formsy "isValidCompose"
+                    (fn [_ value]
+                      (if (empty? value)
+                        false
+                        (yaml/valid? value))))
