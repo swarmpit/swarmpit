@@ -25,7 +25,7 @@
                  [buddy/buddy-hashers "1.2.0"]
                  [clojure-humanize "0.2.2"]
                  [http-kit "2.2.0"]
-                 [clj-http "3.6.1"]
+                 [clj-http "3.8.0"]
                  [clj-yaml "0.4.0"]
                  [cljs-ajax "0.5.8"]
                  [bidi "2.0.16"]

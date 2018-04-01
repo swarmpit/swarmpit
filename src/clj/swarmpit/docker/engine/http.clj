@@ -16,12 +16,15 @@
       (.register "http" (UnixSocketFactory/createUnixSocketFactory (config :docker-sock)))
       (.build)))
 
+(defn- make-unix-conn-manager
+  []
+  (BasicHttpClientConnectionManager. (unix-scheme)))
+
 (defn- make-conn-manager
   []
-  (let [scheme (if (http?)
-                 conn-mgr/regular-scheme-registry
-                 (unix-scheme))]
-    (BasicHttpClientConnectionManager. scheme)))
+  (if (http?)
+    (conn-mgr/make-regular-conn-manager {})
+    (make-unix-conn-manager)))
 
 (defn- url
   [uri]
