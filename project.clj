@@ -38,7 +38,7 @@
                  [com.cemerick/friend "0.2.3"]
                  [com.cognitect/transit-cljs "0.8.239"]
                  [com.github.jnr/jnr-unixsocket "0.18"]]
-  :plugins [[lein-cljsbuild "1.1.4"]
+  :plugins [[lein-cljsbuild "1.1.7"]
             [lein-environ "1.1.0"]
             [lein-pprint "1.1.2"]
             [lein-cloverage "1.0.9"]]
@@ -82,13 +82,13 @@
              :ring-handler   repl.user/http-handler
              :server-logfile "log/figwheel.log"}
   :profiles {:dev
-             {:dependencies [[figwheel "0.5.10"]
-                             [figwheel-sidecar "0.5.10"]
-                             [com.cemerick/piggieback "0.2.1"]
-                             [org.clojure/tools.nrepl "0.2.12"]
-                             [binaryage/devtools "0.9.2"]
+             {:dependencies [[figwheel "0.5.15"]
+                             [figwheel-sidecar "0.5.15"]
+                             [com.cemerick/piggieback "0.2.2"]
+                             [org.clojure/tools.nrepl "0.2.13"]
+                             [binaryage/devtools "0.9.9"]
                              [criterium "0.4.4"]]
-              :plugins      [[lein-figwheel "0.5.10"]
+              :plugins      [[lein-figwheel "0.5.15"]
                              [lein-doo "0.1.6"]]
               :source-paths ["dev"]
               :repl-options {:nrepl-middleware [cemerick.piggieback/wrap-cljs-repl]}}
