@@ -4,7 +4,7 @@
   :license {:name "Eclipse Public License"
             :url  "http://www.eclipse.org/legal/epl-v10.html"}
   :dependencies [[org.clojure/clojure "1.9.0"]
-                 [org.clojure/clojurescript "1.9.660"]
+                 [org.clojure/clojurescript "1.9.946"]
                  [org.clojure/core.async "0.4.474"]
                  [org.clojure/core.cache "0.7.1"]
                  [org.clojure/tools.logging "0.4.0"]
@@ -36,7 +36,7 @@
                  [com.andrewmcveigh/cljs-time "0.5.1"]
                  [com.cemerick/url "0.1.1"]
                  [com.cemerick/friend "0.2.3"]
-                 [com.cognitect/transit-cljs "0.8.239"]
+                 [com.cognitect/transit-cljs "0.8.256"]
                  [com.github.jnr/jnr-unixsocket "0.18"]]
   :plugins [[lein-cljsbuild "1.1.7"]
             [lein-environ "1.1.0"]
