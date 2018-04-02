@@ -22,14 +22,14 @@
 (defn- form-cpu-reservation [value]
   (form/comp
     (str "CPU  " "(" (cpu-value value) ")")
-    (comp/slider #js {:min          0
-                      :max          2
-                      :step         0.10
-                      :defaultValue 0
-                      :value        value
-                      :onChange     (fn [_ v]
-                                      (state/update-value [:reservation :cpu] (parse-float v) form-value-cursor))
-                      :sliderStyle  #js {:marginTop "14px"}})))
+    (comp/slider {:min          0
+                  :max          2
+                  :step         0.10
+                  :defaultValue 0
+                  :value        value
+                  :onChange     (fn [_ v]
+                                  (state/update-value [:reservation :cpu] (parse-float v) form-value-cursor))
+                  :sliderStyle  {:marginTop "14px"}})))
 
 (defn- form-memory-reservation [value]
   (form/comp
@@ -48,14 +48,14 @@
 (defn- form-cpu-limit [value]
   (form/comp
     (str "CPU  " "(" (cpu-value value) ")")
-    (comp/slider #js {:min          0
-                      :max          2
-                      :step         0.10
-                      :defaultValue 0
-                      :value        value
-                      :onChange     (fn [_ v]
-                                      (state/update-value [:limit :cpu] (parse-float v) form-value-cursor))
-                      :sliderStyle  #js {:marginTop "14px"}})))
+    (comp/slider {:min          0
+                  :max          2
+                  :step         0.10
+                  :defaultValue 0
+                  :value        value
+                  :onChange     (fn [_ v]
+                                  (state/update-value [:limit :cpu] (parse-float v) form-value-cursor))
+                  :sliderStyle  {:marginTop "14px"}})))
 
 (defn- form-memory-limit [value]
   (form/comp

@@ -3,6 +3,7 @@
             [material.component.form :as form]
             [swarmpit.component.state :as state]
             [swarmpit.component.service.form-deployment-placement :as placement]
+            [swarmpit.component.parser :refer [parse-int]]
             [sablono.core :refer-macros [html]]
             [rum.core :as rum]))
 
@@ -13,26 +14,26 @@
 (defn- form-restart-policy-attempts [value]
   (form/comp
     "MAX ATTEMPTS"
-    (comp/text-field
+    (comp/vtext-field
       {:name     "restart-policy-attempts"
        :key      "restart-policy-attempts"
        :type     "number"
        :min      0
-       :value    value
+       :value    (str value)
        :onChange (fn [_ v]
-                   (state/update-value [:restartPolicy :attempts] (js/parseInt v) form-value-cursor))})))
+                   (state/update-value [:restartPolicy :attempts] (parse-int v) form-value-cursor))})))
 
 (defn- form-restart-policy-delay [value]
   (form/comp
     "DELAY"
-    (comp/text-field
+    (comp/vtext-field
       {:name     "restart-policy-delay"
        :key      "restart-policy-delay"
        :type     "number"
        :min      0
-       :value    value
+       :value    (str value)
        :onChange (fn [_ v]
-                   (state/update-value [:restartPolicy :delay] (js/parseInt v) form-value-cursor))})))
+                   (state/update-value [:restartPolicy :delay] (parse-int v) form-value-cursor))})))
 
 (defn- form-restart-policy-condition [value]
   (form/comp
@@ -57,26 +58,26 @@
 (defn- form-update-parallelism [value]
   (form/comp
     "PARALLELISM"
-    (comp/text-field
+    (comp/vtext-field
       {:name     "update-parallelism"
        :key      "update-parallelism"
        :type     "number"
        :min      0
-       :value    value
+       :value    (str value)
        :onChange (fn [_ v]
-                   (state/update-value [:update :parallelism] (js/parseInt v) form-value-cursor))})))
+                   (state/update-value [:update :parallelism] (parse-int v) form-value-cursor))})))
 
 (defn- form-update-delay [value]
   (form/comp
     "DELAY"
-    (comp/text-field
+    (comp/vtext-field
       {:name     "update-delay"
        :key      "update-delay"
        :type     "number"
        :min      0
-       :value    value
+       :value    (str value)
        :onChange (fn [_ v]
-                   (state/update-value [:update :delay] (js/parseInt v) form-value-cursor))})))
+                   (state/update-value [:update :delay] (parse-int v) form-value-cursor))})))
 
 (defn- form-update-failure-action [value]
   (form/comp
@@ -101,26 +102,26 @@
 (defn- form-rollback-parallelism [value]
   (form/comp
     "PARALLELISM"
-    (comp/text-field
+    (comp/vtext-field
       {:name     "rollback-parallelism"
        :key      "rollback-parallelism"
        :type     "number"
        :min      0
-       :value    value
+       :value    (str value)
        :onChange (fn [_ v]
-                   (state/update-value [:rollback :parallelism] (js/parseInt v) form-value-cursor))})))
+                   (state/update-value [:rollback :parallelism] (parse-int v) form-value-cursor))})))
 
 (defn- form-rollback-delay [value]
   (form/comp
     "DELAY"
-    (comp/text-field
+    (comp/vtext-field
       {:name     "rollback-delay"
        :key      "rollback-delay"
        :type     "number"
        :min      0
-       :value    value
+       :value    (str value)
        :onChange (fn [_ v]
-                   (state/update-value [:rollback :delay] (js/parseInt v) form-value-cursor))})))
+                   (state/update-value [:rollback :delay] (parse-int v) form-value-cursor))})))
 
 (defn- form-rollback-failure-action [value]
   (form/comp

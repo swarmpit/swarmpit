@@ -5,6 +5,7 @@
             [swarmpit.component.state :as state]
             [swarmpit.ajax :as ajax]
             [swarmpit.routes :as routes]
+            [sablono.core :refer-macros [html]]
             [rum.core :as rum]))
 
 (enable-console-print!)
@@ -45,11 +46,13 @@
 
 (defn- form-table
   [labels label-names]
-  (list/table headers
-              labels
-              label-names
-              render-labels
-              (fn [index] (state/remove-item index form-value-cursor))))
+  (form/form
+    {}
+    (list/table-raw headers
+                    labels
+                    label-names
+                    render-labels
+                    (fn [index] (state/remove-item index form-value-cursor)))))
 
 (defn- add-item
   []

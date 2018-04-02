@@ -68,6 +68,7 @@
                     :tags   []} settings/form-state-cursor)
   (state/set-value {:volumes []} mounts/form-state-cursor)
   (state/set-value {:list []} secrets/form-state-cursor)
+  (state/set-value {:list []} configs/form-state-cursor)
   (state/set-value {:list []} networks/form-state-cursor)
   (state/set-value {:list []} placement/form-state-cursor)
   (state/set-value {:names []} labels/form-state-cursor)

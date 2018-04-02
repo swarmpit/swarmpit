@@ -2,6 +2,7 @@
   (:require [material.component.form :as form]
             [material.component.list-table-form :as list]
             [swarmpit.component.state :as state]
+            [sablono.core :refer-macros [html]]
             [rum.core :as rum]))
 
 (enable-console-print!)
@@ -38,11 +39,13 @@
 
 (defn- form-table
   [variables]
-  (list/table headers
-              variables
-              nil
-              render-variables
-              (fn [index] (state/remove-item index form-value-cursor))))
+  (form/form
+    {}
+    (list/table-raw headers
+                    variables
+                    nil
+                    render-variables
+                    (fn [index] (state/remove-item index form-value-cursor)))))
 
 (defn- add-item
   []

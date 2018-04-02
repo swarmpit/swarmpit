@@ -3,6 +3,7 @@
             [material.component.form :as form]
             [swarmpit.component.state :as state]
             [swarmpit.component.service.form-ports :as ports]
+            [swarmpit.component.parser :refer [parse-int]]
             [swarmpit.ajax :as ajax]
             [swarmpit.routes :as routes]
             [rum.core :as rum]))
@@ -98,9 +99,9 @@
        :required true
        :type     "number"
        :min      0
-       :value    value
+       :value    (str value)
        :onChange (fn [_ v]
-                   (state/update-value [:replicas] (js/parseInt v) form-value-cursor))})))
+                   (state/update-value [:replicas] (parse-int v) form-value-cursor))})))
 
 (defn tags-handler
   [repository]

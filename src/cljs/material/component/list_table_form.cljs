@@ -1,10 +1,11 @@
 (ns material.component.list-table-form
   (:require [material.component :as cmp]
+            [material.component.form :as form]
             [material.icon :as icon]))
 
 (defn textfield
   [props]
-  (cmp/text-field
+  (cmp/vtext-field
     (merge props
            {:style {:width "100%"}})))
 

@@ -3,8 +3,10 @@
             [material.component.form :as form]
             [material.component.list-table-form :as list]
             [swarmpit.component.state :as state]
+            [swarmpit.component.parser :refer [parse-int]]
             [swarmpit.ajax :as ajax]
             [swarmpit.routes :as routes]
+            [sablono.core :refer-macros [html]]
             [rum.core :as rum]))
 
 (enable-console-print!)
@@ -36,11 +38,6 @@
               {:name  "Host port"
                :width "100px"}])
 
-(defn- format-port-value
-  [value]
-  (if (or (zero? value)
-          (js/isNaN value)) "" value))
-
 (defn- form-container [value index]
   (list/textfield
     {:name     (str "form-container-text-" index)
@@ -48,9 +45,9 @@
      :type     "number"
      :min      1
      :max      65535
-     :value    (format-port-value value)
+     :value    value
      :onChange (fn [_ v]
-                 (state/update-item index :containerPort (js/parseInt v) form-value-cursor))}))
+                 (state/update-item index :containerPort (parse-int v) form-value-cursor))}))
 
 (defn- form-protocol [value index]
   (list/selectfield
@@ -77,9 +74,9 @@
      :type     "number"
      :min      1
      :max      65535
-     :value    (format-port-value value)
+     :value    value
      :onChange (fn [_ v]
-                 (state/update-item index :hostPort (js/parseInt v) form-value-cursor))}))
+                 (state/update-item index :hostPort (parse-int v) form-value-cursor))}))
 
 (defn- render-ports
   [item index _]
@@ -92,11 +89,13 @@
 
 (defn- form-table
   [ports]
-  (list/table headers
-              ports
-              nil
-              render-ports
-              (fn [index] (state/remove-item index form-value-cursor))))
+  (form/form
+    {}
+    (list/table-raw headers
+                    ports
+                    nil
+                    render-ports
+                    (fn [index] (state/remove-item index form-value-cursor)))))
 
 (defn- add-item
   []

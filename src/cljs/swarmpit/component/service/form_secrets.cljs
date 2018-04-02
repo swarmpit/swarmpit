@@ -5,6 +5,7 @@
             [swarmpit.component.state :as state]
             [swarmpit.routes :as routes]
             [swarmpit.ajax :as ajax]
+            [sablono.core :refer-macros [html]]
             [clojure.string :as str]
             [rum.core :as rum]))
 
@@ -56,11 +57,13 @@
 
 (defn- form-table
   [secrets secrets-list]
-  (list/table headers
-              secrets
-              secrets-list
-              render-secrets
-              (fn [index] (state/remove-item index form-value-cursor))))
+  (form/form
+    {}
+    (list/table-raw headers
+                    secrets
+                    secrets-list
+                    render-secrets
+                    (fn [index] (state/remove-item index form-value-cursor)))))
 
 (defn- add-item
   []
