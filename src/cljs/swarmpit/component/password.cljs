@@ -57,7 +57,7 @@
     (routes/path-for-backend :password)
     {:params     (dissoc @local-state :canSubmit)
      :on-success (fn [_]
-                   (reset! local-state)
+                   (reset! local-state nil)
                    (dispatch!
                      (routes/path-for-frontend :index))
                    (message/info

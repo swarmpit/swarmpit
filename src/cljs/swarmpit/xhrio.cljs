@@ -4,7 +4,7 @@
 
 (defn- response-header
   [xhrio-header]
-  (let [separator-pos (str/index_of xhrio-header ":")
+  (let [separator-pos (str/index-of xhrio-header ":")
         length (count xhrio-header)]
     {(subs xhrio-header 0 separator-pos)
      (subs xhrio-header (+ separator-pos 2) length)}))
@@ -12,8 +12,7 @@
 (defn- response-headers
   [xhrio-headers]
   (->> (str/split xhrio-headers #"\r\n")
-       (map #(response-header %))
-       (into {})))
+       (into {} (map response-header))))
 
 (defn- parse-headers
   [xhrio]

@@ -25,7 +25,7 @@
     (routes/path-for-backend :login)
     {:headers    (login-headers local-state)
      :on-success (fn [{:keys [response]}]
-                   (reset! local-state)
+                   (reset! local-state nil)
                    (storage/add "token" (:token response))
                    (dispatch!
                      (routes/path-for-frontend :service-list)))
