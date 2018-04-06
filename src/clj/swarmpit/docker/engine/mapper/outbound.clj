@@ -154,6 +154,7 @@
   (let [update (get-in service [:deployment :update])]
     {:Parallelism   (:parallelism update)
      :Delay         (* (:delay update) 1000000000)
+     :Order         (:order update)
      :FailureAction (:failureAction update)}))
 
 (defn ->service-rollback-config
@@ -161,6 +162,7 @@
   (let [rollback (get-in service [:deployment :rollback])]
     {:Parallelism   (:parallelism rollback)
      :Delay         (* (:delay rollback) 1000000000)
+     :Order         (:order rollback)
      :FailureAction (:failureAction rollback)}))
 
 (defn ->service-restart-policy
