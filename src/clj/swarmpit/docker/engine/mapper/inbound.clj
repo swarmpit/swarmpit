@@ -260,9 +260,7 @@
 (defn ->service-autoredeploy
   [service-labels]
   (let [value (:swarmpit.service.deployment.autoredeploy service-labels)]
-    (if (some? value)
-      (= "true" value)
-      nil)))
+    (= "true" value)))
 
 (defn ->service-image-details
   [image-name]

@@ -177,7 +177,6 @@
     (form/toogle
       {:name     "autoredeploy"
        :key      "autoredeploy"
-       :disabled (nil? value)
        :toggled  value
        :onToggle (fn [_ v]
                    (state/update-value [:autoredeploy] v form-value-cursor))})))
