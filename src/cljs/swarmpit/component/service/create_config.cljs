@@ -96,9 +96,11 @@
                                     :attempts  0}
                     :update        {:parallelism   1
                                     :delay         0
+                                    :order         "stop-first"
                                     :failureAction "pause"}
                     :rollback      {:parallelism   1
                                     :delay         0
+                                    :order         "stop-first"
                                     :failureAction "pause"}} deployment/form-value-cursor)
   (state/set-value {:reservation {:cpu    0.000
                                   :memory 0}
