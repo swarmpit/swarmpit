@@ -216,6 +216,7 @@
   (let [update-config (:UpdateConfig service-spec)]
     {:parallelism   (or (:Parallelism update-config) 1)
      :delay         (/ (or (:Delay update-config) 0) 1000000000)
+     :order         (or (:Order update-config) "stop-first")
      :failureAction (or (:FailureAction update-config) "pause")}))
 
 (defn ->service-deployment-rollback
@@ -223,6 +224,7 @@
   (let [update-config (:RollbackConfig service-spec)]
     {:parallelism   (or (:Parallelism update-config) 1)
      :delay         (/ (or (:Delay update-config) 0) 1000000000)
+     :order         (or (:Order update-config) "stop-first")
      :failureAction (or (:FailureAction update-config) "pause")}))
 
 (defn ->service-deployment-restart-policy
