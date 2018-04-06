@@ -79,6 +79,22 @@
        :onChange (fn [_ v]
                    (state/update-value [:update :delay] (parse-int v) form-value-cursor))})))
 
+(defn- form-update-order [value]
+  (form/comp
+    "ORDER"
+    (comp/select-field
+      {:value    value
+       :onChange (fn [_ _ v]
+                   (state/update-value [:update :order] v form-value-cursor))}
+      (comp/menu-item
+        {:key         "fuo1"
+         :value       "start-first"
+         :primaryText "start-first"})
+      (comp/menu-item
+        {:key         "fuo2"
+         :value       "stop-first"
+         :primaryText "stop-first"}))))
+
 (defn- form-update-failure-action [value]
   (form/comp
     "FAILURE ACTION"
@@ -87,15 +103,15 @@
        :onChange (fn [_ _ v]
                    (state/update-value [:update :failureAction] v form-value-cursor))}
       (comp/menu-item
-        {:key         "fdiu1"
+        {:key         "fufa1"
          :value       "pause"
          :primaryText "pause"})
       (comp/menu-item
-        {:key         "fdiu2"
+        {:key         "fufa2"
          :value       "continue"
          :primaryText "continue"})
       (comp/menu-item
-        {:key         "fdiu3"
+        {:key         "fufa3"
          :value       "rollback"
          :primaryText "rollback"}))))
 
@@ -123,6 +139,22 @@
        :onChange (fn [_ v]
                    (state/update-value [:rollback :delay] (parse-int v) form-value-cursor))})))
 
+(defn- form-rollback-order [value]
+  (form/comp
+    "ORDER"
+    (comp/select-field
+      {:value    value
+       :onChange (fn [_ _ v]
+                   (state/update-value [:rollback :order] v form-value-cursor))}
+      (comp/menu-item
+        {:key         "fro1"
+         :value       "stop-first"
+         :primaryText "stop-first"})
+      (comp/menu-item
+        {:key         "fro2"
+         :value       "start-first"
+         :primaryText "start-first"}))))
+
 (defn- form-rollback-failure-action [value]
   (form/comp
     "FAILURE ACTION"
@@ -131,11 +163,11 @@
        :onChange (fn [_ _ v]
                    (state/update-value [:rollback :failureAction] v form-value-cursor))}
       (comp/menu-item
-        {:key         "fdir1"
+        {:key         "frfa1"
          :value       "pause"
          :primaryText "pause"})
       (comp/menu-item
-        {:key         "fdir2"
+        {:key         "frfa2"
          :value       "continue"
          :primaryText "continue"}))))
 
@@ -168,6 +200,7 @@
        (html (form/subsection "Update Config"))
        (form-update-parallelism (:parallelism update))
        (form-update-delay (:delay update))
+       (form-update-order (:order update))
        (form-update-failure-action (:failureAction update))
        (when (= "rollback" (:failureAction update))
          (html
@@ -175,4 +208,5 @@
             (form/subsection "Rollback Config")
             (form-rollback-parallelism (:parallelism rollback))
             (form-rollback-delay (:delay rollback))
+            (form-rollback-order (:order rollback))
             (form-rollback-failure-action (:failureAction rollback))])))]))
