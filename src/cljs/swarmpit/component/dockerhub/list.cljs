@@ -76,7 +76,7 @@
        (comp/mui
          (comp/raised-button
            {:href    (routes/path-for-frontend :dockerhub-user-create)
-            :label   "New user"
+            :label   "Add user"
             :primary true}))]]
      (list/table headers
                  (sort-by :username filtered-items)

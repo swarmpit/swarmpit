@@ -84,7 +84,7 @@
     [:div
      [:div.form-panel
       [:div.form-panel-left
-       (panel/info icon/docker "New user")]
+       (panel/info icon/docker "Add Dockerhub user")]
       [:div.form-panel-right
        (comp/progress-button
          {:label      "Save"
