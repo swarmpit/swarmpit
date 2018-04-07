@@ -213,7 +213,8 @@
                                        (state/update-value [:opened] (not opened) state/layout-cursor))})
         (comp/menu
           {:key   "menu"
-           :style menu-style}
+           :style menu-style
+           :listStyle {:paddingBottom "80px"}}
           (map
             (fn [menu-item]
               (let [icon (:icon menu-item)
