@@ -119,7 +119,7 @@
     [:div
      [:div.form-panel
       [:div.form-panel-left
-       (panel/info icon/registries "New registry")]
+       (panel/info icon/registries "Add registry")]
       [:div.form-panel-right
        (comp/progress-button
          {:label      "Save"

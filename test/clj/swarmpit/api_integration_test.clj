@@ -115,11 +115,12 @@
 
     (testing "tasks"
       (let [tasks (tasks)
-            some-task (-> tasks first)]
+            some-task (-> tasks first)
+            task-id (:id some-task)]
         (is (some? tasks))
         (is (= (service-tasks service-id)
                (->> tasks (filter #(.startsWith (:taskName %) "test")))))
-        (is (= some-task (task (:id some-task))))))
+        (is (= task-id (-> task-id (task) :id)))))
 
     (testing "find public repository"
       (let [results (public-repositories "nginx" 1)]

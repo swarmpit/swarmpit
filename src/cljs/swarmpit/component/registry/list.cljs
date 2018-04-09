@@ -80,7 +80,7 @@
        (comp/mui
          (comp/raised-button
            {:href    (routes/path-for-frontend :registry-create)
-            :label   "New registry"
+            :label   "Add registry"
             :primary true}))]]
      (list/table headers
                  (sort-by :name filtered-items)
