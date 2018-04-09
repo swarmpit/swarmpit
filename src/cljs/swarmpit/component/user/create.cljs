@@ -83,7 +83,7 @@
                      (str "User " (:id response) " has been created.")))
      :on-error   (fn [{:keys [response]}]
                    (message/error
-                     (str "User creation failed. Reason: " (:error response))))}))
+                     (str "User creation failed. " (:error response))))}))
 
 (defn- init-form-state
   []

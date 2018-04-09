@@ -64,7 +64,7 @@
                      (str "Service " service-id " has been removed.")))
      :on-error   (fn [{:keys [response]}]
                    (message/error
-                     (str "Service removing failed. Reason: " (:error response))))}))
+                     (str "Service removing failed. " (:error response))))}))
 
 (defn- redeploy-service-handler
   [service-id]
@@ -75,7 +75,7 @@
                      (str "Service " service-id " redeploy triggered.")))
      :on-error   (fn [{:keys [response]}]
                    (message/error
-                     (str "Service redeploy failed. Reason: " (:error response))))}))
+                     (str "Service redeploy failed. " (:error response))))}))
 
 (defn- rollback-service-handler
   [service-id]
@@ -86,7 +86,7 @@
                      (str "Service " service-id " rollback triggered.")))
      :on-error   (fn [{:keys [response]}]
                    (message/error
-                     (str "Service rollback failed. Reason: " (:error response))))}))
+                     (str "Service rollback failed. " (:error response))))}))
 
 (def action-menu-style
   {:position   "relative"

@@ -33,7 +33,7 @@
                      (str "Registry " registry-id " has been removed.")))
      :on-error   (fn [{:keys [response]}]
                    (message/error
-                     (str "Registry removing failed. Reason: " (:error response))))}))
+                     (str "Registry removing failed. " (:error response))))}))
 
 (defn- init-form-state
   []

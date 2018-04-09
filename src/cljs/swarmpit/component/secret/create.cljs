@@ -70,7 +70,7 @@
                      (str "Secret " (:id response) " has been created.")))
      :on-error   (fn [{:keys [response]}]
                    (message/error
-                     (str "Secret creation failed. Reason: " (:error response))))}))
+                     (str "Secret creation failed. " (:error response))))}))
 
 (defn- init-form-state
   []

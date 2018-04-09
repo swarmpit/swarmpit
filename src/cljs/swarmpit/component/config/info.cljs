@@ -42,7 +42,7 @@
                      (str "Config " config-id " has been removed.")))
      :on-error   (fn [{:keys [response]}]
                    (message/error
-                     (str "Config removing failed. Reason: " (:error response))))}))
+                     (str "Config removing failed. " (:error response))))}))
 
 (defn- init-form-state
   []

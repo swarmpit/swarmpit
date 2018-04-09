@@ -58,7 +58,7 @@
                      (str "Config " (:id response) " has been created.")))
      :on-error   (fn [{:keys [response]}]
                    (message/error
-                     (str "Config creation failed. Reason: " (:error response))))}))
+                     (str "Config creation failed. " (:error response))))}))
 
 (defn- init-form-state
   []

@@ -34,7 +34,7 @@
                      (str "User " user-id " has been removed.")))
      :on-error   (fn [{:keys [response]}]
                    (message/error
-                     (str "User removing failed. Reason: " (:error response))))}))
+                     (str "User removing failed. " (:error response))))}))
 
 (defn- init-form-state
   []
