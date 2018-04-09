@@ -24,7 +24,7 @@
   [local-state]
   (ajax/post
     (routes/path-for-backend :login)
-    {:headers (login-headers local-state)
+    {:headers    (login-headers local-state)
      :on-success (fn [{:keys [response]}]
                    (reset! local-state nil)
                    (storage/add "token" (:token response))
@@ -32,8 +32,8 @@
                      (state/set-value nil [:redirect-location])
                      (dispatch!
                        (or redirect-location (routes/path-for-frontend :service-list)))))
-     :on-error (fn [{:keys [response]}]
-                 (swap! local-state assoc :message (:error response)))}))
+     :on-error   (fn [{:keys [response]}]
+                   (swap! local-state assoc :message (:error response)))}))
 
 (defn- on-enter
   [event local-state]
