@@ -8,6 +8,14 @@
             [swarmpit.component.message :as message]
             [clojure.walk :refer [keywordize-keys]]))
 
+(defn- login-redirect
+  []
+  "Redirect to login if authentication failed and store redirect location."
+  (let [location js/window.location.hash]
+    (when (not= "#/login" location)
+      (state/set-value location [:redirect-location]))
+    (router/set-location {:handler :login})))
+
 (defn- command-state
   "Update given form state if form origin."
   [request form-id progress?]
@@ -20,7 +28,7 @@
   [{:keys [body headers]} status]
   (cond
     (and (= 401 status)
-         (= "swarmpit" (:x-backend-server headers))) (router/set-location {:handler :login})
+         (= "swarmpit" (:x-backend-server headers))) (login-redirect)
     (and (= 403 status)
          (= "swarmpit" (:x-backend-server headers))) (router/set-location {:handler :unauthorized})
     (= 404 status) (router/set-route {:handler :not-found})

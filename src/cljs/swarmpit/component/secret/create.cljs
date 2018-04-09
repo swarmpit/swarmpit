@@ -104,10 +104,10 @@
           :primary    true
           :onTouchTap create-secret-handler} processing?)]]
      [:div.form-edit
-      (form/icon-value icon/info "Data must be base64 encoded. If plain text check please encode data.")
       (form/form
         {:onValid   #(state/update-value [:valid?] true state/form-state-cursor)
          :onInvalid #(state/update-value [:valid?] false state/form-state-cursor)}
+        (html (form/icon-value icon/info "Data must be base64 encoded. If plain text check please encode data."))
         (form-name secretName)
         (form-data-encoder encode)
         (form-data data))]]))

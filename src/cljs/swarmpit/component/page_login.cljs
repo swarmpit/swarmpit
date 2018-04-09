@@ -1,6 +1,7 @@
 (ns swarmpit.component.page-login
   (:require [material.component :as comp]
             [material.icon :as icon]
+            [swarmpit.component.state :as state]
             [swarmpit.url :refer [dispatch!]]
             [swarmpit.storage :as storage]
             [swarmpit.ajax :as ajax]
@@ -27,8 +28,10 @@
      :on-success (fn [{:keys [response]}]
                    (reset! local-state nil)
                    (storage/add "token" (:token response))
-                   (dispatch!
-                     (routes/path-for-frontend :service-list)))
+                   (let [redirect-location (state/get-value [:redirect-location])]
+                     (state/set-value nil [:redirect-location])
+                     (dispatch!
+                       (or redirect-location (routes/path-for-frontend :service-list)))))
      :on-error   (fn [{:keys [response]}]
                    (swap! local-state assoc :message (:error response)))}))
 
