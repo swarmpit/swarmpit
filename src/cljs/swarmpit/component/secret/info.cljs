@@ -42,7 +42,7 @@
                      (str "Secret " secret-id " has been removed.")))
      :on-error   (fn [{:keys [response]}]
                    (message/error
-                     (str "Secret removing failed. Reason: " (:error response))))}))
+                     (str "Secret removing failed. " (:error response))))}))
 
 (defn- init-form-state
   []

@@ -99,7 +99,7 @@
                        (str "Service " service-id " has been updated.")))
        :on-error   (fn [{:keys [response]}]
                      (message/error
-                       (str "Service update failed. Reason: " (:error response))))})))
+                       (str "Service update failed. " (:error response))))})))
 
 (defn- init-form-state
   []

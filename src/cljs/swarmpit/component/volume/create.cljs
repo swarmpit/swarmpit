@@ -35,7 +35,7 @@
                      (str "Volume " (:volumeName response) " has been created.")))
      :on-error   (fn [{:keys [response]}]
                    (message/error
-                     (str "Volume creation failed. Reason: " (:error response))))}))
+                     (str "Volume creation failed. " (:error response))))}))
 
 (defn- form-name [value]
   (form/comp

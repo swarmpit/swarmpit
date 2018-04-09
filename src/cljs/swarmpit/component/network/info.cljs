@@ -44,7 +44,7 @@
                      (str "Network " network-id " has been removed.")))
      :on-error   (fn [{:keys [response]}]
                    (message/error
-                     (str "Network removing failed. Reason: " (:error response))))}))
+                     (str "Network removing failed. " (:error response))))}))
 
 (defn- init-form-state
   []

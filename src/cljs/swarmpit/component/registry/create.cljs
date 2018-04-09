@@ -90,7 +90,7 @@
                      (str "Registry " (:id response) " has been created.")))
      :on-error   (fn [{:keys [response]}]
                    (message/error
-                     (str "Registry creation failed. Reason: " (:error response))))}))
+                     (str "Registry creation failed. " (:error response))))}))
 
 (defn- init-form-state
   []

@@ -92,7 +92,7 @@
                      (str "Network " (:Id response) " has been added.")))
      :on-error   (fn [{:keys [response]}]
                    (message/error
-                     (str "Network creation failed. Reason: " (:error response))))}))
+                     (str "Network creation failed. " (:error response))))}))
 
 (defn- init-form-state
   []

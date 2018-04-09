@@ -54,7 +54,7 @@
                    (state/set-value response form-value-cursor))
      :on-error   (fn [{:keys [response]}]
                    (message/error
-                     (str "Repositories fetching failed. Reason: " (:error response))))}))
+                     (str "Repositories fetching failed. " (:error response))))}))
 
 (defn- form-username-label
   [user]

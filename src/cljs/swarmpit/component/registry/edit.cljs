@@ -44,7 +44,7 @@
                      (str "Registry " registry-id " has been updated.")))
      :on-error   (fn [{:keys [response]}]
                    (message/error
-                     (str "Registry update failed. Reason: " (:error response))))}))
+                     (str "Registry update failed. " (:error response))))}))
 
 (defn- init-form-state
   []

@@ -44,7 +44,7 @@
                      (str "User " user-id " has been updated.")))
      :on-error   (fn [{:keys [response]}]
                    (message/error
-                     (str "User update failed. Reason: " (:error response))))}))
+                     (str "User update failed. " (:error response))))}))
 
 (defn- init-form-state
   []

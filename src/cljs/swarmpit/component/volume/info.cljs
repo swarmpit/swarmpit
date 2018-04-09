@@ -43,7 +43,7 @@
                      (str "Volume " volume-name " has been removed.")))
      :on-error   (fn [{:keys [response]}]
                    (message/error
-                     (str "Volume removing failed. Reason: " (:error response))))}))
+                     (str "Volume removing failed. " (:error response))))}))
 
 (defn- init-form-state
   []

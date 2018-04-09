@@ -58,7 +58,7 @@
                      (str "User " (:id response) " has been added.")))
      :on-error   (fn [{:keys [response]}]
                    (message/error
-                     (str "User cannot be added. Reason: " (:error response))))}))
+                     (str "User cannot be added. " (:error response))))}))
 
 (defn- init-form-state
   []
