@@ -80,15 +80,23 @@ linked services are shown on resource (volume/network/secret/node) info page.
 - [[#105](https://github.com/swarmpit/swarmpit/issues/105)] Show list of linked services in volume/network/secret ...
 - [[#186](https://github.com/swarmpit/swarmpit/issues/186)] Material & State cleanup
 
+### 1.4 Release
+
+In 1.4 release we finally introduced application stacks. User can easily drag and drop existing compose file
+into stack editor and create / update stack accordingly. Also stack rollback and redeploy functionality has
+been introduced. In case of external stack user can simply link compose file by stack edit. Apart of that we
+did quite a huge refactoring of application state so it's super easy to debug swarmpit in case of failure. 
+Finally we enabled service auto redeploy for external services & added support for service update/rollback
+deployment order.
+
+- [[#39](https://github.com/swarmpit/swarmpit/issues/39)] Add application stacks.
+- [[#207](https://github.com/swarmpit/swarmpit/issues/207)] Add progress btn for create forms instead page progress loader & cleanup local state
+- [[#211](https://github.com/swarmpit/swarmpit/issues/211)] Enable autoredeploy for existing service
+- [[#212](https://github.com/swarmpit/swarmpit/issues/212)] Add support for service update config order
+
 ## What we will bring into the game
 
 You can find here our goals and related features for future releases.
-
-### 1.4 Release
-
-The main goal is to introduce application stacks.
-
-- [[#39](https://github.com/swarmpit/swarmpit/issues/39)] Add application stacks.
 
 ### 2.0 Release
 
