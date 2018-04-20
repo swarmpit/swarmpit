@@ -185,13 +185,24 @@
                 :api    (str "/secrets/" id)})
       :body))
 
+(defn- base64-encoding-error? [ex]
+  (clojure.string/starts-with?
+    (get-in (ex-data ex) [:body :error])
+    "illegal base64 data"))
+
 (defn create-secret
   [secret]
-  (-> (execute {:method  :POST
-                :api     "/secrets/create"
-                :options {:body    secret
+  (try
+    (->
+      (execute {:method :POST
+                :api "/secrets/create"
+                :options {:body secret
                           :headers {:Content-Type "application/json"}}})
-      :body))
+      :body)
+    (catch Exception ex
+      (if (base64-encoding-error? ex)
+        (create-secret (assoc secret :Data (base64/encode (:Data secret))))
+        (throw ex)))))
 
 (defn update-secret
   [id version secret]
@@ -229,10 +240,15 @@
 
 (defn create-config
   [config]
-  (-> (execute {:method  :POST
-                :api     "/configs/create"
-                :options {:body config}})
-      :body))
+  (try
+    (-> (execute {:method :POST
+                  :api "/configs/create"
+                  :options {:body config}})
+        :body)
+    (catch Exception ex
+      (if (base64-encoding-error? ex)
+        (create-config (assoc config :Data (base64/encode (:Data config))))
+        (throw ex)))))
 
 ;; Node
 

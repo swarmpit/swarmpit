@@ -251,9 +251,7 @@
 (defn ->secret
   [secret]
   {:Name (:secretName secret)
-   :Data (if (:encode secret)
-           (base64/encode (:data secret))
-           (:data secret))})
+   :Data (:data secret)})
 
 (defn ->config
   [config]
