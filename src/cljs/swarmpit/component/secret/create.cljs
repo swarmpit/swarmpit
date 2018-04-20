@@ -46,16 +46,6 @@
        :onChange      (fn [_ v]
                         (state/update-value [:data] v state/form-value-cursor))})))
 
-(defn- form-data-encoder [value]
-  (form/comp
-    "ENCODE DATA"
-    (form/checkbox
-      {:name    "encoded"
-       :key     "encoded"
-       :checked value
-       :onCheck (fn [_ v]
-                  (state/update-value [:encode] v state/form-value-cursor))})))
-
 (defn- create-secret-handler
   []
   (ajax/post
@@ -80,8 +70,7 @@
 (defn- init-form-value
   []
   (state/set-value {:secretName nil
-                    :data       ""
-                    :encode     false} state/form-value-cursor))
+                    :data       ""} state/form-value-cursor))
 
 (def mixin-init-form
   (mixin/init-form
@@ -109,5 +98,4 @@
          :onInvalid #(state/update-value [:valid?] false state/form-state-cursor)}
         (html (form/icon-value icon/info "Data must be base64 encoded. If plain text check please encode data."))
         (form-name secretName)
-        (form-data-encoder encode)
         (form-data data))]]))
