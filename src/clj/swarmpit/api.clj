@@ -121,8 +121,9 @@
   ([]
    (configs nil))
   ([label]
-   (-> (dc/configs label)
-       (dmi/->configs))))
+   (try (-> (dc/configs label)
+            (dmi/->configs))
+        (catch Exception _ {}))))
 
 (defn config
   [config-id]
