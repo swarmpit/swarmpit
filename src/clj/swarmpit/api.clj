@@ -522,15 +522,20 @@
   ([]
    (services nil))
   ([label]
+   (services label (dc/networks)))
+  ([label networks]
    (dmi/->services (dc/services label)
-                   (dc/tasks))))
+                   (dc/tasks)
+                   networks)))
+
 
 (def services-memo (memo/ttl services :ttl/threshold 1000))
 
 (defn- services-by
   [service-filter]
   (dmi/->services (filter #(service-filter %) (dc/services))
-                  (dc/tasks)))
+                  (dc/tasks)
+                  (dc/networks)))
 
 (defn services-by-network
   [network-name]
@@ -559,7 +564,8 @@
 (defn service
   [service-id]
   (dmi/->service (dc/service service-id)
-                 (dc/service-tasks service-id)))
+                 (dc/service-tasks service-id)
+                 (dc/networks)))
 
 (defn service-networks
   [service-id]
@@ -655,7 +661,7 @@
 (defn redeploy-service
   [owner service-id]
   (let [service-origin (dc/service service-id)
-        service (dmi/->service service-origin nil)
+        service (dmi/->service service-origin)
         repository-name (get-in service [:repository :name])
         repository-tag (get-in service [:repository :tag])
         image-digest (repository-digest owner repository-name repository-tag)
@@ -672,7 +678,7 @@
 (defn rollback-service
   [owner service-id]
   (let [service-origin (dc/service service-id)
-        service (dmi/->service service-origin nil)]
+        service (dmi/->service service-origin)]
     (dc/update-service
       (service-auth owner service)
       service-id
@@ -743,31 +749,24 @@
 
 ;; Stack API
 
-(defn stacks
-  []
-  (->> (dissoc (group-by :stack (services)) nil)
-       (map key)
-       (map #(let [label (str "com.docker.stack.namespace=" %)]
-               {:stackName %
-                :stackFile (if (some? (cc/stackfile %)) true false)
-                :services  (services label)
-                :networks  (networks label)
-                :volumes   (volumes label)
-                :configs   (configs label)
-                :secrets   (secrets label)}))))
-
 (defn stack
   [stack-name]
   (let [label (str "com.docker.stack.namespace=" stack-name)
         services (services label)]
     (when (not-empty services)
       {:stackName stack-name
-       :stackFile (if (some? (cc/stackfile stack-name)) true false)
+       :stackFile (some? (cc/stackfile stack-name))
        :services  services
        :networks  (networks label)
        :volumes   (volumes label)
        :configs   (configs label)
        :secrets   (secrets label)})))
+
+(defn stacks
+  []
+  (->> (dissoc (group-by :stack (services)) nil)
+       (map key)
+       (map stack)))
 
 (defn stack-login
   [owner stackfile-spec]

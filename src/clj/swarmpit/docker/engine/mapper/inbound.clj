@@ -274,7 +274,9 @@
          :tag  ""}))))
 
 (defn ->service
-  [service tasks]
+  ([service]
+   (->service service nil nil))
+  ([service tasks networks]
   (let [service-spec (:Spec service)
         service-labels (:Labels service-spec)
         service-task-template (:TaskTemplate service-spec)
@@ -311,6 +313,7 @@
                :message (get-in service [:UpdateStatus :Message])}
       :ports (->service-ports service)
       :mounts (->service-mounts service-spec)
+      :networks (->service-networks service networks)
       :secrets (->service-secrets service-spec)
       :configs (->service-configs service-spec)
       :variables (->service-variables service-spec)
@@ -325,12 +328,12 @@
                    :rollback        (->service-deployment-rollback service-spec)
                    :rollbackAllowed (some? (:PreviousSpec service))
                    :autoredeploy    (->service-autoredeploy service-labels)
-                   :placement       (->service-placement-constraints service-spec)})))
+                   :placement       (->service-placement-constraints service-spec)}))))
 
 (defn ->services
-  [services tasks]
+  [services tasks networks]
   (->> services
-       (map #(->service % tasks))
+       (map #(->service % tasks networks))
        (into [])))
 
 (defn ->volume
