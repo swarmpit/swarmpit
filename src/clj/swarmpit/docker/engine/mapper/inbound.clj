@@ -141,9 +141,9 @@
 (defn ->service-mount-options
   [volume-options]
   (when volume-options
-    {:labels       (-> volume-options :Labels)
-     :driverConfig {:name    (-> volume-options :DriverConfig :Name)
-                    :options (-> volume-options :DriverConfig :Options)}}))
+    {:labels (-> volume-options :Labels)
+     :driver {:name    (-> volume-options :DriverConfig :Name)
+              :options (-> volume-options :DriverConfig :Options)}}))
 
 (defn ->service-mounts
   [service-spec]
