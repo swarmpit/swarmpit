@@ -123,7 +123,7 @@
   ([label]
    (try (-> (dc/configs label)
             (dmi/->configs))
-        (catch Exception _ {}))))
+        (catch Exception _ []))))
 
 (defn config
   [config-id]
