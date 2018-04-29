@@ -9,6 +9,13 @@
      "Parse YAML to JSON format"
      (yaml/parse-string yaml)))
 
+
+#?(:clj
+   (defn ->yaml
+     [map]
+     "Parse YAML to JSON format"
+     (yaml/generate-string map :dumper-options {:flow-style :block})))
+
 #?(:cljs
    (defn ->json
      [yaml]
