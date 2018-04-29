@@ -138,13 +138,22 @@
                     (merge {:serviceAliases (:Aliases %)})))
          (into []))))
 
+(defn ->service-mount-options
+  [volume-options]
+  (when volume-options
+    {:labels       (-> volume-options :Labels)
+     :driverConfig {:name    (-> volume-options :DriverConfig :Name)
+                    :options (-> volume-options :DriverConfig :Options)}}))
+
 (defn ->service-mounts
   [service-spec]
   (->> (get-in service-spec [:TaskTemplate :ContainerSpec :Mounts])
        (map (fn [v] {:containerPath (:Target v)
                      :host          (:Source v)
                      :type          (:Type v)
-                     :readOnly      (contains? #{true 1} (:ReadOnly v))}))
+                     :volumeOptions (->service-mount-options (:VolumeOptions v))
+                     :readOnly      (contains? #{true 1} (:ReadOnly v))
+                     :stack         (-> v :VolumeOptions :Labels stack-label)}))
        (into [])))
 
 (defn ->service-variables
@@ -277,58 +286,58 @@
   ([service]
    (->service service nil nil))
   ([service tasks networks]
-  (let [service-spec (:Spec service)
-        service-labels (:Labels service-spec)
-        service-task-template (:TaskTemplate service-spec)
-        service-mode (->service-mode service-spec)
-        service-name (:Name service-spec)
-        service-id (:ID service)
-        service-tasks (->service-tasks service-id tasks)
-        replicas (get-in service-spec [:Mode :Replicated :Replicas])
-        replicas-running (->service-replicas-running service-tasks)
-        replicas-no-shutdown (->service-replicas-no-shutdown service-tasks)
-        image (get-in service-task-template [:ContainerSpec :Image])
-        image-info (str/split image #"@")
-        image-name (first image-info)
-        image-digest (second image-info)]
-    (array-map
-      :id service-id
-      :version (get-in service [:Version :Index])
-      :createdAt (:CreatedAt service)
-      :updatedAt (:UpdatedAt service)
-      :repository (merge (->service-image-details image-name)
-                         {:image       image-name
-                          :imageDigest image-digest})
-      :serviceName service-name
-      :mode service-mode
-      :stack (-> service-labels stack-label)
-      :replicas replicas
-      :state (if (= service-mode "replicated")
-               (->service-state replicas-running replicas)
-               (->service-state replicas-running replicas-no-shutdown))
-      :status {:info    (if (= service-mode "replicated")
-                          (->service-info-status replicas-running replicas)
-                          (->service-info-status replicas-running replicas-no-shutdown))
-               :update  (get-in service [:UpdateStatus :State])
-               :message (get-in service [:UpdateStatus :Message])}
-      :ports (->service-ports service)
-      :mounts (->service-mounts service-spec)
-      :networks (->service-networks service networks)
-      :secrets (->service-secrets service-spec)
-      :configs (->service-configs service-spec)
-      :variables (->service-variables service-spec)
-      :labels (->service-labels service-labels)
-      :logdriver {:name (or (get-in service-task-template [:LogDriver :Name]) "json-file")
-                  :opts (->service-log-options service-task-template)}
-      :resources {:reservation (->service-resource (get-in service-task-template [:Resources :Reservations]))
-                  :limit       (->service-resource (get-in service-task-template [:Resources :Limits]))}
-      :deployment {:update          (->service-deployment-update service-spec)
-                   :forceUpdate     (:ForceUpdate service-task-template)
-                   :restartPolicy   (->service-deployment-restart-policy service-task-template)
-                   :rollback        (->service-deployment-rollback service-spec)
-                   :rollbackAllowed (some? (:PreviousSpec service))
-                   :autoredeploy    (->service-autoredeploy service-labels)
-                   :placement       (->service-placement-constraints service-spec)}))))
+   (let [service-spec (:Spec service)
+         service-labels (:Labels service-spec)
+         service-task-template (:TaskTemplate service-spec)
+         service-mode (->service-mode service-spec)
+         service-name (:Name service-spec)
+         service-id (:ID service)
+         service-tasks (->service-tasks service-id tasks)
+         replicas (get-in service-spec [:Mode :Replicated :Replicas])
+         replicas-running (->service-replicas-running service-tasks)
+         replicas-no-shutdown (->service-replicas-no-shutdown service-tasks)
+         image (get-in service-task-template [:ContainerSpec :Image])
+         image-info (str/split image #"@")
+         image-name (first image-info)
+         image-digest (second image-info)]
+     (array-map
+       :id service-id
+       :version (get-in service [:Version :Index])
+       :createdAt (:CreatedAt service)
+       :updatedAt (:UpdatedAt service)
+       :repository (merge (->service-image-details image-name)
+                          {:image       image-name
+                           :imageDigest image-digest})
+       :serviceName service-name
+       :mode service-mode
+       :stack (-> service-labels stack-label)
+       :replicas replicas
+       :state (if (= service-mode "replicated")
+                (->service-state replicas-running replicas)
+                (->service-state replicas-running replicas-no-shutdown))
+       :status {:info    (if (= service-mode "replicated")
+                           (->service-info-status replicas-running replicas)
+                           (->service-info-status replicas-running replicas-no-shutdown))
+                :update  (get-in service [:UpdateStatus :State])
+                :message (get-in service [:UpdateStatus :Message])}
+       :ports (->service-ports service)
+       :mounts (->service-mounts service-spec)
+       :networks (->service-networks service networks)
+       :secrets (->service-secrets service-spec)
+       :configs (->service-configs service-spec)
+       :variables (->service-variables service-spec)
+       :labels (->service-labels service-labels)
+       :logdriver {:name (or (get-in service-task-template [:LogDriver :Name]) "json-file")
+                   :opts (->service-log-options service-task-template)}
+       :resources {:reservation (->service-resource (get-in service-task-template [:Resources :Reservations]))
+                   :limit       (->service-resource (get-in service-task-template [:Resources :Limits]))}
+       :deployment {:update          (->service-deployment-update service-spec)
+                    :forceUpdate     (:ForceUpdate service-task-template)
+                    :restartPolicy   (->service-deployment-restart-policy service-task-template)
+                    :rollback        (->service-deployment-rollback service-spec)
+                    :rollbackAllowed (some? (:PreviousSpec service))
+                    :autoredeploy    (->service-autoredeploy service-labels)
+                    :placement       (->service-placement-constraints service-spec)}))))
 
 (defn ->services
   [services tasks networks]
