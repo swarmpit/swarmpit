@@ -16,7 +16,10 @@
             [swarmpit.ajax :as ajax]
             [swarmpit.url :refer [dispatch!]]
             [swarmpit.routes :as routes]
-            [rum.core :as rum]))
+            [rum.core :as rum]
+            [material.component.label :as label]
+            [swarmpit.docker.utils :as utils]
+            [clojure.string :refer [includes?]]))
 
 (enable-console-print!)
 
@@ -147,53 +150,65 @@
          :onClick       #(delete-stack-handler stack-name)
          :primaryText   "Delete"}))))
 
-(rum/defc form-services < rum/static [services]
+(defn- stack-render-item
+  [stack-name name-key default-render-item]
+  (fn [item row]
+    (case (key item)
+      :stack (if (not= stack-name (val item))
+               (label/yellow "external"))
+      (if (= name-key (key item))
+        (if (= stack-name (:stack row))
+          (utils/trim-stack stack-name (val item))
+          (val item))
+        (default-render-item item row)))))
+
+(rum/defc form-services < rum/static [stack-name services]
   [:div.form-layout-group
    (form/section "Services")
    (list/table (map :name services/headers)
                services
-               services/render-item
+               (stack-render-item stack-name :serviceName services/render-item)
                services/render-item-keys
                services/onclick-handler)])
 
-(rum/defc form-networks < rum/static [networks]
+(rum/defc form-networks < rum/static [stack-name networks]
   (when (not-empty networks)
     [:div.form-layout-group.form-layout-group-border
      (form/section "Networks")
      (list/table (map :name networks/headers)
                  networks
-                 networks/render-item
-                 networks/render-item-keys
+                 (stack-render-item stack-name :networkName networks/render-item)
+                 (conj networks/render-item-keys [:stack])
                  networks/onclick-handler)]))
 
-(rum/defc form-volumes < rum/static [volumes]
+(rum/defc form-volumes < rum/static [stack-name volumes]
   (when (not-empty volumes)
     [:div.form-layout-group.form-layout-group-border
      (form/section "Volumes")
      (list/table (map :name volumes/headers)
                  volumes
-                 volumes/render-item
-                 volumes/render-item-keys
+                 (stack-render-item stack-name :volumeName volumes/render-item)
+                 (conj volumes/render-item-keys [:stack])
                  volumes/onclick-handler)]))
 
-(rum/defc form-configs < rum/static [configs]
+(rum/defc form-configs < rum/static [stack-name configs]
   (when (not-empty configs)
     [:div.form-layout-group.form-layout-group-border
      (form/section "Configs")
      (list/table (map :name configs/headers)
                  configs
-                 configs/render-item
-                 configs/render-item-keys
+                 (stack-render-item stack-name :configName configs/render-item)
+                 (conj configs/render-item-keys [:stack])
                  configs/onclick-handler)]))
 
-(rum/defc form-secrets < rum/static [secrets]
+(rum/defc form-secrets < rum/static [stack-name secrets]
   (when (not-empty secrets)
     [:div.form-layout-group.form-layout-group-border
      (form/section "Secrets")
      (list/table (map :name configs/headers)
                  secrets
-                 secrets/render-item
-                 secrets/render-item-keys
+                 (stack-render-item stack-name :secretName secrets/render-item)
+                 (conj secrets/render-item-keys [:stack])
                  secrets/onclick-handler)]))
 
 (defn- init-form-state
@@ -229,11 +244,11 @@
            :label         "Actions"}))
       (form-action-menu stack-name stackfile menu?)]]]
    [:div.form-layout
-    (form-services services)
-    (form-networks networks)
-    (form-volumes volumes)
-    (form-configs configs)
-    (form-secrets secrets)]])
+    (form-services stack-name services)
+    (form-networks stack-name networks)
+    (form-volumes stack-name volumes)
+    (form-configs stack-name configs)
+    (form-secrets stack-name secrets)]])
 
 (rum/defc form < rum/reactive
                  mixin-init-form

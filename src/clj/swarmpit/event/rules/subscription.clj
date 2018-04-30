@@ -30,20 +30,8 @@
   [service-event]
   (let [service-name (or (get-in service-event [:Actor :Attributes :com.docker.swarm.service.name])
                          (get-in service-event [:Actor :Attributes :name]))
-        stack-name (du/hypothetical-stack service-name)
-        stack-label (str "com.docker.stack.namespace=" stack-name)
-        stack-services (api/services stack-label)
-        stack-networks (api/networks stack-label)
-        stack-volumes (api/volumes stack-label)
-        stack-secrets (api/secrets stack-label)
-        stack-configs (api/configs stack-label)
-        stackfile (api/stackfile stack-name)]
-    {:services  stack-services
-     :networks  stack-networks
-     :volumes   stack-volumes
-     :secrets   stack-secrets
-     :configs   stack-configs
-     :stackfile stackfile}))
+        stack-name (du/hypothetical-stack service-name)]
+    (api/stack stack-name)))
 
 ;; Rules
 

@@ -151,6 +151,7 @@
        (map (fn [v] {:containerPath (:Target v)
                      :host          (:Source v)
                      :type          (:Type v)
+                     :id            (when (= "volume" (:Type v)) (:Source v))
                      :volumeOptions (->service-mount-options (:VolumeOptions v))
                      :readOnly      (contains? #{true 1} (:ReadOnly v))
                      :stack         (-> v :VolumeOptions :Labels stack-label)}))
