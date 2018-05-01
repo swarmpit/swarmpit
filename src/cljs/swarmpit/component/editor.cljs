@@ -9,14 +9,17 @@
   (js/CodeMirror.fromTextArea
     (.getElementById js/document editor-id)
     (clj->js
-      {:lineNumbers        true
-       :viewportMargin     (.-Infinity js/window)
-       :matchBrackets      true
-       :autofocus          true
-       :autoCloseBrackets  true
-       :gutters            ["CodeMirror-lint-markers"]
-       :lint               true
-       :mode               editor-mode})))
+      {:lineNumbers       true
+       :viewportMargin    (.-Infinity js/window)
+       :matchBrackets     true
+       :smartIndent       true
+       :tabSize           2
+       :indentWithTabs    false
+       :autofocus         true
+       :autoCloseBrackets true
+       :gutters           ["CodeMirror-lint-markers"]
+       :lint              true
+       :mode              editor-mode})))
 
 (defn yaml
   [editor-id]
