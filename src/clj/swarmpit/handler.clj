@@ -527,30 +527,29 @@
 
 (defmethod dispatch :stack-services [_]
   (fn [{:keys [route-params]}]
-    (let [label (str "com.docker.stack.namespace=" (:name route-params))]
-      (->> (api/services label)
-           (resp-ok)))))
+    (-> (api/stack-services (:name route-params))
+        (resp-ok))))
 
 (defmethod dispatch :stack-networks [_]
   (fn [{:keys [route-params]}]
-    (let [label (str "com.docker.stack.namespace=" (:name route-params))]
-      (->> (api/networks label)
-           (resp-ok)))))
+    (-> (api/stack-services (:name route-params))
+        (api/resources-by-services :networks api/networks)
+        (resp-ok))))
 
 (defmethod dispatch :stack-volumes [_]
   (fn [{:keys [route-params]}]
-    (let [label (str "com.docker.stack.namespace=" (:name route-params))]
-      (->> (api/volumes label)
-           (resp-ok)))))
+    (-> (api/stack-services (:name route-params))
+        (api/resources-by-services :mounts api/volumes)
+        (resp-ok))))
 
 (defmethod dispatch :stack-configs [_]
   (fn [{:keys [route-params]}]
-    (let [label (str "com.docker.stack.namespace=" (:name route-params))]
-      (->> (api/configs label)
-           (resp-ok)))))
+    (-> (api/stack-services (:name route-params))
+        (api/resources-by-services :configs api/configs)
+        (resp-ok))))
 
 (defmethod dispatch :stack-secrets [_]
   (fn [{:keys [route-params]}]
-    (let [label (str "com.docker.stack.namespace=" (:name route-params))]
-      (->> (api/secrets label)
-           (resp-ok)))))
+    (-> (api/stack-services (:name route-params))
+        (api/resources-by-services :secrets api/secrets)
+        (resp-ok))))

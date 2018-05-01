@@ -528,6 +528,16 @@
                    (dc/tasks)
                    networks)))
 
+(defn resources-by-services
+  [services resource source]
+  (let [ids (->> services
+                 (map resource)
+                 (flatten)
+                 (map :id)
+                 (set))]
+    (->> (source)
+         (filter #(contains? ids (:id %)))
+         (vec))))
 
 (def services-memo (memo/ttl services :ttl/threshold 1000))
 
@@ -749,18 +759,26 @@
 
 ;; Stack API
 
+(defn stack-label
+  [stack-name]
+  (str "com.docker.stack.namespace=" stack-name))
+
+(defn stack-services
+  [stack-name]
+  (-> (stack-label stack-name)
+      (services)))
+
 (defn stack
   [stack-name]
-  (let [label (str "com.docker.stack.namespace=" stack-name)
-        services (services label)]
+  (let [services (stack-services stack-name)]
     (when (not-empty services)
       {:stackName stack-name
-       :stackFile (some? (cc/stackfile stack-name))
+       :stackFile (some? (stackfile stack-name))
        :services  services
-       :networks  (networks label)
-       :volumes   (volumes label)
-       :configs   (configs label)
-       :secrets   (secrets label)})))
+       :networks  (resources-by-services services :networks networks)
+       :volumes   (resources-by-services services :mounts volumes)
+       :configs   (resources-by-services services :configs configs)
+       :secrets   (resources-by-services services :secrets secrets)})))
 
 (defn stacks
   []

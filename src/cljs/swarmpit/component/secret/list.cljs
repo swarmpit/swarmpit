@@ -21,7 +21,9 @@
 
 (defn- render-item
   [item _]
-  (val item))
+  (case (key item)
+    :createdAt (time/humanize (val item))
+    (val item)))
 
 (defn- onclick-handler
   [item]
@@ -68,8 +70,7 @@
             :primary true}))]]
      (list/table headers
                  (->> (list/filter items (:query filter))
-                      (sort-by :secretName)
-                      (map #(update % :createdAt time/simplify)))
+                      (sort-by :secretName))
                  loading?
                  render-item
                  render-item-keys

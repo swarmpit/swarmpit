@@ -4,7 +4,8 @@
     line-height: 21px;
     color: rgb(117, 117, 117);
     position: relative;
-    height: 500px;
+    height: auto;
+    min-height: 400px;
     margin: 10px 24px 10px 24px;
     border: 1px solid rgb(224, 228, 231);
 }
@@ -235,6 +236,7 @@ div.CodeMirror span.CodeMirror-nonmatchingbracket {
     margin-bottom: -30px;
     margin-right: -30px;
     padding-bottom: 30px;
+    min-height: 400px;
     height: 100%;
     outline: none;
     position: relative
