@@ -2,20 +2,25 @@
   (:require [clojure.string :as str]
             [clojure.set :refer [rename-keys]]
             [swarmpit.utils :refer [clean select-keys*]]
+            [swarmpit.docker.utils :refer [trim-stack]]
             [swarmpit.yaml :refer [->yaml]])
   (:refer-clojure :exclude [alias]))
 
+(defn in-stack?
+  [stack-name map]
+  (= stack-name (:stack map)))
+
 (defn alias
-  [key stackName map]
+  [key stack-name map]
   (let [name (get map key)]
-    (if (= stackName (:stack map))
-      (str/replace name (str stackName "_") "")
+    (if (in-stack? stack-name map)
+      (trim-stack stack-name name)
       name)))
 
 (defn group
-  [stackName fn coll]
+  [stack-name fn coll]
   (->> coll
-       (map #(fn stackName %))
+       (map #(fn stack-name %))
        (into {})))
 
 (defn environment
@@ -28,32 +33,51 @@
 
 (defn resource
   [{:keys [cpu memory]}]
-  {:cpus   (some-> cpu (str))
-   :memory (some-> memory (str "M"))})
+  {:cpus   (when (< 0 cpu) (str cpu))
+   :memory (when (< 0 memory) (str memory "M"))})
 
 (defn service
-  [stackName service]
-  {(keyword (alias :serviceName stackName service))
+  [stack-name service]
+  {(keyword (alias :serviceName stack-name service))
    {:image       (-> service :repository :image)
     :environment (->> service :variables
                       (map #(str (:name %) "=" (:value %))))
     :ports       (->> service :ports
                       (map #(str (:hostPort %) ":" (:containerPort %) (when (= "udp" (:protocol %)) "/udp"))))
     :volumes     (->> service :mounts
-                      (map #(str (alias :host stackName %) "=" (:containerPath %) (when (:readOnly %) ":ro"))))
-    :networks    (->> service :networks (map #(alias :networkName stackName %)))
+                      (map #(str (alias :host stack-name %) "=" (:containerPath %) (when (:readOnly %) ":ro"))))
+    :networks    (->> service :networks (map #(alias :networkName stack-name %)))
     :deploy      {:mode      (when-not (= "replicated" (:mode service)) (:mode service))
                   :placement {:constraints (->> service :deployment :placement (map :rule))}
                   :resources {:reservations (-> service :resources :reservation resource)
                               :limits       (-> service :resources :limit resource)}}}})
 
 (defn network
-  [stackName net]
-  {(keyword (alias :networkName stackName net)) (select-keys net [:driver])})
+  [stack-name net]
+  {(keyword (alias :networkName stack-name net))
+   (if (in-stack? stack-name net)
+     {:driver      (:driver net)
+      :internal    (when (:internal net) true)
+      :driver_opts (:options net)}
+     {:external true})})
 
 (defn volume
-  [stackName volume]
-  {(keyword (alias :volumeName stackName volume)) (select-keys volume [:driver])})
+  [stack-name volume]
+  {(keyword (alias :volumeName stack-name volume))
+   (if (in-stack? stack-name volume)
+     {:driver      (:driver volume)
+      :driver_opts (:options volume)}
+     {:external true})})
+
+(defn secret
+  [_ secret]
+  {(keyword (:secretName secret))
+   {:external true}})
+
+(defn config
+  [_ config]
+  {(keyword (:configName config))
+   {:external true}})
 
 (defn ->compose
   [stack]
@@ -61,5 +85,7 @@
     (-> {:version  "3"
          :services (group name service (:services stack))
          :networks (group name network (:networks stack))
-         :volumes  (group name volume (:volumes stack))}
+         :volumes  (group name volume (:volumes stack))
+         :configs  (group name config (:configs stack))
+         :secrets  (group name secret (:secrets stack))}
         (clean))))
