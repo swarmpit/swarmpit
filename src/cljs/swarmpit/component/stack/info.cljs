@@ -166,7 +166,7 @@
   [:div.form-layout-group
    (form/section "Services")
    (list/table (map :name services/headers)
-               services
+               (sort-by :serviceName services)
                (stack-render-item stack-name :serviceName services/render-item)
                services/render-item-keys
                services/onclick-handler)])
@@ -176,7 +176,7 @@
     [:div.form-layout-group.form-layout-group-border
      (form/section "Networks")
      (list/table (map :name networks/headers)
-                 networks
+                 (sort-by :networkName networks)
                  (stack-render-item stack-name :networkName networks/render-item)
                  (conj networks/render-item-keys [:stack])
                  networks/onclick-handler)]))
@@ -186,7 +186,7 @@
     [:div.form-layout-group.form-layout-group-border
      (form/section "Volumes")
      (list/table (map :name volumes/headers)
-                 volumes
+                 (sort-by :volumeName volumes)
                  (stack-render-item stack-name :volumeName volumes/render-item)
                  (conj volumes/render-item-keys [:stack])
                  volumes/onclick-handler)]))
@@ -196,7 +196,7 @@
     [:div.form-layout-group.form-layout-group-border
      (form/section "Configs")
      (list/table (map :name configs/headers)
-                 configs
+                 (sort-by :configName configs)
                  (stack-render-item stack-name :configName configs/render-item)
                  (conj configs/render-item-keys [:stack])
                  configs/onclick-handler)]))
@@ -206,7 +206,7 @@
     [:div.form-layout-group.form-layout-group-border
      (form/section "Secrets")
      (list/table (map :name configs/headers)
-                 secrets
+                 (sort-by :secretName secrets)
                  (stack-render-item stack-name :secretName secrets/render-item)
                  (conj secrets/render-item-keys [:stack])
                  secrets/onclick-handler)]))
