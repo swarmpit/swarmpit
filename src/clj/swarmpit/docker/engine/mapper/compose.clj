@@ -3,6 +3,7 @@
             [clojure.set :refer [rename-keys]]
             [swarmpit.utils :refer [clean select-keys*]]
             [swarmpit.docker.utils :refer [trim-stack]]
+            [swarmpit.docker.engine.mapper.inbound :refer [autoredeploy-label]]
             [swarmpit.yaml :refer [->yaml]])
   (:refer-clojure :exclude [alias]))
 
@@ -25,7 +26,17 @@
 
 (defn variables
   [variables]
-  (map #(str (:name %) "=" (:value %)) variables))
+  (map #(str (name (key %)) "=" (val %)) variables))
+
+(defn add-swarmpit-labels
+  [service map]
+  (when (-> service :deployment :autoredeploy) (merge map {autoredeploy-label "true"})))
+
+(defn name-value->map
+  [name-value-coll]
+  (->> name-value-coll
+       (map #(hash-map (keyword (:name %)) (:value %)))
+       (into {})))
 
 (defn resource
   [{:keys [cpu memory]}]
@@ -42,15 +53,17 @@
   [stack-name service]
   {(keyword (alias :serviceName stack-name service))
    {:image       (-> service :repository :image)
-    :environment (-> service :variables (variables))
+    :environment (-> service :variables (name-value->map) (variables))
     :ports       (->> service :ports
                       (map #(str (:hostPort %) ":" (:containerPort %) (when (= "udp" (:protocol %)) "/udp"))))
     :volumes     (->> service :mounts
                       (map #(str (alias :host stack-name %) "=" (:containerPath %) (when (:readOnly %) ":ro"))))
     :networks    (->> service :networks (map #(alias :networkName stack-name %)))
+    :logging     {:driver  (-> service :logdriver :name)
+                  :options (-> service :logdriver :opts (name-value->map))}
     :deploy      {:mode           (when-not (= "replicated" (:mode service)) (:mode service))
                   :replicas       (some-> (:replicas service) (#(when (< 1 %) %)))
-                  :labels         (-> service :labels (variables))
+                  :labels         (->> service :labels (name-value->map) (add-swarmpit-labels service) (variables))
                   :update_config  (-> service :deployment :update
                                       (rename-keys {:failureAction :failure_action})
                                       (update :delay #(str % "s"))
