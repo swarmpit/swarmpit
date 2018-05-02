@@ -14,6 +14,7 @@
    :stack-list            "Stacks"
    :stack-create          "Stacks / Create"
    :stack-edit            "Stacks / Edit"
+   :stack-compose         "Stacks / Compose"
    :stack-info            "Stacks"
    :service-list          "Services"
    :service-create-config "Services / Wizard"

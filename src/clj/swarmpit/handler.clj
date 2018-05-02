@@ -525,6 +525,14 @@
         (resp-ok response)
         (resp-error 400 "Stackfile not found")))))
 
+(defmethod dispatch :stack-compose [_]
+  (fn [{:keys [route-params]}]
+    (let [response (api/stack-compose (:name route-params))]
+      (if (some? response)
+        (resp-ok {:name (:name route-params)
+                  :spec {:compose response}})
+        (resp-error 400 "Failed to create compose file")))))
+
 (defmethod dispatch :stack-services [_]
   (fn [{:keys [route-params]}]
     (-> (api/stack-services (:name route-params))

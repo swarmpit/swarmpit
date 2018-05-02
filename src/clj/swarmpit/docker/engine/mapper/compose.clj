@@ -7,6 +7,8 @@
             [swarmpit.yaml :refer [->yaml]])
   (:refer-clojure :exclude [alias]))
 
+(def compose-version "3.3")
+
 (defn in-stack?
   [stack-name map]
   (= stack-name (:stack map)))
@@ -57,7 +59,7 @@
     :ports       (->> service :ports
                       (map #(str (:hostPort %) ":" (:containerPort %) (when (= "udp" (:protocol %)) "/udp"))))
     :volumes     (->> service :mounts
-                      (map #(str (alias :host stack-name %) "=" (:containerPath %) (when (:readOnly %) ":ro"))))
+                      (map #(str (alias :host stack-name %) ":" (:containerPath %) (when (:readOnly %) ":ro"))))
     :networks    (->> service :networks (map #(alias :networkName stack-name %)))
     :logging     {:driver  (-> service :logdriver :name)
                   :options (-> service :logdriver :opts (name-value->map))}
@@ -113,7 +115,7 @@
 (defn ->compose
   [stack]
   (let [name (:stackName stack)]
-    (-> {:version  "3"
+    (-> {:version  compose-version
          :services (group name service (:services stack))
          :networks (group name network (:networks stack))
          :volumes  (group name volume (:volumes stack))
