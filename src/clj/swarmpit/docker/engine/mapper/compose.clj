@@ -23,34 +23,52 @@
        (map #(fn stack-name %))
        (into {})))
 
-(defn environment
+(defn variables
   [variables]
   (map #(str (:name %) "=" (:value %)) variables))
-
-(defn service-volumes
-  [mounts]
-  (map #(str (:host %) "=" (:containerPath %) (when (:readOnly %) ":ro")) mounts))
 
 (defn resource
   [{:keys [cpu memory]}]
   {:cpus   (when (< 0 cpu) (str cpu))
    :memory (when (< 0 memory) (str memory "M"))})
 
+(defn remove-defaults
+  [map defaults]
+  (->> (keys defaults)
+       (filter #(= (% defaults) (% map)))
+       (apply dissoc map)))
+
 (defn service
   [stack-name service]
   {(keyword (alias :serviceName stack-name service))
    {:image       (-> service :repository :image)
-    :environment (->> service :variables
-                      (map #(str (:name %) "=" (:value %))))
+    :environment (-> service :variables (variables))
     :ports       (->> service :ports
                       (map #(str (:hostPort %) ":" (:containerPort %) (when (= "udp" (:protocol %)) "/udp"))))
     :volumes     (->> service :mounts
                       (map #(str (alias :host stack-name %) "=" (:containerPath %) (when (:readOnly %) ":ro"))))
     :networks    (->> service :networks (map #(alias :networkName stack-name %)))
-    :deploy      {:mode      (when-not (= "replicated" (:mode service)) (:mode service))
-                  :placement {:constraints (->> service :deployment :placement (map :rule))}
-                  :resources {:reservations (-> service :resources :reservation resource)
-                              :limits       (-> service :resources :limit resource)}}}})
+    :deploy      {:mode           (when-not (= "replicated" (:mode service)) (:mode service))
+                  :replicas       (some-> (:replicas service) (#(when (< 1 %) %)))
+                  :labels         (-> service :labels (variables))
+                  :update_config  (-> service :deployment :update
+                                      (rename-keys {:failureAction :failure_action})
+                                      (update :delay #(str % "s"))
+                                      (remove-defaults
+                                        {:parallelism    1
+                                         :delay          "0s"
+                                         :order          "stop-first"
+                                         :failure_action "pause"}))
+                  :restart_policy (-> service :deployment :restartPolicy
+                                      (rename-keys {:attempts :max_attempts})
+                                      (update :delay #(str % "s"))
+                                      (remove-defaults
+                                        {:condition    "any"
+                                         :delay        "5s"
+                                         :max_attempts 0}))
+                  :placement      {:constraints (->> service :deployment :placement (map :rule))}
+                  :resources      {:reservations (-> service :resources :reservation resource)
+                                   :limits       (-> service :resources :limit resource)}}}})
 
 (defn network
   [stack-name net]
