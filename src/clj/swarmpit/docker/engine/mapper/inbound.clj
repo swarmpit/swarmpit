@@ -7,6 +7,7 @@
   (quot bytes (* 1024 1024)))
 
 (def stack-label :com.docker.stack.namespace)
+(def autoredeploy-label :swarmpit.service.deployment.autoredeploy)
 
 (defn ->image-ports
   [image-config]
@@ -269,7 +270,7 @@
 
 (defn ->service-autoredeploy
   [service-labels]
-  (let [value (:swarmpit.service.deployment.autoredeploy service-labels)]
+  (let [value (autoredeploy-label service-labels)]
     (= "true" value)))
 
 (defn ->service-image-details

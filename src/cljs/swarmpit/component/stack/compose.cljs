@@ -1,4 +1,4 @@
-(ns swarmpit.component.stack.edit
+(ns swarmpit.component.stack.compose
   (:require [material.icon :as icon]
             [material.component :as comp]
             [material.component.form :as form]
@@ -57,15 +57,13 @@
                    (message/error
                      (str "Stack update failed. " (:error response))))}))
 
-(defn- stackfile-handler
+(defn- compose-handler
   [name]
   (ajax/get
-    (routes/path-for-backend :stack-file {:name name})
+    (routes/path-for-backend :stack-compose {:name name})
     {:state      [:loading?]
      :on-success (fn [{:keys [response]}]
-                   (state/set-value response state/form-value-cursor))
-     :on-error   (fn [_]
-                   (state/update-value [:external?] true state/form-state-cursor))}))
+                   (state/set-value response state/form-value-cursor))}))
 
 (def mixin-init-editor
   {:did-mount
@@ -77,7 +75,6 @@
 (defn- init-form-state
   []
   (state/set-value {:valid?      false
-                    :external?   false
                     :loading?    true
                     :processing? false} state/form-state-cursor))
 
@@ -91,10 +88,10 @@
     (fn [{{:keys [name]} :params}]
       (init-form-state)
       (init-form-value name)
-      (stackfile-handler name))))
+      (compose-handler name))))
 
 (rum/defc form-edit < mixin-init-editor [{:keys [name spec]}
-                                         {:keys [processing? valid? external?]}]
+                                         {:keys [processing? valid?]}]
   [:div
    [:div.form-panel
     [:div.form-panel-left
@@ -109,9 +106,6 @@
      {:onValid   #(state/update-value [:valid?] true state/form-state-cursor)
       :onInvalid #(state/update-value [:valid?] false state/form-state-cursor)}
      (form-name name)
-     (when external?
-       (html (form/icon-value icon/warn "You are trying to edit external stack. Please drag & drop or paste matching compose file to link.")))
-     (html (form/icon-value icon/info [:div "Experimental! Let swarmpit " [:a {:href (routes/path-for-frontend :stack-compose {:name name})} "compose your stack"] "!"]))
      (form-editor (:compose spec)))])
 
 (rum/defc form < rum/reactive

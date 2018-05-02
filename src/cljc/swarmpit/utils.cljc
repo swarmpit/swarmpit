@@ -35,3 +35,19 @@
                     (number? x) (str x)
                     (boolean? x) (str x)
                     :else (identity x))) m)))))
+
+(defn empty-or-nil?
+  [val]
+  (if (coll? val)
+    (empty? val)
+    (nil? val)))
+
+(defn clean
+  "remove pairs of key-value that are nil or empty from a (possibly nested) map."
+  [nm]
+  (clojure.walk/postwalk
+    #(if (map? %)
+       (let [m (into {} (remove (comp empty-or-nil? val) %))]
+         (when (seq m) m))
+       %)
+    nm))

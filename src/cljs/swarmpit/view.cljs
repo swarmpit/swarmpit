@@ -5,6 +5,7 @@
             [swarmpit.component.page-error :as page-error]
             [swarmpit.component.password :as password]
             [swarmpit.component.stack.edit :as stack-edit]
+            [swarmpit.component.stack.compose :as stack-compose]
             [swarmpit.component.stack.create :as stack-create]
             [swarmpit.component.stack.info :as stack-info]
             [swarmpit.component.stack.list :as stack-list]
@@ -86,6 +87,10 @@
 (defmethod dispatch :stack-edit
   [route]
   (stack-edit/form route))
+
+(defmethod dispatch :stack-compose
+  [route]
+  (stack-compose/form route))
 
 ;;; Service view
 

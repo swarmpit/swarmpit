@@ -29,6 +29,7 @@
        "/stacks"        {:get  :stacks
                          :post :stack-create}
        "/stacks/"       {:get    {[:name] {"/file"     :stack-file
+                                           "/compose"  :stack-compose
                                            "/services" :stack-services
                                            "/networks" :stack-networks
                                            "/volumes"  :stack-volumes
@@ -96,10 +97,11 @@
                                                ["/" :id]        {""      :service-info
                                                                  "/edit" :service-edit
                                                                  "/log"  :service-log}}
-                   "/stacks"                  {""                  :stack-list
-                                               "/create"           :stack-create
-                                               ["/" :name]         :stack-info
-                                               ["/" :name "/edit"] :stack-edit}
+                   "/stacks"                  {""                     :stack-list
+                                               "/create"              :stack-create
+                                               ["/" :name]            :stack-info
+                                               ["/" :name "/edit"]    :stack-edit
+                                               ["/" :name "/compose"] :stack-compose}
                    "/networks"                {""        :network-list
                                                "/create" :network-create
                                                ["/" :id] :network-info}

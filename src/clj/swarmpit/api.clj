@@ -4,13 +4,14 @@
             [digest :refer [digest]]
             [swarmpit.utils :refer [merge-data]]
             [swarmpit.config :as cfg]
-            [swarmpit.yaml :as yaml]
+            [swarmpit.yaml :as yaml :refer [->yaml]]
             [swarmpit.docker.utils :as du]
             [swarmpit.docker.engine.client :as dc]
             [swarmpit.docker.engine.cli :as dcli]
             [swarmpit.docker.engine.log :as dl]
             [swarmpit.docker.engine.mapper.inbound :as dmi]
             [swarmpit.docker.engine.mapper.outbound :as dmo]
+            [swarmpit.docker.engine.mapper.compose :refer [->compose]]
             [swarmpit.docker.auth.client :as dac]
             [swarmpit.docker.registry.client :as drc]
             [swarmpit.docker.hub.client :as dhc]
@@ -779,6 +780,10 @@
        :volumes   (resources-by-services services :mounts volumes)
        :configs   (resources-by-services services :configs configs)
        :secrets   (resources-by-services services :secrets secrets)})))
+
+(defn stack-compose
+  [stack-name]
+  (some-> (stack stack-name) (->compose) (->yaml)))
 
 (defn stacks
   []
