@@ -2,6 +2,7 @@
   (:require [clojure.string :as str]
             [clojure.set :refer [rename-keys]]
             [swarmpit.utils :refer [clean select-keys*]]
+            [flatland.ordered.map :refer [ordered-map]]
             [swarmpit.docker.utils :refer [trim-stack]]
             [swarmpit.docker.engine.mapper.inbound :refer [autoredeploy-label]]
             [swarmpit.yaml :refer [->yaml]])
@@ -26,10 +27,6 @@
        (map #(fn stack-name %))
        (into {})))
 
-(defn variables
-  [variables]
-  (map #(str (name (key %)) "=" (val %)) variables))
-
 (defn add-swarmpit-labels
   [service map]
   (when (-> service :deployment :autoredeploy) (merge map {autoredeploy-label "true"})))
@@ -39,6 +36,16 @@
   (->> name-value-coll
        (map #(hash-map (keyword (:name %)) (:value %)))
        (into {})))
+
+(defn targetable
+  [source-key target-key item]
+  (->> item
+       (map #(let [{name   source-key
+                    target target-key} %]
+               (if (= name target)
+                 name
+                 {:source name
+                  :target target})))))
 
 (defn resource
   [{:keys [cpu memory]}]
@@ -54,36 +61,39 @@
 (defn service
   [stack-name service]
   {(keyword (alias :serviceName stack-name service))
-   {:image       (-> service :repository :image)
-    :environment (-> service :variables (name-value->map) (variables))
-    :ports       (->> service :ports
-                      (map #(str (:hostPort %) ":" (:containerPort %) (when (= "udp" (:protocol %)) "/udp"))))
-    :volumes     (->> service :mounts
-                      (map #(str (alias :host stack-name %) ":" (:containerPath %) (when (:readOnly %) ":ro"))))
-    :networks    (->> service :networks (map #(alias :networkName stack-name %)))
-    :logging     {:driver  (-> service :logdriver :name)
-                  :options (-> service :logdriver :opts (name-value->map))}
-    :deploy      {:mode           (when-not (= "replicated" (:mode service)) (:mode service))
-                  :replicas       (some-> (:replicas service) (#(when (< 1 %) %)))
-                  :labels         (->> service :labels (name-value->map) (add-swarmpit-labels service) (variables))
-                  :update_config  (-> service :deployment :update
-                                      (rename-keys {:failureAction :failure_action})
-                                      (update :delay #(str % "s"))
-                                      (remove-defaults
-                                        {:parallelism    1
-                                         :delay          "0s"
-                                         :order          "stop-first"
-                                         :failure_action "pause"}))
-                  :restart_policy (-> service :deployment :restartPolicy
-                                      (rename-keys {:attempts :max_attempts})
-                                      (update :delay #(str % "s"))
-                                      (remove-defaults
-                                        {:condition    "any"
-                                         :delay        "5s"
-                                         :max_attempts 0}))
-                  :placement      {:constraints (->> service :deployment :placement (map :rule))}
-                  :resources      {:reservations (-> service :resources :reservation resource)
-                                   :limits       (-> service :resources :limit resource)}}}})
+   (ordered-map
+     :image (-> service :repository :image)
+     :environment (-> service :variables (name-value->map))
+     :ports (->> service :ports
+                 (map #(str (:hostPort %) ":" (:containerPort %) (when (= "udp" (:protocol %)) "/udp"))))
+     :volumes (->> service :mounts
+                   (map #(str (alias :host stack-name %) ":" (:containerPath %) (when (:readOnly %) ":ro"))))
+     :networks (->> service :networks (map #(alias :networkName stack-name %)))
+     :secrets (->> service :secrets (targetable :secretName :secretTarget))
+     :configs (->> service :configs (targetable :configName :configTarget))
+     :logging {:driver  (-> service :logdriver :name)
+               :options (-> service :logdriver :opts (name-value->map))}
+     :deploy {:mode           (when-not (= "replicated" (:mode service)) (:mode service))
+              :replicas       (some-> (:replicas service) (#(when (< 1 %) %)))
+              :labels         (->> service :labels (name-value->map) (add-swarmpit-labels service))
+              :update_config  (-> service :deployment :update
+                                  (rename-keys {:failureAction :failure_action})
+                                  (update :delay #(str % "s"))
+                                  (remove-defaults
+                                    {:parallelism    1
+                                     :delay          "0s"
+                                     :order          "stop-first"
+                                     :failure_action "pause"}))
+              :restart_policy (-> service :deployment :restartPolicy
+                                  (rename-keys {:attempts :max_attempts})
+                                  (update :delay #(str % "s"))
+                                  (remove-defaults
+                                    {:condition    "any"
+                                     :delay        "5s"
+                                     :max_attempts 0}))
+              :placement      {:constraints (->> service :deployment :placement (map :rule))}
+              :resources      {:reservations (-> service :resources :reservation resource)
+                               :limits       (-> service :resources :limit resource)}})})
 
 (defn network
   [stack-name net]

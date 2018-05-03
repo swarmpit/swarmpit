@@ -37,6 +37,7 @@
                  [com.cemerick/url "0.1.1"]
                  [com.cemerick/friend "0.2.3"]
                  [com.cognitect/transit-cljs "0.8.256"]
+                 [org.flatland/ordered "1.5.6"]
                  [com.github.jnr/jnr-unixsocket "0.18"]]
   :plugins [[lein-cljsbuild "1.1.7"]
             [lein-environ "1.1.0"]
