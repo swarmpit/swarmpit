@@ -1,4 +1,5 @@
-(ns swarmpit.utils)
+(ns swarmpit.utils
+  (:require [flatland.ordered.map :refer [ordered-map]]))
 
 (defn remove-el
   "Remove element in `vector` on given `index`"
@@ -44,10 +45,13 @@
 
 (defn clean
   "remove pairs of key-value that are nil or empty from a (possibly nested) map."
-  [nm]
+  [map]
   (clojure.walk/postwalk
     #(if (map? %)
-       (let [m (into {} (remove (comp empty-or-nil? val) %))]
+       (let [nm (if (instance? flatland.ordered.map.OrderedMap %)
+                  (ordered-map)
+                  {})
+             m (into nm (remove (comp empty-or-nil? val) %))]
          (when (seq m) m))
        %)
-    nm))
+    map))

@@ -1,16 +1,19 @@
 (ns swarmpit.yaml
   (:require
-    #?@(:clj  [[clj-yaml.core :as yaml]]
+    #?@(:clj  [[clj-yaml.core :as yaml]
+               [flatland.ordered.map :refer [ordered-map]]]
         :cljs [[cljsjs.js-yaml]]))
   #?(:clj
-     (:import [org.yaml.snakeyaml Yaml DumperOptions])))
+     (:import [org.yaml.snakeyaml Yaml DumperOptions]
+              (clojure.lang IPersistentMap))))
 
 #?(:clj
-   (defn ->json
-     [yaml]
-     "Parse YAML to JSON format"
-     (yaml/parse-string yaml)))
-
+   (extend-protocol yaml/YAMLCodec
+     IPersistentMap
+     (encode [data]
+       (into (ordered-map)
+             (for [[k v] data]
+               [(yaml/encode k) (yaml/encode v)])))))
 
 #?(:clj
    (defn- generate-string
@@ -19,23 +22,18 @@
                      (.setDefaultFlowStyle (:block yaml/flow-styles))
                      (.setIndicatorIndent 1)))
             (yaml/encode data))))
-#?(:clj
-   (defn ->yaml
-     [map]
-     "Parse YAML to JSON format"
-     (generate-string map)))
 
-#?(:cljs
-   (defn ->json
-     [yaml]
-     "Parse YAML to JSON format"
-     (js->clj (.load js/jsyaml yaml))))
+(defn ->yaml
+  [map]
+  "Parse YAML to JSON format"
+  #?(:clj  (generate-string map)
+     :cljs (.dump js/jsyaml (clj->js json))))
 
-#?(:cljs
-   (defn ->yaml
-     [json]
-     "Parse JSON to YAML format"
-     (.dump js/jsyaml (clj->js json))))
+(defn ->json
+  [yaml]
+  "Parse YAML to JSON format"
+  #?(:clj  (yaml/parse-string yaml)
+     :cljs (js->clj (.load js/jsyaml yaml))))
 
 #?(:cljs
    (defn valid?
