@@ -1,7 +1,9 @@
 (ns swarmpit.yaml
   (:require
     #?@(:clj  [[clj-yaml.core :as yaml]]
-        :cljs [[cljsjs.js-yaml]])))
+        :cljs [[cljsjs.js-yaml]]))
+  #?(:clj
+     (:import [org.yaml.snakeyaml Yaml DumperOptions])))
 
 #?(:clj
    (defn ->json
@@ -11,10 +13,17 @@
 
 
 #?(:clj
+   (defn- generate-string
+     [data]
+     (.dump (Yaml. (doto (DumperOptions.)
+                     (.setDefaultFlowStyle (:block yaml/flow-styles))
+                     (.setIndicatorIndent 1)))
+            (yaml/encode data))))
+#?(:clj
    (defn ->yaml
      [map]
      "Parse YAML to JSON format"
-     (yaml/generate-string map :dumper-options {:flow-style :block})))
+     (generate-string map)))
 
 #?(:cljs
    (defn ->json
