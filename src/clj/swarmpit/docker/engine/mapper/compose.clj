@@ -25,7 +25,8 @@
   [stack-name fn coll]
   (->> coll
        (map #(fn stack-name %))
-       (into {})))
+       (into (sorted-map))
+       (ordered-map)))
 
 (defn add-swarmpit-labels
   [service map]
@@ -126,7 +127,7 @@
   [stack]
   (let [name (:stackName stack)]
     (-> {:version  compose-version
-         :services (group name service (:services stack))
+         :services (group name service (->> stack :services (sort-by :serviceName) (vec)))
          :networks (group name network (:networks stack))
          :volumes  (group name volume (:volumes stack))
          :configs  (group name config (:configs stack))
