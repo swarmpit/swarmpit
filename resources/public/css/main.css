@@ -1,6 +1,12 @@
 html > body {
-    font-family: "Open Sans", sans-serif;
-    font-size: 14px;
+    font: 14px "Open Sans", sans-serif;
+    font-display: optional;
+    -webkit-font-kerning: normal;
+    font-kerning: normal;
+    -webkit-text-size-adjust: 100%;
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+    text-rendering: geometricPrecision;
     color: rgb(117, 117, 117);
 }
 
