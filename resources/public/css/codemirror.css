@@ -6,6 +6,7 @@
     position: relative;
     height: auto;
     min-height: 400px;
+    max-height: calc(100vh - 254px);
     margin: 10px 24px 10px 24px;
     border: 1px solid rgb(224, 228, 231);
 }
@@ -227,7 +228,7 @@ div.CodeMirror span.CodeMirror-nonmatchingbracket {
 
 .CodeMirror {
     position: relative;
-    overflow: hidden;
+    overflow: auto;
     background: #fff
 }
 
