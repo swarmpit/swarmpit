@@ -22,7 +22,7 @@
 
 (defn- stack-deploy-cmd
   [name file]
-  ["docker" "stack" "deploy" "--compose-file" file name "--with-registry-auth"])
+  ["docker" "stack" "deploy" "--with-registry-auth" "--compose-file" file name])
 
 (defn- stack-remove-cmd
   [name]

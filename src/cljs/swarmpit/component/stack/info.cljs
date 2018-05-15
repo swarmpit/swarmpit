@@ -155,7 +155,7 @@
   (fn [item row]
     (case (key item)
       :stack (if (not= stack-name (val item))
-               (label/yellow "external"))
+               (label/info "external"))
       (if (= name-key (key item))
         (if (= stack-name (:stack row))
           (utils/trim-stack stack-name (val item))
