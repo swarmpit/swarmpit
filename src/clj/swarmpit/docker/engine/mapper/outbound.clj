@@ -210,6 +210,7 @@
                                     :Mounts  (->service-mounts service)
                                     :Secrets (:secrets service)
                                     :Configs (:configs service)
+                                    :Args    (:command service)
                                     :Env     (->service-variables service)}
                     :LogDriver     {:Name    (get-in service [:logdriver :name])
                                     :Options (->service-log-options service)}

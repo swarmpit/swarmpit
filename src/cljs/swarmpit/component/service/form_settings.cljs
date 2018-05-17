@@ -6,7 +6,8 @@
             [swarmpit.component.parser :refer [parse-int]]
             [swarmpit.ajax :as ajax]
             [swarmpit.routes :as routes]
-            [rum.core :as rum]))
+            [rum.core :as rum]
+            [clojure.string :as str]))
 
 (enable-console-print!)
 
@@ -103,6 +104,17 @@
        :onChange (fn [_ v]
                    (state/update-value [:replicas] (parse-int v) form-value-cursor))})))
 
+(defn- form-command [value]
+  (form/comp
+    "COMMAND"
+    (comp/vtext-field
+      {:name     "command"
+       :key      "command"
+       :required false
+       :value    value
+       :onChange (fn [_ v]
+                   (state/update-value [:command] (when (< 0 (count v)) (str/split v #" ")) form-value-cursor))})))
+
 (defn tags-handler
   [repository]
   (ajax/get
@@ -113,7 +125,7 @@
      :on-error   (fn [_])}))
 
 (rum/defc form < rum/reactive [update-form?]
-  (let [{:keys [repository serviceName mode replicas]} (state/react form-value-cursor)
+  (let [{:keys [repository serviceName mode replicas command]} (state/react form-value-cursor)
         {:keys [tags]} (state/react form-state-cursor)]
     [:div.form-edit
      (form/form
@@ -126,4 +138,5 @@
        (form-name serviceName update-form?)
        (form-mode mode update-form?)
        (when (= "replicated" mode)
-         (form-replicas replicas)))]))
+         (form-replicas replicas))
+       (form-command (str/join " " command)))]))

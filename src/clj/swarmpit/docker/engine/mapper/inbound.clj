@@ -329,6 +329,7 @@
        :configs (->service-configs service-spec)
        :variables (->service-variables service-spec)
        :labels (->service-labels service-labels)
+       :command (get-in service-task-template [:ContainerSpec :Args])
        :logdriver {:name (or (get-in service-task-template [:LogDriver :Name]) "json-file")
                    :opts (->service-log-options service-task-template)}
        :resources {:reservation (->service-resource (get-in service-task-template [:Resources :Reservations]))

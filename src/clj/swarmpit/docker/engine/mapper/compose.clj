@@ -64,6 +64,7 @@
   {(keyword (alias :serviceName stack-name service))
    (ordered-map
      :image (-> service :repository :image)
+     :command (some->> service :command (str/join " "))
      :environment (-> service :variables (name-value->map))
      :ports (->> service :ports
                  (map #(str (:hostPort %) ":" (:containerPort %) (when (= "udp" (:protocol %)) "/udp"))))
