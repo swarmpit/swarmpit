@@ -30,7 +30,7 @@
 
 (defn add-swarmpit-labels
   [service map]
-  (when (-> service :deployment :autoredeploy) (merge map {autoredeploy-label "true"})))
+  (merge map (when (-> service :deployment :autoredeploy) {autoredeploy-label "true"})))
 
 (defn name-value->map
   [name-value-coll]
