@@ -793,12 +793,13 @@
 
 (defn stack-login
   [owner stackfile-spec]
-  (->> (remove nil?
-               (conj (registries-by-stackfile owner stackfile-spec)
-                     (dockeruser-by-stackfile owner stackfile-spec)))
-       (map #(dcli/login (:username %)
-                         (:password %)
-                         (:url %)))))
+  (let [distributions (remove nil?
+                              (conj (registries-by-stackfile owner stackfile-spec)
+                                    (dockeruser-by-stackfile owner stackfile-spec)))]
+    (doseq [distro distributions]
+      (dcli/login (:username distro)
+                  (:password distro)
+                  (:url distro)))))
 
 (defn create-stack
   "Create application stack and link stackfile"
