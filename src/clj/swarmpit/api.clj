@@ -540,6 +540,17 @@
          (filter #(contains? ids (:id %)))
          (vec))))
 
+(defn volumes-by-services
+  [services]
+  (let [volumes (->> (volumes)
+                     (group-by :id))]
+    (->> services
+         (map :mounts)
+         (flatten)
+         (filter #(= "volume" (:type %)))
+         (map #(assoc % :volumeName (:host %)))
+         (map #(merge (first (get volumes (:id %))) %)))))
+
 (def services-memo (memo/ttl services :ttl/threshold 1000))
 
 (defn- services-by
@@ -777,7 +788,7 @@
        :stackFile (some? (stackfile stack-name))
        :services  services
        :networks  (resources-by-services services :networks networks)
-       :volumes   (resources-by-services services :mounts volumes)
+       :volumes   (volumes-by-services services)
        :configs   (resources-by-services services :configs configs)
        :secrets   (resources-by-services services :secrets secrets)})))
 
