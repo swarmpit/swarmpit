@@ -547,7 +547,7 @@
 (defmethod dispatch :stack-volumes [_]
   (fn [{:keys [route-params]}]
     (-> (api/stack-services (:name route-params))
-        (api/resources-by-services :mounts api/volumes)
+        (api/volumes-by-services)
         (resp-ok))))
 
 (defmethod dispatch :stack-configs [_]
