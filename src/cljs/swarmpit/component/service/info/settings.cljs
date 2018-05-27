@@ -23,4 +23,9 @@
        (form/item "IMAGE DIGEST" image-digest))
      (form/item "MODE" (:mode service))
      (when command
-       (form/item "COMMAND" (str/join " " command)))]))
+       (form/item "COMMAND" [:pre {:style {:fontSize "0.9em"
+                                           :margin 0}}
+                             (let [merged (str/join " " command)]
+                               (if (< 100 (count merged))
+                                 (str/join "\n" command)
+                                 merged))]))]))
