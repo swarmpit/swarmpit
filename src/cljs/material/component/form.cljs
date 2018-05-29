@@ -70,10 +70,10 @@
 (defn item-date [label date]
   [:div.form-view-row
    [:span.form-row-label label]
-   [:div.form-row-value.hoverable
-    (when (some? date)
-      {:data-1 (time/humanize date)
-       :data-2 (time/simplify date)})]])
+   [:div.form-row-value
+    [:time {:date-time date
+            :title (time/simplify date)}
+     (time/humanize date)]]])
 
 (defn value [value]
   [:div.form-view-row
