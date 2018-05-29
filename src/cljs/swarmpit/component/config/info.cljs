@@ -6,15 +6,42 @@
             [material.component.list-table-auto :as list]
             [swarmpit.component.state :as state]
             [swarmpit.component.mixin :as mixin]
+            [swarmpit.component.editor :as editor]
             [swarmpit.component.message :as message]
             [swarmpit.component.progress :as progress]
             [swarmpit.component.service.list :as services]
             [swarmpit.url :refer [dispatch!]]
             [swarmpit.ajax :as ajax]
             [swarmpit.routes :as routes]
-            [rum.core :as rum]))
+            [swarmpit.base64 :as base64]
+            [rum.core :as rum]
+            [goog.crypt.base64 :as b64]
+            [sablono.core :refer-macros [html]]))
 
 (enable-console-print!)
+
+(def editor-id "config-view")
+
+(def form-data-style {:top       "-7px"
+                      :maxHeight "400px"})
+
+(defn- parse-data [data]
+  (if (base64/base64? data)
+    (b64/decodeString data)
+    data))
+
+(defn- form-data [value]
+  (html
+    (comp/mui
+      (comp/text-field
+        {:id            editor-id
+         :name          "config-view"
+         :key           "config-view"
+         :multiLine     true
+         :value         value
+         :style         form-data-style
+         :underlineShow false
+         :fullWidth     true}))))
 
 (defn- config-services-handler
   [config-id]
@@ -55,7 +82,14 @@
       (config-handler id)
       (config-services-handler id))))
 
-(rum/defc form-info < rum/static [{:keys [config services]}]
+(def mixin-init-editor
+  {:did-mount
+   (fn [state]
+     (editor/view editor-id)
+     state)})
+
+(rum/defc form-info < rum/static
+                      mixin-init-editor [{:keys [config services]}]
   [:div
    [:div.form-panel
     [:div.form-panel-left
@@ -72,7 +106,9 @@
      (form/item "ID" (:id config))
      (form/item "NAME" (:configName config))
      (form/item-date "CREATED" (:createdAt config))
-     (form/item-date "UPDATED" (:updatedAt config))]
+     (form/item-date "UPDATED" (:updatedAt config))
+     (form/section "Data")
+     (form-data (parse-data (:data config)))]
     [:div.form-layout-group.form-layout-group-border
      (form/section "Linked Services")
      (list/table (map :name services/headers)
