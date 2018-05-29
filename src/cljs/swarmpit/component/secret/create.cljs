@@ -4,6 +4,7 @@
             [material.component.form :as form]
             [material.component.panel :as panel]
             [swarmpit.component.mixin :as mixin]
+            [swarmpit.component.editor :as editor]
             [swarmpit.component.state :as state]
             [swarmpit.component.message :as message]
             [swarmpit.url :refer [dispatch!]]
@@ -15,10 +16,7 @@
 
 (enable-console-print!)
 
-(def form-data-style
-  {:padding  "10px"
-   :border   "1px solid rgb(224, 224, 224)"
-   :minWidth "400px"})
+(def editor-id "secret-editor")
 
 (defn- form-name [value]
   (form/comp
@@ -32,19 +30,16 @@
                    (state/update-value [:secretName] v state/form-value-cursor))})))
 
 (defn- form-data [value]
-  (form/textarea
-    "DATA"
-    (comp/vtext-field
-      {:name          "data"
-       :key           "data"
-       :required      true
-       :multiLine     true
-       :rows          10
-       :fullWidth     true
-       :textareaStyle form-data-style
-       :value         value
-       :onChange      (fn [_ v]
-                        (state/update-value [:data] v state/form-value-cursor))})))
+  (comp/vtext-field
+    {:id            editor-id
+     :name          "secret-editor"
+     :key           "secret-editor"
+     :multiLine     true
+     :rows          10
+     :rowsMax       10
+     :value         value
+     :underlineShow false
+     :fullWidth     true}))
 
 (defn- create-secret-handler
   []
@@ -78,8 +73,16 @@
       (init-form-state)
       (init-form-value))))
 
+(def mixin-init-editor
+  {:did-mount
+   (fn [state]
+     (let [editor (editor/default editor-id)]
+       (.on editor "change" (fn [cm] (state/update-value [:data] (-> cm .getValue) state/form-value-cursor))))
+     state)})
+
 (rum/defc form < rum/reactive
-                 mixin-init-form [_]
+                 mixin-init-form
+                 mixin-init-editor [_]
   (let [{:keys [secretName data encode]} (state/react state/form-value-cursor)
         {:keys [valid? processing?]} (state/react state/form-state-cursor)]
     [:div
@@ -96,6 +99,5 @@
       (form/form
         {:onValid   #(state/update-value [:valid?] true state/form-state-cursor)
          :onInvalid #(state/update-value [:valid?] false state/form-state-cursor)}
-        (html (form/icon-value icon/info "Data must be base64 encoded. If plain text check please encode data."))
         (form-name secretName)
         (form-data data))]]))
