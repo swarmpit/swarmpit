@@ -72,8 +72,7 @@
     [:div.form-layout-group
      (form/section "General settings")
      (form/item "ID" (:id network))
-     (if (some? (:stack network))
-       (form/item "STACK" (:stack network)))
+     (form/item-stack (:stack network))
      (form/item "NAME" (utils/trim-stack (:stack network)
                                          (:networkName network)))
      (when (time/valid? (:created network))

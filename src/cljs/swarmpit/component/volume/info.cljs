@@ -70,8 +70,7 @@
    [:div.form-layout
     [:div.form-layout-group
      (form/section "General settings")
-     (if (some? (:stack volume))
-       (form/item "STACK" (:stack volume)))
+     (form/item-stack (:stack volume))
      (form/item "NAME" (utils/trim-stack (:stack volume) (:volumeName volume)))
      (form/item "DRIVER" (:driver volume))
      (form/item "SCOPE" (:scope volume))

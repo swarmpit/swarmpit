@@ -3,7 +3,8 @@
   (:require [material.component :as cmp]
             [material.icon :as icon]
             [sablono.core :refer-macros [html]]
-            [swarmpit.time :as time]))
+            [swarmpit.time :as time]
+            [swarmpit.routes :as routes]))
 
 ;; Form components
 
@@ -74,6 +75,10 @@
     [:time {:date-time date
             :title (time/simplify date)}
      (time/humanize date)]]])
+
+(defn item-stack [stack]
+  (if (some? stack)
+    (item "STACK" [:a {:href (routes/path-for-frontend :stack-info {:name stack})} stack])))
 
 (defn value [value]
   [:div.form-view-row
