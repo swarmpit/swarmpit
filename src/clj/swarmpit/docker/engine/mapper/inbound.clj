@@ -389,7 +389,8 @@
     :version (get-in config [:Version :Index])
     :configName (get-in config [:Spec :Name])
     :createdAt (:CreatedAt config)
-    :updatedAt (:UpdatedAt config)))
+    :updatedAt (:UpdatedAt config)
+    :data (get-in config [:Spec :Data])))
 
 (defn ->configs
   [configs]
