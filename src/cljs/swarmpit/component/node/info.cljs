@@ -7,11 +7,13 @@
             [swarmpit.component.state :as state]
             [swarmpit.component.mixin :as mixin]
             [swarmpit.component.progress :as progress]
+            [swarmpit.component.node.list :refer [resources]]
             [swarmpit.component.task.list :as tasks]
             [swarmpit.url :refer [dispatch!]]
             [swarmpit.ajax :as ajax]
             [swarmpit.routes :as routes]
-            [rum.core :as rum]))
+            [rum.core :as rum]
+            [material.component.label :as label]))
 
 (enable-console-print!)
 
@@ -45,7 +47,7 @@
   [:div
    [:div.form-panel
     [:div.form-panel-left
-     (panel/info icon/nodes
+     (panel/info (icon/os (:os node))
                  (:nodeName node))]
     [:div.form-panel-right
      (comp/mui
@@ -58,8 +60,14 @@
      (form/item "ID" (:id node))
      (form/item "NAME" (:nodeName node))
      (form/item "ROLE" (:role node))
-     (form/item "IP" (:address node))
-     (form/item "ENGINE" (:engine node))]
+     (form/item "OS" [(:os node) " " (:arch node)])
+     (form/item "RESOURCES" (resources node))
+     (form/item "ENGINE" ["docker " (:engine node)])
+     (form/item "IP" (:address node))]
+    [:div.form-layout-group.form-layout-group-border
+     (form/section "Plugins")
+     (form/item "NETWORK " (->> node :plugins :networks (interpose ", ")))
+     (form/item "VOLUME" (->> node :plugins :volumes (interpose ", ")))]
     [:div.form-layout-group.form-layout-group-border
      (form/section "Status")
      (form/item "STATE" (:state node))

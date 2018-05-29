@@ -354,12 +354,11 @@ input:invalid {
     padding: 10px;
     text-align: center;
     background: rgb(245, 245, 245);
-    min-width: 200px;
+    min-width: 280px;
 }
 
 .node-item-secondary {
-    font-weight: lighter;
-    font-size: 12px;
+    font-size: 0.9em;
 }
 
 .node-item-state {

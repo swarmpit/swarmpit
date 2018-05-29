@@ -8,7 +8,8 @@
             [swarmpit.ajax :as ajax]
             [swarmpit.routes :as routes]
             [sablono.core :refer-macros [html]]
-            [rum.core :as rum]))
+            [rum.core :as rum]
+            [clojure.contrib.humanize :as humanize]))
 
 (enable-console-print!)
 
@@ -22,7 +23,10 @@
    [:span.node-item-state (node-item-state (:state item))]
    (when (:leader item)
      [:span.node-item-state (label/blue "leader")])
-   [:span.node-item-state (label/blue (:role item))]])
+   [:span.node-item-state (label/blue (:role item))]
+   [:span.node-item-state (if (= "active" (:availability item))
+                            (label/blue "active")
+                            (label/yellow (:availability item)))]])
 
 (defn- node-item-header [item]
   [:div
@@ -30,11 +34,19 @@
     [:svg.node-item-ico {:width  "24"
                          :height "24"
                          :fill   "rgb(117, 117, 117)"}
-     [:path {:d icon/docker}]]]
+     [:path {:d (icon/os (:os item))}]]]
    [:span [:b (:nodeName item)]]])
+
+(defn resources
+  [node]
+  (let [cpu (-> node :resources :cpu (int))
+        memory-bytes (-> node :resources :memory (* 1024 1024))]
+    [cpu " " (clojure.contrib.inflect/pluralize-noun cpu "core") ", "
+     (humanize/filesize memory-bytes :binary false) " memory"]))
 
 (defn- node-item
   [item]
+
   (html
     [:div.mdl-cell.node-item {:key (:id item)}
      [:a {:href  (str "/#/nodes/" (:id item))
@@ -43,11 +55,11 @@
       (node-item-header item)
       (node-item-states item)
       [:div
-       [:span.node-item-secondary "ip: " (:address item)]]
+       [:span.node-item-secondary (resources item)]]
       [:div
-       [:span.node-item-secondary "version: " (:engine item)]]
+       [:span.node-item-secondary "docker " (:engine item)]]
       [:div
-       [:span.node-item-secondary "availability: " (:availability item)]]]]))
+       [:span.node-item-secondary (:address item)]]]]))
 
 (defn- nodes-handler
   []

@@ -6,6 +6,16 @@
   [bytes]
   (quot bytes (* 1024 1024)))
 
+(defn ->resources
+  [resources]
+  (let [nano-cpu (:NanoCPUs resources)
+        memory-bytes (:MemoryBytes resources)]
+    {:cpu    (-> (or nano-cpu 0)
+                 (/ 1000000000)
+                 (double))
+     :memory (-> (or memory-bytes 0)
+                 (as-megabytes))}))
+
 (def stack-label :com.docker.stack.namespace)
 (def autoredeploy-label :swarmpit.service.deployment.autoredeploy)
 
@@ -41,6 +51,18 @@
        (filter #(not (contains? #{"null" "host"} (:driver %))))
        (into [])))
 
+(defn ->plugins
+  [node]
+  (let [m (->> node
+               :Description
+               :Engine
+               :Plugins
+               (group-by :Type))]
+    {:networks (->> (get m "Network")
+                    (map :Name))
+     :volumes  (->> (get m "Volume")
+                    (map :Name))}))
+
 (defn ->node
   [node]
   (array-map
@@ -52,6 +74,10 @@
     :state (get-in node [:Status :State])
     :address (get-in node [:Status :Addr])
     :engine (get-in node [:Description :Engine :EngineVersion])
+    :arch (get-in node [:Description :Platform :Architecture])
+    :os (get-in node [:Description :Platform :OS])
+    :resources (->resources (get-in node [:Description :Resources]))
+    :plugins (->plugins node)
     :leader (get-in node [:ManagerStatus :Leader])))
 
 (defn ->nodes
@@ -190,16 +216,6 @@
        (map (fn [v] {:rule v}))
        (into [])))
 
-(defn ->service-resource
-  [service-resource-category]
-  (let [nano-cpu (:NanoCPUs service-resource-category)
-        memory-bytes (:MemoryBytes service-resource-category)]
-    {:cpu    (-> (or nano-cpu 0)
-                 (/ 1000000000)
-                 (double))
-     :memory (-> (or memory-bytes 0)
-                 (as-megabytes))}))
-
 (defn ->service-secrets
   [service-spec]
   (->> (get-in service-spec [:TaskTemplate :ContainerSpec :Secrets])
@@ -332,8 +348,8 @@
        :command (get-in service-task-template [:ContainerSpec :Args])
        :logdriver {:name (or (get-in service-task-template [:LogDriver :Name]) "json-file")
                    :opts (->service-log-options service-task-template)}
-       :resources {:reservation (->service-resource (get-in service-task-template [:Resources :Reservations]))
-                   :limit       (->service-resource (get-in service-task-template [:Resources :Limits]))}
+       :resources {:reservation (->resources (get-in service-task-template [:Resources :Reservations]))
+                   :limit       (->resources (get-in service-task-template [:Resources :Limits]))}
        :deployment {:update          (->service-deployment-update service-spec)
                     :forceUpdate     (:ForceUpdate service-task-template)
                     :restartPolicy   (->service-deployment-restart-policy service-task-template)
