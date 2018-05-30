@@ -30,6 +30,7 @@
                      (> (:containerPort %) 0)
                      (> (:hostPort %) 0)))
        (map (fn [p] {:Protocol      (:protocol p)
+                     :PublishMode   (:mode p)
                      :PublishedPort (:hostPort p)
                      :TargetPort    (:containerPort p)}))
        (into [])))
