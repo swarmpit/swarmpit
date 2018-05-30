@@ -1,5 +1,6 @@
 (ns swarmpit.utils
-  #?(:clj (:require[flatland.ordered.map :refer [ordered-map]])))
+  #?(:clj
+     (:require [flatland.ordered.map :refer [ordered-map]])))
 
 (defn remove-el
   "Remove element in `vector` on given `index`"
@@ -56,3 +57,16 @@
          (when (seq m) m))
        %)
     map))
+
+(defn name-value->map
+  [name-value-coll]
+  (->> name-value-coll
+       (map #(hash-map (keyword (:name %)) (:value %)))
+       (into {})))
+
+(defn map->name-value
+  [map-col]
+  (->> map-col
+       (map (fn [l] {:name  (name (key l))
+                     :value (val l)}))
+       (into [])))
