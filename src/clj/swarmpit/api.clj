@@ -549,8 +549,8 @@
          (flatten)
          (filter #(= "volume" (:type %)))
          (map #(merge % {:volumeName (:host %)
-                         :driver (-> % :volumeOptions :driver :name)
-                         :options (-> % :volumeOptions :options)}))
+                         :driver     (-> % :volumeOptions :driver :name)
+                         :options    (-> % :volumeOptions :options)}))
          (map #(merge (first (get volumes (:id %))) %)))))
 
 (def services-memo (memo/ttl services :ttl/threshold 1000))
@@ -801,8 +801,26 @@
 (defn stacks
   []
   (->> (dissoc (group-by :stack (services)) nil)
-       (map key)
-       (map stack)))
+       (map (fn [s]
+              (letfn [(distinct-resources [r]
+                        (->> (dissoc (group-by :id r) nil)
+                             (vals)
+                             (map first)
+                             (map #(dissoc % :serviceAliases))))]
+                (let [stack-name (key s)
+                      stack-services (val s)
+                      stack-networks (flatten (map :networks stack-services))
+                      stack-volumes (flatten (map :mounts stack-services))
+                      stack-configs (flatten (map :configs stack-services))
+                      stack-secrets (flatten (map :secrets stack-services))]
+                  (when (not-empty stack-services)
+                    {:stackName stack-name
+                     :stackFile (some? (stackfile stack-name))
+                     :services  stack-services
+                     :networks  (distinct-resources stack-networks)
+                     :volumes   (distinct-resources stack-volumes)
+                     :configs   (distinct-resources stack-configs)
+                     :secrets   (distinct-resources stack-secrets)})))))))
 
 (defn stack-login
   [owner stackfile-spec]
