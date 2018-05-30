@@ -225,22 +225,27 @@
    :RollbackConfig (->service-rollback-config service)
    :EndpointSpec   {:Ports (->service-ports service)}})
 
-(defn ->network-ipam
+(defn ->network-ipam-config
   [network]
   (let [ipam (:ipam network)
         gateway (:gateway ipam)
         subnet (:subnet ipam)]
-    (if (and (not (str/blank? gateway))
-             (not (str/blank? subnet)))
+    (if (not (str/blank? subnet))
       {:Config [{:Subnet  subnet
-                 :Gateway gateway}]})))
+                 :Gateway gateway}]}
+      {:Config []})))
 
 (defn ->network
   [network]
-  {:Name     (:networkName network)
-   :Driver   (:driver network)
-   :Internal (:internal network)
-   :IPAM     (->network-ipam network)})
+  {:Name       (:networkName network)
+   :Driver     (:driver network)
+   :Internal   (:internal network)
+   :Options    (name-value->map (:options network))
+   :Attachable (:attachable network)
+   :Ingress    (:ingress network)
+   :EnableIPv6 (:enableIPv6 network)
+   :IPAM       (merge {:Driver "default"}
+                      (->network-ipam-config network))})
 
 (defn ->volume
   [volume]
