@@ -97,7 +97,7 @@
    (if (in-stack? stack-name net)
      {:driver      (:driver net)
       :internal    (when (:internal net) true)
-      :driver_opts (:options net)}
+      :driver_opts (-> net :options (name-value->map))}
      {:external true})})
 
 (defn volume
