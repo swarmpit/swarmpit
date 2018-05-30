@@ -17,6 +17,15 @@
 
 (enable-console-print!)
 
+(def driver-opts-headers ["Name" "Value"])
+
+(def driver-opts-render-keys
+  [[:name] [:value]])
+
+(defn driver-opts-render-item
+  [item]
+  (val item))
+
 (defn- volume-services-handler
   [volume-name]
   (ajax/get
@@ -72,9 +81,19 @@
      (form/section "General settings")
      (form/item-stack (:stack volume))
      (form/item "NAME" (utils/trim-stack (:stack volume) (:volumeName volume)))
-     (form/item "DRIVER" (:driver volume))
      (form/item "SCOPE" (:scope volume))
      (form/item "MOUNTPOINT" (:mountpoint volume))]
+    [:div.form-layout-group.form-layout-group-border
+     (form/section "Driver")
+     (form/item "NAME" (:driver volume))
+     (when (not-empty (:options volume))
+       [:div
+        (form/subsection "Volume driver options")
+        (list/table driver-opts-headers
+                    (:options volume)
+                    driver-opts-render-item
+                    driver-opts-render-keys
+                    nil)])]
     [:div.form-layout-group.form-layout-group-border
      (form/section "Linked Services")
      (list/table (map :name services/headers)
