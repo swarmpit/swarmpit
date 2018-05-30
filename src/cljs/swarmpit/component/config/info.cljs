@@ -107,15 +107,15 @@
      (form/item-date "CREATED" (:createdAt config))
      (form/item-date "UPDATED" (:updatedAt config))]
     [:div.form-layout-group.form-layout-group-border
+     (form/section "Data")
+     (form-data (parse-data (:data config)))]
+    [:div.form-layout-group.form-layout-group-border
      (form/section "Linked Services")
      (list/table (map :name services/headers)
                  services
                  services/render-item
                  services/render-item-keys
-                 services/onclick-handler)]
-    [:div.form-layout-group.form-layout-group-border
-     (form/section "Data")
-     (form-data (parse-data (:data config)))]]])
+                 services/onclick-handler)]]])
 
 (rum/defc form < rum/reactive
                  mixin-init-form
