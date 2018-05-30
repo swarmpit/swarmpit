@@ -152,6 +152,7 @@
   (->> (get-in service [:Endpoint :Ports])
        (map (fn [p] {:containerPort (:TargetPort p)
                      :protocol      (:Protocol p)
+                     :mode          (:PublishMode p)
                      :hostPort      (:PublishedPort p)}))
        (into [])))
 

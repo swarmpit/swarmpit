@@ -5,10 +5,10 @@
 
 (enable-console-print!)
 
-(def headers ["Container port" "Protocol" "Host port"])
+(def headers ["Container port" "Protocol" "Mode" "Host port"])
 
 (def render-item-keys
-  [[:containerPort] [:protocol] [:hostPort]])
+  [[:containerPort] [:protocol] [:mode] [:hostPort]])
 
 (defn render-item
   [item]
