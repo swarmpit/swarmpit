@@ -28,13 +28,16 @@
      :on-success (fn [{:keys [response]}]
                    (doseq [port response]
                      (if (not-suggested? port)
-                       (state/add-item port form-value-cursor))))
+                       (state/add-item (merge port
+                                              {:mode "ingress"}) form-value-cursor))))
      :on-error   (fn [_])}))
 
 (def headers [{:name  "Container port"
                :width "100px"}
               {:name  "Protocol"
                :width "100px"}
+              {:name  "Mode"
+               :width "150px"}
               {:name  "Host port"
                :width "100px"}])
 
@@ -67,6 +70,24 @@
        :value       "udp"
        :primaryText "UDP"})))
 
+(defn- form-mode [value index]
+  (list/selectfield
+    {:name     (str "form-mode-select-" index)
+     :key      (str "form-mode-select-" index)
+     :value    value
+     :onChange (fn [_ _ v]
+                 (state/update-item index :mode v form-value-cursor))}
+    (comp/menu-item
+      {:name        (str "form-mode-ingress-" index)
+       :key         (str "form-mode-ingress-" index)
+       :value       "ingress"
+       :primaryText "ingress"})
+    (comp/menu-item
+      {:name        (str "form-mode-host-" index)
+       :key         (str "form-mode-host-" index)
+       :value       "host"
+       :primaryText "host"})))
+
 (defn- form-host [value index]
   (list/textfield
     {:name     (str "form-host-text-" index)
@@ -82,9 +103,11 @@
   [item index _]
   (let [{:keys [containerPort
                 protocol
+                mode
                 hostPort]} item]
     [(form-container containerPort index)
      (form-protocol protocol index)
+     (form-mode mode index)
      (form-host hostPort index)]))
 
 (defn- form-table
@@ -101,6 +124,7 @@
   []
   (state/add-item {:containerPort 0
                    :protocol      "tcp"
+                   :mode          "ingress"
                    :hostPort      0} form-value-cursor))
 
 (rum/defc form < rum/reactive []
