@@ -18,6 +18,15 @@
 
 (enable-console-print!)
 
+(def driver-opts-headers ["Name" "Value"])
+
+(def driver-opts-render-keys
+  [[:name] [:value]])
+
+(defn driver-opts-render-item
+  [item]
+  (val item))
+
 (defn- network-services-handler
   [network-id]
   (ajax/get
@@ -58,40 +67,55 @@
       (network-services-handler id))))
 
 (rum/defc form-info < rum/static [{:keys [network services]}]
-  [:div
-   [:div.form-panel
-    [:div.form-panel-left
-     (panel/info icon/networks
-                 (:networkName network))]
-    [:div.form-panel-right
-     (comp/mui
-       (comp/raised-button
-         {:onTouchTap #(delete-network-handler (:id network))
-          :label      "Delete"}))]]
-   [:div.form-layout
-    [:div.form-layout-group
-     (form/section "General settings")
-     (form/item "ID" (:id network))
-     (form/item-stack (:stack network))
-     (form/item "NAME" (utils/trim-stack (:stack network)
-                                         (:networkName network)))
-     (when (time/valid? (:created network))
-       (form/item-date "CREATED" (:created network)))
-     (form/item "DRIVER" (:driver network))
-     (form/item "INTERNAL" (if (:internal network)
-                             "yes"
-                             "no"))]
-    [:div.form-layout-group.form-layout-group-border
-     (form/section "IP address management")
-     (form/item "SUBNET" (get-in network [:ipam :subnet]))
-     (form/item "GATEWAY" (get-in network [:ipam :gateway]))]
-    [:div.form-layout-group.form-layout-group-border
-     (form/section "Linked Services")
-     (list/table (map :name services/headers)
-                 services
-                 services/render-item
-                 services/render-item-keys
-                 services/onclick-handler)]]])
+  (let [subnet (get-in network [:ipam :subnet])
+        gateway (get-in network [:ipam :gateway])]
+    [:div
+     [:div.form-panel
+      [:div.form-panel-left
+       (panel/info icon/networks
+                   (:networkName network))]
+      [:div.form-panel-right
+       (comp/mui
+         (comp/raised-button
+           {:onTouchTap #(delete-network-handler (:id network))
+            :label      "Delete"}))]]
+     [:div.form-layout
+      [:div.form-layout-group
+       (form/section "General settings")
+       (form/item "ID" (:id network))
+       (form/item-stack (:stack network))
+       (form/item "NAME" (utils/trim-stack (:stack network)
+                                           (:networkName network)))
+       (when (time/valid? (:created network))
+         (form/item-date "CREATED" (:created network)))
+       (form/item "INTERNAL" (if (:internal network) "yes" "no"))
+       (form/item "ATTACHABLE" (if (:attachable network) "yes" "no"))
+       (form/item "INGRESS" (if (:ingress network) "yes" "no"))
+       (form/item "ENABLED IPv6" (if (:enableIPv6 network) "yes" "no"))]
+      [:div.form-layout-group.form-layout-group-border
+       (form/section "Driver")
+       (form/item "NAME" (:driver network))
+       (when (not-empty (:options network))
+         [:div
+          (form/subsection "Network driver options")
+          (list/table driver-opts-headers
+                      (:options network)
+                      driver-opts-render-item
+                      driver-opts-render-keys
+                      nil)])]
+      (when (and (some? subnet)
+                 (some? gateway))
+        [:div.form-layout-group.form-layout-group-border
+         (form/section "IP address management")
+         (form/item "SUBNET" subnet)
+         (form/item "GATEWAY" gateway)])
+      [:div.form-layout-group.form-layout-group-border
+       (form/section "Linked Services")
+       (list/table (map :name services/headers)
+                   services
+                   services/render-item
+                   services/render-item-keys
+                   services/onclick-handler)]]]))
 
 (rum/defc form < rum/reactive
                  mixin-init-form
