@@ -15,7 +15,6 @@
             [swarmpit.routes :as routes]
             [swarmpit.base64 :as base64]
             [rum.core :as rum]
-            [goog.crypt.base64 :as b64]
             [sablono.core :refer-macros [html]]))
 
 (enable-console-print!)
@@ -27,7 +26,7 @@
 
 (defn- parse-data [data]
   (if (base64/base64? data)
-    (b64/decodeString data)
+    (base64/decode data)
     data))
 
 (defn- form-data [value]
@@ -101,21 +100,22 @@
          {:onTouchTap #(delete-config-handler (:id config))
           :label      "Delete"}))]]
    [:div.form-layout
-    [:div.form-layout-group
+    [:div.div.form-layout-group
      (form/section "General settings")
      (form/item "ID" (:id config))
      (form/item "NAME" (:configName config))
      (form/item-date "CREATED" (:createdAt config))
-     (form/item-date "UPDATED" (:updatedAt config))
-     (form/section "Data")
-     (form-data (parse-data (:data config)))]
+     (form/item-date "UPDATED" (:updatedAt config))]
     [:div.form-layout-group.form-layout-group-border
      (form/section "Linked Services")
      (list/table (map :name services/headers)
                  services
                  services/render-item
                  services/render-item-keys
-                 services/onclick-handler)]]])
+                 services/onclick-handler)]
+    [:div.form-layout-group.form-layout-group-border
+     (form/section "Data")
+     (form-data (parse-data (:data config)))]]])
 
 (rum/defc form < rum/reactive
                  mixin-init-form
