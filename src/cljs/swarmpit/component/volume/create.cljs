@@ -1,18 +1,27 @@
 (ns swarmpit.component.volume.create
   (:require [material.icon :as icon]
             [material.component :as comp]
+            [material.component.list-table-form :as list]
             [material.component.form :as form]
             [material.component.panel :as panel]
             [swarmpit.component.mixin :as mixin]
             [swarmpit.component.state :as state]
             [swarmpit.component.message :as message]
-            [swarmpit.url :refer [dispatch!]]
             [swarmpit.ajax :as ajax]
             [swarmpit.routes :as routes]
             [swarmpit.url :refer [dispatch!]]
+            [sablono.core :refer-macros [html]]
             [rum.core :as rum]))
 
 (enable-console-print!)
+
+(def form-driver-opts-cursor (conj state/form-value-cursor :options))
+
+(def form-driver-opts-headers
+  [{:name  "Name"
+    :width "35%"}
+   {:name  "Value"
+    :width "35%"}])
 
 (defn- volume-plugin-handler
   []
@@ -39,7 +48,7 @@
 
 (defn- form-name [value]
   (form/comp
-    "NAME"
+    "VOLUME NAME"
     (comp/vtext-field
       {:name     "name"
        :key      "name"
@@ -50,7 +59,7 @@
 
 (defn- form-driver [value plugins]
   (form/comp
-    "DRIVER"
+    "NAME"
     (comp/select-field
       {:value    value
        :onChange (fn [_ _ v]
@@ -61,6 +70,41 @@
                     :value       %
                     :primaryText %}))))))
 
+(defn- form-driver-opt-name [value index]
+  (list/textfield
+    {:name     (str "form-driver-opt-name-" index)
+     :key      (str "form-driver-opt-name-" index)
+     :value    value
+     :onChange (fn [_ v]
+                 (state/update-item index :name v form-driver-opts-cursor))}))
+
+(defn- form-driver-opt-value [value index]
+  (list/textfield
+    {:name     (str "form-driver-opt-value-" index)
+     :key      (str "form-driver-opt-value-" index)
+     :value    value
+     :onChange (fn [_ v]
+                 (state/update-item index :value v form-driver-opts-cursor))}))
+
+(defn- form-driver-render-opts
+  [item index]
+  (let [{:keys [name value]} item]
+    [(form-driver-opt-name name index)
+     (form-driver-opt-value value index)]))
+
+(defn- form-driver-opts-table
+  [opts]
+  (list/table-raw form-driver-opts-headers
+                  opts
+                  nil
+                  form-driver-render-opts
+                  (fn [index] (state/remove-item index form-driver-opts-cursor))))
+
+(defn- add-driver-opt
+  []
+  (state/add-item {:name  ""
+                   :value ""} form-driver-opts-cursor))
+
 (defn- init-form-state
   []
   (state/set-value {:valid?      false
@@ -70,7 +114,8 @@
 (defn- init-form-value
   []
   (state/set-value {:volumeName nil
-                    :driver     "local"} state/form-value-cursor))
+                    :driver     "local"
+                    :options    []} state/form-value-cursor))
 
 (def mixin-init-form
   (mixin/init-form
@@ -81,7 +126,7 @@
 
 (rum/defc form < rum/reactive
                  mixin-init-form [_]
-  (let [{:keys [volumeName driver]} (state/react state/form-value-cursor)
+  (let [{:keys [volumeName driver options]} (state/react state/form-value-cursor)
         {:keys [valid? processing? plugins]} (state/react state/form-state-cursor)]
     [:div
      [:div.form-panel
@@ -94,8 +139,17 @@
           :primary    true
           :onTouchTap create-volume-handler} processing?)]]
      [:div.form-edit
-      (form/form
-        {:onValid   #(state/update-value [:valid?] true state/form-state-cursor)
-         :onInvalid #(state/update-value [:valid?] false state/form-state-cursor)}
-        (form-name volumeName)
-        (form-driver driver plugins))]]))
+      [:div.form-layout
+       (form/form
+         {:onValid   #(state/update-value [:valid?] true state/form-state-cursor)
+          :onInvalid #(state/update-value [:valid?] false state/form-state-cursor)}
+         (html
+           [:div.form-layout-group
+            (form-name volumeName)])
+         (html
+           [:div.form-layout-group.form-layout-group-border
+            (form/section "Driver")
+            (form-driver driver plugins)
+            (form/subsection-add "Add volume driver option" add-driver-opt)
+            (when (not (empty? options))
+              (form-driver-opts-table options))]))]]]))

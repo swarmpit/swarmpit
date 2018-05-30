@@ -1,7 +1,7 @@
 (ns swarmpit.docker.engine.mapper.compose
   (:require [clojure.string :as str]
             [clojure.set :refer [rename-keys]]
-            [swarmpit.utils :refer [clean select-keys*]]
+            [swarmpit.utils :refer [clean select-keys* name-value->map]]
             [flatland.ordered.map :refer [ordered-map]]
             [swarmpit.docker.utils :refer [trim-stack]]
             [swarmpit.docker.engine.mapper.inbound :refer [autoredeploy-label]]
@@ -31,12 +31,6 @@
 (defn add-swarmpit-labels
   [service map]
   (merge map (when (-> service :deployment :autoredeploy) {autoredeploy-label "true"})))
-
-(defn name-value->map
-  [name-value-coll]
-  (->> name-value-coll
-       (map #(hash-map (keyword (:name %)) (:value %)))
-       (into {})))
 
 (defn targetable
   [source-key target-key item]
@@ -111,7 +105,7 @@
   {(keyword (alias :volumeName stack-name volume))
    (if (in-stack? stack-name volume)
      {:driver      (:driver volume)
-      :driver_opts (:options volume)}
+      :driver_opts (-> volume :options (name-value->map))}
      {:external true})})
 
 (defn secret

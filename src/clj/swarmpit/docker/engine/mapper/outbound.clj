@@ -1,7 +1,8 @@
 (ns swarmpit.docker.engine.mapper.outbound
   "Map swarmpit domain to docker domain"
   (:require [clojure.string :as str]
-            [swarmpit.docker.engine.mapper.inbound :refer [autoredeploy-label]]))
+            [swarmpit.docker.engine.mapper.inbound :refer [autoredeploy-label]]
+            [swarmpit.utils :refer [name-value->map]]))
 
 (defn- as-bytes
   [megabytes]
@@ -55,16 +56,14 @@
   (->> (:labels service)
        (filter #(not (and (str/blank? (:name %))
                           (str/blank? (:value %)))))
-       (map (fn [l] {(:name l) (:value l)}))
-       (into {})))
+       (name-value->map)))
 
 (defn ->service-log-options
   [service]
   (->> (get-in service [:logdriver :opts])
        (filter #(not (and (str/blank? (:name %))
                           (str/blank? (:value %)))))
-       (map (fn [l] {(:name l) (:value l)}))
-       (into {})))
+       (name-value->map)))
 
 (defn ->service-volume-options
   [service-volume]
@@ -245,10 +244,10 @@
 
 (defn ->volume
   [volume]
-  {:Name    (:volumeName volume)
-   :Driver  (:driver volume)
-   :Options (:options volume)
-   :Labels  (:labels volume)})
+  {:Name       (:volumeName volume)
+   :Driver     (:driver volume)
+   :DriverOpts (name-value->map (:options volume))
+   :Labels     (:labels volume)})
 
 (defn ->secret
   [secret]

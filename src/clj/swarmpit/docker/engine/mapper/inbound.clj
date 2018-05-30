@@ -1,6 +1,7 @@
 (ns swarmpit.docker.engine.mapper.inbound
   "Map docker domain to swarmpit domain"
-  (:require [clojure.string :as str]))
+  (:require [clojure.string :as str]
+            [swarmpit.utils :refer [map->name-value]]))
 
 (defn- as-megabytes
   [bytes]
@@ -199,17 +200,13 @@
   (->> service-labels
        (filter #(not (or (str/starts-with? (name (key %)) "swarmpit")
                          (str/starts-with? (name (key %)) "com.docker"))))
-       (map (fn [l] {:name  (name (key l))
-                     :value (val l)}))
-       (into [])))
+       (map->name-value)))
 
 (defn ->service-log-options
   [service-task-template]
   (let [log-driver (get-in service-task-template [:LogDriver :Options])]
     (->> log-driver
-         (map (fn [l] {:name  (name (key l))
-                       :value (val l)}))
-         (into []))))
+         (map->name-value))))
 
 (defn ->service-placement-constraints
   [service-spec]
@@ -374,7 +371,7 @@
       :driver (:Driver volume)
       :stack (-> volume :Labels stack-label)
       :labels (:Labels volume)
-      :options (:Options volume)
+      :options (map->name-value (:Options volume))
       :mountpoint (:Mountpoint volume)
       :scope (:Scope volume))))
 
