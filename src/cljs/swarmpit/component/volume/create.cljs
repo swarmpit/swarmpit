@@ -138,18 +138,17 @@
           :disabled   (not valid?)
           :primary    true
           :onTouchTap create-volume-handler} processing?)]]
-     [:div.form-edit
-      [:div.form-layout
+     [:div.form-layout
+      [:div.form-layout-group
        (form/form
          {:onValid   #(state/update-value [:valid?] true state/form-state-cursor)
           :onInvalid #(state/update-value [:valid?] false state/form-state-cursor)}
-         (html
-           [:div.form-layout-group
-            (form-name volumeName)])
-         (html
-           [:div.form-layout-group.form-layout-group-border
-            (form/section "Driver")
-            (form-driver driver plugins)
-            (form/subsection-add "Add volume driver option" add-driver-opt)
-            (when (not (empty? options))
-              (form-driver-opts-table options))]))]]]))
+         (form-name volumeName))]
+      [:div.form-layout-group.form-layout-group-border
+       (form/section "Driver")
+       (form/form
+         {}
+         (form-driver driver plugins)
+         (html (form/subsection-add "Add volume driver option" add-driver-opt))
+         (when (not (empty? options))
+           (form-driver-opts-table options)))]]]))

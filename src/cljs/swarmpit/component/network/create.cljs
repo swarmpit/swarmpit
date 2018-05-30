@@ -130,8 +130,8 @@
                           (not valid-ipam?))
           :primary    true
           :onTouchTap create-network-handler} processing?)]]
-     [:div.form-view
-      [:div.form-view-group
+     [:div.form-layout
+      [:div.form-layout-group
        (form/section "General settings")
        (form/form
          {:onValid   #(state/update-value [:valid?] true state/form-state-cursor)
@@ -139,10 +139,12 @@
          (form-name name)
          (form-driver driver plugins)
          (form-internal internal))]
-      [:div.form-view-group
+      [:div.form-layout-group.form-layout-group-border
        (form/section "IP address management")
        (form/form
          {:onValid   #(state/update-value [:valid-ipam?] true state/form-state-cursor)
           :onInvalid #(state/update-value [:valid-ipam?] false state/form-state-cursor)}
          (form-subnet (:subnet ipam))
-         (form-gateway (:gateway ipam)))]]]))
+         (form-gateway (:gateway ipam)))]
+
+      ]]))
