@@ -70,7 +70,7 @@
   (when (some? service-volume)
     {:Labels       (:labels service-volume)
      :DriverConfig {:Name    (get-in service-volume [:driver :name])
-                    :Options (get-in service-volume [:driver :options])}}))
+                    :Options (name-value->map (get-in service-volume [:driver :options]))}}))
 
 (defn ->service-mounts
   [service]
