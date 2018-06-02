@@ -97,7 +97,9 @@
    (if (in-stack? stack-name net)
      {:driver      (:driver net)
       :internal    (when (:internal net) true)
-      :driver_opts (-> net :options (name-value->map))}
+      :driver_opts (-> (:options net)
+                       (name-value->map)
+                       (dissoc :com.docker.network.driver.overlay.vxlanid_list))}
      {:external true})})
 
 (defn volume
