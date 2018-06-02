@@ -176,6 +176,14 @@
     (api/delete-service (:id route-params))
     (resp-ok)))
 
+(defmethod dispatch :service-compose [_]
+  (fn [{:keys [route-params]}]
+    (let [response (api/service-compose (:id route-params))]
+      (if (some? response)
+        (resp-ok {:name (:name route-params)
+                  :spec {:compose response}})
+        (resp-error 400 "Failed to create compose file")))))
+
 (defmethod dispatch :labels-service [_]
   (fn [_]
     (resp-ok (api/labels-service))))

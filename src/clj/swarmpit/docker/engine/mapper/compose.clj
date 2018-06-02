@@ -12,7 +12,7 @@
 
 (defn in-stack?
   [stack-name map]
-  (= stack-name (:stack map)))
+  (when stack-name (= stack-name (:stack map))))
 
 (defn alias
   [key stack-name map]

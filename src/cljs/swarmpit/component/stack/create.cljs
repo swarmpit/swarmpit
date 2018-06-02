@@ -11,7 +11,8 @@
             [swarmpit.routes :as routes]
             [swarmpit.url :refer [dispatch!]]
             [sablono.core :refer-macros [html]]
-            [rum.core :as rum]))
+            [rum.core :as rum]
+            [swarmpit.component.progress :as progress]))
 
 (enable-console-print!)
 
@@ -40,6 +41,18 @@
      :value         value
      :underlineShow false
      :fullWidth     true}))
+
+(defn- compose-handler
+  [service-name]
+  (when service-name
+    (ajax/get
+      (routes/path-for-backend :service-compose {:id service-name})
+      {:state      [:loading?]
+       :on-success (fn [{:keys [response]}]
+                     (state/set-value response state/form-value-cursor))
+       :on-error   (fn [_]
+                     (message/error
+                       (str "Failed to generate compose file from service " service-name)))})))
 
 (defn- create-stack-handler
   []
@@ -77,13 +90,13 @@
 
 (def mixin-init-form
   (mixin/init-form
-    (fn [_]
+    (fn [{{:keys [from]} :params}]
       (init-form-state)
-      (init-form-value))))
+      (init-form-value)
+      (compose-handler from))))
 
-(rum/defc form < rum/reactive
-                 mixin-init-form
-                 mixin-init-editor [_]
+(rum/defc form-edit < rum/reactive
+                      mixin-init-editor [{{:keys [from]} :params}]
   (let [{:keys [spec name]} (state/react state/form-value-cursor)
         {:keys [valid? processing?]} (state/react state/form-state-cursor)]
     [:div
@@ -100,5 +113,13 @@
        {:onValid   #(state/update-value [:valid?] true state/form-state-cursor)
         :onInvalid #(state/update-value [:valid?] false state/form-state-cursor)}
        (form-name name)
-       (html (form/icon-value icon/info "Please drag & drop or paste a compose file."))
+       (when-not from
+         (html (form/icon-value icon/info "Please drag & drop or paste a compose file.")))
        (form-editor (:compose spec)))]))
+
+(rum/defc form < rum/reactive
+                 mixin-init-form [params]
+  (let [state (state/react state/form-state-cursor)]
+    (progress/form
+      (:loading? state)
+      (form-edit params))))

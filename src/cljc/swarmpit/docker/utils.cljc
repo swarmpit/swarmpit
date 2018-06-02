@@ -6,7 +6,7 @@
   [stack name]
   "Removes stack name from object name eg. swarmpit_app -> app"
   (if (some? stack)
-    (str/replace name #"^.*_" "")
+    (subs name (+ 1 (count stack)))
     name))
 
 (defn library?

@@ -44,7 +44,8 @@
        "/services/"     {:get    {[:id] {""          :service
                                          "/logs"     :service-logs
                                          "/networks" :service-networks
-                                         "/tasks"    :service-tasks}}
+                                         "/tasks"    :service-tasks
+                                         "/compose"  :service-compose}}
                          :delete {[:id] :service-delete}
                          :post   {[:id] {""          :service-update
                                          "/redeploy" :service-redeploy

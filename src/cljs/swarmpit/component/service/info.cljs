@@ -112,6 +112,14 @@
                             (routes/path-for-frontend :service-edit {:id service-id})))
          :primaryText   "Edit"})
       (comp/menu-item
+        {:key           "action-compose"
+         :innerDivStyle action-menu-item-style
+         :leftIcon      (comp/svg nil icon/stacks)
+         :onClick       (fn []
+                          (dispatch!
+                            (routes/path-for-frontend :stack-create nil {:from service-id})))
+         :primaryText   "Compose"})
+      (comp/menu-item
         {:key           "action-redeploy"
          :innerDivStyle action-menu-item-style
          :leftIcon      (comp/svg nil icon/redeploy)

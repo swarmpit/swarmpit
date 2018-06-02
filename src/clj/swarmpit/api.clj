@@ -783,20 +783,28 @@
       (services)))
 
 (defn stack
-  [stack-name]
-  (let [services (stack-services stack-name)]
-    (when (not-empty services)
-      {:stackName stack-name
-       :stackFile (some? (stackfile stack-name))
-       :services  services
-       :networks  (resources-by-services services :networks networks)
-       :volumes   (volumes-by-services services)
-       :configs   (resources-by-services services :configs configs)
-       :secrets   (resources-by-services services :secrets secrets)})))
+  ([stack-name services]
+   (when (not-empty services)
+     {:stackName stack-name
+      :stackFile (some? (stackfile stack-name))
+      :services  services
+      :networks  (resources-by-services services :networks networks)
+      :volumes   (volumes-by-services services)
+      :configs   (resources-by-services services :configs configs)
+      :secrets   (resources-by-services services :secrets secrets)}))
+  ([stack-name]
+   (stack stack-name (stack-services stack-name))))
 
 (defn stack-compose
   [stack-name]
   (some-> (stack stack-name) (->compose) (->yaml)))
+
+(defn service-compose
+  [service-name]
+  (some->> [(service service-name)]
+           (stack nil)
+           (->compose)
+           (->yaml)))
 
 (defn stacks
   []
