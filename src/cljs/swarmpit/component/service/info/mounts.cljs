@@ -7,10 +7,10 @@
 
 (def headers-bind ["Container path" "Host path" "Read only"])
 
-(def headers-volume ["Container path" "Volume" "Read only"])
+(def headers-volume ["Container path" "Volume" "Read only" "Driver"])
 
 (def render-item-keys
-  [[:containerPath] [:host] [:readOnly]])
+  [[:containerPath] [:host] [:readOnly] [:volumeOptions :driver :name]])
 
 (defn render-item
   [item _]
