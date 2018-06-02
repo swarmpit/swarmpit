@@ -55,7 +55,7 @@
 
 (defn service
   [stack-name service]
-  {(keyword (alias :serviceName stack-name service))
+  {(keyword (alias :serviceName (or stack-name (:stack service)) service))
    (ordered-map
      :image (-> service :repository :image)
      :command (some->> service :command (str/join " "))
