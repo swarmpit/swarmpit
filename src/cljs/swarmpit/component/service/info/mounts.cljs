@@ -1,7 +1,8 @@
 (ns swarmpit.component.service.info.mounts
   (:require [material.component.form :as form]
             [material.component.list-table-auto :as list]
-            [rum.core :as rum]))
+            [rum.core :as rum]
+            [swarmpit.routes :as routes]))
 
 (enable-console-print!)
 
@@ -21,6 +22,10 @@
                   "No")
       (val item))))
 
+(defn onclick-handler
+  [item]
+  (routes/path-for-frontend :volume-info {:name (:host item)}))
+
 (rum/defc form-bind < rum/static [bind]
   (when (not-empty bind)
     [:div
@@ -39,7 +44,7 @@
                  volume
                  render-item
                  render-item-keys
-                 nil)]))
+                 onclick-handler)]))
 
 (rum/defc form < rum/static [mounts]
   (when (not-empty mounts)
