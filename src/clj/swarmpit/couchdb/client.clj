@@ -212,6 +212,10 @@
   [user encrypted-password]
   (update-doc user :password encrypted-password))
 
+(defn set-api-token
+  [user api-token]
+  (update-doc user :api-token api-token))
+
 ;; Stackfile
 
 (defn stackfiles

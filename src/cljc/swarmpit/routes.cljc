@@ -11,6 +11,9 @@
        "/login"         {:post :login}
        "/slt"           {:get :slt}
        "/password"      {:post :password}
+       "/me"            {:get :me}
+       "/api-token"     {:post   :api-token-generate
+                         :delete :api-token-remove}
        "/repository/"   {:get {"tags"  :repository-tags
                                "ports" :repository-ports}}
        "/distribution/" {"public"     {:get {"/repositories" :public-repositories}}
@@ -89,6 +92,7 @@
 
 (def frontend ["" {"/"                        :index
                    "/login"                   :login
+                   "/api-access"              :api-access
                    "/error"                   :error
                    "/unauthorized"            :unauthorized
                    "/password"                :password

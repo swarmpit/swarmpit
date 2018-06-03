@@ -4,6 +4,7 @@
             [swarmpit.component.page-404 :as page-404]
             [swarmpit.component.page-error :as page-error]
             [swarmpit.component.password :as password]
+            [swarmpit.component.api-access :as api-access]
             [swarmpit.component.stack.edit :as stack-edit]
             [swarmpit.component.stack.compose :as stack-compose]
             [swarmpit.component.stack.create :as stack-create]
@@ -65,6 +66,10 @@
 (defmethod dispatch :login
   [_]
   (page-login/form))
+
+(defmethod dispatch :api-access
+  [_]
+  (api-access/form))
 
 (defmethod dispatch :password
   [_]

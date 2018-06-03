@@ -11,6 +11,7 @@
 (def page-titles
   {:index                 "Home"
    :password              "Change password"
+   :api-access            "API access"
    :stack-list            "Stacks"
    :stack-create          "Stacks / Create"
    :stack-edit            "Stacks / Edit"

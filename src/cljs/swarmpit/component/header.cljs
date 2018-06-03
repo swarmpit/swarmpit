@@ -55,6 +55,12 @@
   (comp/icon-menu
     {:iconButtonElement (user-menu-button)}
     (comp/menu-item
+      {:key         "user-menu-api-token"
+       :onTouchTap  (fn []
+                      (dispatch!
+                        (routes/path-for-frontend :api-access)))
+       :primaryText "API access"})
+    (comp/menu-item
       {:key         "user-menu-settings"
        :onTouchTap  (fn []
                       (dispatch!
