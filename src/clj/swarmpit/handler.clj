@@ -100,6 +100,13 @@
 
 ;; User handler
 
+(defmethod dispatch :me [_]
+  (fn [{:keys [identity]}]
+    (-> identity :usr :username
+        (api/user-by-username)
+        (select-keys [:username :email :role :api-token])
+        (resp-ok))))
+
 (defmethod dispatch :users [_]
   (fn [_]
     (->> (api/users)
