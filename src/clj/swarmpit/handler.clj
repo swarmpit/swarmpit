@@ -81,6 +81,23 @@
             (resp-ok))
         (resp-error 403 "Invalid old password provided")))))
 
+
+;; User api token handler
+
+(defmethod dispatch :api-token-generate [_]
+  (fn [{:keys [identity]}]
+    (->> identity :usr :username
+         (api/user-by-username)
+         (api/generate-api-token)
+         (resp-ok))))
+
+(defmethod dispatch :api-token-remove [_]
+  (fn [{:keys [identity]}]
+    (->> identity :usr :username
+         (api/user-by-username)
+         (api/remove-api-token))
+    (resp-ok)))
+
 ;; User handler
 
 (defmethod dispatch :users [_]

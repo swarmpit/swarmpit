@@ -24,7 +24,8 @@
             [clojure.core.memoize :as memo]
             [clojure.tools.logging :as log]
             [clojure.string :as str]
-            [cemerick.url :refer [url]]))
+            [cemerick.url :refer [url]]
+            [swarmpit.token :as token]))
 
 ;;; User API
 
@@ -85,6 +86,17 @@
       (password-check-upgrade password (:password user)
                               #(change-password user password))
       user)))
+
+(defn generate-api-token
+  [user]
+  (let [jti (swarmpit.uuid/uuid)
+        token (token/generate-jwt user {:exp nil :jti jti :iss "swarmpit-api"})]
+    (cc/set-api-token user {:jti jti :mask (subs token (- (count token) 5))})
+    {:token token}))
+
+(defn remove-api-token
+  [user]
+  (cc/set-api-token user nil))
 
 ;;; Secret API
 

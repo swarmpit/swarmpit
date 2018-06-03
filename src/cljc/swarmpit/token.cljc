@@ -32,18 +32,23 @@
 
 #?(:clj
    (defn claim
-     [user]
-     {:iss "swarmpit"
-      :exp (plus (now) (days 1))
-      :iat (now)
-      :usr (select-keys user [:username :email :role])
-      :jti (uuid)}))
+     ([user]
+      (claim user nil))
+     ([user options]
+      (-> {:iss "swarmpit"
+           :exp (plus (now) (days 1))
+           :iat (now)
+           :usr (select-keys user [:username :email :role])
+           :jti (uuid)}
+          (merge (select-keys options [:exp :jti :iss]))))))
 
 #?(:clj
    (defn generate-jwt
-     [user]
-     (let [jwt (jwt/sign (claim user) (:secret (cc/get-secret)))]
-       (bearer jwt))))
+     ([user]
+      (generate-jwt user (claim user)))
+     ([user options]
+      (let [jwt (jwt/sign (claim user options) (:secret (cc/get-secret)))]
+        (bearer jwt)))))
 
 #?(:clj
    (defn verify-jwt

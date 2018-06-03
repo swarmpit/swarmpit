@@ -11,6 +11,8 @@
        "/login"         {:post :login}
        "/slt"           {:get :slt}
        "/password"      {:post :password}
+       "/api-token"     {:post   :api-token-generate
+                         :delete :api-token-remove}
        "/repository/"   {:get {"tags"  :repository-tags
                                "ports" :repository-ports}}
        "/distribution/" {"public"     {:get {"/repositories" :public-repositories}}
