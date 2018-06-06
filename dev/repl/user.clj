@@ -16,7 +16,7 @@
 (defn- on-startup
   []
   (print (:out (sh "sh" "dev/script/init-db.sh")))
-  (print (:out (sh "sh" "dev/script/init-ec.sh")))
+  (print (:out (sh "sh" "dev/script/init-agent.sh")))
   (db/init)
   (agent/init)
   (setup/docker))
