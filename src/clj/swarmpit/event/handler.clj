@@ -25,7 +25,7 @@
 (defmethod dispatch :event-push [_]
   (fn [{:keys [params]}]
     (if (some? params)
-      (let [event (-> (keywordize-keys params) :Message)]
+      (let [event (keywordize-keys params)]
         (channel/broadcast-data-memo event)
         (processor/process event)
         (resp-accepted))

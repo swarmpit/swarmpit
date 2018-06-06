@@ -33,10 +33,10 @@
    (-> @hub (keys))))
 
 (defn list
-  ([event]
+  ([{:keys [type message] :as event}]
    "Get subscribed channels based on given event"
-   (->> (filter #(rule/match? % event) rule/list)
-        (map #(rule/subscription % event))
+   (->> (filter #(rule/match? % type message) rule/list)
+        (map #(rule/subscription % message))
         (map #(subscribers %))
         (flatten)
         (filter #(some? %))
@@ -47,16 +47,16 @@
         (map #(str %)))))
 
 (defn broadcast-data
-  [event]
+  [{:keys [type message] :as event}]
   "Broadcast data to subscribers based on event subscription.
    Broadcast processing is delayed for 1 second due to cluster sync"
   (go
     (<! (timeout 1000))
-    (doseq [rule (filter #(rule/match? % event) rule/list)]
-      (let [subscription (rule/subscription rule event)
+    (doseq [rule (filter #(rule/match? % type message) rule/list)]
+      (let [subscription (rule/subscription rule message)
             subscribers (subscribers subscription)]
         (doseq [subscriber subscribers]
-          (let [data (rule/subscribed-data rule event)]
+          (let [data (rule/subscribed-data rule message)]
             (send! subscriber (event-data data) false)))))))
 
 ;; To prevent data duplicity/spam we cache:

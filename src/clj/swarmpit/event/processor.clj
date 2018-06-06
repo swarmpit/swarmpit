@@ -3,8 +3,8 @@
             [swarmpit.event.rules.processing :as rule]))
 
 (defn process
-  [event]
+  [{:keys [type message] :as event}]
   "Process event on server"
   (go
-    (doseq [rule (filter #(rule/match? % event) rule/list)]
-      (rule/process rule event))))
+    (doseq [rule (filter #(rule/match? % type message) rule/list)]
+      (rule/process rule message))))
