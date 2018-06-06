@@ -140,6 +140,7 @@
       :status {:error (get-in task [:Status :Err])}
       :desiredState (:DesiredState task)
       :serviceName (or service-name service-id)
+      :nodeId node-id
       :nodeName (or node-name node-id))))
 
 (defn ->tasks
