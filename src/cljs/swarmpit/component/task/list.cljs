@@ -6,23 +6,36 @@
             [swarmpit.component.state :as state]
             [swarmpit.ajax :as ajax]
             [swarmpit.routes :as routes]
+            [clojure.contrib.humanize :as humanize]
+            [goog.string :as gstring]
+            [goog.string.format]
             [rum.core :as rum]))
 
 (enable-console-print!)
 
 (def headers [{:name  "Name"
                :width "20%"}
-              {:name  "Service"
-               :width "20%"}
               {:name  "Image"
-               :width "30%"}
+               :width "20%"}
               {:name  "Node"
-               :width "15%"}
+               :width "20%"}
+              {:name  "CPU Usage"
+               :width "10%"}
+              {:name  "Memory Usage"
+               :width "10%"}
+              {:name  "Memory"
+               :width "10%"}
               {:name  "Status"
-               :width "15%"}])
+               :width "10%"}])
 
 (def render-item-keys
-  [[:taskName] [:serviceName] [:repository :image] [:nodeName] [:state]])
+  [[:taskName]
+   [:repository :image]
+   [:nodeName]
+   [:stats :cpuPercentage]
+   [:stats :memoryPercentage]
+   [:stats :memory]
+   [:state]])
 
 (defn render-item-state [value]
   (case value
@@ -40,12 +53,27 @@
     "rejected" (label/red value)
     "failed" (label/red value)))
 
+(defn- render-percentage
+  [val]
+  (if (some? val)
+    (str (gstring/format "%.2f" val) "%")
+    "-"))
+
+(defn- render-capacity
+  [val]
+  (if (some? val)
+    (humanize/filesize val :binary false)
+    "-"))
+
 (defn- render-item
   [item _]
   (let [value (val item)]
-    (if (= :state (key item))
-      (render-item-state value)
-      (val item))))
+    (case (key item)
+      :state (render-item-state value)
+      :cpuPercentage (render-percentage value)
+      :memoryPercentage (render-percentage value)
+      :memory (render-capacity value)
+      value)))
 
 (defn- onclick-handler
   [item]
