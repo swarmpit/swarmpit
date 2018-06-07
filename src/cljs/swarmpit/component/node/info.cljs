@@ -7,15 +7,23 @@
             [swarmpit.component.state :as state]
             [swarmpit.component.mixin :as mixin]
             [swarmpit.component.progress :as progress]
-            [swarmpit.component.node.list :refer [resources]]
             [swarmpit.component.task.list :as tasks]
             [swarmpit.url :refer [dispatch!]]
             [swarmpit.ajax :as ajax]
             [swarmpit.routes :as routes]
-            [rum.core :as rum]
-            [material.component.label :as label]))
+            [clojure.contrib.humanize :as humanize]
+            [rum.core :as rum]))
 
 (enable-console-print!)
+
+(defn resources
+  [node]
+  (let [cpu (-> node :resources :cpu (int))
+        memory-bytes (-> node :resources :memory (* 1024 1024))
+        disk-bytes (-> node :stats :disk :total)]
+    (str cpu " " (clojure.contrib.inflect/pluralize-noun cpu "core") ", "
+         (humanize/filesize memory-bytes :binary false) " memory, "
+         (humanize/filesize disk-bytes :binary false) " disk")))
 
 (defn- node-tasks-handler
   [node-id]

@@ -378,6 +378,22 @@ input:invalid {
     -o-transform: scale(0.8);
 }
 
+.node-progress-table {
+    width: 60%;
+    margin: 0 auto;
+    line-height: 12px;
+    font-size: 12px !important;
+}
+
+.node-progress-table-name {
+    font-size: 10px !important;
+    font-weight: 600 !important;
+}
+
+.node-progress-table-usage {
+    font-size: 14px !important;
+}
+
 /* Custom service styles */
 
 .service-image-tab > div > div > svg {
