@@ -7,7 +7,8 @@
             [clojure.walk :refer [keywordize-keys]]
             [cheshire.core :refer [generate-string]]
             [swarmpit.base64 :as base64]
-            [swarmpit.event.rules.subscription :as rule]))
+            [swarmpit.event.rules.subscription :as rule]
+            [swarmpit.event.rules.subscription-stats :as stats]))
 
 (def hub (atom {}))
 
@@ -46,7 +47,7 @@
    (->> (keys @hub)
         (map #(str %)))))
 
-(defn broadcast-data
+(defn broadcast
   [{:keys [type message] :as event}]
   "Broadcast data to subscribers based on event subscription.
    Broadcast processing is delayed for 1 second due to cluster sync"
@@ -59,8 +60,18 @@
           (let [data (rule/subscribed-data rule message)]
             (send! subscriber (event-data data) false)))))))
 
+(defn broadcast-statistics
+  []
+  "Broadcast data with actual statistics records to all corresponding subscribers"
+  (go
+    (let [subscribers (filter #(contains? stats/subscribers (:handler (subscription %))) @hub)]
+      (doseq [subscriber subscribers]
+        (let [subscription (subscription subscriber)
+              data (stats/subscribed-data subscription)]
+          (send! (key subscriber) (event-data data) false))))))
+
 ;; To prevent data duplicity/spam we cache:
 ;;
 ;; 1) Swarm scoped events that are received from each manager at the same time
 ;; 2) Same local scoped events that occured within 1 second
-(def broadcast-data-memo (memo/ttl broadcast-data :ttl/threshold 1000))
+(def broadcast-memo (memo/ttl broadcast :ttl/threshold 1000))
