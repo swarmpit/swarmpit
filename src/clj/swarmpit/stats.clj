@@ -7,13 +7,13 @@
   [stats]
   (swap! cache assoc (:id stats) stats))
 
-(defn node-stats
+(defn node
   [node-id]
   (get @cache node-id))
 
-(defn task-stats
+(defn task
   [task]
-  (->> (node-stats (:nodeId task))
+  (->> (node (:nodeId task))
        :tasks
        (filter #(= (str "/" (:taskName task) "." (:id task))
                    (:name %)))

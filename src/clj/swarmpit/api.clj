@@ -500,7 +500,7 @@
 
 (defn task-stats
   [task]
-  (let [stats (apply dissoc (stats/task-stats task) [:name :id])]
+  (let [stats (apply dissoc (stats/task task) [:name :id])]
     (assoc task :stats stats)))
 
 (defn tasks
@@ -717,7 +717,7 @@
 
 (defn node-stats
   [node]
-  (let [stats (apply dissoc (stats/node-stats (:id node)) [:id :tasks])]
+  (let [stats (apply dissoc (stats/node (:id node)) [:id :tasks])]
     (assoc node :stats stats)))
 
 (defn nodes
