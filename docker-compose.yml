@@ -38,8 +38,8 @@ services:
           cpus: '0.15'
           memory: 256M
 
-  event-collector:
-    image: swarmpit/event-collector:latest
+  agent:
+    image: swarmpit/agent:latest
     environment:
       - DOCKER_API_VERSION=1.35
     volumes:
