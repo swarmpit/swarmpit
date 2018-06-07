@@ -4,6 +4,7 @@
             [digest :refer [digest]]
             [swarmpit.utils :refer [merge-data]]
             [swarmpit.config :as cfg]
+            [swarmpit.stats :as stats]
             [swarmpit.yaml :as yaml :refer [->yaml]]
             [swarmpit.docker.utils :as du]
             [swarmpit.docker.engine.client :as dc]
@@ -200,24 +201,6 @@
   (->> (dmo/->volume volume)
        (dc/create-volume)
        (dmi/->volume)))
-
-;;; Node API
-
-(defn nodes
-  []
-  (-> (dc/nodes)
-      (dmi/->nodes)))
-
-(defn node
-  [node-id]
-  (-> (dc/node node-id)
-      (dmi/->node)))
-
-(defn node-tasks
-  [node-id]
-  (dmi/->tasks (dc/node-tasks node-id)
-               (dc/nodes)
-               (dc/services)))
 
 ;;; Stackfile API
 
@@ -515,19 +498,26 @@
 
 ;;; Task API
 
+(defn task-stats
+  [task]
+  (let [stats (apply dissoc (stats/task task) [:name :id])]
+    (assoc task :stats stats)))
+
 (defn tasks
   []
-  (dmi/->tasks (dc/tasks)
-               (dc/nodes)
-               (dc/services)))
+  (->> (dmi/->tasks (dc/tasks)
+                    (dc/nodes)
+                    (dc/services))
+       (map #(task-stats %))))
 
 (def tasks-memo (memo/ttl tasks :ttl/threshold 1000))
 
 (defn task
   [task-id]
-  (dmi/->task (dc/task task-id)
-              (dc/nodes)
-              (dc/services)))
+  (-> (dmi/->task (dc/task task-id)
+                  (dc/nodes)
+                  (dc/services))
+      (task-stats)))
 
 ;;; Service API
 
@@ -610,9 +600,10 @@
 
 (defn service-tasks
   [service-id]
-  (dmi/->tasks (dc/service-tasks service-id)
-               (dc/nodes)
-               (dc/services)))
+  (->> (dmi/->tasks (dc/service-tasks service-id)
+                    (dc/nodes)
+                    (dc/services))
+       (map #(task-stats %))))
 
 (defn service-logs
   [service-id from-timestamp]
@@ -721,6 +712,32 @@
       (get-in service-origin [:Version :Index])
       (-> service-origin
           :PreviousSpec))))
+
+;;; Node API
+
+(defn node-stats
+  [node]
+  (let [stats (apply dissoc (stats/node (:id node)) [:id :tasks])]
+    (assoc node :stats stats)))
+
+(defn nodes
+  []
+  (->> (dc/nodes)
+       (dmi/->nodes)
+       (map #(node-stats %))))
+
+(defn node
+  [node-id]
+  (-> (dc/node node-id)
+      (dmi/->node)
+      (node-stats)))
+
+(defn node-tasks
+  [node-id]
+  (->> (dmi/->tasks (dc/node-tasks node-id)
+                    (dc/nodes)
+                    (dc/services))
+       (map #(task-stats %))))
 
 ;; Labels API
 

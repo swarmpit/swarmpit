@@ -4,6 +4,7 @@
             [swarmpit.handler :refer [dispatch resp-accepted resp-error resp-unauthorized]]
             [swarmpit.event.channel :as channel]
             [swarmpit.event.processor :as processor]
+            [swarmpit.event.rules.predicate :refer [stats?]]
             [swarmpit.slt :as slt]))
 
 (defmethod dispatch :events [_]
@@ -25,8 +26,10 @@
 (defmethod dispatch :event-push [_]
   (fn [{:keys [params]}]
     (if (some? params)
-      (let [event (-> (keywordize-keys params) :Message)]
-        (channel/broadcast-data-memo event)
+      (let [event (keywordize-keys params)]
         (processor/process event)
+        (if (stats? (:type event))
+          (channel/broadcast-statistics)
+          (channel/broadcast-memo event))
         (resp-accepted))
       (resp-error 400 "No data sent"))))
