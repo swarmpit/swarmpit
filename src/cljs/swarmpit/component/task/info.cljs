@@ -32,7 +32,9 @@
 
 (rum/defc form-info < rum/static [{:keys [repository status] :as item}]
   (let [error (:error status)
-        image-digest (:imageDigest repository)]
+        image-digest (:imageDigest repository)
+        service (:serviceName item)
+        node (:nodeName item)]
     [:div
      [:div.form-panel
       [:div.form-panel-left
@@ -43,12 +45,15 @@
       [:div.form-view-group
        (form/section "General settings")
        (form/item "ID" (:id item))
+       (form/item "SERVICE" [:a {:href (routes/path-for-frontend :service-info {:id service})} service])
        (form/item "NAME" (:taskName item))
        (form/item-date "CREATED" (:createdAt item))
        (form/item-date "LAST UPDATE" (:updatedAt item))
        (form/item "IMAGE" (get-in item [:repository :image]))
        (when (some? image-digest)
-         (form/item "IMAGE DIGEST" image-digest))]
+         (form/item "IMAGE DIGEST" image-digest))
+       (when node
+         (form/item "NODE" [:a {:href (routes/path-for-frontend :node-info {:id node})} node]))]
       [:div.form-view-group
        (form/section "Status")
        (form/item "STATE" (:state item))
