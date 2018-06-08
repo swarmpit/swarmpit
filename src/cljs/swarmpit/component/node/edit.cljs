@@ -122,7 +122,7 @@
 
 (defn- init-form-state
   []
-  (state/set-value {:valid?      false
+  (state/set-value {:valid?      true
                     :loading?    true
                     :processing? false} state/form-state-cursor))
 
