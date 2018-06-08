@@ -108,13 +108,14 @@
                    labels-render-item
                    labels-render-keys
                    nil)])
-    [:div.form-layout-group.form-layout-group-border
-     (form/section "Linked Tasks")
-     (list/table (map :name tasks/headers)
-                 tasks
-                 tasks/render-item
-                 tasks/render-item-keys
-                 tasks/onclick-handler)]]])
+    (when (not-empty tasks)
+      [:div.form-layout-group.form-layout-group-border
+       (form/section "Tasks")
+       (list/table (map :name tasks/headers)
+                   tasks
+                   tasks/render-item
+                   tasks/render-item-keys
+                   tasks/onclick-handler)])]])
 
 (rum/defc form < rum/reactive
                  mixin-init-form

@@ -17,7 +17,7 @@
 (defn alias
   [key stack-name map]
   (let [name (get map key)]
-    (if (in-stack? stack-name map)
+    (if (and name (in-stack? stack-name map))
       (trim-stack stack-name name)
       name)))
 
@@ -70,7 +70,7 @@
      :logging {:driver  (-> service :logdriver :name)
                :options (-> service :logdriver :opts (name-value->map))}
      :deploy {:mode           (when-not (= "replicated" (:mode service)) (:mode service))
-              :replicas       (some-> (:replicas service) (#(when (< 1 %) %)))
+              :replicas       (some-> (:replicas service) (#(when (not (= 1 %)) %)))
               :labels         (->> service :labels (name-value->map) (add-swarmpit-labels service))
               :update_config  (-> service :deployment :update
                                   (rename-keys {:failureAction :failure_action})

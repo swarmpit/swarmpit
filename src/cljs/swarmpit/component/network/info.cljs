@@ -109,13 +109,7 @@
          (form/section "IP address management")
          (form/item "SUBNET" subnet)
          (form/item "GATEWAY" gateway)])
-      [:div.form-layout-group.form-layout-group-border
-       (form/section "Linked Services")
-       (list/table (map :name services/headers)
-                   services
-                   services/render-item
-                   services/render-item-keys
-                   services/onclick-handler)]]]))
+      (services/linked-services services)]]))
 
 (rum/defc form < rum/reactive
                  mixin-init-form
