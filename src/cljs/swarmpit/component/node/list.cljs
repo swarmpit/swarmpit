@@ -70,12 +70,15 @@
        [:td "MEMORY"]]
       [:tr
        [:td (str cpu " " (clojure.contrib.inflect/pluralize-noun cpu "core"))]
-       [:td (humanize/filesize disk-bytes :binary false)]
+       [:td (if (some? disk-bytes)
+              (humanize/filesize disk-bytes :binary false)
+              "-")]
        [:td (humanize/filesize memory-bytes :binary false)]]
-      [:tr.node-progress-table-usage
-       (node-item-usage (get-in item [:stats :cpu :usedPercentage]))
-       (node-item-usage (get-in item [:stats :disk :usedPercentage]))
-       (node-item-usage (get-in item [:stats :memory :usedPercentage]))]]]))
+      (when (some? (:stats item))
+        [:tr.node-progress-table-usage
+         (node-item-usage (get-in item [:stats :cpu :usedPercentage]))
+         (node-item-usage (get-in item [:stats :disk :usedPercentage]))
+         (node-item-usage (get-in item [:stats :memory :usedPercentage]))])]]))
 
 (defn- node-item
   [item]
