@@ -94,13 +94,7 @@
                     driver-opts-render-item
                     driver-opts-render-keys
                     nil)])]
-    [:div.form-layout-group.form-layout-group-border
-     (form/section "Linked Services")
-     (list/table (map :name services/headers)
-                 services
-                 services/render-item
-                 services/render-item-keys
-                 services/onclick-handler)]]])
+    (services/linked-services services)]])
 
 (rum/defc form < rum/reactive
                  mixin-init-form

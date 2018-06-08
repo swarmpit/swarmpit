@@ -163,13 +163,14 @@
         (default-render-item item row)))))
 
 (rum/defc form-services < rum/static [stack-name services]
-  [:div.form-layout-group
-   (form/section "Services")
-   (list/table (map :name services/headers)
-               (sort-by :serviceName services)
-               (stack-render-item stack-name :serviceName services/render-item)
-               services/render-item-keys
-               services/onclick-handler)])
+  (when (not-empty services)
+    [:div.form-layout-group
+     (form/section "Services")
+     (list/table (map :name services/headers)
+                 (sort-by :serviceName services)
+                 (stack-render-item stack-name :serviceName services/render-item)
+                 services/render-item-keys
+                 services/onclick-handler)]))
 
 (rum/defc form-networks < rum/static [stack-name networks]
   (when (not-empty networks)

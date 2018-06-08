@@ -3,12 +3,14 @@
             [material.component.label :as label]
             [material.component.panel :as panel]
             [material.component.list-table :as list]
+            [material.component.list-table-auto :as list-auto]
             [swarmpit.component.state :as state]
             [swarmpit.component.mixin :as mixin]
             [swarmpit.ajax :as ajax]
             [swarmpit.routes :as routes]
             [sablono.core :refer-macros [html]]
-            [rum.core :as rum]))
+            [rum.core :as rum]
+            [material.component.form :as form]))
 
 (enable-console-print!)
 
@@ -82,6 +84,17 @@
     (fn [_]
       (init-form-state)
       (services-handler))))
+
+(defn linked-services
+  [services]
+  (when (not-empty services)
+    [:div.form-layout-group.form-layout-group-border
+     (form/section "Linked Services")
+     (list-auto/table (map :name headers)
+                      services
+                      render-item
+                      render-item-keys
+                      onclick-handler)]))
 
 (rum/defc form < rum/reactive
                  mixin-init-form

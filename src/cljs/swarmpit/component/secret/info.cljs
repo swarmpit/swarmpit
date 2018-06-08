@@ -73,13 +73,7 @@
      (form/item "NAME" (:secretName secret))
      (form/item-date "CREATED" (:createdAt secret))
      (form/item-date "UPDATED" (:updatedAt secret))]
-    [:div.form-layout-group.form-layout-group-border
-     (form/section "Linked Services")
-     (list/table (map :name services/headers)
-                 services
-                 services/render-item
-                 services/render-item-keys
-                 services/onclick-handler)]]])
+    (services/linked-services services)]])
 
 (rum/defc form < rum/reactive
                  mixin-init-form

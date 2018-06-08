@@ -3,7 +3,6 @@
             [material.component :as comp]
             [material.component.form :as form]
             [material.component.panel :as panel]
-            [material.component.list-table-auto :as list]
             [swarmpit.component.state :as state]
             [swarmpit.component.mixin :as mixin]
             [swarmpit.component.editor :as editor]
@@ -109,13 +108,7 @@
     [:div.form-layout-group.form-layout-group-border
      (form/section "Data")
      (form-data (parse-data (:data config)))]
-    [:div.form-layout-group.form-layout-group-border
-     (form/section "Linked Services")
-     (list/table (map :name services/headers)
-                 services
-                 services/render-item
-                 services/render-item-keys
-                 services/onclick-handler)]]])
+    (services/linked-services services)]])
 
 (rum/defc form < rum/reactive
                  mixin-init-form
