@@ -16,6 +16,15 @@
 
 (enable-console-print!)
 
+(def labels-headers ["Name" "Value"])
+
+(def labels-render-keys
+  [[:name] [:value]])
+
+(defn labels-render-item
+  [item]
+  (val item))
+
 (defn resources
   [node]
   (let [cpu (-> node :resources :cpu (int))
@@ -53,13 +62,19 @@
       (node-handler id)
       (node-tasks-handler id))))
 
-(rum/defc form-info < rum/static [{:keys [node tasks]}]
+(rum/defc form-info < rum/static [id {:keys [node tasks]}]
   [:div
    [:div.form-panel
     [:div.form-panel-left
      (panel/info (icon/os (:os node))
                  (:nodeName node))]
     [:div.form-panel-right
+     (comp/mui
+       (comp/raised-button
+         {:href    (routes/path-for-frontend :node-edit {:id id})
+          :label   "Edit"
+          :primary true}))
+     [:span.form-panel-delimiter]
      (comp/mui
        (comp/raised-button
          {:href  (routes/path-for-frontend :node-list)
@@ -85,6 +100,14 @@
      (form/item "LEADER" (if (:leader node)
                            "yes"
                            "no"))]
+    (when (not-empty (:labels node))
+      [:div.form-layout-group.form-layout-group-border
+       (form/section "Labels")
+       (list/table labels-headers
+                   (:labels node)
+                   labels-render-item
+                   labels-render-keys
+                   nil)])
     [:div.form-layout-group.form-layout-group-border
      (form/section "Linked Tasks")
      (list/table (map :name tasks/headers)
@@ -95,9 +118,9 @@
 
 (rum/defc form < rum/reactive
                  mixin-init-form
-                 mixin/subscribe-form [_]
+                 mixin/subscribe-form [{{:keys [id]} :params}]
   (let [state (state/react state/form-state-cursor)
         item (state/react state/form-value-cursor)]
     (progress/form
       (:loading? state)
-      (form-info item))))
+      (form-info id item))))

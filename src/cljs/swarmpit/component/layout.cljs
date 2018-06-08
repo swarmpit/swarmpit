@@ -37,6 +37,7 @@
    :config-info           "Configs"
    :node-list             "Nodes"
    :node-info             "Nodes"
+   :node-edit             "Nodes / Edit"
    :task-list             "Tasks"
    :task-info             "Tasks"
    :user-list             "Users"
