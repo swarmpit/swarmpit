@@ -21,9 +21,11 @@
   (let [cpu (-> node :resources :cpu (int))
         memory-bytes (-> node :resources :memory (* 1024 1024))
         disk-bytes (-> node :stats :disk :total)]
-    (str cpu " " (clojure.contrib.inflect/pluralize-noun cpu "core") ", "
-         (humanize/filesize memory-bytes :binary false) " memory, "
-         (humanize/filesize disk-bytes :binary false) " disk")))
+    (let [core-stats (str cpu " " (clojure.contrib.inflect/pluralize-noun cpu "core") ", "
+                          (humanize/filesize memory-bytes :binary false) " memory")]
+      (if (some? disk-bytes)
+        (str core-stats ", " (humanize/filesize disk-bytes :binary false) " disk")
+        core-stats))))
 
 (defn- node-tasks-handler
   [node-id]
