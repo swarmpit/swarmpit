@@ -194,9 +194,9 @@
   [secret]
   (try
     (->
-      (execute {:method :POST
-                :api "/secrets/create"
-                :options {:body secret
+      (execute {:method  :POST
+                :api     "/secrets/create"
+                :options {:body    secret
                           :headers {:Content-Type "application/json"}}})
       :body)
     (catch Exception ex
@@ -241,8 +241,8 @@
 (defn create-config
   [config]
   (try
-    (-> (execute {:method :POST
-                  :api "/configs/create"
+    (-> (execute {:method  :POST
+                  :api     "/configs/create"
                   :options {:body config}})
         :body)
     (catch Exception ex
@@ -262,6 +262,15 @@
   [id]
   (-> (execute {:method :GET
                 :api    (str "/nodes/" id)})
+      :body))
+
+(defn update-node
+  [id version node]
+  (-> (execute {:method  :POST
+                :api     (str "/nodes/" id "/update")
+                :options {:body         node
+                          :query-params {:version version}
+                          :headers      {:Content-Type "application/json"}}})
       :body))
 
 (defn node-tasks
