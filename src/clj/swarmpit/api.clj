@@ -793,7 +793,6 @@
         nodes-role '("manager" "worker")
         nodes-hostname (map :nodeName nodes)
         nodes-label (set (flatten (map :labels nodes)))]
-    (log/info nodes-label)
     (concat
       (placement-rule
         nodes-id
