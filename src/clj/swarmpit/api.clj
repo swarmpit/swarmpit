@@ -732,6 +732,18 @@
       (dmi/->node)
       (node-stats)))
 
+(defn update-node
+  [node]
+  (dc/update-node (:id node)
+                  (:version node)
+                  node))
+
+(defn update-node
+  [node-id node]
+  (let [node-version (:version node)]
+    (->> (dmo/->node node)
+         (dc/update-node node-id node-version))))
+
 (defn node-tasks
   [node-id]
   (->> (dmi/->tasks (dc/node-tasks node-id)
@@ -780,8 +792,8 @@
         nodes-id (map :id nodes)
         nodes-role '("manager" "worker")
         nodes-hostname (map :nodeName nodes)
-        nodes-label (->> (map :labels nodes)
-                         (into {}))]
+        nodes-label (set (flatten (map :labels nodes)))]
+    (log/info nodes-label)
     (concat
       (placement-rule
         nodes-id
@@ -798,7 +810,7 @@
       (placement-rule
         nodes-label
         (fn [matcher item]
-          (str "node.labels." (name (key item)) matcher (val item)))))))
+          (str "node.labels." (:name item) matcher (:value item)))))))
 
 ;; Stack API
 

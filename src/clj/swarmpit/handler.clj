@@ -342,6 +342,12 @@
     (->> (api/node (:id route-params))
          (resp-ok))))
 
+(defmethod dispatch :node-update [_]
+  (fn [{:keys [route-params params]}]
+    (let [payload (keywordize-keys params)]
+      (api/update-node (:id route-params) payload)
+      (resp-ok))))
+
 (defmethod dispatch :node-tasks [_]
   (fn [{:keys [route-params]}]
     (->> (api/node-tasks (:id route-params))
