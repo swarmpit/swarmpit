@@ -72,10 +72,11 @@
   [node]
   (array-map
     :id (:ID node)
+    :version (get-in node [:Version :Index])
     :nodeName (get-in node [:Description :Hostname])
     :role (get-in node [:Spec :Role])
     :availability (get-in node [:Spec :Availability])
-    :labels (get-in node [:Spec :Labels])
+    :labels (map->name-value (get-in node [:Spec :Labels]))
     :state (get-in node [:Status :State])
     :address (get-in node [:Status :Addr])
     :engine (get-in node [:Description :Engine :EngineVersion])

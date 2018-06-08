@@ -263,3 +263,9 @@
   [config]
   {:Name (:configName config)
    :Data (:data config)})
+
+(defn ->node
+  [node]
+  {:Availability (:availability node)
+   :Role (:role node)
+   :Labels (name-value->map (:labels node))})

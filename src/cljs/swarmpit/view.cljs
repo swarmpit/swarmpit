@@ -30,6 +30,7 @@
             [swarmpit.component.config.list :as config-list]
             [swarmpit.component.node.list :as node-list]
             [swarmpit.component.node.info :as node-info]
+            [swarmpit.component.node.edit :as node-edit]
             [swarmpit.component.task.list :as task-list]
             [swarmpit.component.task.info :as task-info]
             [swarmpit.component.user.list :as user-list]
@@ -146,6 +147,10 @@
 (defmethod dispatch :node-info
   [route]
   (node-info/form route))
+
+(defmethod dispatch :node-edit
+  [route]
+  (node-edit/form route))
 
 ;;; Volume view
 

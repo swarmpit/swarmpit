@@ -76,8 +76,9 @@
                          :delete {[:id] :config-delete}}
        "/nodes"         {:get :nodes}
        "/placement"     {:get :placement}
-       "/nodes/"        {:get {[:id] {""       :node
-                                      "/tasks" :node-tasks}}}
+       "/nodes/"        {:get  {[:id] {""       :node
+                                       "/tasks" :node-tasks}}
+                         :post {[:id] :node-update}}
        "/tasks"         {:get :tasks}
        "/tasks/"        {:get {[:id] :task}}
        "/plugin/"       {:get {"network" :plugin-network
@@ -119,8 +120,9 @@
                    "/configs"                 {""        :config-list
                                                "/create" :config-create
                                                ["/" :id] :config-info}
-                   "/nodes"                   {""        :node-list
-                                               ["/" :id] :node-info}
+                   "/nodes"                   {""                :node-list
+                                               ["/" :id]         :node-info
+                                               ["/" :id "/edit"] :node-edit}
                    "/tasks"                   {""        :task-list
                                                ["/" :id] :task-info}
                    "/distribution/registries" {""                :registry-list
