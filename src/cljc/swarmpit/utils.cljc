@@ -73,8 +73,8 @@
 
 (defn ->nano
   [number]
-  (* number 1000000000))
+  (when number (* number 1000000000)))
 
 (defn nano->
   [number]
-  (/ number 1000000000))
+  (when number (/ number 1000000000)))
