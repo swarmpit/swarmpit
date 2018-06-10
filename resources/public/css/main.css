@@ -379,7 +379,7 @@ input:invalid {
 }
 
 .node-progress-table {
-    width: 60%;
+    width: 220px;
     margin: 0 auto;
     line-height: 12px;
     font-size: 12px !important;
