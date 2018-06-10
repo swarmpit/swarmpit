@@ -170,7 +170,7 @@
   (let [policy (get-in service [:deployment :restartPolicy])]
     {:Condition   (:condition policy)
      :Delay       (->nano (:delay policy))
-     :Window      (->nano (:window update))
+     :Window      (->nano (:window policy))
      :MaxAttempts (:attempts policy)}))
 
 (defn ->service-image

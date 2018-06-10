@@ -35,6 +35,18 @@
        :onChange (fn [_ v]
                    (state/update-value [:restartPolicy :delay] (parse-int v) form-value-cursor))})))
 
+(defn- form-restart-policy-window [value]
+  (form/comp
+    "WINDOW"
+    (comp/vtext-field
+      {:name     "restart-policy-window"
+       :key      "restart-policy-window"
+       :type     "number"
+       :min      0
+       :value    (str value)
+       :onChange (fn [_ v]
+                   (state/update-value [:restartPolicy :window] (parse-int v) form-value-cursor))})))
+
 (defn- form-restart-policy-condition [value]
   (form/comp
     "CONDITION"
@@ -195,6 +207,7 @@
        (html (form/subsection "Restart Policy"))
        (form-restart-policy-condition (:condition restartPolicy))
        (form-restart-policy-delay (:delay restartPolicy))
+       (form-restart-policy-window (:window restartPolicy))
        (form-restart-policy-attempts (:attempts restartPolicy))
        (html (form/subsection "Update Config"))
        (form-update-parallelism (:parallelism update))

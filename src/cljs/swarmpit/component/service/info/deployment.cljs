@@ -25,6 +25,7 @@
         placement (:placement deployment)
         restart-policy-condition (get-in deployment [:restartPolicy :condition])
         restart-policy-delay (get-in deployment [:restartPolicy :delay])
+        restart-policy-window (get-in deployment [:restartPolicy :window])
         restart-policy-attempts (get-in deployment [:restartPolicy :attempts])]
     [:div.form-layout-group.form-layout-group-border
      (form/section "Deployment")
@@ -40,6 +41,7 @@
      (form/subsection "Restart Policy")
      (form/item "CONDITION" restart-policy-condition)
      (form/item "DELAY" (str restart-policy-delay "s"))
+     (form/item "WINDOW" (str restart-policy-window "s"))
      (form/item "MAX ATTEMPTS" restart-policy-attempts)
      (form/subsection "Update Config")
      (form/item "PARALLELISM" update-parallelism)
