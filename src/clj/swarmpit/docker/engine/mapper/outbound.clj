@@ -2,7 +2,7 @@
   "Map swarmpit domain to docker domain"
   (:require [clojure.string :as str]
             [swarmpit.docker.engine.mapper.inbound :refer [autoredeploy-label]]
-            [swarmpit.utils :refer [name-value->map]]))
+            [swarmpit.utils :refer [name-value->map ->nano]]))
 
 (defn- as-bytes
   [megabytes]
@@ -144,7 +144,7 @@
         memory (:memory service-resource)]
     {:NanoCPUs    (when (some? cpu)
                     (-> cpu
-                        (* 1000000000)
+                        (->nano)
                         (long)))
      :MemoryBytes (when (some? memory)
                     (as-bytes memory))}))
@@ -153,7 +153,7 @@
   [service]
   (let [update (get-in service [:deployment :update])]
     {:Parallelism   (:parallelism update)
-     :Delay         (* (:delay update) 1000000000)
+     :Delay         (->nano (:delay update))
      :Order         (:order update)
      :FailureAction (:failureAction update)}))
 
@@ -161,7 +161,7 @@
   [service]
   (let [rollback (get-in service [:deployment :rollback])]
     {:Parallelism   (:parallelism rollback)
-     :Delay         (* (:delay rollback) 1000000000)
+     :Delay         (->nano (:delay rollback))
      :Order         (:order rollback)
      :FailureAction (:failureAction rollback)}))
 
@@ -169,7 +169,8 @@
   [service]
   (let [policy (get-in service [:deployment :restartPolicy])]
     {:Condition   (:condition policy)
-     :Delay       (* (:delay policy) 1000000000)
+     :Delay       (->nano (:delay policy))
+     :Window      (->nano (:window update))
      :MaxAttempts (:attempts policy)}))
 
 (defn ->service-image
@@ -267,5 +268,5 @@
 (defn ->node
   [node]
   {:Availability (:availability node)
-   :Role (:role node)
-   :Labels (name-value->map (:labels node))})
+   :Role         (:role node)
+   :Labels       (name-value->map (:labels node))})

@@ -83,9 +83,11 @@
               :restart_policy (-> service :deployment :restartPolicy
                                   (rename-keys {:attempts :max_attempts})
                                   (update :delay #(str % "s"))
+                                  (update :window #(str % "s"))
                                   (remove-defaults
                                     {:condition    "any"
                                      :delay        "5s"
+                                     :window       "0s"
                                      :max_attempts 0}))
               :placement      {:constraints (->> service :deployment :placement (map :rule))}
               :resources      {:reservations (-> service :resources :reservation resource)

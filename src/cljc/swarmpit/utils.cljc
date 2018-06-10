@@ -70,3 +70,11 @@
        (map (fn [l] {:name  (name (key l))
                      :value (val l)}))
        (into [])))
+
+(defn ->nano
+  [number]
+  (* number 1000000000))
+
+(defn nano->
+  [number]
+  (/ number 1000000000))

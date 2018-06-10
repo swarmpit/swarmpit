@@ -1,7 +1,7 @@
 (ns swarmpit.docker.engine.mapper.inbound
   "Map docker domain to swarmpit domain"
   (:require [clojure.string :as str]
-            [swarmpit.utils :refer [map->name-value]]))
+            [swarmpit.utils :refer [map->name-value nano->]]))
 
 (defn- as-megabytes
   [bytes]
@@ -12,7 +12,7 @@
   (let [nano-cpu (:NanoCPUs resources)
         memory-bytes (:MemoryBytes resources)]
     {:cpu    (-> (or nano-cpu 0)
-                 (/ 1000000000)
+                 (nano->)
                  (double))
      :memory (-> (or memory-bytes 0)
                  (as-megabytes))}))
@@ -246,7 +246,7 @@
   [service-spec]
   (let [update-config (:UpdateConfig service-spec)]
     {:parallelism   (or (:Parallelism update-config) 1)
-     :delay         (/ (or (:Delay update-config) 0) 1000000000)
+     :delay         (nano-> (or (:Delay update-config) 0))
      :order         (or (:Order update-config) "stop-first")
      :failureAction (or (:FailureAction update-config) "pause")}))
 
@@ -254,7 +254,7 @@
   [service-spec]
   (let [update-config (:RollbackConfig service-spec)]
     {:parallelism   (or (:Parallelism update-config) 1)
-     :delay         (/ (or (:Delay update-config) 0) 1000000000)
+     :delay         (nano-> (or (:Delay update-config) 0))
      :order         (or (:Order update-config) "stop-first")
      :failureAction (or (:FailureAction update-config) "pause")}))
 
@@ -262,7 +262,8 @@
   [service-task-template]
   (let [restart-policy (:RestartPolicy service-task-template)]
     {:condition (or (:Condition restart-policy) "any")
-     :delay     (/ (or (:Delay restart-policy) 5000000000) 1000000000)
+     :delay     (nano-> (or (:Delay restart-policy) 5000000000))
+     :window    (nano-> (or (:Window restart-policy) 0))
      :attempts  (or (:MaxAttempts restart-policy) 0)}))
 
 (defn ->service-replicas-running
