@@ -22,8 +22,6 @@
               {:name  "Configs"
                :width "10%"}
               {:name  "Secrets"
-               :width "10%"}
-              {:name  ""
                :width "10%"}])
 
 (def render-item-keys
@@ -32,16 +30,11 @@
    [:stackStats :networks]
    [:stackStats :volumes]
    [:stackStats :configs]
-   [:stackStats :secrets]
-   [:stackFile]])
+   [:stackStats :secrets]])
 
 (defn- render-item
   [item _]
-  (let [value (val item)]
-    (case (key item)
-      :stackFile (when value
-                   (comp/svg icon/compose-18))
-      value)))
+  (val item))
 
 (defn- onclick-handler
   [item]

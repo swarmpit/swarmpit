@@ -127,7 +127,7 @@
          :leftIcon      (comp/svg nil icon/edit)
          :onClick       (fn []
                           (dispatch!
-                            (routes/path-for-frontend :stack-edit {:name stack-name})))
+                            (routes/path-for-frontend :stack-compose {:name stack-name})))
          :primaryText   "Edit"})
       (comp/menu-item
         {:key           "action-redeploy"

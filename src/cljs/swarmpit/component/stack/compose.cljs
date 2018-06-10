@@ -106,6 +106,8 @@
      {:onValid   #(state/update-value [:valid?] true state/form-state-cursor)
       :onInvalid #(state/update-value [:valid?] false state/form-state-cursor)}
      (form-name name)
+     (html (form/icon-value icon/info [:div "Stackfile is automatically created from actual docker engine state. You can still "
+                                       [:a {:href (routes/path-for-frontend :stack-edit {:name name})} "edit last deployed version"] " of this stack."]))
      (form-editor (:compose spec)))])
 
 (rum/defc form < rum/reactive

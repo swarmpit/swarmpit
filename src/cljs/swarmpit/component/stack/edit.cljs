@@ -111,7 +111,7 @@
      (form-name name)
      (when external?
        (html (form/icon-value icon/warn "You are trying to edit external stack. Please drag & drop or paste matching compose file to link.")))
-     (html (form/icon-value icon/info [:div "Experimental! Let swarmpit " [:a {:href (routes/path-for-frontend :stack-compose {:name name})} "compose your stack"] "!"]))
+     (html (form/icon-value icon/info [:div "Let swarmpit " [:a {:href (routes/path-for-frontend :stack-compose {:name name})} "compose this stack"] " from actual state."]))
      (form-editor (:compose spec)))])
 
 (rum/defc form < rum/reactive
