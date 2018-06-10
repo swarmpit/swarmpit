@@ -9,6 +9,7 @@
             [swarmpit.component.message :as message]
             [swarmpit.component.progress :as progress]
             [swarmpit.component.service.create-image :as images]
+            [swarmpit.component.stack.info :as info]
             [swarmpit.ajax :as ajax]
             [swarmpit.routes :as routes]
             [swarmpit.url :refer [dispatch!]]
@@ -95,6 +96,7 @@
   (state/set-value {:valid?      false
                     :last?       false
                     :previous?   false
+                    :menu?       false
                     :loading?    true
                     :processing? false} state/form-state-cursor))
 
@@ -144,13 +146,45 @@
           :disabled (not previous?)
           :value    2})))])
 
+(defn select-stackfile [stack-name stackfile opened?]
+  (comp/mui
+    (comp/icon-menu
+      {:iconButtonElement (comp/icon-button nil nil)
+       :open              opened?
+       :style             {:position   "relative"
+                           :marginTop  "13px"
+                           :marginRight "70px"}
+       :onRequestChange   (fn [state] (state/update-value [:menu?] state state/form-state-cursor))}
+      (comp/menu-item
+        {:key           "last"
+         :innerDivStyle info/action-menu-item-style
+         :leftIcon      (comp/svg nil icon/redeploy)
+         :disabled      false
+         :primaryText   "Last deployed"})
+      (comp/menu-item
+        {:key           "previous"
+         :innerDivStyle info/action-menu-item-style
+         :leftIcon      (comp/svg nil icon/rollback)
+         :disabled      true
+         :primaryText   "Previously deployed"}))))
+
 (rum/defc form-edit [{:keys [name spec]}
-                     {:keys [processing? valid? last? previous?]}]
+                     {:keys [processing? valid? last? previous? menu?]}]
   [:div
    [:div.form-panel
     [:div.form-panel-left
      (panel/info icon/stacks name)]
     [:div.form-panel-right
+     [:div
+     ;; (comp/mui
+     ;;   (comp/raised-button
+     ;;     {:onClick       (fn [_] (state/update-value [:menu?] true state/form-state-cursor))
+     ;;      :icon          (comp/button-icon icon/expand-18)
+     ;;      :labelPosition "before"
+     ;;      :label         "Current state"}))
+      (select-stackfile "asdf" nil menu?)]
+
+     [:span.form-panel-delimiter]
      (comp/progress-button
        {:label      "Deploy"
         :disabled   (not valid?)
@@ -160,7 +194,29 @@
      {:onValid   #(state/update-value [:valid?] true state/form-state-cursor)
       :onInvalid #(state/update-value [:valid?] false state/form-state-cursor)}
      (form-name name)
-     (html (tabs name 0 last? previous?))
+     (form/comp
+       "COMPOSE FILE SOURCE"
+       (comp/select-field
+         {:name     "cfs"
+          :key      "cfs"
+          :required true
+          :disabled false
+          :value    0}
+         (comp/menu-item
+           {:key           "current"
+            :innerDivStyle info/action-menu-item-style
+            :disabled      false
+            :primaryText   "Current state"})
+         (comp/menu-item
+           {:key           "last"
+            :innerDivStyle info/action-menu-item-style
+            :disabled      false
+            :primaryText   "Last deployed"})
+         (comp/menu-item
+           {:key           "previous"
+            :innerDivStyle info/action-menu-item-style
+            :disabled      true
+            :primaryText   "Previously deployed"})))
      (editor (:compose spec)))])
 
 (rum/defc form < rum/reactive
