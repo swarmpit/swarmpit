@@ -103,11 +103,12 @@
                                                ["/" :id]        {""      :service-info
                                                                  "/edit" :service-edit
                                                                  "/log"  :service-log}}
-                   "/stacks"                  {""                     :stack-list
-                                               "/create"              :stack-create
-                                               ["/" :name]            :stack-info
-                                               ["/" :name "/edit"]    :stack-edit
-                                               ["/" :name "/compose"] :stack-compose}
+                   "/stacks"                  {""                      :stack-list
+                                               "/create"               :stack-create
+                                               ["/" :name]             :stack-info
+                                               ["/" :name "/previous"] :stack-previous
+                                               ["/" :name "/last"]     :stack-last
+                                               ["/" :name "/compose"]  :stack-compose}
                    "/networks"                {""        :network-list
                                                "/create" :network-create
                                                ["/" :id] :network-info}

@@ -8,6 +8,7 @@
             [swarmpit.component.mixin :as mixin]
             [swarmpit.component.message :as message]
             [swarmpit.component.progress :as progress]
+            [swarmpit.component.service.create-image :as images]
             [swarmpit.ajax :as ajax]
             [swarmpit.routes :as routes]
             [swarmpit.url :refer [dispatch!]]
@@ -17,6 +18,12 @@
 (enable-console-print!)
 
 (def editor-id "compose")
+
+(defn tab-style [disabled?]
+  (if disabled?
+    {:color    "rgba(0, 0, 0, 0.3)"
+     :minWidth "200px"}
+    images/tab-style))
 
 (defn- form-name [value]
   (form/comp
@@ -72,9 +79,22 @@
        (.on editor "change" (fn [cm] (state/update-value [:spec :compose] (-> cm .getValue) state/form-value-cursor))))
      state)})
 
+(defn stackfile-handler
+  [name]
+  (ajax/get
+    (routes/path-for-backend :stack-file {:name name})
+    {:on-success (fn [{:keys [response]}]
+                   (when (:spec response) (state/update-value [:last?] true state/form-state-cursor))
+                   (when (:previousSpec response) (state/update-value [:previous?] true state/form-state-cursor)))
+     :on-error   (fn [_]
+                   (state/update-value [:last?] false state/form-state-cursor)
+                   (state/update-value [:previous?] false state/form-state-cursor))}))
+
 (defn- init-form-state
   []
   (state/set-value {:valid?      false
+                    :last?       false
+                    :previous?   false
                     :loading?    true
                     :processing? false} state/form-state-cursor))
 
@@ -88,10 +108,44 @@
     (fn [{{:keys [name]} :params}]
       (init-form-state)
       (init-form-value name)
+      (stackfile-handler name)
       (compose-handler name))))
 
-(rum/defc form-edit < mixin-init-editor [{:keys [name spec]}
-                                         {:keys [processing? valid?]}]
+(rum/defc editor < mixin-init-editor [spec]
+  (form-editor spec))
+
+(defn tabs
+  [name value last? previous?]
+  [:div.form-panel-tabs
+   (comp/mui
+     (comp/tabs
+       {:key                   "tabs"
+        :value                 value
+        :inkBarStyle           images/tabs-inkbar-style
+        :tabItemContainerStyle images/tabs-container-style}
+       (comp/tab
+         {:key   "compose"
+          :href  (routes/path-for-frontend :stack-compose {:name name})
+          :label "Current state"
+          :style (tab-style false)
+          :value 0})
+       (comp/tab
+         {:key      "last"
+          :href     (routes/path-for-frontend :stack-last {:name name})
+          :label    "Last deployed"
+          :style    (tab-style (not last?))
+          :disabled (not last?)
+          :value    1})
+       (comp/tab
+         {:key      "previous"
+          :href     (routes/path-for-frontend :stack-previous {:name name})
+          :label    "Previously deployed"
+          :style    (tab-style (not previous?))
+          :disabled (not previous?)
+          :value    2})))])
+
+(rum/defc form-edit [{:keys [name spec]}
+                     {:keys [processing? valid? last? previous?]}]
   [:div
    [:div.form-panel
     [:div.form-panel-left
@@ -106,9 +160,8 @@
      {:onValid   #(state/update-value [:valid?] true state/form-state-cursor)
       :onInvalid #(state/update-value [:valid?] false state/form-state-cursor)}
      (form-name name)
-     (html (form/icon-value icon/info [:div "Stackfile is automatically created from actual docker engine state. You can still "
-                                       [:a {:href (routes/path-for-frontend :stack-edit {:name name})} "edit last deployed version"] " of this stack."]))
-     (form-editor (:compose spec)))])
+     (html (tabs name 0 last? previous?))
+     (editor (:compose spec)))])
 
 (rum/defc form < rum/reactive
                  mixin-init-form [_]

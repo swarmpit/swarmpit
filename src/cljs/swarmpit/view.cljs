@@ -90,9 +90,13 @@
   [route]
   (stack-create/form route))
 
-(defmethod dispatch :stack-edit
+(defmethod dispatch :stack-last
   [route]
-  (stack-edit/form route))
+  (stack-edit/form-last route))
+
+(defmethod dispatch :stack-previous
+  [route]
+  (stack-edit/form-previous route))
 
 (defmethod dispatch :stack-compose
   [route]

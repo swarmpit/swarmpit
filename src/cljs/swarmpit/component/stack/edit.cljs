@@ -8,11 +8,13 @@
             [swarmpit.component.mixin :as mixin]
             [swarmpit.component.message :as message]
             [swarmpit.component.progress :as progress]
+            [swarmpit.component.stack.compose :as compose]
             [swarmpit.ajax :as ajax]
             [swarmpit.routes :as routes]
             [swarmpit.url :refer [dispatch!]]
             [sablono.core :refer-macros [html]]
-            [rum.core :as rum]))
+            [rum.core :as rum]
+            [clojure.set :as set]))
 
 (enable-console-print!)
 
@@ -58,14 +60,13 @@
                      (str "Stack update failed. " (:error response))))}))
 
 (defn- stackfile-handler
-  [name]
+  [name handler]
   (ajax/get
     (routes/path-for-backend :stack-file {:name name})
     {:state      [:loading?]
      :on-success (fn [{:keys [response]}]
-                   (state/set-value response state/form-value-cursor))
-     :on-error   (fn [_]
-                   (state/update-value [:external?] true state/form-state-cursor))}))
+                   (state/set-value (case handler :stack-previous (set/rename-keys response {:previousSpec :spec}) response) state/form-value-cursor)
+                   (state/update-value [:previous?] (:previousSpec response) state/form-state-cursor))}))
 
 (def mixin-init-editor
   {:did-mount
@@ -77,7 +78,7 @@
 (defn- init-form-state
   []
   (state/set-value {:valid?      false
-                    :external?   false
+                    :previous?   false
                     :loading?    true
                     :processing? false} state/form-state-cursor))
 
@@ -88,13 +89,14 @@
 
 (def mixin-init-form
   (mixin/init-form
-    (fn [{{:keys [name]} :params}]
+    (fn [{{:keys [name]} :params :keys [handler]}]
       (init-form-state)
       (init-form-value name)
-      (stackfile-handler name))))
+      (stackfile-handler name handler))))
 
 (rum/defc form-edit < mixin-init-editor [{:keys [name spec]}
-                                         {:keys [processing? valid? external?]}]
+                                         tab
+                                         {:keys [processing? valid? previous?]}]
   [:div
    [:div.form-panel
     [:div.form-panel-left
@@ -109,15 +111,21 @@
      {:onValid   #(state/update-value [:valid?] true state/form-state-cursor)
       :onInvalid #(state/update-value [:valid?] false state/form-state-cursor)}
      (form-name name)
-     (when external?
-       (html (form/icon-value icon/warn "You are trying to edit external stack. Please drag & drop or paste matching compose file to link.")))
-     (html (form/icon-value icon/info [:div "Let swarmpit " [:a {:href (routes/path-for-frontend :stack-compose {:name name})} "compose this stack"] " from actual state."]))
+     (html (compose/tabs name tab true previous?))
      (form-editor (:compose spec)))])
 
-(rum/defc form < rum/reactive
+(rum/defc form-last < rum/reactive
                  mixin-init-form [_]
   (let [state (state/react state/form-state-cursor)
         stackfile (state/react state/form-value-cursor)]
     (progress/form
       (:loading? state)
-      (form-edit stackfile state))))
+      (form-edit stackfile 1 state))))
+
+(rum/defc form-previous < rum/reactive
+                 mixin-init-form [_]
+  (let [state (state/react state/form-state-cursor)
+        stackfile (state/react state/form-value-cursor)]
+    (progress/form
+      (:loading? state)
+      (form-edit stackfile 2 state))))

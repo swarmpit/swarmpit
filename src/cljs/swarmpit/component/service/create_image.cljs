@@ -23,7 +23,7 @@
    :borderBottom    "1px solid rgb(224, 228, 231)"})
 
 (def tab-style
-  {:color    "rgb(117, 117, 117"
+  {:color    "rgb(117, 117, 117)"
    :minWidth "200px"})
 
 (defn- registries-handler
