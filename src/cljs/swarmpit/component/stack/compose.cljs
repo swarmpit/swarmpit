@@ -8,7 +8,6 @@
             [swarmpit.component.mixin :as mixin]
             [swarmpit.component.message :as message]
             [swarmpit.component.progress :as progress]
-            [swarmpit.component.service.create-image :as images]
             [swarmpit.ajax :as ajax]
             [swarmpit.routes :as routes]
             [swarmpit.url :refer [dispatch!]]
@@ -19,21 +18,17 @@
 
 (def editor-id "compose")
 
-(defn tab-style [disabled?]
-  (if disabled?
-    {:color    "rgba(0, 0, 0, 0.3)"
-     :minWidth "200px"}
-    images/tab-style))
-
-(defn- form-name [value]
+(defn form-name [value]
   (form/comp
     "STACK NAME"
     (comp/vtext-field
-      {:name     "stack-name"
-       :key      "stack-name"
-       :required true
-       :disabled true
-       :value    value})))
+      {:name          "stack-name"
+       :key           "stack-name"
+       :width         "400px"
+       :underlineShow false
+       :required      true
+       :disabled      true
+       :value         value})))
 
 (defn- form-editor [value]
   (comp/vtext-field
@@ -114,35 +109,40 @@
 (rum/defc editor < mixin-init-editor [spec]
   (form-editor spec))
 
-(defn tabs
+(def action-menu-item-style
+  {:padding "0px 10px 0px 20px"})
+
+(defn file-select
   [name value last? previous?]
-  [:div.form-panel-tabs
-   (comp/mui
-     (comp/tabs
-       {:key                   "tabs"
-        :value                 value
-        :inkBarStyle           images/tabs-inkbar-style
-        :tabItemContainerStyle images/tabs-container-style}
-       (comp/tab
-         {:key   "compose"
-          :href  (routes/path-for-frontend :stack-compose {:name name})
-          :label "Current state"
-          :style (tab-style false)
-          :value 0})
-       (comp/tab
-         {:key      "last"
-          :href     (routes/path-for-frontend :stack-last {:name name})
-          :label    "Last deployed"
-          :style    (tab-style (not last?))
-          :disabled (not last?)
-          :value    1})
-       (comp/tab
-         {:key      "previous"
-          :href     (routes/path-for-frontend :stack-previous {:name name})
-          :label    "Previously deployed"
-          :style    (tab-style (not previous?))
-          :disabled (not previous?)
-          :value    2})))])
+  (form/comp
+    "COMPOSE FILE SOURCE"
+    (comp/select-field
+      {:name       "cfs"
+       :key        "cfs"
+       :required   true
+       :inputStyle {:width "270px"}
+       :disabled   false
+       :value      value}
+      (comp/menu-item
+        {:key           "current"
+         :innerDivStyle action-menu-item-style
+         :href          (routes/path-for-frontend :stack-compose {:name name})
+         :value         :current
+         :primaryText   "Current engine state"})
+      (comp/menu-item
+        {:key           "last"
+         :innerDivStyle action-menu-item-style
+         :href          (routes/path-for-frontend :stack-last {:name name})
+         :disabled      (not last?)
+         :value         :last
+         :primaryText   "Last deployed"})
+      (comp/menu-item
+        {:key           "previous"
+         :innerDivStyle action-menu-item-style
+         :href          (routes/path-for-frontend :stack-previous {:name name})
+         :disabled      (not previous?)
+         :value         :previous
+         :primaryText   "Previously deployed (rollback)"}))))
 
 (rum/defc form-edit [{:keys [name spec]}
                      {:keys [processing? valid? last? previous?]}]
@@ -160,7 +160,7 @@
      {:onValid   #(state/update-value [:valid?] true state/form-state-cursor)
       :onInvalid #(state/update-value [:valid?] false state/form-state-cursor)}
      (form-name name)
-     (html (tabs name 0 last? previous?))
+     (html (file-select name :current last? previous?))
      (editor (:compose spec)))])
 
 (rum/defc form < rum/reactive
