@@ -24,7 +24,6 @@
     (comp/vtext-field
       {:name          "stack-name"
        :key           "stack-name"
-       :width         "400px"
        :underlineShow false
        :required      true
        :disabled      true
