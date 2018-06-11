@@ -20,16 +20,6 @@
 
 (def editor-id "compose")
 
-(defn- form-name [value]
-  (form/comp
-    "STACK NAME"
-    (comp/vtext-field
-      {:name     "stack-name"
-       :key      "stack-name"
-       :required true
-       :disabled true
-       :value    value})))
-
 (defn- form-editor [value]
   (comp/vtext-field
     {:id            editor-id
@@ -95,7 +85,7 @@
       (stackfile-handler name handler))))
 
 (rum/defc form-edit < mixin-init-editor [{:keys [name spec]}
-                                         tab
+                                         select
                                          {:keys [processing? valid? previous?]}]
   [:div
    [:div.form-panel
@@ -110,8 +100,8 @@
    (form/form
      {:onValid   #(state/update-value [:valid?] true state/form-state-cursor)
       :onInvalid #(state/update-value [:valid?] false state/form-state-cursor)}
-     (form-name name)
-     (html (compose/tabs name tab true previous?))
+     (compose/form-name name)
+     (html (compose/file-select name select true previous?))
      (form-editor (:compose spec)))])
 
 (rum/defc form-last < rum/reactive
@@ -120,7 +110,7 @@
         stackfile (state/react state/form-value-cursor)]
     (progress/form
       (:loading? state)
-      (form-edit stackfile 1 state))))
+      (form-edit stackfile :last state))))
 
 (rum/defc form-previous < rum/reactive
                  mixin-init-form [_]
@@ -128,4 +118,4 @@
         stackfile (state/react state/form-value-cursor)]
     (progress/form
       (:loading? state)
-      (form-edit stackfile 2 state))))
+      (form-edit stackfile :previous state))))
