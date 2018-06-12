@@ -2,7 +2,7 @@ version: '3'
 
 services:
   app:
-    image: swarmpit/swarmpit:1.5
+    image: swarmpit/swarmpit:latest
     environment:
       - SWARMPIT_DB=http://db:5984
     volumes:
@@ -39,7 +39,7 @@ services:
           memory: 256M
 
   agent:
-    image: swarmpit/agent:2.0
+    image: swarmpit/agent:latest
     environment:
       - DOCKER_API_VERSION=1.35
     volumes:
