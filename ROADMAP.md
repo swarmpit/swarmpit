@@ -94,6 +94,22 @@ deployment order.
 - [[#211](https://github.com/swarmpit/swarmpit/issues/211)] Enable autoredeploy for existing service
 - [[#212](https://github.com/swarmpit/swarmpit/issues/212)] Add support for service update config order
 
+### 1.5 Release
+
+Stacks integration with the engine state was the main goal here. We are now officially supporting multiple ways
+of editing compose either by current state, last deployed or previous one (rollback-ed). It allows seamless
+transition between service & stack api. Event collector went deprecated. Dedicated agent that handle both
+event & stats collecting is introduced instead. Please remove event-collector service once new stack deployed.
+First stage of resource monitoring is out as well. You can now see live statistics of your running nodes & tasks.
+User is offered with possibility to generate custom token for direct communication with Swarmpit backend API.
+
+- [[#226](https://github.com/swarmpit/swarmpit/issues/226)] Generate stackfile dynamically from swarm state
+- [[#227](https://github.com/swarmpit/swarmpit/issues/227)] Update stack based on service change
+- [[#246](https://github.com/swarmpit/swarmpit/issues/246)] Create stack from service
+- [[#225](https://github.com/swarmpit/swarmpit/issues/225)] Upgrade event-collector to fully fledged agent
+- [[#98](https://github.com/swarmpit/swarmpit/issues/98)] Add swarm cluster resource monitoring
+- [[#215](https://github.com/swarmpit/swarmpit/issues/215)] Generating token without expiration date
+
 ## What we will bring into the game
 
 You can find here our goals and related features for future releases.
