@@ -84,7 +84,7 @@
   [item]
   (html
     [:div.mdl-cell.node-item {:key (:id item)}
-     [:a {:href  (str "/#/nodes/" (:id item))
+     [:a {:href  (routes/path-for-frontend :node-info item)
           :style {:color          "inherit"
                   :textDecoration "inherit"}}
       (node-item-header item)
