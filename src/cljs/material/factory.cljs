@@ -28,6 +28,9 @@
 (def list-item-icon (create-factory js/MaterialUI.ListItemIcon))
 (def menu (create-factory js/MaterialUI.Menu))
 (def menu-item (create-factory js/MaterialUI.MenuItem))
+(def avatar (create-factory js/MaterialUI.Avatar))
+(def paper (create-factory js/MaterialUI.Paper))
+(def svg-icon (create-factory js/MaterialUI.SvgIcon))
 
 (def visibility-icon (create-factory js/MaterialUIIcons.Visibility))
 (def visibility-off-icon (create-factory js/MaterialUIIcons.VisibilityOff))
@@ -37,19 +40,15 @@
 (def account-circle-icon (create-factory js/MaterialUIIcons.AccountCircle))
 
 (def create-mui-theme js/MaterialUI.createMuiTheme)
-(def with-styles js/MaterialUI.withStyles)
-
 
 
 
 
 
 (def dialog (create-factory js/MaterialUI.Dialog))
-(def avatar (create-factory js/MaterialUI.Avatar))
 (def snackbar (create-factory js/MaterialUI.Snackbar))
 
 (def icon-menu (create-factory js/MaterialUI.IconMenu))
-(def svg-icon (create-factory js/MaterialUI.SvgIcon))
 (def flat-button (create-factory js/MaterialUI.FlatButton))
 (def raised-button (create-factory js/MaterialUI.RaisedButton))
 (def toogle (create-factory js/MaterialUI.Toggle))

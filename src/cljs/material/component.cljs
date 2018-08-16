@@ -49,17 +49,25 @@
   [props & childs]
   (f/menu (clj->js props) childs))
 
-(defn input-label
-  [props label]
-  (f/input-label (clj->js props) label))
+(defn paper
+  [props & childs]
+  (f/paper (clj->js props) childs))
 
 (defn input
   [props]
   (f/input (clj->js props)))
 
+(defn avatar
+  [props]
+  (f/avatar (clj->js props)))
+
 (defn list-item-text
   [props]
   (f/list-item-text (clj->js props)))
+
+(defn input-label
+  [props label]
+  (f/input-label (clj->js props) label))
 
 (defn list-item-icon
   [props icon]
@@ -88,6 +96,10 @@
 (defn typography
   [props label]
   (f/typography (clj->js props) label))
+
+(defn svg
+  ([props d] (f/svg-icon (clj->js props) (html [:path {:d d}])))
+  ([d] (f/svg-icon nil (html [:path {:d d}]))))
 
 
 
@@ -123,10 +135,6 @@
 (defn auto-complete
   ([props] (f/auto-complete (clj->js props)))
   ([] (f/auto-complete nil)))
-
-(defn avatar
-  ([props] (f/avatar (clj->js props)))
-  ([] (f/avatar nil)))
 
 (defn snackbar
   ([props] (f/snackbar (clj->js props)))
@@ -239,10 +247,6 @@
 (defn radio-button-group
   [props & childs]
   (f/radio-button-group (clj->js props) childs))
-
-(defn svg
-  ([props d] (f/svg-icon (clj->js props) (html [:path {:d d}])))
-  ([d] (f/svg-icon nil (html [:path {:d d}]))))
 
 (defn button-icon
   [icon]

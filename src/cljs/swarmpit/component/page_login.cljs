@@ -7,7 +7,8 @@
             [swarmpit.ajax :as ajax]
             [swarmpit.token :as token]
             [swarmpit.routes :as routes]
-            [rum.core :as rum]))
+            [rum.core :as rum]
+            [sablono.core :refer-macros [html]]))
 
 (enable-console-print!)
 
@@ -38,23 +39,25 @@
     (login-handler local-state)))
 
 (defn- form-username [value local-state]
-  (comp/text-field
-    {:id         "loginUsername"
-     :className  "SwarmpitFormLogin"
-     :label      "Username"
-     :key        "username-input"
-     :required   true
-     :value      value
-     :onKeyPress (fn [event]
-                   (on-enter event local-state))
-     :onChange   (fn [event]
-                   (swap! local-state assoc :username (-> event .-target .-value)))}))
+  (comp/form-control
+    {:margin    "normal"
+     :required  true
+     :fullWidth true}
+    (comp/input-label
+      {:htmlFor "user"} "User")
+    (comp/input
+      {:id           "user"
+       :name         "user"
+       :autoComplete "user"
+       :autoFocus    true
+       :value        value
+       :onChange     (fn [event]
+                       (swap! local-state assoc :username (-> event .-target .-value)))})))
 
 (defn- form-password-adornment [local-state]
   (let [show-password? (:showPassword @local-state)]
     (comp/input-adornment
-      {:position  "end"
-       :className "SwarmpitFormLogin-password-adornment"}
+      {:position "end"}
       (comp/icon-button
         {:aria-label  "Toggle password visibility"
          :onClick     (fn []
@@ -69,14 +72,15 @@
   (let [show-password? (:showPassword @local-state)]
     (comp/form-control
       {:className "SwarmpitFormLogin"
+       :fullWidth true
        :required  true}
       (comp/input-label
         {:htmlFor "adornment-password"
-         :key     "password-input-label"} "Password")
+         :key     "Swarmpit-login-password-input-label"} "Password")
       (comp/input
         {:id           "adornment-password"
          :label        "Password"
-         :key          "password-input"
+         :key          "Swarmpit-login-password-input"
          :type         (if show-password?
                          "text"
                          "password")
@@ -90,11 +94,13 @@
 (defn- form-button [local-state]
   (let [canSubmit? (:canSubmit @local-state)]
     (comp/button
-      {:className "SwarmpitFormLogin-button"
+      {:className "Swarmpit-login-form-submit"
        :disabled  (not canSubmit?)
-       :variant   "outlined"
-       :color     "secondary"
-       :onClick   #(login-handler local-state)} "Login")))
+       :type      "submit"
+       :variant   "raised"
+       :fullWidth true
+       :color     "primary"
+       :onClick   #(login-handler local-state)} "Sign in")))
 
 (rum/defcs form < (rum/local {:username     ""
                               :password     ""
@@ -105,20 +111,28 @@
         username (:username @local-state)
         password (:password @local-state)
         message (:message @local-state)]
-    [:div.page-back
-     [:div.page
-      [:div.page-logo
-       [:img {:src    "img/logo.png"
-              :width  "350px"
-              :height "350px"}]]
-      [:div.page-form
-       (comp/form-control
-         {:required true
-          :error    (not-empty message)}
-         (when (not-empty message)
-           (comp/form-helper-text {:error true} message))
-         (comp/form-group
-           {}
-           (comp/mui (form-username username local-state))
-           (comp/mui (form-password password local-state))
-           (comp/mui (form-button local-state))))]]]))
+    [:div.Swarmpit-page
+     [:div.Swarmpit-login-layout
+      (comp/mui
+        (comp/paper
+          {:className "Swarmpit-login-paper"}
+          (comp/avatar
+            {:className "Swarmpit-login-avatar"
+             :alt       "Swarmpit logo"
+             :src       "/img/swarmpit-transparent.png"})
+
+          ;(html
+          ;  [:img {:src    "img/swarmpit.png"
+          ;         :width  "80px"
+          ;         :height "80px"}])
+
+          (comp/typography
+            {:variant   "headline"
+             :className "Swarmpit-login-text"} "Welcome!")
+          (html
+            [:form.Swarmpit-login-form
+             (when (not-empty message)
+               (comp/form-helper-text {:error true} message))
+             (form-username username local-state)
+             (form-password password local-state)
+             (form-button local-state)])))]]))

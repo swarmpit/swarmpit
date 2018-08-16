@@ -116,6 +116,44 @@ html > body {
     padding: 24px;
 }
 
+.Swarmpit-page {
+    display: flex;
+    justify-content: center;
+    background: url("../img/background.png") no-repeat;
+    min-height: 100vh;
+}
+
+.Swarmpit-login-layout {
+    width: auto;
+    margin-left: 24px;
+    margin-right: 24px;
+}
+
+.Swarmpit-login-paper {
+    margin-top: 64px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    padding: 16px 24px 24px;
+}
+
+.Swarmpit-login-avatar {
+    margin: 8px;
+    background-color: #65519f;
+}
+
+.Swarmpit-login-text {
+    color: #65519f !important;
+}
+
+.Swarmpit-login-form {
+    margin-top: 8px;
+}
+
+.Swarmpit-login-form-submit {
+    margin-top: 24px !important;
+}
+
 @media (min-width: 600px) {
     .Swarmpit-drawer-closed > div {
         width: 72px;
@@ -130,8 +168,17 @@ html > body {
     }
 }
 
+@media (min-width: 448px) {
+    .Swarmpit-login-layout {
+        width: 400px;
+        margin-left: auto;
+        margin-right: auto;
+    }
+}
+
 @media (min-width: 0px) and (orientation: landscape) {
     .Swarmpit-drawer-toolbar {
         /*min-height: 48px;*/
     }
 }
+
