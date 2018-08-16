@@ -1,26 +1,55 @@
 (ns material.factory
-  (:refer-clojure :exclude [stepper list])
+  (:refer-clojure :exclude [list])
   (:require [cljsjs.react]
-            [cljsjs.material-ui]
-            [cljsjs.formsy-react]
-            [cljsjs.formsy-material-ui]))
+            [material-ui]
+            [material-ui-icons]))
 
 (def create-factory js/React.createFactory)
 
 ;;; Material-UI
 
-(def dialog (create-factory js/MaterialUI.Dialog))
-(def avatar (create-factory js/MaterialUI.Avatar))
-(def app-bar (create-factory js/MaterialUI.AppBar))
+(def css-baseline (create-factory js/MaterialUI.CssBaseline))
+(def mui-theme-provider (create-factory js/MaterialUI.MuiThemeProvider))
+(def form-control (create-factory js/MaterialUI.FormControl))
+(def form-group (create-factory js/MaterialUI.FormGroup))
+(def form-helper-text (create-factory js/MaterialUI.FormHelperText))
+(def input (create-factory js/MaterialUI.Input))
+(def input-label (create-factory js/MaterialUI.InputLabel))
+(def input-adornment (create-factory js/MaterialUI.InputAdornment))
+(def icon-button (create-factory js/MaterialUI.IconButton))
+(def button (create-factory js/MaterialUI.Button))
+(def typography (create-factory js/MaterialUI.Typography))
 (def drawer (create-factory js/MaterialUI.Drawer))
-(def snackbar (create-factory js/MaterialUI.Snackbar))
+(def divider (create-factory js/MaterialUI.Divider))
+(def toolbar (create-factory js/MaterialUI.Toolbar))
+(def appbar (create-factory js/MaterialUI.AppBar))
+(def list-item (create-factory js/MaterialUI.ListItem))
+(def list-item-text (create-factory js/MaterialUI.ListItemText))
+(def list-item-icon (create-factory js/MaterialUI.ListItemIcon))
 (def menu (create-factory js/MaterialUI.Menu))
 (def menu-item (create-factory js/MaterialUI.MenuItem))
-(def list (create-factory js/MaterialUI.List))
-(def list-item (create-factory js/MaterialUI.ListItem))
-(def svg-icon (create-factory js/MaterialUI.SvgIcon))
-(def icon-button (create-factory js/MaterialUI.IconButton))
+
+(def visibility-icon (create-factory js/MaterialUIIcons.Visibility))
+(def visibility-off-icon (create-factory js/MaterialUIIcons.VisibilityOff))
+(def menu-icon (create-factory js/MaterialUIIcons.Menu))
+(def chevron-left-icon (create-factory js/MaterialUIIcons.ChevronLeft))
+(def chevron-right-icon (create-factory js/MaterialUIIcons.ChevronRight))
+(def account-circle-icon (create-factory js/MaterialUIIcons.AccountCircle))
+
+(def create-mui-theme js/MaterialUI.createMuiTheme)
+(def with-styles js/MaterialUI.withStyles)
+
+
+
+
+
+
+(def dialog (create-factory js/MaterialUI.Dialog))
+(def avatar (create-factory js/MaterialUI.Avatar))
+(def snackbar (create-factory js/MaterialUI.Snackbar))
+
 (def icon-menu (create-factory js/MaterialUI.IconMenu))
+(def svg-icon (create-factory js/MaterialUI.SvgIcon))
 (def flat-button (create-factory js/MaterialUI.FlatButton))
 (def raised-button (create-factory js/MaterialUI.RaisedButton))
 (def toogle (create-factory js/MaterialUI.Toggle))
@@ -43,23 +72,3 @@
 (def radio-button-group (create-factory js/MaterialUI.RadioButtonGroup))
 (def radio-button (create-factory js/MaterialUI.RadioButton))
 (def auto-complete (create-factory js/MaterialUI.AutoComplete))
-(def mui-theme-provider (create-factory js/MaterialUIStyles.MuiThemeProvider))
-
-(def mui-theme js/MaterialUIStyles.getMuiTheme)
-(def fade js/MaterialUIUtils.colorManipulator.fade)
-
-;;; Formsy
-
-(def vform (create-factory js/Formsy.Form))
-
-;;; Formsy Material-UI
-
-(def vcheckbox (create-factory js/FormsyMaterialUI.FormsyCheckbox))
-(def vdate (create-factory js/FormsyMaterialUI.FormsyDate))
-(def vradio (create-factory js/FormsyMaterialUI.FormsyRadio))
-(def vradio-group (create-factory js/FormsyMaterialUI.FormsyRadioGroup))
-(def vselect (create-factory js/FormsyMaterialUI.FormsySelect))
-(def vtext (create-factory js/FormsyMaterialUI.FormsyText))
-(def vtime (create-factory js/FormsyMaterialUI.FormsyTime))
-(def vtoogle (create-factory js/FormsyMaterialUI.FormsyToggle))
-(def vauto-complete (create-factory js/FormsyMaterialUI.FormsyAutoComplete))

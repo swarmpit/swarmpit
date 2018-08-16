@@ -1,5 +1,6 @@
 (ns swarmpit.component.layout
   (:require [rum.core :as rum]
+            [material.component :as comp]
             [clojure.string :as str]
             [swarmpit.view :as view]
             [swarmpit.component.state :as state]
@@ -7,6 +8,17 @@
             [swarmpit.component.header :as header]))
 
 (enable-console-print!)
+
+(def styles
+  (let [theme (js->clj comp/theme)]
+    {:root    {:flexGrow 1
+               :zIndex   1
+               :overflow "hidden"
+               :position "relative"
+               :display  "flex"}
+     :context {:flexGrow        1
+               :backgroundColor (-> theme (get-in ["palette" "background" "default"]))
+               :padding         (* (-> theme (get-in ["spacing" "unit"])) 3)}}))
 
 (def page-titles
   {:index                 "Home"
@@ -78,18 +90,16 @@
   (view/dispatch route))
 
 (rum/defc page-layout < rum/reactive [route]
-  (let [{:keys [opened]} (state/react state/layout-cursor)
-        {:keys [handler]} route
-        layout-type (if opened
-                      "layout-opened"
-                      "layout-closed")
+  (let [{:keys [handler]} route
         page-title (page-title handler)
         page-domain (page-domain handler)]
     (document-title page-title)
-    [:div {:class ["layout" layout-type]}
-     [:header (header/appbar page-title)]
+    [:div.Swarmpit-root
+     (header/appbar page-title)
      [:nav (menu/drawer page-domain)]
-     [:main (view/dispatch route)]]))
+     [:main.Swarmpit-context
+      [:div.Swarmpit-toolbar]
+      [:div "test"]]]))
 
 (rum/defc layout < rum/reactive []
   (let [{:keys [handler] :as route} (state/react state/route-cursor)]

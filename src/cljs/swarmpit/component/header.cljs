@@ -1,92 +1,107 @@
 (ns swarmpit.component.header
   (:require [material.component :as comp]
             [material.icon :as icon]
-            [swarmpit.url :refer [dispatch!]]
+            [swarmpit.routes :as routes]
             [swarmpit.storage :as storage]
             [swarmpit.event.source :as eventsource]
-            [swarmpit.routes :as routes]
-            [clojure.string :as string]
+            [swarmpit.component.state :as state]
+            [swarmpit.url :refer [dispatch!]]
             [rum.core :as rum]
-            [goog.crypt :as crypt])
-  (:import [goog.crypt Md5]))
+            [sablono.core :refer-macros [html]]))
 
 (enable-console-print!)
 
-(def user-avatar-style
-  {:marginRight "10px"
-   :border      "1px solid #fff"})
+(def drawer-width 200)
 
-(def appbar-style
-  {:position  "fixed"
-   :boxShadow "none"
-   :top       0})
+(def styles
+  (let [theme (js->clj comp/theme)
+        transitions (-> theme (get "transitions"))
+        transitions-create (get transitions "create")
+        transition-easing (-> transitions (get-in ["easing" "sharp"]))
+        transition-duration-leaving (-> transitions (get-in ["duration" "leavingScreen"]))
+        transition-duration-entering (-> transitions (get-in ["duration" "enteringScreen"]))]
+    {:appBar      {:zIndex     (+ (get-in theme ["zIndex" "drawer"]) 1)
+                   :transition (transitions-create
+                                 (clj->js ["width" "margin"])
+                                 (clj->js {:easing   transition-easing
+                                           :duration transition-duration-leaving}))}
+     :appBarShift {:marginLeft drawer-width
+                   :width      (str "calc(100% - " drawer-width "px)")
+                   :transition (transitions-create
+                                 (clj->js ["width" "margin"])
+                                 (clj->js {:easing   transition-easing
+                                           :duration transition-duration-entering}))}
+     :menuButton  {:marginLeft  12
+                   :marginRight 36}
+     :hide        {:display "none"}}))
 
-(def appbar-icon-style
-  {:position "fixed"
-   :right    20})
-
-(def appbar-title-style
-  {:fontSize   "25px"
-   :fontWeight 200})
-
-(defn user-gravatar-hash [email]
-  (let [md5 (Md5.)]
-    (when (some? email)
-      (do
-        (.update md5 (string/trim email))
-        (crypt/byteArrayToHex (.digest md5))))))
-
-(defn- user-avatar []
-  (comp/avatar
-    {:style user-avatar-style
-     :src   (->> (storage/email)
-                 (user-gravatar-hash)
-                 (str "https://www.gravatar.com/avatar/"))}))
-
-(defn- user-menu-button []
-  (comp/icon-button
-    nil
-    (comp/svg
-      {:key   "user-menu-button-icon"
-       :color "#fff"}
-      icon/expand)))
-
-(defn- user-menu []
-  (comp/icon-menu
-    {:iconButtonElement (user-menu-button)}
-    (comp/menu-item
-      {:key         "user-menu-api-token"
-       :onTouchTap  (fn []
-                      (dispatch!
-                        (routes/path-for-frontend :api-access)))
-       :primaryText "API access"})
-    (comp/menu-item
-      {:key         "user-menu-settings"
-       :onTouchTap  (fn []
-                      (dispatch!
-                        (routes/path-for-frontend :password)))
-       :primaryText "Change password"})
-    (comp/menu-item
-      {:key         "user-menu-logout"
-       :onTouchTap  (fn []
-                      (storage/remove "token")
-                      (eventsource/close!)
-                      (dispatch!
-                        (routes/path-for-frontend :login)))
-       :primaryText "Log out"})))
-
-(rum/defc userbar < rum/static []
-  [:div.user-bar
-   (user-avatar)
-   [:span (storage/user)]
-   (user-menu)])
-
-(rum/defc appbar < rum/static [title]
-  (comp/mui
-    (comp/app-bar
-      {:title              title
-       :titleStyle         appbar-title-style
-       :style              appbar-style
-       :iconElementRight   (userbar)
-       :iconStyleRight     appbar-icon-style
-       :showMenuIconButton false})))
+(rum/defc appbar < rum/reactive [title]
+  (let [{:keys [opened anchorEl]} (state/react state/layout-cursor)]
+    (comp/mui
+      (comp/app-bar
+        {:position  "absolute"
+         :key       "Swarmpit-appbar"
+         :className (if opened
+                      "Swarmpit-appbar Swarmpit-appbar-shift"
+                      "Swarmpit-appbar")}
+        (comp/toolbar
+          {:disableGutters (not opened)}
+          (comp/icon-button
+            {:key        "Swarmpit-appbar-menu-btn"
+             :color      "inherit"
+             :aria-label "Open drawer"
+             :onClick    #(state/update-value [:opened] true state/layout-cursor)
+             :className  (if opened
+                           "Swarmpit-appbar-menu-btn hide"
+                           "Swarmpit-appbar-menu-btn")}
+            icon/menu)
+          (comp/typography
+            {:key       "Swarmpit-appbar-title"
+             :className "Swarmpit-appbar-title"
+             :variant   "title"
+             :color     "inherit"
+             :noWrap    true}
+            title)
+          (html
+            [:div
+             (comp/icon-button
+               {:aria-owns     (when anchorEl "Swarmpit-appbar-user-menu")
+                :aria-haspopup "true"
+                :onClick       (fn [e]
+                                 (state/update-value [:anchorEl] (.-currentTarget e) state/layout-cursor))
+                :color         "inherit"} icon/account-circle)
+             (comp/menu
+               {:id              "Swarmpit-appbar-user-menu"
+                :key             "Swarmpit-appbar-user-menu"
+                :anchorEl        anchorEl
+                :anchorOrigin    {:vertical   "top"
+                                  :horizontal "right"}
+                :transformOrigin {:vertical   "top"
+                                  :horizontal "right"}
+                :open            (some? anchorEl)
+                :onClose         #(state/update-value [:anchorEl] nil state/layout-cursor)}
+               (comp/menu-item
+                 {:key       "Swarmpit-appbar-user-menu-logged-info"
+                  :className "Swarmpit-appbar-user-menu-logged-info"
+                  :disabled  true} (html [:div
+                                          [:span "Signed in as"]
+                                          [:br]
+                                          [:span.Swarmpit-appbar-user-menu-logged-user (storage/user)]]))
+               (comp/divider)
+               (comp/menu-item
+                 {:key     "Swarmpit-appbar-user-menu-api-token"
+                  :onClick (fn []
+                             (dispatch!
+                               (routes/path-for-frontend :api-access)))} "API access")
+               (comp/menu-item
+                 {:key     "Swarmpit-appbar-user-menu-settings"
+                  :onClick (fn []
+                             (dispatch!
+                               (routes/path-for-frontend :password)))} "Change password")
+               (comp/menu-item
+                 {:key     "Swarmpit-appbar-user-menu-logout"
+                  :onClick (fn []
+                             (storage/remove "token")
+                             (eventsource/close!)
+                             (dispatch!
+                               (routes/path-for-frontend :login)))} "Log out"))]))))))

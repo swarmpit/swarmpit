@@ -4,18 +4,17 @@
   :license {:name "Eclipse Public License"
             :url  "http://www.eclipse.org/legal/epl-v10.html"}
   :dependencies [[org.clojure/clojure "1.9.0"]
-                 [org.clojure/clojurescript "1.10.238"]
+                 [org.clojure/clojurescript "1.10.312"]
                  [org.clojure/core.async "0.4.474"]
                  [org.clojure/core.cache "0.7.1"]
                  [org.clojure/tools.logging "0.4.0"]
-                 [cljsjs/react "15.4.2-2"]
-                 [cljsjs/react-dom "15.4.2-2"]
-                 [cljsjs/material-ui "0.18.1-0"]
-                 [cljsjs/formsy-react "0.19.0-0"]
-                 [cljsjs/formsy-material-ui "0.5.3-0"]
+                 [cljsjs/react "16.4.0-0"]
+                 [cljsjs/react-dom "16.4.0-0"]
+                 [cljsjs/material-ui "1.4.0-0"]
+                 [cljsjs/material-ui-icons "1.1.0-0"]
                  [cljsjs/codemirror "5.24.0-1"]
                  [cljsjs/js-yaml "3.3.1-0"]
-                 [rum "0.10.8" :exclusions [cljsjs/react cljsjs/react-dom]]
+                 [rum "0.11.2" :exclusions [cljsjs/react cljsjs/react-dom]]
                  [ring "1.6.3" :exclusions [ring/ring-jetty-adapter]]
                  [ring/ring-json "0.4.0"]
                  [ring/ring-defaults "0.3.1" :exclusions [ring/ring-core]]
@@ -67,6 +66,8 @@
                                :output-to            "resources/public/js/main.js"
                                :output-dir           "resources/public/js/out"
                                :parallel-build       true
+                               ;:npm-deps             {"react-material-ui-form-validator" "2.0.0-beta.10"}
+                               :install-deps         true
                                :source-map-timestamp true}}
                {:id           "min"
                 :source-paths ["src/cljs" "src/cljc"]

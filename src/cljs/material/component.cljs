@@ -1,193 +1,248 @@
 (ns material.component
   (:refer-clojure :exclude [stepper list])
-  (:require [material.factory :as factory]
+  (:require [material.factory :as f]
             [material.validation]
             [sablono.core :refer-macros [html]]))
 
 ;;; Theme components
 
-(def theme
-  {:palette {:primary1Color      "#437f9d"
-             :primary2Color      "#3C728D"
-             :primary3Color      "#bdbdbd"
-             :accent1Color       "#437f9d"
-             :accent2Color       "#f5f5f5"
-             :accent3Color       "#9e9e9e"
-             :textColor          "#757575"
-             :alternateTextColor "#ffffff"
-             :canvasColor        "#ffffff"
-             :borderColor        "#e0e0e0"
-             :disabledColor      (factory/fade "rgba(0, 0, 0, 0.87)" 0.3)
-             :pickerHeaderColor  "437f9d"
-             :clockCircleColor   (factory/fade "rgba(0, 0, 0, 0.87)" 0.07)
-             :shadowColor        "#000000"}})
+(def theme-props
+  {:palette {:primary   {:main "#65519f"}
+             :secondary {:main "#f91556"}}})
 
-(defn- mui-theme
-  [theme]
-  (factory/mui-theme (clj->js theme)))
+(def theme (f/create-mui-theme (clj->js theme-props)))
 
-(defn- mui-theme-provider
-  [props comp]
-  (factory/mui-theme-provider (clj->js props) comp))
-
-(defn mui
-  [comp]
-  [:div
-   (mui-theme-provider
-     {:muiTheme (mui-theme theme)}
-     comp)])
-
-;;; Single formsy components
-
-(defn vform
-  [props & childs] (factory/vform (clj->js props) childs))
-
-(defn vtext-field
-  ([props] (factory/vtext (clj->js props)))
-  ([] (factory/vtext nil)))
-
-(defn vauto-complete
-  ([props] (factory/vauto-complete (clj->js props)))
-  ([] (factory/vauto-complete nil)))
+(defn mui [component]
+  (f/mui-theme-provider (clj->js {:theme theme}) (f/css-baseline) component))
 
 ;;; Single material-ui components
 
-(defn auto-complete
-  ([props] (factory/auto-complete (clj->js props)))
-  ([] (factory/auto-complete nil)))
+(defn divider
+  ([props] (f/divider (clj->js props)))
+  ([] (f/divider nil)))
 
-(defn avatar
-  ([props] (factory/avatar (clj->js props)))
-  ([] (factory/avatar nil)))
-
-(defn snackbar
-  ([props] (factory/snackbar (clj->js props)))
-  ([] (factory/snackbar nil)))
-
-(defn toogle
-  ([props] (factory/toogle (clj->js props)))
-  ([] (factory/toogle nil)))
-
-(defn checkbox
-  ([props] (factory/checkbox (clj->js props)))
-  ([] (factory/checkbox nil)))
-
-(defn slider
-  ([props] (factory/slider (clj->js props)))
-  ([] (factory/slider nil)))
-
-(defn linear-progress
-  ([props] (factory/linear-progress (clj->js props)))
-  ([] (factory/linear-progress nil)))
-
-(defn circular-progress
-  ([props] (factory/circular-progress (clj->js props)))
-  ([] (factory/circular-progress nil)))
-
-(defn refresh-indicator
-  ([props] (factory/refresh-indicator (clj->js props)))
-  ([] (factory/refresh-indicator nil)))
-
-(defn text-field
-  ([props] (factory/text-field (clj->js props)))
-  ([] (factory/text-field nil)))
-
-(defn app-bar
-  ([props] (factory/app-bar (clj->js props)))
-  ([] (factory/app-bar nil)))
-
-(defn menu-item
-  ([props] (factory/menu-item (clj->js props)))
-  ([] (factory/menu-item nil)))
-
-(defn flat-button
-  ([props] (factory/flat-button (clj->js props)))
-  ([] (factory/flat-button nil)))
-
-(defn radio-button
-  ([props] (factory/radio-button (clj->js props)))
-  ([] (factory/radio-button nil)))
-
-(defn raised-button
-  ([props & childs] (factory/raised-button (clj->js props) childs))
-  ([props] (factory/raised-button (clj->js props)))
-  ([] (factory/raised-button nil)))
-
-(defn list-item
-  ([props] (factory/list-item (clj->js props)))
-  ([] (factory/list-item nil)))
-
-(defn dialog
+(defn form-control
   [props & childs]
-  (factory/dialog (clj->js props) childs))
+  (f/form-control (clj->js props) childs))
 
-(defn list
+(defn form-group
   [props & childs]
-  (factory/list (clj->js props) childs))
+  (f/form-group (clj->js props) childs))
 
-(defn menu
+(defn form-helper-text
   [props & childs]
-  (factory/menu (clj->js props) childs))
+  (f/form-helper-text (clj->js props) childs))
 
-(defn icon-menu
+(defn toolbar
   [props & childs]
-  (factory/icon-menu (clj->js props) childs))
-
-(defn icon-button
-  [props comp]
-  (factory/icon-button (clj->js props) comp))
-
-(defn select-field
-  [props & childs]
-  (factory/select-field (clj->js props) childs))
+  (f/toolbar (clj->js props) childs))
 
 (defn drawer
   [props & childs]
-  (factory/drawer (clj->js props) childs))
+  (f/drawer (clj->js props) childs))
+
+(defn list-item
+  [props & childs]
+  (f/list-item (clj->js props) childs))
+
+(defn menu
+  [props & childs]
+  (f/menu (clj->js props) childs))
+
+(defn input-label
+  [props label]
+  (f/input-label (clj->js props) label))
+
+(defn input
+  [props]
+  (f/input (clj->js props)))
+
+(defn list-item-text
+  [props]
+  (f/list-item-text (clj->js props)))
+
+(defn list-item-icon
+  [props icon]
+  (f/list-item-icon (clj->js props) icon))
+
+(defn input-adornment
+  [props adorment]
+  (f/input-adornment (clj->js props) adorment))
+
+(defn icon-button
+  [props icon]
+  (f/icon-button (clj->js props) icon))
+
+(defn button
+  [props label]
+  (f/button (clj->js props) label))
+
+(defn menu-item
+  [props label]
+  (f/menu-item (clj->js props) label))
+
+(defn app-bar
+  [props drawer]
+  (f/appbar (clj->js props) drawer))
+
+(defn typography
+  [props label]
+  (f/typography (clj->js props) label))
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+(defn auto-complete
+  ([props] (f/auto-complete (clj->js props)))
+  ([] (f/auto-complete nil)))
+
+(defn avatar
+  ([props] (f/avatar (clj->js props)))
+  ([] (f/avatar nil)))
+
+(defn snackbar
+  ([props] (f/snackbar (clj->js props)))
+  ([] (f/snackbar nil)))
+
+(defn toogle
+  ([props] (f/toogle (clj->js props)))
+  ([] (f/toogle nil)))
+
+(defn checkbox
+  ([props] (f/checkbox (clj->js props)))
+  ([] (f/checkbox nil)))
+
+(defn slider
+  ([props] (f/slider (clj->js props)))
+  ([] (f/slider nil)))
+
+(defn linear-progress
+  ([props] (f/linear-progress (clj->js props)))
+  ([] (f/linear-progress nil)))
+
+(defn circular-progress
+  ([props] (f/circular-progress (clj->js props)))
+  ([] (f/circular-progress nil)))
+
+(defn refresh-indicator
+  ([props] (f/refresh-indicator (clj->js props)))
+  ([] (f/refresh-indicator nil)))
+
+(defn text-field
+  ([props] (f/text-field (clj->js props)))
+  ([] (f/text-field nil)))
+
+(defn flat-button
+  ([props] (f/flat-button (clj->js props)))
+  ([] (f/flat-button nil)))
+
+(defn radio-button
+  ([props] (f/radio-button (clj->js props)))
+  ([] (f/radio-button nil)))
+
+(defn raised-button
+  ([props & childs] (f/raised-button (clj->js props) childs))
+  ([props] (f/raised-button (clj->js props)))
+  ([] (f/raised-button nil)))
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+(defn dialog
+  [props & childs]
+  (f/dialog (clj->js props) childs))
+
+
+
+(defn icon-menu
+  [props & childs]
+  (f/icon-menu (clj->js props) childs))
+
+(defn select-field
+  [props & childs]
+  (f/select-field (clj->js props) childs))
 
 (defn tab
   [props & childs]
-  (factory/tab (clj->js props) childs))
+  (f/tab (clj->js props) childs))
 
 (defn tabs
   [props & childs]
-  (factory/tabs (clj->js props) childs))
+  (f/tabs (clj->js props) childs))
 
 (defn table
   [props & childs]
-  (factory/table (clj->js props) childs))
+  (f/table (clj->js props) childs))
 
 (defn table-header
   [props & childs]
-  (factory/table-header (clj->js props) childs))
+  (f/table-header (clj->js props) childs))
 
 (defn table-header-column
   [props comp]
-  (factory/table-header-column (clj->js props) comp))
+  (f/table-header-column (clj->js props) comp))
 
 (defn table-body
   [props & childs]
-  (factory/table-body (clj->js props) childs))
+  (f/table-body (clj->js props) childs))
 
 (defn table-row
   [props & childs]
-  (factory/table-row (clj->js props) childs))
+  (f/table-row (clj->js props) childs))
 
 (defn table-row-column
-  ([props comp] (factory/table-row-column (clj->js props) comp))
-  ([props] (factory/table-row-column (clj->js props))))
+  ([props comp] (f/table-row-column (clj->js props) comp))
+  ([props] (f/table-row-column (clj->js props))))
 
 (defn table-footer
   [props & childs]
-  (factory/table-footer (clj->js props) childs))
+  (f/table-footer (clj->js props) childs))
 
 (defn radio-button-group
   [props & childs]
-  (factory/radio-button-group (clj->js props) childs))
+  (f/radio-button-group (clj->js props) childs))
 
 (defn svg
-  ([props d] (factory/svg-icon (clj->js props) (html [:path {:d d}])))
-  ([d] (factory/svg-icon nil (html [:path {:d d}]))))
+  ([props d] (f/svg-icon (clj->js props) (html [:path {:d d}])))
+  ([d] (f/svg-icon nil (html [:path {:d d}]))))
 
 (defn button-icon
   [icon]
@@ -198,12 +253,12 @@
 
 ;;; Composite components
 
-(defn vtextfield [props]
-  (vtext-field
-    (merge props
-           {:required      true
-            :underlineShow false
-            :inputStyle    {:color "rgb(117, 117, 117)"}})))
+;(defn vtextfield [props]
+;  (vtext-field
+;    (merge props
+;           {:required      true
+;            :underlineShow false
+;            :inputStyle    {:color "rgb(117, 117, 117)"}})))
 
 (defn loader [props]
   (refresh-indicator

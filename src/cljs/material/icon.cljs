@@ -1,5 +1,6 @@
 (ns material.icon
-  (:refer-clojure :exclude [remove]))
+  (:refer-clojure :exclude [remove])
+  (:require [material.factory :as f]))
 
 (def home "M10 20v-6h4v6h5v-8h3L12 3 2 12h3v8z")
 
@@ -52,3 +53,10 @@
   (if (= os "windows")
     win
     tux))
+
+(def visibility (f/visibility-icon))
+(def visibility-off (f/visibility-off-icon))
+(def menu (f/menu-icon))
+(def chevron-left (f/chevron-left-icon))
+(def chevron-right (f/chevron-right-icon))
+(def account-circle (f/account-circle-icon))

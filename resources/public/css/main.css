@@ -263,11 +263,115 @@ input:invalid {
     margin-top: -4px;
 }
 
+/* Layout */
+
+.SwarmpitLayout {
+    flex-grow: 1;
+    height: 430px;
+    z-index: 1;
+    overflow: hidden;
+    position: relative;
+    display: flex;
+}
+
+/* Application bar */
+
+
+/*.SwarmpitAppBar-appBar-1 {*/
+    /*z-index: 1101;*/
+    /*transition: width 195ms cubic-bezier(0.4, 0, 0.6, 1) 0ms,margin 195ms cubic-bezier(0.4, 0, 0.6, 1) 0ms;*/
+/*}*/
+/*.SwarmpitAppBar-appBarShift-2 {*/
+    /*width: calc(100% - 240px);*/
+    /*transition: width 225ms cubic-bezier(0.4, 0, 0.6, 1) 0ms,margin 225ms cubic-bezier(0.4, 0, 0.6, 1) 0ms;*/
+    /*margin-left: 240px;*/
+/*}*/
+
+
+.SwarmpitAppbar {
+    z-index: 1300 !important;
+}
+
+.SwarmpitAppbar-shift {
+    margin-left: 240px !important;
+    width: calc(100% - 240px) !important;
+}
+
+.SwarmpitAppbar-menu {
+    margin-left: 12px;
+    margin-right: 36px;
+}
+
+.SwarmpitAppbar-menu-hidden {
+    display: none !important;
+}
+
+.SwarmpitDrawer-paper > div {
+    position: relative;
+    white-space: nowrap;
+    width: 240px !important;
+}
+
+.SwarmpitDrawer-paper-closed > div {
+    overflow-x: hidden;
+    width: 70px !important;
+}
+
+.SwarmpitDrawer-toolbar {
+    display: flex;
+    align-items: center;
+    justify-content: flex-end;
+    padding: 0 8px;
+}
+
+/* Login */
+
+.SwarmpitFormLogin {
+    display: flex !important;
+    flex-direction: column !important;
+    margin-top: 5px !important;
+    margin-bottom: 5px !important;
+}
+
+.SwarmpitFormLogin > form > div {
+    background-color: #f1f1f1;
+    width: 100px;
+    margin: 10px !important;
+    padding: 10px !important;
+    text-align: center;
+    line-height: 75px;
+    font-size: 30px;
+}
+
+.SwarmpitFormLogin > div > input {
+    color: #fff;
+}
+
+.SwarmpitFormLogin > div:before {
+    border-bottom: 1px solid #fff !important;
+}
+
+.SwarmpitFormLogin > div:after {
+    border-bottom: 2px solid #fff !important;
+}
+
+.SwarmpitFormLogin > label {
+    color: #fff !important;
+}
+
+.SwarmpitFormLogin-password-adornment > button {
+    color: #fff !important;
+}
+
+.SwarmpitFormLogin-button {
+    margin-top: 30px !important;
+    border: 1px solid #fff !important;
+}
+
 /* Page layout (404/Login) */
 
 .page {
     align-self: center;
-    width: 400px;
     text-align: center;
     margin: auto;
 }
@@ -277,10 +381,12 @@ input:invalid {
 }
 
 .page-form {
-    padding-top: 30px;
-    padding-bottom: 30px;
-    border: 1px solid rgb(127, 127, 127);
-    background-color: #fdfdfd;
+    padding: 0px 30px 0px 30px;
+}
+
+.page-form > input {
+    color: #fff;
+    background-color: #fff;
 }
 
 .page-code {

@@ -1,0 +1,137 @@
+html > body {
+    /*font-family: "Open Sans", sans-serif;*/
+    /*font-size: 14px;*/
+    /*color: rgb(117, 117, 117);*/
+}
+
+.hide {
+    display: none !important;
+}
+
+/** Swarmpit **/
+
+.Swarmpit-root {
+    flex-grow: 1;
+    z-index: 1;
+    overflow: hidden;
+    position: relative;
+    display: flex;
+}
+
+.Swarmpit-appbar {
+    z-index: 1201 !important;
+    transition: width 195ms cubic-bezier(0.4, 0, 0.6, 1) 0ms, margin 195ms cubic-bezier(0.4, 0, 0.6, 1) 0ms;
+}
+
+.Swarmpit-appbar-title {
+    flex-grow: 1;
+}
+
+.Swarmpit-appbar-shift {
+    margin-left: 200px;
+    width: calc(100% - 200px) !important;
+    transition: width 225ms cubic-bezier(0.4, 0, 0.6, 1) 0ms, margin 225ms cubic-bezier(0.4, 0, 0.6, 1) 0ms;
+}
+
+.Swarmpit-appbar-menu-btn {
+    margin-left: 12px !important;
+    margin-right: 36px !important;
+}
+
+.Swarmpit-appbar-user-menu-logged-info {
+    opacity: 0.7 !important;
+}
+
+.Swarmpit-appbar-user-menu-logged-user {
+    font-weight: 600;
+}
+
+.Swarmpit-drawer > div {
+    position: relative;
+    white-space: nowrap;
+    transition: width 225ms cubic-bezier(0.4, 0, 0.6, 1) 0ms;
+    width: 200px;
+}
+
+.Swarmpit-drawer-closed > div {
+    overflow-x: hidden;
+    transition: width 195ms cubic-bezier(0.4, 0, 0.6, 1) 0ms;
+    width: 56px;
+}
+
+.Swarmpit-drawer-item-icon-selected,
+.Swarmpit-drawer-item-text-selected > span {
+    color: #65519f !important;
+}
+
+.Swarmpit-title {
+    display: flex;
+    flex-grow: 1;
+    min-height: 56px;
+    align-items: flex-start;
+    padding-left: 24px;
+    flex-direction: column;
+    justify-content: center;
+}
+
+.Swarmpit-title > a:link {
+    text-decoration: none;
+}
+
+.Swarmpit-title > a:visited {
+    text-decoration: none;
+}
+
+.Swarmpit-title > a:hover {
+    color: rgba(0, 0, 0, 0.54);
+    text-decoration: underline;
+}
+
+.Swarmpit-title-name {
+    color: rgba(0, 0, 0, 0.54);
+    font-size: 1.3125rem;
+    font-weight: 600;
+    font-family: "Roboto", "Helvetica", "Arial", sans-serif;
+    line-height: 1.16667em;
+}
+
+.Swarmpit-title-version {
+    color: rgba(0, 0, 0, 0.54);
+    font-size: 0.75rem;
+    font-weight: 400;
+    font-family: "Roboto", "Helvetica", "Arial", sans-serif;
+    line-height: 1.375em;
+}
+
+.Swarmpit-toolbar {
+    display: flex;
+    align-items: center;
+    justify-content: flex-end;
+    min-height: 56px;
+}
+
+.Swarmpit-context {
+    flex-grow: 1;
+    background-color: #fafafa;
+    padding: 24px;
+}
+
+@media (min-width: 600px) {
+    .Swarmpit-drawer-closed > div {
+        width: 72px;
+    }
+
+    .Swarmpit-toolbar {
+        min-height: 64px;
+    }
+
+    .Swarmpit-title {
+        min-height: 64px;
+    }
+}
+
+@media (min-width: 0px) and (orientation: landscape) {
+    .Swarmpit-drawer-toolbar {
+        /*min-height: 48px;*/
+    }
+}

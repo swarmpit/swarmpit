@@ -4,7 +4,8 @@
 
 (defonce state
          (atom {:route   nil
-                :layout  {:opened true}
+                :layout  {:opened   true
+                          :anchorEl nil}
                 :message {:text ""
                           :time nil
                           :type :info
@@ -69,9 +70,10 @@
 (defn reset-form
   "Reset state form data"
   []
-  (set-value {:id    (str (random-uuid))
-              :state nil
-              :value nil} [:form]))
+  (set-value {:id      (str (random-uuid))
+              :classes nil
+              :state   nil
+              :value   nil} [:form]))
 
 ;; Common cursors
 
