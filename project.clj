@@ -66,8 +66,6 @@
                                :output-to            "resources/public/js/main.js"
                                :output-dir           "resources/public/js/out"
                                :parallel-build       true
-                               ;:npm-deps             {"react-material-ui-form-validator" "2.0.0-beta.10"}
-                               :install-deps         true
                                :source-map-timestamp true}}
                {:id           "min"
                 :source-paths ["src/cljs" "src/cljc"]
