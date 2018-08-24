@@ -8,7 +8,7 @@
 
 (def theme-props
   {:palette {:primary   {:main "#65519f"}
-             :secondary {:main "#f91556"}}})
+             :secondary {:main "#ffffff"}}})
 
 (def theme (f/create-mui-theme (clj->js theme-props)))
 
@@ -61,6 +61,10 @@
   [props]
   (f/avatar (clj->js props)))
 
+(defn chip
+  [props]
+  (f/chip (clj->js props)))
+
 (defn list-item-text
   [props]
   (f/list-item-text (clj->js props)))
@@ -85,6 +89,10 @@
   [props label]
   (f/button (clj->js props) label))
 
+(defn hidden
+  [props comp]
+  (f/hidden (clj->js props) comp))
+
 (defn menu-item
   [props label]
   (f/menu-item (clj->js props) label))
@@ -101,12 +109,45 @@
   ([props d] (f/svg-icon (clj->js props) (html [:path {:d d}])))
   ([d] (f/svg-icon nil (html [:path {:d d}]))))
 
+(defn table
+  [props & childs]
+  (f/table (clj->js props) childs))
 
+(defn table-head
+  [props & childs]
+  (f/table-head (clj->js props) childs))
 
+(defn table-cell
+  [props comp]
+  (f/table-cell (clj->js props) comp))
 
+(defn table-body
+  [props & childs]
+  (f/table-body (clj->js props) childs))
 
+(defn table-row
+  [props & childs]
+  (f/table-row (clj->js props) childs))
 
+(defn table-footer
+  [props & childs]
+  (f/table-footer (clj->js props) childs))
 
+(defn expansion-panel
+  [props & childs]
+  (f/expansion-panel (clj->js props) childs))
+
+(defn expansion-panel-details
+  [props comp]
+  (f/expansion-panel-details (clj->js props) comp))
+
+(defn expansion-panel-summary
+  [props comp]
+  (f/expansion-panel-summary (clj->js props) comp))
+
+(defn expansion-panel-actions
+  [props & childs]
+  (f/expansion-panel-actions (clj->js props) childs))
 
 
 
@@ -215,34 +256,6 @@
 (defn tabs
   [props & childs]
   (f/tabs (clj->js props) childs))
-
-(defn table
-  [props & childs]
-  (f/table (clj->js props) childs))
-
-(defn table-header
-  [props & childs]
-  (f/table-header (clj->js props) childs))
-
-(defn table-header-column
-  [props comp]
-  (f/table-header-column (clj->js props) comp))
-
-(defn table-body
-  [props & childs]
-  (f/table-body (clj->js props) childs))
-
-(defn table-row
-  [props & childs]
-  (f/table-row (clj->js props) childs))
-
-(defn table-row-column
-  ([props comp] (f/table-row-column (clj->js props) comp))
-  ([props] (f/table-row-column (clj->js props))))
-
-(defn table-footer
-  [props & childs]
-  (f/table-footer (clj->js props) childs))
 
 (defn radio-button-group
   [props & childs]

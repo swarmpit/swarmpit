@@ -139,26 +139,31 @@
     {:disabled true
      :key      (str "Swarmpit-drawer-category-" name)}
     (comp/list-item-text
-      (merge {:primary name
-              :key     (str "Swarmpit-drawer-category-text-" name)}
+      (merge {:primary   name
+              :className "Swarmpit-drawer-category-text"
+              :key       (str "Swarmpit-drawer-category-text-" name)}
              (when (false? opened?)
                {:className "hide"})))))
 
 (rum/defc drawer-item < rum/static [name icon handler selected?]
   (comp/list-item
-    {:button  true
-     :key     (str "Swarmpit-drawer-item-" name)
-     :onClick #(dispatch! (routes/path-for-frontend handler))}
+    (merge {:button  true
+            :key     (str "Swarmpit-drawer-item-" name)
+            :onClick #(dispatch! (routes/path-for-frontend handler))}
+           (when selected?
+             {:className "Swarmpit-drawer-item-selected"}))
     (comp/list-item-icon
       (merge {:color "primary"
               :key   (str "Swarmpit-drawer-item-icon-" name)}
-             (when selected?
-               {:className "Swarmpit-drawer-item-icon-selected"})) (comp/svg icon))
+             (if selected?
+               {:className "Swarmpit-drawer-item-icon-selected"}
+               {:className "Swarmpit-drawer-item-icon"})) (comp/svg icon))
     (comp/list-item-text
       (merge {:primary name
               :key     (str "Swarmpit-drawer-item-text-" name)}
-             (when selected?
-               {:className "Swarmpit-drawer-item-text-selected"})))))
+             (if selected?
+               {:className "Swarmpit-drawer-item-text-selected"}
+               {:className "Swarmpit-drawer-item-text"})))))
 
 (def retrieve-version
   {:init

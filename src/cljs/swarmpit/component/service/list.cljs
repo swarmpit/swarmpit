@@ -3,7 +3,7 @@
             [material.component.label :as label]
             [material.component.panel :as panel]
             [material.component.list-table :as list]
-            [material.component.list-table-auto :as list-auto]
+            [material.component.responsive-table :as responsive]
             [swarmpit.component.state :as state]
             [swarmpit.component.mixin :as mixin]
             [swarmpit.ajax :as ajax]
@@ -14,53 +14,48 @@
 
 (enable-console-print!)
 
-(def headers [{:name  "Name"
-               :width "20%"}
-              {:name  "Image"
-               :width "30%"}
-              {:name  "Replicas"
-               :width "15%"}
-              {:name  "Ports"
-               :width "15%"}
-              {:name  "Status"
-               :width "20%"}])
-
-(def render-item-keys
-  [[:serviceName] [:repository :image] [:status :info] [:ports] [:state]])
-
-(defn- render-item-update-state [value]
-  (case value
-    "rollback_started" (label/update "rollback")
-    (label/update value)))
-
-(defn- render-item-state [value]
-  (case value
-    "running" (label/green value)
-    "not running" (label/grey value)
-    "partly running" (label/yellow value)))
-
 (defn- render-item-ports [value]
   (html
     (for [port value]
       [:div
        [:span (:hostPort port)
-        [:span.service-list-port (str " [" (:protocol port) "]")]]])))
+        [:span.Swarmpit-service-list-port (str " [" (:protocol port) "]")]]])))
 
-(defn- render-status [value update-status]
-  (if (or (= "updating" update-status)
-          (= "rollback_started" update-status))
-    (render-item-update-state update-status)
-    (render-item-state value)))
+(defn- render-item-update-state [value]
+  (case value
+    "rollback_started" (label/info "rollback")
+    (label/info value)))
 
-(defn- render-item
-  [item service]
-  (let [update (get-in service [:status :update])
-        value (val item)]
-    (case (key item)
-      :ports (render-item-ports value)
-      :state (render-status value update)
-      :info (label/info value)
-      value)))
+(defn- render-item-state [value]
+  (case value
+    "running" (label/green value)
+    "not running" (label/info value)
+    "partly running" (label/yellow value)))
+
+(defn- render-status [value item]
+  (let [update-status (get-in item [:status :update])]
+    (if (or (= "updating" update-status)
+            (= "rollback_started" update-status))
+      (render-item-update-state update-status)
+      (render-item-state value))))
+
+(def render-metadata
+  [{:name    "Name"
+    :key     [:serviceName]
+    :primary true}
+   {:name "Image"
+    :key  [:repository :image]}
+   {:name      "Replicas"
+    :key       [:status :info]
+    :render-fn (fn [value _] (label/info value))}
+   {:name      "Ports"
+    :key       [:ports]
+    :render-fn (fn [value _] (render-item-ports value))}
+   {:name      "Status"
+    :key       [:state]
+    :render-fn (fn [value item] (render-status value item))}])
+
+(def status-key [:status :info])
 
 (defn- onclick-handler
   [item]
@@ -85,41 +80,63 @@
       (init-form-state)
       (services-handler))))
 
-(defn linked-services
-  [services]
-  (when (not-empty services)
-    [:div.form-layout-group.form-layout-group-border
-     (form/section "Linked Services")
-     (list-auto/table (map :name headers)
-                      services
-                      render-item
-                      render-item-keys
-                      onclick-handler)]))
+;(defn linked-services
+;  [services]
+;  (when (not-empty services)
+;    [:div.form-layout-group.form-layout-group-border
+;     (form/section "Linked Services")
+;     (list-auto/table (map :name headers)
+;                      services
+;                      render-item
+;                      render-item-keys
+;                      onclick-handler)]))
 
 (rum/defc form < rum/reactive
                  mixin-init-form
                  mixin/subscribe-form
-                 mixin/focus-filter [_]
+  ;mixin/focus-filter
+  [_]
   (let [{:keys [items]} (state/react state/form-value-cursor)
         {:keys [loading? filter]} (state/react state/form-state-cursor)
         filtered-items (list/filter items (:query filter))]
-    [:div
-     [:div.form-panel
-      [:div.form-panel-left
-       (panel/text-field
-         {:id       "filter"
-          :hintText "Search services"
-          :onChange (fn [_ v]
-                      (state/update-value [:filter :query] v state/form-state-cursor))})]
-      [:div.form-panel-right
-       (comp/mui
-         (comp/raised-button
-           {:href    (routes/path-for-frontend :service-create-image)
-            :label   "New service"
-            :primary true}))]]
-     (list/table headers
-                 (sort-by :serviceName filtered-items)
-                 loading?
-                 render-item
-                 render-item-keys
-                 onclick-handler)]))
+
+    (comp/mui
+      (html
+        [:div.Swarmpit-form
+         [:div.Swarmpit-form-panel
+          (panel/search-2 "Find service")
+          (comp/button
+            {:variant "contained"
+             :color   "primary"} "New Service")]
+         [:div.Swarmpit-form-context
+          (responsive/responsive-table
+            render-metadata
+            status-key
+            (sort-by :serviceName filtered-items))]]))
+
+
+
+
+
+    ;[:div
+    ; [:div.form-panel
+    ;  [:div.form-panel-left
+    ;   (panel/text-field
+    ;     {:id       "filter"
+    ;      :hintText "Search services"
+    ;      :onChange (fn [_ v]
+    ;                  (state/update-value [:filter :query] v state/form-state-cursor))})]
+    ;  [:div.form-panel-right
+    ;   (comp/mui
+    ;     (comp/raised-button
+    ;       {:href    (routes/path-for-frontend :service-create-image)
+    ;        :label   "New service"
+    ;        :primary true}))]]
+    ; (list/table headers
+    ;             (sort-by :serviceName filtered-items)
+    ;             loading?
+    ;             render-item
+    ;             render-item-keys
+    ;             onclick-handler)]
+
+    ))

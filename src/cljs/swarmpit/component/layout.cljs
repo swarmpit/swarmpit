@@ -99,7 +99,7 @@
      [:nav (menu/drawer page-domain)]
      [:main.Swarmpit-context
       [:div.Swarmpit-toolbar]
-      [:div "test"]]]))
+      [:div (view/dispatch {:handler :service-list})]]]))
 
 (rum/defc layout < rum/reactive []
   (let [{:keys [handler] :as route} (state/react state/route-cursor)]

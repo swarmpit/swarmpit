@@ -32,12 +32,32 @@
 (def paper (create-factory js/MaterialUI.Paper))
 (def svg-icon (create-factory js/MaterialUI.SvgIcon))
 
+(def table (create-factory js/MaterialUI.Table))
+(def table-head (create-factory js/MaterialUI.TableHead))
+(def table-cell (create-factory js/MaterialUI.TableCell))
+(def table-row (create-factory js/MaterialUI.TableRow))
+(def table-body (create-factory js/MaterialUI.TableBody))
+(def table-footer (create-factory js/MaterialUI.TableFooter))
+(def hidden (create-factory js/MaterialUI.Hidden))
+(def chip (create-factory js/MaterialUI.Chip))
+
+(def expansion-panel (create-factory js/MaterialUI.ExpansionPanel))
+(def expansion-panel-summary (create-factory js/MaterialUI.ExpansionPanelSummary))
+(def expansion-panel-details (create-factory js/MaterialUI.ExpansionPanelDetails))
+(def expansion-panel-actions (create-factory js/MaterialUI.ExpansionPanelActions))
+
+
 (def visibility-icon (create-factory js/MaterialUIIcons.Visibility))
 (def visibility-off-icon (create-factory js/MaterialUIIcons.VisibilityOff))
 (def menu-icon (create-factory js/MaterialUIIcons.Menu))
 (def chevron-left-icon (create-factory js/MaterialUIIcons.ChevronLeft))
 (def chevron-right-icon (create-factory js/MaterialUIIcons.ChevronRight))
 (def account-circle-icon (create-factory js/MaterialUIIcons.AccountCircle))
+(def search-icon (create-factory js/MaterialUIIcons.Search))
+(def expand-more-icon (create-factory js/MaterialUIIcons.ExpandMore))
+(def check-circle-icon (create-factory js/MaterialUIIcons.CheckCircle))
+(def search-icon (create-factory js/MaterialUIIcons.Search))
+
 
 (def create-mui-theme js/MaterialUI.createMuiTheme)
 
@@ -56,13 +76,6 @@
 (def linear-progress (create-factory js/MaterialUI.LinearProgress))
 (def circular-progress (create-factory js/MaterialUI.CircularProgress))
 (def refresh-indicator (create-factory js/MaterialUI.RefreshIndicator))
-(def table (create-factory js/MaterialUI.Table))
-(def table-header (create-factory js/MaterialUI.TableHeader))
-(def table-header-column (create-factory js/MaterialUI.TableHeaderColumn))
-(def table-body (create-factory js/MaterialUI.TableBody))
-(def table-row (create-factory js/MaterialUI.TableRow))
-(def table-row-column (create-factory js/MaterialUI.TableRowColumn))
-(def table-footer (create-factory js/MaterialUI.TableFooter))
 (def tab (create-factory js/MaterialUI.Tab))
 (def tabs (create-factory js/MaterialUI.Tabs))
 (def select-field (create-factory js/MaterialUI.SelectField))

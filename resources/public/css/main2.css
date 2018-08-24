@@ -2,13 +2,17 @@ html > body {
     /*font-family: "Open Sans", sans-serif;*/
     /*font-size: 14px;*/
     /*color: rgb(117, 117, 117);*/
+
+    font-family: "Roboto", "Helvetica", "Arial", sans-serif;
+}
+
+html > button {
+    font-family: "Roboto", "Helvetica", "Arial", sans-serif;
 }
 
 .hide {
     display: none !important;
 }
-
-/** Swarmpit **/
 
 .Swarmpit-root {
     flex-grow: 1;
@@ -17,6 +21,28 @@ html > body {
     position: relative;
     display: flex;
 }
+
+.Swarmpit-toolbar {
+    display: flex;
+    align-items: center;
+    justify-content: flex-end;
+    min-height: 56px;
+}
+
+.Swarmpit-context {
+    flex-grow: 1;
+    background-color: #fafafa;
+    /*padding: 24px;*/
+}
+
+.Swarmpit-page {
+    display: flex;
+    justify-content: center;
+    background: url("../img/background.png") no-repeat;
+    min-height: 100vh;
+}
+
+/** Appbar **/
 
 .Swarmpit-appbar {
     z-index: 1201 !important;
@@ -34,8 +60,8 @@ html > body {
 }
 
 .Swarmpit-appbar-menu-btn {
-    margin-left: 12px !important;
-    margin-right: 36px !important;
+    margin-left: 4px !important;
+    margin-right: 26px !important;
 }
 
 .Swarmpit-appbar-user-menu-logged-info {
@@ -45,6 +71,8 @@ html > body {
 .Swarmpit-appbar-user-menu-logged-user {
     font-weight: 600;
 }
+
+/** Drawer **/
 
 .Swarmpit-drawer > div {
     position: relative;
@@ -59,9 +87,24 @@ html > body {
     width: 56px;
 }
 
+.Swarmpit-drawer-item-icon,
+.Swarmpit-drawer-item-text > span {
+    color: rgba(0, 0, 0, 0.54) !important;
+}
+
+.Swarmpit-drawer-category-text > span {
+    /*color: rgb(99, 99, 99) !important;*/
+}
+
+.Swarmpit-drawer-item-selected {
+    border-left: 5px solid #65519f !important;
+    padding-left: 11px !important;
+}
+
 .Swarmpit-drawer-item-icon-selected,
 .Swarmpit-drawer-item-text-selected > span {
     color: #65519f !important;
+    font-weight: 600 !important;
 }
 
 .Swarmpit-title {
@@ -90,7 +133,7 @@ html > body {
 .Swarmpit-title-name {
     color: rgba(0, 0, 0, 0.54);
     font-size: 1.3125rem;
-    font-weight: 600;
+    font-weight: 500;
     font-family: "Roboto", "Helvetica", "Arial", sans-serif;
     line-height: 1.16667em;
 }
@@ -103,25 +146,7 @@ html > body {
     line-height: 1.375em;
 }
 
-.Swarmpit-toolbar {
-    display: flex;
-    align-items: center;
-    justify-content: flex-end;
-    min-height: 56px;
-}
-
-.Swarmpit-context {
-    flex-grow: 1;
-    background-color: #fafafa;
-    padding: 24px;
-}
-
-.Swarmpit-page {
-    display: flex;
-    justify-content: center;
-    background: url("../img/background.png") no-repeat;
-    min-height: 100vh;
-}
+/** Login screen **/
 
 .Swarmpit-login-layout {
     width: auto;
@@ -154,10 +179,183 @@ html > body {
     margin-top: 24px !important;
 }
 
-@media (min-width: 600px) {
-    .Swarmpit-drawer-closed > div {
-        width: 72px;
+/** List **/
+
+.Swarmpit-data-table {
+    background-color: #fff !important;
+}
+
+.Swarmpit-data-table-head-cell {
+    text-transform: uppercase !important;
+}
+
+.Swarmpit-data-list-expandable-panel-summary-content {
+    display: flex;
+    flex-direction: row;
+    justify-content: start;
+}
+
+.Swarmpit-data-list-expandable-panel-summary-content > div {
+    margin-right: 5px;
+}
+
+.Swarmpit-data-list-expandable-panel-summary-text {
+    width: 100%;
+}
+
+.Swarmpit-data-list-expandable-panel-details-text {
+    opacity: 0.5;
+    width: 100%;
+}
+
+/** Form panel **/
+
+.Swarmpit-form-panel {
+    display: flex;
+    overflow: hidden;
+    margin: 1em 0;
+    align-items: center;
+    padding: 0 24px;
+}
+
+.Swarmpit-form-panel-search {
+    margin-right: auto;
+    height: 48px;
+    display: flex;
+    justify-content: space-between;
+    background-color: #fff;
+    border: 2px solid rgba(101, 81, 159, 0.5);
+    border-radius: 4px;
+}
+
+.Swarmpit-form-panel-search > div {
+    margin: auto 14px;
+    width: 100%;
+}
+
+.Swarmpit-form-panel-search-input {
+    width: 100%;
+}
+
+.Swarnpit-form-panel-search-icon {
+    opacity: 1;
+    transform: scale(1, 1);
+    transition: transform 200ms cubic-bezier(0.4, 0.0, 0.2, 1);
+    color: #65519f !important;
+}
+
+.Swarmpit-form-context {
+    padding: 0 24px;
+}
+
+.Swarmpit-form-envelope {
+    flex-direction: column;
+}
+
+.Swarmpit-form-item {
+    display: flex;
+    flex-direction: row;
+    justify-content: start;
+    padding: 4px;
+}
+
+.Swarmpit-form-item > div {
+    text-align: left;
+}
+
+.Swarmpit-form-item-label {
+    font-weight: 400;
+    color: rgba(0, 0, 0, 0.54);
+    text-transform: uppercase;
+    width: 150px;
+}
+
+/* Status icons */
+
+.Swarmpit-icon-ok > svg {
+    color: #3a9e29;
+}
+
+/* Labels */
+
+.dot {
+    height: 24px;
+    width: 24px;
+    background-color: #3a9e29;
+    border-radius: 50%;
+    display: inline-block;
+    border: 1px solid rgba(0, 0, 0, 0.12) !important;
+}
+
+.Swarmpit-label {
+    font-size: 0.875rem;
+    min-width: 64px;
+    min-height: 36px;
+    box-sizing: border-box;
+    line-height: 1.4em;
+    font-family: "Roboto", "Helvetica", "Arial", sans-serif;
+    font-weight: 500;
+}
+
+.Swarmpit-label-green {
+    color: #3a9e29;
+}
+
+.Swarmpit-label-red {
+    color: rgb(244, 67, 54);
+}
+
+.Swarmpit-label-yellow {
+    color: #9e931b;
+}
+
+.Swarmpit-label-blue {
+    color: #437f9d;
+}
+
+.Swarmpit-label-info {
+    color: rgb(117, 117, 117);
+    border: 1px solid rgb(224, 228, 231);
+    border-radius: .25em;
+    padding: .2em .6em .3em;
+}
+
+/* SERVICE */
+
+.Swarmpit-service-list-port {
+    font-size: 10px;
+    color: rgb(158, 158, 158);
+}
+
+/* Medium screens */
+@media all and (max-width: 800px) {
+    .Swarmpit-form-panel {
+        justify-content: space-around;
     }
+}
+
+/* Small screens */
+@media all and (max-width: 500px) {
+    .Swarmpit-form-panel {
+        flex-direction: column;
+    }
+
+    .Swarmpit-form-panel-search {
+        width: 100%;
+        margin-bottom: 10px;
+    }
+
+    .Swarmpit-form-item {
+        flex-direction: column;
+        padding-bottom: 10px;
+    }
+
+    .Swarmpit-form-item > div {
+        width: 100%;
+    }
+}
+
+@media (min-width: 600px) {
 
     .Swarmpit-toolbar {
         min-height: 64px;
@@ -165,6 +363,19 @@ html > body {
 
     .Swarmpit-title {
         min-height: 64px;
+    }
+
+    .Swarmpit-drawer-item-selected {
+        padding-left: 19px !important;
+    }
+
+    .Swarmpit-drawer-closed > div {
+        width: 72px;
+    }
+
+    .Swarmpit-appbar-menu-btn {
+        margin-left: 12px !important;
+        margin-right: 36px !important;
     }
 }
 

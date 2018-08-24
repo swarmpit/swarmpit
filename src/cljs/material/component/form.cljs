@@ -6,6 +6,21 @@
             [swarmpit.time :as time]
             [swarmpit.routes :as routes]))
 
+(defn item
+  [name value]
+  (html
+    [:div.Swarmpit-form-item
+     [:div.Swarmpit-form-item-label name]
+     [:div value]]))
+
+(defn envelope
+  [items]
+  (html
+    [:div.Swarmpit-form-envelope items]))
+
+
+
+
 ;; Form components
 
 (defn checkbox
@@ -63,17 +78,17 @@
      [:span.form-row-label label]
      [:div.form-row-textarea textarea]]))
 
-(defn item [label value]
-  [:div.form-view-row
-   [:span.form-row-label label]
-   [:div.form-row-value value]])
+;(defn item [label value]
+;  [:div.form-view-row
+;   [:span.form-row-label label]
+;   [:div.form-row-value value]])
 
 (defn item-date [label date]
   [:div.form-view-row
    [:span.form-row-label label]
    [:div.form-row-value
     [:time {:date-time date
-            :title (time/simplify date)}
+            :title     (time/simplify date)}
      (time/humanize date)]]])
 
 (defn item-stack [stack]

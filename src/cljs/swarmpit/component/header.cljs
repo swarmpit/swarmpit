@@ -41,6 +41,7 @@
       (comp/app-bar
         {:position  "absolute"
          :key       "Swarmpit-appbar"
+         :color     "primary"
          :className (if opened
                       "Swarmpit-appbar Swarmpit-appbar-shift"
                       "Swarmpit-appbar")}

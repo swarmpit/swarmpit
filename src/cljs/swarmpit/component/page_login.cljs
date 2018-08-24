@@ -44,9 +44,11 @@
      :required  true
      :fullWidth true}
     (comp/input-label
-      {:htmlFor "user"} "User")
+      {:htmlFor "user"
+       :key     "Swarmpit-login-username-input-label"} "User")
     (comp/input
       {:id           "user"
+       :key          "Swarmpit-login-username-input"
        :name         "user"
        :autoComplete "user"
        :autoFocus    true
@@ -118,6 +120,7 @@
           {:className "Swarmpit-login-paper"}
           (comp/avatar
             {:className "Swarmpit-login-avatar"
+             :key       "Swarmpit-login-avatar"
              :alt       "Swarmpit logo"
              :src       "/img/swarmpit-transparent.png"})
 
@@ -128,9 +131,10 @@
 
           (comp/typography
             {:variant   "headline"
+             :key       "Swarmpit-login-text"
              :className "Swarmpit-login-text"} "Welcome!")
           (html
-            [:form.Swarmpit-login-form
+            [:form.Swarmpit-login-form {:key "Swarmpit-login-form"}
              (when (not-empty message)
                (comp/form-helper-text {:error true} message))
              (form-username username local-state)
