@@ -108,7 +108,7 @@
         [:div.Swarmpit-form
          [:div.Swarmpit-form-panel
           (panel/search
-            "Search service"
+            "Search services"
             (fn [event]
               (state/update-value [:filter :query] (-> event .-target .-value) state/form-state-cursor)))
           (comp/button
