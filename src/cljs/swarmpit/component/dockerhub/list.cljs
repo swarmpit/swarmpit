@@ -1,37 +1,30 @@
 (ns swarmpit.component.dockerhub.list
   (:require [material.component :as comp]
+            [material.component.list :as list]
             [material.component.panel :as panel]
-            [material.component.list-table :as list]
             [swarmpit.component.mixin :as mixin]
             [swarmpit.component.state :as state]
             [swarmpit.ajax :as ajax]
             [swarmpit.routes :as routes]
             [swarmpit.storage :as storage]
+            [swarmpit.url :refer [dispatch!]]
+            [sablono.core :refer-macros [html]]
             [cljs.core :as core]
             [rum.core :as rum]))
 
 (enable-console-print!)
 
-(def headers [{:name  "Username"
-               :width "30%"}
-              {:name  "Name"
-               :width "30%"}
-              {:name  "Company"
-               :width "30%"}
-              {:name  "Public"
-               :width "10%"}])
-
-(def render-item-keys
-  [[:username] [:name] [:company] [:public]])
-
-(defn- render-item
-  [item _]
-  (let [value (val item)]
-    (case (key item)
-      :public (if value
-                "yes"
-                "no")
-      value)))
+(def render-metadata
+  [{:name    "Username"
+    :key     [:username]
+    :primary true}
+   {:name "Name"
+    :key  [:name]}
+   {:name "Company"
+    :key  [:company]}
+   {:name      "Public"
+    :key       [:public]
+    :render-fn (fn [value _] (if value "yes" "no"))}])
 
 (defn- onclick-handler
   [item]
@@ -64,23 +57,21 @@
         {:keys [loading? filter]} (state/react state/form-state-cursor)
         filtered-items (-> (core/filter #(= (:owner %) (storage/user)) items)
                            (list/filter (:query filter)))]
-    [:div
-     [:div.form-panel
-      [:div.form-panel-left
-       (panel/text-field
-         {:id       "filter"
-          :hintText "Search hub users"
-          :onChange (fn [_ v]
-                      (state/update-value [:filter :query] v state/form-state-cursor))})]
-      [:div.form-panel-right
-       (comp/mui
-         (comp/raised-button
-           {:href    (routes/path-for-frontend :dockerhub-user-create)
-            :label   "Add user"
-            :primary true}))]]
-     (list/table headers
-                 (sort-by :username filtered-items)
-                 loading?
-                 render-item
-                 render-item-keys
-                 onclick-handler)]))
+    (comp/mui
+      (html
+        [:div.Swarmpit-form
+         [:div.Swarmpit-form-panel
+          (panel/search
+            "Search hub users"
+            (fn [event]
+              (state/update-value [:filter :query] (-> event .-target .-value) state/form-state-cursor)))
+          (comp/button
+            {:variant "contained"
+             :onClick #(dispatch! (routes/path-for-frontend :dockerhub-user-create))
+             :color   "primary"} "Add user")]
+         [:div.Swarmpit-form-context
+          (list/responsive-table
+            render-metadata
+            nil
+            (sort-by :username filtered-items)
+            onclick-handler)]]))))

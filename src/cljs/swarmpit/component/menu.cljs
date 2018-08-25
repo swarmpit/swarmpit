@@ -50,55 +50,55 @@
 (def menu
   [{:name "APPLICATIONS"}
    {:name    "Stacks"
-    :icon    icon/stacks
+    :icon    (comp/svg icon/stacks)
     :handler :stack-list
     :domain  :stack}
    {:name    "Services"
-    :icon    icon/services
+    :icon    (comp/svg icon/services)
     :handler :service-list
     :domain  :service}
    {:name    "Tasks"
-    :icon    icon/tasks
+    :icon    (comp/svg icon/tasks)
     :handler :task-list
     :domain  :task}
    {:name "INFRASTRUCTURE"}
    {:name    "Networks"
-    :icon    icon/networks
+    :icon    (comp/svg icon/networks)
     :handler :network-list
     :domain  :network}
    {:name    "Nodes"
-    :icon    icon/nodes
+    :icon    (comp/svg icon/nodes)
     :handler :node-list
     :domain  :node}
    {:name "DATA"}
    {:name    "Volumes"
-    :icon    icon/volumes
+    :icon    (comp/svg icon/volumes)
     :handler :volume-list
     :domain  :volume}
    {:name    "Secrets"
-    :icon    icon/secrets
+    :icon    (comp/svg icon/secrets)
     :handler :secret-list
     :route   "secrets"
     :domain  :secret}
    {:name    "Configs"
-    :icon    icon/configs
+    :icon    (comp/svg icon/configs)
     :handler :config-list
     :route   "configs"
     :domain  :config}
    {:name "DISTRIBUTION"}
    {:name    "Dockerhub"
-    :icon    icon/docker
+    :icon    (comp/svg icon/docker)
     :handler :dockerhub-user-list
     :domain  :dockerhub}
    {:name    "Registry"
-    :icon    icon/registries
+    :icon    (comp/svg icon/registries)
     :handler :registry-list
     :domain  :registry}])
 
 (def admin-menu
   [{:name "ADMIN"}
    {:name    "Users"
-    :icon    icon/users
+    :icon    (comp/svg icon/users)
     :handler :user-list
     :domain  :user}])
 
@@ -157,7 +157,7 @@
               :key   (str "Swarmpit-drawer-item-icon-" name)}
              (if selected?
                {:className "Swarmpit-drawer-item-icon-selected"}
-               {:className "Swarmpit-drawer-item-icon"})) (comp/svg icon))
+               {:className "Swarmpit-drawer-item-icon"})) icon)
     (comp/list-item-text
       (merge {:primary name
               :key     (str "Swarmpit-drawer-item-text-" name)}

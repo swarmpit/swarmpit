@@ -1,37 +1,31 @@
 (ns swarmpit.component.network.list
   (:require [material.component :as comp]
+            [material.component.list :as list]
             [material.component.label :as label]
             [material.component.panel :as panel]
-            [material.component.list-table :as list]
             [swarmpit.component.mixin :as mixin]
             [swarmpit.component.state :as state]
             [swarmpit.ajax :as ajax]
             [swarmpit.routes :as routes]
+            [swarmpit.url :refer [dispatch!]]
+            [sablono.core :refer-macros [html]]
             [rum.core :as rum]))
 
 (enable-console-print!)
 
-(def headers [{:name  "Name"
-               :width "20%"}
-              {:name  "Driver"
-               :width "20%"}
-              {:name  "Subnet"
-               :width "20%"}
-              {:name  "Gateway"
-               :width "20%"}
-              {:name  ""
-               :width "20%"}])
-
-(def render-item-keys
-  [[:networkName] [:driver] [:ipam :subnet] [:ipam :gateway] [:internal]])
-
-(defn- render-item
-  [item _]
-  (let [value (val item)]
-    (case (key item)
-      :internal (if value
-                  (label/blue "internal"))
-      value)))
+(def render-metadata
+  [{:name    "Name"
+    :key     [:networkName]
+    :primary true}
+   {:name "Driver"
+    :key  [:driver]}
+   {:name "Subnet"
+    :key  [:ipam :subnet]}
+   {:name "Gateway"
+    :key  [:ipam :gateway]}
+   {:name      "Status"
+    :key       [:internal]
+    :render-fn (fn [value _] (when value (label/blue "internal")))}])
 
 (defn- onclick-handler
   [item]
@@ -63,23 +57,21 @@
   (let [{:keys [items]} (state/react state/form-value-cursor)
         {:keys [loading? filter]} (state/react state/form-state-cursor)
         filtered-items (list/filter items (:query filter))]
-    [:div
-     [:div.form-panel
-      [:div.form-panel-left
-       (panel/text-field
-         {:id       "filter"
-          :hintText "Search networks"
-          :onChange (fn [_ v]
-                      (state/update-value [:filter :query] v state/form-state-cursor))})]
-      [:div.form-panel-right
-       (comp/mui
-         (comp/raised-button
-           {:href    (routes/path-for-frontend :network-create)
-            :label   "New network"
-            :primary true}))]]
-     (list/table headers
-                 (sort-by :networkName filtered-items)
-                 loading?
-                 render-item
-                 render-item-keys
-                 onclick-handler)]))
+    (comp/mui
+      (html
+        [:div.Swarmpit-form
+         [:div.Swarmpit-form-panel
+          (panel/search
+            "Search networks"
+            (fn [event]
+              (state/update-value [:filter :query] (-> event .-target .-value) state/form-state-cursor)))
+          (comp/button
+            {:variant "contained"
+             :onClick #(dispatch! (routes/path-for-frontend :network-create))
+             :color   "primary"} "New network")]
+         [:div.Swarmpit-form-context
+          (list/responsive-table
+            render-metadata
+            nil
+            (sort-by :networkName filtered-items)
+            onclick-handler)]]))))

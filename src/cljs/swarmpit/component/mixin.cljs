@@ -40,6 +40,6 @@
 (def focus-filter
   {:did-mount (fn [state]
                 (-> js/document
-                    (.getElementById "filter")
+                    (.getElementById "Swarmpit-form-panel-filter")
                     (.focus))
                 state)})

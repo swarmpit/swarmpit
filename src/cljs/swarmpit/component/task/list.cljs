@@ -1,57 +1,20 @@
 (ns swarmpit.component.task.list
-  (:require [material.component.label :as label]
+  (:require [material.component :as comp]
+            [material.component.list :as list]
+            [material.component.label :as label]
             [material.component.panel :as panel]
-            [material.component.list-table :as list]
-            [swarmpit.component.mixin :as mixin]
             [swarmpit.component.state :as state]
+            [swarmpit.component.mixin :as mixin]
             [swarmpit.ajax :as ajax]
             [swarmpit.routes :as routes]
+            [swarmpit.url :refer [dispatch!]]
+            [sablono.core :refer-macros [html]]
             [clojure.contrib.humanize :as humanize]
             [goog.string :as gstring]
             [goog.string.format]
             [rum.core :as rum]))
 
 (enable-console-print!)
-
-(def headers [{:name  "Name"
-               :width "20%"}
-              {:name  "Image"
-               :width "20%"}
-              {:name  "Node"
-               :width "20%"}
-              {:name  "CPU Usage"
-               :width "10%"}
-              {:name  "Memory Usage"
-               :width "10%"}
-              {:name  "Memory"
-               :width "10%"}
-              {:name  "Status"
-               :width "10%"}])
-
-(def render-item-keys
-  [[:taskName]
-   [:repository :image]
-   [:nodeName]
-   [:stats :cpuPercentage]
-   [:stats :memoryPercentage]
-   [:stats :memory]
-   [:state]])
-
-(defn render-item-state [value]
-  (case value
-    "preparing" (label/yellow value)
-    "starting" (label/yellow value)
-    "pending" (label/yellow value)
-    "new" (label/blue value)
-    "ready" (label/blue value)
-    "assigned" (label/blue value)
-    "accepted" (label/blue value)
-    "complete" (label/blue value)
-    "running" (label/green value)
-    "shutdown" (label/grey value)
-    "orphaned" (label/grey value)
-    "rejected" (label/red value)
-    "failed" (label/red value)))
 
 (defn- render-percentage
   [val]
@@ -65,6 +28,22 @@
     (humanize/filesize val :binary false)
     "-"))
 
+(defn render-item-state [value]
+  (case value
+    "preparing" (label/yellow value)
+    "starting" (label/yellow value)
+    "pending" (label/yellow value)
+    "new" (label/blue value)
+    "ready" (label/blue value)
+    "assigned" (label/blue value)
+    "accepted" (label/blue value)
+    "complete" (label/blue value)
+    "running" (label/green value)
+    "shutdown" (label/info value)
+    "orphaned" (label/info value)
+    "rejected" (label/red value)
+    "failed" (label/red value)))
+
 (defn- render-item
   [item _]
   (let [value (val item)]
@@ -74,6 +53,27 @@
       :memoryPercentage (render-percentage value)
       :memory (render-capacity value)
       value)))
+
+(def render-metadata
+  [{:name    "Name"
+    :key     [:taskName]
+    :primary true}
+   {:name "Image"
+    :key  [:repository :image]}
+   {:name "Node"
+    :key  [:nodeName]}
+   {:name      "CPU Usage"
+    :key       [:stats :cpuPercentage]
+    :render-fn (fn [value _] (render-percentage value))}
+   {:name      "Memory Usage"
+    :key       [:stats :memoryPercentage]
+    :render-fn (fn [value _] (render-percentage value))}
+   {:name      "Memory"
+    :key       [:stats :memory]
+    :render-fn (fn [value _] (render-capacity value))}
+   {:name      "Status"
+    :key       [:state]
+    :render-fn (fn [value _] (render-item-state value))}])
 
 (defn- onclick-handler
   [item]
@@ -105,17 +105,17 @@
   (let [{:keys [items]} (state/react state/form-value-cursor)
         {:keys [loading? filter]} (state/react state/form-state-cursor)
         filtered-items (list/filter items (:query filter))]
-    [:div
-     [:div.form-panel
-      [:div.form-panel-left
-       (panel/text-field
-         {:id       "filter"
-          :hintText "Search tasks"
-          :onChange (fn [_ v]
-                      (state/update-value [:filter :query] v state/form-state-cursor))})]]
-     (list/table headers
-                 (sort-by :serviceName filtered-items)
-                 loading?
-                 render-item
-                 render-item-keys
-                 onclick-handler)]))
+    (comp/mui
+      (html
+        [:div.Swarmpit-form
+         [:div.Swarmpit-form-panel
+          (panel/search
+            "Search tasks"
+            (fn [event]
+              (state/update-value [:filter :query] (-> event .-target .-value) state/form-state-cursor)))]
+         [:div.Swarmpit-form-context
+          (list/responsive-table
+            render-metadata
+            nil
+            (sort-by :serviceName filtered-items)
+            onclick-handler)]]))))

@@ -1,16 +1,16 @@
 (ns swarmpit.component.service.list
-  (:require [material.component :as comp]
+  (:require [material.icon :as icon]
+            [material.component :as comp]
+            [material.component.list :as list]
             [material.component.label :as label]
             [material.component.panel :as panel]
-            [material.component.list-table :as list]
-            [material.component.responsive-table :as responsive]
             [swarmpit.component.state :as state]
             [swarmpit.component.mixin :as mixin]
             [swarmpit.ajax :as ajax]
             [swarmpit.routes :as routes]
+            [swarmpit.url :refer [dispatch!]]
             [sablono.core :refer-macros [html]]
-            [rum.core :as rum]
-            [material.component.form :as form]))
+            [rum.core :as rum]))
 
 (enable-console-print!)
 
@@ -55,11 +55,16 @@
     :key       [:state]
     :render-fn (fn [value item] (render-status value item))}])
 
-(def status-key [:status :info])
+(defn- render-state-fn
+  [item]
+  (case (:state item)
+    "running" [:div.Swarmpit-icon-ok icon/check-circle]
+    "not running" [:div.Swarmpit-icon-ok icon/check-circle]
+    "partly running" [:div.Swarmpit-icon-ok icon/check-circle]))
 
 (defn- onclick-handler
   [item]
-  (routes/path-for-frontend :service-info {:id (:serviceName item)}))
+  (dispatch! (routes/path-for-frontend :service-info {:id (:serviceName item)})))
 
 (defn- services-handler
   []
@@ -94,49 +99,25 @@
 (rum/defc form < rum/reactive
                  mixin-init-form
                  mixin/subscribe-form
-  ;mixin/focus-filter
-  [_]
+                 mixin/focus-filter [_]
   (let [{:keys [items]} (state/react state/form-value-cursor)
         {:keys [loading? filter]} (state/react state/form-state-cursor)
         filtered-items (list/filter items (:query filter))]
-
     (comp/mui
       (html
         [:div.Swarmpit-form
          [:div.Swarmpit-form-panel
-          (panel/search-2 "Find service")
+          (panel/search
+            "Search services"
+            (fn [event]
+              (state/update-value [:filter :query] (-> event .-target .-value) state/form-state-cursor)))
           (comp/button
             {:variant "contained"
+             :onClick #(dispatch! (routes/path-for-frontend :service-create-image))
              :color   "primary"} "New Service")]
          [:div.Swarmpit-form-context
-          (responsive/responsive-table
+          (list/responsive-table
             render-metadata
-            status-key
-            (sort-by :serviceName filtered-items))]]))
-
-
-
-
-
-    ;[:div
-    ; [:div.form-panel
-    ;  [:div.form-panel-left
-    ;   (panel/text-field
-    ;     {:id       "filter"
-    ;      :hintText "Search services"
-    ;      :onChange (fn [_ v]
-    ;                  (state/update-value [:filter :query] v state/form-state-cursor))})]
-    ;  [:div.form-panel-right
-    ;   (comp/mui
-    ;     (comp/raised-button
-    ;       {:href    (routes/path-for-frontend :service-create-image)
-    ;        :label   "New service"
-    ;        :primary true}))]]
-    ; (list/table headers
-    ;             (sort-by :serviceName filtered-items)
-    ;             loading?
-    ;             render-item
-    ;             render-item-keys
-    ;             onclick-handler)]
-
-    ))
+            render-state-fn
+            (sort-by :serviceName filtered-items)
+            onclick-handler)]]))))

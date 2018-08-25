@@ -1,26 +1,23 @@
 (ns swarmpit.component.volume.list
   (:require [material.component :as comp]
+            [material.component.list :as list]
             [material.component.panel :as panel]
-            [material.component.list-table :as list]
-            [swarmpit.component.mixin :as mixin]
             [swarmpit.component.state :as state]
+            [swarmpit.component.mixin :as mixin]
             [swarmpit.ajax :as ajax]
             [swarmpit.routes :as routes]
+            [swarmpit.url :refer [dispatch!]]
+            [sablono.core :refer-macros [html]]
             [rum.core :as rum]))
 
 (enable-console-print!)
 
-(def headers [{:name  "Name"
-               :width "50%"}
-              {:name  "Driver"
-               :width "50%"}])
-
-(def render-item-keys
-  [[:volumeName] [:driver]])
-
-(defn- render-item
-  [item _]
-  (val item))
+(def render-metadata
+  [{:name    "Name"
+    :key     [:volumeName]
+    :primary true}
+   {:name "Driver"
+    :key  [:driver]}])
 
 (defn- onclick-handler
   [item]
@@ -52,23 +49,21 @@
   (let [{:keys [items]} (state/react state/form-value-cursor)
         {:keys [loading? filter]} (state/react state/form-state-cursor)
         filtered-items (list/filter items (:query filter))]
-    [:div
-     [:div.form-panel
-      [:div.form-panel-left
-       (panel/text-field
-         {:id       "filter"
-          :hintText "Search volumes"
-          :onChange (fn [_ v]
-                      (state/update-value [:filter :query] v state/form-state-cursor))})]
-      [:div.form-panel-right
-       (comp/mui
-         (comp/raised-button
-           {:href    (routes/path-for-frontend :volume-create)
-            :label   "New volume"
-            :primary true}))]]
-     (list/table headers
-                 (sort-by :volumeName filtered-items)
-                 loading?
-                 render-item
-                 render-item-keys
-                 onclick-handler)]))
+    (comp/mui
+      (html
+        [:div.Swarmpit-form
+         [:div.Swarmpit-form-panel
+          (panel/search
+            "Search volumes"
+            (fn [event]
+              (state/update-value [:filter :query] (-> event .-target .-value) state/form-state-cursor)))
+          (comp/button
+            {:variant "contained"
+             :onClick #(dispatch! (routes/path-for-frontend :volume-create))
+             :color   "primary"} "New volume")]
+         [:div.Swarmpit-form-context
+          (list/responsive-table
+            render-metadata
+            nil
+            (sort-by :volumeName filtered-items)
+            onclick-handler)]]))))

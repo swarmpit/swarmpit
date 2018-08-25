@@ -57,6 +57,14 @@
 (def expand-more-icon (create-factory js/MaterialUIIcons.ExpandMore))
 (def check-circle-icon (create-factory js/MaterialUIIcons.CheckCircle))
 (def search-icon (create-factory js/MaterialUIIcons.Search))
+(def key-icon (create-factory js/MaterialUIIcons.VpnKey))
+(def settings-icon (create-factory js/MaterialUIIcons.Settings))
+(def receipt-icon (create-factory js/MaterialUIIcons.Receipt))
+(def storage-icon (create-factory js/MaterialUIIcons.Storage))
+(def device-hub-icon (create-factory js/MaterialUIIcons.DeviceHub))
+(def dns-icon (create-factory js/MaterialUIIcons.Dns))
+
+
 
 
 (def create-mui-theme js/MaterialUI.createMuiTheme)

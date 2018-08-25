@@ -1,40 +1,32 @@
 (ns swarmpit.component.stack.list
   (:require [material.icon :as icon]
             [material.component :as comp]
+            [material.component.list :as list]
             [material.component.panel :as panel]
-            [material.component.list-table :as list]
-            [swarmpit.component.mixin :as mixin]
             [swarmpit.component.state :as state]
+            [swarmpit.component.mixin :as mixin]
             [swarmpit.ajax :as ajax]
             [swarmpit.routes :as routes]
+            [swarmpit.url :refer [dispatch!]]
+            [sablono.core :refer-macros [html]]
             [rum.core :as rum]))
 
 (enable-console-print!)
 
-(def headers [{:name  "Name"
-               :width "40%"}
-              {:name  "Services"
-               :width "10%"}
-              {:name  "Networks"
-               :width "10%"}
-              {:name  "Volumes"
-               :width "10%"}
-              {:name  "Configs"
-               :width "10%"}
-              {:name  "Secrets"
-               :width "10%"}])
-
-(def render-item-keys
-  [[:stackName]
-   [:stackStats :services]
-   [:stackStats :networks]
-   [:stackStats :volumes]
-   [:stackStats :configs]
-   [:stackStats :secrets]])
-
-(defn- render-item
-  [item _]
-  (val item))
+(def render-metadata
+  [{:name    "Name"
+    :key     [:stackName]
+    :primary true}
+   {:name "Services"
+    :key  [:stackStats :services]}
+   {:name "Networks"
+    :key  [:stackStats :networks]}
+   {:name "Volumes"
+    :key  [:stackStats :volumes]}
+   {:name "Configs"
+    :key  [:stackStats :configs]}
+   {:name "Secrets"
+    :key  [:stackStats :secrets]}])
 
 (defn- onclick-handler
   [item]
@@ -76,25 +68,23 @@
                  mixin/focus-filter [_]
   (let [{:keys [items]} (state/react state/form-value-cursor)
         {:keys [loading? filter]} (state/react state/form-state-cursor)]
-    [:div
-     [:div.form-panel
-      [:div.form-panel-left
-       (panel/text-field
-         {:id       "filter"
-          :hintText "Search stacks"
-          :onChange (fn [_ v]
-                      (state/update-value [:filter :query] v state/form-state-cursor))})]
-      [:div.form-panel-right
-       (comp/mui
-         (comp/raised-button
-           {:href    (routes/path-for-frontend :stack-create)
-            :label   "New stack"
-            :primary true}))]]
-     (list/table headers
-                 (->> (list/filter items (:query filter))
-                      (format-response)
-                      (sort-by :stackName))
-                 loading?
-                 render-item
-                 render-item-keys
-                 onclick-handler)]))
+    (comp/mui
+      (html
+        [:div.Swarmpit-form
+         [:div.Swarmpit-form-panel
+          (panel/search
+            "Search stacks"
+            (fn [event]
+              (state/update-value [:filter :query] (-> event .-target .-value) state/form-state-cursor)))
+          (comp/button
+            {:variant "contained"
+             :onClick #(dispatch! (routes/path-for-frontend :stack-create))
+             :color   "primary"} "New stack")]
+         [:div.Swarmpit-form-context
+          (list/responsive-table
+            render-metadata
+            nil
+            (->> (list/filter items (:query filter))
+                 (format-response)
+                 (sort-by :stackName))
+            onclick-handler)]]))))

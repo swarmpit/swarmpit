@@ -1,41 +1,32 @@
 (ns swarmpit.component.registry.list
   (:require [material.icon :as icon]
             [material.component :as comp]
+            [material.component.list :as list]
             [material.component.panel :as panel]
-            [material.component.list-table :as list]
             [swarmpit.component.mixin :as mixin]
             [swarmpit.component.state :as state]
             [swarmpit.ajax :as ajax]
             [swarmpit.routes :as routes]
             [swarmpit.storage :as storage]
+            [swarmpit.url :refer [dispatch!]]
+            [sablono.core :refer-macros [html]]
             [cljs.core :as core]
             [rum.core :as rum]))
 
 (enable-console-print!)
 
-(def headers [{:name  "Name"
-               :width "30%"}
-              {:name  "Url"
-               :width "50%"}
-              {:name  "Public"
-               :width "10%"}
-              {:name  "Secure"
-               :width "10%"}])
-
-(def render-item-keys
-  [[:name] [:url] [:public] [:withAuth]])
-
-(defn- render-item
-  [item _]
-  (let [value (val item)]
-    (case (key item)
-      :withAuth (if value
-                  (comp/svg icon/ok)
-                  "")
-      :public (if value
-                "yes"
-                "no")
-      value)))
+(def render-metadata
+  [{:name    "Name"
+    :key     [:name]
+    :primary true}
+   {:name "Url"
+    :key  [:url]}
+   {:name      "Public"
+    :key       [:public]
+    :render-fn (fn [value _] (if value "yes" "no"))}
+   {:name      "Secure"
+    :key       [:withAuth]
+    :render-fn (fn [value _] (if value "yes" "no"))}])
 
 (defn- onclick-handler
   [item]
@@ -68,23 +59,21 @@
         {:keys [loading? filter]} (state/react state/form-state-cursor)
         filtered-items (-> (core/filter #(= (:owner %) (storage/user)) items)
                            (list/filter (:query filter)))]
-    [:div
-     [:div.form-panel
-      [:div.form-panel-left
-       (panel/text-field
-         {:id       "filter"
-          :hintText "Search registries"
-          :onChange (fn [_ v]
-                      (state/update-value [:filter :query] v state/form-state-cursor))})]
-      [:div.form-panel-right
-       (comp/mui
-         (comp/raised-button
-           {:href    (routes/path-for-frontend :registry-create)
-            :label   "Add registry"
-            :primary true}))]]
-     (list/table headers
-                 (sort-by :name filtered-items)
-                 loading?
-                 render-item
-                 render-item-keys
-                 onclick-handler)]))
+    (comp/mui
+      (html
+        [:div.Swarmpit-form
+         [:div.Swarmpit-form-panel
+          (panel/search
+            "Search registries"
+            (fn [event]
+              (state/update-value [:filter :query] (-> event .-target .-value) state/form-state-cursor)))
+          (comp/button
+            {:variant "contained"
+             :onClick #(dispatch! (routes/path-for-frontend :registry-create))
+             :color   "primary"} "Add registry")]
+         [:div.Swarmpit-form-context
+          (list/responsive-table
+            render-metadata
+            nil
+            (sort-by :name filtered-items)
+            onclick-handler)]]))))
