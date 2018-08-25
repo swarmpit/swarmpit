@@ -63,6 +63,10 @@
 (def storage-icon (create-factory js/MaterialUIIcons.Storage))
 (def device-hub-icon (create-factory js/MaterialUIIcons.DeviceHub))
 (def dns-icon (create-factory js/MaterialUIIcons.Dns))
+(def error-icon (create-factory js/MaterialUIIcons.Error))
+(def warning-icon (create-factory js/MaterialUIIcons.Warning))
+(def cancel-icon (create-factory js/MaterialUIIcons.Cancel))
+(def sync-icon (create-factory js/MaterialUIIcons.Sync))
 
 
 

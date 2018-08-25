@@ -59,8 +59,8 @@
   [item]
   (case (:state item)
     "running" [:div.Swarmpit-icon-ok icon/check-circle]
-    "not running" [:div.Swarmpit-icon-ok icon/check-circle]
-    "partly running" [:div.Swarmpit-icon-ok icon/check-circle]))
+    "not running" [:div.Swarmpit-icon-info icon/cancel]
+    "partly running" [:div.Swarmpit-icon-warning icon/check-circle]))
 
 (defn- onclick-handler
   [item]
@@ -108,7 +108,7 @@
         [:div.Swarmpit-form
          [:div.Swarmpit-form-panel
           (panel/search
-            "Search services"
+            "Search service"
             (fn [event]
               (state/update-value [:filter :query] (-> event .-target .-value) state/form-state-cursor)))
           (comp/button

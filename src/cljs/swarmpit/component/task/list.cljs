@@ -1,5 +1,6 @@
 (ns swarmpit.component.task.list
-  (:require [material.component :as comp]
+  (:require [material.icon :as icon]
+            [material.component :as comp]
             [material.component.list :as list]
             [material.component.label :as label]
             [material.component.panel :as panel]
@@ -44,16 +45,6 @@
     "rejected" (label/red value)
     "failed" (label/red value)))
 
-(defn- render-item
-  [item _]
-  (let [value (val item)]
-    (case (key item)
-      :state (render-item-state value)
-      :cpuPercentage (render-percentage value)
-      :memoryPercentage (render-percentage value)
-      :memory (render-capacity value)
-      value)))
-
 (def render-metadata
   [{:name    "Name"
     :key     [:taskName]
@@ -74,6 +65,23 @@
    {:name      "Status"
     :key       [:state]
     :render-fn (fn [value _] (render-item-state value))}])
+
+(defn- render-state-fn
+  [item]
+  (case (:state item)
+    "preparing" [:div.Swarmpit-icon-ok icon/sync]
+    "starting" [:div.Swarmpit-icon-ok icon/sync]
+    "pending" [:div.Swarmpit-icon-warning icon/sync]
+    "new" [:div.Swarmpit-icon-accept icon/check-circle]
+    "ready" [:div.Swarmpit-icon-accept icon/check-circle]
+    "assigned" [:div.Swarmpit-icon-accept icon/check-circle]
+    "accepted" [:div.Swarmpit-icon-accept icon/check-circle]
+    "complete" [:div.Swarmpit-icon-accept icon/check-circle]
+    "running" [:div.Swarmpit-icon-ok icon/check-circle]
+    "shutdown" [:div.Swarmpit-icon-info icon/cancel]
+    "orphaned" [:div.Swarmpit-icon-info icon/cancel]
+    "rejected" [:div.Swarmpit-icon-error icon/error]
+    "failed" [:div.Swarmpit-icon-error icon/error]))
 
 (defn- onclick-handler
   [item]
@@ -116,6 +124,6 @@
          [:div.Swarmpit-form-context
           (list/responsive-table
             render-metadata
-            nil
+            render-state-fn
             (sort-by :serviceName filtered-items)
             onclick-handler)]]))))

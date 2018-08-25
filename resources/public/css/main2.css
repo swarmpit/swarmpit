@@ -279,13 +279,7 @@ html > button {
     width: 150px;
 }
 
-/* Status icons */
-
-.Swarmpit-icon-ok > svg {
-    color: #3a9e29;
-}
-
-/* Labels */
+/* Labels & Status ico  */
 
 .Swarmpit-label {
     font-size: 0.875rem;
@@ -297,22 +291,27 @@ html > button {
     font-weight: 500;
 }
 
+.Swarmpit-icon-ok > svg,
 .Swarmpit-label-green {
     color: #3a9e29;
 }
 
+.Swarmpit-icon-error > svg,
 .Swarmpit-label-red {
     color: rgb(244, 67, 54);
 }
 
+.Swarmpit-icon-warning > svg,
 .Swarmpit-label-yellow {
     color: #9e931b;
 }
 
+.Swarmpit-icon-accept > svg,
 .Swarmpit-label-blue {
     color: #437f9d;
 }
 
+.Swarmpit-icon-info > svg,
 .Swarmpit-label-grey {
     color: rgb(117, 117, 117);
 }
