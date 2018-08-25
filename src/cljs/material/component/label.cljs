@@ -16,6 +16,10 @@
   [label]
   (base label "info"))
 
+(defn grey
+  [label]
+  (base label "grey"))
+
 (defn red
   [label]
   (base label "red"))

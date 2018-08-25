@@ -39,8 +39,8 @@
     "accepted" (label/blue value)
     "complete" (label/blue value)
     "running" (label/green value)
-    "shutdown" (label/info value)
-    "orphaned" (label/info value)
+    "shutdown" (label/grey value)
+    "orphaned" (label/grey value)
     "rejected" (label/red value)
     "failed" (label/red value)))
 

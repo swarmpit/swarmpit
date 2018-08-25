@@ -279,13 +279,6 @@ html > button {
     width: 150px;
 }
 
-.Swarmpit-form-item-value {
-    /*text-overflow: ellipsis;*/
-    /*white-space: nowrap;*/
-    /*overflow: hidden;*/
-    /*width: width: calc(100% - 200px) !important;*/
-}
-
 /* Status icons */
 
 .Swarmpit-icon-ok > svg {
@@ -293,15 +286,6 @@ html > button {
 }
 
 /* Labels */
-
-.dot {
-    height: 24px;
-    width: 24px;
-    background-color: #3a9e29;
-    border-radius: 50%;
-    display: inline-block;
-    border: 1px solid rgba(0, 0, 0, 0.12) !important;
-}
 
 .Swarmpit-label {
     font-size: 0.875rem;
@@ -327,6 +311,10 @@ html > button {
 
 .Swarmpit-label-blue {
     color: #437f9d;
+}
+
+.Swarmpit-label-grey {
+    color: rgb(117, 117, 117);
 }
 
 .Swarmpit-label-info {
