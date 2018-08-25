@@ -11,7 +11,7 @@
   (html
     [:div.Swarmpit-form-item
      [:div.Swarmpit-form-item-label name]
-     [:div value]]))
+     [:div.Swarmpit-form-item-value value]]))
 
 (defn envelope
   [items]

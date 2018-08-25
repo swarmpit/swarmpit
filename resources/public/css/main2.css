@@ -220,12 +220,18 @@ html > button {
 
 .Swarmpit-form-panel-search {
     margin-right: auto;
-    height: 48px;
+    height: 36px;
     display: flex;
     justify-content: space-between;
     background-color: #fff;
-    border: 2px solid rgba(101, 81, 159, 0.5);
+    /*border: 2px solid rgba(101, 81, 159, 0.5);*/
+    border: 1px solid #ced4da;
     border-radius: 4px;
+}
+
+.Swarmpit-form-panel-search:focus {
+    border-color: #65519f;
+    box-shadow: 0 0 0 0.2rem rgba(101, 81, 159, 0.5);
 }
 
 .Swarmpit-form-panel-search > div {
@@ -242,7 +248,10 @@ html > button {
     transform: scale(1, 1);
     transition: transform 200ms cubic-bezier(0.4, 0.0, 0.2, 1);
     color: #65519f !important;
+    height: 36px !important;
 }
+
+/** Form content **/
 
 .Swarmpit-form-context {
     padding: 0 24px;
@@ -268,6 +277,13 @@ html > button {
     color: rgba(0, 0, 0, 0.54);
     text-transform: uppercase;
     width: 150px;
+}
+
+.Swarmpit-form-item-value {
+    /*text-overflow: ellipsis;*/
+    /*white-space: nowrap;*/
+    /*overflow: hidden;*/
+    /*width: width: calc(100% - 200px) !important;*/
 }
 
 /* Status icons */
@@ -331,6 +347,14 @@ html > button {
 @media all and (max-width: 800px) {
     .Swarmpit-form-panel {
         justify-content: space-around;
+    }
+
+    .Swarmpit-data-list-expandable-panel-summary-text {
+        width: 200px;
+    }
+
+    .Swarmpit-data-list-expandable-panel-details-text {
+        width: 200px;
     }
 }
 

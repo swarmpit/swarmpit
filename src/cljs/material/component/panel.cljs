@@ -3,28 +3,16 @@
             [material.icon :as icon]
             [sablono.core :refer-macros [html]]))
 
-(defn search [text]
-  (html
-    [:div.Swarmpit-form-panel-search
-     (cmp/form-control
-       {:className "Swarmpit-form-panel-search"}
-       (cmp/input-label
-         {:htmlFor "input-with-search-adornment"} text)
-       (cmp/input
-         {:id             "input-with-search-adornment"
-          :startAdornment (cmp/input-adornment
-                            {:position "start"} icon/search)}))]))
-
-
-(defn search-2 [text]
+(defn search [placeholder on-change-fn]
   (html
     [:div {:className "Swarmpit-form-panel-search"}
-
      [:div
       (cmp/input
-        {:placeholder      text
+        {:placeholder      placeholder
+         :onChange         on-change-fn
          :fullWidth        true
          :className        "Swarmpit-form-panel-search-input"
+         :id               "Swarmpit-form-panel-filter"
          :disableUnderline true})]
      (cmp/icon-button
        {:className "Swarnpit-form-panel-search-icon"
