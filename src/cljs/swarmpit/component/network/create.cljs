@@ -49,19 +49,22 @@
 (defn- form-internal [value]
   (comp/checkbox
     {:checked  value
-     :onChange #(state/update-value [:internal] (-> % .-target .-value) state/form-value-cursor)}))
+     :value    value
+     :onChange #(state/update-value [:internal] (-> % .-target .-checked) state/form-value-cursor)}))
 
 (defn- form-attachable [value ingres?]
   (comp/checkbox
     {:checked  value
      :disabled ingres?
-     :onCheck  #(state/update-value [:attachable] (-> % .-target .-value) state/form-value-cursor)}))
+     :value    value
+     :onChange #(state/update-value [:attachable] (-> % .-target .-checked) state/form-value-cursor)}))
 
 (defn- form-ingress [value attachable?]
   (comp/checkbox
     {:checked  value
      :disabled attachable?
-     :onCheck  #(state/update-value [:ingress] (-> % .-target .-value) state/form-value-cursor)}))
+     :value    value
+     :onChange #(state/update-value [:ingress] (-> % .-target .-checked) state/form-value-cursor)}))
 
 (defn- section-general
   [{:keys [name internal attachable ingress]}]
@@ -99,8 +102,9 @@
 
 (defn- form-ipv6 [value]
   (comp/checkbox
-    {:checked value
-     :onCheck #(state/update-value [:enableIPv6] (-> % .-target .-value) state/form-value-cursor)}))
+    {:checked  value
+     :value    value
+     :onChange #(state/update-value [:enableIPv6] (-> % .-target .-checked) state/form-value-cursor)}))
 
 (defn- form-subnet [value]
   (comp/text-field
