@@ -89,7 +89,12 @@ html > button {
 
 .Swarmpit-drawer-item-icon,
 .Swarmpit-drawer-item-text > span {
-    color: rgba(0, 0, 0, 0.54) !important;
+    color: rgb(117, 117, 117) !important;
+}
+
+.Swarmpit-drawer-item,
+.Swarmpit-drawer-category {
+    /*background-color: rgb(117, 117, 117) !important*/
 }
 
 .Swarmpit-drawer-category-text > span {
@@ -189,6 +194,24 @@ html > button {
     text-transform: uppercase !important;
 }
 
+.Swarmpit-data-table-head-cell-editable {
+    border-bottom: none !important;
+}
+
+.Swarmpit-data-table-row-cell-editable {
+    border-bottom: none !important;
+    padding: 0 10px 0 0 !important;
+}
+
+.Swarmpit-data-table-row-cell-delete {
+    border-bottom: none !important;
+    padding: 0 0 0 0 !important;
+}
+
+.Swarmpit-data-table-row-cell-delete > button {
+    margin-top: 20px;
+}
+
 .Swarmpit-data-list-expandable-panel-summary-content {
     display: flex;
     flex-direction: row;
@@ -217,6 +240,8 @@ html > button {
     align-items: center;
     padding: 0 24px;
 }
+
+/** Form panel SEARCH **/
 
 .Swarmpit-form-panel-search {
     margin-right: auto;
@@ -251,32 +276,53 @@ html > button {
     height: 36px !important;
 }
 
+/** Form panel INFO **/
+
+.Swarmpit-form-panel-info {
+    margin-right: auto;
+    height: 36px;
+    display: flex;
+    justify-content: space-between;
+}
+
+.Swarmpit-form-panel-info > div {
+    margin: auto 14px;
+    width: 100%;
+}
+
+.Swarnpit-form-panel-info-icon {
+    opacity: 1;
+    transform: scale(1, 1);
+    color: rgba(0, 0, 0, 0.54) !important;
+    transition: transform 200ms cubic-bezier(0.4, 0.0, 0.2, 1);
+    height: 36px !important;
+    width: 0;
+}
+
 /** Form content **/
 
 .Swarmpit-form-context {
     padding: 0 24px;
 }
 
-.Swarmpit-form-envelope {
-    flex-direction: column;
+.Swarmpit-form-section {
+    flex-direction: row;
+    display: flex;
+    align-items: baseline;
 }
 
 .Swarmpit-form-item {
-    display: flex;
-    flex-direction: row;
-    justify-content: start;
     padding: 4px;
-}
-
-.Swarmpit-form-item > div {
-    text-align: left;
 }
 
 .Swarmpit-form-item-label {
     font-weight: 400;
     color: rgba(0, 0, 0, 0.54);
     text-transform: uppercase;
-    width: 150px;
+}
+
+.Swarmpit-form-card-header {
+    border-top: 15px solid #65519f;
 }
 
 /* Labels & Status ico  */
@@ -359,10 +405,6 @@ html > button {
     .Swarmpit-form-item {
         flex-direction: column;
         padding-bottom: 10px;
-    }
-
-    .Swarmpit-form-item > div {
-        width: 100%;
     }
 }
 
