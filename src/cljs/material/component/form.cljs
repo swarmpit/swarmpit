@@ -8,15 +8,31 @@
 
 (defn item
   [name value]
-  (html
-    [:div.Swarmpit-form-item
-     [:div.Swarmpit-form-item-label name]
-     [:div.Swarmpit-form-item-value value]]))
+  (cmp/grid
+    {:container true
+     :className "Swarmpit-form-item"}
+    (cmp/grid
+      {:item      true
+       :xs        6
+       :className "Swarmpit-form-item-label"} name)
+    (cmp/grid
+      {:item true
+       :xs   6} value)))
 
-(defn envelope
+(defn form
   [items]
-  (html
-    [:div.Swarmpit-form-envelope items]))
+  (cmp/grid
+    {:container true
+     :direction "column"
+     :xs        12
+     :sm        6} items))
+
+(defn section
+  [name icon onclick-fn]
+  (html [:div.Swarmpit-form-section
+         [:div (cmp/typography {:variant "subheading"} name)]
+         [:div (cmp/button {:color   "primary"
+                            :onClick #(onclick-fn)} icon "Add option")]]))
 
 
 
@@ -27,41 +43,41 @@
   [props]
   (cmp/checkbox
     (merge props
-           {:style {:marginTop "12px"}})))
+           {:style {:marginTop " 12px "}})))
 
 (defn toogle
   [props]
   (cmp/toogle
     (merge props
-           {:style {:marginTop  "12px"
-                    :marginLeft "-10px"}})))
+           {:style {:marginTop  " 12px "
+                    :marginLeft " -10px "}})))
 
 (defn loading [loading]
-  (let [mode (if loading "indeterminate"
-                         "determinate")]
+  (let [mode (if loading " indeterminate "
+                         " determinate ")]
     (cmp/mui
       (cmp/linear-progress
         {:mode  mode
          :style {:borderRadius 0
-                 :background   "rgb(224, 228, 231)"
-                 :height       "1px"}}))))
+                 :background   " rgb (224, 228, 231) "
+                 :height       " 1px "}}))))
 
 (defn add-btn [label add-item-fn]
   [:div.form-add-button
    (cmp/mui
      (cmp/flat-button
        {:label         label
-        :labelPosition "before"
+        :labelPosition " before "
         :primary       true
         :onTouchTap    add-item-fn
-        :style         {:marginLeft "10px"}
+        :style         {:marginLeft " 10px "}
         :icon          (cmp/svg icon/add-small)}))])
 
 ;; Form component layout
 
-(defn form [props & childs]
-  (cmp/mui
-    (cmp/vform props childs)))
+;(defn form [props & childs]
+;  (cmp/mui
+;    (cmp/vform props childs)))
 
 (defn comps [& comps]
   (html comps))
@@ -93,7 +109,7 @@
 
 (defn item-stack [stack]
   (if (some? stack)
-    (item "STACK" [:a {:href (routes/path-for-frontend :stack-info {:name stack})} stack])))
+    (item " STACK " [:a {:href (routes/path-for-frontend :stack-info {:name stack})} stack])))
 
 (defn value [value]
   [:div.form-view-row
@@ -104,9 +120,9 @@
    [:div.form-row-icon-field (cmp/svg icon)]
    [:div.form-row-value value]])
 
-(defn section [label]
-  [:div.form-view-row
-   [:span.form-row-section label]])
+;(defn section [label]
+;  [:div.form-view-row
+;   [:span.form-row-section label]])
 
 (defn section-add
   [label add-item-fn]
@@ -115,8 +131,8 @@
    [:div.form-row-icon-field
     (cmp/mui
       (cmp/svg
-        {:hoverColor "#437f9d"
-         :style      {:cursor "pointer"}
+        {:hoverColor " #437f9d "
+         :style      {:cursor " pointer "}
          :onClick    #(add-item-fn)}
         icon/add-small))]])
 
@@ -131,10 +147,10 @@
    [:div.form-row-icon-field
     (cmp/mui
       (cmp/svg
-        {:hoverColor "#437f9d"
-         :style      {:cursor    "pointer"
-                      :marginTop "2px"
-                      :width     "20px"
-                      :height    "20px"}
+        {:hoverColor " #437f9d "
+         :style      {:cursor    " pointer "
+                      :marginTop " 2px "
+                      :width     " 20px "
+                      :height    " 20px "}
          :onClick    #(add-item-fn)}
         icon/add-small))]])

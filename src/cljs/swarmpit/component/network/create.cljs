@@ -2,7 +2,7 @@
   (:require [material.icon :as icon]
             [material.component :as comp]
             [material.component.form :as form]
-            [material.component.list-table-form :as list]
+            [material.component.list :as list]
             [material.component.panel :as panel]
             [swarmpit.component.mixin :as mixin]
             [swarmpit.component.state :as state]
@@ -17,130 +17,197 @@
 
 (def form-driver-opts-cursor (conj state/form-value-cursor :options))
 
-(def form-driver-opts-headers
-  [{:name  "Name"
-    :width "35%"}
-   {:name  "Value"
-    :width "35%"}])
-
 (defn- form-name [value]
-  (form/comp
-    "NAME"
-    (comp/vtext-field
-      {:name     "name"
-       :key      "name"
-       :required true
-       :value    value
-       :onChange (fn [_ v]
-                   (state/update-value [:networkName] v state/form-value-cursor))})))
+  (comp/text-field
+    {:label     "Name"
+     :fullWidth true
+     :name      "name"
+     :key       "name"
+     :value     value
+     :required  true
+     :onChange  #(state/update-value [:networkName] (-> % .-target .-value) state/form-value-cursor)}))
 
 (defn- form-driver [value plugins]
-  (form/comp
-    "DRIVER"
-    (comp/select-field
+  (comp/form-control
+    {:fullWidth true}
+    (comp/input-label
+      {:htmlFor "network-driver"} "Driver")
+    (comp/select
       {:value    value
-       :onChange (fn [_ _ v]
-                   (state/update-value [:driver] v state/form-value-cursor))}
+       :input    (comp/input
+                   {:id   "network-driver"
+                    :name "driver"})
+       :onChange #(state/update-value [:driver] (-> % .-target .-value) state/form-value-cursor)}
       (->> plugins
            (map #(comp/menu-item
-                   {:key         %
-                    :value       %
-                    :primaryText %}))))))
+                   {:key   %
+                    :value %} %))))
+    (comp/form-helper-text
+      {}
+      "Network driver")))
 
 (defn- form-internal [value]
-  (form/comp
-    "IS PRIVATE"
-    (form/checkbox
-      {:checked value
-       :onCheck (fn [_ v]
-                  (state/update-value [:internal] v state/form-value-cursor))})))
+  (comp/checkbox
+    {:checked  value
+     :onChange #(state/update-value [:internal] (-> % .-target .-value) state/form-value-cursor)}))
 
 (defn- form-attachable [value ingres?]
-  (form/comp
-    "IS ATTACHABLE"
-    (form/checkbox
-      {:checked  value
-       :disabled ingres?
-       :onCheck  (fn [_ v]
-                   (state/update-value [:attachable] v state/form-value-cursor))})))
+  (comp/checkbox
+    {:checked  value
+     :disabled ingres?
+     :onCheck  #(state/update-value [:attachable] (-> % .-target .-value) state/form-value-cursor)}))
 
 (defn- form-ingress [value attachable?]
-  (form/comp
-    "IS INGRESS"
-    (form/checkbox
-      {:checked  value
-       :disabled attachable?
-       :onCheck  (fn [_ v]
-                   (state/update-value [:ingress] v state/form-value-cursor))})))
+  (comp/checkbox
+    {:checked  value
+     :disabled attachable?
+     :onCheck  #(state/update-value [:ingress] (-> % .-target .-value) state/form-value-cursor)}))
+
+(defn- section-general
+  [{:keys [name internal attachable ingress]}]
+  (comp/card
+    {:style {:height "100%"}}
+    (comp/card-header
+      {:title     "General settings"
+       :className "Swarmpit-form-card-header"})
+    (comp/card-content
+      {}
+      (comp/grid
+        {:container true
+         :spacing   24}
+        (comp/grid
+          {:item true
+           :xs   12}
+          (form-name name))
+        (comp/grid
+          {:item true
+           :xs   12
+           :sm   6}
+          (comp/form-control
+            {:component "fieldset"}
+            (comp/form-group
+              {}
+              (comp/form-control-label
+                {:control (form-internal internal)
+                 :label   "Is Internal"})
+              (comp/form-control-label
+                {:control (form-attachable attachable ingress)
+                 :label   "Is Attachable"})
+              (comp/form-control-label
+                {:control (form-ingress ingress attachable)
+                 :label   "Is Ingress"}))))))))
 
 (defn- form-ipv6 [value]
-  (form/comp
-    "ENABLE IPV6"
-    (form/checkbox
-      {:checked value
-       :onCheck (fn [_ v]
-                  (state/update-value [:enableIPv6] v state/form-value-cursor))})))
+  (comp/checkbox
+    {:checked value
+     :onCheck #(state/update-value [:enableIPv6] (-> % .-target .-value) state/form-value-cursor)}))
 
 (defn- form-subnet [value]
-  (form/comp
-    "SUBNET"
-    (comp/vtext-field
-      {:name            "subnet"
-       :key             "subnet"
-       :validations     "isValidSubnet"
-       :validationError "Please provide a valid CIDR format"
-       :hintText        "e.g. 10.0.0.0/24"
-       :value           value
-       :onChange        (fn [_ v]
-                          (state/update-value [:ipam :subnet] v state/form-value-cursor))})))
+  (comp/text-field
+    {:label      "Subnet"
+     :fullWidth  true
+     :name       "subnet"
+     :key        "subnet"
+     :helperText "e.g. 10.0.0.0/24"
+     :value      value
+     :onChange   #(state/update-value [:ipam :subnet] (-> % .-target .-value) state/form-value-cursor)}))
 
 (defn- form-gateway [value]
-  (form/comp
-    "GATEWAY"
-    (comp/vtext-field
-      {:name            "gateway"
-       :key             "gateway"
-       :validations     "isValidGateway"
-       :validationError "Please provide a valid IP format"
-       :hintText        "e.g. 10.0.0.1"
-       :value           value
-       :onChange        (fn [_ v]
-                          (state/update-value [:ipam :gateway] v state/form-value-cursor))})))
+  (comp/text-field
+    {:label      "Gateway"
+     :fullWidth  true
+     :name       "gateway"
+     :key        "gateway"
+     :helperText "e.g. 10.0.0.1"
+     :value      value
+     :onChange   #(state/update-value [:ipam :gateway] (-> % .-target .-value) state/form-value-cursor)}))
+
+(defn- section-ipam
+  [{:keys [ipam enableIPv6]}]
+  (comp/card
+    {:style {:height "100%"}}
+    (comp/card-header
+      {:title     "IP address management"
+       :className "Swarmpit-form-card-header"})
+    (comp/card-content
+      {}
+      (comp/grid
+        {:container true
+         :spacing   24}
+        (comp/grid
+          {:item true
+           :xs   12} (form-subnet (:subnet ipam)))
+        (comp/grid
+          {:item true
+           :xs   12} (form-gateway (:gateway ipam)))
+        (comp/grid
+          {:item true
+           :xs   12
+           :sm   6}
+          (comp/form-control-label
+            {:control (form-ipv6 enableIPv6)
+             :label   "Enable IPV6"}))))))
 
 (defn- form-driver-opt-name [value index]
-  (list/textfield
-    {:name     (str "form-driver-opt-name-" index)
-     :key      (str "form-driver-opt-name-" index)
-     :value    value
-     :onChange (fn [_ v]
-                 (state/update-item index :name v form-driver-opts-cursor))}))
+  (comp/text-field
+    {:label     "Name"
+     :fullWidth true
+     :name      (str "form-driver-opt-name-" index)
+     :key       (str "form-driver-opt-name-" index)
+     :value     value
+     :onChange  #(state/update-item index :name (-> % .-target .-value) form-driver-opts-cursor)}))
 
 (defn- form-driver-opt-value [value index]
-  (list/textfield
-    {:name     (str "form-driver-opt-value-" index)
-     :key      (str "form-driver-opt-value-" index)
-     :value    value
-     :onChange (fn [_ v]
-                 (state/update-item index :value v form-driver-opts-cursor))}))
+  (comp/text-field
+    {:label     "Value"
+     :fullWidth true
+     :name      (str "form-driver-opt-value-" index)
+     :key       (str "form-driver-opt-value-" index)
+     :value     value
+     :onChange  #(state/update-item index :value (-> % .-target .-value) form-driver-opts-cursor)}))
 
-(defn- form-driver-render-opts
-  [item index]
-  (let [{:keys [name value]} item]
-    [(form-driver-opt-name name index)
-     (form-driver-opt-value value index)]))
+(def form-driver-opts-render-metadata
+  [{:name      "Name"
+    :primary   true
+    :key       [:name]
+    :render-fn (fn [value _ index] (form-driver-opt-name value index))}
+   {:name      "Value"
+    :key       [:value]
+    :render-fn (fn [value _ index] (form-driver-opt-value value index))}])
 
-(defn- form-driver-opts-table
-  [opts]
-  (list/table-raw form-driver-opts-headers
-                  opts
-                  nil
-                  form-driver-render-opts
-                  (fn [index] (state/remove-item index form-driver-opts-cursor))))
-
-(defn- add-driver-opt
-  []
-  (state/add-item {:name  ""
-                   :value ""} form-driver-opts-cursor))
+(defn- section-driver
+  [{:keys [driver options]} plugins]
+  (comp/card
+    {:style {:height "100%"}}
+    (comp/card-header
+      {:title     "Driver"
+       :className "Swarmpit-form-card-header"})
+    (comp/card-content
+      {}
+      (comp/grid
+        {:container true
+         :spacing   24}
+        (comp/grid
+          {:item true
+           :xs   12}
+          (form-driver driver plugins))
+        (comp/grid
+          {:item true
+           :xs   12
+           :sm   6}
+          (form/section
+            "Driver options"
+            (comp/svg icon/add-small)
+            #(state/add-item {:name  ""
+                              :value ""} form-driver-opts-cursor)))
+        (when (not (empty? options))
+          (comp/grid
+            {:item true
+             :xs   12}
+            (list/edit
+              form-driver-opts-render-metadata
+              options
+              (fn [index] (state/remove-item index form-driver-opts-cursor)))))))))
 
 (defn- network-plugin-handler
   []
@@ -192,42 +259,32 @@
 
 (rum/defc form < rum/reactive
                  mixin-init-form [_]
-  (let [{:keys [name driver internal attachable ingress enableIPv6 ipam options]} (state/react state/form-value-cursor)
+  (let [data (state/react state/form-value-cursor)
         {:keys [valid? valid-ipam? processing? plugins]} (state/react state/form-state-cursor)]
-    [:div
-     [:div.form-panel
-      [:div.form-panel-left
-       (panel/info icon/networks "New network")]
-      [:div.form-panel-right
-       (comp/progress-button
-         {:label      "Create"
-          :disabled   (or (not valid?)
-                          (not valid-ipam?))
-          :primary    true
-          :onTouchTap create-network-handler} processing?)]]
-     [:div.form-layout
-      [:div.form-layout-group
-       (form/section "General settings")
-       (form/form
-         {:onValid   #(state/update-value [:valid?] true state/form-state-cursor)
-          :onInvalid #(state/update-value [:valid?] false state/form-state-cursor)}
-         (form-name name)
-         (form-internal internal)
-         (form-attachable attachable ingress)
-         (form-ingress ingress attachable)
-         (form-ipv6 enableIPv6))]
-      [:div.form-layout-group.form-layout-group-border
-       (form/section "Driver")
-       (form/form
-         {}
-         (form-driver driver plugins)
-         (html (form/subsection-add "Add network driver option" add-driver-opt))
-         (when (not (empty? options))
-           (form-driver-opts-table options)))]
-      [:div.form-layout-group.form-layout-group-border
-       (form/section "IP address management")
-       (form/form
-         {:onValid   #(state/update-value [:valid-ipam?] true state/form-state-cursor)
-          :onInvalid #(state/update-value [:valid-ipam?] false state/form-state-cursor)}
-         (form-subnet (:subnet ipam))
-         (form-gateway (:gateway ipam)))]]]))
+    (comp/mui
+      (html
+        [:div.Swarmpit-form
+         [:div.Swarmpit-form-panel
+          (panel/info "New network" (comp/svg icon/networks))
+          (comp/button
+            {:variant "contained"
+             :onClick #(create-network-handler)
+             :color   "primary"} "Create")]
+         [:div.Swarmpit-form-context
+          (comp/grid
+            {:container true
+             :spacing   40}
+            (comp/grid
+              {:item true
+               :xs   12
+               :sm   6}
+              (section-general data))
+            (comp/grid
+              {:item true
+               :xs   12
+               :sm   6}
+              (section-ipam data))
+            (comp/grid
+              {:item true
+               :xs   12}
+              (section-driver data plugins)))]]))))

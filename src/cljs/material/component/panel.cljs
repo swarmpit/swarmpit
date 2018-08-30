@@ -5,7 +5,7 @@
 
 (defn search [placeholder on-change-fn]
   (html
-    [:div {:className "Swarmpit-form-panel-search"}
+    [:div.Swarmpit-form-panel-search
      [:div
       (cmp/input
         {:placeholder      placeholder
@@ -17,6 +17,16 @@
      (cmp/icon-button
        {:className "Swarnpit-form-panel-search-icon"
         :disabled  true} icon/search)]))
+
+(defn info [title icon]
+  (html
+    [:div.Swarmpit-form-panel-info
+     (cmp/icon-button
+       {:className "Swarnpit-form-panel-info-icon"
+        :disabled  true} icon)
+     [:div
+      (cmp/typography
+        {:variant "subheading"} title)]]))
 
 
 

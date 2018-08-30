@@ -136,8 +136,9 @@
 
 (rum/defc drawer-category < rum/static [name opened?]
   (comp/list-item
-    {:disabled true
-     :key      (str "Swarmpit-drawer-category-" name)}
+    {:disabled  true
+     :className "Swarmpit-drawer-category"
+     :key       (str "Swarmpit-drawer-category-" name)}
     (comp/list-item-text
       (merge {:primary   name
               :className "Swarmpit-drawer-category-text"
@@ -147,9 +148,10 @@
 
 (rum/defc drawer-item < rum/static [name icon handler selected?]
   (comp/list-item
-    (merge {:button  true
-            :key     (str "Swarmpit-drawer-item-" name)
-            :onClick #(dispatch! (routes/path-for-frontend handler))}
+    (merge {:button    true
+            :className "Swarmpit-drawer-item"
+            :key       (str "Swarmpit-drawer-item-" name)
+            :onClick   #(dispatch! (routes/path-for-frontend handler))}
            (when selected?
              {:className "Swarmpit-drawer-item-selected"}))
     (comp/list-item-icon
