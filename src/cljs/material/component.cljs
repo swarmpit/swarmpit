@@ -8,7 +8,7 @@
 
 (def theme-props
   {:palette {:primary   {:main "#65519f"}
-             :secondary {:main "#ffffff"}}})
+             :secondary {:main "rgb(117, 117, 117)"}}})
 
 (def theme (f/create-mui-theme (clj->js theme-props)))
 
@@ -24,6 +24,10 @@
 (defn form-control
   [props & childs]
   (f/form-control (clj->js props) childs))
+
+(defn form-control-label
+  [props]
+  (f/form-control-label (clj->js props)))
 
 (defn form-group
   [props & childs]
@@ -41,13 +45,13 @@
   [props & childs]
   (f/drawer (clj->js props) childs))
 
-(defn list-item
-  [props & childs]
-  (f/list-item (clj->js props) childs))
-
 (defn menu
   [props & childs]
   (f/menu (clj->js props) childs))
+
+(defn menu-item
+  [props label]
+  (f/menu-item (clj->js props) label))
 
 (defn paper
   [props & childs]
@@ -57,6 +61,14 @@
   [props]
   (f/input (clj->js props)))
 
+(defn input-adornment
+  [props adorment]
+  (f/input-adornment (clj->js props) adorment))
+
+(defn input-label
+  [props label]
+  (f/input-label (clj->js props) label))
+
 (defn avatar
   [props]
   (f/avatar (clj->js props)))
@@ -65,37 +77,29 @@
   [props]
   (f/chip (clj->js props)))
 
-(defn list-item-text
-  [props]
-  (f/list-item-text (clj->js props)))
-
-(defn input-label
-  [props label]
-  (f/input-label (clj->js props) label))
+(defn list-item
+  [props & childs]
+  (f/list-item (clj->js props) childs))
 
 (defn list-item-icon
   [props icon]
   (f/list-item-icon (clj->js props) icon))
 
-(defn input-adornment
-  [props adorment]
-  (f/input-adornment (clj->js props) adorment))
+(defn list-item-text
+  [props]
+  (f/list-item-text (clj->js props)))
 
 (defn icon-button
   [props icon]
   (f/icon-button (clj->js props) icon))
 
 (defn button
-  [props label]
-  (f/button (clj->js props) label))
+  [props & childs]
+  (f/button (clj->js props) childs))
 
 (defn hidden
   [props comp]
   (f/hidden (clj->js props) comp))
-
-(defn menu-item
-  [props label]
-  (f/menu-item (clj->js props) label))
 
 (defn app-bar
   [props drawer]
@@ -149,12 +153,33 @@
   [props & childs]
   (f/expansion-panel-actions (clj->js props) childs))
 
+(defn grid
+  [props & childs]
+  (f/grid (clj->js props) childs))
 
+(defn card
+  [props & childs]
+  (f/card (clj->js props) childs))
 
+(defn card-header
+  [props]
+  (f/card-header (clj->js props)))
 
+(defn card-content
+  [props & childs]
+  (f/card-content (clj->js props) childs))
 
+(defn checkbox
+  ([props] (f/checkbox (clj->js props)))
+  ([] (f/checkbox nil)))
 
+(defn select
+  [props & childs]
+  (f/select (clj->js props) childs))
 
+(defn tooltip
+  [props comp]
+  (f/tooltip (clj->js props) comp))
 
 
 
@@ -184,10 +209,6 @@
 (defn toogle
   ([props] (f/toogle (clj->js props)))
   ([] (f/toogle nil)))
-
-(defn checkbox
-  ([props] (f/checkbox (clj->js props)))
-  ([] (f/checkbox nil)))
 
 (defn slider
   ([props] (f/slider (clj->js props)))
