@@ -70,7 +70,7 @@
              :onClick #(dispatch! (routes/path-for-frontend :network-create))
              :color   "primary"} "New network")]
          [:div.Swarmpit-form-context
-          (list/responsive-table
+          (list/view
             render-metadata
             nil
             (sort-by :networkName filtered-items)

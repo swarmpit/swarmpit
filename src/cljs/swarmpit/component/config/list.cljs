@@ -63,7 +63,7 @@
              :onClick #(dispatch! (routes/path-for-frontend :config-create))
              :color   "primary"} "New Config")]
          [:div.Swarmpit-form-context
-          (list/responsive-table
+          (list/view
             render-metadata
             nil
             (->> (list/filter items (:query filter))

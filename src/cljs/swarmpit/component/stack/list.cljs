@@ -81,7 +81,7 @@
              :onClick #(dispatch! (routes/path-for-frontend :stack-create))
              :color   "primary"} "New stack")]
          [:div.Swarmpit-form-context
-          (list/responsive-table
+          (list/view
             render-metadata
             nil
             (->> (list/filter items (:query filter))

@@ -70,7 +70,7 @@
              :onClick #(dispatch! (routes/path-for-frontend :dockerhub-user-create))
              :color   "primary"} "Add user")]
          [:div.Swarmpit-form-context
-          (list/responsive-table
+          (list/view
             render-metadata
             nil
             (sort-by :username filtered-items)

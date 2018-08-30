@@ -47,10 +47,10 @@
     :key  [:repository :image]}
    {:name      "Replicas"
     :key       [:status :info]
-    :render-fn (fn [value _] (label/info value))}
+    :render-fn (fn [value] (label/info value))}
    {:name      "Ports"
     :key       [:ports]
-    :render-fn (fn [value _] (render-item-ports value))}
+    :render-fn (fn [value] (render-item-ports value))}
    {:name      "Status"
     :key       [:state]
     :render-fn (fn [value item] (render-status value item))}])
@@ -116,7 +116,7 @@
              :onClick #(dispatch! (routes/path-for-frontend :service-create-image))
              :color   "primary"} "New Service")]
          [:div.Swarmpit-form-context
-          (list/responsive-table
+          (list/view
             render-metadata
             render-state-fn
             (sort-by :serviceName filtered-items)

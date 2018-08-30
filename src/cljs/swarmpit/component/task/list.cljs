@@ -122,7 +122,7 @@
             (fn [event]
               (state/update-value [:filter :query] (-> event .-target .-value) state/form-state-cursor)))]
          [:div.Swarmpit-form-context
-          (list/responsive-table
+          (list/view
             render-metadata
             render-state-fn
             (sort-by :serviceName filtered-items)

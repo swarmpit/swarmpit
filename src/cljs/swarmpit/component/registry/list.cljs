@@ -72,7 +72,7 @@
              :onClick #(dispatch! (routes/path-for-frontend :registry-create))
              :color   "primary"} "Add registry")]
          [:div.Swarmpit-form-context
-          (list/responsive-table
+          (list/view
             render-metadata
             nil
             (sort-by :name filtered-items)

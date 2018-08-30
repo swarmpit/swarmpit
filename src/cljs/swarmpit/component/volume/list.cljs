@@ -62,7 +62,7 @@
              :onClick #(dispatch! (routes/path-for-frontend :volume-create))
              :color   "primary"} "New volume")]
          [:div.Swarmpit-form-context
-          (list/responsive-table
+          (list/view
             render-metadata
             nil
             (sort-by :volumeName filtered-items)

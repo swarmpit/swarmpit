@@ -66,7 +66,7 @@
              :onClick #(dispatch! (routes/path-for-frontend :user-create))
              :color   "primary"} "New user")]
          [:div.Swarmpit-form-context
-          (list/responsive-table
+          (list/view
             render-metadata
             nil
             (sort-by :username filtered-items)
