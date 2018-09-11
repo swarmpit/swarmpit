@@ -1,7 +1,8 @@
 (ns swarmpit.component.task.list
   (:require [material.icon :as icon]
             [material.component :as comp]
-            [material.component.list :as list]
+            [material.component.list.basic :as list]
+            [material.component.list.util :as list-util]
             [material.component.label :as label]
             [material.component.panel :as panel]
             [swarmpit.component.state :as state]
@@ -85,7 +86,7 @@
 
 (defn- onclick-handler
   [item]
-  (routes/path-for-frontend :task-info (select-keys item [:id])))
+  (dispatch! (routes/path-for-frontend :task-info (select-keys item [:id]))))
 
 (defn- tasks-handler
   []
@@ -112,7 +113,7 @@
                  mixin/focus-filter [_]
   (let [{:keys [items]} (state/react state/form-value-cursor)
         {:keys [loading? filter]} (state/react state/form-state-cursor)
-        filtered-items (list/filter items (:query filter))]
+        filtered-items (list-util/filter items (:query filter))]
     (comp/mui
       (html
         [:div.Swarmpit-form
@@ -122,7 +123,7 @@
             (fn [event]
               (state/update-value [:filter :query] (-> event .-target .-value) state/form-state-cursor)))]
          [:div.Swarmpit-form-context
-          (list/view
+          (list/responsive
             render-metadata
             render-state-fn
             (sort-by :serviceName filtered-items)

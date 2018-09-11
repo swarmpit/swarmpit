@@ -1,6 +1,7 @@
 (ns swarmpit.component.config.list
   (:require [material.component :as comp]
-            [material.component.list :as list]
+            [material.component.list.basic :as list]
+            [material.component.list.util :as list-util]
             [material.component.panel :as panel]
             [swarmpit.component.mixin :as mixin]
             [swarmpit.component.state :as state]
@@ -23,7 +24,7 @@
 
 (defn- onclick-handler
   [item]
-  (routes/path-for-frontend :config-info {:id (:configName item)}))
+  (dispatch! (routes/path-for-frontend :config-info {:id (:configName item)})))
 
 (defn- configs-handler
   []
@@ -63,9 +64,9 @@
              :onClick #(dispatch! (routes/path-for-frontend :config-create))
              :color   "primary"} "New Config")]
          [:div.Swarmpit-form-context
-          (list/view
+          (list/responsive
             render-metadata
             nil
-            (->> (list/filter items (:query filter))
+            (->> (list-util/filter items (:query filter))
                  (sort-by :configName))
             onclick-handler)]]))))

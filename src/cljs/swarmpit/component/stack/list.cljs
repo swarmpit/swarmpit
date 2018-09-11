@@ -1,7 +1,8 @@
 (ns swarmpit.component.stack.list
   (:require [material.icon :as icon]
             [material.component :as comp]
-            [material.component.list :as list]
+            [material.component.list.basic :as list]
+            [material.component.list.util :as list-util]
             [material.component.panel :as panel]
             [swarmpit.component.state :as state]
             [swarmpit.component.mixin :as mixin]
@@ -30,7 +31,7 @@
 
 (defn- onclick-handler
   [item]
-  (routes/path-for-frontend :stack-info {:name (:stackName item)}))
+  (dispatch! (routes/path-for-frontend :stack-info {:name (:stackName item)})))
 
 (defn- format-response
   [response]
@@ -81,10 +82,10 @@
              :onClick #(dispatch! (routes/path-for-frontend :stack-create))
              :color   "primary"} "New stack")]
          [:div.Swarmpit-form-context
-          (list/view
+          (list/responsive
             render-metadata
             nil
-            (->> (list/filter items (:query filter))
+            (->> (list-util/filter items (:query filter))
                  (format-response)
                  (sort-by :stackName))
             onclick-handler)]]))))

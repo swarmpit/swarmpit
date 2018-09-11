@@ -33,7 +33,7 @@
              (not))) items)))
 
 (defn data-table-head
-  [render-metadata editable?]
+  [render-metadata]
   (cmp/table-head
     {:key "Swarmpit-data-table-head"}
     (cmp/table-row
@@ -46,28 +46,33 @@
             (:name header))) render-metadata))))
 
 (defn data-table-body
-  [render-metadata items editable? action-handler-fn]
+  [render-metadata items type action-handler-fn]
   (cmp/table-body
     {:key "Swarmpit-data-table-body"}
     (map-indexed
       (fn [index item]
         (cmp/table-row
           (merge {:key (str "Swarmpit-data-table-body-row-" index)}
-                 (when (false? editable?)
-                   {:onClick #(action-handler-fn item)
-                    :hover   true}))
+                 (case type
+                   :list {:onClick #(action-handler-fn item)
+                          :hover   true}
+                   :info {:hover true}
+                   nil))
           (->> (select-keys* item (render-keys render-metadata))
                (map-indexed
                  (fn [coll-index coll]
                    (cmp/table-cell
                      {:key       (str "Swarmpit-data-table-row-cell-" index "-" coll-index)
-                      :className (when editable? "Swarmpit-data-table-row-cell-editable")}
+                      :className (case type
+                                   :edit "Swarmpit-data-table-row-cell-edit"
+                                   :info "Swarmpit-data-table-row-cell-info"
+                                   nil)}
                      (let [render-fn (:render-fn (nth render-metadata coll-index))
                            value (val coll)]
                        (if render-fn
                          (render-fn value item index)
                          value))))))
-          (when editable?
+          (when (= :edit type)
             (cmp/table-cell
               {:className "Swarmpit-data-table-row-cell-delete"}
               (cmp/tooltip
@@ -78,25 +83,25 @@
                    :onClick #(action-handler-fn index)} (cmp/svg icon/trash))))))) items)))
 
 (defn data-table-raw
-  [render-metadata items editable? action-handler-fn]
+  [render-metadata items type action-handler-fn]
   (cmp/table
     {:key       "Swarmpit-data-table"
      :className "Swarmpit-data-table"}
-    (when (false? editable?)
-      (data-table-head render-metadata editable?))
-    (data-table-body render-metadata items editable? action-handler-fn)))
+    (when (not (= :edit type))
+      (data-table-head render-metadata))
+    (data-table-body render-metadata items type action-handler-fn)))
 
 (defn data-table
-  [render-metadata items editable? action-handler-fn]
-  (if editable?
-    (data-table-raw render-metadata items editable? action-handler-fn)
+  [render-metadata items type action-handler-fn]
+  (if (= :edit type)
+    (data-table-raw render-metadata items type action-handler-fn)
     (cmp/paper
-      {}
-      (data-table-raw render-metadata items editable? action-handler-fn))))
+      {:className "Swarmpit-paper"}
+      (data-table-raw render-metadata items type action-handler-fn))))
 
 (defn data-list-expandable-item-detail
-  [name value editable?]
-  (if editable?
+  [name value type]
+  (if (= :edit type)
     (cmp/grid
       {:container true
        :className "Swarmpit-form-item"}
@@ -115,7 +120,7 @@
          :xs   6} value))))
 
 (defn data-list-expandable-item-details
-  [render-metadata editable? item index]
+  [render-metadata type item index]
   (let [labels (map :name render-metadata)]
     (cmp/grid
       {:container true
@@ -129,11 +134,11 @@
                      value (val coll)
                      name (nth labels coll-index)]
                  (if render-fn
-                   (data-list-expandable-item-detail name (render-fn value item index) editable?)
-                   (data-list-expandable-item-detail name value editable?)))))))))
+                   (data-list-expandable-item-detail name (render-fn value item index) type)
+                   (data-list-expandable-item-detail name value type)))))))))
 
 (defn data-list-expandable-item
-  [render-metadata index item summary-status editable? action-handler-fn]
+  [render-metadata index item summary-status type action-handler-fn]
   (let [expanded (rum/react active-panel)
         summary (get-in item (primary-key render-metadata))]
     (cmp/expansion-panel
@@ -157,20 +162,23 @@
                :variant      "subheading"} summary)]]))
       (cmp/expansion-panel-details
         {:key (str "Swarmpit-data-list-expandable-panel-details-" index)}
-        (data-list-expandable-item-details render-metadata editable? item index))
+        (data-list-expandable-item-details render-metadata type item index))
       (cmp/divider)
-      (cmp/expansion-panel-actions
-        {}
-        (if editable?
-          (cmp/button {:size    "small"
-                       :onClick #(action-handler-fn index)
-                       :color   "primary"} "Delete")
-          (cmp/button {:size    "small"
-                       :onClick #(action-handler-fn item)
-                       :color   "primary"} "Details"))))))
+      (case type
+        :edit (cmp/expansion-panel-actions
+                {}
+                (cmp/button {:size    "small"
+                             :onClick #(action-handler-fn index)
+                             :color   "primary"} "Delete"))
+        :list (cmp/expansion-panel-actions
+                {}
+                (cmp/button {:size    "small"
+                             :onClick #(action-handler-fn item)
+                             :color   "primary"} "Details"))
+        nil))))
 
 (defn data-list
-  [render-metadata render-status-fn items editable? action-handler-fn]
+  [render-metadata render-status-fn items type action-handler-fn]
   (html
     [:div.Swarmpit-data-list
      (map-indexed
@@ -180,7 +188,7 @@
            index
            item
            (when render-status-fn (render-status-fn item))
-           editable?
+           type
            action-handler-fn)) items)]))
 
 (rum/defc view < rum/reactive
@@ -190,21 +198,34 @@
      (cmp/hidden
        {:only           ["xs" "sm" "md"]
         :implementation "js"}
-       (data-table render-metadata items false onclick-handler-fn))
+       (data-table render-metadata items :list onclick-handler-fn))
      (cmp/hidden
        {:only           ["lg" "xl"]
         :implementation "js"}
-       (data-list render-metadata render-status-fn items false onclick-handler-fn))]))
+       (data-list render-metadata render-status-fn items :list onclick-handler-fn))]))
 
-(rum/defc edit < rum/reactive
-  [render-metadata items ondelete-handler-fn]
-  (html
-    [:div
-     (cmp/hidden
-       {:only           ["xs" "sm" "md"]
-        :implementation "js"}
-       (data-table render-metadata items true ondelete-handler-fn))
-     (cmp/hidden
-       {:only           ["lg" "xl"]
-        :implementation "js"}
-       (data-list render-metadata nil items true ondelete-handler-fn))]))
+;(rum/defc edit < rum/reactive
+;  [render-metadata items ondelete-handler-fn]
+;  (html
+;    [:div
+;     (cmp/hidden
+;       {:only           ["xs" "sm" "md"]
+;        :implementation "js"}
+;       (data-table render-metadata items :edit ondelete-handler-fn))
+;     (cmp/hidden
+;       {:only           ["lg" "xl"]
+;        :implementation "js"}
+;       (data-list render-metadata nil items :edit ondelete-handler-fn))]))
+
+;(rum/defc info < rum/reactive
+;  [render-metadata items]
+;  (html
+;    [:div
+;     (cmp/hidden
+;       {:only           ["xs" "sm" "md"]
+;        :implementation "js"}
+;       (data-table render-metadata items :info nil))
+;     (cmp/hidden
+;       {:only           ["lg" "xl"]
+;        :implementation "js"}
+;       (data-list render-metadata nil items :info nil))]))

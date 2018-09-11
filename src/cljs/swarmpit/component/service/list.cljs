@@ -1,9 +1,9 @@
 (ns swarmpit.component.service.list
   (:require [material.icon :as icon]
             [material.component :as comp]
-            [material.component.list :as list]
+            [material.component.list.basic :as list]
+            [material.component.list.util :as list-util]
             [material.component.label :as label]
-            [material.component.panel :as panel]
             [swarmpit.component.state :as state]
             [swarmpit.component.mixin :as mixin]
             [swarmpit.ajax :as ajax]
@@ -74,6 +74,16 @@
      :on-success (fn [{:keys [response]}]
                    (state/update-value [:items] response state/form-value-cursor))}))
 
+(defn form-search-fn
+  [event]
+  (state/update-value [:filter :query] (-> event .-target .-value) state/form-state-cursor))
+
+(def form-actions
+  [{:button (comp/icon-button
+              {:color   "inherit"
+               :onClick #(dispatch! (routes/path-for-frontend :service-create-image))} icon/add-circle)
+    :name   "New service"}])
+
 (defn- init-form-state
   []
   (state/set-value {:loading? false
@@ -102,21 +112,12 @@
                  mixin/focus-filter [_]
   (let [{:keys [items]} (state/react state/form-value-cursor)
         {:keys [loading? filter]} (state/react state/form-state-cursor)
-        filtered-items (list/filter items (:query filter))]
+        filtered-items (list-util/filter items (:query filter))]
     (comp/mui
       (html
         [:div.Swarmpit-form
-         [:div.Swarmpit-form-panel
-          (panel/search
-            "Search services"
-            (fn [event]
-              (state/update-value [:filter :query] (-> event .-target .-value) state/form-state-cursor)))
-          (comp/button
-            {:variant "contained"
-             :onClick #(dispatch! (routes/path-for-frontend :service-create-image))
-             :color   "primary"} "New Service")]
          [:div.Swarmpit-form-context
-          (list/view
+          (list/responsive
             render-metadata
             render-state-fn
             (sort-by :serviceName filtered-items)

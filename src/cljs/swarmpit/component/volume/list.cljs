@@ -1,6 +1,7 @@
 (ns swarmpit.component.volume.list
   (:require [material.component :as comp]
-            [material.component.list :as list]
+            [material.component.list.basic :as list]
+            [material.component.list.util :as list-util]
             [material.component.panel :as panel]
             [swarmpit.component.state :as state]
             [swarmpit.component.mixin :as mixin]
@@ -21,7 +22,7 @@
 
 (defn- onclick-handler
   [item]
-  (routes/path-for-frontend :volume-info {:name (:volumeName item)}))
+  (dispatch! (routes/path-for-frontend :volume-info {:name (:volumeName item)})))
 
 (defn- volumes-handler
   []
@@ -48,7 +49,7 @@
                  mixin/focus-filter [_]
   (let [{:keys [items]} (state/react state/form-value-cursor)
         {:keys [loading? filter]} (state/react state/form-state-cursor)
-        filtered-items (list/filter items (:query filter))]
+        filtered-items (list-util/filter items (:query filter))]
     (comp/mui
       (html
         [:div.Swarmpit-form
@@ -62,7 +63,7 @@
              :onClick #(dispatch! (routes/path-for-frontend :volume-create))
              :color   "primary"} "New volume")]
          [:div.Swarmpit-form-context
-          (list/view
+          (list/responsive
             render-metadata
             nil
             (sort-by :volumeName filtered-items)

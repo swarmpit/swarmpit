@@ -1,6 +1,7 @@
 (ns swarmpit.component.secret.list
   (:require [material.component :as comp]
-            [material.component.list :as list]
+            [material.component.list.basic :as list]
+            [material.component.list.util :as list-util]
             [material.component.panel :as panel]
             [swarmpit.component.mixin :as mixin]
             [swarmpit.component.state :as state]
@@ -23,7 +24,7 @@
 
 (defn- onclick-handler
   [item]
-  (routes/path-for-frontend :secret-info {:id (:secretName item)}))
+  (dispatch! (routes/path-for-frontend :secret-info {:id (:secretName item)})))
 
 (defn- secrets-handler
   []
@@ -63,9 +64,9 @@
              :onClick #(dispatch! (routes/path-for-frontend :secret-create))
              :color   "primary"} "New Secret")]
          [:div.Swarmpit-form-context
-          (list/view
+          (list/responsive
             render-metadata
             nil
-            (->> (list/filter items (:query filter))
+            (->> (list-util/filter items (:query filter))
                  (sort-by :secretName))
             onclick-handler)]]))))

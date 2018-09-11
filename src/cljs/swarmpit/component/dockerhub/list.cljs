@@ -1,6 +1,7 @@
 (ns swarmpit.component.dockerhub.list
   (:require [material.component :as comp]
-            [material.component.list :as list]
+            [material.component.list.basic :as list]
+            [material.component.list.util :as list-util]
             [material.component.panel :as panel]
             [swarmpit.component.mixin :as mixin]
             [swarmpit.component.state :as state]
@@ -28,7 +29,7 @@
 
 (defn- onclick-handler
   [item]
-  (routes/path-for-frontend :dockerhub-user-info {:id (:_id item)}))
+  (dispatch! (routes/path-for-frontend :dockerhub-user-info {:id (:_id item)})))
 
 (defn- users-handler
   []
@@ -56,7 +57,7 @@
   (let [{:keys [items]} (state/react state/form-value-cursor)
         {:keys [loading? filter]} (state/react state/form-state-cursor)
         filtered-items (-> (core/filter #(= (:owner %) (storage/user)) items)
-                           (list/filter (:query filter)))]
+                           (list-util/filter (:query filter)))]
     (comp/mui
       (html
         [:div.Swarmpit-form
@@ -70,7 +71,7 @@
              :onClick #(dispatch! (routes/path-for-frontend :dockerhub-user-create))
              :color   "primary"} "Add user")]
          [:div.Swarmpit-form-context
-          (list/view
+          (list/responsive
             render-metadata
             nil
             (sort-by :username filtered-items)
