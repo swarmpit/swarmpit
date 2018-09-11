@@ -7,7 +7,10 @@
 ;;; Theme components
 
 (def theme-props
-  {:palette {:primary   {:main "#65519f"}
+  {:palette {:primary   {:main         "#65519f"
+                         :light        "#957ed1"
+                         :dark         "#362870"
+                         :contrastText "#fff"}
              :secondary {:main "rgb(117, 117, 117)"}}})
 
 (def theme (f/create-mui-theme (clj->js theme-props)))
@@ -50,8 +53,8 @@
   (f/menu (clj->js props) childs))
 
 (defn menu-item
-  [props label]
-  (f/menu-item (clj->js props) label))
+  [props & childs]
+  (f/menu-item (clj->js props) childs))
 
 (defn paper
   [props & childs]
@@ -106,8 +109,8 @@
   (f/appbar (clj->js props) drawer))
 
 (defn typography
-  [props label]
-  (f/typography (clj->js props) label))
+  [props & childs]
+  (f/typography (clj->js props) childs))
 
 (defn svg
   ([props d] (f/svg-icon (clj->js props) (html [:path {:d d}])))
@@ -168,6 +171,10 @@
 (defn card-content
   [props & childs]
   (f/card-content (clj->js props) childs))
+
+(defn card-actions
+  [props & childs]
+  (f/card-actions (clj->js props) childs))
 
 (defn checkbox
   ([props] (f/checkbox (clj->js props)))
