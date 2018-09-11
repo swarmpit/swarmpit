@@ -14,6 +14,10 @@ html > button {
     display: none !important;
 }
 
+.grow {
+    flex-grow: 1;
+}
+
 .Swarmpit-root {
     flex-grow: 1;
     z-index: 1;
@@ -42,21 +46,34 @@ html > button {
     min-height: 100vh;
 }
 
+.Swarmpit-paper {
+    box-shadow: 0 12px 20px -10px rgba(101, 81, 159, 0.28),
+    0 4px 20px 0px rgba(0, 0, 0, 0.12),
+    0 7px 8px -5px rgba(101, 81, 159, 0.2) !important;
+}
+
 /** Appbar **/
 
 .Swarmpit-appbar {
+    background: linear-gradient(60deg, #362870, #65519f);
+    box-shadow: none;
     z-index: 1201 !important;
     transition: width 195ms cubic-bezier(0.4, 0, 0.6, 1) 0ms, margin 195ms cubic-bezier(0.4, 0, 0.6, 1) 0ms;
 }
 
-.Swarmpit-appbar-title {
-    flex-grow: 1;
+.Swarmpit-appbar-mobile {
+    position: absolute;
+    margin-left: 200px;
 }
 
 .Swarmpit-appbar-shift {
     margin-left: 200px;
     width: calc(100% - 200px) !important;
     transition: width 225ms cubic-bezier(0.4, 0, 0.6, 1) 0ms, margin 225ms cubic-bezier(0.4, 0, 0.6, 1) 0ms;
+}
+
+.Swarmpit-appbar-title {
+    display: none !important;
 }
 
 .Swarmpit-appbar-menu-btn {
@@ -70,6 +87,52 @@ html > button {
 
 .Swarmpit-appbar-user-menu-logged-user {
     font-weight: 600;
+}
+
+.Swarmpit-appbar-search {
+    position: relative;
+    border-radius: 4px;
+    background-color: rgba(255, 255, 255, 0.15);
+    margin-right: 16px;
+    margin-left: 0;
+    width: 100%;
+}
+
+.Swarmpit-appbar-search:hover {
+    background-color: rgba(255, 255, 255, 0.25);
+}
+
+.Swarmpit-appbar-search-icon {
+    width: 56px;
+    height: 100%;
+    position: absolute;
+    pointer-events: none;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.Swarmpit-appbar-search-root {
+    color: inherit !important;
+    width: 100%;
+}
+
+.Swarmpit-appbar-search-input {
+    padding: 8px 8px 8px 80px !important;
+    transition: width 300ms cubic-bezier(0.4, 0, 0.2, 1) 0ms;
+    width: 100% !important;
+}
+
+.Swarmpit-appbar-avatar {
+    border: 1px solid #fff;
+}
+
+.Swarmpit-appbar-section-desktop {
+    display: none;
+}
+
+.Swarmpit-appbar-section-mobile {
+    display: flex;
 }
 
 /** Drawer **/
@@ -87,18 +150,13 @@ html > button {
     width: 56px;
 }
 
+.Swarmpit-drawer-mobile {
+    width: 200px;
+}
+
 .Swarmpit-drawer-item-icon,
 .Swarmpit-drawer-item-text > span {
     color: rgb(117, 117, 117) !important;
-}
-
-.Swarmpit-drawer-item,
-.Swarmpit-drawer-category {
-    /*background-color: rgb(117, 117, 117) !important*/
-}
-
-.Swarmpit-drawer-category-text > span {
-    /*color: rgb(99, 99, 99) !important;*/
 }
 
 .Swarmpit-drawer-item-selected {
@@ -186,47 +244,50 @@ html > button {
 
 /** List **/
 
-.Swarmpit-data-table {
-    background-color: #fff !important;
+.Swarmpit-list-context {
+    padding: 0 24px;
 }
 
-.Swarmpit-data-table-head-cell {
+.Swarmpit-table-cell {
+    padding: 4px 56px 4px 4px !important;
+}
+
+.Swarmpit-table-card > thead > tr > th,
+.Swarmpit-table-card > tbody > tr > td {
+    padding: 0 20px 0 0 !important;
+}
+
+.Swarmpit-table-card-edit > tbody > tr > td {
+    border-bottom: none !important;
+}
+
+.Swarmpit-table-info-row {
+    height: 26px !important;
+}
+
+.Swarmpit-table-head-cell {
     text-transform: uppercase !important;
 }
 
-.Swarmpit-data-table-head-cell-editable {
-    border-bottom: none !important;
-}
-
-.Swarmpit-data-table-row-cell-editable {
-    border-bottom: none !important;
-    padding: 0 10px 0 0 !important;
-}
-
-.Swarmpit-data-table-row-cell-delete {
-    border-bottom: none !important;
-    padding: 0 0 0 0 !important;
-}
-
-.Swarmpit-data-table-row-cell-delete > button {
+.Swarmpit-table-row-cell-delete > button {
     margin-top: 20px;
 }
 
-.Swarmpit-data-list-expandable-panel-summary-content {
+.Swarmpit-list-expansion-panel-summary-content {
     display: flex;
     flex-direction: row;
     justify-content: start;
 }
 
-.Swarmpit-data-list-expandable-panel-summary-content > div {
+.Swarmpit-list-expansion-panel-summary-content > div {
     margin-right: 5px;
 }
 
-.Swarmpit-data-list-expandable-panel-summary-text {
+.Swarmpit-list-expansion-panel-summary-text {
     width: 100%;
 }
 
-.Swarmpit-data-list-expandable-panel-details-text {
+.Swarmpit-list-expansion-panel-details-text {
     opacity: 0.5;
     width: 100%;
 }
@@ -236,9 +297,9 @@ html > button {
 .Swarmpit-form-panel {
     display: flex;
     overflow: hidden;
-    margin: 1em 0;
     align-items: center;
-    padding: 0 24px;
+    padding: 1em 24px;
+    /*background: rgb(229, 229, 229);*/
 }
 
 /** Form panel SEARCH **/
@@ -249,7 +310,6 @@ html > button {
     display: flex;
     justify-content: space-between;
     background-color: #fff;
-    /*border: 2px solid rgba(101, 81, 159, 0.5);*/
     border: 1px solid #ced4da;
     border-radius: 4px;
 }
@@ -302,7 +362,13 @@ html > button {
 /** Form content **/
 
 .Swarmpit-form-context {
-    padding: 0 24px;
+    padding: 24px 24px;
+}
+
+.Swarmpit-form-buttons {
+    margin-top: 15px;
+    display: flex;
+    justify-content: flex-end;
 }
 
 .Swarmpit-form-section {
@@ -311,8 +377,12 @@ html > button {
     align-items: baseline;
 }
 
+.Swarmpit-form-section-wrapper {
+    margin-top: 20px;
+}
+
 .Swarmpit-form-item {
-    padding: 4px;
+    padding-bottom: 10px;
 }
 
 .Swarmpit-form-item-label {
@@ -322,51 +392,94 @@ html > button {
 }
 
 .Swarmpit-form-card-header {
-    border-top: 15px solid #65519f;
+    /*border-top: 15px solid #65519f;*/
+}
+
+.Swarmpit-form-card-header-avatar {
+    background: linear-gradient(60deg, #362870, #957ed1);
+}
+
+.Swarmpit-form-card-header-avatar > span > svg {
+    color: #fff;
+}
+
+.Swarmpit-form-card-subheader-icon {
+    top: 2px;
+    position: relative;
+    margin-right: 3px;
+    height: 16px !important;
+    width: 16px !important;
+}
+
+.Swarmpit-form-card-header:first-child:before {
+    content: '';
+    background: linear-gradient(60deg, #362870, #957ed1);
 }
 
 /* Labels & Status ico  */
 
+.Swarmpit-fdd {
+    display: inline-flex;
+    font-size: 12px;
+}
+
 .Swarmpit-label {
-    font-size: 0.875rem;
-    min-width: 64px;
-    min-height: 36px;
-    box-sizing: border-box;
-    line-height: 1.4em;
-    font-family: "Roboto", "Helvetica", "Arial", sans-serif;
+    color: #fff;
+    display: inline-block;
+    padding: 5px 12px;
+    font-size: 10px;
+    text-align: center;
     font-weight: 500;
+    white-space: nowrap;
+    line-height: 1;
+    margin-right: 3px;
+    border-radius: 12px;
+    text-transform: uppercase;
+    vertical-align: baseline;
 }
 
-.Swarmpit-icon-ok > svg,
 .Swarmpit-label-green {
-    color: #3a9e29;
+    background-color: #43a047;
 }
 
-.Swarmpit-icon-error > svg,
 .Swarmpit-label-red {
-    color: rgb(244, 67, 54);
+    background-color: #d32f2f;
 }
 
-.Swarmpit-icon-warning > svg,
 .Swarmpit-label-yellow {
-    color: #9e931b;
+    background-color: #ffa000;
 }
 
-.Swarmpit-icon-accept > svg,
 .Swarmpit-label-blue {
-    color: #437f9d;
+    background-color: #1976d2;
 }
 
-.Swarmpit-icon-info > svg,
 .Swarmpit-label-grey {
-    color: rgb(117, 117, 117);
+    background-color: #6c757d;
 }
 
 .Swarmpit-label-info {
-    color: rgb(117, 117, 117);
-    border: 1px solid rgb(224, 228, 231);
-    border-radius: .25em;
-    padding: .2em .6em .3em;
+    background-color: #6c757d;
+}
+
+.Swarmpit-icon-ok > svg {
+    color: #43a047;
+}
+
+.Swarmpit-icon-error > svg {
+    color: #d32f2f;
+}
+
+.Swarmpit-icon-warning > svg {
+    color: #ffa000;
+}
+
+.Swarmpit-icon-accept > svg {
+    color: #1976d2
+}
+
+.Swarmpit-icon-info > svg {
+    color: #6c757d;
 }
 
 /* SERVICE */
@@ -376,17 +489,41 @@ html > button {
     color: rgb(158, 158, 158);
 }
 
+/**** MEDIA ****/
+
+@media (min-width: 960px) {
+    .Swarmpit-drawer-mobile {
+        position: relative;
+    }
+
+    .Swarmpit-appbar-mobile {
+        width: calc(100% - 200px);
+    }
+
+    .Swarmpit-appbar-search-input {
+        width: 200px;
+    }
+
+    .Swarmpit-appbar-section-desktop {
+        display: flex;
+    }
+
+    .Swarmpit-appbar-section-mobile {
+        display: none;
+    }
+}
+
 /* Medium screens */
 @media all and (max-width: 800px) {
     .Swarmpit-form-panel {
         justify-content: space-around;
     }
 
-    .Swarmpit-data-list-expandable-panel-summary-text {
+    .Swarmpit-list-expansion-panel-summary-text {
         width: 200px;
     }
 
-    .Swarmpit-data-list-expandable-panel-details-text {
+    .Swarmpit-list-expansion-panel-details-text {
         width: 200px;
     }
 }
@@ -401,15 +538,9 @@ html > button {
         width: 100%;
         margin-bottom: 10px;
     }
-
-    .Swarmpit-form-item {
-        flex-direction: column;
-        padding-bottom: 10px;
-    }
 }
 
 @media (min-width: 600px) {
-
     .Swarmpit-toolbar {
         min-height: 64px;
     }
@@ -426,6 +557,15 @@ html > button {
         width: 72px;
     }
 
+    .Swarmpit-appbar-title {
+        display: block !important;
+    }
+
+    .Swarmpit-appbar-search {
+        width: auto;
+        margin-left: 24px;
+    }
+
     .Swarmpit-appbar-menu-btn {
         margin-left: 12px !important;
         margin-right: 36px !important;
@@ -438,6 +578,10 @@ html > button {
         margin-left: auto;
         margin-right: auto;
     }
+}
+
+@media (min-width: 648px) {
+
 }
 
 @media (min-width: 0px) and (orientation: landscape) {
