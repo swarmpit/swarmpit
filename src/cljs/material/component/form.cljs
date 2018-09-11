@@ -13,11 +13,46 @@
      :className "Swarmpit-form-item"}
     (cmp/grid
       {:item      true
-       :xs        6
+       :xs        12
+       :sm        6
        :className "Swarmpit-form-item-label"} name)
     (cmp/grid
       {:item true
-       :xs   6} value)))
+       :xs   12
+       :sm   6}
+      (cmp/typography
+        {:gutterBottom true
+         :noWrap       true
+         :variant      "body1"} value))))
+
+(defn item-stack
+  [stack]
+  (when stack
+    (item " STACK " (html [:a {:href (routes/path-for-frontend :stack-info {:name stack})} stack]))))
+
+(defn item-date [action date]
+  (html
+    [:time {:date-time date
+            :title     (time/simplify date)}
+     [:div.Swarmpit-fdd
+      (icon/access-time
+        {:className "Swarmpit-form-card-subheader-icon"})
+      (str action " " (time/humanize date))]]))
+
+(defn item-id [id]
+  (html
+    [:div.Swarmpit-fdd
+     (icon/fingerprint
+       {:className "Swarmpit-form-card-subheader-icon"}) id]))
+
+(defn item-yn [value label]
+  (html
+    [:div.Swarmpit-fdd
+     (if value
+       (icon/check
+         {:className "Swarmpit-form-card-subheader-icon Swarmpit-label-green"})
+       (icon/close
+         {:className "Swarmpit-form-card-subheader-icon Swarmpit-label-red"})) label]))
 
 (defn form
   [items]
@@ -27,12 +62,13 @@
      :xs        12
      :sm        6} items))
 
-(defn section
-  [name icon onclick-fn]
-  (html [:div.Swarmpit-form-section
-         [:div (cmp/typography {:variant "subheading"} name)]
-         [:div (cmp/button {:color   "primary"
-                            :onClick #(onclick-fn)} icon "Add option")]]))
+(defn subsection
+  ([name]
+   (subsection name nil))
+  ([name button]
+   (html [:div.Swarmpit-form-section
+          [:div (cmp/typography {:variant "subheading"} name)]
+          [:div button]])))
 
 
 
@@ -99,18 +135,6 @@
 ;   [:span.form-row-label label]
 ;   [:div.form-row-value value]])
 
-(defn item-date [label date]
-  [:div.form-view-row
-   [:span.form-row-label label]
-   [:div.form-row-value
-    [:time {:date-time date
-            :title     (time/simplify date)}
-     (time/humanize date)]]])
-
-(defn item-stack [stack]
-  (if (some? stack)
-    (item " STACK " [:a {:href (routes/path-for-frontend :stack-info {:name stack})} stack])))
-
 (defn value [value]
   [:div.form-view-row
    [:div.form-row-value value]])
@@ -136,9 +160,9 @@
          :onClick    #(add-item-fn)}
         icon/add-small))]])
 
-(defn subsection [label]
-  [:div.form-view-row
-   [:span.form-row-subsection label]])
+;(defn subsection [label]
+;  [:div.form-view-row
+;   [:span.form-row-subsection label]])
 
 (defn subsection-add
   [label add-item-fn]

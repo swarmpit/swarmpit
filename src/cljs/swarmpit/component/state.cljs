@@ -4,8 +4,10 @@
 
 (defonce state
          (atom {:route   nil
-                :layout  {:opened   true
-                          :anchorEl nil}
+                :layout  {:opened             true
+                          :mobileOpened       false
+                          :anchorEl           nil
+                          :mobileMoreAnchorEl nil}
                 :message {:text ""
                           :time nil
                           :type :info
