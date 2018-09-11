@@ -2,7 +2,7 @@
   (:require [material.icon :as icon]
             [material.component :as comp]
             [material.component.form :as form]
-            [material.component.list :as list]
+            [material.component.list.edit :as list]
             [material.component.panel :as panel]
             [swarmpit.component.mixin :as mixin]
             [swarmpit.component.state :as state]
@@ -14,8 +14,6 @@
             [rum.core :as rum]))
 
 (enable-console-print!)
-
-(def form-driver-opts-cursor (conj state/form-value-cursor :options))
 
 (defn- form-name [value]
   (comp/text-field
@@ -68,37 +66,30 @@
 
 (defn- section-general
   [{:keys [name internal attachable ingress]}]
-  (comp/card
-    {:style {:height "100%"}}
-    (comp/card-header
-      {:title     "General settings"
-       :className "Swarmpit-form-card-header"})
-    (comp/card-content
-      {}
-      (comp/grid
-        {:container true
-         :spacing   24}
-        (comp/grid
-          {:item true
-           :xs   12}
-          (form-name name))
-        (comp/grid
-          {:item true
-           :xs   12
-           :sm   6}
-          (comp/form-control
-            {:component "fieldset"}
-            (comp/form-group
-              {}
-              (comp/form-control-label
-                {:control (form-internal internal)
-                 :label   "Is Internal"})
-              (comp/form-control-label
-                {:control (form-attachable attachable ingress)
-                 :label   "Is Attachable"})
-              (comp/form-control-label
-                {:control (form-ingress ingress attachable)
-                 :label   "Is Ingress"}))))))))
+  (comp/grid
+    {:container true
+     :spacing   24}
+    (comp/grid
+      {:item true
+       :xs   12}
+      (form-name name))
+    (comp/grid
+      {:item true
+       :xs   12
+       :sm   6}
+      (comp/form-control
+        {:component "fieldset"}
+        (comp/form-group
+          {}
+          (comp/form-control-label
+            {:control (form-internal internal)
+             :label   "Is Internal"})
+          (comp/form-control-label
+            {:control (form-attachable attachable ingress)
+             :label   "Is Attachable"})
+          (comp/form-control-label
+            {:control (form-ingress ingress attachable)
+             :label   "Is Ingress"}))))))
 
 (defn- form-ipv6 [value]
   (comp/checkbox
@@ -128,29 +119,24 @@
 
 (defn- section-ipam
   [{:keys [ipam enableIPv6]}]
-  (comp/card
-    {:style {:height "100%"}}
-    (comp/card-header
-      {:title     "IP address management"
-       :className "Swarmpit-form-card-header"})
-    (comp/card-content
-      {}
-      (comp/grid
-        {:container true
-         :spacing   24}
-        (comp/grid
-          {:item true
-           :xs   12} (form-subnet (:subnet ipam)))
-        (comp/grid
-          {:item true
-           :xs   12} (form-gateway (:gateway ipam)))
-        (comp/grid
-          {:item true
-           :xs   12
-           :sm   6}
-          (comp/form-control-label
-            {:control (form-ipv6 enableIPv6)
-             :label   "Enable IPV6"}))))))
+  (comp/grid
+    {:container true
+     :spacing   24}
+    (comp/grid
+      {:item true
+       :xs   12} (form-subnet (:subnet ipam)))
+    (comp/grid
+      {:item true
+       :xs   12} (form-gateway (:gateway ipam)))
+    (comp/grid
+      {:item true
+       :xs   12
+       :sm   6}
+      (comp/form-control-label
+        {:control (form-ipv6 enableIPv6)
+         :label   "Enable IPV6"}))))
+
+(def form-driver-opts-cursor (conj state/form-value-cursor :options))
 
 (defn- form-driver-opt-name [value index]
   (comp/text-field
@@ -179,39 +165,38 @@
     :key       [:value]
     :render-fn (fn [value _ index] (form-driver-opt-value value index))}])
 
+(defn- add-driver-opt
+  []
+  (state/add-item {:name  ""
+                   :value ""} form-driver-opts-cursor))
+
 (defn- section-driver
   [{:keys [driver options]} plugins]
-  (comp/card
-    {:style {:height "100%"}}
-    (comp/card-header
-      {:title     "Driver"
-       :className "Swarmpit-form-card-header"})
-    (comp/card-content
-      {}
+  (comp/grid
+    {:container true
+     :spacing   24}
+    (comp/grid
+      {:item true
+       :xs   12}
+      (form-driver driver plugins))
+    (comp/grid
+      {:item true
+       :xs   12
+       :sm   6}
+      (form/subsection
+        "Driver options"
+        (comp/button
+          {:color   "primary"
+           :onClick add-driver-opt}
+          (comp/svg icon/add-small) "Add option")))
+    (when (not (empty? options))
       (comp/grid
-        {:container true
-         :spacing   24}
-        (comp/grid
-          {:item true
-           :xs   12}
-          (form-driver driver plugins))
-        (comp/grid
-          {:item true
-           :xs   12
-           :sm   6}
-          (form/section
-            "Driver options"
-            (comp/svg icon/add-small)
-            #(state/add-item {:name  ""
-                              :value ""} form-driver-opts-cursor)))
-        (when (not (empty? options))
-          (comp/grid
-            {:item true
-             :xs   12}
-            (list/edit
-              form-driver-opts-render-metadata
-              options
-              (fn [index] (state/remove-item index form-driver-opts-cursor)))))))))
+        {:item true
+         :xs   12}
+        (list/responsive
+          form-driver-opts-render-metadata
+          options
+          (fn [index] (state/remove-item index form-driver-opts-cursor)))))))
 
 (defn- network-plugin-handler
   []
@@ -263,32 +248,52 @@
 
 (rum/defc form < rum/reactive
                  mixin-init-form [_]
-  (let [data (state/react state/form-value-cursor)
+  (let [item (state/react state/form-value-cursor)
         {:keys [valid? valid-ipam? processing? plugins]} (state/react state/form-state-cursor)]
     (comp/mui
       (html
         [:div.Swarmpit-form
-         [:div.Swarmpit-form-panel
-          (panel/info "New network" (comp/svg icon/networks))
-          (comp/button
-            {:variant "contained"
-             :onClick #(create-network-handler)
-             :color   "primary"} "Create")]
+         ;[:div.Swarmpit-form-panel
+         ; (panel/info "New network" (comp/svg icon/networks))
+         ; (comp/button
+         ;   {:variant "contained"
+         ;    :onClick #(create-network-handler)
+         ;    :color   "primary"} "Create")]
          [:div.Swarmpit-form-context
-          (comp/grid
-            {:container true
-             :spacing   40}
+
+          (comp/paper
+            {:className "Swarmpit-form-context"
+             :elevation 0}
+
             (comp/grid
-              {:item true
-               :xs   12
-               :sm   6}
-              (section-general data))
-            (comp/grid
-              {:item true
-               :xs   12
-               :sm   6}
-              (section-ipam data))
-            (comp/grid
-              {:item true
-               :xs   12}
-              (section-driver data plugins)))]]))))
+              {:container true
+               :spacing   40}
+              (comp/grid
+                {:item true
+                 :xs   12
+                 :sm   6}
+                (comp/typography
+                  {:variant      "title"
+                   :gutterBottom true} "General")
+                (section-general item))
+              (comp/grid
+                {:item true
+                 :xs   12
+                 :sm   6}
+                (comp/typography
+                  {:variant      "title"
+                   :gutterBottom true} "IPAM")
+                (section-ipam item))
+              (comp/grid
+                {:item true
+                 :xs   12}
+                (comp/typography
+                  {:variant      "title"
+                   :gutterBottom true} "Driver")
+                (section-driver item plugins)))
+            (html
+              [:div.Swarmpit-form-buttons
+               (comp/button
+                 {:variant "contained"
+                  :onClick #(create-network-handler)
+                  :color   "primary"} "Create")]))]]))))
