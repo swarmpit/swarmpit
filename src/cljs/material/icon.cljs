@@ -74,3 +74,21 @@
 (def warning (f/warning-icon))
 (def cancel (f/cancel-icon))
 (def sync (f/sync-icon))
+(def add-circle (f/add-circle-icon))
+(def more (f/more-icon))
+
+(defn access-time
+  [props]
+  (f/access-time-icon (clj->js props)))
+
+(defn fingerprint
+  [props]
+  (f/fingerprint-icon (clj->js props)))
+
+(defn check
+  [props]
+  (f/check-icon (clj->js props)))
+
+(defn close
+  [props]
+  (f/close-icon (clj->js props)))
