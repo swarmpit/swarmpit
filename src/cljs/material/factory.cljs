@@ -60,6 +60,7 @@
 (def card (create-factory js/MaterialUI.Card))
 (def card-header (create-factory js/MaterialUI.CardHeader))
 (def card-content (create-factory js/MaterialUI.CardContent))
+(def card-actions (create-factory js/MaterialUI.CardActions))
 
 (def visibility-icon (create-factory js/MaterialUIIcons.Visibility))
 (def visibility-off-icon (create-factory js/MaterialUIIcons.VisibilityOff))
@@ -81,7 +82,12 @@
 (def warning-icon (create-factory js/MaterialUIIcons.Warning))
 (def cancel-icon (create-factory js/MaterialUIIcons.Cancel))
 (def sync-icon (create-factory js/MaterialUIIcons.Sync))
-
+(def access-time-icon (create-factory js/MaterialUIIcons.AccessTime))
+(def fingerprint-icon (create-factory js/MaterialUIIcons.Fingerprint))
+(def check-icon (create-factory js/MaterialUIIcons.Check))
+(def close-icon (create-factory js/MaterialUIIcons.Close))
+(def add-circle-icon (create-factory js/MaterialUIIcons.AddCircle))
+(def more-icon (create-factory js/MaterialUIIcons.MoreVert))
 
 
 
