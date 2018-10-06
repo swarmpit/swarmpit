@@ -14,30 +14,6 @@
 
 (enable-console-print!)
 
-(def drawer-width 200)
-
-(def styles
-  (let [theme (js->clj comp/theme)
-        transitions (-> theme (get "transitions"))
-        transitions-create (get transitions "create")
-        transition-easing (-> transitions (get-in ["easing" "sharp"]))
-        transition-duration-leaving (-> transitions (get-in ["duration" "leavingScreen"]))
-        transition-duration-entering (-> transitions (get-in ["duration" "enteringScreen"]))]
-    {:appBar      {:zIndex     (+ (get-in theme ["zIndex" "drawer"]) 1)
-                   :transition (transitions-create
-                                 (clj->js ["width" "margin"])
-                                 (clj->js {:easing   transition-easing
-                                           :duration transition-duration-leaving}))}
-     :appBarShift {:marginLeft drawer-width
-                   :width      (str "calc(100% - " drawer-width "px)")
-                   :transition (transitions-create
-                                 (clj->js ["width" "margin"])
-                                 (clj->js {:easing   transition-easing
-                                           :duration transition-duration-entering}))}
-     :menuButton  {:marginLeft  12
-                   :marginRight 36}
-     :hide        {:display "none"}}))
-
 (defn- user-gravatar-hash [email]
   (let [md5 (Md5.)]
     (when (some? email)
@@ -59,8 +35,8 @@
        {:aria-owns     (when anchorEl "Swarmpit-appbar-user-menu")
         :aria-haspopup "true"
         :onClick       (fn [e]
-                         (state/update-value [:anchorEl] (.-currentTarget e) state/layout-cursor))
-        :color         "inherit"} (user-avatar))
+                         (state/update-value [:menuAnchorEl] (.-currentTarget e) state/layout-cursor))
+        :color         "inherit"} icon/account-circle)
      (comp/menu
        {:id              "Swarmpit-appbar-user-menu"
         :key             "Swarmpit-appbar-user-menu"
@@ -70,7 +46,7 @@
         :transformOrigin {:vertical   "top"
                           :horizontal "right"}
         :open            (some? anchorEl)
-        :onClose         #(state/update-value [:anchorEl] nil state/layout-cursor)}
+        :onClose         #(state/update-value [:menuAnchorEl] nil state/layout-cursor)}
        (comp/menu-item
          {:key       "Swarmpit-appbar-user-menu-logged-info"
           :className "Swarmpit-appbar-user-menu-logged-info"
@@ -97,18 +73,6 @@
                      (dispatch!
                        (routes/path-for-frontend :login)))} "Log out"))]))
 
-(defn- search-input [placeholder on-change-fn]
-  (html
-    [:div.Swarmpit-appbar-search
-     [:div.Swarmpit-appbar-search-icon icon/search]
-     (comp/input
-       {:placeholder      placeholder
-        :onChange         on-change-fn
-        :classes          {:root  "Swarmpit-appbar-search-root"
-                           :input "Swarmpit-appbar-search-input"}
-        :id               "Swarmpit-appbar-search-filter"
-        :disableUnderline true})]))
-
 (defn- mobile-actions-menu
   [actions mobileMoreAnchorEl]
   (comp/menu
@@ -125,28 +89,83 @@
                  (:button %)
                  (html [:p (:name %)]))))))
 
+(defn- search-input [on-change-fn]
+  (html
+    [:div.Swarmpit-appbar-search
+     [:div.Swarmpit-appbar-search-icon icon/search]
+     (comp/input
+       {:placeholder      "Search..."
+        :onChange         on-change-fn
+        :fullWidth        true
+        :classes          {:root  "Swarmpit-appbar-search-root"
+                           :input "Swarmpit-appbar-search-input"}
+        :id               "Swarmpit-appbar-search-filter"
+        :disableUnderline true})]))
+
+(defn- mobile-search-message [on-change-fn]
+  (html
+    [:span#snackbar-mobile-search.Swarmpit-appbar-search-mobile-message
+     (comp/input
+       {:placeholder      "Search..."
+        :onChange         on-change-fn
+        :fullWidth        true
+        :classes          {:root  "Swarmpit-appbar-search-mobile-root"
+                           :input "Swarmpit-appbar-search-mobile-input"}
+        :disableUnderline true})]))
+
+(defn- mobile-search-action []
+  (html
+    [:span
+     (comp/icon-button
+       {:onClick    #(state/update-value [:mobileSearchOpened] false state/layout-cursor)
+        :key        "close"
+        :aria-label "Close"
+        :color      "inherit"}
+       (icon/close
+         {:className "Swarmpit-appbar-search-mobile-close"}))]))
+
+(defn- mobile-search [on-change-fn opened]
+  (comp/snackbar
+    {:open         opened
+     :anchorOrigin {:vertical   "top"
+                    :horizontal "center"}
+     :className    "Swarmpit-appbar-search-mobile"
+     :onClose      #(state/update-value [:mobileSearchOpened] false state/layout-cursor)}
+    (comp/snackbar-content
+      {:aria-describedby "snackbar-mobile-search"
+       :className        "Swarmpit-appbar-search-mobile-content"
+       :message          (mobile-search-message on-change-fn)
+       :action           (mobile-search-action)})))
+
+(defn- appbar-desktop-section
+  [items]
+  (html
+    [:div.Swarmpit-appbar-section-desktop
+     items]))
+
+(defn- appbar-mobile-section
+  [items]
+  (html
+    [:div.Swarmpit-appbar-section-mobile
+     items]))
+
 (rum/defc appbar < rum/reactive [{:keys [title search actions]}]
-  (let [{:keys [opened anchorEl mobileMoreAnchorEl]} (state/react state/layout-cursor)]
+  (let [{:keys [mobileSearchOpened menuAnchorEl mobileMoreAnchorEl]} (state/react state/layout-cursor)]
     (comp/mui
       (html
         [:div
          (comp/app-bar
-           {:position  "absolute"
-            :key       "Swarmpit-appbar"
+           {:key       "Swarmpit-appbar"
             :color     "primary"
-            :className (if opened
-                         "Swarmpit-appbar Swarmpit-appbar-shift"
-                         "Swarmpit-appbar")}
+            :className "Swarmpit-appbar"}
            (comp/toolbar
-             {:disableGutters (not opened)}
+             {:disableGutters false}
              (comp/icon-button
                {:key        "Swarmpit-appbar-menu-btn"
                 :color      "inherit"
                 :aria-label "Open drawer"
-                :onClick    #(state/update-value [:opened] true state/layout-cursor)
-                :className  (if opened
-                              "Swarmpit-appbar-menu-btn hide"
-                              "Swarmpit-appbar-menu-btn")}
+                :onClick    #(state/update-value [:mobileOpened] true state/layout-cursor)
+                :className  "Swarmpit-appbar-menu-btn"}
                icon/menu)
              (comp/typography
                {:key       "Swarmpit-appbar-title"
@@ -155,63 +174,23 @@
                 :color     "inherit"
                 :noWrap    true}
                title)
-             (when search
-               (search-input (:placeholder search)
-                             (:on-change search)))
-             (html
-               [:div.grow])
-             (html
-               [:div.Swarmpit-appbar-section-desktop
-                (->> actions
-                     (map :button))])
-             (html
-               [:div.Swarmpit-appbar-section-mobile
+             (html [:div.grow])
+             (appbar-desktop-section
+               [(when search
+                  (search-input (:on-change search)))
+
+                (->> actions (map :button))])
+             (appbar-mobile-section
+               [(when search
+                  (comp/icon-button
+                    {:aria-haspopup "true"
+                     :onClick       #(state/update-value [:mobileSearchOpened] true state/layout-cursor)
+                     :color         "inherit"} icon/search))
                 (comp/icon-button
                   {:aria-haspopup "true"
                    :onClick       (fn [e]
                                     (state/update-value [:mobileMoreAnchorEl] (.-currentTarget e) state/layout-cursor))
                    :color         "inherit"} icon/more)])
-             (html
-               [:div
-                (comp/icon-button
-                  {:aria-owns     (when anchorEl "Swarmpit-appbar-user-menu")
-                   :aria-haspopup "true"
-                   :onClick       (fn [e]
-                                    (state/update-value [:anchorEl] (.-currentTarget e) state/layout-cursor))
-                   :color         "inherit"} (user-avatar))
-                (comp/menu
-                  {:id              "Swarmpit-appbar-user-menu"
-                   :key             "Swarmpit-appbar-user-menu"
-                   :anchorEl        anchorEl
-                   :anchorOrigin    {:vertical   "top"
-                                     :horizontal "right"}
-                   :transformOrigin {:vertical   "top"
-                                     :horizontal "right"}
-                   :open            (some? anchorEl)
-                   :onClose         #(state/update-value [:anchorEl] nil state/layout-cursor)}
-                  (comp/menu-item
-                    {:key       "Swarmpit-appbar-user-menu-logged-info"
-                     :className "Swarmpit-appbar-user-menu-logged-info"
-                     :disabled  true} (html [:div
-                                             [:span "Signed in as"]
-                                             [:br]
-                                             [:span.Swarmpit-appbar-user-menu-logged-user (storage/user)]]))
-                  (comp/divider)
-                  (comp/menu-item
-                    {:key     "Swarmpit-appbar-user-menu-api-token"
-                     :onClick (fn []
-                                (dispatch!
-                                  (routes/path-for-frontend :api-access)))} "API access")
-                  (comp/menu-item
-                    {:key     "Swarmpit-appbar-user-menu-settings"
-                     :onClick (fn []
-                                (dispatch!
-                                  (routes/path-for-frontend :password)))} "Change password")
-                  (comp/menu-item
-                    {:key     "Swarmpit-appbar-user-menu-logout"
-                     :onClick (fn []
-                                (storage/remove "token")
-                                (eventsource/close!)
-                                (dispatch!
-                                  (routes/path-for-frontend :login)))} "Log out"))])))
-         (mobile-actions-menu actions mobileMoreAnchorEl)]))))
+             (user-menu menuAnchorEl)))
+         (mobile-actions-menu actions mobileMoreAnchorEl)
+         (mobile-search (:on-change search) mobileSearchOpened)]))))

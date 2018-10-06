@@ -15,38 +15,6 @@
 
 (def swarmpit-revision-page "https://github.com/swarmpit/swarmpit/commit")
 
-(def drawer-width 200)
-
-(def styles
-  (let [theme (js->clj comp/theme)
-        spacing-unit (get-in theme ["spacing" "unit"])
-        breakpoints-up (get-in theme ["breakpoints" "up"])
-        transitions (-> theme (get "transitions"))
-        transitions-create (get transitions "create")
-        transition-easing (-> transitions (get-in ["easing" "sharp"]))
-        transition-duration-leaving (-> transitions (get-in ["duration" "leavingScreen"]))
-        transition-duration-entering (-> transitions (get-in ["duration" "enteringScreen"]))]
-    {:drawerPaper      {:position   "relative"
-                        :whiteSpace "nowrap"
-                        :width      drawer-width
-                        :transition (transitions-create
-                                      "width"
-                                      (clj->js {:easing   transition-easing
-                                                :duration transition-duration-entering}))}
-     :drawerPaperClose {:overflowX  "hidden"
-                        :transition (transitions-create
-                                      "width"
-                                      (clj->js {:easing   transition-easing
-                                                :duration transition-duration-leaving}))
-                        :width      (* spacing-unit 7)
-                        (breakpoints-up "sm")
-                                    {:width (* spacing-unit 9)}}
-     :toolbar          (merge {:display        "flex"
-                               :alignItems     "center"
-                               :justifyContent "flex-end"
-                               :padding        "0 8px"}
-                              (get-in theme ["mixins" "toolbar"]))}))
-
 (def menu
   [{:name "APPLICATIONS"}
    {:name    "Stacks"
@@ -134,17 +102,15 @@
          :href   (str swarmpit-revision-page "/" (:revision version))}
      [:span.Swarmpit-title-version (parse-version version)]]))
 
-(rum/defc drawer-category < rum/static [name opened?]
+(rum/defc drawer-category < rum/static [name]
   (comp/list-item
     {:disabled  true
      :className "Swarmpit-drawer-category"
      :key       (str "Swarmpit-drawer-category-" name)}
     (comp/list-item-text
-      (merge {:primary   name
-              :className "Swarmpit-drawer-category-text"
-              :key       (str "Swarmpit-drawer-category-text-" name)}
-             (when (false? opened?)
-               {:className "hide"})))))
+      {:primary   name
+       :className "Swarmpit-drawer-category-text"
+       :key       (str "Swarmpit-drawer-category-text-" name)})))
 
 (rum/defc drawer-item < rum/static [name icon handler selected?]
   (comp/list-item
@@ -173,38 +139,61 @@
      (version-handler)
      state)})
 
+(rum/defc drawer-content < rum/static [version page-domain docker-api]
+  [(html
+     [:div.Swarmpit-toolbar
+      [:div.Swarmpit-title
+       (drawer-title-name)
+       (drawer-title-version version)]
+
+      ;(comp/icon-button
+      ;  {:className "Swarmpit-appbar-logo"}
+      ;  (comp/avatar
+      ;    {:className "Swarmpit-appbar-logo-avatar"
+      ;     :src       "img/swarmpit.png"}))
+
+
+      ])
+   (comp/divider)
+   (map
+     (fn [menu-item]
+       (let [icon (:icon menu-item)
+             name (:name menu-item)
+             handler (:handler menu-item)
+             domain (:domain menu-item)
+             selected (= page-domain domain)]
+         (if (some? icon)
+           (drawer-item name icon handler selected)
+           (drawer-category name))))
+     (let [fmenu (filter-menu docker-api)]
+       (if (storage/admin?)
+         (concat fmenu admin-menu)
+         fmenu)))])
+
 (rum/defc drawer < rum/reactive
                    retrieve-version [page-domain]
-  (let [{:keys [opened version]} (state/react state/layout-cursor)
+  (let [{:keys [mobileOpened version]} (state/react state/layout-cursor)
         docker-api (state/react state/docker-api-cursor)]
     (comp/mui
-      (comp/drawer
-        {:key       "Swarmpit-drawer"
-         :open      opened
-         :className (if opened
-                      "Swarmpit-drawer"
-                      "Swarmpit-drawer Swarmpit-drawer-closed")
-         :variant   "permanent"}
-        (html
-          [:div.Swarmpit-toolbar
-           [:div.Swarmpit-title
-            (drawer-title-name)
-            (drawer-title-version version)]
-           (comp/icon-button
-             {:onClick #(state/update-value [:opened] false state/layout-cursor)}
-             icon/chevron-left)])
-        (comp/divider)
-        (map
-          (fn [menu-item]
-            (let [icon (:icon menu-item)
-                  name (:name menu-item)
-                  handler (:handler menu-item)
-                  domain (:domain menu-item)
-                  selected (= page-domain domain)]
-              (if (some? icon)
-                (drawer-item name icon handler selected)
-                (drawer-category name opened))))
-          (let [fmenu (filter-menu docker-api)]
-            (if (storage/admin?)
-              (concat fmenu admin-menu)
-              fmenu)))))))
+      (html
+        [:div
+         (comp/hidden
+           {:mdUp true}
+           (comp/drawer
+             {:key        "Swarmpit-drawer"
+              :className  "Swarmpit-drawer"
+              :anchor     "left"
+              :open       mobileOpened
+              :variant    "temporary"
+              :onClose    #(state/update-value [:mobileOpened] false state/layout-cursor)
+              :ModalProps {:keepMounted true}}
+             (drawer-content version page-domain docker-api)))
+         (comp/hidden
+           {:smDown         true
+            :implementation "css"}
+           (comp/drawer
+             {:key       "Swarmpit-drawer"
+              :className "Swarmpit-drawer"
+              :open      true
+              :variant   "permanent"}
+             (drawer-content version page-domain docker-api)))]))))
