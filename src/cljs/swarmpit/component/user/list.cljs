@@ -3,7 +3,6 @@
             [material.component :as comp]
             [material.component.list.basic :as list]
             [material.component.list.util :as list-util]
-            [material.component.panel :as panel]
             [swarmpit.component.state :as state]
             [swarmpit.component.mixin :as mixin]
             [swarmpit.ajax :as ajax]
@@ -36,6 +35,16 @@
      :on-success (fn [{:keys [response]}]
                    (state/update-value [:items] response state/form-value-cursor))}))
 
+(defn form-search-fn
+  [event]
+  (state/update-value [:filter :query] (-> event .-target .-value) state/form-state-cursor))
+
+(def form-actions
+  [{:button (comp/icon-button
+              {:color   "inherit"
+               :onClick #(dispatch! (routes/path-for-frontend :user-create))} icon/add-circle)
+    :name   "New user"}])
+
 (defn- init-form-state
   []
   (state/set-value {:loading? false
@@ -57,15 +66,6 @@
     (comp/mui
       (html
         [:div.Swarmpit-form
-         [:div.Swarmpit-form-panel
-          (panel/search
-            "Search users"
-            (fn [event]
-              (state/update-value [:filter :query] (-> event .-target .-value) state/form-state-cursor)))
-          (comp/button
-            {:variant "contained"
-             :onClick #(dispatch! (routes/path-for-frontend :user-create))
-             :color   "primary"} "New user")]
          [:div.Swarmpit-form-context
           (list/responsive
             render-metadata

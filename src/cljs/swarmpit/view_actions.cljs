@@ -67,7 +67,9 @@
 
 (defmethod render :stack-list
   [_]
-  {:title "Stacks"})
+  {:title     "Stacks"
+   :search-fn stack-list/form-search-fn
+   :actions   stack-list/form-actions})
 
 (defmethod render :stack-info
   [_]
@@ -93,10 +95,9 @@
 
 (defmethod render :service-list
   [_]
-  {:title   "Services"
-   :search  {:placeholder "Search services"
-             :on-change   service-list/form-search-fn}
-   :actions service-list/form-actions})
+  {:title     "Services"
+   :search-fn service-list/form-search-fn
+   :actions   service-list/form-actions})
 
 (defmethod render :service-info
   [_]
@@ -122,7 +123,9 @@
 
 (defmethod render :network-list
   [_]
-  {:title "Networks"})
+  {:title     "Networks"
+   :search-fn network-list/form-search-fn
+   :actions   network-list/form-actions})
 
 (defmethod render :network-info
   [_]
@@ -136,7 +139,8 @@
 
 (defmethod render :node-list
   [_]
-  {:title "Nodes"})
+  {:title     "Nodes"
+   :search-fn node-list/form-search-fn})
 
 (defmethod render :node-info
   [_]
@@ -150,7 +154,9 @@
 
 (defmethod render :volume-list
   [_]
-  {:title "Volumes"})
+  {:title     "Volumes"
+   :search-fn volume-list/form-search-fn
+   :actions   volume-list/form-actions})
 
 (defmethod render :volume-info
   [_]
@@ -164,7 +170,9 @@
 
 (defmethod render :secret-list
   [_]
-  {:title "Secrets"})
+  {:title     "Secrets"
+   :search-fn secret-list/form-search-fn
+   :actions   secret-list/form-actions})
 
 (defmethod render :secret-info
   [_]
@@ -178,7 +186,9 @@
 
 (defmethod render :config-list
   [_]
-  {:title "Configs"})
+  {:title     "Configs"
+   :search-fn config-list/form-search-fn
+   :actions   config-list/form-actions})
 
 (defmethod render :config-info
   [_]
@@ -192,7 +202,8 @@
 
 (defmethod render :task-list
   [_]
-  {:title "Tasks"})
+  {:title     "Tasks"
+   :search-fn task-list/form-search-fn})
 
 (defmethod render :task-info
   [_]
@@ -202,7 +213,9 @@
 
 (defmethod render :user-list
   [_]
-  {:title "Users"})
+  {:title     "Users"
+   :search-fn user-list/form-search-fn
+   :actions   user-list/form-actions})
 
 (defmethod render :user-info
   [_]
@@ -220,7 +233,9 @@
 
 (defmethod render :registry-list
   [_]
-  {:title "Registries"})
+  {:title     "Registries"
+   :search-fn registry-list/form-search-fn
+   :actions   registry-list/form-actions})
 
 (defmethod render :registry-info
   [_]
@@ -238,7 +253,9 @@
 
 (defmethod render :dockerhub-user-list
   [_]
-  {:title "Dockerhub"})
+  {:title     "Dockerhub"
+   :search-fn dockerhub-list/form-search-fn
+   :actions   dockerhub-list/form-actions})
 
 (defmethod render :dockerhub-user-info
   [_]

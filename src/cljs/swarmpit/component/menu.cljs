@@ -144,16 +144,7 @@
      [:div.Swarmpit-toolbar
       [:div.Swarmpit-title
        (drawer-title-name)
-       (drawer-title-version version)]
-
-      ;(comp/icon-button
-      ;  {:className "Swarmpit-appbar-logo"}
-      ;  (comp/avatar
-      ;    {:className "Swarmpit-appbar-logo-avatar"
-      ;     :src       "img/swarmpit.png"}))
-
-
-      ])
+       (drawer-title-version version)]])
    (comp/divider)
    (map
      (fn [menu-item]

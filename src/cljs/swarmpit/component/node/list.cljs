@@ -1,16 +1,17 @@
 (ns swarmpit.component.node.list
   (:require [material.icon :as icon]
+            [material.component :as comp]
             [material.component.label :as label]
-            [material.component.panel :as panel]
             [swarmpit.component.mixin :as mixin]
             [swarmpit.component.state :as state]
             [material.component.list-table :as list]
             [swarmpit.ajax :as ajax]
             [swarmpit.routes :as routes]
+            [swarmpit.url :refer [dispatch!]]
             [sablono.core :refer-macros [html]]
             [rum.core :as rum]
-            [goog.string :as gstring]
             [goog.string.format]
+            [goog.string :as gstring]
             [clojure.contrib.humanize :as humanize]))
 
 (enable-console-print!)
@@ -100,6 +101,10 @@
     {:on-success (fn [{:keys [response]}]
                    (state/update-value [:items] response state/form-value-cursor))}))
 
+(defn form-search-fn
+  [event]
+  (state/update-value [:filter :query] (-> event .-target .-value) state/form-state-cursor))
+
 (defn- init-form-state
   []
   (state/set-value {:filter {:query ""}} state/form-state-cursor))
@@ -117,14 +122,10 @@
   (let [{:keys [items]} (state/react state/form-value-cursor)
         {:keys [filter]} (state/react state/form-state-cursor)
         filtered-items (list/filter items (:query filter))]
-    [:div
-     [:div.form-panel
-      [:div.form-panel-left
-       (panel/text-field
-         {:id       "filter"
-          :hintText "Search nodes"
-          :onChange (fn [_ v]
-                      (state/update-value [:filter :query] v state/form-state-cursor))})]]
-     [:div.content-grid.mdl-grid
-      (->> (sort-by :nodeName filtered-items)
-           (map #(node-item %)))]]))
+    (comp/mui
+      (html
+        [:div.Swarmpit-form
+         [:div.Swarmpit-form-context
+          [:div.content-grid.mdl-grid
+           (->> (sort-by :nodeName filtered-items)
+                (map #(node-item %)))]]]))))

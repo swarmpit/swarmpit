@@ -3,7 +3,6 @@
             [material.component :as comp]
             [material.component.list.basic :as list]
             [material.component.list.util :as list-util]
-            [material.component.panel :as panel]
             [swarmpit.component.mixin :as mixin]
             [swarmpit.component.state :as state]
             [swarmpit.ajax :as ajax]
@@ -41,6 +40,16 @@
      :on-success (fn [{:keys [response]}]
                    (state/update-value [:items] response state/form-value-cursor))}))
 
+(defn form-search-fn
+  [event]
+  (state/update-value [:filter :query] (-> event .-target .-value) state/form-state-cursor))
+
+(def form-actions
+  [{:button (comp/icon-button
+              {:color   "inherit"
+               :onClick #(dispatch! (routes/path-for-frontend :registry-create))} icon/add-circle)
+    :name   "Add registry"}])
+
 (defn- init-form-state
   []
   (state/set-value {:loading? false
@@ -63,15 +72,6 @@
     (comp/mui
       (html
         [:div.Swarmpit-form
-         [:div.Swarmpit-form-panel
-          (panel/search
-            "Search registries"
-            (fn [event]
-              (state/update-value [:filter :query] (-> event .-target .-value) state/form-state-cursor)))
-          (comp/button
-            {:variant "contained"
-             :onClick #(dispatch! (routes/path-for-frontend :registry-create))
-             :color   "primary"} "Add registry")]
          [:div.Swarmpit-form-context
           (list/responsive
             render-metadata

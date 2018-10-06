@@ -36,7 +36,7 @@
         :aria-haspopup "true"
         :onClick       (fn [e]
                          (state/update-value [:menuAnchorEl] (.-currentTarget e) state/layout-cursor))
-        :color         "inherit"} icon/account-circle)
+        :color         "inherit"} (user-avatar))
      (comp/menu
        {:id              "Swarmpit-appbar-user-menu"
         :key             "Swarmpit-appbar-user-menu"
@@ -149,7 +149,7 @@
     [:div.Swarmpit-appbar-section-mobile
      items]))
 
-(rum/defc appbar < rum/reactive [{:keys [title search actions]}]
+(rum/defc appbar < rum/reactive [{:keys [title search-fn actions]}]
   (let [{:keys [mobileSearchOpened menuAnchorEl mobileMoreAnchorEl]} (state/react state/layout-cursor)]
     (comp/mui
       (html
@@ -176,12 +176,12 @@
                title)
              (html [:div.grow])
              (appbar-desktop-section
-               [(when search
-                  (search-input (:on-change search)))
+               [(when search-fn
+                  (search-input search-fn))
 
                 (->> actions (map :button))])
              (appbar-mobile-section
-               [(when search
+               [(when search-fn
                   (comp/icon-button
                     {:aria-haspopup "true"
                      :onClick       #(state/update-value [:mobileSearchOpened] true state/layout-cursor)
@@ -193,4 +193,4 @@
                    :color         "inherit"} icon/more)])
              (user-menu menuAnchorEl)))
          (mobile-actions-menu actions mobileMoreAnchorEl)
-         (mobile-search (:on-change search) mobileSearchOpened)]))))
+         (mobile-search search-fn mobileSearchOpened)]))))

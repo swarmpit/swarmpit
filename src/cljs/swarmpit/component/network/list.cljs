@@ -1,9 +1,9 @@
 (ns swarmpit.component.network.list
-  (:require [material.component :as comp]
+  (:require [material.icon :as icon]
+            [material.component :as comp]
             [material.component.list.basic :as list]
             [material.component.list.util :as list-util]
             [material.component.label :as label]
-            [material.component.panel :as panel]
             [swarmpit.component.mixin :as mixin]
             [swarmpit.component.state :as state]
             [swarmpit.ajax :as ajax]
@@ -40,6 +40,16 @@
      :on-success (fn [{:keys [response]}]
                    (state/update-value [:items] response state/form-value-cursor))}))
 
+(defn form-search-fn
+  [event]
+  (state/update-value [:filter :query] (-> event .-target .-value) state/form-state-cursor))
+
+(def form-actions
+  [{:button (comp/icon-button
+              {:color   "inherit"
+               :onClick #(dispatch! (routes/path-for-frontend :network-create))} icon/add-circle)
+    :name   "New network"}])
+
 (defn- init-form-state
   []
   (state/set-value {:loading? false
@@ -61,15 +71,6 @@
     (comp/mui
       (html
         [:div.Swarmpit-form
-         [:div.Swarmpit-form-panel
-          (panel/search
-            "Search networks"
-            (fn [event]
-              (state/update-value [:filter :query] (-> event .-target .-value) state/form-state-cursor)))
-          (comp/button
-            {:variant "contained"
-             :onClick #(dispatch! (routes/path-for-frontend :network-create))
-             :color   "primary"} "New network")]
          [:div.Swarmpit-form-context
           (list/responsive
             render-metadata
