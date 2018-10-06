@@ -42,6 +42,8 @@
 (def checkbox (create-factory js/MaterialUI.Checkbox))
 (def select (create-factory js/MaterialUI.Select))
 (def tooltip (create-factory js/MaterialUI.Tooltip))
+(def snackbar (create-factory js/MaterialUI.Snackbar))
+(def snackbar-content (create-factory js/MaterialUI.SnackbarContent))
 
 (def table (create-factory js/MaterialUI.Table))
 (def table-head (create-factory js/MaterialUI.TableHead))
@@ -98,7 +100,6 @@
 
 
 (def dialog (create-factory js/MaterialUI.Dialog))
-(def snackbar (create-factory js/MaterialUI.Snackbar))
 
 (def icon-menu (create-factory js/MaterialUI.IconMenu))
 (def flat-button (create-factory js/MaterialUI.FlatButton))

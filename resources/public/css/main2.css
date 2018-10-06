@@ -24,6 +24,7 @@ html > button {
     overflow: hidden;
     position: relative;
     display: flex;
+    width: 100%;
 }
 
 .Swarmpit-toolbar {
@@ -55,30 +56,16 @@ html > button {
 /** Appbar **/
 
 .Swarmpit-appbar {
+    position: absolute;
+    margin-left: 200px;
     background: linear-gradient(60deg, #362870, #65519f);
     box-shadow: none;
     z-index: 1201 !important;
     transition: width 195ms cubic-bezier(0.4, 0, 0.6, 1) 0ms, margin 195ms cubic-bezier(0.4, 0, 0.6, 1) 0ms;
 }
 
-.Swarmpit-appbar-mobile {
-    position: absolute;
-    margin-left: 200px;
-}
-
-.Swarmpit-appbar-shift {
-    margin-left: 200px;
-    width: calc(100% - 200px) !important;
-    transition: width 225ms cubic-bezier(0.4, 0, 0.6, 1) 0ms, margin 225ms cubic-bezier(0.4, 0, 0.6, 1) 0ms;
-}
-
 .Swarmpit-appbar-title {
     display: none !important;
-}
-
-.Swarmpit-appbar-menu-btn {
-    margin-left: 4px !important;
-    margin-right: 26px !important;
 }
 
 .Swarmpit-appbar-user-menu-logged-info {
@@ -120,7 +107,33 @@ html > button {
 .Swarmpit-appbar-search-input {
     padding: 8px 8px 8px 80px !important;
     transition: width 300ms cubic-bezier(0.4, 0, 0.2, 1) 0ms;
-    width: 100% !important;
+}
+
+.Swarmpit-appbar-search-mobile {
+    position: absolute;
+    display: flex;
+}
+
+.Swarmpit-appbar-search-mobile-root {
+    flex-grow: 1;
+}
+
+.Swarmpit-appbar-search-mobile-input {
+    color: #5f6368 !important;
+    font-size: 24px !important;
+}
+
+.Swarmpit-appbar-search-mobile-close {
+    color: #5f6368;
+}
+
+.Swarmpit-appbar-search-mobile-content {
+    background-color: #fff !important;
+}
+
+.Swarmpit-appbar-search-mobile-message {
+    display: flex;
+    align-items: center;
 }
 
 .Swarmpit-appbar-avatar {
@@ -129,29 +142,19 @@ html > button {
 
 .Swarmpit-appbar-section-desktop {
     display: none;
+    align-items: center;
 }
 
 .Swarmpit-appbar-section-mobile {
     display: flex;
+    align-items: center;
 }
 
 /** Drawer **/
 
 .Swarmpit-drawer > div {
-    position: relative;
     white-space: nowrap;
     transition: width 225ms cubic-bezier(0.4, 0, 0.6, 1) 0ms;
-    width: 200px;
-}
-
-.Swarmpit-drawer-closed > div {
-    overflow-x: hidden;
-    transition: width 195ms cubic-bezier(0.4, 0, 0.6, 1) 0ms;
-    width: 56px;
-}
-
-.Swarmpit-drawer-mobile {
-    width: 200px;
 }
 
 .Swarmpit-drawer-item-icon,
@@ -304,60 +307,60 @@ html > button {
 
 /** Form panel SEARCH **/
 
-.Swarmpit-form-panel-search {
-    margin-right: auto;
-    height: 36px;
-    display: flex;
-    justify-content: space-between;
-    background-color: #fff;
-    border: 1px solid #ced4da;
-    border-radius: 4px;
-}
+/*.Swarmpit-form-panel-search {*/
+/*margin-right: auto;*/
+/*height: 36px;*/
+/*display: flex;*/
+/*justify-content: space-between;*/
+/*background-color: #fff;*/
+/*border: 1px solid #ced4da;*/
+/*border-radius: 4px;*/
+/*}*/
 
-.Swarmpit-form-panel-search:focus {
-    border-color: #65519f;
-    box-shadow: 0 0 0 0.2rem rgba(101, 81, 159, 0.5);
-}
+/*.Swarmpit-form-panel-search:focus {*/
+/*border-color: #65519f;*/
+/*box-shadow: 0 0 0 0.2rem rgba(101, 81, 159, 0.5);*/
+/*}*/
 
-.Swarmpit-form-panel-search > div {
-    margin: auto 14px;
-    width: 100%;
-}
+/*.Swarmpit-form-panel-search > div {*/
+/*margin: auto 14px;*/
+/*width: 100%;*/
+/*}*/
 
-.Swarmpit-form-panel-search-input {
-    width: 100%;
-}
+/*.Swarmpit-form-panel-search-input {*/
+/*width: 100%;*/
+/*}*/
 
-.Swarnpit-form-panel-search-icon {
-    opacity: 1;
-    transform: scale(1, 1);
-    transition: transform 200ms cubic-bezier(0.4, 0.0, 0.2, 1);
-    color: #65519f !important;
-    height: 36px !important;
-}
+/*.Swarnpit-form-panel-search-icon {*/
+/*opacity: 1;*/
+/*transform: scale(1, 1);*/
+/*transition: transform 200ms cubic-bezier(0.4, 0.0, 0.2, 1);*/
+/*color: #65519f !important;*/
+/*height: 36px !important;*/
+/*}*/
 
 /** Form panel INFO **/
 
-.Swarmpit-form-panel-info {
-    margin-right: auto;
-    height: 36px;
-    display: flex;
-    justify-content: space-between;
-}
+/*.Swarmpit-form-panel-info {*/
+/*margin-right: auto;*/
+/*height: 36px;*/
+/*display: flex;*/
+/*justify-content: space-between;*/
+/*}*/
 
-.Swarmpit-form-panel-info > div {
-    margin: auto 14px;
-    width: 100%;
-}
+/*.Swarmpit-form-panel-info > div {*/
+/*margin: auto 14px;*/
+/*width: 100%;*/
+/*}*/
 
-.Swarnpit-form-panel-info-icon {
-    opacity: 1;
-    transform: scale(1, 1);
-    color: rgba(0, 0, 0, 0.54) !important;
-    transition: transform 200ms cubic-bezier(0.4, 0.0, 0.2, 1);
-    height: 36px !important;
-    width: 0;
-}
+/*.Swarnpit-form-panel-info-icon {*/
+/*opacity: 1;*/
+/*transform: scale(1, 1);*/
+/*color: rgba(0, 0, 0, 0.54) !important;*/
+/*transition: transform 200ms cubic-bezier(0.4, 0.0, 0.2, 1);*/
+/*height: 36px !important;*/
+/*width: 0;*/
+/*}*/
 
 /** Form content **/
 
@@ -492,16 +495,17 @@ html > button {
 /**** MEDIA ****/
 
 @media (min-width: 960px) {
-    .Swarmpit-drawer-mobile {
+    .Swarmpit-drawer > div {
         position: relative;
-    }
-
-    .Swarmpit-appbar-mobile {
-        width: calc(100% - 200px);
-    }
-
-    .Swarmpit-appbar-search-input {
         width: 200px;
+    }
+
+    .Swarmpit-appbar {
+        width: calc(100% - 200px) !important;
+    }
+
+    .Swarmpit-appbar-menu-btn {
+        display: none !important;
     }
 
     .Swarmpit-appbar-section-desktop {
@@ -566,9 +570,12 @@ html > button {
         margin-left: 24px;
     }
 
-    .Swarmpit-appbar-menu-btn {
-        margin-left: 12px !important;
-        margin-right: 36px !important;
+    .Swarmpit-appbar-search-input {
+        width: 120px;
+    }
+
+    .Swarmpit-appbar-search-input:focus {
+        width: 200px;
     }
 }
 
@@ -577,16 +584,6 @@ html > button {
         width: 400px;
         margin-left: auto;
         margin-right: auto;
-    }
-}
-
-@media (min-width: 648px) {
-
-}
-
-@media (min-width: 0px) and (orientation: landscape) {
-    .Swarmpit-drawer-toolbar {
-        /*min-height: 48px;*/
     }
 }
 

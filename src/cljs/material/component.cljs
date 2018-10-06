@@ -188,7 +188,13 @@
   [props comp]
   (f/tooltip (clj->js props) comp))
 
+(defn snackbar
+  [props content]
+  (f/snackbar (clj->js props) content))
 
+(defn snackbar-content
+  ([props] (f/snackbar-content (clj->js props)))
+  ([] (f/snackbar-content nil)))
 
 
 
@@ -208,10 +214,6 @@
 (defn auto-complete
   ([props] (f/auto-complete (clj->js props)))
   ([] (f/auto-complete nil)))
-
-(defn snackbar
-  ([props] (f/snackbar (clj->js props)))
-  ([] (f/snackbar nil)))
 
 (defn toogle
   ([props] (f/toogle (clj->js props)))
