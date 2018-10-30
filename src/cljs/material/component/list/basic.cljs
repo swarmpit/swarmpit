@@ -20,7 +20,7 @@
           (cmp/table-cell
             {:key       (str "Swarmpit-table-head-cell-" index)
              :className "Swarmpit-table-head-cell"}
-            (:name header))) render-metadata))))
+            (:name header))) (:summary render-metadata)))))
 
 (defn table-body
   [render-metadata items onclick-handler-fn]
@@ -32,26 +32,34 @@
           {:key     (str "Swarmpit-table-row-" index)
            :onClick #(onclick-handler-fn item)
            :hover   true}
-          (->> (select-keys* item (render-keys render-metadata))
+          (->> (:summary render-metadata)
                (map-indexed
                  (fn [coll-index coll]
-                   (cmp/table-cell
-                     {:key (str "Swarmpit-table-row-cell-" index "-" coll-index)}
-                     (let [render-fn (:render-fn (nth render-metadata coll-index))
-                           value (val coll)]
-                       (if render-fn
-                         (render-fn value item)
-                         value)))))))) items)))
+                   (let [render-fn (:render-fn coll)]
+                     (cmp/table-cell
+                       {:key       (str "Swarmpit-table-row-cell-" index "-" coll-index)
+                        :className "Swarmpit-table-row-cell"}
+                       (cmp/typography
+                         {:variant      "body1"
+                          :color        "textSecondary"
+                          :gutterBottom true}
+                         (render-fn item))))))))) items)))
 
 (defn table
   [render-metadata items onclick-handler-fn]
-  (cmp/paper
-    {}
-    (cmp/table
-      {:key       "Swarmpit-table"
-       :className "Swarmpit-table"}
-      (table-head render-metadata)
-      (table-body render-metadata items onclick-handler-fn))))
+  (cmp/card
+    {:className "Swarmpit-card"}
+    (cmp/card-header
+      {:className "Swarmpit-table-card-header"
+       :title     (:title render-metadata)
+       :subheader (:subheader render-metadata)})
+    (cmp/card-content
+      {:className "Swarmpit-table-card-content"}
+      (cmp/table
+        {:key       "Swarmpit-table"
+         :className "Swarmpit-table"}
+        (table-head render-metadata)
+        (table-body render-metadata items onclick-handler-fn)))))
 
 (defn list-item-detail
   [name value]
@@ -88,31 +96,50 @@
                      (list-item-detail name value))))))))))
 
 (defn list-item
-  [render-metadata index item summary-status onclick-handler-fn]
+  [render-metadata index item onclick-handler-fn]
   (let [expanded (rum/react active-panel)
-        summary (get-in item (primary-key render-metadata))]
+        status-fn (:status-fn render-metadata)]
     (cmp/expansion-panel
-      {:key      (str "Swarmpit-list-expansion-panel-" index)
-       :expanded (= expanded index)
-       :onChange #(if (= expanded index)
-                    (reset! active-panel false)
-                    (reset! active-panel index))}
+      {:key       (str "Swarmpit-list-expansion-panel-" index)
+       :className "Swarmpit-list-expansion-panel"
+       :expanded  (= expanded index)
+       :onChange  #(if (= expanded index)
+                     (reset! active-panel false)
+                     (reset! active-panel index))}
       (cmp/expansion-panel-summary
         {:key        (str "Swarmpit-list-expansion-panel-summary-" index)
          :className  "Swarmpit-list-expansion-panel-summary"
          :expandIcon icon/expand-more}
+        ;(when status-fn
+        ;  (html
+        ;    [:div.Swarmpit-list-expansion-panel-summary-content (status-fn item)]))
         (html
-          [:div.Swarmpit-list-expansion-panel-summary-content summary-status
+          [:div {:style {:flexBasis  "33.33%"
+                         :flexShrink 0}}
            [:div
             (cmp/typography
-              {:key          (str "Swarmpit-list-expansion-panel-summary-text-" index)
-               :className    "Swarmpit-list-expansion-panel-summary-text"
-               :gutterBottom true
-               :noWrap       true
-               :variant      "subheading"} summary)]]))
+              {:key       (str "Swarmpit-list-expansion-panel-summary-text-" index)
+               :className "Swarmpit-list-expansion-panel-summary-text"
+               :noWrap    true
+               :variant   "subheading"} ((:primary-key render-metadata) item))]
+           [:div
+            (cmp/typography
+              {:key       (str "Swarmpit-list-expansion-panel-summary-text-" index)
+               :className "Swarmpit-list-expansion-panel-summary-text"
+               :noWrap    true
+               :variant   "caption"} ((:secondary-key render-metadata) item))]])
+
+        (cmp/typography
+          {:key       (str "Swarmpit-list-expansion-panel-summary-text-" index)
+           :className "Swarmpit-list-expansion-panel-summary-text"
+           :noWrap    true
+           :variant   "subheading"} (status-fn item)))
       (cmp/expansion-panel-details
         {:key (str "Swarmpit-list-expansion-panel-details-" index)}
-        (list-item-details render-metadata item))
+        (->> (:summary render-metadata)
+             (map (fn [data]
+                    (let [render-fn (:render-fn data)]
+                      (render-fn item))))))
       (cmp/divider)
       (cmp/expansion-panel-actions
         {}
@@ -121,27 +148,34 @@
                      :color   "primary"} "Details")))))
 
 (defn list
-  [render-metadata render-status-fn items onclick-handler-fn]
-  (html
-    [:div.Swarmpit-list
-     (map-indexed
-       (fn [index item]
-         (list-item
-           render-metadata
-           index
-           item
-           (when render-status-fn (render-status-fn item))
-           onclick-handler-fn)) items)]))
+  [render-metadata items onclick-handler-fn]
+  (cmp/card
+    {:className "Swarmpit-form-card"}
+    (cmp/card-header
+      {:className "Swarmpit-form-card-header"
+       :title     "dsdsd"
+       :subheader "Running: 3, Updating: 5"})
+    (cmp/card-content
+      {:className "Swarmpit-table-card-content"}
+      (html
+        [:div.Swarmpit-list
+         (map-indexed
+           (fn [index item]
+             (list-item
+               render-metadata
+               index
+               item
+               onclick-handler-fn)) items)]))))
 
 (rum/defc responsive < rum/reactive
-  [render-metadata render-status-fn items onclick-handler-fn]
+  [render-metadata items onclick-handler-fn]
   (html
     [:div
      (cmp/hidden
        {:only           ["xs" "sm" "md"]
         :implementation "js"}
-       (table render-metadata items onclick-handler-fn))
+       (table (:table render-metadata) items onclick-handler-fn))
      (cmp/hidden
        {:only           ["lg" "xl"]
         :implementation "js"}
-       (list render-metadata render-status-fn items onclick-handler-fn))]))
+       (list (:list render-metadata) items onclick-handler-fn))]))

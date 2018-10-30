@@ -1,9 +1,9 @@
 (ns swarmpit.component.network.info
   (:require [material.icon :as icon]
             [material.component :as comp]
+            [material.component.label :as label]
             [material.component.form :as form]
             [material.component.list.info :as list]
-            [material.component.panel :as panel]
             [swarmpit.component.mixin :as mixin]
             [swarmpit.component.state :as state]
             [swarmpit.component.message :as message]
@@ -26,98 +26,60 @@
     :key  [:value]}])
 
 (defn- section-general
-  [{:keys [id stack networkName created internal attachable ingress]}]
+  [{:keys [id stack networkName driver created internal attachable ingress enableIPv6 ipam]}]
   (comp/card
-    {:style {:height "100%"}}
+    {:className "Swarmpit-form-card"}
     (comp/card-header
       (merge {:title     networkName
-              :className "Swarmpit-form-card-header"
-              ;:avatar    (comp/icon-button
-              ;             {:className "Swarmpit-form-card-header-avatar"}
-              ;             (comp/svg icon/networks))
-              }
+              :className "Swarmpit-form-card-header"}
              (when (time/valid? created)
                {:subheader (form/item-id id)})))
     (comp/card-content
       {}
-      ;(comp/typography
-      ;  {:variant   "headline"
-      ;   :component "h6"} "Properties")
-      (comp/typography
-        {:component "p"}
-        (form/item-yn internal "Internal")
-        (html [:br])
-        (form/item-yn attachable "Attachable")
-        (html [:br])
-        (form/item-yn ingress "Ingress"))
-      ;
-      ;<Typography className={classes.pos} color="textSecondary">
-      ;adjective
-      ;</Typography>
-
-      ;(form/item "ID" id)
-      ;(form/item-stack stack)
-      ;(form/item "NAME" (utils/trim-stack stack networkName))
-      ;(form/item "INTERNAL" (if internal "yes" "no"))
-      ;(form/item "ATTACHABLE" (if attachable "yes" "no"))
-      ;(form/item "INGRESS" (if ingress "yes" "no"))
-
-      )
+      (when (and (:subnet ipam)
+                 (:gateway ipam))
+        (comp/typography
+          {:component "p"}
+          (str "The subnet is listed as " (:subnet ipam))
+          (html [:br])
+          (str "The gateway IP in the above instance is " (:gateway ipam))))
+      (html [:br])
+      (when driver
+        (label/grey driver))
+      (when internal
+        (label/grey "Internal"))
+      (when ingress
+        (label/grey "Ingress"))
+      (when attachable
+        (label/grey "Attachable"))
+      (when enableIPv6
+        (label/grey "IPv6")))
     (comp/card-actions
       {}
-
-      (comp/button
-        {:size  "small"
-         :color "primary"}
-        "See stack")
-
-      ;(comp/tooltip
-      ;  {:title     "Go to stack"
-      ;   :placement "top-start"}
-      ;  (comp/icon-button
-      ;    {:color   "secondary"
-      ;     :onClick #(dispatch! (routes/path-for-frontend :stack-info {:name stack}))}
-      ;    (comp/svg icon/stacks)))
-
-      )
+      (when stack
+        (comp/button
+          {:size  "small"
+           :color "primary"
+           :href  (routes/path-for-frontend :stack-info {:name stack})}
+          "See stack")))
     (comp/divider)
-
     (comp/card-content
       {:style {:paddingBottom "16px"}}
       (comp/typography
         {:color "textSecondary"}
-        (form/item-date "created" created)))
-
-    ))
-
-(defn- section-ipam
-  [{:keys [ipam enableIPv6]}]
-  (comp/card
-    {:style {:height "100%"}}
-    (comp/card-header
-      {:title     "IP address management"
-       :className "Swarmpit-form-card-header"})
-    (comp/card-content
-      {}
-      (form/item "SUBNET" (:subnet ipam))
-      (form/item "GATEWAY" (:gateway ipam))
-      (form/item "ENABLED IPv6" (if enableIPv6 "yes" "no")))))
+        (form/item-date "created" created)))))
 
 (defn- section-driver
   [{:keys [driver options]}]
   (comp/card
-    {:style {:height "100%"}}
+    {:className "Swarmpit-form-card"}
     (comp/card-header
-      {:title     "Driver"
-       :className "Swarmpit-form-card-header"})
+      {:className "Swarmpit-form-card-header"
+       :subheader (form/item-ico "Driver options" icon/settings)})
     (comp/card-content
       {}
-      (form/item "NAME" driver)
-      (html
-        [:div.Swarmpit-form-section-wrapper
-         (form/subsection "Driver options")])
       (when (not-empty options)
-        (list/responsive
+        (list/table
           form-driver-opts-render-metadata
           options
           nil)))))
@@ -155,6 +117,13 @@
     {:onClick #(delete-network-handler "tests")
      :color   "inherit"} (comp/svg icon/trash)))
 
+(defn form-actions
+  [{:keys [params]}]
+  [{:button (comp/icon-button
+              {:color   "inherit"
+               :onClick #(delete-network-handler (:id params))} (comp/svg icon/trash))
+    :name   "Delete network"}])
+
 (defn- init-form-state
   []
   (state/set-value {:loading? true} state/form-state-cursor))
@@ -166,88 +135,25 @@
       (network-handler id)
       (network-services-handler id))))
 
-(rum/defc form-info < rum/static [{:keys [network services]}]
-  (let [subnet (get-in network [:ipam :subnet])
-        gateway (get-in network [:ipam :gateway])]
-    (comp/mui
-      (html
-        [:div.Swarmpit-form
-         ;[:div.Swarmpit-form-panel
-         ; (panel/info (:networkName network) (comp/svg icon/networks))
-         ; (comp/button
-         ;   {:variant "contained"
-         ;    :onClick #(delete-network-handler (:id network))
-         ;    :color   "primary"} "Delete")]
-         [:div.Swarmpit-form-context
+(rum/defc form-info < rum/static [{:keys [network]}]
+  (comp/mui
+    (html
+      [:div.Swarmpit-form
+       [:div.Swarmpit-form-context
+        (comp/grid
+          {:container true
+           :spacing   40}
           (comp/grid
-            {:container true
-             :spacing   40}
+            {:item true
+             :xs   12
+             :sm   6}
+            (section-general network))
+          (when (not-empty (:options network))
             (comp/grid
               {:item true
                :xs   12
                :sm   6}
-              (section-general network))
-            (when (and (some? subnet)
-                       (some? gateway))
-              (comp/grid
-                {:item true
-                 :xs   12
-                 :sm   6}
-                (section-ipam network)))
-            (comp/grid
-              {:item true
-               :xs   12
-               :sm   6}
-              (section-driver network)))]]))
-
-
-
-
-
-
-    ;[:div
-    ; [:div.form-panel
-    ;  [:div.form-panel-left
-    ;   (panel/info icon/networks
-    ;               (:networkName network))]
-    ;  [:div.form-panel-right
-    ;   (comp/mui
-    ;     (comp/raised-button
-    ;       {:onTouchTap #(delete-network-handler (:id network))
-    ;        :label      "Delete"}))]]
-    ; [:div.form-layout
-    ;  [:div.form-layout-group
-    ;   (form/subsection "General settings")
-    ;   (form/item "ID" (:id network))
-    ;   (form/item-stack (:stack network))
-    ;   (form/item "NAME" (utils/trim-stack (:stack network)
-    ;                                       (:networkName network)))
-    ;   (when (time/valid? (:created network))
-    ;     (form/item-date "CREATED" (:created network)))
-    ;   (form/item "INTERNAL" (if (:internal network) "yes" "no"))
-    ;   (form/item "ATTACHABLE" (if (:attachable network) "yes" "no"))
-    ;   (form/item "INGRESS" (if (:ingress network) "yes" "no"))
-    ;   (form/item "ENABLED IPv6" (if (:enableIPv6 network) "yes" "no"))]
-    ;  [:div.form-layout-group.form-layout-group-border
-    ;   (form/subsection "Driver")
-    ;   (form/item "NAME" (:driver network))
-    ;   (when (not-empty (:options network))
-    ;     [:div
-    ;      (form/subsection "Network driver options")
-    ;      (list/table driver-opts-headers
-    ;                  (:options network)
-    ;                  driver-opts-render-item
-    ;                  driver-opts-render-keys
-    ;                  nil)])]
-    ;  (when (and (some? subnet)
-    ;             (some? gateway))
-    ;    [:div.form-layout-group.form-layout-group-border
-    ;     (form/subsection "IP address management")
-    ;     (form/item "SUBNET" subnet)
-    ;     (form/item "GATEWAY" gateway)])
-    ;  (services/linked-services services)]]
-
-    ))
+              (section-driver network))))]])))
 
 (rum/defc form < rum/reactive
                  mixin-init-form

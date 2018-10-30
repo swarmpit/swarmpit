@@ -128,8 +128,9 @@
    :actions   network-list/form-actions})
 
 (defmethod render :network-info
-  [_]
-  {:title "Networks"})
+  [route]
+  {:title   "Networks"
+   :actions (network-info/form-actions route)})
 
 (defmethod render :network-create
   [_]

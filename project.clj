@@ -14,6 +14,7 @@
                  [cljsjs/material-ui-icons "1.1.0-0"]
                  [cljsjs/codemirror "5.24.0-1"]
                  [cljsjs/js-yaml "3.3.1-0"]
+                 [cljsjs/recharts "1.1.0-3"]
                  [rum "0.11.2" :exclusions [cljsjs/react cljsjs/react-dom]]
                  [ring "1.6.3" :exclusions [ring/ring-jetty-adapter]]
                  [ring/ring-json "0.4.0"]

@@ -1,6 +1,7 @@
 (ns material.factory
   (:refer-clojure :exclude [list])
   (:require [cljsjs.react]
+            [cljsjs.recharts]
             [material-ui]
             [material-ui-icons]))
 
@@ -20,6 +21,7 @@
 (def input-label (create-factory js/MaterialUI.InputLabel))
 (def input-adornment (create-factory js/MaterialUI.InputAdornment))
 
+(def list (create-factory js/MaterialUI.List))
 (def list-item (create-factory js/MaterialUI.ListItem))
 (def list-item-text (create-factory js/MaterialUI.ListItemText))
 (def list-item-icon (create-factory js/MaterialUI.ListItemIcon))
@@ -63,6 +65,9 @@
 (def card-header (create-factory js/MaterialUI.CardHeader))
 (def card-content (create-factory js/MaterialUI.CardContent))
 (def card-actions (create-factory js/MaterialUI.CardActions))
+(def card-media (create-factory js/MaterialUI.CardMedia))
+
+;;; Material-UI Icons
 
 (def visibility-icon (create-factory js/MaterialUIIcons.Visibility))
 (def visibility-off-icon (create-factory js/MaterialUIIcons.VisibilityOff))
@@ -90,6 +95,19 @@
 (def close-icon (create-factory js/MaterialUIIcons.Close))
 (def add-circle-icon (create-factory js/MaterialUIIcons.AddCircle))
 (def more-icon (create-factory js/MaterialUIIcons.MoreVert))
+(def label-icon (create-factory js/MaterialUIIcons.Label))
+(def settings-icon (create-factory js/MaterialUIIcons.Settings))
+
+;; Recharts
+
+(def pie-chart (create-factory js/Recharts.PieChart))
+(def pie (create-factory js/Recharts.Pie))
+(def cell (create-factory js/Recharts.Cell))
+(def legend (create-factory js/Recharts.Legend))
+(def label (create-factory js/Recharts.Label))
+
+
+
 
 
 

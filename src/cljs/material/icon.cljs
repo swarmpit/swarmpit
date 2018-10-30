@@ -85,6 +85,14 @@
   [props]
   (f/fingerprint-icon (clj->js props)))
 
+(defn label
+  [props]
+  (f/label-icon (clj->js props)))
+
+(defn settings
+  [props]
+  (f/settings-icon (clj->js props)))
+
 (defn check
   [props]
   (f/check-icon (clj->js props)))

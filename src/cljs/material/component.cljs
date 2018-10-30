@@ -73,12 +73,16 @@
   (f/input-label (clj->js props) label))
 
 (defn avatar
-  [props]
-  (f/avatar (clj->js props)))
+  [props & childs]
+  (f/avatar (clj->js props) childs))
 
 (defn chip
   [props]
   (f/chip (clj->js props)))
+
+(defn list
+  [props & childs]
+  (f/list (clj->js props) childs))
 
 (defn list-item
   [props & childs]
@@ -149,8 +153,8 @@
   (f/expansion-panel-details (clj->js props) comp))
 
 (defn expansion-panel-summary
-  [props comp]
-  (f/expansion-panel-summary (clj->js props) comp))
+  [props & childs]
+  (f/expansion-panel-summary (clj->js props) childs))
 
 (defn expansion-panel-actions
   [props & childs]
@@ -176,6 +180,10 @@
   [props & childs]
   (f/card-actions (clj->js props) childs))
 
+(defn card-media
+  [props]
+  (f/card-media (clj->js props)))
+
 (defn checkbox
   ([props] (f/checkbox (clj->js props)))
   ([] (f/checkbox nil)))
@@ -196,15 +204,27 @@
   ([props] (f/snackbar-content (clj->js props)))
   ([] (f/snackbar-content nil)))
 
+;;; Single recharts components
 
+(defn pie-chart
+  [props & childs]
+  (f/pie-chart (clj->js props) childs))
 
+(defn pie
+  [props & childs]
+  (f/pie (clj->js props) childs))
 
+(defn cell
+  [props]
+  (f/cell (clj->js props)))
 
+(defn legend
+  [props]
+  (f/legend (clj->js props)))
 
-
-
-
-
+(defn re-label
+  [props label]
+  (f/label (clj->js props) label))
 
 
 

@@ -262,7 +262,7 @@
          [:div.Swarmpit-form-context
 
           (comp/paper
-            {:className "Swarmpit-form-context"
+            {:className "Swarmpit-form-context Swarmpit-form-context-new"
              :elevation 0}
 
             (comp/grid
@@ -273,7 +273,7 @@
                  :xs   12
                  :sm   6}
                 (comp/typography
-                  {:variant      "title"
+                  {:variant      "subheading"
                    :gutterBottom true} "General")
                 (section-general item))
               (comp/grid
@@ -281,14 +281,14 @@
                  :xs   12
                  :sm   6}
                 (comp/typography
-                  {:variant      "title"
+                  {:variant      "subheading"
                    :gutterBottom true} "IPAM")
                 (section-ipam item))
               (comp/grid
                 {:item true
                  :xs   12}
                 (comp/typography
-                  {:variant      "title"
+                  {:variant      "h3"
                    :gutterBottom true} "Driver")
                 (section-driver item plugins)))
             (html
@@ -296,4 +296,8 @@
                (comp/button
                  {:variant "contained"
                   :onClick #(create-network-handler)
-                  :color   "primary"} "Create")]))]]))))
+                  :color   "primary"} "Create")])
+
+            )
+
+          ]]))))
