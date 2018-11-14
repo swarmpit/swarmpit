@@ -31,9 +31,9 @@
         memory-bytes (-> node :resources :memory (* 1024 1024))
         disk-bytes (-> node :stats :disk :total)]
     (let [core-stats (str cpu " " (clojure.contrib.inflect/pluralize-noun cpu "core") ", "
-                          (humanize/filesize memory-bytes :binary false) " memory")]
+                          (humanize/filesize memory-bytes :binary true) " memory")]
       (if (some? disk-bytes)
-        (str core-stats ", " (humanize/filesize disk-bytes :binary false) " disk")
+        (str core-stats ", " (humanize/filesize disk-bytes :binary true) " disk")
         core-stats))))
 
 (defn- node-tasks-handler

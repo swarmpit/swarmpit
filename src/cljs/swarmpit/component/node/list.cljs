@@ -71,9 +71,9 @@
       [:tr
        [:td (str cpu " " (clojure.contrib.inflect/pluralize-noun cpu "core"))]
        [:td (if (some? disk-bytes)
-              (humanize/filesize disk-bytes :binary false)
+              (humanize/filesize disk-bytes :binary true)
               "-")]
-       [:td (humanize/filesize memory-bytes :binary false)]]
+       [:td (humanize/filesize memory-bytes :binary true)]]
       (when (some? (:stats item))
         [:tr.node-progress-table-usage
          (node-item-usage (get-in item [:stats :cpu :usedPercentage]))

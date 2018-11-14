@@ -62,7 +62,7 @@
 (defn- render-capacity
   [val]
   (if (some? val)
-    (humanize/filesize val :binary false)
+    (humanize/filesize val :binary true)
     "-"))
 
 (defn- render-item
