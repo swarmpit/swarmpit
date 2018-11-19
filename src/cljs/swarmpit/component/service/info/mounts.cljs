@@ -1,26 +1,32 @@
 (ns swarmpit.component.service.info.mounts
-  (:require [material.component.form :as form]
-            [material.component.list-table-auto :as list]
-            [rum.core :as rum]
-            [swarmpit.routes :as routes]))
+  (:require [material.icon :as icon]
+            [material.component :as comp]
+            [material.component.form :as form]
+            [material.component.list.info :as list]
+            [swarmpit.routes :as routes]
+            [rum.core :as rum]))
 
 (enable-console-print!)
 
-(def headers-bind ["Container path" "Host path" "Read only"])
+(def bind-render-metadata
+  [{:name    "Container path"
+    :primary true
+    :key     [:containerPath]}
+   {:name "Host path"
+    :key  [:host]}
+   {:name "Read only"
+    :key  [:readOnly]}])
 
-(def headers-volume ["Container path" "Volume" "Read only" "Driver"])
-
-(def render-item-keys
-  [[:containerPath] [:host] [:readOnly] [:volumeOptions :driver :name]])
-
-(defn render-item
-  [item _]
-  (let [value (val item)]
-    (case (key item)
-      :readOnly (if value
-                  "Yes"
-                  "No")
-      (val item))))
+(def volume-render-metadata
+  [{:name    "Container path"
+    :primary true
+    :key     [:containerPath]}
+   {:name "Volume"
+    :key  [:host]}
+   {:name "Read only"
+    :key  [:readOnly]}
+   {:name "Driver"
+    :key  [:volumeOptions :driver :name]}])
 
 (defn onclick-handler
   [item]
@@ -28,29 +34,27 @@
 
 (rum/defc form-bind < rum/static [bind]
   (when (not-empty bind)
-    [:div
-     (form/subsection "Bind")
-     (list/table headers-bind
-                 bind
-                 render-item
-                 render-item-keys
-                 nil)]))
+    (list/table
+      bind-render-metadata
+      bind
+      nil)))
 
 (rum/defc form-volume < rum/static [volume]
   (when (not-empty volume)
-    [:div
-     (form/subsection "Volume")
-     (list/table headers-volume
-                 volume
-                 render-item
-                 render-item-keys
-                 onclick-handler)]))
+    (list/table
+      volume-render-metadata
+      volume
+      onclick-handler)))
 
 (rum/defc form < rum/static [mounts]
-  (when (not-empty mounts)
-    (let [bind (filter #(= "bind" (:type %)) mounts)
-          volume (filter #(= "volume" (:type %)) mounts)]
-      [:div.form-layout-group.form-layout-group-border
-       (form/section "Mounts")
-       (form-bind bind)
-       (form-volume volume)])))
+  (let [bind (filter #(= "bind" (:type %)) mounts)
+        volume (filter #(= "volume" (:type %)) mounts)]
+    (comp/card
+      {:className "Swarmpit-form-card"}
+      (comp/card-header
+        {:className "Swarmpit-form-card-header"
+         :subheader (form/subheader "Mounts" icon/settings)})
+      (comp/card-content
+        {}
+        (form-bind bind)
+        (form-volume volume)))))

@@ -17,7 +17,7 @@
 (rum/defc form < rum/static [ports]
   (when (not-empty ports)
     [:div.form-layout-group.form-layout-group-border
-     (form/section "Ports")
+     (form/subsection "Ports")
      (list/table headers
                  ports
                  render-item

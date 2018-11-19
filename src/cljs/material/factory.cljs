@@ -67,6 +67,8 @@
 (def card-actions (create-factory js/MaterialUI.CardActions))
 (def card-media (create-factory js/MaterialUI.CardMedia))
 
+(def click-away-listener (create-factory js/MaterialUI.ClickAwayListener))
+
 ;;; Material-UI Icons
 
 (def visibility-icon (create-factory js/MaterialUIIcons.Visibility))
@@ -105,6 +107,7 @@
 (def cell (create-factory js/Recharts.Cell))
 (def legend (create-factory js/Recharts.Legend))
 (def label (create-factory js/Recharts.Label))
+(def responsive-container (create-factory js/Recharts.ResponsiveContainer))
 
 
 

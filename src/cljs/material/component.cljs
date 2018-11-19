@@ -204,6 +204,10 @@
   ([props] (f/snackbar-content (clj->js props)))
   ([] (f/snackbar-content nil)))
 
+(defn click-away-listener
+  [props content]
+  (f/click-away-listener (clj->js props) content))
+
 ;;; Single recharts components
 
 (defn pie-chart
@@ -225,6 +229,10 @@
 (defn re-label
   [props label]
   (f/label (clj->js props) label))
+
+(defn responsive-container
+  [comp]
+  (f/responsive-container {} comp))
 
 
 

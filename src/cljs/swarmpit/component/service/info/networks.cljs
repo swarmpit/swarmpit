@@ -1,30 +1,37 @@
 (ns swarmpit.component.service.info.networks
-  (:require [material.component.form :as form]
-            [material.component.list-table-auto :as list]
+  (:require [material.icon :as icon]
+            [material.component :as comp]
+            [material.component.form :as form]
+            [material.component.list.info :as list]
             [swarmpit.routes :as routes]
             [rum.core :as rum]))
 
 (enable-console-print!)
 
-(def headers ["Name" "Driver" "Subnet" "Gateway" ""])
-
-(def render-item-keys
-  [[:networkName] [:driver] [:ipam :subnet] [:ipam :gateway] [:internal]])
-
-(defn render-item
-  [item _]
-  (val item))
-
 (defn onclick-handler
   [item]
   (routes/path-for-frontend :network-info {:id (:networkName item)}))
 
+(def render-metadata
+  [{:name    "Name"
+    :primary true
+    :key     [:networkName]}
+   {:name "Driver"
+    :key  [:driver]}
+   {:name "Subnet"
+    :key  [:ipam :subnet]}
+   {:name "Gateway"
+    :key  [:ipam :gateway]}])
+
 (rum/defc form < rum/static [networks]
-  (when (not-empty networks)
-    [:div.form-layout-group.form-layout-group-border
-     (form/section "Networks")
-     (list/table headers
-                 networks
-                 render-item
-                 render-item-keys
-                 onclick-handler)]))
+  (comp/card
+    {:className "Swarmpit-form-card"}
+    (comp/card-header
+      {:className "Swarmpit-form-card-header"
+       :subheader (form/subheader "Networks" icon/settings)})
+    (comp/card-content
+      {}
+      (list/table
+        render-metadata
+        networks
+        onclick-handler))))

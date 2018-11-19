@@ -24,6 +24,7 @@
             [swarmpit.url :refer [dispatch!]]
             [swarmpit.ajax :as ajax]
             [swarmpit.routes :as routes]
+            [sablono.core :refer-macros [html]]
             [rum.core :as rum]))
 
 (enable-console-print!)
@@ -88,65 +89,50 @@
                    (message/error
                      (str "Service rollback failed. " (:error response))))}))
 
-(def action-menu-style
-  {:position   "relative"
-   :marginTop  "13px"
-   :marginLeft "66px"})
-
-(def action-menu-item-style
-  {:padding "0px 10px 0px 52px"})
-
-(defn- form-action-menu [service-id service-rollback-allowed opened?]
-  (comp/mui
-    (comp/icon-menu
-      {:iconButtonElement (comp/icon-button nil nil)
-       :open              opened?
-       :style             action-menu-style
-       :onRequestChange   (fn [state] (state/update-value [:menu?] state state/form-state-cursor))}
-      (comp/menu-item
-        {:key           "action-edit"
-         :innerDivStyle action-menu-item-style
-         :leftIcon      (comp/svg nil icon/edit)
-         :onClick       (fn []
-                          (dispatch!
-                            (routes/path-for-frontend :service-edit {:id service-id})))
-         :primaryText   "Edit"})
-      (comp/menu-item
-        {:key           "action-compose"
-         :innerDivStyle action-menu-item-style
-         :leftIcon      (comp/svg nil icon/stacks)
-         :onClick       (fn []
-                          (dispatch!
-                            (routes/path-for-frontend :stack-create nil {:from service-id})))
-         :primaryText   "Compose"})
-      (comp/menu-item
-        {:key           "action-redeploy"
-         :innerDivStyle action-menu-item-style
-         :leftIcon      (comp/svg nil icon/redeploy)
-         :onClick       #(redeploy-service-handler service-id)
-         :primaryText   "Redeploy"})
-      (comp/menu-item
-        {:key           "action-rollback"
-         :innerDivStyle action-menu-item-style
-         :leftIcon      (comp/svg nil icon/rollback)
-         :onClick       #(rollback-service-handler service-id)
-         :disabled      (not service-rollback-allowed)
-         :primaryText   "Rollback"})
-      (comp/menu-item
-        {:key           "action-delete"
-         :innerDivStyle action-menu-item-style
-         :leftIcon      (comp/svg nil icon/trash)
-         :onClick       #(delete-service-handler service-id)
-         :primaryText   "Delete"}))))
-
 (rum/defc form-tasks < rum/static [tasks]
   [:div.form-layout-group.form-layout-group-border
-   (form/section "Tasks")
+   (form/subsection "Tasks")
    (list/table (map :name tasks/headers)
                (filter #(not (= "shutdown" (:state %))) tasks)
                tasks/render-item
                tasks/render-item-keys
                tasks/onclick-handler)])
+
+(defn form-actions
+  [{:keys [params]}]
+  [{:button (comp/icon-button
+              {:color   "inherit"
+               :onClick #(dispatch!
+                           (routes/path-for-frontend :service-log {:id (:id params)}))}
+              (comp/svg icon/log-18))
+    :name   "Service logs"}
+   {:button (comp/icon-button
+              {:color   "inherit"
+               :onClick #(dispatch!
+                           (routes/path-for-frontend :service-edit {:id (:id params)}))}
+              (comp/svg icon/edit))
+    :name   "Edit service"}
+   {:button (comp/icon-button
+              {:color   "inherit"
+               :onClick #(dispatch!
+                           (routes/path-for-frontend :stack-create nil {:from (:id params)}))}
+              (comp/svg icon/stacks))
+    :name   "Compose stack"}
+   {:button (comp/icon-button
+              {:color   "inherit"
+               :onClick #(redeploy-service-handler (:id params))}
+              (comp/svg icon/redeploy))
+    :name   "Redeploy service"}
+   {:button (comp/icon-button
+              {:color   "inherit"
+               :onClick #(rollback-service-handler (:id params))}
+              (comp/svg icon/rollback))
+    :name   "Rollback service"}
+   {:button (comp/icon-button
+              {:color   "inherit"
+               :onClick #(delete-service-handler (:id params))}
+              (comp/svg icon/trash))
+    :name   "Delete service"}])
 
 (defn- init-form-state
   []
@@ -168,8 +154,7 @@
       (service-networks-handler id)
       (service-tasks-handler id))))
 
-(rum/defc form-info < rum/reactive [{:keys [service networks tasks]}
-                                    {:keys [menu?]}]
+(rum/defc form-info < rum/reactive [{:keys [service networks tasks]}]
   (let [ports (:ports service)
         mounts (:mounts service)
         secrets (:secrets service)
@@ -180,41 +165,66 @@
         resources (:resources service)
         deployment (:deployment service)
         id (:id service)]
-    [:div
-     [:div.form-panel
-      [:div.form-panel-left
-       (panel/info icon/services
-                   (:serviceName service)
-                   (label/info
-                     (label service)))]
-      [:div.form-panel-right
-       (comp/mui
-         (comp/raised-button
-           {:href  (routes/path-for-frontend :service-log {:id id})
-            :icon  (comp/button-icon icon/log-18)
-            :label "Logs"}))
-       [:span.form-panel-delimiter]
-       [:div
-        (comp/mui
-          (comp/raised-button
-            {:onClick       (fn [_] (state/update-value [:menu?] true state/form-state-cursor))
-             :icon          (comp/button-icon icon/expand-18)
-             :labelPosition "before"
-             :label         "Actions"}))
-        (form-action-menu id (:rollbackAllowed deployment) menu?)]]]
-     [:div.form-layout
-      (settings/form service)
-      (ports/form ports)
-      (networks/form networks)
-      (mounts/form mounts)
-      (secrets/form secrets)
-      (configs/form configs)
-      (variables/form variables)
-      (labels/form labels)
-      (logdriver/form logdriver)
-      (resources/form resources)
-      (deployment/form deployment)
-      (form-tasks tasks)]]))
+    (comp/mui
+      (html
+        [:div.Swarmpit-form
+         [:div.Swarmpit-form-context
+          (comp/grid
+            {:container true
+             :spacing   40}
+            (comp/grid
+              {:item true
+               :xs   12
+               :sm   6}
+              (settings/form service))
+            (comp/grid
+              {:item true
+               :xs   12
+               :sm   6}
+              (deployment/form deployment))
+            (when (not-empty networks)
+              (comp/grid
+                {:item true
+                 :xs   12
+                 :sm   6}
+                (networks/form networks)))
+            (when (not-empty mounts)
+              (comp/grid
+                {:item true
+                 :xs   12
+                 :sm   6}
+                (mounts/form mounts)))
+            (when (not-empty secrets)
+              (comp/grid
+                {:item true
+                 :xs   12
+                 :sm   6}
+                (secrets/form secrets)))
+            (when (not-empty configs)
+              (comp/grid
+                {:item true
+                 :xs   12
+                 :sm   6}
+                (configs/form configs)))
+            (when (not-empty variables)
+              (comp/grid
+                {:item true
+                 :xs   12
+                 :sm   6}
+                (variables/form variables)))
+            (when (not-empty labels)
+              (comp/grid
+                {:item true
+                 :xs   12
+                 :sm   6}
+                (labels/form labels)))
+            (when (not-empty (:opts logdriver))
+              (comp/grid
+                {:item true
+                 :xs   12
+                 :sm   6}
+                (logdriver/form logdriver)))
+            )]]))))
 
 (rum/defc form < rum/reactive
                  mixin-init-form
@@ -223,4 +233,4 @@
         item (state/react state/form-value-cursor)]
     (progress/form
       (:loading? state)
-      (form-info item state))))
+      (form-info item))))

@@ -1,28 +1,29 @@
 (ns swarmpit.component.service.info.logdriver
-  (:require [material.component.form :as form]
-            [material.component.list-table-auto :as list]
+  (:require [material.icon :as icon]
+            [material.component :as comp]
+            [material.component.form :as form]
+            [material.component.list.info :as list]
+            [clojure.string :as str]
             [rum.core :as rum]))
 
 (enable-console-print!)
 
-(def headers ["Name" "Value"])
-
-(def render-item-keys
-  [[:name] [:value]])
-
-(defn render-item
-  [item]
-  (val item))
+(def render-metadata
+  [{:name    "Name"
+    :primary true
+    :key     [:name]}
+   {:name "Value"
+    :key  [:value]}])
 
 (rum/defc form < rum/static [{:keys [name opts]}]
-  [:div.form-layout-group.form-layout-group-border
-   (form/section "Logging")
-   (form/item "DRIVER" (or name "none"))
-   (when (not-empty opts)
-     [:div
-      (form/subsection "Log driver options")
-      (list/table headers
-                  opts
-                  render-item
-                  render-item-keys
-                  nil)])])
+  (comp/card
+    {:className "Swarmpit-form-card"}
+    (comp/card-header
+      {:className "Swarmpit-form-card-header"
+       :subheader (form/subheader "Log driver options" icon/settings)})
+    (comp/card-content
+      {}
+      (list/table
+        render-metadata
+        opts
+        nil))))

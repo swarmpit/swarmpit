@@ -100,8 +100,9 @@
    :actions   service-list/form-actions})
 
 (defmethod render :service-info
-  [_]
-  {:title "Services"})
+  [route]
+  {:title   "Services"
+   :actions (service-info/form-actions route)})
 
 (defmethod render :service-log
   [_]
