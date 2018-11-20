@@ -1,6 +1,6 @@
 (ns swarmpit.component.page-login
-  (:require [material.component :as comp]
-            [material.icon :as icon]
+  (:require [material.icon :as icon]
+            [material.component :as comp]
             [swarmpit.component.state :as state]
             [swarmpit.url :refer [dispatch!]]
             [swarmpit.storage :as storage]
@@ -39,22 +39,19 @@
     (login-handler local-state)))
 
 (defn- form-username [value local-state]
-  (comp/form-control
-    {:margin    "normal"
-     :required  true
-     :fullWidth true}
-    (comp/input-label
-      {:htmlFor "user"
-       :key     "Swarmpit-login-username-input-label"} "User")
-    (comp/input
-      {:id           "user"
-       :key          "Swarmpit-login-username-input"
-       :name         "user"
-       :autoComplete "user"
-       :autoFocus    true
-       :value        value
-       :onChange     (fn [event]
-                       (swap! local-state assoc :username (-> event .-target .-value)))})))
+  (comp/text-field
+    {:id              "user"
+     :key             "Swarmpit-login-username-input"
+     :label           "Username"
+     :variant         "outlined"
+     :fullWidth       true
+     :required        true
+     :autoComplete    "user"
+     :autoFocus       true
+     :value           value
+     :onChange        (fn [event]
+                        (swap! local-state assoc :username (-> event .-target .-value)))
+     :InputLabelProps {:shrink true}}))
 
 (defn- form-password-adornment [local-state]
   (let [show-password? (:showPassword @local-state)]
@@ -72,26 +69,23 @@
 
 (defn- form-password [value local-state]
   (let [show-password? (:showPassword @local-state)]
-    (comp/form-control
-      {:className "SwarmpitFormLogin"
-       :fullWidth true
-       :required  true}
-      (comp/input-label
-        {:htmlFor "adornment-password"
-         :key     "Swarmpit-login-password-input-label"} "Password")
-      (comp/input
-        {:id           "adornment-password"
-         :label        "Password"
-         :key          "Swarmpit-login-password-input"
-         :type         (if show-password?
-                         "text"
-                         "password")
-         :value        value
-         :onChange     (fn [event]
-                         (swap! local-state assoc :password (-> event .-target .-value)))
-         :onKeyPress   (fn [event]
-                         (on-enter event local-state))
-         :endAdornment (form-password-adornment local-state)}))))
+    (comp/text-field
+      {:id              "password"
+       :key             "Swarmpit-login-password-input"
+       :label           "Password"
+       :variant         "outlined"
+       :fullWidth       true
+       :required        true
+       :type            (if show-password?
+                          "text"
+                          "password")
+       :value           value
+       :onChange        (fn [event]
+                          (swap! local-state assoc :password (-> event .-target .-value)))
+       :onKeyPress      (fn [event]
+                          (on-enter event local-state))
+       :InputLabelProps {:shrink true}
+       :InputProps      {:endAdornment (form-password-adornment local-state)}})))
 
 (defn- form-button [local-state]
   (let [canSubmit? (:canSubmit @local-state)]
@@ -118,21 +112,10 @@
       (comp/mui
         (comp/paper
           {:className "Swarmpit-login-paper"}
-          (comp/avatar
-            {:className "Swarmpit-login-avatar"
-             :key       "Swarmpit-login-avatar"
-             :alt       "Swarmpit logo"
-             :src       "/img/swarmpit-transparent.png"})
-
-          ;(html
-          ;  [:img {:src    "img/swarmpit.png"
-          ;         :width  "80px"
-          ;         :height "80px"}])
-
-          (comp/typography
-            {:variant   "headline"
-             :key       "Swarmpit-login-text"
-             :className "Swarmpit-login-text"} "Welcome!")
+          (html
+            [:img {:src    "img/swarmpit.png"
+                   :width  "100%"
+                   :height "100%"}])
           (html
             [:form.Swarmpit-login-form {:key "Swarmpit-login-form"}
              (when (not-empty message)
