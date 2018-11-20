@@ -1,9 +1,12 @@
 html > body {
-    /*font-family: "Open Sans", sans-serif;*/
-    /*font-size: 14px;*/
-    /*color: rgb(117, 117, 117);*/
-
-    font-family: "Roboto", "Helvetica", "Arial", sans-serif;
+    font: 14px "Open Sans", sans-serif;
+    -webkit-font-kerning: normal;
+    font-kerning: normal;
+    -webkit-text-size-adjust: 100%;
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+    text-rendering: geometricPrecision;
+    color: rgb(117, 117, 117);
 }
 
 html > button {
@@ -37,7 +40,11 @@ html > button {
 .Swarmpit-context {
     flex-grow: 1;
     background-color: #fafafa;
-    /*padding: 24px;*/
+}
+
+.Swarmpit-card {
+    box-shadow: none !important;
+    border: 1px solid rgba(0, 0, 0, 0.12);
 }
 
 .Swarmpit-page {
@@ -48,9 +55,7 @@ html > button {
 }
 
 .Swarmpit-paper {
-    box-shadow: 0 12px 20px -10px rgba(101, 81, 159, 0.28),
-    0 4px 20px 0px rgba(0, 0, 0, 0.12),
-    0 7px 8px -5px rgba(101, 81, 159, 0.2) !important;
+    border: 1px solid rgba(0, 0, 0, 0.12);
 }
 
 /** Appbar **/
@@ -58,14 +63,10 @@ html > button {
 .Swarmpit-appbar {
     position: absolute;
     margin-left: 200px;
-    background: linear-gradient(60deg, #362870, #65519f);
+    background: linear-gradient(60deg, #65519f, #362870);
     box-shadow: none;
     z-index: 1201 !important;
     transition: width 195ms cubic-bezier(0.4, 0, 0.6, 1) 0ms, margin 195ms cubic-bezier(0.4, 0, 0.6, 1) 0ms;
-}
-
-.Swarmpit-appbar-title {
-    display: none !important;
 }
 
 .Swarmpit-appbar-user-menu-logged-info {
@@ -241,14 +242,27 @@ html > button {
     margin-top: 8px;
 }
 
-.Swarmpit-login-form-submit {
-    margin-top: 24px !important;
+.Swarmpit-login-form > div {
+    margin-bottom: 24px;
 }
 
 /** List **/
 
-.Swarmpit-list-context {
-    padding: 0 24px;
+.Swarmpit-table {
+    background-color: #fff;
+    font-weight: 300;
+}
+
+.Swarmpit-table-card-content {
+    padding: 0 !important;
+}
+
+.Swarmpit-table-info {
+    padding: 15px;
+    margin-top: -20px;
+    border-radius: 3px;
+    background: linear-gradient(60deg, #ab47bc, #8e24aa);
+    box-shadow: 0 12px 20px -10px rgba(156, 39, 176, 0.28), 0 4px 20px 0px rgba(0, 0, 0, 0.12), 0 7px 8px -5px rgba(156, 39, 176, 0.2);
 }
 
 .Swarmpit-table-cell {
@@ -270,10 +284,33 @@ html > button {
 
 .Swarmpit-table-head-cell {
     text-transform: uppercase !important;
+    /*color: #65519f !important;*/
+}
+
+.typoname {
+    font-size: 20px;
+}
+
+.Swarmpit-table-row-cell {
+    border-bottom: none !important;
+
+    border-top: 1px solid rgba(224, 224, 224, 1);
 }
 
 .Swarmpit-table-row-cell-delete > button {
     margin-top: 20px;
+}
+
+.Swarmpit-list-context {
+    padding: 0 24px;
+}
+
+.Swarmpit-list {
+    background-color: #fafafa;
+}
+
+.Swarmpit-list-expansion-panel {
+    box-shadow: 0px 0px 1px 0px rgba(0, 0, 0, 0.2) !important;
 }
 
 .Swarmpit-list-expansion-panel-summary-content {
@@ -294,73 +331,6 @@ html > button {
     opacity: 0.5;
     width: 100%;
 }
-
-/** Form panel **/
-
-.Swarmpit-form-panel {
-    display: flex;
-    overflow: hidden;
-    align-items: center;
-    padding: 1em 24px;
-    /*background: rgb(229, 229, 229);*/
-}
-
-/** Form panel SEARCH **/
-
-/*.Swarmpit-form-panel-search {*/
-/*margin-right: auto;*/
-/*height: 36px;*/
-/*display: flex;*/
-/*justify-content: space-between;*/
-/*background-color: #fff;*/
-/*border: 1px solid #ced4da;*/
-/*border-radius: 4px;*/
-/*}*/
-
-/*.Swarmpit-form-panel-search:focus {*/
-/*border-color: #65519f;*/
-/*box-shadow: 0 0 0 0.2rem rgba(101, 81, 159, 0.5);*/
-/*}*/
-
-/*.Swarmpit-form-panel-search > div {*/
-/*margin: auto 14px;*/
-/*width: 100%;*/
-/*}*/
-
-/*.Swarmpit-form-panel-search-input {*/
-/*width: 100%;*/
-/*}*/
-
-/*.Swarnpit-form-panel-search-icon {*/
-/*opacity: 1;*/
-/*transform: scale(1, 1);*/
-/*transition: transform 200ms cubic-bezier(0.4, 0.0, 0.2, 1);*/
-/*color: #65519f !important;*/
-/*height: 36px !important;*/
-/*}*/
-
-/** Form panel INFO **/
-
-/*.Swarmpit-form-panel-info {*/
-/*margin-right: auto;*/
-/*height: 36px;*/
-/*display: flex;*/
-/*justify-content: space-between;*/
-/*}*/
-
-/*.Swarmpit-form-panel-info > div {*/
-/*margin: auto 14px;*/
-/*width: 100%;*/
-/*}*/
-
-/*.Swarnpit-form-panel-info-icon {*/
-/*opacity: 1;*/
-/*transform: scale(1, 1);*/
-/*color: rgba(0, 0, 0, 0.54) !important;*/
-/*transition: transform 200ms cubic-bezier(0.4, 0.0, 0.2, 1);*/
-/*height: 36px !important;*/
-/*width: 0;*/
-/*}*/
 
 /** Form content **/
 
@@ -384,6 +354,24 @@ html > button {
     margin-top: 20px;
 }
 
+.Swarmpit-form-label {
+    list-style: none;
+    margin: 0;
+    display: -webkit-box;
+    display: -moz-box;
+    display: -ms-flexbox;
+    display: -webkit-flex;
+    display: flex;
+    -webkit-flex-flow: row wrap;
+    justify-content: flex-end;
+}
+
+.Swarmpit-form-label > li {
+    text-decoration: none;
+    display: block;
+    padding: 1em;
+}
+
 .Swarmpit-form-item {
     padding-bottom: 10px;
 }
@@ -392,6 +380,11 @@ html > button {
     font-weight: 400;
     color: rgba(0, 0, 0, 0.54);
     text-transform: uppercase;
+}
+
+.Swarmpit-form-card {
+    box-shadow: none !important;
+    border: 1px solid rgba(0, 0, 0, 0.12);
 }
 
 .Swarmpit-form-card-header {
@@ -406,12 +399,50 @@ html > button {
     color: #fff;
 }
 
-.Swarmpit-form-card-subheader-icon {
+.Swarmpit-form-card-media {
+    float: left;
+    padding: 15px;
+    margin-top: -20px;
+    margin-right: 15px;
+    border-radius: 3px;
+    background-color: #999;
+}
+
+.Swarmpit-form-card-icon {
     top: 2px;
     position: relative;
     margin-right: 3px;
     height: 16px !important;
     width: 16px !important;
+}
+
+.Swarmpit-form-card-icon-item {
+    display: inline-flex;
+    font-size: 12px;
+}
+
+.Swarmpit-form-card-labels {
+    display: inline-flex;
+}
+
+.Swarmpit-form-card-labels > span {
+    margin-right: 5px;
+}
+
+.Swarmpit-form-card-subheader {
+    font-size: 0.875rem;
+    font-weight: 400;
+    font-family: "Roboto", "Helvetica", "Arial", sans-serif;
+    line-height: 1.46429em;
+    color: rgba(0, 0, 0, 0.54);
+}
+
+.Swarmpit-form-card-subheader-icon {
+    top: 5px;
+    position: relative;
+    margin-right: 3px;
+    height: 20px !important;
+    width: 20px !important;
 }
 
 .Swarmpit-form-card-header:first-child:before {
@@ -421,21 +452,14 @@ html > button {
 
 /* Labels & Status ico  */
 
-.Swarmpit-fdd {
-    display: inline-flex;
-    font-size: 12px;
-}
-
 .Swarmpit-label {
     color: #fff;
-    display: inline-block;
     padding: 5px 12px;
+    display: inline-block;
     font-size: 10px;
     text-align: center;
-    font-weight: 500;
-    white-space: nowrap;
+    font-weight: 700;
     line-height: 1;
-    margin-right: 3px;
     border-radius: 12px;
     text-transform: uppercase;
     vertical-align: baseline;
