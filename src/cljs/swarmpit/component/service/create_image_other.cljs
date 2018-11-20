@@ -1,11 +1,8 @@
 (ns swarmpit.component.service.create-image-other
   (:require [material.icon :as icon]
             [material.component :as comp]
-            [material.component.form :as form]
-            [material.component.list-table :as list]
             [swarmpit.component.state :as state]
             [swarmpit.component.mixin :as mixin]
-            [swarmpit.component.progress :as progress]
             [swarmpit.component.message :as message]
             [swarmpit.docker.utils :as du]
             [swarmpit.storage :as storage]
@@ -20,14 +17,6 @@
 
 (def form-state-cursor (conj state/form-state-cursor :other))
 
-(def headers [{:name  "Name"
-               :width "100%"}])
-
-(defn- render-item
-  [item]
-  (let [value (val item)]
-    value))
-
 (defn- filter-items
   [items predicate]
   (filter #(string/includes? (:name %) predicate) items))
@@ -38,13 +27,12 @@
       (first)))
 
 (defn- onclick-handler
-  [index registry repositories]
-  (let [repository (fn [index] (:name (nth repositories index)))]
-    (dispatch!
-      (routes/path-for-frontend :service-create-config
-                                {}
-                                {:repository (du/repository (:url registry)
-                                                            (repository index))}))))
+  [repository registry]
+  (dispatch!
+    (routes/path-for-frontend :service-create-config
+                              {}
+                              {:repository (du/repository (:url registry)
+                                                          repository)})))
 
 (defn- repository-handler
   [registry-id]
@@ -66,27 +54,36 @@
            [:span.owner-item (str " [" (:owner registry) "]")]])))
 
 (defn- form-registry [registry registries]
-  (form/comp
-    "REGISTRY"
-    (comp/select-field
-      {:value    (:_id registry)
-       :onChange (fn [_ _ v]
-                   (state/update-value [:registry] (selected-registry v registries) form-state-cursor)
-                   (repository-handler v))}
-      (->> registries
-           (map #(comp/menu-item
-                   {:key         (:_id %)
-                    :value       (:_id %)
-                    :primaryText (form-registry-label %)}))))))
+  (comp/text-field
+    {:fullWidth       true
+     :id              "registry"
+     :label           "Registry"
+     :select          true
+     :value           (:_id registry)
+     :margin          "normal"
+     :variant         "outlined"
+     :InputLabelProps {:shrink true}
+     :onChange        (fn [event]
+                        (let [value (-> event .-target .-value)]
+                          (state/update-value [:registry] (selected-registry value registries) form-state-cursor)
+                          (repository-handler value)))}
+    (->> registries
+         (map #(comp/menu-item
+                 {:key   (:_id %)
+                  :value (:_id %)} (form-registry-label %))))))
 
 (defn- form-repository [repository]
-  (form/comp
-    "REPOSITORY"
-    (comp/text-field
-      {:hintText "Filter by name"
-       :value    repository
-       :onChange (fn [_ v]
-                   (state/update-value [:repository] v form-state-cursor))})))
+  (comp/text-field
+    {:fullWidth       true
+     :id              "repository"
+     :label           "Repository"
+     :value           repository
+     :margin          "normal"
+     :variant         "outlined"
+     :placeholder     "Find repository"
+     :InputLabelProps {:shrink true}
+     :onChange        (fn [event]
+                        (state/update-value [:repository] (-> event .-target .-value) form-state-cursor))}))
 
 (defn- init-form-state
   [registry]
@@ -97,23 +94,28 @@
 (def mixin-init-form
   (mixin/init-tab
     (fn [registries]
-      (init-form-state (first registries)))))
+      (let [init-registry (first registries)]
+        (init-form-state init-registry)
+        (when (some? init-registry)
+          (repository-handler (:_id init-registry)))))))
 
 (rum/defc form-list < rum/static [searching? registry repositories]
-  [:div.form-edit-loader
-   (if searching?
-     (progress/loading)
-     (progress/loaded))
-   (comp/mui
-     (comp/table
-       {:key         "tbl"
-        :selectable  false
-        :onCellClick (fn [i] (onclick-handler i registry repositories))}
-       (list/table-header headers)
-       (list/table-body headers
-                        repositories
-                        render-item
-                        [[:name]])))])
+  (html
+    [:div
+     (when searching?
+       (comp/linear-progress))
+     (comp/list
+       {:dense true}
+       (->> repositories
+            (map (fn [item]
+                   (comp/list-item
+                     {:button         true
+                      :onClick        #(onclick-handler (:name item) registry)
+                      :disableGutters true
+                      :divider        true}
+                     (comp/list-item-text
+                       {:primary   (:name item)
+                        :secondary (:description item)}))))))]))
 
 (rum/defc form < rum/reactive
                  mixin-init-form [registries]
@@ -121,11 +123,14 @@
         repositories (state/react form-value-cursor)
         filtered-repositories (filter-items repositories repository)]
     (if (some? registry)
-      [:div.form-edit
+      [:div.Swarmpit-form-context
        (form-registry registry registries)
        (form-repository repository)
        (form-list searching? registry filtered-repositories)]
-      [:div.form-edit
-       (if (storage/admin?)
-         (form/icon-value icon/info [:span "No custom registries found. Add new " [:a {:href (routes/path-for-frontend :registry-create)} "registry."]])
-         (form/icon-value icon/info "No custom registries found. Please ask your admin to setup."))])))
+      [:div.Swarmpit-form-context
+       (html
+         [:span.Swarmpit-message
+          (comp/svg icon/info)
+          (if (storage/admin?)
+            [:span "No custom registries found. Add new " [:a {:href (routes/path-for-frontend :registry-create)} "registry."]]
+            [:span "No custom registries found. Please ask your admin to setup."])])])))

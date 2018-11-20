@@ -1,7 +1,6 @@
 (ns swarmpit.component.service.create-image
   (:require [material.icon :as icon]
             [material.component :as comp]
-            [material.component.panel :as panel]
             [swarmpit.component.mixin :as mixin]
             [swarmpit.component.state :as state]
             [swarmpit.component.progress :as progress]
@@ -10,21 +9,10 @@
             [swarmpit.component.service.create-image-private :as ciu]
             [swarmpit.ajax :as ajax]
             [swarmpit.routes :as routes]
+            [sablono.core :refer-macros [html]]
             [rum.core :as rum]))
 
 (enable-console-print!)
-
-(def tabs-inkbar-style
-  {:backgroundColor "#437f9d"
-   :minWidth        "200px"})
-
-(def tabs-container-style
-  {:backgroundColor "#fff"
-   :borderBottom    "1px solid rgb(224, 228, 231)"})
-
-(def tab-style
-  {:color    "rgb(117, 117, 117)"
-   :minWidth "200px"})
 
 (defn- registries-handler
   []
@@ -47,7 +35,8 @@
   (state/set-value {:registries {:loading? true
                                  :list     []}
                     :users      {:loading? true
-                                 :list     []}} state/form-state-cursor))
+                                 :list     []}
+                    :tab        0} state/form-state-cursor))
 
 (defn- init-form-value
   []
@@ -63,54 +52,50 @@
       (registries-handler)
       (users-handler))))
 
-(rum/defc form-tabs < rum/static [registries users]
-  [:div
-   [:div.form-panel
-    [:div.form-panel-left
-     (panel/info icon/services "New service")]]
-   [:div.form-panel-tabs
-    (comp/mui
-      (comp/tabs
-        {:key                   "tabs"
-         :inkBarStyle           tabs-inkbar-style
-         :tabItemContainerStyle tabs-container-style}
-        (comp/tab
-          {:key       "tab1"
-           :label     "SEARCH PUBLIC"
-           :className "service-image-tab"
-           :icon      (comp/svg icon/search)
-           :style     tab-style}
-          (cip/form))
-        (comp/tab
-          {:key       "tab2"
-           :label     "SEARCH PRIVATE"
-           :className "service-image-tab"
-           :icon      (comp/svg icon/docker)
-           :style     tab-style
-           :onActive  (fn []
-                        (let [state (state/get-value ciu/form-state-cursor)
-                              user (:user state)]
-                          (when (some? user)
-                            (ciu/repository-handler (:_id user)))))}
-          (ciu/form users))
-        (comp/tab
-          {:key       "tab3"
-           :label     "OTHER REGISTRIES"
-           :className "service-image-tab"
-           :icon      (comp/svg icon/registries)
-           :style     tab-style
-           :onActive  (fn []
-                        (let [state (state/get-value cio/form-state-cursor)
-                              registry (:registry state)]
-                          (when (some? registry)
-                            (cio/repository-handler (:_id registry)))))}
-          (cio/form registries))))]])
+(rum/defc form-tabs < rum/static [registries users tab]
+  (html
+    [:div.Swarmpit-form
+     [:div.Swarmpit-form-context
+      (comp/mui
+        (html
+          [:div
+           (comp/tabs
+             {:key            "tabs"
+              ;:style          {:backgroundColor "#f5f5f5"
+              ;                 :borderBottom    "1px solid rgba(0, 0, 0, 0.12)"}
+              :value          tab
+              :onChange       (fn [e v]
+                                (state/update-value [:tab] v state/form-state-cursor))
+              :fullWidth      true
+              :indicatorColor "primary"
+              :textColor      "primary"
+              :centered       true}
+             (comp/tab
+               {:key   "tab1"
+                :label "SEARCH PUBLIC"
+                :icon  icon/search})
+             (comp/tab
+               {:key   "tab2"
+                :label "SEARCH PRIVATE"
+                :icon  (comp/svg icon/docker)})
+             (comp/tab
+               {:key   "tab3"
+                :label "OTHER REGISTRIES"
+                :icon  (comp/svg icon/registries)}))
+           (comp/paper
+             {:className "Swarmpit-paper"
+              :elevation 0}
+             (case tab
+               0 (cip/form)
+               1 (ciu/form users)
+               2 (cio/form registries)))]))]]))
 
 (rum/defc form < rum/reactive
                  mixin-init-form [_]
-  (let [{:keys [registries users]} (state/react state/form-state-cursor)]
+  (let [{:keys [registries users tab]} (state/react state/form-state-cursor)]
     (progress/form
       (or (:loading? registries)
           (:loading? users))
       (form-tabs (:list registries)
-                 (:list users)))))
+                 (:list users)
+                 tab))))
