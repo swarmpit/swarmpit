@@ -290,12 +290,7 @@ a {
 
 .Swarmpit-table-row-cell {
     border-bottom: none !important;
-
     border-top: 1px solid rgba(224, 224, 224, 1);
-}
-
-.Swarmpit-table-row-cell-delete > button {
-    margin-top: 20px;
 }
 
 .Swarmpit-list-context {
@@ -344,7 +339,7 @@ a {
 .Swarmpit-form-section {
     flex-direction: row;
     display: flex;
-    align-items: baseline;
+    align-items: center;
 }
 
 .Swarmpit-form-item {

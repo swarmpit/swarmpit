@@ -25,7 +25,7 @@
                       :className "Swarmpit-table-row-cell-edit"}
                      (let [render-fn (:render-fn (nth render-metadata coll-index))
                            value (val coll)]
-                       (render-fn value item))))))
+                       (render-fn value item index))))))
           (cmp/table-cell
             {:className "Swarmpit-table-row-cell-delete"}
             (cmp/tooltip
