@@ -301,6 +301,24 @@
 
 
 
+
+
+
+;;; OLD MESS BELOW -> Clean it up !!!
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 (defn auto-complete
   ([props] (f/auto-complete (clj->js props)))
   ([] (f/auto-complete nil)))
@@ -331,19 +349,6 @@
   ([props & childs] (f/raised-button (clj->js props) childs))
   ([props] (f/raised-button (clj->js props)))
   ([] (f/raised-button nil)))
-
-
-
-
-
-
-
-
-
-
-
-
-
 
 (defn dialog
   [props & childs]
