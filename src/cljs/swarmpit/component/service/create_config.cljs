@@ -115,8 +115,8 @@
     (fn [{{:keys [repository]} :params}]
       (init-form-state)
       (init-form-value repository)
-      ;(mounts/volumes-handler)
-      ;(networks/networks-handler)
+      (mounts/volumes-handler)
+      (networks/networks-handler)
       ;(secrets/secrets-handler)
       ;(when (<= 1.30 (state/get-value [:docker :api]))
       ;  (configs/configs-handler))
@@ -198,10 +198,41 @@
               (comp/grid
                 {:item true
                  :xs   12}
-                (comp/typography
-                  {:variant      "h6"
-                   :gutterBottom true} "General")
+                (form/section
+                  "General")
                 (settings/form false))
+              (comp/grid
+                {:item true
+                 :xs   12}
+                (form/section
+                  "Ports"
+                  (comp/button
+                    {:color   "primary"
+                     :onClick ports/add-item}
+                    (comp/svg icon/add-small) "Add port"))
+                (ports/form))
+              (comp/grid
+                {:item true
+                 :xs   12}
+                (form/section
+                  "Networks"
+                  (comp/button
+                    {:color   "primary"
+                     :onClick networks/add-item}
+                    (comp/svg icon/add-small) "Add network"))
+                (networks/form))
+              (comp/grid
+                {:item true
+                 :xs   12}
+                (form/section
+                  "Mounts"
+                  (comp/button
+                    {:color   "primary"
+                     :onClick mounts/add-item}
+                    (comp/svg icon/add-small) "Add mount"))
+                (mounts/form))
+
+
               ;(comp/grid
               ;  {:item true
               ;   :xs   12

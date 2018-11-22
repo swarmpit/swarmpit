@@ -35,7 +35,7 @@
 (defn- form-container [value index]
   (comp/text-field
     {:fullWidth       true
-     :key             (str "form-container-port-" index)
+     :key             (str "form-port-container" index)
      :id              "container"
      :label           "Container port"
      :type            "number"
@@ -67,7 +67,7 @@
 (defn- form-mode [value index]
   (comp/text-field
     {:fullWidth       true
-     :key             (str "form-mode-port-" index)
+     :key             (str "form-port-mode-" index)
      :id              "mode"
      :label           "Mode"
      :select          true
@@ -85,7 +85,7 @@
 (defn- form-host [value index]
   (comp/text-field
     {:fullWidth       true
-     :key             (str "form-host-port-" index)
+     :key             (str "form-port-host-" index)
      :id              "host"
      :label           "Host port"
      :type            "number"
