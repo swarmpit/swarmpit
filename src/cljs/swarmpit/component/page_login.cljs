@@ -93,7 +93,7 @@
       {:className "Swarmpit-login-form-submit"
        :disabled  (not canSubmit?)
        :type      "submit"
-       :variant   "raised"
+       :variant   "contained"
        :fullWidth true
        :color     "primary"
        :onClick   #(login-handler local-state)} "Sign in")))
@@ -116,10 +116,15 @@
             [:img {:src    "img/swarmpit.png"
                    :width  "100%"
                    :height "100%"}])
+          (when (not-empty message)
+            (html
+              [:span {:style {:display    "flex"
+                              :alignItems "center"
+                              :color      "#d32f2f"
+                              :padding    20}}
+               icon/error message]))
           (html
-            [:form.Swarmpit-login-form {:key "Swarmpit-login-form"}
-             (when (not-empty message)
-               (comp/form-helper-text {:error true} message))
+            [:div.Swarmpit-login-form {:key "Swarmpit-login-form"}
              (form-username username local-state)
              (form-password password local-state)
              (form-button local-state)])))]]))
