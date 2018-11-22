@@ -1,7 +1,6 @@
 (ns swarmpit.component.service.form-configs
   (:require [material.component :as comp]
-            [material.component.form :as form]
-            [material.component.list-table-form :as list]
+            [material.component.list.edit :as list]
             [swarmpit.component.state :as state]
             [swarmpit.ajax :as ajax]
             [swarmpit.routes :as routes]
@@ -21,49 +20,53 @@
                :width "35%"}])
 
 (def undefined-info
-  (form/value
-    [:span "No configs found. Create new "
-     [:a {:href (routes/path-for-frontend :config-create)} "config."]]))
+  (html
+    [:span.Swarmpit-message
+     [:span "No configs found. Create new "
+      [:a {:href (routes/path-for-frontend :config-create)} "config."]]]))
 
 (defn- form-config [value index configs-list]
-  (list/selectfield
-    {:name     (str "form-config-select-" index)
-     :key      (str "form-config-select-" index)
-     :value    value
-     :onChange (fn [_ _ v]
-                 (state/update-item index :configName v form-value-cursor))}
+  (comp/text-field
+    {:fullWidth       true
+     :label           "Name"
+     :key             (str "form-config-name-" index)
+     :select          true
+     :value           value
+     :variant         "outlined"
+     :InputLabelProps {:shrink true}
+     :onChange        #(state/update-item index :configName (-> % .-target .-value) form-value-cursor)}
     (->> configs-list
          (map #(comp/menu-item
-                 {:name        (str "form-config-item-" (:configName %))
-                  :key         (str "form-config-item-" (:configName %))
-                  :value       (:configName %)
-                  :primaryText (:configName %)})))))
+                 {:key   (str "form-config-item-" (:configName %))
+                  :value (:configName %)} (:configName %))))))
 
 (defn- form-config-target [value name index]
-  (list/textfield
-    {:name     (str "form-config-target-" index)
-     :key      (str "form-config-target-" index)
-     :hintText (when (str/blank? value)
-                 name)
-     :value    value
-     :onChange (fn [_ v]
-                 (state/update-item index :configTarget v form-value-cursor))}))
+  (comp/text-field
+    {:label           "Target"
+     :fullWidth       true
+     :key             (str "form-config-target-" index)
+     :placeholder     (when (str/blank? value) name)
+     :variant         "outlined"
+     :value           value
+     :required        true
+     :InputLabelProps {:shrink true}
+     :onChange        #(state/update-item index :configTarget (-> % .-target .-value) form-value-cursor)}))
 
-(defn- render-configs
-  [item index data]
-  (let [{:keys [configName configTarget]} item]
-    [(form-config configName index data)
-     (form-config-target configTarget configName index)]))
+(defn- form-configs-metadata [configs-list]
+  [{:name      "Name"
+    :primary   true
+    :key       [:configName]
+    :render-fn (fn [value _ index] (form-config value index configs-list))}
+   {:name      "Target"
+    :key       [:configTarget]
+    :render-fn (fn [value item index] (form-config-target value (:configName item) index))}])
 
 (defn- form-table
   [configs configs-list]
-  (form/form
-    {}
-    (list/table-raw headers
-                    configs
-                    configs-list
-                    render-configs
-                    (fn [index] (state/remove-item index form-value-cursor)))))
+  (list/responsive
+    (form-configs-metadata configs-list)
+    configs
+    (fn [index] (state/remove-item index form-value-cursor))))
 
 (defn- add-item
   []
@@ -81,7 +84,7 @@
   (let [{:keys [list]} (state/react form-state-cursor)
         configs (state/react form-value-cursor)]
     (if (empty? configs)
-      (form/value "No configs defined for the service.")
+      (html [:div "No configs defined for the service."])
       (if (empty? list)
         undefined-info
         (form-table configs list)))))

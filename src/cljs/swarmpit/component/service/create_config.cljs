@@ -117,9 +117,9 @@
       (init-form-value repository)
       (mounts/volumes-handler)
       (networks/networks-handler)
-      ;(secrets/secrets-handler)
-      ;(when (<= 1.30 (state/get-value [:docker :api]))
-      ;  (configs/configs-handler))
+      (secrets/secrets-handler)
+      (when (<= 1.30 (state/get-value [:docker :api]))
+        (configs/configs-handler))
       ;(placement/placement-handler)
       ;(labels/labels-handler)
       (settings/tags-handler repository))))
@@ -231,6 +231,30 @@
                      :onClick mounts/add-item}
                     (comp/svg icon/add-small) "Add mount"))
                 (mounts/form))
+              (comp/grid
+                {:item true
+                 :xs   12}
+                (form/section
+                  "Secrets"
+                  (comp/button
+                    {:color   "primary"
+                     :onClick secrets/add-item}
+                    (comp/svg icon/add-small) "Add secret"))
+                (secrets/form))
+
+              (when (<= 1.30 (state/get-value [:docker :api]))
+                (comp/grid
+                  {:item true
+                   :xs   12}
+                  (form/section
+                    "Configs"
+                    (comp/button
+                      {:color   "primary"
+                       :onClick configs/add-item}
+                      (comp/svg icon/add-small) "Add config"))
+                  (configs/form)))
+
+
 
 
               ;(comp/grid
