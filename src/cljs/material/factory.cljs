@@ -2,6 +2,8 @@
   (:refer-clojure :exclude [list])
   (:require [cljsjs.react]
             [cljsjs.recharts]
+            [cljsjs.react-select]
+            [cljsjs.react-autosuggest]
             [material-ui]
             [material-ui-icons]))
 
@@ -13,6 +15,7 @@
 (def mui-theme-provider (create-factory js/MaterialUI.MuiThemeProvider))
 
 (def form-control (create-factory js/MaterialUI.FormControl))
+(def form-label (create-factory js/MaterialUI.FormLabel))
 (def form-control-label (create-factory js/MaterialUI.FormControlLabel))
 (def form-group (create-factory js/MaterialUI.FormGroup))
 (def form-helper-text (create-factory js/MaterialUI.FormHelperText))
@@ -28,6 +31,7 @@
 
 (def menu (create-factory js/MaterialUI.Menu))
 (def menu-item (create-factory js/MaterialUI.MenuItem))
+(def menu-list (create-factory js/MaterialUI.MenuList))
 
 (def typography (create-factory js/MaterialUI.Typography))
 (def drawer (create-factory js/MaterialUI.Drawer))
@@ -46,6 +50,7 @@
 (def tooltip (create-factory js/MaterialUI.Tooltip))
 (def snackbar (create-factory js/MaterialUI.Snackbar))
 (def snackbar-content (create-factory js/MaterialUI.SnackbarContent))
+(def text-field (create-factory js/MaterialUI.TextField))
 
 (def table (create-factory js/MaterialUI.Table))
 (def table-head (create-factory js/MaterialUI.TableHead))
@@ -66,6 +71,18 @@
 (def card-content (create-factory js/MaterialUI.CardContent))
 (def card-actions (create-factory js/MaterialUI.CardActions))
 (def card-media (create-factory js/MaterialUI.CardMedia))
+
+(def tab (create-factory js/MaterialUI.Tab))
+(def tabs (create-factory js/MaterialUI.Tabs))
+
+(def radio-group (create-factory js/MaterialUI.RadioGroup))
+(def radio (create-factory js/MaterialUI.Radio))
+
+(def popper (create-factory js/MaterialUI.Popper))
+(def grow (create-factory js/MaterialUI.Grow))
+(def no-ssr (create-factory js/MaterialUI.NoSsr))
+
+(def linear-progress (create-factory js/MaterialUI.LinearProgress))
 
 (def click-away-listener (create-factory js/MaterialUI.ClickAwayListener))
 
@@ -100,6 +117,8 @@
 (def label-icon (create-factory js/MaterialUIIcons.Label))
 (def settings-icon (create-factory js/MaterialUIIcons.Settings))
 
+(def create-mui-theme js/MaterialUI.createMuiTheme)
+
 ;; Recharts
 
 (def pie-chart (create-factory js/Recharts.PieChart))
@@ -109,12 +128,16 @@
 (def label (create-factory js/Recharts.Label))
 (def responsive-container (create-factory js/Recharts.ResponsiveContainer))
 
+;; React select
+
+(def react-select (create-factory js/Select))
+(def autosuggest (create-factory js/Autosuggest))
 
 
 
 
 
-(def create-mui-theme js/MaterialUI.createMuiTheme)
+
 
 
 
@@ -126,14 +149,10 @@
 (def flat-button (create-factory js/MaterialUI.FlatButton))
 (def raised-button (create-factory js/MaterialUI.RaisedButton))
 (def toogle (create-factory js/MaterialUI.Toggle))
-(def linear-progress (create-factory js/MaterialUI.LinearProgress))
 (def circular-progress (create-factory js/MaterialUI.CircularProgress))
 (def refresh-indicator (create-factory js/MaterialUI.RefreshIndicator))
-(def tab (create-factory js/MaterialUI.Tab))
-(def tabs (create-factory js/MaterialUI.Tabs))
+
 (def select-field (create-factory js/MaterialUI.SelectField))
-(def text-field (create-factory js/MaterialUI.TextField))
 (def slider (create-factory js/MaterialUI.Slider))
-(def radio-button-group (create-factory js/MaterialUI.RadioButtonGroup))
-(def radio-button (create-factory js/MaterialUI.RadioButton))
+
 (def auto-complete (create-factory js/MaterialUI.AutoComplete))

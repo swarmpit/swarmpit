@@ -178,7 +178,6 @@
              (appbar-desktop-section
                [(when search-fn
                   (search-input search-fn))
-
                 (->> actions (map :button))])
              (appbar-mobile-section
                [(when search-fn

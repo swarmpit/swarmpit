@@ -38,11 +38,19 @@
       {}
       (when (and (:subnet ipam)
                  (:gateway ipam))
-        (comp/typography
-          {:component "p"}
-          (str "The subnet is listed as " (:subnet ipam))
-          (html [:br])
-          (str "The gateway IP in the above instance is " (:gateway ipam))))
+        (html
+          [:div
+           [:span "The subnet is listed as " [:b (:subnet ipam)]]
+           [:br]
+           [:span "The gateway IP in the above instance is " [:b (:gateway ipam)]]])
+
+        ;(comp/typography
+        ;  {:component "p"}
+        ;  (str "The subnet is listed as " (:subnet ipam))
+        ;  (html [:br])
+        ;  (str "The gateway IP in the above instance is " (:gateway ipam)))
+
+        )
       (html [:br])
       (when driver
         (label/grey driver))
@@ -67,7 +75,7 @@
       {:style {:paddingBottom "16px"}}
       (comp/typography
         {:color "textSecondary"}
-        (form/item-date "created" created)))))
+        (form/item-date created nil)))))
 
 (defn- section-driver
   [{:keys [driver options]}]
@@ -75,7 +83,7 @@
     {:className "Swarmpit-form-card"}
     (comp/card-header
       {:className "Swarmpit-form-card-header"
-       :subheader (form/item-ico "Driver options" icon/settings)})
+       :subheader (form/subheader "Driver options" icon/settings)})
     (comp/card-content
       {}
       (when (not-empty options)

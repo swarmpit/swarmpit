@@ -131,7 +131,7 @@
 
 (rum/defc form-settings < rum/static []
   [:div.form-layout-group
-   (form/section "General settings")
+   (form/subsection "General settings")
    (settings/form true)])
 
 (rum/defc form-ports < rum/static []
@@ -171,17 +171,17 @@
 
 (rum/defc form-logdriver < rum/static []
   [:div.form-layout-group.form-layout-group-border
-   (form/section "Logging")
+   (form/subsection "Logging")
    (logdriver/form)])
 
 (rum/defc form-resources < rum/static []
   [:div.form-layout-group.form-layout-group-border
-   (form/section "Resources")
+   (form/subsection "Resources")
    (resources/form)])
 
 (rum/defc form-deployment < rum/static []
   [:div.form-layout-group.form-layout-group-border
-   (form/section "Deployment")
+   (form/subsection "Deployment")
    (deployment/form)])
 
 (rum/defc form-edit < rum/reactive [id

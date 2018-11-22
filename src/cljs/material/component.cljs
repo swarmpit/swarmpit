@@ -28,6 +28,10 @@
   [props & childs]
   (f/form-control (clj->js props) childs))
 
+(defn form-label
+  [props label]
+  (f/form-label (clj->js props) label))
+
 (defn form-control-label
   [props]
   (f/form-control-label (clj->js props)))
@@ -55,6 +59,10 @@
 (defn menu-item
   [props & childs]
   (f/menu-item (clj->js props) childs))
+
+(defn menu-list
+  [props & childs]
+  (f/menu-list (clj->js props) childs))
 
 (defn paper
   [props & childs]
@@ -204,6 +212,42 @@
   ([props] (f/snackbar-content (clj->js props)))
   ([] (f/snackbar-content nil)))
 
+(defn text-field
+  ([props & childs] (f/text-field (clj->js props) childs))
+  ([] (f/text-field nil)))
+
+(defn tab
+  [props]
+  (f/tab (clj->js props)))
+
+(defn tabs
+  [props & childs]
+  (f/tabs (clj->js props) childs))
+
+(defn popper
+  [props grow-fn]
+  (f/popper (clj->js props) grow-fn))
+
+(defn grow
+  [props comp]
+  (f/grow (clj->js props) comp))
+
+(defn no-ssr
+  [props & childs]
+  (f/no-ssr (clj->js props) childs))
+
+(defn radio
+  ([props] (f/radio (clj->js props)))
+  ([] (f/radio nil)))
+
+(defn radio-group
+  [props & childs]
+  (f/radio-group (clj->js props) childs))
+
+(defn linear-progress
+  ([props] (f/linear-progress (clj->js props)))
+  ([] (f/linear-progress nil)))
+
 (defn click-away-listener
   [props content]
   (f/click-away-listener (clj->js props) content))
@@ -234,6 +278,24 @@
   [comp]
   (f/responsive-container {} comp))
 
+;;; react-select component
+
+(defn react-select
+  [props]
+  (f/react-select (clj->js props)))
+
+(defn autosuggest
+  [props]
+  (f/autosuggest (clj->js props)))
+
+
+
+
+
+
+
+
+
 
 
 
@@ -251,9 +313,7 @@
   ([props] (f/slider (clj->js props)))
   ([] (f/slider nil)))
 
-(defn linear-progress
-  ([props] (f/linear-progress (clj->js props)))
-  ([] (f/linear-progress nil)))
+
 
 (defn circular-progress
   ([props] (f/circular-progress (clj->js props)))
@@ -263,17 +323,9 @@
   ([props] (f/refresh-indicator (clj->js props)))
   ([] (f/refresh-indicator nil)))
 
-(defn text-field
-  ([props] (f/text-field (clj->js props)))
-  ([] (f/text-field nil)))
-
 (defn flat-button
   ([props] (f/flat-button (clj->js props)))
   ([] (f/flat-button nil)))
-
-(defn radio-button
-  ([props] (f/radio-button (clj->js props)))
-  ([] (f/radio-button nil)))
 
 (defn raised-button
   ([props & childs] (f/raised-button (clj->js props) childs))
@@ -307,17 +359,7 @@
   [props & childs]
   (f/select-field (clj->js props) childs))
 
-(defn tab
-  [props & childs]
-  (f/tab (clj->js props) childs))
 
-(defn tabs
-  [props & childs]
-  (f/tabs (clj->js props) childs))
-
-(defn radio-button-group
-  [props & childs]
-  (f/radio-button-group (clj->js props) childs))
 
 (defn button-icon
   [icon]

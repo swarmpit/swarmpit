@@ -21,6 +21,7 @@
             [swarmpit.ajax :as ajax]
             [swarmpit.url :refer [dispatch!]]
             [swarmpit.routes :as routes]
+            [sablono.core :refer-macros [html]]
             [rum.core :as rum]))
 
 (enable-console-print!)
@@ -64,8 +65,9 @@
 (defn- init-form-state
   []
   (state/set-value {:processing? false} state/form-state-cursor)
-  (state/set-value {:valid? false
-                    :tags   []} settings/form-state-cursor)
+  (state/set-value {:valid?             false
+                    :tagMenuSuggestions []
+                    :tags               []} settings/form-state-cursor)
   (state/set-value {:volumes []} mounts/form-state-cursor)
   (state/set-value {:list []} secrets/form-state-cursor)
   (state/set-value {:list []} configs/form-state-cursor)
@@ -113,18 +115,18 @@
     (fn [{{:keys [repository]} :params}]
       (init-form-state)
       (init-form-value repository)
-      (mounts/volumes-handler)
-      (networks/networks-handler)
-      (secrets/secrets-handler)
-      (when (<= 1.30 (state/get-value [:docker :api]))
-        (configs/configs-handler))
-      (placement/placement-handler)
-      (labels/labels-handler)
+      ;(mounts/volumes-handler)
+      ;(networks/networks-handler)
+      ;(secrets/secrets-handler)
+      ;(when (<= 1.30 (state/get-value [:docker :api]))
+      ;  (configs/configs-handler))
+      ;(placement/placement-handler)
+      ;(labels/labels-handler)
       (settings/tags-handler repository))))
 
 (rum/defc form-settings < rum/static []
   [:div.form-layout-group
-   (form/section "General settings")
+   (form/subsection "General settings")
    (settings/form false)])
 
 (rum/defc form-ports < rum/static []
@@ -164,17 +166,17 @@
 
 (rum/defc form-logdriver < rum/static []
   [:div.form-layout-group.form-layout-group-border
-   (form/section "Logging")
+   (form/subsection "Logging")
    (logdriver/form)])
 
 (rum/defc form-resources < rum/static []
   [:div.form-layout-group.form-layout-group-border
-   (form/section "Resources")
+   (form/subsection "Resources")
    (resources/form)])
 
 (rum/defc form-deployment < rum/static []
   [:div.form-layout-group.form-layout-group-border
-   (form/section "Deployment")
+   (form/subsection "Deployment")
    (deployment/form)])
 
 (rum/defc form < rum/reactive
@@ -182,27 +184,82 @@
   (let [settings-state (state/react settings/form-state-cursor)
         resources-state (state/react resources/form-state-cursor)
         {:keys [processing?]} (state/react state/form-state-cursor)]
-    [:div
-     [:div.form-panel
-      [:div.form-panel-left
-       (panel/info icon/services "New service")]
-      [:div.form-panel-right
-       (comp/progress-button
-         {:label      "Create"
-          :disabled   (or (not (:valid? settings-state))
-                          (not (:valid? resources-state)))
-          :primary    true
-          :onTouchTap create-service-handler} processing?)]]
-     [:div.form-layout
-      (form-settings)
-      (form-ports)
-      (form-networks)
-      (form-mounts)
-      (form-secrets)
-      (when (<= 1.30 (state/get-value [:docker :api]))
-        (form-configs))
-      (form-variables)
-      (form-labels)
-      (form-logdriver)
-      (form-resources)
-      (form-deployment)]]))
+    (comp/mui
+      (html
+        [:div.Swarmpit-form
+         [:div.Swarmpit-form-context
+          (comp/paper
+            {:className "Swarmpit-paper Swarmpit-form-context"
+             :elevation 0}
+
+            (comp/grid
+              {:container true
+               :spacing   40}
+              (comp/grid
+                {:item true
+                 :xs   12}
+                (comp/typography
+                  {:variant      "h6"
+                   :gutterBottom true} "General")
+                (settings/form false))
+              ;(comp/grid
+              ;  {:item true
+              ;   :xs   12
+              ;   :sm   6}
+              ;  (comp/typography
+              ;    {:variant      "h6"
+              ;     :gutterBottom true} "IPAM")
+              ;  (section-ipam item))
+              ;(comp/grid
+              ;  {:item true
+              ;   :xs   12}
+              ;  (comp/typography
+              ;    {:variant      "h6"
+              ;     :gutterBottom true} "Driver")
+              ;  (section-driver item plugins))
+              )
+
+            )
+
+
+          ;(form-settings)
+
+          ;(form-ports)
+          ;(form-networks)
+          ;(form-mounts)
+          ;(form-secrets)
+          ;(when (<= 1.30 (state/get-value [:docker :api]))
+          ;  (form-configs))
+          ;(form-variables)
+          ;(form-labels)
+          ;(form-logdriver)
+          ;(form-resources)
+          ;(form-deployment)
+
+          ]]))))
+
+
+;[:div
+; [:div.form-panel
+;  [:div.form-panel-left
+;   (panel/info icon/services "New service")]
+;  [:div.form-panel-right
+;   (comp/progress-button
+;     {:label      "Create"
+;      :disabled   (or (not (:valid? settings-state))
+;                      (not (:valid? resources-state)))
+;      :primary    true
+;      :onTouchTap create-service-handler} processing?)]]
+; [:div.form-layout
+;  (form-settings)
+;  (form-ports)
+;  (form-networks)
+;  (form-mounts)
+;  (form-secrets)
+;  (when (<= 1.30 (state/get-value [:docker :api]))
+;    (form-configs))
+;  (form-variables)
+;  (form-labels)
+;  (form-logdriver)
+;  (form-resources)
+;  (form-deployment)]]

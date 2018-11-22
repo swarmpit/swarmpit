@@ -17,32 +17,31 @@
 
 (defn- form-name [value]
   (comp/text-field
-    {:label     "Name"
-     :fullWidth true
-     :name      "name"
-     :key       "name"
-     :value     value
-     :required  true
-     :onChange  #(state/update-value [:networkName] (-> % .-target .-value) state/form-value-cursor)}))
+    {:label           "Name"
+     :fullWidth       true
+     :name            "name"
+     :key             "name"
+     :variant         "outlined"
+     :value           value
+     :required        true
+     :InputLabelProps {:shrink true}
+     :onChange        #(state/update-value [:networkName] (-> % .-target .-value) state/form-value-cursor)}))
 
 (defn- form-driver [value plugins]
-  (comp/form-control
-    {:fullWidth true}
-    (comp/input-label
-      {:htmlFor "network-driver"} "Driver")
-    (comp/select
-      {:value    value
-       :input    (comp/input
-                   {:id   "network-driver"
-                    :name "driver"})
-       :onChange #(state/update-value [:driver] (-> % .-target .-value) state/form-value-cursor)}
-      (->> plugins
-           (map #(comp/menu-item
-                   {:key   %
-                    :value %} %))))
-    (comp/form-helper-text
-      {}
-      "Network driver")))
+  (comp/text-field
+    {:fullWidth       true
+     :id              "driver"
+     :label           "Network driver"
+     :helperText      "Driver to manage the Network "
+     :select          true
+     :value           value
+     :variant         "outlined"
+     :InputLabelProps {:shrink true}
+     :onChange        #(state/update-value [:driver] (-> % .-target .-value) state/form-value-cursor)}
+    (->> plugins
+         (map #(comp/menu-item
+                 {:key   %
+                  :value %} %)))))
 
 (defn- form-internal [value]
   (comp/checkbox
@@ -99,23 +98,29 @@
 
 (defn- form-subnet [value]
   (comp/text-field
-    {:label      "Subnet"
-     :fullWidth  true
-     :name       "subnet"
-     :key        "subnet"
-     :helperText "e.g. 10.0.0.0/24"
-     :value      value
-     :onChange   #(state/update-value [:ipam :subnet] (-> % .-target .-value) state/form-value-cursor)}))
+    {:label           "Subnet"
+     :fullWidth       true
+     :variant         "outlined"
+     :name            "subnet"
+     :key             "subnet"
+     :placeholder     "e.g. 10.0.0.0/24"
+     :helperText      "Subnet in CIDR format that represents a network segment"
+     :value           value
+     :InputLabelProps {:shrink true}
+     :onChange        #(state/update-value [:ipam :subnet] (-> % .-target .-value) state/form-value-cursor)}))
 
 (defn- form-gateway [value]
   (comp/text-field
-    {:label      "Gateway"
-     :fullWidth  true
-     :name       "gateway"
-     :key        "gateway"
-     :helperText "e.g. 10.0.0.1"
-     :value      value
-     :onChange   #(state/update-value [:ipam :gateway] (-> % .-target .-value) state/form-value-cursor)}))
+    {:label           "Gateway"
+     :fullWidth       true
+     :variant         "outlined"
+     :name            "gateway"
+     :key             "gateway"
+     :placeholder     "e.g. 10.0.0.1 "
+     :helperText      "IPv4 or IPv6 Gateway for the master subnet"
+     :value           value
+     :InputLabelProps {:shrink true}
+     :onChange        #(state/update-value [:ipam :gateway] (-> % .-target .-value) state/form-value-cursor)}))
 
 (defn- section-ipam
   [{:keys [ipam enableIPv6]}]
@@ -141,6 +146,7 @@
 (defn- form-driver-opt-name [value index]
   (comp/text-field
     {:label     "Name"
+     :variant   "outlined"
      :fullWidth true
      :name      (str "form-driver-opt-name-" index)
      :key       (str "form-driver-opt-name-" index)
@@ -150,6 +156,7 @@
 (defn- form-driver-opt-value [value index]
   (comp/text-field
     {:label     "Value"
+     :variant   "outlined"
      :fullWidth true
      :name      (str "form-driver-opt-value-" index)
      :key       (str "form-driver-opt-value-" index)
@@ -262,7 +269,7 @@
          [:div.Swarmpit-form-context
 
           (comp/paper
-            {:className "Swarmpit-form-context Swarmpit-form-context-new"
+            {:className "Swarmpit-paper Swarmpit-form-context"
              :elevation 0}
 
             (comp/grid
@@ -273,7 +280,7 @@
                  :xs   12
                  :sm   6}
                 (comp/typography
-                  {:variant      "subheading"
+                  {:variant      "h6"
                    :gutterBottom true} "General")
                 (section-general item))
               (comp/grid
@@ -281,14 +288,14 @@
                  :xs   12
                  :sm   6}
                 (comp/typography
-                  {:variant      "subheading"
+                  {:variant      "h6"
                    :gutterBottom true} "IPAM")
                 (section-ipam item))
               (comp/grid
                 {:item true
                  :xs   12}
                 (comp/typography
-                  {:variant      "h3"
+                  {:variant      "h6"
                    :gutterBottom true} "Driver")
                 (section-driver item plugins)))
             (html

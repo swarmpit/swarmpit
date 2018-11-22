@@ -13,6 +13,10 @@ html > button {
     font-family: "Roboto", "Helvetica", "Arial", sans-serif;
 }
 
+a {
+    color: #65519f;
+}
+
 .hide {
     display: none !important;
 }
@@ -52,6 +56,11 @@ html > button {
     justify-content: center;
     background: url("../img/background.png") no-repeat;
     min-height: 100vh;
+}
+
+.Swarmpit-message {
+    display: flex;
+    align-items: center;
 }
 
 .Swarmpit-paper {
@@ -257,14 +266,6 @@ html > button {
     padding: 0 !important;
 }
 
-.Swarmpit-table-info {
-    padding: 15px;
-    margin-top: -20px;
-    border-radius: 3px;
-    background: linear-gradient(60deg, #ab47bc, #8e24aa);
-    box-shadow: 0 12px 20px -10px rgba(156, 39, 176, 0.28), 0 4px 20px 0px rgba(0, 0, 0, 0.12), 0 7px 8px -5px rgba(156, 39, 176, 0.2);
-}
-
 .Swarmpit-table-cell {
     padding: 4px 56px 4px 4px !important;
 }
@@ -285,10 +286,6 @@ html > button {
 .Swarmpit-table-head-cell {
     text-transform: uppercase !important;
     /*color: #65519f !important;*/
-}
-
-.typoname {
-    font-size: 20px;
 }
 
 .Swarmpit-table-row-cell {
@@ -350,28 +347,6 @@ html > button {
     align-items: baseline;
 }
 
-.Swarmpit-form-section-wrapper {
-    margin-top: 20px;
-}
-
-.Swarmpit-form-label {
-    list-style: none;
-    margin: 0;
-    display: -webkit-box;
-    display: -moz-box;
-    display: -ms-flexbox;
-    display: -webkit-flex;
-    display: flex;
-    -webkit-flex-flow: row wrap;
-    justify-content: flex-end;
-}
-
-.Swarmpit-form-label > li {
-    text-decoration: none;
-    display: block;
-    padding: 1em;
-}
-
 .Swarmpit-form-item {
     padding-bottom: 10px;
 }
@@ -385,18 +360,6 @@ html > button {
 .Swarmpit-form-card {
     box-shadow: none !important;
     border: 1px solid rgba(0, 0, 0, 0.12);
-}
-
-.Swarmpit-form-card-header {
-    /*border-top: 15px solid #65519f;*/
-}
-
-.Swarmpit-form-card-header-avatar {
-    background: linear-gradient(60deg, #362870, #957ed1);
-}
-
-.Swarmpit-form-card-header-avatar > span > svg {
-    color: #fff;
 }
 
 .Swarmpit-form-card-media {
