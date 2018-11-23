@@ -260,18 +260,10 @@
     (comp/mui
       (html
         [:div.Swarmpit-form
-         ;[:div.Swarmpit-form-panel
-         ; (panel/info "New network" (comp/svg icon/networks))
-         ; (comp/button
-         ;   {:variant "contained"
-         ;    :onClick #(create-network-handler)
-         ;    :color   "primary"} "Create")]
          [:div.Swarmpit-form-context
-
           (comp/paper
             {:className "Swarmpit-paper Swarmpit-form-context"
              :elevation 0}
-
             (comp/grid
               {:container true
                :spacing   40}
@@ -303,8 +295,4 @@
                (comp/button
                  {:variant "contained"
                   :onClick #(create-network-handler)
-                  :color   "primary"} "Create")])
-
-            )
-
-          ]]))))
+                  :color   "primary"} "Create")]))]]))))
