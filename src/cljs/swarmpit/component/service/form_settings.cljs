@@ -29,7 +29,7 @@
      :InputLabelProps {:shrink true}}))
 
 (defn- form-image-tag-r [value tags tagMenuSuggestions]
-  (comp/autosuggest
+  (comp/react-autosuggest
     {:renderInputComponent        (fn [inputProps]
                                     (let [{:keys [ref] :as p} (keywordize-keys (js->clj inputProps))]
                                       (comp/text-field
@@ -50,10 +50,10 @@
                                     (comp/menu-item
                                       {:key      s
                                        :selected (goog.object/get props "isHighlighted")} s))
-     :renderSuggestionsContainer  (fn [options]
-                                    (comp/paper
-                                      (merge {:square true} (keywordize-keys (goog.object/get options "containerProps")))
-                                      (goog.object/get options "children")))
+     ;:renderSuggestionsContainer  (fn [options]
+     ;                               (comp/paper
+     ;                                 (merge {:square true} (keywordize-keys (goog.object/get options "containerProps")))
+     ;                                 (goog.object/get options "children")))
      :theme                       {:container                {:position "relative"}
                                    :suggestionsContainerOpen {:position  "absolute"
                                                               :zIndex    1
