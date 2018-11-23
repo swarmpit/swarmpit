@@ -78,12 +78,14 @@
 
 (def radio-group (create-factory js/MaterialUI.RadioGroup))
 (def radio (create-factory js/MaterialUI.Radio))
+(def switch (create-factory js/MaterialUI.Switch))
 
 (def popper (create-factory js/MaterialUI.Popper))
 (def grow (create-factory js/MaterialUI.Grow))
 (def no-ssr (create-factory js/MaterialUI.NoSsr))
 
 (def linear-progress (create-factory js/MaterialUI.LinearProgress))
+(def circular-progress (create-factory js/MaterialUI.CircularProgress))
 
 (def click-away-listener (create-factory js/MaterialUI.ClickAwayListener))
 
@@ -149,7 +151,6 @@
 (def flat-button (create-factory js/MaterialUI.FlatButton))
 (def raised-button (create-factory js/MaterialUI.RaisedButton))
 (def toogle (create-factory js/MaterialUI.Toggle))
-(def circular-progress (create-factory js/MaterialUI.CircularProgress))
 (def refresh-indicator (create-factory js/MaterialUI.RefreshIndicator))
 
 (def select-field (create-factory js/MaterialUI.SelectField))

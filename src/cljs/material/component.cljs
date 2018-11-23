@@ -244,9 +244,17 @@
   [props & childs]
   (f/radio-group (clj->js props) childs))
 
+(defn switch
+  [props & childs]
+  (f/switch (clj->js props) childs))
+
 (defn linear-progress
   ([props] (f/linear-progress (clj->js props)))
   ([] (f/linear-progress nil)))
+
+(defn circular-progress
+  ([props] (f/circular-progress (clj->js props)))
+  ([] (f/circular-progress nil)))
 
 (defn click-away-listener
   [props content]
@@ -333,9 +341,7 @@
 
 
 
-(defn circular-progress
-  ([props] (f/circular-progress (clj->js props)))
-  ([] (f/circular-progress nil)))
+
 
 (defn refresh-indicator
   ([props] (f/refresh-indicator (clj->js props)))
