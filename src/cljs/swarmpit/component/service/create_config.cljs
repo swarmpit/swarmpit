@@ -119,7 +119,7 @@
       (secrets/secrets-handler)
       (when (<= 1.30 (state/get-value [:docker :api]))
         (configs/configs-handler))
-      ;(placement/placement-handler)
+      (placement/placement-handler)
       (labels/labels-handler)
       (settings/tags-handler repository))))
 
@@ -237,8 +237,7 @@
      :xs   12}
     (form/section
       "Deployment")
-    ;(deployment/form)
-    ))
+    (deployment/form)))
 
 (rum/defc form < rum/reactive
                  mixin-init-form [_]
