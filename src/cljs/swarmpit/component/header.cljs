@@ -134,6 +134,7 @@
     (comp/snackbar-content
       {:aria-describedby "snackbar-mobile-search"
        :className        "Swarmpit-appbar-search-mobile-content"
+       :classes          {:message "Swarmpit-appbar-search-mobile-content-message"}
        :message          (mobile-search-message on-change-fn)
        :action           (mobile-search-action)})))
 

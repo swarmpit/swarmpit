@@ -141,6 +141,10 @@ a {
     background-color: #fff !important;
 }
 
+.Swarmpit-appbar-search-mobile-content-message {
+    flex: 1
+}
+
 .Swarmpit-appbar-search-mobile-message {
     display: flex;
     align-items: center;
