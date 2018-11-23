@@ -1,7 +1,6 @@
 (ns swarmpit.component.service.form-labels
   (:require [material.component :as comp]
-            [material.component.form :as form]
-            [material.component.list-table-form :as list]
+            [material.component.list.edit :as list]
             [swarmpit.component.state :as state]
             [swarmpit.ajax :as ajax]
             [swarmpit.routes :as routes]
@@ -14,45 +13,43 @@
 
 (def form-state-cursor (conj state/form-state-cursor :labels))
 
-(def headers [{:name  "Name"
-               :width "35%"}
-              {:name  "Value"
-               :width "35%"}])
-
-(defn- form-name [value index label-names]
-  (comp/autocomplete
-    {:name          (str "form-name-text-" index)
-     :key           (str "form-name-text-" index)
-     :value         value
-     :onUpdateInput #(state/update-item index :name % form-value-cursor)
-     :fullWidth     true
-     :searchText    value
-     :dataSource    label-names}))
+(defn- form-name [value index]
+  (comp/text-field
+    {:fullWidth       true
+     :label           "Name"
+     :key             (str "form-label-name-" index)
+     :value           value
+     :required        true
+     :variant         "outlined"
+     :InputLabelProps {:shrink true}
+     :onChange        #(state/update-item index :name (-> % .-target .-value) form-value-cursor)}))
 
 (defn- form-value [value index]
-  (list/textfield
-    {:name     (str "form-value-text-" index)
-     :key      (str "form-value-text-" index)
-     :value    value
-     :onChange (fn [_ v]
-                 (state/update-item index :value v form-value-cursor))}))
+  (comp/text-field
+    {:fullWidth       true
+     :label           "Value"
+     :key             (str "form-label-value-" index)
+     :value           value
+     :required        true
+     :variant         "outlined"
+     :InputLabelProps {:shrink true}
+     :onChange        #(state/update-item index :value (-> % .-target .-value) form-value-cursor)}))
 
-(defn- render-labels
-  [item index data]
-  (let [{:keys [name
-                value]} item]
-    [(form-name name index data)
-     (form-value value index)]))
+(def form-metadata
+  [{:name      "Name"
+    :primary   true
+    :key       [:name]
+    :render-fn (fn [value _ index] (form-name value index))}
+   {:name      "Value"
+    :key       [:value]
+    :render-fn (fn [value _ index] (form-value value index))}])
 
 (defn- form-table
-  [labels label-names]
-  (form/form
-    {}
-    (list/table-raw headers
-                    labels
-                    label-names
-                    render-labels
-                    (fn [index] (state/remove-item index form-value-cursor)))))
+  [labels names]
+  (list/responsive
+    form-metadata
+    labels
+    (fn [index] (state/remove-item index form-value-cursor))))
 
 (defn- add-item
   []
@@ -70,5 +67,5 @@
   (let [{:keys [names]} (state/react form-state-cursor)
         labels (state/react form-value-cursor)]
     (if (empty? labels)
-      (form/value "No labels defined for the service.")
+      (html [:div "No labels defined for the service."])
       (form-table labels names))))
