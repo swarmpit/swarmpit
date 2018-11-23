@@ -177,7 +177,9 @@
       (comp/grid
         {:item true
          :xs   12
-         :sm   6} (form-image-tag-r repository tags tagMenuSuggestions))
+         :sm   6}
+        ;(form-image-tag-r repository tags tagMenuSuggestions)
+        )
       (comp/grid
         {:item true
          :xs   12} (form-name serviceName update-form?))
