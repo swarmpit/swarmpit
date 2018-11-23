@@ -2,7 +2,6 @@
   (:require [material.icon :as icon]
             [material.component :as comp]
             [material.component.form :as form]
-            [material.component.panel :as panel]
             [swarmpit.component.mixin :as mixin]
             [swarmpit.component.state :as state]
             [swarmpit.component.message :as message]
@@ -121,63 +120,125 @@
       (when (<= 1.30 (state/get-value [:docker :api]))
         (configs/configs-handler))
       ;(placement/placement-handler)
-      ;(labels/labels-handler)
+      (labels/labels-handler)
       (settings/tags-handler repository))))
 
 (rum/defc form-settings < rum/static []
-  [:div.form-layout-group
-   (form/subsection "General settings")
-   (settings/form false)])
+  (comp/grid
+    {:item true
+     :xs   12}
+    (form/section
+      "General")
+    (settings/form false)))
 
 (rum/defc form-ports < rum/static []
-  [:div.form-layout-group.form-layout-group-border
-   (form/section-add "Ports" ports/add-item)
-   (ports/form)])
+  (comp/grid
+    {:item true
+     :xs   12}
+    (form/section
+      "Ports"
+      (comp/button
+        {:color   "primary"
+         :onClick ports/add-item}
+        (comp/svg icon/add-small) "Add port"))
+    (ports/form)))
 
 (rum/defc form-networks < rum/static []
-  [:div.form-layout-group.form-layout-group-border
-   (form/section-add "Networks" networks/add-item)
-   (networks/form)])
+  (comp/grid
+    {:item true
+     :xs   12}
+    (form/section
+      "Networks"
+      (comp/button
+        {:color   "primary"
+         :onClick networks/add-item}
+        (comp/svg icon/add-small) "Add network"))
+    (networks/form)))
 
 (rum/defc form-mounts < rum/static []
-  [:div.form-layout-group.form-layout-group-border
-   (form/section-add "Mounts" mounts/add-item)
-   (mounts/form)])
+  (comp/grid
+    {:item true
+     :xs   12}
+    (form/section
+      "Mounts"
+      (comp/button
+        {:color   "primary"
+         :onClick mounts/add-item}
+        (comp/svg icon/add-small) "Add mount"))
+    (mounts/form)))
 
 (rum/defc form-secrets < rum/reactive []
-  [:div.form-layout-group.form-layout-group-border
-   (form/section-add "Secrets" secrets/add-item)
-   (secrets/form)])
+  (comp/grid
+    {:item true
+     :xs   12}
+    (form/section
+      "Secrets"
+      (comp/button
+        {:color   "primary"
+         :onClick secrets/add-item}
+        (comp/svg icon/add-small) "Add secret"))
+    (secrets/form)))
 
 (rum/defc form-configs < rum/reactive []
-  [:div.form-layout-group.form-layout-group-border
-   (form/section-add "Configs" configs/add-item)
-   (configs/form)])
+  (comp/grid
+    {:item true
+     :xs   12}
+    (form/section
+      "Configs"
+      (comp/button
+        {:color   "primary"
+         :onClick configs/add-item}
+        (comp/svg icon/add-small) "Add config"))
+    (configs/form)))
 
 (rum/defc form-variables < rum/static []
-  [:div.form-layout-group.form-layout-group-border
-   (form/section-add "Environment Variables" variables/add-item)
-   (variables/form)])
+  (comp/grid
+    {:item true
+     :xs   12}
+    (form/section
+      "Environment variables"
+      (comp/button
+        {:color   "primary"
+         :onClick variables/add-item}
+        (comp/svg icon/add-small) "Add variable"))
+    (variables/form)))
 
 (rum/defc form-labels < rum/static []
-  [:div.form-layout-group.form-layout-group-border
-   (form/section-add "Labels" labels/add-item)
-   (labels/form)])
+  (comp/grid
+    {:item true
+     :xs   12}
+    (form/section
+      "Labels"
+      (comp/button
+        {:color   "primary"
+         :onClick labels/add-item}
+        (comp/svg icon/add-small) "Add label"))
+    (labels/form)))
 
 (rum/defc form-logdriver < rum/static []
-  [:div.form-layout-group.form-layout-group-border
-   (form/subsection "Logging")
-   (logdriver/form)])
+  (comp/grid
+    {:item true
+     :xs   12}
+    (form/section
+      "Logging")
+    (logdriver/form)))
 
 (rum/defc form-resources < rum/static []
-  [:div.form-layout-group.form-layout-group-border
-   (form/subsection "Resources")
-   (resources/form)])
+  (comp/grid
+    {:item true
+     :xs   12}
+    (form/section
+      "Resources")
+    (resources/form)))
 
 (rum/defc form-deployment < rum/static []
-  [:div.form-layout-group.form-layout-group-border
-   (form/subsection "Deployment")
-   (deployment/form)])
+  (comp/grid
+    {:item true
+     :xs   12}
+    (form/section
+      "Deployment")
+    ;(deployment/form)
+    ))
 
 (rum/defc form < rum/reactive
                  mixin-init-form [_]
@@ -191,130 +252,18 @@
           (comp/paper
             {:className "Swarmpit-paper Swarmpit-form-context"
              :elevation 0}
-
             (comp/grid
               {:container true
                :spacing   40}
-              (comp/grid
-                {:item true
-                 :xs   12}
-                (form/section
-                  "General")
-                (settings/form false))
-              (comp/grid
-                {:item true
-                 :xs   12}
-                (form/section
-                  "Ports"
-                  (comp/button
-                    {:color   "primary"
-                     :onClick ports/add-item}
-                    (comp/svg icon/add-small) "Add port"))
-                (ports/form))
-              (comp/grid
-                {:item true
-                 :xs   12}
-                (form/section
-                  "Networks"
-                  (comp/button
-                    {:color   "primary"
-                     :onClick networks/add-item}
-                    (comp/svg icon/add-small) "Add network"))
-                (networks/form))
-              (comp/grid
-                {:item true
-                 :xs   12}
-                (form/section
-                  "Mounts"
-                  (comp/button
-                    {:color   "primary"
-                     :onClick mounts/add-item}
-                    (comp/svg icon/add-small) "Add mount"))
-                (mounts/form))
-              (comp/grid
-                {:item true
-                 :xs   12}
-                (form/section
-                  "Secrets"
-                  (comp/button
-                    {:color   "primary"
-                     :onClick secrets/add-item}
-                    (comp/svg icon/add-small) "Add secret"))
-                (secrets/form))
-
+              (form-settings)
+              (form-ports)
+              (form-networks)
+              (form-mounts)
+              (form-secrets)
               (when (<= 1.30 (state/get-value [:docker :api]))
-                (comp/grid
-                  {:item true
-                   :xs   12}
-                  (form/section
-                    "Configs"
-                    (comp/button
-                      {:color   "primary"
-                       :onClick configs/add-item}
-                      (comp/svg icon/add-small) "Add config"))
-                  (configs/form)))
-
-
-
-
-              ;(comp/grid
-              ;  {:item true
-              ;   :xs   12
-              ;   :sm   6}
-              ;  (comp/typography
-              ;    {:variant      "h6"
-              ;     :gutterBottom true} "IPAM")
-              ;  (section-ipam item))
-              ;(comp/grid
-              ;  {:item true
-              ;   :xs   12}
-              ;  (comp/typography
-              ;    {:variant      "h6"
-              ;     :gutterBottom true} "Driver")
-              ;  (section-driver item plugins))
-              )
-
-            )
-
-
-          ;(form-settings)
-
-          ;(form-ports)
-          ;(form-networks)
-          ;(form-mounts)
-          ;(form-secrets)
-          ;(when (<= 1.30 (state/get-value [:docker :api]))
-          ;  (form-configs))
-          ;(form-variables)
-          ;(form-labels)
-          ;(form-logdriver)
-          ;(form-resources)
-          ;(form-deployment)
-
-          ]]))))
-
-
-;[:div
-; [:div.form-panel
-;  [:div.form-panel-left
-;   (panel/info icon/services "New service")]
-;  [:div.form-panel-right
-;   (comp/progress-button
-;     {:label      "Create"
-;      :disabled   (or (not (:valid? settings-state))
-;                      (not (:valid? resources-state)))
-;      :primary    true
-;      :onTouchTap create-service-handler} processing?)]]
-; [:div.form-layout
-;  (form-settings)
-;  (form-ports)
-;  (form-networks)
-;  (form-mounts)
-;  (form-secrets)
-;  (when (<= 1.30 (state/get-value [:docker :api]))
-;    (form-configs))
-;  (form-variables)
-;  (form-labels)
-;  (form-logdriver)
-;  (form-resources)
-;  (form-deployment)]]
+                (form-configs))
+              (form-variables)
+              (form-labels)
+              (form-logdriver)
+              (form-resources)
+              (form-deployment)))]]))))
