@@ -278,19 +278,23 @@
   [comp]
   (f/responsive-container {} comp))
 
-;;; react-select component
+;;; Single react components
 
 (defn react-select
   [props]
   (f/react-select (clj->js props)))
 
-(defn autosuggest
+(defn react-autosuggest
   [props]
-  (f/autosuggest (clj->js props)))
+  (f/react-autosuggest (clj->js props)))
 
+(defn rc-slider
+  [props]
+  (f/rc-slider (clj->js props)))
 
-
-
+(defn rc-slider-handle
+  [props]
+  (f/rc-slider-handle (clj->js props)))
 
 
 
@@ -326,10 +330,6 @@
 (defn toogle
   ([props] (f/toogle (clj->js props)))
   ([] (f/toogle nil)))
-
-(defn slider
-  ([props] (f/slider (clj->js props)))
-  ([] (f/slider nil)))
 
 
 

@@ -4,6 +4,7 @@
             [cljsjs.recharts]
             [cljsjs.react-select]
             [cljsjs.react-autosuggest]
+            [cljsjs.rc-slider]
             [material-ui]
             [material-ui-icons]))
 
@@ -128,13 +129,12 @@
 (def label (create-factory js/Recharts.Label))
 (def responsive-container (create-factory js/Recharts.ResponsiveContainer))
 
-;; React select
+;; React components
 
 (def react-select (create-factory js/Select))
-(def autosuggest (create-factory js/Autosuggest))
-
-
-
+(def react-autosuggest (create-factory js/Autosuggest))
+(def rc-slider (create-factory (.-default js/Slider)))
+(def rc-slider-handle (create-factor js/Slider.Handle))
 
 
 ;;; OLD MESS BELOW -> Clean it up !!!
@@ -153,6 +153,3 @@
 (def refresh-indicator (create-factory js/MaterialUI.RefreshIndicator))
 
 (def select-field (create-factory js/MaterialUI.SelectField))
-(def slider (create-factory js/MaterialUI.Slider))
-
-(def auto-complete (create-factory js/MaterialUI.AutoComplete))

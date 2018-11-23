@@ -14,6 +14,7 @@
                  [cljsjs/material-ui-icons "3.0.1-0"]
                  [cljsjs/react-select "1.2.1-1"]
                  [cljsjs/react-autosuggest "9.3.4-0"]
+                 [cljsjs/rc-slider "8.6.1-0"]
                  [cljsjs/codemirror "5.24.0-1"]
                  [cljsjs/js-yaml "3.3.1-0"]
                  [cljsjs/recharts "1.1.0-3"]
