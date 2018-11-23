@@ -1,5 +1,6 @@
 (ns swarmpit.component.service.form-settings
-  (:require [material.component :as comp]
+  (:require [goog.object]
+            [material.component :as comp]
             [swarmpit.component.state :as state]
             [swarmpit.component.service.form-ports :as ports]
             [swarmpit.component.parser :refer [parse-int]]
@@ -48,15 +49,15 @@
      :renderSuggestion            (fn [s props]
                                     (comp/menu-item
                                       {:key      s
-                                       :selected (.-isHighlighted props)} s))
-     ;:renderSuggestionsContainer  (fn [options]
-     ;                               (let [{:keys [children containerProps]} (keywordize-keys (js->clj options))]
-     ;                                 (comp/paper (merge containerProps
-     ;                                                    {:square true}) children)))
+                                       :selected (goog.object/get props "isHighlighted")} s))
+     :renderSuggestionsContainer  (fn [options]
+                                    (comp/paper
+                                      (merge {:square true} (keywordize-keys (goog.object/get options "containerProps")))
+                                      (goog.object/get options "children")))
      :theme                       {:container                {:position "relative"}
                                    :suggestionsContainerOpen {:position  "absolute"
                                                               :zIndex    1
-                                                              :marginTop 8
+                                                              :marginTop -8
                                                               :left      0
                                                               :right     0}
                                    :suggestionsList          {:margin        0
