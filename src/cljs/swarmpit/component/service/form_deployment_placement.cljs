@@ -1,6 +1,6 @@
 (ns swarmpit.component.service.form-deployment-placement
   (:require [material.component :as comp]
-            [material.component.list-table-form :as list]
+            [material.component.list.edit :as list]
             [swarmpit.component.state :as state]
             [swarmpit.ajax :as ajax]
             [swarmpit.routes :as routes]
@@ -12,35 +12,30 @@
 
 (def form-state-cursor (conj state/form-state-cursor :placement))
 
-(def headers [{:name  "Rule"
-               :width "500px"}])
+(defn- form-placement [value index]
+  (comp/text-field
+    {:fullWidth       true
+     :label           "Placement"
+     :key             (str "form-placement-" index)
+     :value           value
+     :required        true
+     :placeholder     "e.g. node.role == manager"
+     :variant         "outlined"
+     :InputLabelProps {:shrink true}
+     :onChange        #(state/update-item index :rule (-> % .-target .-value) form-value-cursor)}))
 
-(defn- form-placement [value index placement-list]
-  (comp/autocomplete {:name          "form-placement"
-                      :key           "form-placement"
-                      :hintText      "e.g. node.role == manager"
-                      :anchorOrigin  {:vertical   "top"
-                                      :horizontal "left"}
-                      :targetOrigin  {:vertical   "bottom"
-                                      :horizontal "left"}
-                      :fullWidth     true
-                      :searchText    value
-                      :onUpdateInput (fn [v]
-                                       (state/update-item index :rule v form-value-cursor))
-                      :dataSource    placement-list}))
-
-(defn- render-placement
-  [item index data]
-  (let [{:keys [rule]} item]
-    [(form-placement rule index data)]))
+(def form-metadata
+  [{:name      "Rule"
+    :primary   true
+    :key       [:rule]
+    :render-fn (fn [value _ index] (form-placement value index))}])
 
 (defn- form-table
   [placement placement-list]
-  (list/table-headless headers
-                       placement
-                       placement-list
-                       render-placement
-                       (fn [index] (state/remove-item index form-value-cursor))))
+  (list/responsive
+    form-metadata
+    placement
+    (fn [index] (state/remove-item index form-value-cursor))))
 
 (defn- add-item
   []

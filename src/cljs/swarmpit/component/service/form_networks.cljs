@@ -1,6 +1,5 @@
 (ns swarmpit.component.service.form-networks
   (:require [material.component :as comp]
-            [material.component.form :as form]
             [material.component.list.edit :as list]
             [swarmpit.component.state :as state]
             [swarmpit.ajax :as ajax]
