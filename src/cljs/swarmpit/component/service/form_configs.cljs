@@ -14,11 +14,6 @@
 
 (def form-state-cursor (conj state/form-state-cursor :configs))
 
-(def headers [{:name  "Name"
-               :width "35%"}
-              {:name  "Target"
-               :width "35%"}])
-
 (def undefined-info
   (html
     [:span.Swarmpit-message
