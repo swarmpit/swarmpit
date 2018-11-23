@@ -81,7 +81,7 @@
           :label "Back"}))]]
    [:div.form-layout
     [:div.div.form-layout-group
-     (form/section "General settings")
+     (form/subsection "General settings")
      (form/item "ID" (:id node))
      (form/item "NAME" (:nodeName node))
      (form/item "ROLE" (:role node))
@@ -90,11 +90,11 @@
      (form/item "ENGINE" ["docker " (:engine node)])
      (form/item "IP" (:address node))]
     [:div.form-layout-group.form-layout-group-border
-     (form/section "Plugins")
+     (form/subsection "Plugins")
      (form/item "NETWORK " (->> node :plugins :networks (interpose ", ")))
      (form/item "VOLUME" (->> node :plugins :volumes (interpose ", ")))]
     [:div.form-layout-group.form-layout-group-border
-     (form/section "Status")
+     (form/subsection "Status")
      (form/item "STATE" (:state node))
      (form/item "AVAILABILITY" (:availability node))
      (form/item "LEADER" (if (:leader node)
@@ -102,7 +102,7 @@
                            "no"))]
     (when (not-empty (:labels node))
       [:div.form-layout-group.form-layout-group-border
-       (form/section "Labels")
+       (form/subsection "Labels")
        (list/table labels-headers
                    (:labels node)
                    labels-render-item
@@ -110,7 +110,7 @@
                    nil)])
     (when (not-empty tasks)
       [:div.form-layout-group.form-layout-group-border
-       (form/section "Tasks")
+       (form/subsection "Tasks")
        (list/table (map :name tasks/headers)
                    tasks
                    tasks/render-item

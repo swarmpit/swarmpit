@@ -100,13 +100,13 @@
           :label      "Delete"}))]]
    [:div.form-layout
     [:div.div.form-layout-group
-     (form/section "General settings")
+     (form/subsection "General settings")
      (form/item "ID" (:id config))
      (form/item "NAME" (:configName config))
      (form/item-date "CREATED" (:createdAt config))
      (form/item-date "UPDATED" (:updatedAt config))]
     [:div.form-layout-group.form-layout-group-border
-     (form/section "Data")
+     (form/subsection "Data")
      (form-data (parse-data (:data config)))]
     (services/linked-services services)]])
 

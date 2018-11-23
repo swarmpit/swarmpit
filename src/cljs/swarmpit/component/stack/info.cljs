@@ -165,7 +165,7 @@
 (rum/defc form-services < rum/static [stack-name services]
   (when (not-empty services)
     [:div.form-layout-group
-     (form/section "Services")
+     (form/subsection "Services")
      (list/table (map :name services/headers)
                  (sort-by :serviceName services)
                  (stack-render-item stack-name :serviceName services/render-item)
@@ -175,7 +175,7 @@
 (rum/defc form-networks < rum/static [stack-name networks]
   (when (not-empty networks)
     [:div.form-layout-group.form-layout-group-border
-     (form/section "Networks")
+     (form/subsection "Networks")
      (list/table (map :name networks/headers)
                  (sort-by :networkName networks)
                  (stack-render-item stack-name :networkName networks/render-item)
@@ -185,7 +185,7 @@
 (rum/defc form-volumes < rum/static [stack-name volumes]
   (when (not-empty volumes)
     [:div.form-layout-group.form-layout-group-border
-     (form/section "Volumes")
+     (form/subsection "Volumes")
      (list/table (map :name volumes/headers)
                  (sort-by :volumeName volumes)
                  (stack-render-item stack-name :volumeName volumes/render-item)
@@ -195,7 +195,7 @@
 (rum/defc form-configs < rum/static [stack-name configs]
   (when (not-empty configs)
     [:div.form-layout-group.form-layout-group-border
-     (form/section "Configs")
+     (form/subsection "Configs")
      (list/table (map :name configs/headers)
                  (sort-by :configName configs)
                  (stack-render-item stack-name :configName configs/render-item)
@@ -205,7 +205,7 @@
 (rum/defc form-secrets < rum/static [stack-name secrets]
   (when (not-empty secrets)
     [:div.form-layout-group.form-layout-group-border
-     (form/section "Secrets")
+     (form/subsection "Secrets")
      (list/table (map :name configs/headers)
                  (sort-by :secretName secrets)
                  (stack-render-item stack-name :secretName secrets/render-item)

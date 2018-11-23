@@ -39,7 +39,7 @@
 
 (def focus-filter
   {:did-mount (fn [state]
-                (-> js/document
-                    (.getElementById "Swarmpit-appbar-search-filter")
-                    (.focus))
+                ;(-> js/document
+                ;    (.getElementById "Swarmpit-appbar-search-filter")
+                ;    (.focus))
                 state)})

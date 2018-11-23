@@ -78,13 +78,13 @@
           :label      "Delete"}))]]
    [:div.form-layout
     [:div.form-layout-group
-     (form/section "General settings")
+     (form/subsection "General settings")
      (form/item-stack (:stack volume))
      (form/item "NAME" (utils/trim-stack (:stack volume) (:volumeName volume)))
      (form/item "SCOPE" (:scope volume))
      (form/item "MOUNTPOINT" (:mountpoint volume))]
     [:div.form-layout-group.form-layout-group-border
-     (form/section "Driver")
+     (form/subsection "Driver")
      (form/item "NAME" (:driver volume))
      (when (not-empty (:options volume))
        [:div

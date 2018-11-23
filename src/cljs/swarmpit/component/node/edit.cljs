@@ -151,14 +151,14 @@
           :label "Back"}))]]
    [:div.form-layout
     [:div.form-layout-group
-     (form/section "General settings")
+     (form/subsection "General settings")
      (form/form
        {:onValid   #(state/update-value [:valid?] true state/form-state-cursor)
         :onInvalid #(state/update-value [:valid?] false state/form-state-cursor)}
        (form-role role)
        (form-availability availability))]
     [:div.form-layout-group.form-layout-group-border
-     (form/section "Labels")
+     (form/subsection "Labels")
      (form/form
        {}
        (html (form/subsection-add "Add label" add-label))

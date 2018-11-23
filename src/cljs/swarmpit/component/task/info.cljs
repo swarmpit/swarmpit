@@ -43,7 +43,7 @@
                    (label/info (:state item)))]]
      [:div.form-view
       [:div.form-view-group
-       (form/section "General settings")
+       (form/subsection "General settings")
        (form/item "ID" (:id item))
        (form/item "SERVICE" [:a {:href (routes/path-for-frontend :service-info {:id service})} service])
        (form/item "NAME" (:taskName item))
@@ -55,12 +55,12 @@
        (when node
          (form/item "NODE" [:a {:href (routes/path-for-frontend :node-info {:id node})} node]))]
       [:div.form-view-group
-       (form/section "Status")
+       (form/subsection "Status")
        (form/item "STATE" (:state item))
        (form/item "DESIRED STATE" (:desiredState item))]
       (when (some? error)
         [:div.form-view-group
-         (form/section "Error")
+         (form/subsection "Error")
          (form/value error)])]]))
 
 (rum/defc form < rum/reactive

@@ -145,7 +145,7 @@
           :onInvalid #(state/update-value [:valid?] false state/form-state-cursor)}
          (form-name volumeName))]
       [:div.form-layout-group.form-layout-group-border
-       (form/section "Driver")
+       (form/subsection "Driver")
        (form/form
          {}
          (form-driver driver plugins)

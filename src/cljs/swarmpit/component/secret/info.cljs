@@ -68,7 +68,7 @@
           :label      "Delete"}))]]
    [:div.form-layout
     [:div.form-layout-group
-     (form/section "General settings")
+     (form/subsection "General settings")
      (form/item "ID" (:id secret))
      (form/item "NAME" (:secretName secret))
      (form/item-date "CREATED" (:createdAt secret))
