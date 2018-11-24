@@ -20,6 +20,7 @@
      :min             0
      :value           value
      :variant         "outlined"
+     :margin          "normal"
      :InputLabelProps {:shrink true}
      :onChange        #(state/update-value [:restartPolicy :attempts] (parse-int (-> % .-target .-value)) form-value-cursor)}))
 
@@ -31,6 +32,7 @@
      :min             0
      :value           value
      :variant         "outlined"
+     :margin          "normal"
      :InputLabelProps {:shrink true}
      :onChange        #(state/update-value [:restartPolicy :delay] (parse-int (-> % .-target .-value)) form-value-cursor)}))
 
@@ -42,6 +44,7 @@
      :min             0
      :value           value
      :variant         "outlined"
+     :margin          "normal"
      :InputLabelProps {:shrink true}
      :onChange        #(state/update-value [:restartPolicy :window] (parse-int (-> % .-target .-value)) form-value-cursor)}))
 
@@ -52,6 +55,7 @@
      :select          true
      :value           value
      :variant         "outlined"
+     :margin          "normal"
      :InputLabelProps {:shrink true}
      :onChange        #(state/update-value [:restartPolicy :condition] (-> % .-target .-value) form-value-cursor)}
     (comp/menu-item
@@ -72,6 +76,7 @@
      :min             0
      :value           value
      :variant         "outlined"
+     :margin          "normal"
      :InputLabelProps {:shrink true}
      :onChange        #(state/update-value [:update :parallelism] (parse-int (-> % .-target .-value)) form-value-cursor)}))
 
@@ -83,6 +88,7 @@
      :min             0
      :value           value
      :variant         "outlined"
+     :margin          "normal"
      :InputLabelProps {:shrink true}
      :onChange        #(state/update-value [:update :delay] (parse-int (-> % .-target .-value)) form-value-cursor)}))
 
@@ -93,6 +99,7 @@
      :select          "true"
      :value           value
      :variant         "outlined"
+     :margin          "normal"
      :InputLabelProps {:shrink true}
      :onChange        #(state/update-value [:update :order] (-> % .-target .-value) form-value-cursor)}
     (comp/menu-item
@@ -109,6 +116,7 @@
      :select          "true"
      :value           value
      :variant         "outlined"
+     :margin          "normal"
      :InputLabelProps {:shrink true}
      :onChange        #(state/update-value [:update :failureAction] (-> % .-target .-value) form-value-cursor)}
     (comp/menu-item
@@ -129,6 +137,7 @@
      :min             0
      :value           value
      :variant         "outlined"
+     :margin          "normal"
      :InputLabelProps {:shrink true}
      :onChange        #(state/update-value [:rollback :parallelism] (parse-int (-> % .-target .-value)) form-value-cursor)}))
 
@@ -140,6 +149,7 @@
      :min             0
      :value           value
      :variant         "outlined"
+     :margin          "normal"
      :InputLabelProps {:shrink true}
      :onChange        #(state/update-value [:rollback :delay] (parse-int (-> % .-target .-value)) form-value-cursor)}))
 
@@ -150,6 +160,7 @@
      :select          "true"
      :value           value
      :variant         "outlined"
+     :margin          "normal"
      :InputLabelProps {:shrink true}
      :onChange        #(state/update-value [:rollback :order] (-> % .-target .-value) form-value-cursor)}
     (comp/menu-item
@@ -166,6 +177,7 @@
      :select          "true"
      :value           value
      :variant         "outlined"
+     :margin          "normal"
      :InputLabelProps {:shrink true}
      :onChange        #(state/update-value [:rollback :failureAction] (-> % .-target .-value) form-value-cursor)}
     (comp/menu-item
@@ -179,6 +191,7 @@
   (comp/switch
     {:name     "autoredeploy"
      :label    "Autoredeploy"
+     :color    "primary"
      :value    value
      :checked  value
      :onChange #(state/update-value [:autoredeploy] (-> % .-target .-checked) form-value-cursor)}))
@@ -190,10 +203,11 @@
                 restartPolicy]} (state/react form-value-cursor)]
     (comp/grid
       {:container true
-       :spacing   40}
+       :spacing   24}
       (comp/grid
-        {:item true
-         :xs   12}
+        {:item      true
+         :xs        12
+         :direction "column"}
         (comp/form-control
           {:component "fieldset"}
           (comp/form-group
@@ -202,8 +216,9 @@
               {:control (form-autoredeploy autoredeploy)
                :label   "Autoredeploy"}))))
       (comp/grid
-        {:item true
-         :xs   12}
+        {:item      true
+         :xs        12
+         :direction "column"}
         (form/subsection
           "Placement"
           (comp/button
@@ -212,18 +227,20 @@
             (comp/svg icon/add-small) "Add placement"))
         (placement/form))
       (comp/grid
-        {:item true
-         :xs   12
-         :sm   6}
+        {:item      true
+         :xs        12
+         :sm        6
+         :direction "column"}
         (form/subsection "Restart Policy")
         (form-restart-policy-condition (:condition restartPolicy))
         (form-restart-policy-delay (:delay restartPolicy))
         (form-restart-policy-window (:window restartPolicy))
         (form-restart-policy-attempts (:attempts restartPolicy)))
       (comp/grid
-        {:item true
-         :xs   12
-         :sm   6}
+        {:item      true
+         :xs        12
+         :sm        6
+         :direction "column"}
         (form/subsection "Update Config")
         (form-update-parallelism (:parallelism update))
         (form-update-delay (:delay update))
@@ -231,9 +248,10 @@
         (form-update-failure-action (:failureAction update)))
       (when (= "rollback" (:failureAction update))
         (comp/grid
-          {:item true
-           :xs   12
-           :sm   6}
+          {:item      true
+           :xs        12
+           :sm        6
+           :direction "column"}
           (form/subsection "Rollback Config")
           (form-rollback-parallelism (:parallelism rollback))
           (form-rollback-delay (:delay rollback))

@@ -28,6 +28,7 @@
      :select          true
      :value           value
      :variant         "outlined"
+     :margin          "dense"
      :InputLabelProps {:shrink true}
      :onChange        #(state/update-item index :configName (-> % .-target .-value) form-value-cursor)}
     (->> configs-list
@@ -42,6 +43,7 @@
      :key             (str "form-config-target-" index)
      :placeholder     (when (str/blank? value) name)
      :variant         "outlined"
+     :margin          "dense"
      :value           value
      :required        true
      :InputLabelProps {:shrink true}

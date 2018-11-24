@@ -21,6 +21,7 @@
      :required        true
      :placeholder     "e.g. node.role == manager"
      :variant         "outlined"
+     :margin          "dense"
      :InputLabelProps {:shrink true}
      :onChange        #(state/update-item index :rule (-> % .-target .-value) form-value-cursor)}))
 

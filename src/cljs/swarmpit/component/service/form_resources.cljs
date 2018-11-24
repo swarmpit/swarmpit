@@ -21,9 +21,9 @@
 
 (defn- form-cpu-reservation [value]
   (html
-    [:div
+    [:div.Swarmpit-margin-normal
      [:div (str "CPU  " "(" (cpu-value value) ")")]
-     [:div
+     [:div.Swarmpit-rc-slider
       (comp/rc-slider
         {:min          0
          :max          2
@@ -38,6 +38,7 @@
      :key             "memory-reservation"
      :type            "number"
      :variant         "outlined"
+     :margin          "normal"
      :helperText      "Use minimum of 4 MB or leave blank for unlimited"
      :min             4
      :fullWidth       true
@@ -48,9 +49,9 @@
 
 (defn- form-cpu-limit [value]
   (html
-    [:div
+    [:div.Swarmpit-margin-normal
      [:div (str "CPU  " "(" (cpu-value value) ")")]
-     [:div
+     [:div.Swarmpit-rc-slider
       (comp/rc-slider
         {:min          0
          :max          2
@@ -65,6 +66,7 @@
      :key             "memory-limit"
      :type            "number"
      :variant         "outlined"
+     :margin          "normal"
      :helperText      "Use minimum of 4 MB or leave blank for unlimited"
      :min             4
      :fullWidth       true
@@ -79,18 +81,20 @@
       {:container true
        :spacing   40}
       (comp/grid
-        {:item true
-         :xs   12
-         :sm   6}
+        {:item      true
+         :xs        12
+         :sm        6
+         :direction "column"}
         (form/subsection "Reservation")
         (html [:div "Minimal resource availability to run a task. Empty for unlimited."])
-        (form-cpu-reservation (:cpu reservation))
-        (form-memory-reservation (:memory reservation)))
+        (form-memory-reservation (:memory reservation))
+        (form-cpu-reservation (:cpu reservation)))
       (comp/grid
-        {:item true
-         :xs   12
-         :sm   6}
+        {:item      true
+         :xs        12
+         :sm        6
+         :direction "column"}
         (form/subsection "Limit")
         (html [:div "Maximal resource usage per task. Empty for unlimited."])
-        (form-cpu-limit (:cpu limit))
-        (form-memory-limit (:memory limit))))))
+        (form-memory-limit (:memory limit))
+        (form-cpu-limit (:cpu limit))))))

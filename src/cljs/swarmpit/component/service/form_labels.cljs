@@ -21,6 +21,7 @@
      :value           value
      :required        true
      :variant         "outlined"
+     :margin          "dense"
      :InputLabelProps {:shrink true}
      :onChange        #(state/update-item index :name (-> % .-target .-value) form-value-cursor)}))
 
@@ -32,6 +33,7 @@
      :value           value
      :required        true
      :variant         "outlined"
+     :margin          "dense"
      :InputLabelProps {:shrink true}
      :onChange        #(state/update-item index :value (-> % .-target .-value) form-value-cursor)}))
 

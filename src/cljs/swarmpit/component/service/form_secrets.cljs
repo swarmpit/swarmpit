@@ -29,6 +29,7 @@
      :select          true
      :value           value
      :variant         "outlined"
+     :margin          "dense"
      :InputLabelProps {:shrink true}
      :onChange        #(state/update-item index :secretName (-> % .-target .-value) form-value-cursor)}
     (->> secrets-list
@@ -43,6 +44,7 @@
      :key             (str "form-secret-target-" index)
      :placeholder     (when (str/blank? value) name)
      :variant         "outlined"
+     :margin          "dense"
      :value           value
      :required        true
      :InputLabelProps {:shrink true}

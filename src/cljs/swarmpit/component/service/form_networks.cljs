@@ -21,6 +21,7 @@
      :select          true
      :value           value
      :variant         "outlined"
+     :margin          "dense"
      :InputLabelProps {:shrink true}
      :onChange        #(state/update-item index :networkName (-> % .-target .-value) form-value-cursor)}
     (->> networks-list

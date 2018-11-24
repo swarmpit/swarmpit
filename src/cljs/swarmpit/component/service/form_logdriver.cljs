@@ -21,6 +21,7 @@
      :select          true
      :value           value
      :variant         "outlined"
+     :margin          "normal"
      :InputLabelProps {:shrink true}
      :onChange        #(state/update-value [:name] (-> % .-target .-value) form-value-cursor)}
     (comp/menu-item
@@ -41,6 +42,7 @@
      :value           value
      :required        true
      :variant         "outlined"
+     :margin          "dense"
      :InputLabelProps {:shrink true}
      :onChange        #(state/update-item index :name (-> % .-target .-value) form-value-opts-cursor)}))
 
@@ -52,6 +54,7 @@
      :value           value
      :required        true
      :variant         "outlined"
+     :margin          "dense"
      :InputLabelProps {:shrink true}
      :onChange        #(state/update-item index :value (-> % .-target .-value) form-value-opts-cursor)}))
 
@@ -79,8 +82,7 @@
 (rum/defc form < rum/reactive []
   (let [{:keys [name opts]} (state/react form-value-cursor)]
     (comp/grid
-      {:container true
-       :spacing   40}
+      {:container true}
       (comp/grid
         {:item true
          :xs   12

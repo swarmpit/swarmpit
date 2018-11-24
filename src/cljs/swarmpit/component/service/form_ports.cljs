@@ -43,6 +43,7 @@
      :max             65535
      :value           value
      :variant         "outlined"
+     :margin          "dense"
      :InputLabelProps {:shrink true}
      :onChange        #(state/update-item index :containerPort (parse-int (-> % .-target .-value)) form-value-cursor)}))
 
@@ -55,6 +56,7 @@
      :select          true
      :value           value
      :variant         "outlined"
+     :margin          "dense"
      :InputLabelProps {:shrink true}
      :onChange        #(state/update-item index :protocol (-> % .-target .-value) form-value-cursor)}
     (comp/menu-item
@@ -73,6 +75,7 @@
      :select          true
      :value           value
      :variant         "outlined"
+     :margin          "dense"
      :InputLabelProps {:shrink true}
      :onChange        #(state/update-item index :mode (-> % .-target .-value) form-value-cursor)}
     (comp/menu-item
@@ -93,6 +96,7 @@
      :max             65535
      :value           value
      :variant         "outlined"
+     :margin          "dense"
      :InputLabelProps {:shrink true}
      :onChange        #(state/update-item index :hostPort (parse-int (-> % .-target .-value)) form-value-cursor)}))
 

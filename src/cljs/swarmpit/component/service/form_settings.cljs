@@ -22,6 +22,7 @@
     {:key             "image"
      :label           "Image"
      :variant         "outlined"
+     :margin          "normal"
      :fullWidth       true
      :disabled        true
      :required        true
@@ -38,6 +39,7 @@
                                                 :key             "image-tag"
                                                 :label           "Image tag"
                                                 :variant         "outlined"
+                                                :margin          "normal"
                                                 :helperText      "Specify image tag or leave empty for latest"
                                                 :fullWidth       true
                                                 :InputProps      {:inputRef (fn [node] (ref node))}
@@ -95,6 +97,7 @@
     {:key             "service-name"
      :label           "Service name"
      :variant         "outlined"
+     :margin          "normal"
      :disabled        update-form?
      :required        true
      :fullWidth       true
@@ -134,6 +137,7 @@
      :label           "Replicas"
      :type            "number"
      :variant         "outlined"
+     :margin          "normal"
      :min             0
      :fullWidth       true
      :required        true
@@ -147,8 +151,10 @@
     {:key             "command"
      :label           "Command"
      :variant         "outlined"
+     :margin          "normal"
      :helperText      "The command to be run in the image"
      :fullWidth       true
+     :multiline       true
      :value           value
      :InputLabelProps {:shrink true}
      :onChange        (fn [event]
@@ -169,7 +175,7 @@
         {:keys [tags tagMenuSuggestions]} (state/react form-state-cursor)]
     (comp/grid
       {:container true
-       :spacing   40}
+       :spacing   24}
       (comp/grid
         {:item true
          :xs   12
@@ -178,7 +184,7 @@
         {:item true
          :xs   12
          :sm   6}
-        ;(form-image-tag-r repository tags tagMenuSuggestions)
+        (form-image-tag-r repository tags tagMenuSuggestions)
         )
       (comp/grid
         {:item true

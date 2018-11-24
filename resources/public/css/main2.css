@@ -67,6 +67,11 @@ a {
     border: 1px solid rgba(0, 0, 0, 0.12);
 }
 
+.Swarmpit-margin-normal {
+    margin-top: 16px;
+    margin-bottom: 8px;
+}
+
 /** Appbar **/
 
 .Swarmpit-appbar {
@@ -410,6 +415,13 @@ a {
 .Swarmpit-form-card-header:first-child:before {
     content: '';
     background: linear-gradient(60deg, #362870, #957ed1);
+}
+
+/** RC Slider **/
+
+.Swarmpit-rc-slider {
+    padding-right: 5px;
+    padding-left: 5px;
 }
 
 /* Labels & Status ico  */

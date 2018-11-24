@@ -40,6 +40,7 @@
      :fullWidth       true
      :key             (str "form-mount-container-" index)
      :variant         "outlined"
+     :margin          "dense"
      :value           value
      :required        true
      :InputLabelProps {:shrink true}
@@ -51,6 +52,7 @@
      :fullWidth       true
      :key             (str "form-mount-bind-" index)
      :variant         "outlined"
+     :margin          "dense"
      :value           value
      :required        true
      :InputLabelProps {:shrink true}
@@ -63,6 +65,7 @@
      :select          true
      :value           value
      :variant         "outlined"
+     :margin          "dense"
      :InputLabelProps {:shrink true}
      :onChange        #(state/update-item index :host (-> % .-target .-value) form-value-cursor)}
     (->> volumes-list
@@ -78,6 +81,7 @@
      :select          true
      :value           value
      :variant         "outlined"
+     :margin          "dense"
      :InputLabelProps {:shrink true}
      :onChange        #(state/update-item index :type (-> % .-target .-value) form-value-cursor)}
     (comp/menu-item
