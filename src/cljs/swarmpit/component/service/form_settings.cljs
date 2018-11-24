@@ -97,7 +97,6 @@
     {:key             "service-name"
      :label           "Service name"
      :variant         "outlined"
-     :margin          "normal"
      :disabled        update-form?
      :required        true
      :fullWidth       true
@@ -137,7 +136,6 @@
      :label           "Replicas"
      :type            "number"
      :variant         "outlined"
-     :margin          "normal"
      :min             0
      :fullWidth       true
      :required        true
@@ -151,7 +149,6 @@
     {:key             "command"
      :label           "Command"
      :variant         "outlined"
-     :margin          "normal"
      :helperText      "The command to be run in the image"
      :fullWidth       true
      :multiline       true

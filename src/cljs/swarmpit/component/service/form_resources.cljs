@@ -23,7 +23,7 @@
   (html
     [:div.Swarmpit-margin-normal
      [:div (str "CPU  " "(" (cpu-value value) ")")]
-     [:div.Swarmpit-rc-slider
+     [:div
       (comp/rc-slider
         {:min          0
          :max          2
@@ -51,7 +51,7 @@
   (html
     [:div.Swarmpit-margin-normal
      [:div (str "CPU  " "(" (cpu-value value) ")")]
-     [:div.Swarmpit-rc-slider
+     [:div
       (comp/rc-slider
         {:min          0
          :max          2
@@ -86,7 +86,7 @@
          :sm        6
          :direction "column"}
         (form/subsection "Reservation")
-        (html [:div "Minimal resource availability to run a task. Empty for unlimited."])
+        ;(html [:div "Minimal resource availability to run a task. Empty for unlimited."])
         (form-memory-reservation (:memory reservation))
         (form-cpu-reservation (:cpu reservation)))
       (comp/grid
@@ -95,6 +95,6 @@
          :sm        6
          :direction "column"}
         (form/subsection "Limit")
-        (html [:div "Maximal resource usage per task. Empty for unlimited."])
+        ;(html [:div "Maximal resource usage per task. Empty for unlimited."])
         (form-memory-limit (:memory limit))
         (form-cpu-limit (:cpu limit))))))
