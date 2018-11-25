@@ -170,8 +170,11 @@
       (comp/card-content
         {:style {:paddingBottom "16px"}}
         (comp/typography
-          {:color "textSecondary"}
+          {:color "textSecondary"
+           :style {:flexDirection "column"}}
           (form/item-date (:createdAt service)
-                          (:updatedAt service))
-          (html [:br])
+                          (:updatedAt service)))
+        (comp/typography
+          {:color "textSecondary"
+           :style {:flexDirection "column"}}
           (form/item-id (:id service)))))))

@@ -7,6 +7,7 @@
             [swarmpit.component.mixin :as mixin]
             [swarmpit.component.state :as state]
             [swarmpit.component.message :as message]
+            [swarmpit.component.progress :as progress]
             [swarmpit.component.service.list :as services]
             [swarmpit.docker.utils :as utils]
             [swarmpit.url :refer [dispatch!]]
@@ -34,34 +35,29 @@
               :className "Swarmpit-form-card-header"}
              (when (time/valid? created)
                {:subheader (form/item-id id)})))
-    (comp/card-content
-      {}
-      (when (and (:subnet ipam)
-                 (:gateway ipam))
+
+    (when (and (:subnet ipam)
+               (:gateway ipam))
+      (comp/card-content
+        {}
         (html
           [:div
            [:span "The subnet is listed as " [:b (:subnet ipam)]]
            [:br]
-           [:span "The gateway IP in the above instance is " [:b (:gateway ipam)]]])
-
-        ;(comp/typography
-        ;  {:component "p"}
-        ;  (str "The subnet is listed as " (:subnet ipam))
-        ;  (html [:br])
-        ;  (str "The gateway IP in the above instance is " (:gateway ipam)))
-
-        )
-      (html [:br])
-      (when driver
-        (label/grey driver))
-      (when internal
-        (label/grey "Internal"))
-      (when ingress
-        (label/grey "Ingress"))
-      (when attachable
-        (label/grey "Attachable"))
-      (when enableIPv6
-        (label/grey "IPv6")))
+           [:span "The gateway IP in the above instance is " [:b (:gateway ipam)]]])))
+    (comp/card-content
+      {}
+      (form/item-labels
+        [(when driver
+           (label/grey driver))
+         (when internal
+           (label/grey "Internal"))
+         (when ingress
+           (label/grey "Ingress"))
+         (when attachable
+           (label/grey "Attachable"))
+         (when enableIPv6
+           (label/grey "IPv6"))]))
     (comp/card-actions
       {}
       (when stack
@@ -75,7 +71,10 @@
       {:style {:paddingBottom "16px"}}
       (comp/typography
         {:color "textSecondary"}
-        (form/item-date created nil)))))
+        (form/item-date created nil))
+      (comp/typography
+        {:color "textSecondary"}
+        (form/item-id id)))))
 
 (defn- section-driver
   [{:keys [driver options]}]
@@ -120,11 +119,6 @@
                    (message/error
                      (str "Network removing failed. " (:error response))))}))
 
-(defn delete-button []
-  (comp/icon-button
-    {:onClick #(delete-network-handler "tests")
-     :color   "inherit"} (comp/svg icon/trash)))
-
 (defn form-actions
   [{:keys [params]}]
   [{:button (comp/icon-button
@@ -168,13 +162,6 @@
                  mixin/subscribe-form [_]
   (let [state (state/react state/form-state-cursor)
         item (state/react state/form-value-cursor)]
-    ;(progress/form
-    ;  (:loading? state)
-    ;  (form-info item))
-
-    (when (false? (:loading? state))
-      (form-info item))
-
-    ;(form-info item)
-
-    ))
+    (progress/form
+      (:loading? state)
+      (form-info item))))

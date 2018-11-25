@@ -2,8 +2,6 @@
   (:require [material.icon :as icon]
             [material.component :as comp]
             [material.component.form :as form]
-            [material.component.panel :as panel]
-            [material.component.list-table-auto :as list]
             [swarmpit.component.state :as state]
             [swarmpit.component.mixin :as mixin]
             [swarmpit.component.message :as message]
@@ -12,6 +10,7 @@
             [swarmpit.url :refer [dispatch!]]
             [swarmpit.ajax :as ajax]
             [swarmpit.routes :as routes]
+            [sablono.core :refer-macros [html]]
             [rum.core :as rum]))
 
 (enable-console-print!)
@@ -44,6 +43,14 @@
                    (message/error
                      (str "Secret removing failed. " (:error response))))}))
 
+(defn form-actions
+  [{:keys [params]}]
+  [{:button (comp/icon-button
+              {:color   "inherit"
+               :onClick #(delete-secret-handler (:id params))}
+              (comp/svg icon/trash))
+    :name   "Delete secret"}])
+
 (defn- init-form-state
   []
   (state/set-value {:loading? true} state/form-state-cursor))
@@ -56,24 +63,31 @@
       (secret-services-handler id))))
 
 (rum/defc form-info < rum/static [{:keys [secret services]}]
-  [:div
-   [:div.form-panel
-    [:div.form-panel-left
-     (panel/info icon/secrets
-                 (:secretName secret))]
-    [:div.form-panel-right
-     (comp/mui
-       (comp/raised-button
-         {:onTouchTap #(delete-secret-handler (:id secret))
-          :label      "Delete"}))]]
-   [:div.form-layout
-    [:div.form-layout-group
-     (form/subsection "General settings")
-     (form/item "ID" (:id secret))
-     (form/item "NAME" (:secretName secret))
-     (form/item-date "CREATED" (:createdAt secret))
-     (form/item-date "UPDATED" (:updatedAt secret))]
-    (services/linked-services services)]])
+  (comp/mui
+    (html
+      [:div.Swarmpit-form
+       [:div.Swarmpit-form-context
+        (comp/grid
+          {:container true
+           :spacing   40}
+          (comp/grid
+            {:item true
+             :xs   12
+             :sm   6}
+            (comp/card
+              {:className "Swarmpit-form-card"}
+              (comp/card-header
+                {:title     (:secretName secret)
+                 :className "Swarmpit-form-card-header"})
+              (comp/divider)
+              (comp/card-content
+                {:style {:paddingBottom "16px"}}
+                (comp/typography
+                  {:color "textSecondary"}
+                  (form/item-date (:createdAt secret) (:updatedAt secret)))
+                (comp/typography
+                  {:color "textSecondary"}
+                  (form/item-id (:id secret)))))))]])))
 
 (rum/defc form < rum/reactive
                  mixin-init-form

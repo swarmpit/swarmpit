@@ -177,8 +177,9 @@
    :actions   secret-list/form-actions})
 
 (defmethod render :secret-info
-  [_]
-  {:title "Secrets"})
+  [route]
+  {:title   "Secrets"
+   :actions (secret-info/form-actions route)})
 
 (defmethod render :secret-create
   [_]
@@ -193,8 +194,9 @@
    :actions   config-list/form-actions})
 
 (defmethod render :config-info
-  [_]
-  {:title "Configs"})
+  [route]
+  {:title   "Configs"
+   :actions (config-info/form-actions route)})
 
 (defmethod render :config-create
   [_]
@@ -260,8 +262,9 @@
    :actions   dockerhub-list/form-actions})
 
 (defmethod render :dockerhub-user-info
-  [_]
-  {:title "Dockerhub"})
+  [route]
+  {:title   "Dockerhub"
+   :actions (dockerhub-info/form-actions route)})
 
 (defmethod render :dockerhub-user-create
   [_]

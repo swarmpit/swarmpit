@@ -5,27 +5,6 @@
             [sablono.core :refer-macros [html]]
             [swarmpit.time :as time]))
 
-(defn item
-  [name value]
-  (cmp/grid
-    {:container true
-     :className "Swarmpit-form-item"}
-    (cmp/grid
-      {:item      true
-       :xs        12
-       :sm        6
-       :className "Swarmpit-form-item-label"} name)
-    (cmp/grid
-      {:item true
-       :xs   12
-       :sm   6}
-      value
-      ;(cmp/typography
-      ;  {:gutterBottom true
-      ;   :noWrap       true
-      ;   :variant      "body1"} value)
-      )))
-
 (defn item-date [created updated]
   (html
     [:div.Swarmpit-form-card-icon-item

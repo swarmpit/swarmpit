@@ -2,7 +2,6 @@
   (:require [material.icon :as icon]
             [material.component :as comp]
             [material.component.label :as label]
-            [material.component.panel :as panel]
             [material.component.form :as form]
             [material.component.list-table-auto :as list]
             [swarmpit.component.state :as state]
@@ -89,14 +88,14 @@
                    (message/error
                      (str "Service rollback failed. " (:error response))))}))
 
-(rum/defc form-tasks < rum/static [tasks]
-  [:div.form-layout-group.form-layout-group-border
-   (form/subsection "Tasks")
-   (list/table (map :name tasks/headers)
-               (filter #(not (= "shutdown" (:state %))) tasks)
-               tasks/render-item
-               tasks/render-item-keys
-               tasks/onclick-handler)])
+;(rum/defc form-tasks < rum/static [tasks]
+;  [:div.form-layout-group.form-layout-group-border
+;   (form/subsection "Tasks")
+;   (list/table (map :name tasks/headers)
+;               (filter #(not (= "shutdown" (:state %))) tasks)
+;               tasks/render-item
+;               tasks/render-item-keys
+;               tasks/onclick-handler)])
 
 (defn form-actions
   [{:keys [params]}]

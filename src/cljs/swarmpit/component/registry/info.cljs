@@ -2,7 +2,6 @@
   (:require [material.icon :as icon]
             [material.component :as comp]
             [material.component.form :as form]
-            [material.component.panel :as panel]
             [swarmpit.component.message :as message]
             [swarmpit.component.state :as state]
             [swarmpit.component.mixin :as mixin]
@@ -10,6 +9,7 @@
             [swarmpit.url :refer [dispatch!]]
             [swarmpit.ajax :as ajax]
             [swarmpit.routes :as routes]
+            [sablono.core :refer-macros [html]]
             [rum.core :as rum]))
 
 (enable-console-print!)
@@ -35,6 +35,20 @@
                    (message/error
                      (str "Registry removing failed. " (:error response))))}))
 
+(defn form-actions
+  [{:keys [params]}]
+  [{:button (comp/icon-button
+              {:color   "inherit"
+               :onClick #(dispatch!
+                           (routes/path-for-frontend :registry-edit {:id (:id params)}))}
+              (comp/svg icon/edit))
+    :name   "Edit"}
+   {:button (comp/icon-button
+              {:color   "inherit"
+               :onClick #(delete-registry-handler (:id params))}
+              (comp/svg icon/trash))
+    :name   "Delete"}])
+
 (defn- init-form-state
   []
   (state/set-value {:loading? true} state/form-state-cursor))
@@ -45,36 +59,38 @@
       (init-form-state)
       (registry-handler id))))
 
-(rum/defc form-info < rum/static [{:keys [_id name] :as registry}]
-  [:div
-   [:div.form-panel
-    [:div.form-panel-left
-     (panel/info icon/registries name)]
-    [:div.form-panel-right
-     (comp/mui
-       (comp/raised-button
-         {:href    (routes/path-for-frontend :registry-edit {:id _id})
-          :label   "Edit"
-          :primary true}))
-     [:span.form-panel-delimiter]
-     (comp/mui
-       (comp/raised-button
-         {:onTouchTap #(delete-registry-handler _id)
-          :label      "Delete"}))]]
-   [:div.form-view
-    [:div.form-view-group
-     (form/item "ID" (:_id registry))
-     (form/item "NAME" (:name registry))
-     (form/item "URL" (:url registry))
-     (form/item "PUBLIC" (if (:public registry)
-                           "yes"
-                           "no"))
-     (form/item "AUTHENTICATION" (if (:withAuth registry)
-                                   "yes"
-                                   "no"))
-     (when (:withAuth registry)
-       [:div
-        (form/item "USERNAME" (:username registry))])]]])
+(rum/defc form-info < rum/static [{:keys [_id name url username public withAuth]}]
+  (comp/mui
+    (html
+      [:div.Swarmpit-form
+       [:div.Swarmpit-form-context
+        (comp/grid
+          {:container true
+           :spacing   40}
+          (comp/grid
+            {:item true
+             :xs   12
+             :sm   6}
+            (comp/card
+              {:className "Swarmpit-form-card"}
+              (comp/card-header
+                {:title     name
+                 :className "Swarmpit-form-card-header"
+                 :subheader url})
+              (comp/card-content
+                {}
+                (html
+                  [:div
+                   (when withAuth
+                     [:span "Authenticated with user " [:b username] "."])
+                   [:br]
+                   [:span "Registry is " [:b (if public "public." "private.")]]]))
+              (comp/divider)
+              (comp/card-content
+                {:style {:paddingBottom "16px"}}
+                (comp/typography
+                  {:color "textSecondary"}
+                  (form/item-id _id))))))]])))
 
 (rum/defc form < rum/reactive
                  mixin-init-form

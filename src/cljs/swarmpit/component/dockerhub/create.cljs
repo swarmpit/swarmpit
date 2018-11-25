@@ -1,48 +1,62 @@
 (ns swarmpit.component.dockerhub.create
   (:require [material.icon :as icon]
             [material.component :as comp]
-            [material.component.form :as form]
-            [material.component.panel :as panel]
             [swarmpit.component.mixin :as mixin]
             [swarmpit.component.state :as state]
             [swarmpit.component.message :as message]
             [swarmpit.url :refer [dispatch!]]
             [swarmpit.ajax :as ajax]
             [swarmpit.routes :as routes]
+            [sablono.core :refer-macros [html]]
             [rum.core :as rum]))
 
 (enable-console-print!)
 
 (defn- form-username [value]
-  (form/comp
-    "USERNAME"
-    (comp/vtext-field
-      {:name     "username"
-       :key      "username"
-       :required true
-       :value    value
-       :onChange (fn [_ v]
-                   (state/update-value [:username] v state/form-value-cursor))})))
+  (comp/text-field
+    {:label           "Name"
+     :fullWidth       true
+     :name            "username"
+     :key             "username"
+     :variant         "outlined"
+     :margin          "normal"
+     :value           value
+     :required        true
+     :InputLabelProps {:shrink true}
+     :onChange        #(state/update-value [:username] (-> % .-target .-value) state/form-value-cursor)}))
 
-(defn- form-password [value]
-  (form/comp
-    "PASSWORD"
-    (comp/vtext-field
-      {:name     "password"
-       :key      "password"
-       :type     "password"
-       :required true
-       :value    value
-       :onChange (fn [_ v]
-                   (state/update-value [:password] v state/form-value-cursor))})))
+(defn- form-password-adornment [show-password?]
+  (comp/input-adornment
+    {:position "end"}
+    (comp/icon-button
+      {:aria-label  "Toggle password visibility"
+       :onClick     #(state/update-value [:showPassword] (not show-password?) state/form-state-cursor)
+       :onMouseDown (fn [event]
+                      (.preventDefault event))}
+      (if show-password?
+        icon/visibility-off
+        icon/visibility))))
+
+(defn- form-password [value show-password?]
+  (comp/text-field
+    {:label           "Password"
+     :variant         "outlined"
+     :fullWidth       true
+     :required        true
+     :margin          "normal"
+     :type            (if show-password?
+                        "text"
+                        "password")
+     :value           value
+     :onChange        #(state/update-value [:password] (-> % .-target .-value) state/form-value-cursor)
+     :InputLabelProps {:shrink true}
+     :InputProps      {:endAdornment (form-password-adornment show-password?)}}))
 
 (defn- form-public [value]
-  (form/comp
-    "PUBLIC"
-    (form/checkbox
-      {:checked value
-       :onCheck (fn [_ v]
-                  (state/update-value [:public] v state/form-value-cursor))})))
+  (comp/checkbox
+    {:checked  value
+     :value    value
+     :onChange #(state/update-value [:public] (-> % .-target .-checked) state/form-value-cursor)}))
 
 (defn- add-user-handler
   []
@@ -62,8 +76,9 @@
 
 (defn- init-form-state
   []
-  (state/set-value {:valid?      false
-                    :processing? false} state/form-state-cursor))
+  (state/set-value {:valid?       false
+                    :processing?  false
+                    :showPassword false} state/form-state-cursor))
 
 (defn- init-form-value
   []
@@ -80,21 +95,33 @@
 (rum/defc form < rum/reactive
                  mixin-init-form [_]
   (let [{:keys [username password public]} (state/react state/form-value-cursor)
-        {:keys [valid? processing?]} (state/react state/form-state-cursor)]
-    [:div
-     [:div.form-panel
-      [:div.form-panel-left
-       (panel/info icon/docker "Add Dockerhub user")]
-      [:div.form-panel-right
-       (comp/progress-button
-         {:label      "Save"
-          :disabled   (not valid?)
-          :primary    true
-          :onTouchTap add-user-handler} processing?)]]
-     [:div.form-edit
-      (form/form
-        {:onValid   #(state/update-value [:valid?] true state/form-state-cursor)
-         :onInvalid #(state/update-value [:valid?] false state/form-state-cursor)}
-        (form-username username)
-        (form-password password)
-        (form-public public))]]))
+        {:keys [valid? processing? showPassword]} (state/react state/form-state-cursor)]
+    (comp/mui
+      (html
+        [:div.Swarmpit-form
+         [:div.Swarmpit-form-context
+          (comp/paper
+            {:className "Swarmpit-paper Swarmpit-form-context"
+             :elevation 0}
+            (comp/grid
+              {:container true
+               :spacing   40}
+              (comp/grid
+                {:item true
+                 :xs   12
+                 :sm   6}
+                (form-username username)
+                (form-password password showPassword)
+                (comp/form-control
+                  {:component "fieldset"}
+                  (comp/form-group
+                    {}
+                    (comp/form-control-label
+                      {:control (form-public public)
+                       :label   "Public"})))))
+            (html
+              [:div.Swarmpit-form-buttons
+               (comp/button
+                 {:variant "contained"
+                  :onClick add-user-handler
+                  :color   "primary"} "Add Dockerhub user")]))]]))))

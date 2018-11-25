@@ -452,6 +452,10 @@ a {
     color: #6c757d;
 }
 
+.Swarmpit-codemirror-view > div:before {
+    border-bottom: none !important;
+}
+
 /* SERVICE */
 
 .Swarmpit-service-list-port {

@@ -1,8 +1,5 @@
 (ns swarmpit.component.config.create
-  (:require [material.icon :as icon]
-            [material.component :as comp]
-            [material.component.form :as form]
-            [material.component.panel :as panel]
+  (:require [material.component :as comp]
             [swarmpit.component.editor :as editor]
             [swarmpit.component.mixin :as mixin]
             [swarmpit.component.state :as state]
@@ -10,6 +7,7 @@
             [swarmpit.url :refer [dispatch!]]
             [swarmpit.ajax :as ajax]
             [swarmpit.routes :as routes]
+            [sablono.core :refer-macros [html]]
             [rum.core :as rum]))
 
 (enable-console-print!)
@@ -17,27 +15,27 @@
 (def editor-id "config-editor")
 
 (defn- form-name [value]
-  (form/comp
-    "NAME"
-    (comp/vtext-field
-      {:name     "name"
-       :key      "name"
-       :required true
-       :value    value
-       :onChange (fn [_ v]
-                   (state/update-value [:configName] v state/form-value-cursor))})))
+  (comp/text-field
+    {:label           "Name"
+     :fullWidth       true
+     :name            "name"
+     :key             "name"
+     :variant         "outlined"
+     :value           value
+     :required        true
+     :InputLabelProps {:shrink true}
+     :onChange        #(state/update-value [:configName] (-> % .-target .-value) state/form-value-cursor)}))
 
 (defn- form-data [value]
-  (comp/vtext-field
-    {:id            editor-id
-     :name          "config-editor"
-     :key           "config-editor"
-     :multiLine     true
-     :rows          10
-     :rowsMax       10
-     :value         value
-     :underlineShow false
-     :fullWidth     true}))
+  (comp/text-field
+    {:id              editor-id
+     :fullWidth       true
+     :name            "data"
+     :key             "data"
+     :variant         "outlined"
+     :required        true
+     :InputLabelProps {:shrink true}
+     :value           value}))
 
 (defn- create-config-handler
   []
@@ -80,22 +78,31 @@
 
 (rum/defc form < rum/reactive
                  mixin-init-form
-                 mixin-init-editor[_]
+                 mixin-init-editor [_]
   (let [{:keys [configName data]} (state/react state/form-value-cursor)
         {:keys [valid? processing?]} (state/react state/form-state-cursor)]
-    [:div
-     [:div.form-panel
-      [:div.form-panel-left
-       (panel/info icon/configs "New config")]
-      [:div.form-panel-right
-       (comp/progress-button
-         {:label      "Create"
-          :disabled   (not valid?)
-          :primary    true
-          :onTouchTap create-config-handler} processing?)]]
-     [:div.form-edit
-      (form/form
-        {:onValid   #(state/update-value [:valid?] true state/form-state-cursor)
-         :onInvalid #(state/update-value [:valid?] false state/form-state-cursor)}
-        (form-name configName)
-        (form-data data))]]))
+    (comp/mui
+      (html
+        [:div.Swarmpit-form
+         [:div.Swarmpit-form-context
+          (comp/paper
+            {:className "Swarmpit-paper Swarmpit-form-context"
+             :elevation 0}
+            (comp/grid
+              {:container true
+               :spacing   40}
+              (comp/grid
+                {:item true
+                 :xs   12
+                 :sm   6}
+                (form-name configName))
+              (comp/grid
+                {:item true
+                 :xs   12}
+                (form-data data)))
+            (html
+              [:div.Swarmpit-form-buttons
+               (comp/button
+                 {:variant "contained"
+                  :onClick create-config-handler
+                  :color   "primary"} "Create")]))]]))))

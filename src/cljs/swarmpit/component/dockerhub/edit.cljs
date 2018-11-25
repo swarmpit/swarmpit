@@ -59,6 +59,11 @@
 
 (rum/defc form-edit < rum/static [{:keys [_id username public]}
                                   {:keys [processing?]}]
+
+
+
+
+
   [:div
    [:div.form-panel
     [:div.form-panel-left

@@ -2,7 +2,6 @@
   (:require [material.icon :as icon]
             [material.component :as comp]
             [material.component.form :as form]
-            [material.component.panel :as panel]
             [swarmpit.component.state :as state]
             [swarmpit.component.mixin :as mixin]
             [swarmpit.component.editor :as editor]
@@ -13,15 +12,12 @@
             [swarmpit.ajax :as ajax]
             [swarmpit.routes :as routes]
             [swarmpit.base64 :as base64]
-            [rum.core :as rum]
-            [sablono.core :refer-macros [html]]))
+            [sablono.core :refer-macros [html]]
+            [rum.core :as rum]))
 
 (enable-console-print!)
 
 (def editor-id "config-view")
-
-(def form-data-style {:top       "-7px"
-                      :maxHeight "400px"})
 
 (defn- parse-data [data]
   (if (base64/base64? data)
@@ -32,14 +28,16 @@
   (html
     (comp/mui
       (comp/text-field
-        {:id            editor-id
-         :name          "config-view"
-         :key           "config-view"
-         :multiLine     true
-         :value         value
-         :style         form-data-style
-         :underlineShow false
-         :fullWidth     true}))))
+        {:id              editor-id
+         :className       "Swarmpit-codemirror-view"
+         :fullWidth       true
+         :name            "config-view"
+         :key             "config-view"
+         :multiline       true
+         :disabled        true
+         :required        true
+         :InputLabelProps {:shrink true}
+         :value           value}))))
 
 (defn- config-services-handler
   [config-id]
@@ -69,6 +67,14 @@
                    (message/error
                      (str "Config removing failed. " (:error response))))}))
 
+(defn form-actions
+  [{:keys [params]}]
+  [{:button (comp/icon-button
+              {:color   "inherit"
+               :onClick #(delete-config-handler (:id params))}
+              (comp/svg icon/trash))
+    :name   "Delete config"}])
+
 (defn- init-form-state
   []
   (state/set-value {:loading? true} state/form-state-cursor))
@@ -88,27 +94,34 @@
 
 (rum/defc form-info < rum/static
                       mixin-init-editor [{:keys [config services]}]
-  [:div
-   [:div.form-panel
-    [:div.form-panel-left
-     (panel/info icon/configs
-                 (:configName config))]
-    [:div.form-panel-right
-     (comp/mui
-       (comp/raised-button
-         {:onTouchTap #(delete-config-handler (:id config))
-          :label      "Delete"}))]]
-   [:div.form-layout
-    [:div.div.form-layout-group
-     (form/subsection "General settings")
-     (form/item "ID" (:id config))
-     (form/item "NAME" (:configName config))
-     (form/item-date "CREATED" (:createdAt config))
-     (form/item-date "UPDATED" (:updatedAt config))]
-    [:div.form-layout-group.form-layout-group-border
-     (form/subsection "Data")
-     (form-data (parse-data (:data config)))]
-    (services/linked-services services)]])
+  (comp/mui
+    (html
+      [:div.Swarmpit-form
+       [:div.Swarmpit-form-context
+        (comp/grid
+          {:container true
+           :spacing   40}
+          (comp/grid
+            {:item true
+             :xs   12
+             :sm   6}
+            (comp/card
+              {:className "Swarmpit-form-card"}
+              (comp/card-header
+                {:title     (:configName config)
+                 :className "Swarmpit-form-card-header"})
+              (comp/card-content
+                {}
+                (form-data (parse-data (:data config))))
+              (comp/divider)
+              (comp/card-content
+                {:style {:paddingBottom "16px"}}
+                (comp/typography
+                  {:color "textSecondary"}
+                  (form/item-date (:createdAt config) (:updatedAt config)))
+                (comp/typography
+                  {:color "textSecondary"}
+                  (form/item-id (:id config)))))))]])))
 
 (rum/defc form < rum/reactive
                  mixin-init-form
