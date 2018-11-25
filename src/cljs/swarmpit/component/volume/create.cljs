@@ -1,9 +1,8 @@
 (ns swarmpit.component.volume.create
   (:require [material.icon :as icon]
             [material.component :as comp]
-            [material.component.list-table-form :as list]
+            [material.component.list.edit :as list]
             [material.component.form :as form]
-            [material.component.panel :as panel]
             [swarmpit.component.mixin :as mixin]
             [swarmpit.component.state :as state]
             [swarmpit.component.message :as message]
@@ -14,14 +13,6 @@
             [rum.core :as rum]))
 
 (enable-console-print!)
-
-(def form-driver-opts-cursor (conj state/form-value-cursor :options))
-
-(def form-driver-opts-headers
-  [{:name  "Name"
-    :width "35%"}
-   {:name  "Value"
-    :width "35%"}])
 
 (defn- volume-plugin-handler
   []
@@ -47,63 +38,98 @@
                      (str "Volume creation failed. " (:error response))))}))
 
 (defn- form-name [value]
-  (form/comp
-    "VOLUME NAME"
-    (comp/vtext-field
-      {:name     "name"
-       :key      "name"
-       :required true
-       :value    value
-       :onChange (fn [_ v]
-                   (state/update-value [:volumeName] v state/form-value-cursor))})))
+  (comp/text-field
+    {:label           "Name"
+     :fullWidth       true
+     :name            "name"
+     :key             "name"
+     :variant         "outlined"
+     :value           value
+     :required        true
+     :InputLabelProps {:shrink true}
+     :onChange        #(state/update-value [:volumeName] (-> % .-target .-value) state/form-value-cursor)}))
 
 (defn- form-driver [value plugins]
-  (form/comp
-    "NAME"
-    (comp/select-field
-      {:value    value
-       :onChange (fn [_ _ v]
-                   (state/update-value [:driver] v state/form-value-cursor))}
-      (->> plugins
-           (map #(comp/menu-item
-                   {:key         %
-                    :value       %
-                    :primaryText %}))))))
+  (comp/text-field
+    {:fullWidth       true
+     :id              "driver"
+     :label           "Volume driver"
+     :helperText      "Driver to manage the Volume "
+     :select          true
+     :value           value
+     :variant         "outlined"
+     :InputLabelProps {:shrink true}
+     :onChange        #(state/update-value [:driver] (-> % .-target .-value) state/form-value-cursor)}
+    (->> plugins
+         (map #(comp/menu-item
+                 {:key   %
+                  :value %} %)))))
+
+(def form-driver-opts-cursor (conj state/form-value-cursor :options))
 
 (defn- form-driver-opt-name [value index]
-  (list/textfield
-    {:name     (str "form-driver-opt-name-" index)
-     :key      (str "form-driver-opt-name-" index)
-     :value    value
-     :onChange (fn [_ v]
-                 (state/update-item index :name v form-driver-opts-cursor))}))
+  (comp/text-field
+    {:label     "Name"
+     :variant   "outlined"
+     :margin    "dense"
+     :fullWidth true
+     :name      (str "form-driver-opt-name-" index)
+     :key       (str "form-driver-opt-name-" index)
+     :value     value
+     :onChange  #(state/update-item index :name (-> % .-target .-value) form-driver-opts-cursor)}))
 
 (defn- form-driver-opt-value [value index]
-  (list/textfield
-    {:name     (str "form-driver-opt-value-" index)
-     :key      (str "form-driver-opt-value-" index)
-     :value    value
-     :onChange (fn [_ v]
-                 (state/update-item index :value v form-driver-opts-cursor))}))
+  (comp/text-field
+    {:label     "Value"
+     :variant   "outlined"
+     :margin    "dense"
+     :fullWidth true
+     :name      (str "form-driver-opt-value-" index)
+     :key       (str "form-driver-opt-value-" index)
+     :value     value
+     :onChange  #(state/update-item index :value (-> % .-target .-value) form-driver-opts-cursor)}))
 
-(defn- form-driver-render-opts
-  [item index]
-  (let [{:keys [name value]} item]
-    [(form-driver-opt-name name index)
-     (form-driver-opt-value value index)]))
-
-(defn- form-driver-opts-table
-  [opts]
-  (list/table-raw form-driver-opts-headers
-                  opts
-                  nil
-                  form-driver-render-opts
-                  (fn [index] (state/remove-item index form-driver-opts-cursor))))
+(def form-driver-opts-render-metadata
+  [{:name      "Name"
+    :primary   true
+    :key       [:name]
+    :render-fn (fn [value _ index] (form-driver-opt-name value index))}
+   {:name      "Value"
+    :key       [:value]
+    :render-fn (fn [value _ index] (form-driver-opt-value value index))}])
 
 (defn- add-driver-opt
   []
   (state/add-item {:name  ""
                    :value ""} form-driver-opts-cursor))
+
+(defn- section-driver
+  [{:keys [driver options]} plugins]
+  (comp/grid
+    {:container true
+     :spacing   24}
+    (comp/grid
+      {:item true
+       :xs   12}
+      (form-driver driver plugins))
+    (comp/grid
+      {:item true
+       :xs   12
+       :sm   6}
+      (form/subsection
+        "Driver options"
+        (comp/button
+          {:color   "primary"
+           :onClick add-driver-opt}
+          (comp/svg icon/add-small) "Add option")))
+    (when (not (empty? options))
+      (comp/grid
+        {:item true
+         :xs   12}
+        (list/list
+          form-driver-opts-render-metadata
+          options
+          (fn [index] (state/remove-item index form-driver-opts-cursor)))))))
 
 (defn- init-form-state
   []
@@ -126,29 +152,33 @@
 
 (rum/defc form < rum/reactive
                  mixin-init-form [_]
-  (let [{:keys [volumeName driver options]} (state/react state/form-value-cursor)
+  (let [{:keys [volumeName driver options] :as item} (state/react state/form-value-cursor)
         {:keys [valid? processing? plugins]} (state/react state/form-state-cursor)]
-    [:div
-     [:div.form-panel
-      [:div.form-panel-left
-       (panel/info icon/networks "New volume")]
-      [:div.form-panel-right
-       (comp/progress-button
-         {:label      "Create"
-          :disabled   (not valid?)
-          :primary    true
-          :onTouchTap create-volume-handler} processing?)]]
-     [:div.form-layout
-      [:div.form-layout-group
-       (form/form
-         {:onValid   #(state/update-value [:valid?] true state/form-state-cursor)
-          :onInvalid #(state/update-value [:valid?] false state/form-state-cursor)}
-         (form-name volumeName))]
-      [:div.form-layout-group.form-layout-group-border
-       (form/subsection "Driver")
-       (form/form
-         {}
-         (form-driver driver plugins)
-         (html (form/subsection-add "Add volume driver option" add-driver-opt))
-         (when (not (empty? options))
-           (form-driver-opts-table options)))]]]))
+    (comp/mui
+      (html
+        [:div.Swarmpit-form
+         [:div.Swarmpit-form-context
+          (comp/paper
+            {:className "Swarmpit-paper Swarmpit-form-context"
+             :elevation 0}
+            (comp/grid
+              {:container true
+               :spacing   40}
+              (comp/grid
+                {:item true
+                 :xs   12
+                 :sm   6}
+                (form-name volumeName))
+              (comp/grid
+                {:item true
+                 :xs   12}
+                (comp/typography
+                  {:variant      "h6"
+                   :gutterBottom true} "Driver")
+                (section-driver item plugins)))
+            (html
+              [:div.Swarmpit-form-buttons
+               (comp/button
+                 {:variant "contained"
+                  :onClick #(create-volume-handler)
+                  :color   "primary"} "Create")]))]]))))

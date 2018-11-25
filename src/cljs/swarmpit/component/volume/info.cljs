@@ -2,8 +2,8 @@
   (:require [material.icon :as icon]
             [material.component :as comp]
             [material.component.form :as form]
-            [material.component.panel :as panel]
-            [material.component.list-table-auto :as list]
+            [material.component.label :as label]
+            [material.component.list.info :as list]
             [swarmpit.component.message :as message]
             [swarmpit.component.mixin :as mixin]
             [swarmpit.component.state :as state]
@@ -13,18 +13,66 @@
             [swarmpit.url :refer [dispatch!]]
             [swarmpit.ajax :as ajax]
             [swarmpit.routes :as routes]
+            [sablono.core :refer-macros [html]]
             [rum.core :as rum]))
 
 (enable-console-print!)
 
-(def driver-opts-headers ["Name" "Value"])
+(def form-driver-opts-render-metadata
+  [{:name    "Name"
+    :primary true
+    :key     [:name]}
+   {:name "Value"
+    :key  [:value]}])
 
-(def driver-opts-render-keys
-  [[:name] [:value]])
+(defn- section-general
+  [{:keys [id stack volumeName driver mountpoint scope]}]
+  (comp/card
+    {:className "Swarmpit-form-card"}
+    (comp/card-header
+      {:title     volumeName
+       :className "Swarmpit-form-card-header"})
+    (comp/card-content
+      {}
+      (html
+        [:div
+         [:span "Volume is mount at " [:b mountpoint] "."]
+         [:br]
+         [:span "Scope is " [:b scope] "."]]))
+    (comp/card-content
+      {}
+      (form/item-labels
+        [(when driver
+           (label/grey driver))]))
+    (comp/card-actions
+      {}
+      (when stack
+        (comp/button
+          {:size  "small"
+           :color "primary"
+           :href  (routes/path-for-frontend :stack-info {:name stack})}
+          "See stack")))
+    (comp/divider)
+    (comp/card-content
+      {:style {:paddingBottom "16px"}}
+      (comp/typography
+        {:color "textSecondary"}
+        (form/item-id id)))))
 
-(defn driver-opts-render-item
-  [item]
-  (val item))
+(defn- section-driver
+  [{:keys [driver options]}]
+  (comp/card
+    {:className "Swarmpit-form-card"}
+    (comp/card-header
+      {:className "Swarmpit-form-card-header"
+       :subheader (form/subheader "Driver options" icon/settings)})
+    (comp/card-content
+      {}
+      (when (not-empty options)
+        (list/table
+          form-driver-opts-render-metadata
+          options
+          nil)))))
 
 (defn- volume-services-handler
   [volume-name]
@@ -54,6 +102,13 @@
                    (message/error
                      (str "Volume removing failed. " (:error response))))}))
 
+(defn form-actions
+  [{:keys [params]}]
+  [{:button (comp/icon-button
+              {:color   "inherit"
+               :onClick #(delete-volume-handler (:id params))} (comp/svg icon/trash))
+    :name   "Delete volume"}])
+
 (defn- init-form-state
   []
   (state/set-value {:loading? true} state/form-state-cursor))
@@ -66,35 +121,24 @@
       (volume-services-handler name))))
 
 (rum/defc form-info < rum/static [{:keys [volume services]}]
-  [:div
-   [:div.form-panel
-    [:div.form-panel-left
-     (panel/info icon/volumes
-                 (:volumeName volume))]
-    [:div.form-panel-right
-     (comp/mui
-       (comp/raised-button
-         {:onTouchTap #(delete-volume-handler (:volumeName volume))
-          :label      "Delete"}))]]
-   [:div.form-layout
-    [:div.form-layout-group
-     (form/subsection "General settings")
-     (form/item-stack (:stack volume))
-     (form/item "NAME" (utils/trim-stack (:stack volume) (:volumeName volume)))
-     (form/item "SCOPE" (:scope volume))
-     (form/item "MOUNTPOINT" (:mountpoint volume))]
-    [:div.form-layout-group.form-layout-group-border
-     (form/subsection "Driver")
-     (form/item "NAME" (:driver volume))
-     (when (not-empty (:options volume))
-       [:div
-        (form/subsection "Volume driver options")
-        (list/table driver-opts-headers
-                    (:options volume)
-                    driver-opts-render-item
-                    driver-opts-render-keys
-                    nil)])]
-    (services/linked-services services)]])
+  (comp/mui
+    (html
+      [:div.Swarmpit-form
+       [:div.Swarmpit-form-context
+        (comp/grid
+          {:container true
+           :spacing   40}
+          (comp/grid
+            {:item true
+             :xs   12
+             :sm   6}
+            (section-general volume))
+          (when (not-empty (:options volume))
+            (comp/grid
+              {:item true
+               :xs   12
+               :sm   6}
+              (section-driver volume))))]])))
 
 (rum/defc form < rum/reactive
                  mixin-init-form

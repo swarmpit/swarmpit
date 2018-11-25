@@ -31,11 +31,8 @@
   (comp/card
     {:className "Swarmpit-form-card"}
     (comp/card-header
-      (merge {:title     networkName
-              :className "Swarmpit-form-card-header"}
-             (when (time/valid? created)
-               {:subheader (form/item-id id)})))
-
+      {:title     networkName
+       :className "Swarmpit-form-card-header"})
     (when (and (:subnet ipam)
                (:gateway ipam))
       (comp/card-content

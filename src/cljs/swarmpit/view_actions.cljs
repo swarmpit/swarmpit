@@ -161,8 +161,9 @@
    :actions   volume-list/form-actions})
 
 (defmethod render :volume-info
-  [_]
-  {:title "Volumes"})
+  [route]
+  {:title   "Volumes"
+   :actions (volume-info/form-actions route)})
 
 (defmethod render :volume-create
   [_]
@@ -222,8 +223,9 @@
    :actions   user-list/form-actions})
 
 (defmethod render :user-info
-  [_]
-  {:title "Users"})
+  [route]
+  {:title   "Users"
+   :actions (user-info/form-actions route)})
 
 (defmethod render :user-create
   [_]
@@ -242,8 +244,9 @@
    :actions   registry-list/form-actions})
 
 (defmethod render :registry-info
-  [_]
-  {:title "Registries"})
+  [route]
+  {:title   "Registries"
+   :actions (registry-info/form-actions route)})
 
 (defmethod render :registry-create
   [_]
