@@ -160,7 +160,8 @@
             :color     "primary"
             :className "Swarmpit-appbar"}
            (comp/toolbar
-             {:disableGutters false}
+             {:key            "Swarmpit-appbar-toolbar"
+              :disableGutters false}
              (comp/icon-button
                {:key        "Swarmpit-appbar-menu-btn"
                 :color      "inherit"
@@ -171,7 +172,7 @@
              (comp/typography
                {:key       "Swarmpit-appbar-title"
                 :className "Swarmpit-appbar-title"
-                :variant   "title"
+                :variant   "h6"
                 :color     "inherit"
                 :noWrap    true}
                title)
