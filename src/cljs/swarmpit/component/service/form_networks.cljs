@@ -37,7 +37,7 @@
 
 (defn- form-table
   [networks networks-list]
-  (list/responsive
+  (list/list
     (form-ports-metadata networks-list)
     networks
     (fn [index] (state/remove-item index form-value-cursor))))

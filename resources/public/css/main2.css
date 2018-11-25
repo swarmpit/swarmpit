@@ -271,6 +271,11 @@ a {
     font-weight: 300;
 }
 
+.Swarmpit-table-card > thead > tr > th,
+.Swarmpit-table-card > tbody > tr > td {
+    padding: 0 20px 0 0 !important;
+}
+
 .Swarmpit-table-card-content {
     padding: 0 !important;
 }
@@ -279,22 +284,8 @@ a {
     padding: 4px 56px 4px 4px !important;
 }
 
-.Swarmpit-table-card > thead > tr > th,
-.Swarmpit-table-card > tbody > tr > td {
-    padding: 0 20px 0 0 !important;
-}
-
-.Swarmpit-table-card-edit > tbody > tr > td {
-    border-bottom: none !important;
-}
-
-.Swarmpit-table-info-row {
-    height: 26px !important;
-}
-
 .Swarmpit-table-head-cell {
     text-transform: uppercase !important;
-    /*color: #65519f !important;*/
 }
 
 .Swarmpit-table-row-cell {
@@ -302,8 +293,20 @@ a {
     border-top: 1px solid rgba(224, 224, 224, 1);
 }
 
+.Swarmpit-table-info-row {
+    height: 26px !important;
+}
+
 .Swarmpit-list-context {
     padding: 0 24px;
+}
+
+.Swarmpit-list-item-edit > div {
+    padding-right: 10px;
+}
+
+.Swarmpit-list-item-edit-small > div {
+    flex-direction: column;
 }
 
 /** Form content **/

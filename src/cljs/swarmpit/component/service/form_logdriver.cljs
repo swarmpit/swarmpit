@@ -69,7 +69,7 @@
 
 (defn- form-table
   [opts]
-  (list/responsive
+  (list/list
     form-metadata
     opts
     (fn [index] (state/remove-item index form-value-opts-cursor))))

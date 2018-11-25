@@ -1,7 +1,6 @@
 (ns material.component.list.basic
   (:require [material.component :as cmp]
             [swarmpit.url :refer [dispatch!]]
-            [swarmpit.utils :refer [select-keys*]]
             [sablono.core :refer-macros [html]]
             [rum.core :as rum]))
 
@@ -35,11 +34,7 @@
                      (cmp/table-cell
                        {:key       (str "Swarmpit-table-row-cell-" index "-" coll-index)
                         :className "Swarmpit-table-row-cell"}
-                       (cmp/typography
-                         {:variant      "body1"
-                          :color        "textSecondary"
-                          :gutterBottom true}
-                         (render-fn item))))))))) items)))
+                       (render-fn item)))))))) items)))
 
 (defn table
   [render-metadata items onclick-handler-fn]
@@ -75,7 +70,7 @@
       (when status-fn
         (cmp/list-item-secondary-action
           {:key   (str "Swarmpit-list-status-" index)
-           :style {:margin-right "10px"}}
+           :style {:marginRight "10px"}}
           (status-fn item))))))
 
 (defn list

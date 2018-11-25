@@ -61,7 +61,7 @@
 
 (defn- form-table
   [secrets secrets-list]
-  (list/responsive
+  (list/list
     (form-secrets-metadata secrets-list)
     secrets
     (fn [index] (state/remove-item index form-value-cursor))))

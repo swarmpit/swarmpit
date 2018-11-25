@@ -33,7 +33,7 @@
 
 (defn- form-table
   [placement placement-list]
-  (list/responsive
+  (list/list
     form-metadata
     placement
     (fn [index] (state/remove-item index form-value-cursor))))

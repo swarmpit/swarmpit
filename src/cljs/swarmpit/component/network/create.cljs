@@ -3,7 +3,6 @@
             [material.component :as comp]
             [material.component.form :as form]
             [material.component.list.edit :as list]
-            [material.component.panel :as panel]
             [swarmpit.component.mixin :as mixin]
             [swarmpit.component.state :as state]
             [swarmpit.component.message :as message]
@@ -147,6 +146,7 @@
   (comp/text-field
     {:label     "Name"
      :variant   "outlined"
+     :margin    "dense"
      :fullWidth true
      :name      (str "form-driver-opt-name-" index)
      :key       (str "form-driver-opt-name-" index)
@@ -157,6 +157,7 @@
   (comp/text-field
     {:label     "Value"
      :variant   "outlined"
+     :margin    "dense"
      :fullWidth true
      :name      (str "form-driver-opt-value-" index)
      :key       (str "form-driver-opt-value-" index)
@@ -200,7 +201,7 @@
       (comp/grid
         {:item true
          :xs   12}
-        (list/responsive
+        (list/list
           form-driver-opts-render-metadata
           options
           (fn [index] (state/remove-item index form-driver-opts-cursor)))))))

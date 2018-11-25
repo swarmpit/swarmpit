@@ -48,7 +48,7 @@
 
 (defn- form-table
   [labels names]
-  (list/responsive
+  (list/list
     form-metadata
     labels
     (fn [index] (state/remove-item index form-value-cursor))))

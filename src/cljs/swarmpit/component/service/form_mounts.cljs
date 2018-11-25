@@ -117,7 +117,7 @@
 
 (defn- form-table
   [mounts volume-list]
-  (list/responsive
+  (list/list
     (form-mounts-metadata volume-list)
     mounts
     (fn [index] (state/remove-item index form-value-cursor))))

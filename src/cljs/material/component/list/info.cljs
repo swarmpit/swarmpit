@@ -1,11 +1,8 @@
 (ns material.component.list.info
-  (:require [material.icon :as icon]
-            [material.component :as cmp]
-            [material.component.list.util :refer [primary-key render-keys render-value?]]
+  (:require [material.component :as cmp]
+            [material.component.list.util :refer [render-keys]]
             [swarmpit.url :refer [dispatch!]]
-            [swarmpit.utils :refer [select-keys*]]
-            [sablono.core :refer-macros [html]]
-            [rum.core :as rum]))
+            [swarmpit.utils :refer [select-keys*]]))
 
 (defn table-head
   [render-metadata]

@@ -44,7 +44,7 @@
 
 (defn- form-table
   [variables]
-  (list/responsive
+  (list/list
     form-metadata
     variables
     (fn [index] (state/remove-item index form-value-cursor))))

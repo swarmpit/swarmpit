@@ -117,7 +117,7 @@
 
 (defn- form-table
   [ports]
-  (list/responsive
+  (list/list
     form-ports-metadata
     ports
     (fn [index] (state/remove-item index form-value-cursor))))
