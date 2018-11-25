@@ -14,11 +14,16 @@
 (enable-console-print!)
 
 (def render-metadata
-  [{:name    "Name"
-    :key     [:volumeName]
-    :primary true}
-   {:name "Driver"
-    :key  [:driver]}])
+  {:table {:title     "Overview"
+           :subheader "RUNNING: 5, UPDATING: 0"
+           :summary   [{:name      "Name"
+                        :render-fn (fn [item] (:volumeName item))}
+                       {:name      "Driver"
+                        :render-fn (fn [item] (:driver item))}]}
+   :list  {:title         "Overview"
+           :subheader     "RUNNING: 5, UPDATING: 0"
+           :primary-key   (fn [item] (:volumeName item))
+           :secondary-key (fn [item] (:driver item))}})
 
 (defn- onclick-handler
   [item]
@@ -66,6 +71,5 @@
          [:div.Swarmpit-form-context
           (list/responsive
             render-metadata
-            nil
             (sort-by :volumeName filtered-items)
             onclick-handler)]]))))

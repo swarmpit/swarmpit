@@ -14,13 +14,25 @@
 
 (enable-console-print!)
 
+(defn- render-item-name [item]
+  (html
+    [:div
+     [:div
+      [:span [:b (:serviceName item)]]]
+     [:div
+      [:span (get-in item [:repository :image])]]]))
+
 (def render-metadata
-  [{:name    "Name"
-    :key     [:configName]
-    :primary true}
-   {:name      "Created"
-    :key       [:createdAt]
-    :render-fn (fn [value _] (time/humanize value))}])
+  {:table {:title     "Overview"
+           :subheader "RUNNING: 5, UPDATING: 0"
+           :summary   [{:name      "Name"
+                        :render-fn (fn [item] (:configName item))}
+                       {:name      "Created"
+                        :render-fn (fn [item] (time/humanize (:createdAt item)))}]}
+   :list  {:title         "Overview"
+           :subheader     "RUNNING: 5, UPDATING: 0"
+           :primary-key   (fn [item] (:configName item))
+           :secondary-key (fn [item] (time/humanize (:createdAt item)))}})
 
 (defn- onclick-handler
   [item]
@@ -67,7 +79,6 @@
          [:div.Swarmpit-form-context
           (list/responsive
             render-metadata
-            nil
             (->> (list-util/filter items (:query filter))
                  (sort-by :configName))
             onclick-handler)]]))))

@@ -15,18 +15,22 @@
 (enable-console-print!)
 
 (def render-metadata
-  [{:name    "Name"
-    :key     [:networkName]
-    :primary true}
-   {:name "Driver"
-    :key  [:driver]}
-   {:name "Subnet"
-    :key  [:ipam :subnet]}
-   {:name "Gateway"
-    :key  [:ipam :gateway]}
-   {:name      "Status"
-    :key       [:internal]
-    :render-fn (fn [value _] (when value (label/blue "internal")))}])
+  {:table {:title     "Overview"
+           :subheader "RUNNING: 5, UPDATING: 0"
+           :summary   [{:name      "Name"
+                        :render-fn (fn [item] (:networkName item))}
+                       {:name      "Driver"
+                        :render-fn (fn [item] (:driver item))}
+                       {:name      "Subnet"
+                        :render-fn (fn [item] (get-in item [:ipam :subnet]))}
+                       {:name      "Gateway"
+                        :render-fn (fn [item] (get-in item [:ipam :gateway]))}
+                       {:name      "Status"
+                        :render-fn (fn [item] (when (:internal item) (label/blue "internal")))}]}
+   :list  {:title         "Overview"
+           :subheader     "RUNNING: 5, UPDATING: 0"
+           :primary-key   (fn [item] (:networkName item))
+           :secondary-key (fn [item] (:driver item))}})
 
 (defn- onclick-handler
   [item]
@@ -74,6 +78,5 @@
          [:div.Swarmpit-form-context
           (list/responsive
             render-metadata
-            nil
             (sort-by :networkName filtered-items)
             onclick-handler)]]))))

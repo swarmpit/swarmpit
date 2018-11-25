@@ -306,33 +306,6 @@ a {
     padding: 0 24px;
 }
 
-.Swarmpit-list {
-    background-color: #fafafa;
-}
-
-.Swarmpit-list-expansion-panel {
-    box-shadow: 0px 0px 1px 0px rgba(0, 0, 0, 0.2) !important;
-}
-
-.Swarmpit-list-expansion-panel-summary-content {
-    display: flex;
-    flex-direction: row;
-    justify-content: start;
-}
-
-.Swarmpit-list-expansion-panel-summary-content > div {
-    margin-right: 5px;
-}
-
-.Swarmpit-list-expansion-panel-summary-text {
-    width: 100%;
-}
-
-.Swarmpit-list-expansion-panel-details-text {
-    opacity: 0.5;
-    width: 100%;
-}
-
 /** Form content **/
 
 .Swarmpit-form-context {
@@ -415,13 +388,6 @@ a {
 .Swarmpit-form-card-header:first-child:before {
     content: '';
     background: linear-gradient(60deg, #362870, #957ed1);
-}
-
-/** RC Slider **/
-
-.Swarmpit-rc-slider {
-    padding-right: 5px;
-    padding-left: 5px;
 }
 
 /* Labels & Status ico  */
@@ -518,14 +484,6 @@ a {
 @media all and (max-width: 800px) {
     .Swarmpit-form-panel {
         justify-content: space-around;
-    }
-
-    .Swarmpit-list-expansion-panel-summary-text {
-        width: 200px;
-    }
-
-    .Swarmpit-list-expansion-panel-details-text {
-        width: 200px;
     }
 }
 

@@ -16,17 +16,20 @@
 (enable-console-print!)
 
 (def render-metadata
-  [{:name    "Name"
-    :key     [:name]
-    :primary true}
-   {:name "Url"
-    :key  [:url]}
-   {:name      "Public"
-    :key       [:public]
-    :render-fn (fn [value _] (if value "yes" "no"))}
-   {:name      "Secure"
-    :key       [:withAuth]
-    :render-fn (fn [value _] (if value "yes" "no"))}])
+  {:table {:title     "Overview"
+           :subheader "RUNNING: 5, UPDATING: 0"
+           :summary   [{:name      "Name"
+                        :render-fn (fn [item] (:name item))}
+                       {:name      "Url"
+                        :render-fn (fn [item] (:url item))}
+                       {:name      "Public"
+                        :render-fn (fn [item] (if (:value item) "yes" "no"))}
+                       {:name      "Secure"
+                        :render-fn (fn [item] (if (:withAuth item) "yes" "no"))}]}
+   :list  {:title         "Overview"
+           :subheader     "RUNNING: 5, UPDATING: 0"
+           :primary-key   (fn [item] (:name item))
+           :secondary-key (fn [item] (:url item))}})
 
 (defn- onclick-handler
   [item]
@@ -75,6 +78,5 @@
          [:div.Swarmpit-form-context
           (list/responsive
             render-metadata
-            nil
             (sort-by :name filtered-items)
             onclick-handler)]]))))

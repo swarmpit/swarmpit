@@ -14,19 +14,23 @@
 (enable-console-print!)
 
 (def render-metadata
-  [{:name    "Name"
-    :key     [:stackName]
-    :primary true}
-   {:name "Services"
-    :key  [:stackStats :services]}
-   {:name "Networks"
-    :key  [:stackStats :networks]}
-   {:name "Volumes"
-    :key  [:stackStats :volumes]}
-   {:name "Configs"
-    :key  [:stackStats :configs]}
-   {:name "Secrets"
-    :key  [:stackStats :secrets]}])
+  {:table {:title     "Overview"
+           :subheader "RUNNING: 5, UPDATING: 0"
+           :summary   [{:name      "Name"
+                        :render-fn (fn [item] (:stackName item))}
+                       {:name      "Services"
+                        :render-fn (fn [item] (get-in item [:stackStats :services]))}
+                       {:name      "Networks"
+                        :render-fn (fn [item] (get-in item [:stackStats :networks]))}
+                       {:name      "Volumes"
+                        :render-fn (fn [item] (get-in item [:stackStats :volumes]))}
+                       {:name      "Configs"
+                        :render-fn (fn [item] (get-in item [:stackStats :configs]))}
+                       {:name      "Secrets"
+                        :render-fn (fn [item] (get-in item [:stackStats :secrets]))}]}
+   :list  {:title       "Overview"
+           :subheader   "RUNNING: 5, UPDATING: 0"
+           :primary-key (fn [item] (:stackName item))}})
 
 (defn- onclick-handler
   [item]
@@ -84,7 +88,6 @@
          [:div.Swarmpit-form-context
           (list/responsive
             render-metadata
-            nil
             (->> (list-util/filter items (:query filter))
                  (format-response)
                  (sort-by :stackName))

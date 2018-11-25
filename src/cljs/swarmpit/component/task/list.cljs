@@ -45,43 +45,34 @@
     "rejected" (label/red value)
     "failed" (label/red value)))
 
-(def render-metadata
-  [{:name    "Name"
-    :key     [:taskName]
-    :primary true}
-   {:name "Image"
-    :key  [:repository :image]}
-   {:name "Node"
-    :key  [:nodeName]}
-   {:name      "CPU Usage"
-    :key       [:stats :cpuPercentage]
-    :render-fn (fn [value _] (render-percentage value))}
-   {:name      "Memory Usage"
-    :key       [:stats :memoryPercentage]
-    :render-fn (fn [value _] (render-percentage value))}
-   {:name      "Memory"
-    :key       [:stats :memory]
-    :render-fn (fn [value _] (render-capacity value))}
-   {:name      "Status"
-    :key       [:state]
-    :render-fn (fn [value _] (render-item-state value))}])
+(defn- render-item-name [item]
+  (html
+    [:div
+     [:div
+      [:span [:b (:taskName item)]]]
+     [:div
+      [:span (get-in item [:repository :image])]]]))
 
-(defn- render-state-fn
-  [item]
-  (case (:state item)
-    "preparing" [:div.Swarmpit-icon-ok icon/sync]
-    "starting" [:div.Swarmpit-icon-ok icon/sync]
-    "pending" [:div.Swarmpit-icon-warning icon/sync]
-    "new" [:div.Swarmpit-icon-accept icon/check-circle]
-    "ready" [:div.Swarmpit-icon-accept icon/check-circle]
-    "assigned" [:div.Swarmpit-icon-accept icon/check-circle]
-    "accepted" [:div.Swarmpit-icon-accept icon/check-circle]
-    "complete" [:div.Swarmpit-icon-accept icon/check-circle]
-    "running" [:div.Swarmpit-icon-ok icon/check-circle]
-    "shutdown" [:div.Swarmpit-icon-info icon/cancel]
-    "orphaned" [:div.Swarmpit-icon-info icon/cancel]
-    "rejected" [:div.Swarmpit-icon-error icon/error]
-    "failed" [:div.Swarmpit-icon-error icon/error]))
+(def render-metadata
+  {:table {:title     "Overview"
+           :subheader "RUNNING: 5, UPDATING: 0"
+           :summary   [{:name      "Task"
+                        :render-fn (fn [item] (render-item-name item))}
+                       {:name      "Node"
+                        :render-fn (fn [item] (:nodeName item))}
+                       {:name      "CPU Usage"
+                        :render-fn (fn [item] (render-percentage (get-in item [:stats :cpuPercentage])))}
+                       {:name      "Memory Usage"
+                        :render-fn (fn [item] (render-percentage (get-in item [:stats :memoryPercentage])))}
+                       {:name      "Memory"
+                        :render-fn (fn [item] (render-capacity (get-in item [:stats :memory])))}
+                       {:name      "State"
+                        :render-fn (fn [item] (render-item-state (:state item)))}]}
+   :list  {:title         "Overview"
+           :subheader     "RUNNING: 5, UPDATING: 0"
+           :primary-key   (fn [item] (:taskName item))
+           :secondary-key (fn [item] (get-in item [:repository :image]))
+           :status-fn     (fn [item] (render-item-state (:state item)))}})
 
 (defn- onclick-handler
   [item]
@@ -123,6 +114,5 @@
          [:div.Swarmpit-form-context
           (list/responsive
             render-metadata
-            render-state-fn
             (sort-by :serviceName filtered-items)
             onclick-handler)]]))))

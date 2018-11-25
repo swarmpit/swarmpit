@@ -16,16 +16,19 @@
 (enable-console-print!)
 
 (def render-metadata
-  [{:name    "Username"
-    :key     [:username]
-    :primary true}
-   {:name "Name"
-    :key  [:name]}
-   {:name "Company"
-    :key  [:company]}
-   {:name      "Public"
-    :key       [:public]
-    :render-fn (fn [value _] (if value "yes" "no"))}])
+  {:table {:title     "Overview"
+           :subheader "RUNNING: 5, UPDATING: 0"
+           :summary   [{:name      "Username"
+                        :render-fn (fn [item] (:username item))}
+                       {:name      "Name"
+                        :render-fn (fn [item] (:name item))}
+                       {:name      "Company"
+                        :render-fn (fn [item] (:company item))}
+                       {:name      "Name"
+                        :render-fn (fn [item] (if (:public item) "yes" "no"))}]}
+   :list  {:title       "Overview"
+           :subheader   "RUNNING: 5, UPDATING: 0"
+           :primary-key (fn [item] (:username item))}})
 
 (defn- onclick-handler
   [item]
@@ -75,6 +78,5 @@
          [:div.Swarmpit-form-context
           (list/responsive
             render-metadata
-            nil
             (sort-by :username filtered-items)
             onclick-handler)]]))))

@@ -15,12 +15,16 @@
 (enable-console-print!)
 
 (def render-metadata
-  [{:name    "Name"
-    :key     [:secretName]
-    :primary true}
-   {:name      "Created"
-    :key       [:createdAt]
-    :render-fn (fn [value _] (time/humanize value))}])
+  {:table {:title     "Overview"
+           :subheader "RUNNING: 5, UPDATING: 0"
+           :summary   [{:name      "Name"
+                        :render-fn (fn [item] (:secretName item))}
+                       {:name      "Created"
+                        :render-fn (fn [item] (time/humanize (:createdAt item)))}]}
+   :list  {:title         "Overview"
+           :subheader     "RUNNING: 5, UPDATING: 0"
+           :primary-key   (fn [item] (:secretName item))
+           :secondary-key (fn [item] (time/humanize (:createdAt item)))}})
 
 (defn- onclick-handler
   [item]
@@ -67,7 +71,6 @@
          [:div.Swarmpit-form-context
           (list/responsive
             render-metadata
-            nil
             (->> (list-util/filter items (:query filter))
                  (sort-by :secretName))
             onclick-handler)]]))))
