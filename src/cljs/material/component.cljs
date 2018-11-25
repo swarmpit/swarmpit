@@ -92,6 +92,10 @@
   [props & childs]
   (f/list (clj->js props) childs))
 
+(defn list-subheader
+  [props & childs]
+  (f/list-subheader (clj->js props) childs))
+
 (defn list-item
   [props & childs]
   (f/list-item (clj->js props) childs))
@@ -103,6 +107,10 @@
 (defn list-item-text
   [props]
   (f/list-item-text (clj->js props)))
+
+(defn list-item-secondary-action
+  [props & childs]
+  (f/list-item-secondary-action (clj->js props) childs))
 
 (defn icon-button
   [props icon]

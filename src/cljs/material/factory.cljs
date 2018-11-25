@@ -26,8 +26,10 @@
 (def input-adornment (create-factory js/MaterialUI.InputAdornment))
 
 (def list (create-factory js/MaterialUI.List))
+(def list-subheader (create-factory js/MaterialUI.ListSubheader))
 (def list-item (create-factory js/MaterialUI.ListItem))
 (def list-item-text (create-factory js/MaterialUI.ListItemText))
+(def list-item-secondary-action (create-factory js/MaterialUI.ListItemSecondaryAction))
 (def list-item-icon (create-factory js/MaterialUI.ListItemIcon))
 
 (def menu (create-factory js/MaterialUI.Menu))
