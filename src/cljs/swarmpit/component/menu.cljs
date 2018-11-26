@@ -140,7 +140,7 @@
      state)})
 
 (rum/defc drawer-content < rum/static [version page-domain docker-api]
-  [:*
+  [:div.Swarmpit-drawer-content
    (html
      [:div.Swarmpit-toolbar
       [:div.Swarmpit-title

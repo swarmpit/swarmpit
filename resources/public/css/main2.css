@@ -176,6 +176,10 @@ a {
     transition: width 225ms cubic-bezier(0.4, 0, 0.6, 1) 0ms;
 }
 
+.Swarmpit-drawer-content {
+    width: 200px;
+}
+
 .Swarmpit-drawer-item-icon,
 .Swarmpit-drawer-item-text > span {
     color: rgb(117, 117, 117) !important;
