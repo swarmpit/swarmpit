@@ -301,6 +301,13 @@ a {
     padding: 0 24px;
 }
 
+.Swarmpit-list-item-text-primary,
+.Swarmpit-list-item-text-secondary {
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+
 .Swarmpit-list-item-edit > div {
     padding-right: 10px;
 }
@@ -489,6 +496,10 @@ a {
 
 /* Medium screens */
 @media all and (max-width: 800px) {
+    .Swarmpit-context {
+        width: 100%;
+    }
+
     .Swarmpit-form-panel {
         justify-content: space-around;
     }
@@ -496,6 +507,10 @@ a {
 
 /* Small screens */
 @media all and (max-width: 500px) {
+    .Swarmpit-context {
+        width: 100%;
+    }
+
     .Swarmpit-form-panel {
         flex-direction: column;
     }

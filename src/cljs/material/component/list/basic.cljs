@@ -1,4 +1,5 @@
 (ns material.component.list.basic
+  (:refer-clojure :exclude [list])
   (:require [material.component :as cmp]
             [swarmpit.url :refer [dispatch!]]
             [sablono.core :refer-macros [html]]
@@ -64,6 +65,8 @@
       (cmp/list-item-text
         (merge
           {:key     (str "Swarmpit-list-item-text-" index)
+           :classes {:primary "Swarmpit-list-item-text-primary"
+                     :secondary "Swarmpit-list-item-text-secondary"}
            :primary (primary-key item)}
           (when secodary-key
             {:secondary (secodary-key item)})))
