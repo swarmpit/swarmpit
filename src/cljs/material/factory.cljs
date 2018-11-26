@@ -99,7 +99,6 @@
 (def chevron-left-icon (create-factory js/MaterialUIIcons.ChevronLeft))
 (def chevron-right-icon (create-factory js/MaterialUIIcons.ChevronRight))
 (def account-circle-icon (create-factory js/MaterialUIIcons.AccountCircle))
-(def search-icon (create-factory js/MaterialUIIcons.Search))
 (def expand-more-icon (create-factory js/MaterialUIIcons.ExpandMore))
 (def check-circle-icon (create-factory js/MaterialUIIcons.CheckCircle))
 (def search-icon (create-factory js/MaterialUIIcons.Search))
@@ -120,7 +119,6 @@
 (def add-circle-icon (create-factory js/MaterialUIIcons.AddCircle))
 (def more-icon (create-factory js/MaterialUIIcons.MoreVert))
 (def label-icon (create-factory js/MaterialUIIcons.Label))
-(def settings-icon (create-factory js/MaterialUIIcons.Settings))
 
 (def create-mui-theme js/MaterialUI.createMuiTheme)
 
@@ -138,7 +136,7 @@
 (def react-select (create-factory js/Select))
 (def react-autosuggest (create-factory js/Autosuggest))
 (def rc-slider (create-factory (.-default js/Slider)))
-(def rc-slider-handle (create-factor js/Slider.Handle))
+(def rc-slider-handle (create-factory js/Slider.Handle))
 
 
 ;;; OLD MESS BELOW -> Clean it up !!!

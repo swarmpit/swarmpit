@@ -1,5 +1,5 @@
 (ns material.icon
-  (:refer-clojure :exclude [remove])
+  (:refer-clojure :exclude [remove key])
   (:require [material.factory :as f]))
 
 (def home "M10 20v-6h4v6h5v-8h3L12 3 2 12h3v8z")
@@ -63,7 +63,6 @@
 (def search (f/search-icon))
 (def expand-more (f/expand-more-icon))
 (def check-circle (f/check-circle-icon))
-(def search (f/search-icon))
 (def key (f/key-icon))
 (def settings (f/settings-icon))
 (def receipt (f/receipt-icon))
