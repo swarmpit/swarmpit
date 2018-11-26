@@ -4,7 +4,6 @@
             [material.component.label :as label]
             [swarmpit.component.mixin :as mixin]
             [swarmpit.component.state :as state]
-            [material.component.list-table :as list]
             [swarmpit.ajax :as ajax]
             [swarmpit.routes :as routes]
             [swarmpit.url :refer [dispatch!]]
@@ -121,11 +120,13 @@
                  mixin/focus-filter [_]
   (let [{:keys [items]} (state/react state/form-value-cursor)
         {:keys [filter]} (state/react state/form-state-cursor)
-        filtered-items (list/filter items (:query filter))]
+        ;filtered-items (list/filter items (:query filter))
+
+        ]
     (comp/mui
       (html
         [:div.Swarmpit-form
          [:div.Swarmpit-form-context
           [:div.content-grid.mdl-grid
-           (->> (sort-by :nodeName filtered-items)
+           (->> (sort-by :nodeName items)
                 (map #(node-item %)))]]]))))

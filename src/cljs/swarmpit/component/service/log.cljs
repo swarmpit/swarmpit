@@ -1,7 +1,6 @@
 (ns swarmpit.component.service.log
   (:require [material.icon :as icon]
             [material.component :as comp]
-            [material.component.panel :as panel]
             [swarmpit.component.state :as state]
             [swarmpit.component.mixin :as mixin]
             [swarmpit.ajax :as ajax]

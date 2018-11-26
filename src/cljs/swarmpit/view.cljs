@@ -3,18 +3,18 @@
             [swarmpit.component.page-403 :as page-403]
             [swarmpit.component.page-404 :as page-404]
             [swarmpit.component.page-error :as page-error]
-            [swarmpit.component.password :as password]
-            [swarmpit.component.api-access :as api-access]
-            [swarmpit.component.stack.edit :as stack-edit]
-            [swarmpit.component.stack.compose :as stack-compose]
-            [swarmpit.component.stack.create :as stack-create]
-            [swarmpit.component.stack.info :as stack-info]
+            ;[swarmpit.component.password :as password]
+            ;[swarmpit.component.api-access :as api-access]
+            ;[swarmpit.component.stack.edit :as stack-edit]
+            ;[swarmpit.component.stack.compose :as stack-compose]
+            ;[swarmpit.component.stack.create :as stack-create]
+            ;[swarmpit.component.stack.info :as stack-info]
             [swarmpit.component.stack.list :as stack-list]
             [swarmpit.component.service.create-config :as service-config]
             [swarmpit.component.service.create-image :as service-image]
             [swarmpit.component.service.edit :as service-edit]
             [swarmpit.component.service.info :as service-info]
-            [swarmpit.component.service.log :as service-log]
+            ;[swarmpit.component.service.log :as service-log]
             [swarmpit.component.service.list :as service-list]
             [swarmpit.component.network.create :as network-create]
             [swarmpit.component.network.info :as network-info]
@@ -29,22 +29,23 @@
             [swarmpit.component.config.info :as config-info]
             [swarmpit.component.config.list :as config-list]
             [swarmpit.component.node.list :as node-list]
-            [swarmpit.component.node.info :as node-info]
-            [swarmpit.component.node.edit :as node-edit]
+            ;[swarmpit.component.node.info :as node-info]
+            ;[swarmpit.component.node.edit :as node-edit]
             [swarmpit.component.task.list :as task-list]
             [swarmpit.component.task.info :as task-info]
             [swarmpit.component.user.list :as user-list]
             [swarmpit.component.user.info :as user-info]
             [swarmpit.component.user.create :as user-create]
-            [swarmpit.component.user.edit :as user-edit]
+            ;[swarmpit.component.user.edit :as user-edit]
             [swarmpit.component.registry.info :as registry-info]
             [swarmpit.component.registry.list :as registry-list]
             [swarmpit.component.registry.create :as registry-create]
-            [swarmpit.component.registry.edit :as registry-edit]
+            ;[swarmpit.component.registry.edit :as registry-edit]
             [swarmpit.component.dockerhub.info :as dockerhub-info]
             [swarmpit.component.dockerhub.list :as dockerhub-list]
             [swarmpit.component.dockerhub.create :as dockerhub-create]
-            [swarmpit.component.dockerhub.edit :as dockerhub-edit]))
+            ;[swarmpit.component.dockerhub.edit :as dockerhub-edit]
+            ))
 
 (defmulti dispatch (fn [route] (:handler route)))
 
@@ -68,13 +69,13 @@
   [_]
   (page-login/form))
 
-(defmethod dispatch :api-access
-  [_]
-  (api-access/form))
-
-(defmethod dispatch :password
-  [_]
-  (password/form))
+;(defmethod dispatch :api-access
+;  [_]
+;  (api-access/form))
+;
+;(defmethod dispatch :password
+;  [_]
+;  (password/form))
 
 ;;; Stack view
 
@@ -82,25 +83,25 @@
   [route]
   (stack-list/form route))
 
-(defmethod dispatch :stack-info
-  [route]
-  (stack-info/form route))
-
-(defmethod dispatch :stack-create
-  [route]
-  (stack-create/form route))
-
-(defmethod dispatch :stack-last
-  [route]
-  (stack-edit/form-last route))
-
-(defmethod dispatch :stack-previous
-  [route]
-  (stack-edit/form-previous route))
-
-(defmethod dispatch :stack-compose
-  [route]
-  (stack-compose/form route))
+;(defmethod dispatch :stack-info
+;  [route]
+;  (stack-info/form route))
+;
+;(defmethod dispatch :stack-create
+;  [route]
+;  (stack-create/form route))
+;
+;(defmethod dispatch :stack-last
+;  [route]
+;  (stack-edit/form-last route))
+;
+;(defmethod dispatch :stack-previous
+;  [route]
+;  (stack-edit/form-previous route))
+;
+;(defmethod dispatch :stack-compose
+;  [route]
+;  (stack-compose/form route))
 
 ;;; Service view
 
@@ -112,9 +113,9 @@
   [route]
   (service-info/form route))
 
-(defmethod dispatch :service-log
-  [route]
-  (service-log/form route))
+;(defmethod dispatch :service-log
+;  [route]
+;  (service-log/form route))
 
 (defmethod dispatch :service-create-image
   [route]
@@ -148,13 +149,13 @@
   [route]
   (node-list/form route))
 
-(defmethod dispatch :node-info
-  [route]
-  (node-info/form route))
-
-(defmethod dispatch :node-edit
-  [route]
-  (node-edit/form route))
+;(defmethod dispatch :node-info
+;  [route]
+;  (node-info/form route))
+;
+;(defmethod dispatch :node-edit
+;  [route]
+;  (node-edit/form route))
 
 ;;; Volume view
 
@@ -222,9 +223,9 @@
   [route]
   (user-create/form route))
 
-(defmethod dispatch :user-edit
-  [route]
-  (user-edit/form route))
+;(defmethod dispatch :user-edit
+;  [route]
+;  (user-edit/form route))
 
 ;;; Registry view
 
@@ -240,9 +241,9 @@
   [route]
   (registry-create/form route))
 
-(defmethod dispatch :registry-edit
-  [route]
-  (registry-edit/form route))
+;(defmethod dispatch :registry-edit
+;  [route]
+;  (registry-edit/form route))
 
 ;;; Dockerhub user view
 
@@ -258,6 +259,6 @@
   [route]
   (dockerhub-create/form route))
 
-(defmethod dispatch :dockerhub-user-edit
-  [route]
-  (dockerhub-edit/form route))
+;(defmethod dispatch :dockerhub-user-edit
+;  [route]
+;  (dockerhub-edit/form route))

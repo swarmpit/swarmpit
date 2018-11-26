@@ -2,7 +2,6 @@
   (:require [material.icon :as icon]
             [material.component :as comp]
             [material.component.form :as form]
-            [material.component.panel :as panel]
             [swarmpit.component.message :as message]
             [swarmpit.url :refer [dispatch!]]
             [swarmpit.ajax :as ajax]

@@ -1,7 +1,6 @@
 (ns material.component
   (:refer-clojure :exclude [stepper list])
   (:require [material.factory :as f]
-            [material.validation]
             [sablono.core :refer-macros [html]]))
 
 ;;; Theme components
