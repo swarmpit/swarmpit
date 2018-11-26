@@ -1,5 +1,6 @@
 (ns swarmpit.component.editor
-  (:require [cljsjs.codemirror]
+  (:require [cljsjs.js-yaml]
+            [cljsjs.codemirror]
             [cljsjs.codemirror.addon.lint.lint]
             [cljsjs.codemirror.addon.lint.yaml-lint]
             [cljsjs.codemirror.mode.yaml]))
