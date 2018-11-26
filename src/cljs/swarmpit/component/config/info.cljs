@@ -25,19 +25,17 @@
     data))
 
 (defn- form-data [value]
-  (html
-    (comp/mui
-      (comp/text-field
-        {:id              editor-id
-         :className       "Swarmpit-codemirror-view"
-         :fullWidth       true
-         :name            "config-view"
-         :key             "config-view"
-         :multiline       true
-         :disabled        true
-         :required        true
-         :InputLabelProps {:shrink true}
-         :value           value}))))
+  (comp/text-field
+    {:id              editor-id
+     :className       "Swarmpit-codemirror-view"
+     :fullWidth       true
+     :name            "config-view"
+     :key             "config-view"
+     :multiline       true
+     :disabled        true
+     :required        true
+     :InputLabelProps {:shrink true}
+     :value           value}))
 
 (defn- config-services-handler
   [config-id]

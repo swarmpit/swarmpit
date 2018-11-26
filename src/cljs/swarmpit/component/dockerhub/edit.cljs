@@ -9,17 +9,29 @@
             [swarmpit.url :refer [dispatch!]]
             [swarmpit.ajax :as ajax]
             [swarmpit.routes :as routes]
+            [sablono.core :refer-macros [html]]
             [rum.core :as rum]))
 
 (enable-console-print!)
 
+(defn- form-username [value]
+  (comp/text-field
+    {:label           "Name"
+     :fullWidth       true
+     :name            "username"
+     :key             "username"
+     :variant         "outlined"
+     :margin          "normal"
+     :value           value
+     :required        true
+     :disabled        true
+     :InputLabelProps {:shrink true}}))
+
 (defn- form-public [value]
-  (form/comp
-    "PUBLIC"
-    (form/checkbox
-      {:checked value
-       :onCheck (fn [_ v]
-                  (state/update-value [:public] v state/form-value-cursor))})))
+  (comp/checkbox
+    {:checked  value
+     :value    value
+     :onChange #(state/update-value [:public] (-> % .-target .-checked) state/form-value-cursor)}))
 
 (defn- user-handler
   [user-id]
@@ -58,29 +70,38 @@
 
 (rum/defc form-edit < rum/static [{:keys [_id username public]}
                                   {:keys [processing?]}]
-
-
-
-
-
-  [:div
-   [:div.form-panel
-    [:div.form-panel-left
-     (panel/info icon/docker username)]
-    [:div.form-panel-right
-     (comp/progress-button
-       {:label      "Save"
-        :primary    true
-        :onTouchTap #(update-user-handler _id)} processing?)
-     [:span.form-panel-delimiter]
-     (comp/mui
-       (comp/raised-button
-         {:href  (routes/path-for-frontend :dockerhub-user-info {:id _id})
-          :label "Back"}))]]
-   [:div.form-edit
-    (form/form
-      nil
-      (form-public public))]])
+  (comp/mui
+    (html
+      [:div.Swarmpit-form
+       [:div.Swarmpit-form-context
+        (comp/paper
+          {:className "Swarmpit-paper Swarmpit-form-context"
+           :elevation 0}
+          (comp/grid
+            {:container true
+             :spacing   40}
+            (comp/grid
+              {:item true
+               :xs   12
+               :sm   6}
+              (form-username username)
+              (comp/form-control
+                {:component "fieldset"}
+                (comp/form-group
+                  {}
+                  (comp/form-control-label
+                    {:control (form-public public)
+                     :label   "Public"})))))
+          (html
+            [:div.Swarmpit-form-buttons
+             (comp/button
+               {:variant "contained"
+                :onClick #(dispatch! (routes/path-for-frontend :dockerhub-user-info {:id _id}))
+                :color   "primary"} "Back")
+             (comp/button
+               {:variant "contained"
+                :onClick #(update-user-handler _id)
+                :color   "primary"} "Save")]))]])))
 
 (rum/defc form < rum/reactive
                  mixin-init-form [_]

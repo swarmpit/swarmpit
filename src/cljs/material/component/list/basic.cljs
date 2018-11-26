@@ -37,6 +37,14 @@
                         :className "Swarmpit-table-row-cell"}
                        (render-fn item)))))))) items)))
 
+(defn table-raw
+  [render-metadata items onclick-handler-fn]
+  (cmp/table
+    {:key       "Swarmpit-table"
+     :className "Swarmpit-table"}
+    (table-head render-metadata)
+    (table-body render-metadata items onclick-handler-fn)))
+
 (defn table
   [render-metadata items onclick-handler-fn]
   (cmp/card
@@ -47,11 +55,7 @@
        :subheader (:subheader render-metadata)})
     (cmp/card-content
       {:className "Swarmpit-table-card-content"}
-      (cmp/table
-        {:key       "Swarmpit-table"
-         :className "Swarmpit-table"}
-        (table-head render-metadata)
-        (table-body render-metadata items onclick-handler-fn)))))
+      (table-raw render-metadata items onclick-handler-fn))))
 
 (defn list-item
   [render-metadata index item onclick-handler-fn]
@@ -65,7 +69,7 @@
       (cmp/list-item-text
         (merge
           {:key     (str "Swarmpit-list-item-text-" index)
-           :classes {:primary "Swarmpit-list-item-text-primary"
+           :classes {:primary   "Swarmpit-list-item-text-primary"
                      :secondary "Swarmpit-list-item-text-secondary"}
            :primary (primary-key item)}
           (when secodary-key
@@ -75,6 +79,18 @@
           {:key   (str "Swarmpit-list-status-" index)
            :style {:marginRight "10px"}}
           (status-fn item))))))
+
+(defn list-raw
+  [render-metadata items onclick-handler-fn]
+  (cmp/list
+    {:dense true}
+    (map-indexed
+      (fn [index item]
+        (list-item
+          render-metadata
+          index
+          item
+          onclick-handler-fn)) items)))
 
 (defn list
   [render-metadata items onclick-handler-fn]
@@ -86,15 +102,7 @@
        :subheader "Running: 3, Updating: 5"})
     (cmp/card-content
       {:className "Swarmpit-table-card-content"}
-      (cmp/list
-        {:dense true}
-        (map-indexed
-          (fn [index item]
-            (list-item
-              render-metadata
-              index
-              item
-              onclick-handler-fn)) items)))))
+      (list-raw render-metadata items onclick-handler-fn))))
 
 (rum/defc responsive < rum/reactive
   [render-metadata items onclick-handler-fn]
@@ -108,3 +116,16 @@
        {:only           ["lg" "xl"]
         :implementation "js"}
        (list (:list render-metadata) items onclick-handler-fn))]))
+
+(rum/defc responsive-raw < rum/reactive
+  [render-metadata items onclick-handler-fn]
+  (html
+    [:div
+     (cmp/hidden
+       {:only           ["xs" "sm" "md"]
+        :implementation "js"}
+       (table-raw (:table render-metadata) items onclick-handler-fn))
+     (cmp/hidden
+       {:only           ["lg" "xl"]
+        :implementation "js"}
+       (list-raw (:list render-metadata) items onclick-handler-fn))]))

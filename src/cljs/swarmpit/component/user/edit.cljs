@@ -9,38 +9,51 @@
             [swarmpit.url :refer [dispatch!]]
             [swarmpit.ajax :as ajax]
             [swarmpit.routes :as routes]
+            [sablono.core :refer-macros [html]]
             [rum.core :as rum]))
 
 (enable-console-print!)
 
+(defn- form-username [value]
+  (comp/text-field
+    {:label           "Username"
+     :fullWidth       true
+     :name            "username"
+     :key             "username"
+     :variant         "outlined"
+     :margin          "normal"
+     :value           value
+     :required        true
+     :disabled        true
+     :InputLabelProps {:shrink true}}))
+
 (defn- form-role [value]
-  (form/comp
-    "ROLE"
-    (comp/select-field
-      {:value    value
-       :onChange (fn [_ _ v]
-                   (state/update-value [:role] v state/form-value-cursor))}
-      (comp/menu-item
-        {:key         "fru"
-         :value       "admin"
-         :primaryText "admin"})
-      (comp/menu-item
-        {:key         "fra"
-         :value       "user"
-         :primaryText "user"}))))
+  (comp/text-field
+    {:fullWidth       true
+     :label           "Role"
+     :select          true
+     :value           value
+     :variant         "outlined"
+     :margin          "normal"
+     :InputLabelProps {:shrink true}
+     :onChange        #(state/update-value [:role] (-> % .-target .-value) state/form-value-cursor)}
+    (comp/menu-item
+      {:key   "admin"
+       :value "admin"} "admin")
+    (comp/menu-item
+      {:key   "user"
+       :value "user"} "user")))
 
 (defn- form-email [value]
-  (form/comp
-    "EMAIL"
-    (comp/vtext-field
-      {:name            "email"
-       :key             "email"
-       :required        true
-       :validations     "isEmail"
-       :validationError "Please provide a valid Email"
-       :value           value
-       :onChange        (fn [_ v]
-                          (state/update-value [:email] v state/form-value-cursor))})))
+  (comp/text-field
+    {:label           "Email"
+     :fullWidth       true
+     :variant         "outlined"
+     :value           value
+     :required        true
+     :margin          "normal"
+     :InputLabelProps {:shrink true}
+     :onChange        #(state/update-value [:email] (-> % .-target .-value) state/form-value-cursor)}))
 
 (defn- user-handler
   [user-id]
@@ -80,27 +93,33 @@
 
 (rum/defc form-edit < rum/static [{:keys [_id username role email]}
                                   {:keys [processing? valid?]}]
-  [:div
-   [:div.form-panel
-    [:div.form-panel-left
-     (panel/info icon/users username)]
-    [:div.form-panel-right
-     (comp/progress-button
-       {:label      "Save"
-        :disabled   (not valid?)
-        :primary    true
-        :onTouchTap #(update-user-handler _id)} processing?)
-     [:span.form-panel-delimiter]
-     (comp/mui
-       (comp/raised-button
-         {:href  (routes/path-for-frontend :user-info {:id _id})
-          :label "Back"}))]]
-   [:div.form-edit
-    (form/form
-      {:onValid   #(state/update-value [:valid?] true state/form-state-cursor)
-       :onInvalid #(state/update-value [:valid?] false state/form-state-cursor)}
-      (form-role role)
-      (form-email email))]])
+  (comp/mui
+    (html
+      [:div.Swarmpit-form
+       [:div.Swarmpit-form-context
+        (comp/paper
+          {:className "Swarmpit-paper Swarmpit-form-context"
+           :elevation 0}
+          (comp/grid
+            {:container true
+             :spacing   40}
+            (comp/grid
+              {:item true
+               :xs   12
+               :sm   6}
+              (form-username username)
+              (form-role role)
+              (form-email email)))
+          (html
+            [:div.Swarmpit-form-buttons
+             (comp/button
+               {:variant "contained"
+                :onClick #(dispatch! (routes/path-for-frontend :user-info {:id _id}))
+                :color   "primary"} "Back")
+             (comp/button
+               {:variant "contained"
+                :onClick #(update-user-handler _id)
+                :color   "primary"} "Save")]))]])))
 
 (rum/defc form < rum/reactive
                  mixin-init-form [_]

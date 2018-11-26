@@ -17,29 +17,29 @@
 
 (def editor-id "compose")
 
-(defn form-name [value]
-  (form/comp
-    "STACK NAME"
-    (comp/vtext-field
-      {:name          "stack-name"
-       :key           "stack-name"
-       :underlineShow false
-       :required      true
-       :disabled      true
-       :value         value})))
+(defn- form-name [value]
+  (comp/text-field
+    {:label           "Name"
+     :fullWidth       true
+     :name            "name"
+     :key             "name"
+     :variant         "outlined"
+     :value           value
+     :required        true
+     :disabled        true
+     :InputLabelProps {:shrink true}}))
 
 (defn- form-editor [value]
-  (comp/vtext-field
-    {:id            editor-id
-     :name          "stack-editor"
-     :key           "stack-editor"
-     :validations   "isValidCompose"
-     :multiLine     true
-     :rows          10
-     :rowsMax       10
-     :value         value
-     :underlineShow false
-     :fullWidth     true}))
+  (comp/text-field
+    {:id              editor-id
+     :fullWidth       true
+     :name            "data"
+     :key             "data"
+     :variant         "outlined"
+     :multiline       true
+     :required        true
+     :InputLabelProps {:shrink true}
+     :value           value}))
 
 (defn- update-stack-handler
   [name]
@@ -107,59 +107,56 @@
 (rum/defc editor < mixin-init-editor [spec]
   (form-editor spec))
 
-(def action-menu-item-style
-  {:padding "0px 10px 0px 20px"})
-
-(defn file-select
-  [name value last? previous?]
-  (form/comp
-    "COMPOSE FILE SOURCE"
-    (comp/select-field
-      {:name       "cfs"
-       :key        "cfs"
-       :required   true
-       :inputStyle {:width "270px"}
-       :disabled   false
-       :value      value}
-      (comp/menu-item
-        {:key           "current"
-         :innerDivStyle action-menu-item-style
-         :href          (routes/path-for-frontend :stack-compose {:name name})
-         :value         :current
-         :primaryText   "Current engine state"})
-      (comp/menu-item
-        {:key           "last"
-         :innerDivStyle action-menu-item-style
-         :href          (routes/path-for-frontend :stack-last {:name name})
-         :disabled      (not last?)
-         :value         :last
-         :primaryText   "Last deployed"})
-      (comp/menu-item
-        {:key           "previous"
-         :innerDivStyle action-menu-item-style
-         :href          (routes/path-for-frontend :stack-previous {:name name})
-         :disabled      (not previous?)
-         :value         :previous
-         :primaryText   "Previously deployed (rollback)"}))))
+(defn- form-select [name value last? previous?]
+  (comp/text-field
+    {:fullWidth       true
+     :label           "Compose file"
+     :helperText      "Compose file source"
+     :select          true
+     :value           value
+     :variant         "outlined"
+     :InputLabelProps {:shrink true}
+     :onChange        #(dispatch! (routes/path-for-frontend (keyword (-> % .-target .-value)) {:name name}))}
+    (comp/menu-item
+      {:key   "current"
+       :value :stack-compose} "Current engine state")
+    (comp/menu-item
+      {:key      "last"
+       :value    :stack-last
+       :disabled (not last?)} "Last deployed")
+    (comp/menu-item
+      {:key      "previous"
+       :value    :stack-previous
+       :disabled (not previous?)} "Previously deployed (rollback)")))
 
 (rum/defc form-edit [{:keys [name spec]}
                      {:keys [processing? valid? last? previous?]}]
-  [:div
-   [:div.form-panel
-    [:div.form-panel-left
-     (panel/info icon/stacks name)]
-    [:div.form-panel-right
-     (comp/progress-button
-       {:label      "Deploy"
-        :disabled   (not valid?)
-        :primary    true
-        :onTouchTap #(update-stack-handler name)} processing?)]]
-   (form/form
-     {:onValid   #(state/update-value [:valid?] true state/form-state-cursor)
-      :onInvalid #(state/update-value [:valid?] false state/form-state-cursor)}
-     (form-name name)
-     (html (file-select name :current last? previous?))
-     (editor (:compose spec)))])
+  (comp/mui
+    (html
+      [:div.Swarmpit-form
+       [:div.Swarmpit-form-context
+        (comp/paper
+          {:className "Swarmpit-paper Swarmpit-form-context"
+           :elevation 0}
+          (comp/grid
+            {:container true
+             :spacing   40}
+            (comp/grid
+              {:item true
+               :xs   12
+               :sm   6}
+              (form-name name)
+              (form-select name :current last? previous?))
+            (comp/grid
+              {:item true
+               :xs   12}
+              (form-editor (:compose spec))))
+          (html
+            [:div.Swarmpit-form-buttons
+             (comp/button
+               {:variant "contained"
+                :onClick #(update-stack-handler name)
+                :color   "primary"} "Deploy")]))]])))
 
 (rum/defc form < rum/reactive
                  mixin-init-form [_]

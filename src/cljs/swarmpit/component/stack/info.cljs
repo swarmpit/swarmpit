@@ -3,9 +3,11 @@
             [material.component :as comp]
             [material.component.form :as form]
             [swarmpit.component.message :as message]
+            [material.component.label :as label]
             [swarmpit.component.state :as state]
             [swarmpit.component.mixin :as mixin]
             [swarmpit.component.progress :as progress]
+            [material.component.list.basic :as list]
             [swarmpit.component.service.list :as services]
             [swarmpit.component.network.list :as networks]
             [swarmpit.component.volume.list :as volumes]
@@ -14,10 +16,10 @@
             [swarmpit.ajax :as ajax]
             [swarmpit.url :refer [dispatch!]]
             [swarmpit.routes :as routes]
-            [rum.core :as rum]
-            [material.component.label :as label]
             [swarmpit.docker.utils :as utils]
-            [clojure.string :refer [includes?]]))
+            [clojure.string :refer [includes?]]
+            [sablono.core :refer-macros [html]]
+            [rum.core :as rum]))
 
 (enable-console-print!)
 
@@ -104,111 +106,110 @@
                    (message/error
                      (str "Stack rollback failed. " (:error response))))}))
 
-(def action-menu-style
-  {:position   "relative"
-   :marginTop  "13px"
-   :marginLeft "66px"})
+(defn form-actions
+  [{:keys [params]}]
+  (let [stackfile (state/react state/form-value-cursor)]
+    [{:button (comp/icon-button
+                {:color   "inherit"
+                 :onClick (fn []
+                            (dispatch!
+                              (routes/path-for-frontend :stack-compose {:name (:name params)})))}
+                (comp/svg icon/edit))
+      :name   "Edit stack"}
+     {:button (comp/icon-button
+                {:color    "inherit"
+                 :disabled (not (some? (:spec stackfile)))
+                 :onClick  #(redeploy-stack-handler (:name params))}
+                (comp/svg icon/redeploy))
+      :name   "Redeploy stack"}
+     {:button (comp/icon-button
+                {:color    "inherit"
+                 :onClick  #(rollback-stack-handler (:name params))
+                 :disabled (not (some? (:previousSpec stackfile)))}
+                (comp/svg icon/rollback))
+      :name   "Rollback stack"}
+     {:button (comp/icon-button
+                {:color   "inherit"
+                 :onClick #(delete-stack-handler (:name params))}
+                (comp/svg icon/trash))
+      :name   "Delete stack"}]))
 
-(def action-menu-item-style
-  {:padding "0px 10px 0px 52px"})
-
-(defn- form-action-menu [stack-name stackfile opened?]
-  (comp/mui
-    (comp/icon-menu
-      {:iconButtonElement (comp/icon-button nil nil)
-       :open              opened?
-       :style             action-menu-style
-       :onRequestChange   (fn [state] (state/update-value [:menu?] state state/form-state-cursor))}
-      (comp/menu-item
-        {:key           "action-edit"
-         :innerDivStyle action-menu-item-style
-         :leftIcon      (comp/svg nil icon/edit)
-         :onClick       (fn []
-                          (dispatch!
-                            (routes/path-for-frontend :stack-compose {:name stack-name})))
-         :primaryText   "Edit"})
-      (comp/menu-item
-        {:key           "action-redeploy"
-         :innerDivStyle action-menu-item-style
-         :leftIcon      (comp/svg nil icon/redeploy)
-         :onClick       #(redeploy-stack-handler stack-name)
-         :disabled      (not (some? (:spec stackfile)))
-         :primaryText   "Redeploy"})
-      (comp/menu-item
-        {:key           "action-rollback"
-         :innerDivStyle action-menu-item-style
-         :leftIcon      (comp/svg nil icon/rollback)
-         :onClick       #(rollback-stack-handler stack-name)
-         :disabled      (not (some? (:previousSpec stackfile)))
-         :primaryText   "Rollback"})
-      (comp/menu-item
-        {:key           "action-delete"
-         :innerDivStyle action-menu-item-style
-         :leftIcon      (comp/svg nil icon/trash)
-         :onClick       #(delete-stack-handler stack-name)
-         :primaryText   "Delete"}))))
-
-(defn- stack-render-item
-  [stack-name name-key default-render-item]
-  (fn [item row]
-    (case (key item)
-      :stack (if (not= stack-name (val item))
-               (label/info "external"))
-      (if (= name-key (key item))
-        (if (= stack-name (:stack row))
-          (utils/trim-stack stack-name (val item))
-          (val item))
-        (default-render-item item row)))))
+;(defn- stack-render-item
+;  [stack-name name-key default-render-item]
+;  (fn [item row]
+;    (case (key item)
+;      :stack (if (not= stack-name (val item))
+;               (label/info "external"))
+;      (if (= name-key (key item))
+;        (if (= stack-name (:stack row))
+;          (utils/trim-stack stack-name (val item))
+;          (val item))
+;        (default-render-item item row)))))
 
 (rum/defc form-services < rum/static [stack-name services]
-  (when (not-empty services)
-    [:div.form-layout-group
-     (form/subsection "Services")
-     (list/table (map :name services/headers)
-                 (sort-by :serviceName services)
-                 (stack-render-item stack-name :serviceName services/render-item)
-                 services/render-item-keys
-                 services/onclick-handler)]))
+  (comp/card
+    {:className "Swarmpit-form-card"}
+    (comp/card-header
+      {:className "Swarmpit-form-card-header"
+       :title     "Services"})
+    (comp/card-content
+      {}
+      (list/responsive-raw
+        services/render-metadata
+        (sort-by :serviceName services)
+        services/onclick-handler))))
 
 (rum/defc form-networks < rum/static [stack-name networks]
-  (when (not-empty networks)
-    [:div.form-layout-group.form-layout-group-border
-     (form/subsection "Networks")
-     (list/table (map :name networks/headers)
-                 (sort-by :networkName networks)
-                 (stack-render-item stack-name :networkName networks/render-item)
-                 (conj networks/render-item-keys [:stack])
-                 networks/onclick-handler)]))
+  (comp/card
+    {:className "Swarmpit-form-card"}
+    (comp/card-header
+      {:className "Swarmpit-form-card-header"
+       :title     "Networks"})
+    (comp/card-content
+      {}
+      (list/responsive-raw
+        networks/render-metadata
+        (sort-by :networkName networks)
+        networks/onclick-handler))))
 
 (rum/defc form-volumes < rum/static [stack-name volumes]
-  (when (not-empty volumes)
-    [:div.form-layout-group.form-layout-group-border
-     (form/subsection "Volumes")
-     (list/table (map :name volumes/headers)
-                 (sort-by :volumeName volumes)
-                 (stack-render-item stack-name :volumeName volumes/render-item)
-                 (conj volumes/render-item-keys [:stack])
-                 volumes/onclick-handler)]))
+  (comp/card
+    {:className "Swarmpit-form-card"}
+    (comp/card-header
+      {:className "Swarmpit-form-card-header"
+       :title     "Volumes"})
+    (comp/card-content
+      {}
+      (list/responsive-raw
+        volumes/render-metadata
+        (sort-by :volumeName volumes)
+        volumes/onclick-handler))))
 
 (rum/defc form-configs < rum/static [stack-name configs]
-  (when (not-empty configs)
-    [:div.form-layout-group.form-layout-group-border
-     (form/subsection "Configs")
-     (list/table (map :name configs/headers)
-                 (sort-by :configName configs)
-                 (stack-render-item stack-name :configName configs/render-item)
-                 (conj configs/render-item-keys [:stack])
-                 configs/onclick-handler)]))
+  (comp/card
+    {:className "Swarmpit-form-card"}
+    (comp/card-header
+      {:className "Swarmpit-form-card-header"
+       :title     "Configs"})
+    (comp/card-content
+      {}
+      (list/responsive-raw
+        configs/render-metadata
+        (sort-by :configName configs)
+        configs/onclick-handler))))
 
 (rum/defc form-secrets < rum/static [stack-name secrets]
-  (when (not-empty secrets)
-    [:div.form-layout-group.form-layout-group-border
-     (form/subsection "Secrets")
-     (list/table (map :name configs/headers)
-                 (sort-by :secretName secrets)
-                 (stack-render-item stack-name :secretName secrets/render-item)
-                 (conj secrets/render-item-keys [:stack])
-                 secrets/onclick-handler)]))
+  (comp/card
+    {:className "Swarmpit-form-card"}
+    (comp/card-header
+      {:className "Swarmpit-form-card-header"
+       :title     "Secrets"})
+    (comp/card-content
+      {}
+      (list/responsive-raw
+        secrets/render-metadata
+        (sort-by :secretName secrets)
+        secrets/onclick-handler))))
 
 (defn- init-form-state
   []
@@ -227,27 +228,38 @@
       (stackfile-handler name))))
 
 (rum/defc form-info < rum/static [stack-name
-                                  {:keys [services networks volumes configs secrets stackfile]}
-                                  {:keys [menu?]}]
-  [:div
-   [:div.form-panel
-    [:div.form-panel-left
-     (panel/info icon/stacks stack-name)]
-    [:div.form-panel-right
-     [:div
-      (comp/mui
-        (comp/raised-button
-          {:onClick       (fn [_] (state/update-value [:menu?] true state/form-state-cursor))
-           :icon          (comp/button-icon icon/expand-18)
-           :labelPosition "before"
-           :label         "Actions"}))
-      (form-action-menu stack-name stackfile menu?)]]]
-   [:div.form-layout
-    (form-services stack-name services)
-    (form-networks stack-name networks)
-    (form-volumes stack-name volumes)
-    (form-configs stack-name configs)
-    (form-secrets stack-name secrets)]])
+                                  {:keys [services networks volumes configs secrets stackfile]}]
+  (comp/mui
+    (html
+      [:div.Swarmpit-form
+       [:div.Swarmpit-form-context
+        (comp/grid
+          {:container true
+           :spacing   40}
+          (comp/grid
+            {:item true
+             :xs   12}
+            (form-services stack-name services))
+          (when (not-empty networks)
+            (comp/grid
+              {:item true
+               :xs   12}
+              (form-networks stack-name networks)))
+          (when (not-empty secrets)
+            (comp/grid
+              {:item true
+               :xs   12}
+              (form-secrets stack-name secrets)))
+          (when (not-empty configs)
+            (comp/grid
+              {:item true
+               :xs   12}
+              (form-configs stack-name configs)))
+          (when (not-empty volumes)
+            (comp/grid
+              {:item true
+               :xs   12}
+              (form-volumes stack-name volumes))))]])))
 
 (rum/defc form < rum/reactive
                  mixin-init-form
@@ -256,4 +268,4 @@
         item (state/react state/form-value-cursor)]
     (progress/form
       (:loading? state)
-      (form-info name item state))))
+      (form-info name item))))

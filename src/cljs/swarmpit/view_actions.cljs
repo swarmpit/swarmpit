@@ -3,18 +3,18 @@
             [swarmpit.component.page-403 :as page-403]
             [swarmpit.component.page-404 :as page-404]
             [swarmpit.component.page-error :as page-error]
-    ;[swarmpit.component.password :as password]
-    ;[swarmpit.component.api-access :as api-access]
-    ;[swarmpit.component.stack.edit :as stack-edit]
-    ;[swarmpit.component.stack.compose :as stack-compose]
-    ;[swarmpit.component.stack.create :as stack-create]
-    ;[swarmpit.component.stack.info :as stack-info]
+            [swarmpit.component.password :as password]
+            [swarmpit.component.api-access :as api-access]
+            [swarmpit.component.stack.edit :as stack-edit]
+            [swarmpit.component.stack.compose :as stack-compose]
+            [swarmpit.component.stack.create :as stack-create]
+            [swarmpit.component.stack.info :as stack-info]
             [swarmpit.component.stack.list :as stack-list]
             [swarmpit.component.service.create-config :as service-config]
             [swarmpit.component.service.create-image :as service-image]
             [swarmpit.component.service.edit :as service-edit]
             [swarmpit.component.service.info :as service-info]
-            ;[swarmpit.component.service.log :as service-log]
+    ;[swarmpit.component.service.log :as service-log]
             [swarmpit.component.service.list :as service-list]
             [swarmpit.component.network.create :as network-create]
             [swarmpit.component.network.info :as network-info]
@@ -36,15 +36,15 @@
             [swarmpit.component.user.list :as user-list]
             [swarmpit.component.user.info :as user-info]
             [swarmpit.component.user.create :as user-create]
-    ;[swarmpit.component.user.edit :as user-edit]
+            [swarmpit.component.user.edit :as user-edit]
             [swarmpit.component.registry.info :as registry-info]
             [swarmpit.component.registry.list :as registry-list]
             [swarmpit.component.registry.create :as registry-create]
-    ;[swarmpit.component.registry.edit :as registry-edit]
+            [swarmpit.component.registry.edit :as registry-edit]
             [swarmpit.component.dockerhub.info :as dockerhub-info]
             [swarmpit.component.dockerhub.list :as dockerhub-list]
             [swarmpit.component.dockerhub.create :as dockerhub-create]
-    ;[swarmpit.component.dockerhub.edit :as dockerhub-edit]
+            [swarmpit.component.dockerhub.edit :as dockerhub-edit]
             ))
 
 (defmulti render (fn [route] (:handler route)))
@@ -73,8 +73,9 @@
    :actions   stack-list/form-actions})
 
 (defmethod render :stack-info
-  [_]
-  {:title "Stacks"})
+  [route]
+  {:title   "Stacks"
+   :actions (stack-info/form-actions route)})
 
 (defmethod render :stack-create
   [_]

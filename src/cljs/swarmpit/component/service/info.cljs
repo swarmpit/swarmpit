@@ -221,8 +221,7 @@
                 {:item true
                  :xs   12
                  :sm   6}
-                (logdriver/form logdriver)))
-            )]]))))
+                (logdriver/form logdriver))))]]))))
 
 (rum/defc form < rum/reactive
                  mixin-init-form

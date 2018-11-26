@@ -327,9 +327,12 @@ a {
 }
 
 .Swarmpit-form-buttons {
-    margin-top: 15px;
     display: flex;
     justify-content: flex-end;
+}
+
+.Swarmpit-form-buttons > * {
+    margin: 5px !important;
 }
 
 .Swarmpit-form-section {

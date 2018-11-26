@@ -1,7 +1,6 @@
 (ns swarmpit.component.stack.edit
   (:require [material.icon :as icon]
             [material.component :as comp]
-            [material.component.form :as form]
             [swarmpit.component.editor :as editor]
             [swarmpit.component.state :as state]
             [swarmpit.component.mixin :as mixin]
@@ -19,18 +18,29 @@
 
 (def editor-id "compose")
 
+(defn- form-name [value]
+  (comp/text-field
+    {:label           "Name"
+     :fullWidth       true
+     :name            "name"
+     :key             "name"
+     :variant         "outlined"
+     :value           value
+     :required        true
+     :disabled        true
+     :InputLabelProps {:shrink true}}))
+
 (defn- form-editor [value]
-  (comp/vtext-field
-    {:id            editor-id
-     :name          "stack-editor"
-     :key           "stack-editor"
-     :validations   "isValidCompose"
-     :multiLine     true
-     :rows          10
-     :rowsMax       10
-     :value         value
-     :underlineShow false
-     :fullWidth     true}))
+  (comp/text-field
+    {:id              editor-id
+     :fullWidth       true
+     :name            "data"
+     :key             "data"
+     :variant         "outlined"
+     :multiline       true
+     :required        true
+     :InputLabelProps {:shrink true}
+     :value           value}))
 
 (defn- update-stack-handler
   [name]
@@ -86,25 +96,35 @@
 (rum/defc form-edit < mixin-init-editor [{:keys [name spec]}
                                          select
                                          {:keys [processing? valid? previous?]}]
-  [:div
-   [:div.form-panel
-    [:div.form-panel-left
-     (panel/info icon/stacks name)]
-    [:div.form-panel-right
-     (comp/progress-button
-       {:label      "Deploy"
-        :disabled   (not valid?)
-        :primary    true
-        :onTouchTap #(update-stack-handler name)} processing?)]]
-   (form/form
-     {:onValid   #(state/update-value [:valid?] true state/form-state-cursor)
-      :onInvalid #(state/update-value [:valid?] false state/form-state-cursor)}
-     (compose/form-name name)
-     (html (compose/file-select name select true previous?))
-     (form-editor (:compose spec)))])
+  (comp/mui
+    (html
+      [:div.Swarmpit-form
+       [:div.Swarmpit-form-context
+        (comp/paper
+          {:className "Swarmpit-paper Swarmpit-form-context"
+           :elevation 0}
+          (comp/grid
+            {:container true
+             :spacing   40}
+            (comp/grid
+              {:item true
+               :xs   12
+               :sm   6}
+              (form-name name)
+              (compose/form-select name select true previous?))
+            (comp/grid
+              {:item true
+               :xs   12}
+              (form-editor (:compose spec))))
+          (html
+            [:div.Swarmpit-form-buttons
+             (comp/button
+               {:variant "contained"
+                :onClick #(update-stack-handler name)
+                :color   "primary"} "Deploy")]))]])))
 
 (rum/defc form-last < rum/reactive
-                 mixin-init-form [_]
+                      mixin-init-form [_]
   (let [state (state/react state/form-state-cursor)
         stackfile (state/react state/form-value-cursor)]
     (progress/form
@@ -112,7 +132,7 @@
       (form-edit stackfile :last state))))
 
 (rum/defc form-previous < rum/reactive
-                 mixin-init-form [_]
+                          mixin-init-form [_]
   (let [state (state/react state/form-state-cursor)
         stackfile (state/react state/form-value-cursor)]
     (progress/form
