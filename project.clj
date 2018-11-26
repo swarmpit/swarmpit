@@ -19,6 +19,7 @@
                  [cljsjs/js-yaml "3.3.1-0"]
                  [cljsjs/recharts "1.1.0-3"]
                  [rum "0.11.2" :exclusions [cljsjs/react cljsjs/react-dom]]
+                 [sablono "0.8.4"]
                  [ring "1.6.3" :exclusions [ring/ring-jetty-adapter]]
                  [ring/ring-json "0.4.0"]
                  [ring/ring-defaults "0.3.1" :exclusions [ring/ring-core]]

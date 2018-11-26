@@ -140,7 +140,8 @@
      state)})
 
 (rum/defc drawer-content < rum/static [version page-domain docker-api]
-  [(html
+  [:*
+   (html
      [:div.Swarmpit-toolbar
       [:div.Swarmpit-title
        (drawer-title-name)
@@ -153,9 +154,11 @@
              handler (:handler menu-item)
              domain (:domain menu-item)
              selected (= page-domain domain)]
-         (if (some? icon)
-           (drawer-item name icon handler selected)
-           (drawer-category name))))
+         (rum/with-key
+           (if (some? icon)
+             (drawer-item name icon handler selected)
+             (drawer-category name))
+           name)))
      (let [fmenu (filter-menu docker-api)]
        (if (storage/admin?)
          (concat fmenu admin-menu)
