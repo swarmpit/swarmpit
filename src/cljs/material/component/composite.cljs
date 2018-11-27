@@ -21,8 +21,7 @@
 (defn autocomplete-input [props]
   (let [{:keys [inputRef] :as p} (keywordize-keys (js->clj props))]
     (html
-      [:div (merge {:ref                   inputRef
-                    :backspaceRemovesValue true}
+      [:div (merge {:ref inputRef}
                    (dissoc p :inputRef))])))
 
 (defn autocomplete-no-options-mssg [props]
