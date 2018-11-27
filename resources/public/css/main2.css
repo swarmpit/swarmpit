@@ -493,6 +493,10 @@ a {
     color: rgb(158, 158, 158);
 }
 
+.Swarmpit-service-slider-title {
+    padding-bottom: 10px;
+}
+
 /* NODE */
 
 .node-item-header {

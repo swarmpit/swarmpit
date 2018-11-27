@@ -4,6 +4,7 @@
             [swarmpit.component.state :as state]
             [material.component.composite :as composite]
             [swarmpit.component.service.form-ports :as ports]
+            [swarmpit.component.service.form-networks :as networks]
             [swarmpit.component.parser :refer [parse-int]]
             [swarmpit.ajax :as ajax]
             [swarmpit.routes :as routes]
@@ -154,6 +155,9 @@
           {:item true
            :xs   12
            :sm   6} (form-replicas replicas)))
+      (comp/grid
+        {:item true
+         :xs   12} (networks/form))
       (comp/grid
         {:item true
          :xs   12} (form-command (str/join " " command))))))

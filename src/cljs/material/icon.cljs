@@ -70,6 +70,8 @@
 (def storage (f/storage-icon))
 (def device-hub (f/device-hub-icon))
 (def error (f/error-icon))
+(def info (f/info-icon))
+
 (def warning (f/warning-icon))
 (def sync (f/sync-icon))
 (def add-circle (f/add-circle-icon))

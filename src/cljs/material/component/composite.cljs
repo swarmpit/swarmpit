@@ -59,7 +59,7 @@
     (cmp/paper
       (merge innerProps
              {:style {:position  "absolute"
-                      :zIndex    1
+                      :zIndex    2
                       :marginTop 8
                       :left      0
                       :right     0}}) (goog.object/get props "children"))))
