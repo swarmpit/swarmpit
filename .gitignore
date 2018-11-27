@@ -1,5 +1,6 @@
 *.class
 *.jar
+!/repo/**/*.jar
 /.lein-*
 /.cljs_rhino_repl/
 /.nrepl-port
