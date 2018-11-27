@@ -19,11 +19,14 @@
 
 (defn autocomplete-input [props]
   (let [{:keys [inputRef] :as p} (keywordize-keys (js->clj props))]
-    (js/console.log props)
-
     (html
-      [:div (merge {:ref inputRef}
+      [:div (merge {:ref                   inputRef
+                    :backspaceRemovesValue true}
                    (dissoc p :inputRef))])))
+
+(defn autocomplete-single-value [props]
+  (let [{:keys [innerProps children]} (keywordize-keys (js->clj props))]
+    (cmp/typography innerProps children)))
 
 (defn autocomplete-value-container [props]
   (html
@@ -37,22 +40,23 @@
 
 (defn autocomplete-control [props]
   (let [{:keys [innerRef innerProps children selectProps]} (keywordize-keys (js->clj props))]
-    (js/console.log (goog.object/get props "children"))
+
+    (js/console.log selectProps)
+
+
     (cmp/text-field
       (merge (:textFieldProps selectProps)
              {:fullWidth  true
               :variant    "outlined"
               :margin     "normal"
-              ;:value      (:value selectProps)
               :InputProps {:inputComponent autocomplete-input
                            :inputProps     (merge innerProps
                                                   {:style    {:display "flex"
                                                               :padding "10px 5px"}
-                                                   :value    (:value selectProps)
                                                    :inputRef innerRef
                                                    :children children})}}))))
 
-(defn- autocomplete-option [props]
+(defn autocomplete-option [props]
   (let [{:keys [innerRef isFocused children isSelected innerProps]} (keywordize-keys (js->clj props))]
     (cmp/menu-item
       (merge innerProps
@@ -66,8 +70,8 @@
     {}
     (cmp/react-select
       (merge props
-             {:components {:Control autocomplete-control
-                           ;:Option         autocomplete-option
-                           ;:ValueContainer autocomplete-value-container
-
+             {:components {:Control        autocomplete-control
+                           :Option         autocomplete-option
+                           :ValueContainer autocomplete-value-container
+                           :SingleValue    autocomplete-single-value
                            }}))))

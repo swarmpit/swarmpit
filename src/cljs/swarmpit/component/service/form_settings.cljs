@@ -38,7 +38,6 @@
       {:options        suggestions
        :textFieldProps {:label           "Tag"
                         :InputLabelProps {:shrink true}}
-       :value          (:tag value)
        :onChange       #(state/update-value [:repository :tag] (-> % .-value) form-value-cursor)
        :placeholder    "Search a tag"})))
 ;
@@ -141,13 +140,7 @@
         {:item true
          :xs   12
          :sm   6}
-        ;(form-image-tag-r repository tags tagMenuSuggestions)
-
-        ;(composite/autocomplete repository tags nil nil)
-
-        (form-image-tag repository tags)
-
-        )
+        (form-image-tag repository tags))
       (comp/grid
         {:item true
          :xs   12} (form-name serviceName update-form?))
