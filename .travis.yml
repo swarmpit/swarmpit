@@ -23,6 +23,7 @@ install:
   - bash dev/script/init-agent.sh
   - bash dev/script/start-dind.sh
 script:
+  - lein deps
   - lein test :all
   - bash dev/script/deploy-image.sh
 notifications:
