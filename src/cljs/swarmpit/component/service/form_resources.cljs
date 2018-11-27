@@ -22,7 +22,8 @@
 (defn- form-cpu-reservation [value]
   (html
     [:div.Swarmpit-margin-normal
-     [:div (str "CPU  " "(" (cpu-value value) ")")]
+     [:div.Swarmpit-service-slider-title
+      (str "CPU  " "(" (cpu-value value) ")")]
      [:div
       (comp/rc-slider
         {:min          0
@@ -50,7 +51,8 @@
 (defn- form-cpu-limit [value]
   (html
     [:div.Swarmpit-margin-normal
-     [:div (str "CPU  " "(" (cpu-value value) ")")]
+     [:div.Swarmpit-service-slider-title
+      (str "CPU  " "(" (cpu-value value) ")")]
      [:div
       (comp/rc-slider
         {:min          0
