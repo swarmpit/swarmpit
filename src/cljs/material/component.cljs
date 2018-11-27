@@ -338,22 +338,6 @@
 
 
 
-(defn auto-complete
-  ([props] (f/auto-complete (clj->js props)))
-  ([] (f/auto-complete nil)))
-
-(defn toogle
-  ([props] (f/toogle (clj->js props)))
-  ([] (f/toogle nil)))
-
-
-
-
-
-(defn refresh-indicator
-  ([props] (f/refresh-indicator (clj->js props)))
-  ([] (f/refresh-indicator nil)))
-
 (defn flat-button
   ([props] (f/flat-button (clj->js props)))
   ([] (f/flat-button nil)))
@@ -367,8 +351,6 @@
   [props & childs]
   (f/dialog (clj->js props) childs))
 
-
-
 (defn icon-menu
   [props & childs]
   (f/icon-menu (clj->js props) childs))
@@ -376,38 +358,6 @@
 (defn select-field
   [props & childs]
   (f/select-field (clj->js props) childs))
-
-
-
-(defn button-icon
-  [icon]
-  (html [:svg {:width  "18"
-               :height "18"
-               :fill   "rgb(117, 117, 117)"}
-         [:path {:d icon}]]))
-
-;;; Composite components
-
-;(defn vtextfield [props]
-;  (vtext-field
-;    (merge props
-;           {:required      true
-;            :underlineShow false
-;            :inputStyle    {:color "rgb(117, 117, 117)"}})))
-
-(defn loader [props]
-  (refresh-indicator
-    (merge props
-           {:size  30
-            :left  8
-            :style {:display  "inline-block"
-                    :position "relative"}})))
-
-(defn autocomplete [props]
-  (auto-complete
-    (merge props
-           {:listStyle {:overflow-y "scroll"
-                        :maxHeight  "230px"}})))
 
 (defn progress-button [props progress?]
   (let [disabled? (:disabled props)]

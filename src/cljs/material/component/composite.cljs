@@ -1,5 +1,6 @@
 (ns material.component.composite
   (:require [goog.object]
+            [material.icon :as icon]
             [material.component :as cmp]
             [sablono.core :refer-macros [html]]
             [clojure.walk :refer [keywordize-keys]]))
@@ -45,7 +46,15 @@
   (let [{:keys [innerProps children]} (keywordize-keys (js->clj props))]
     (cmp/typography
       (merge innerProps
-             {:style {:fontSize 16}}) children)))
+             {:style {:fontSize 16}} children))))
+
+(defn autocomplete-multi-value [props]
+  (let [{:keys [removeProps children]} (keywordize-keys (js->clj props))]
+    (cmp/chip
+      {:tabIndex   -1
+       :onDelete   (:onClick removeProps)
+       :deleteIcon (icon/cancel removeProps)
+       :label      children})))
 
 (defn autocomplete-menu [props]
   (let [{:keys [innerProps]} (keywordize-keys (js->clj props))]
@@ -99,6 +108,7 @@
                            :Option           autocomplete-option
                            :ValueContainer   autocomplete-value-container
                            :SingleValue      autocomplete-single-value
+                           :MultiValue       autocomplete-multi-value
                            :Placeholder      autocomplete-placeholder
                            :NoOptionsMessage autocomplete-no-options-mssg
                            :Menu             autocomplete-menu}}))))

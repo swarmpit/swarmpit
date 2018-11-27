@@ -71,10 +71,13 @@
 (def device-hub (f/device-hub-icon))
 (def error (f/error-icon))
 (def warning (f/warning-icon))
-(def cancel (f/cancel-icon))
 (def sync (f/sync-icon))
 (def add-circle (f/add-circle-icon))
 (def more (f/more-icon))
+
+(defn cancel
+  [props]
+  (f/cancel-icon (clj->js props)))
 
 (defn access-time
   [props]

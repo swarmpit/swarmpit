@@ -150,7 +150,4 @@
 (def icon-menu (create-factory js/MaterialUI.IconMenu))
 (def flat-button (create-factory js/MaterialUI.FlatButton))
 (def raised-button (create-factory js/MaterialUI.RaisedButton))
-(def toogle (create-factory js/MaterialUI.Toggle))
-(def refresh-indicator (create-factory js/MaterialUI.RefreshIndicator))
-
 (def select-field (create-factory js/MaterialUI.SelectField))
