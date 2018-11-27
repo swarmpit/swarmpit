@@ -4,5 +4,5 @@
   <modelVersion>4.0.0</modelVersion>
   <groupId>cljsjs</groupId>
   <artifactId>react-select</artifactId>
-  <version>2.1.2</version>
+  <version>2.1.1</version>
 </project>
