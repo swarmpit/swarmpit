@@ -16,13 +16,17 @@
 (enable-console-print!)
 
 (defn- node-item-header [item]
-  [:div
-   [:span
-    [:svg.node-item-ico {:width  "24"
-                         :height "24"
-                         :fill   "rgb(117, 117, 117)"}
-     [:path {:d (icon/os (:os item))}]]]
-   [:span [:b (:nodeName item)]]])
+  (comp/card-header
+    {:title
+     (html
+       [:div.node-item-header
+        [:span.node-item-header-os-icon
+         [:svg.node-item-ico {:width "24"
+                              :height "24"
+                              :fill "rgb(117, 117, 117)"}
+          [:path {:d (icon/os (:os item))}]]]
+        [:span [:b (:nodeName item)]]])
+     :className "Swarmpit-node-card-header"}))
 
 (defn- node-item-state [value]
   (case value
@@ -30,22 +34,25 @@
     "down" (label/red value)))
 
 (defn- node-item-states [item]
-  [:div.node-item-states
-   [:span.node-item-state (node-item-state (:state item))]
-   (when (:leader item)
-     [:span.node-item-state (label/blue "leader")])
-   [:span.node-item-state (label/blue (:role item))]
-   [:span.node-item-state (if (= "active" (:availability item))
-                            (label/blue "active")
-                            (label/yellow (:availability item)))]])
+  (comp/card-content
+    {}
+    (html
+      [:div.node-item-states
+       [:span.node-item-state (node-item-state (:state item))]
+       (when (:leader item)
+         [:span.node-item-state (label/blue "leader")])
+       [:span.node-item-state (label/blue (:role item))]
+       [:span.node-item-state (if (= "active" (:availability item))
+                                (label/blue "active")
+                                (label/yellow (:availability item)))]])))
 
-(defn- node-item-engine [item]
-  [:div
-   [:span.node-item-secondary "docker " (:engine item)]])
-
-(defn- node-item-address [item]
-  [:div
-   [:span.node-item-secondary (:address item)]])
+(defn- node-item-engine-and-address [item]
+  (comp/card-content
+    {}
+    (html
+      [:div.node-item-engine-and-address
+       [:span.node-item-secondary "docker " (:engine item)]
+       [:span.node-item-secondary (:address item)]])))
 
 (defn- node-item-usage [stat]
   (let [stat-string (str (gstring/format "%.2f" stat) "%")]
@@ -58,40 +65,54 @@
   (let [cpu (-> item :resources :cpu (int))
         memory-bytes (-> item :resources :memory (* 1024 1024))
         disk-bytes (-> item :stats :disk :total)]
-    [:div
-     [:table.node-progress-table
-      [:tr
-       [:td]
-       [:td]
-       [:td]]
-      [:tr.node-progress-table-name
-       [:td "CPU"]
-       [:td "DISK"]
-       [:td "MEMORY"]]
-      [:tr
-       [:td (str cpu " " (clojure.contrib.inflect/pluralize-noun cpu "core"))]
-       [:td (if (some? disk-bytes)
-              (humanize/filesize disk-bytes :binary false)
-              "-")]
-       [:td (humanize/filesize memory-bytes :binary false)]]
-      (when (some? (:stats item))
-        [:tr.node-progress-table-usage
-         (node-item-usage (get-in item [:stats :cpu :usedPercentage]))
-         (node-item-usage (get-in item [:stats :disk :usedPercentage]))
-         (node-item-usage (get-in item [:stats :memory :usedPercentage]))])]]))
+    (comp/card-content
+      {}
+      (html
+        [:table.node-progress-table
+         {:style {:width "100%"}}
+         [:tbody
+          [:tr.node-progress-table-icons
+           [:td
+            [:img.hardware-icon {:src "img/icons-svg/cpu.svg" :alt "CPU"}]]
+           [:td
+            [:img.hardware-icon {:src "img/icons-svg/disk.svg" :alt "Disk"}]]
+           [:td
+            [:img.hardware-icon {:src "img/icons-svg/memory.svg" :alt "Memory"}]]]
+          [:tr.node-progress-table-name
+           [:td "CPU"]
+           [:td "DISK"]
+           [:td "MEMORY"]]
+          [:tr.node-progress-table-values
+           [:td (str cpu " " (clojure.contrib.inflect/pluralize-noun cpu "core"))]
+           [:td (if (some? disk-bytes)
+                  (humanize/filesize disk-bytes :binary false)
+                  "-")]
+           [:td (humanize/filesize memory-bytes :binary false)]]
+          (when (some? (:stats item))
+            [:tr.node-progress-table-usage
+             (node-item-usage (get-in item [:stats :cpu :usedPercentage]))
+             (node-item-usage (get-in item [:stats :disk :usedPercentage]))
+             (node-item-usage (get-in item [:stats :memory :usedPercentage]))])]]))))
 
 (defn- node-item
   [item]
-  (html
-    [:div.mdl-cell.node-item {:key (:id item)}
-     [:a {:href  (str "/#/nodes/" (:id item))
-          :style {:color          "inherit"
-                  :textDecoration "inherit"}}
-      (node-item-header item)
-      (node-item-engine item)
-      (node-item-address item)
-      (node-item-states item)
-      (node-item-stats item)]]))
+  (comp/grid
+    {:item true
+     :xs 12
+     :sm 6
+     :lg 4
+     :xl 3}
+    (comp/card
+      {:className "Swarmpit-form-card"}
+      (html
+        [:div.node-item
+         [:a {:href (str "/#/nodes/" (:id item))
+              :style {:color "inherit"
+                      :textDecoration "inherit"}}
+          (node-item-header item)
+          (node-item-engine-and-address item)
+          (node-item-states item)
+          (node-item-stats item)]]))))
 
 (defn- nodes-handler
   []
@@ -119,14 +140,16 @@
                  mixin/subscribe-form
                  mixin/focus-filter [_]
   (let [{:keys [items]} (state/react state/form-value-cursor)
-        {:keys [filter]} (state/react state/form-state-cursor)
-        ;filtered-items (list/filter items (:query filter))
-
-        ]
+        {:keys [filter]} (state/react state/form-state-cursor)]
+    ;filtered-items (list/filter items (:query filter))
     (comp/mui
       (html
         [:div.Swarmpit-form
          [:div.Swarmpit-form-context
-          [:div.content-grid.mdl-grid
-           (->> (sort-by :nodeName items)
-                (map #(node-item %)))]]]))))
+          (comp/grid
+            {:container true
+             :spacing 40}
+            (->> (sort-by :nodeName items)
+                 ;(map #(rum/with-key (node-item %) (:id %)))
+                 (map #(node-item %))))]]))))
+
