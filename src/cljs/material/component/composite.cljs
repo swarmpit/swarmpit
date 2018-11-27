@@ -43,10 +43,9 @@
                       :padding  "10px 15px"}}) children)))
 
 (defn autocomplete-single-value [props]
-  (let [{:keys [innerProps children]} (keywordize-keys (js->clj props))]
+  (let [{:keys [children]} (keywordize-keys (js->clj props))]
     (cmp/typography
-      (merge innerProps
-             {:style {:fontSize 16}} children))))
+      {:style {:fontSize 16}} children)))
 
 (defn autocomplete-multi-value [props]
   (let [{:keys [removeProps children]} (keywordize-keys (js->clj props))]
