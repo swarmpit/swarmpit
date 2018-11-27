@@ -79,19 +79,19 @@
 
 (defmethod render :stack-create
   [_]
-  {:title "Stacks / Create"})
+  {:title "Stacks"})
 
 (defmethod render :stack-last
   [_]
-  {:title "Stacks / Edit"})
+  {:title "Stacks"})
 
 (defmethod render :stack-previous
   [_]
-  {:title "Stacks / Edit"})
+  {:title "Stacks"})
 
 (defmethod render :stack-compose
   [_]
-  {:title "Stacks / Edit"})
+  {:title "Stacks"})
 
 ;;; Service view
 
@@ -108,19 +108,19 @@
 
 (defmethod render :service-log
   [_]
-  {:title "Services / Log"})
+  {:title "Services"})
 
 (defmethod render :service-create-image
   [_]
-  {:title "Services / Wizard"})
+  {:title "Services"})
 
 (defmethod render :service-create-config
   [_]
-  {:title "Services / Wizard"})
+  {:title "Services"})
 
 (defmethod render :service-edit
   [_]
-  {:title "Services / Edit"})
+  {:title "Services"})
 
 ;;; Network view
 
@@ -137,7 +137,7 @@
 
 (defmethod render :network-create
   [_]
-  {:title "Networks / Create"})
+  {:title "Networks"})
 
 ;;; Node view
 
@@ -152,7 +152,7 @@
 
 (defmethod render :node-edit
   [_]
-  {:title "Nodes / Edit"})
+  {:title "Nodes"})
 
 ;;; Volume view
 
@@ -169,7 +169,7 @@
 
 (defmethod render :volume-create
   [_]
-  {:title "Volumes / Create"})
+  {:title "Volumes"})
 
 ;;; Secret view
 
@@ -186,7 +186,7 @@
 
 (defmethod render :secret-create
   [_]
-  {:title "Secrets / Create"})
+  {:title "Secrets"})
 
 ;;; Config view
 
@@ -203,7 +203,7 @@
 
 (defmethod render :config-create
   [_]
-  {:title "Configs / Create"})
+  {:title "Configs"})
 
 ;;; Task view
 
@@ -231,11 +231,11 @@
 
 (defmethod render :user-create
   [_]
-  {:title "Users / Create"})
+  {:title "Users"})
 
 (defmethod render :user-edit
   [_]
-  {:title "Users / Edit"})
+  {:title "Users"})
 
 ;;; Registry view
 
@@ -252,11 +252,11 @@
 
 (defmethod render :registry-create
   [_]
-  {:title "Registries / Create"})
+  {:title "Registries"})
 
 (defmethod render :registry-edit
   [_]
-  {:title "Registries / Edit"})
+  {:title "Registries"})
 
 ;;; Dockerhub user view
 
@@ -273,8 +273,8 @@
 
 (defmethod render :dockerhub-user-create
   [_]
-  {:title "Dockerhub / Create"})
+  {:title "Dockerhub"})
 
 (defmethod render :dockerhub-user-edit
   [_]
-  {:title "Dockerhub / Edit"})
+  {:title "Dockerhub"})
