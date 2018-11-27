@@ -214,17 +214,7 @@
             {}
             (comp/form-control-label
               {:control (form-autoredeploy autoredeploy)
-               :label   "Autoredeploy"}))))
-      (comp/grid
-        {:item      true
-         :xs        12
-         :direction "column"}
-        (form/subsection
-          "Placement"
-          (comp/button
-            {:color   "primary"
-             :onClick placement/add-item}
-            (comp/svg icon/add-small) "Add placement"))
+               :label   "Autoredeploy"})))
         (placement/form))
       (comp/grid
         {:item      true

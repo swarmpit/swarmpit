@@ -150,10 +150,11 @@
      :xs   12}
     (form/section
       "Networks"
-      (comp/button
-        {:color   "primary"
-         :onClick networks/add-item}
-        (comp/svg icon/add-small) "Add network"))
+      ;(comp/button
+      ;  {:color   "primary"
+      ;   :onClick networks/add-item}
+      ;  (comp/svg icon/add-small) "Add network")
+      )
     (networks/form)))
 
 (rum/defc form-mounts < rum/static []
@@ -256,8 +257,8 @@
               {:container true
                :spacing   40}
               (form-settings)
-              (form-ports)
               (form-networks)
+              (form-ports)
               (form-mounts)
               (form-secrets)
               (when (<= 1.30 (state/get-value [:docker :api]))

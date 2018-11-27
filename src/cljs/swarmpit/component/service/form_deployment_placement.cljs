@@ -1,7 +1,6 @@
 (ns swarmpit.component.service.form-deployment-placement
-  (:require [material.component :as comp]
-            [material.component.list.edit :as list]
-            [swarmpit.component.state :as state]
+  (:require [swarmpit.component.state :as state]
+            [material.component.composite :as composite]
             [swarmpit.ajax :as ajax]
             [swarmpit.routes :as routes]
             [rum.core :as rum]))
@@ -12,36 +11,6 @@
 
 (def form-state-cursor (conj state/form-state-cursor :placement))
 
-(defn- form-placement [value index]
-  (comp/text-field
-    {:fullWidth       true
-     :label           "Placement"
-     :key             (str "form-placement-" index)
-     :value           value
-     :required        true
-     :placeholder     "e.g. node.role == manager"
-     :variant         "outlined"
-     :margin          "dense"
-     :InputLabelProps {:shrink true}
-     :onChange        #(state/update-item index :rule (-> % .-target .-value) form-value-cursor)}))
-
-(def form-metadata
-  [{:name      "Rule"
-    :primary   true
-    :key       [:rule]
-    :render-fn (fn [value _ index] (form-placement value index))}])
-
-(defn- form-table
-  [placement placement-list]
-  (list/list
-    form-metadata
-    placement
-    (fn [index] (state/remove-item index form-value-cursor))))
-
-(defn- add-item
-  []
-  (state/add-item {:rule ""} form-value-cursor))
-
 (defn placement-handler
   []
   (ajax/get
@@ -49,7 +18,21 @@
     {:on-success (fn [{:keys [response]}]
                    (state/update-value [:list] response form-state-cursor))}))
 
+(defn- form-placement [placement-list]
+  (let [suggestions (map #(hash-map :label %
+                                    :value %) placement-list)]
+    (composite/autocomplete
+      {:options        suggestions
+       :textFieldProps {:label           "Placement"
+                        :helperText      "Speficy placement constraints"
+                        :InputLabelProps {:shrink true}}
+       :onChange       (fn [value]
+                         (state/set-value
+                           (->> (js->clj value)
+                                (map #(hash-map :rule (get % "value")))) form-value-cursor))
+       :placeholder    "Add placement"
+       :isMulti        true})))
+
 (rum/defc form < rum/reactive []
-  (let [{:keys [list]} (state/react form-state-cursor)
-        placement (state/react form-value-cursor)]
-    (form-table placement list)))
+  (let [{:keys [list]} (state/react form-state-cursor)]
+    (form-placement list)))
