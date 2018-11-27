@@ -1,6 +1,8 @@
 (ns swarmpit.component.message
-  (:require [material.component :as comp]
+  (:require [material.icon :as icon]
+            [material.component :as comp]
             [swarmpit.component.state :as state]
+            [sablono.core :refer-macros [html]]
             [rum.core :as rum]))
 
 (enable-console-print!)
@@ -45,20 +47,24 @@
   (show text :error))
 
 (rum/defc info-message < rum/reactive [text opened?]
-  (comp/mui
-    (comp/snackbar {:bodyStyle        message-info-body-style
-                    :contentStyle     message-info-content-style
-                    :autoHideDuration 5000
-                    :message          text
-                    :open             opened?})))
+  (comp/snackbar
+    {:autoHideDuration 5000
+     :anchorOrigin     {:vertical   "bottom"
+                        :horizontal "center"}
+     :open             opened?}
+    (comp/snackbar-content
+      {:aria-describedby "client-snackbar"
+       :message          (html [:span#client-snackbar icon/info text])})))
 
 (rum/defc error-message < rum/reactive [text opened?]
-  (comp/mui
-    (comp/snackbar {:bodyStyle        message-error-body-style
-                    :contentStyle     message-error-content-style
-                    :autoHideDuration 300000
-                    :message          text
-                    :open             opened?})))
+  (comp/snackbar
+    {:autoHideDuration 300000
+     :anchorOrigin     {:vertical   "bottom"
+                        :horizontal "center"}
+     :open             opened?}
+    (comp/snackbar-content
+      {:aria-describedby "client-snackbar"
+       :message          (html [:span#client-snackbar icon/error text])})))
 
 (rum/defc message < rum/reactive []
   (let [{:keys [open type text]} (state/react message-cursor)]
