@@ -250,27 +250,32 @@
       (html
         [:div.Swarmpit-form
          [:div.Swarmpit-form-context
-          (comp/paper
-            {:className "Swarmpit-paper Swarmpit-form-context"
-             :elevation 0}
-            (comp/grid
-              {:container true
-               :spacing   40}
-              (form-settings)
-              (form-networks)
-              (form-ports)
-              (form-mounts)
-              (form-secrets)
-              (when (<= 1.30 (state/get-value [:docker :api]))
-                (form-configs))
-              (form-variables)
-              (form-labels)
-              (form-logdriver)
-              (form-resources)
-              (form-deployment))
-            (html
-              [:div.Swarmpit-form-buttons
-               (composite/progress-button
-                 "Create"
-                 create-service-handler
-                 processing?)]))]]))))
+          (comp/card
+            {:className "Swarmpit-form-card"}
+            (comp/card-header
+              {:className "Swarmpit-form-card-header"
+               :title     "New Service"
+               :subheader (str "from " (get-in (state/get-value settings/form-value-cursor) [:repository :name]))})
+            (comp/card-content
+              {}
+              (comp/grid
+                {:container true
+                 :spacing   40}
+                (form-settings)
+                (form-networks)
+                (form-ports)
+                (form-mounts)
+                (form-secrets)
+                (when (<= 1.30 (state/get-value [:docker :api]))
+                  (form-configs))
+                (form-variables)
+                (form-labels)
+                (form-logdriver)
+                (form-resources)
+                (form-deployment))
+              (html
+                [:div.Swarmpit-form-buttons
+                 (composite/progress-button
+                   "Create"
+                   create-service-handler
+                   processing?)])))]]))))
