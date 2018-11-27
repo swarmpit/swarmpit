@@ -35,7 +35,6 @@
      :fullWidth       true
      :name            "data"
      :key             "data"
-     :variant         "outlined"
      :multiline       true
      :required        true
      :InputLabelProps {:shrink true}
@@ -129,8 +128,10 @@
        :value    :stack-previous
        :disabled (not previous?)} "Previously deployed (rollback)")))
 
-(rum/defc form-edit [{:keys [name spec]}
-                     {:keys [processing? valid? last? previous?]}]
+(rum/defc form-edit < rum/reactive
+                      mixin-init-editor
+  [{:keys [name spec]}
+   {:keys [processing? valid? last? previous?]}]
   (comp/mui
     (html
       [:div.Swarmpit-form
