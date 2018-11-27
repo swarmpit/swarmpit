@@ -12,7 +12,9 @@
                  [cljsjs/react-dom "16.4.0-0"]
                  [cljsjs/material-ui "3.2.0-0"]
                  [cljsjs/material-ui-icons "3.0.1-0"]
-                 [cljsjs/react-select "1.2.1-1"]
+                 [cljsjs/react-select "2.1.2"]
+                 [cljsjs/emotion "9.2.12"]
+                 [cljsjs/react-input-autosize "2.2.1-1"]
                  [cljsjs/react-autosuggest "9.3.4-0"]
                  [cljsjs/rc-slider "8.6.1-0"]
                  [cljsjs/codemirror "5.24.0-1"]
@@ -48,6 +50,7 @@
             [lein-environ "1.1.0"]
             [lein-pprint "1.1.2"]
             [lein-cloverage "1.0.9"]]
+  :repositories {"local" "file:repo"}
   :min-lein-version "2.6.1"
   :source-paths ["src/clj" "src/cljs" "src/cljc"]
   :test-paths ["test/clj" "test/cljc"]

@@ -37,6 +37,26 @@ and then packed into Docker image
 docker build -t swarmpit .
 ```
 
+### Custom cljsjs packages
+
+In case of outdated dependency feel free to build new version locally 
+
+```
+boot package install target
+```
+
+and deploy to local swarmpit repo e.g.
+
+```
+mvn deploy:deploy-file -Dfile=react-select-2.1.2-1.jar -DartifactId=react-select -Dversion=2.1.2 -DgroupId=cljsjs -Dpackaging=jar -Durl=file:repo
+```
+
+Finally add dependency to your maven repository
+
+```
+lein deps
+```
+
 ## Reporting issues
 
 In case of unexpected swarmpit behaviour, please create well-written issue [here](https://github.com/swarmpit/swarmpit/issues/new). It makes it easier to find & fix the problem accordingly. Please follow the template below, we really appreciate the effort.
