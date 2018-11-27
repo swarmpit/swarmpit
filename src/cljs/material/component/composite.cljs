@@ -24,9 +24,38 @@
                     :backspaceRemovesValue true}
                    (dissoc p :inputRef))])))
 
+(defn autocomplete-no-options-mssg [props]
+  (let [{:keys [innerProps children]} (keywordize-keys (js->clj props))]
+    (cmp/typography
+      (merge innerProps
+             {:color "textSecondary"
+              :style {:padding "8px 16px"}}) children)))
+
+(defn autocomplete-placeholder [props]
+  (let [{:keys [innerProps children]} (keywordize-keys (js->clj props))]
+    (cmp/typography
+      (merge innerProps
+             {:color "textSecondary"
+              :style {:position "absolute"
+                      :left     2
+                      :fontSize 16
+                      :padding  "10px 15px"}}) children)))
+
 (defn autocomplete-single-value [props]
   (let [{:keys [innerProps children]} (keywordize-keys (js->clj props))]
-    (cmp/typography innerProps children)))
+    (cmp/typography
+      (merge innerProps
+             {:style {:fontSize 16}}) children)))
+
+(defn autocomplete-menu [props]
+  (let [{:keys [innerProps]} (keywordize-keys (js->clj props))]
+    (cmp/paper
+      (merge innerProps
+             {:style {:position  "absolute"
+                      :zIndex    1
+                      :marginTop 8
+                      :left      0
+                      :right     0}}) (goog.object/get props "children"))))
 
 (defn autocomplete-value-container [props]
   (html
@@ -40,10 +69,6 @@
 
 (defn autocomplete-control [props]
   (let [{:keys [innerRef innerProps children selectProps]} (keywordize-keys (js->clj props))]
-
-    (js/console.log selectProps)
-
-
     (cmp/text-field
       (merge (:textFieldProps selectProps)
              {:fullWidth  true
@@ -52,7 +77,7 @@
               :InputProps {:inputComponent autocomplete-input
                            :inputProps     (merge innerProps
                                                   {:style    {:display "flex"
-                                                              :padding "10px 5px"}
+                                                              :padding "10px 15px"}
                                                    :inputRef innerRef
                                                    :children children})}}))))
 
@@ -70,8 +95,10 @@
     {}
     (cmp/react-select
       (merge props
-             {:components {:Control        autocomplete-control
-                           :Option         autocomplete-option
-                           :ValueContainer autocomplete-value-container
-                           :SingleValue    autocomplete-single-value
-                           }}))))
+             {:components {:Control          autocomplete-control
+                           :Option           autocomplete-option
+                           :ValueContainer   autocomplete-value-container
+                           :SingleValue      autocomplete-single-value
+                           :Placeholder      autocomplete-placeholder
+                           :NoOptionsMessage autocomplete-no-options-mssg
+                           :Menu             autocomplete-menu}}))))
