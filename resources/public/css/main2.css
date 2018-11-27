@@ -268,6 +268,21 @@ a {
     margin-bottom: 24px;
 }
 
+/** Progress button **/
+
+.Swarmpit-progress-button-wrapper {
+    position: relative;
+}
+
+.Swarmpit-progress-button {
+    color: #65519f;
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    margin-top: -12px;
+    margin-left: -12px;
+}
+
 /** List **/
 
 .Swarmpit-table {
@@ -327,6 +342,7 @@ a {
 }
 
 .Swarmpit-form-buttons {
+    margin-top: 10px;
     display: flex;
     justify-content: flex-end;
 }

@@ -2,6 +2,7 @@
   (:require [goog.object]
             [material.component :as comp]
             [swarmpit.component.state :as state]
+            [material.component.composite :as composite]
             [swarmpit.component.service.form-ports :as ports]
             [swarmpit.component.parser :refer [parse-int]]
             [swarmpit.ajax :as ajax]
@@ -29,57 +30,17 @@
      :value           value
      :InputLabelProps {:shrink true}}))
 
-(defn- form-image-tag-r [value tags tagMenuSuggestions]
-  (comp/react-autosuggest
-    {:renderInputComponent        (fn [inputProps]
-                                    (let [{:keys [ref] :as p} (keywordize-keys (js->clj inputProps))]
-                                      (comp/text-field
-                                        (merge (dissoc p :ref)
-                                               {:id              "image-tag"
-                                                :key             "image-tag"
-                                                :label           "Image tag"
-                                                :variant         "outlined"
-                                                :margin          "normal"
-                                                :helperText      "Specify image tag or leave empty for latest"
-                                                :fullWidth       true
-                                                :InputProps      {:inputRef (fn [node] (ref node))}
-                                                :InputLabelProps {:shrink true}}))))
-     :suggestions                 tagMenuSuggestions
-     :onSuggestionsFetchRequested (fn [_] (state/update-value [:tagMenuSuggestions] (filter #(str/includes? % (:tag value)) tags) form-state-cursor))
-     :onSuggestionsClearRequested (fn [] (state/update-value [:tagMenuSuggestions] [] form-state-cursor))
-     :getSuggestionValue          identity
-     :renderSuggestion            (fn [s props]
-                                    (comp/menu-item
-                                      {:key      s
-                                       :selected (goog.object/get props "isHighlighted")} s))
-     ;:renderSuggestionsContainer  (fn [options]
-     ;                               (comp/paper
-     ;                                 (merge {:square true} (keywordize-keys (goog.object/get options "containerProps")))
-     ;                                 (goog.object/get options "children")))
-     :theme                       {:container                {:position "relative"}
-                                   :suggestionsContainerOpen {:position  "absolute"
-                                                              :zIndex    1
-                                                              :marginTop -8
-                                                              :left      0
-                                                              :right     0}
-                                   :suggestionsList          {:margin        0
-                                                              :padding       0
-                                                              :listStyleType "none"}
-                                   :suggestion               {:display "block"}}
-     :inputProps                  {:value    (:tag value)
-                                   :onChange (fn [_ props]
-                                               (state/update-value [:repository :tag] (.-newValue props) form-value-cursor))}}))
-
-;(defn- form-image-tag [value tags]
-;  "For update services there is no port preload"
-;  (form/comp
-;    "IMAGE TAG"
-;    (comp/autocomplete
-;      {:name          "image-tag"
-;       :key           "image-tag"
-;       :searchText    (:tag value)
-;       :onUpdateInput (fn [v] (state/update-value [:repository :tag] v form-value-cursor))
-;       :dataSource    tags})))
+(defn- form-image-tag [value tags]
+  "For update services there is no port preload"
+  (let [suggestions (map #(hash-map :label %
+                                    :value %) tags)]
+    (composite/autocomplete
+      {:options        suggestions
+       :textFieldProps {:label           "Tag"
+                        :InputLabelProps {:shrink true}}
+       :value          (:tag value)
+       :onChange       #(state/update-value [:repository :tag] (-> % .-value) form-value-cursor)
+       :placeholder    "Search a tag"})))
 ;
 ;(defn- form-image-tag-preloaded [value tags]
 ;  "Preload ports for services created via swarmpit"
@@ -97,13 +58,12 @@
     {:key             "service-name"
      :label           "Service name"
      :variant         "outlined"
+     :helperText      "Specify name or leave empty for random"
      :disabled        update-form?
-     :required        true
      :fullWidth       true
      :value           value
      :InputLabelProps {:shrink true}
-     :onChange        (fn [_ v]
-                        (state/update-value [:serviceName] v form-value-cursor))}))
+     :onChange        #(state/update-value [:serviceName] (-> % .-target .-value) form-value-cursor)}))
 
 (defn- form-mode [value update-form?]
   (comp/form-control
@@ -181,7 +141,12 @@
         {:item true
          :xs   12
          :sm   6}
-        (form-image-tag-r repository tags tagMenuSuggestions)
+        ;(form-image-tag-r repository tags tagMenuSuggestions)
+
+        ;(composite/autocomplete repository tags nil nil)
+
+        (form-image-tag repository tags)
+
         )
       (comp/grid
         {:item true

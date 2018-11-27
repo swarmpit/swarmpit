@@ -2,6 +2,7 @@
   (:require [material.icon :as icon]
             [material.component :as comp]
             [material.component.form :as form]
+            [material.component.composite :as composite]
             [swarmpit.component.mixin :as mixin]
             [swarmpit.component.state :as state]
             [swarmpit.component.message :as message]
@@ -265,4 +266,10 @@
               (form-labels)
               (form-logdriver)
               (form-resources)
-              (form-deployment)))]]))))
+              (form-deployment))
+            (html
+              [:div.Swarmpit-form-buttons
+               (composite/progress-button
+                 "Create"
+                 create-service-handler
+                 processing?)]))]]))))
