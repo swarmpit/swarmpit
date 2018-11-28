@@ -162,66 +162,30 @@
         logdriver (:logdriver service)
         resources (:resources service)
         deployment (:deployment service)
-        id (:id service)]
+        id (:id service)
+        is-even-and-not-third? #(and (even? %) (not (= 2 %)))]
     (comp/mui
       (html
         [:div.Swarmpit-form
          [:div.Swarmpit-form-context
-          (comp/grid
-            {:container true
-             :spacing   40}
-            (comp/grid
-              {:item true
-               :xs   12
-               :sm   6}
-              (settings/form service))
-            (comp/grid
-              {:item true
-               :xs   12
-               :sm   6}
-              (deployment/form deployment))
+          (comp/masonry-like-grid
+            {:first-col-pred is-even-and-not-third?}
+            (settings/form service)
+            (deployment/form deployment)
             (when (not-empty networks)
-              (comp/grid
-                {:item true
-                 :xs   12
-                 :sm   6}
-                (networks/form networks)))
+              (networks/form networks))
             (when (not-empty mounts)
-              (comp/grid
-                {:item true
-                 :xs   12
-                 :sm   6}
-                (mounts/form mounts)))
+              (mounts/form mounts))
             (when (not-empty secrets)
-              (comp/grid
-                {:item true
-                 :xs   12
-                 :sm   6}
-                (secrets/form secrets)))
+              (secrets/form secrets))
             (when (not-empty configs)
-              (comp/grid
-                {:item true
-                 :xs   12
-                 :sm   6}
-                (configs/form configs)))
+              (configs/form configs))
             (when (not-empty variables)
-              (comp/grid
-                {:item true
-                 :xs   12
-                 :sm   6}
-                (variables/form variables)))
+              (variables/form variables))
             (when (not-empty labels)
-              (comp/grid
-                {:item true
-                 :xs   12
-                 :sm   6}
-                (labels/form labels)))
+              (labels/form labels))
             (when (not-empty (:opts logdriver))
-              (comp/grid
-                {:item true
-                 :xs   12
-                 :sm   6}
-                (logdriver/form logdriver))))]]))))
+              (logdriver/form logdriver)))]]))))
 
 (rum/defc form < rum/reactive
                  mixin-init-form
