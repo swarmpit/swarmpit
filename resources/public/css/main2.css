@@ -395,7 +395,7 @@ a {
 }
 
 .Swarmpit-form-card-icon-item {
-    display: inline-flex;
+    display: flex;
     font-size: 12px;
 }
 
@@ -578,11 +578,6 @@ a {
 
 .volume-mountpoint {
     word-break: break-all;
-}
-
-.Swarmpit-form-card-icon-item {
-    display: flex;
-    align-items: center;
 }
 
 .Swarmpit-form-card-icon-item-id {
