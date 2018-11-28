@@ -31,12 +31,13 @@
     {:className "Swarmpit-form-card"}
     (comp/card-header
       {:title     volumeName
+       :classes {:title "Swarmpit-card-header-responsive-title"}
        :className "Swarmpit-form-card-header"})
     (comp/card-content
       {}
       (html
         [:div
-         [:span "Volume is mount at " [:b mountpoint] "."]
+         [:span "Volume is mount at " [:b.volume-mountpoint mountpoint] "."]
          [:br]
          [:span "Scope is " [:b scope] "."]]))
     (comp/card-content

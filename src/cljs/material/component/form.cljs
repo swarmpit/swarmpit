@@ -23,7 +23,8 @@
   (html
     [:div.Swarmpit-form-card-icon-item
      (icon/fingerprint
-       {:className "Swarmpit-form-card-icon"}) id]))
+       {:className "Swarmpit-form-card-icon"})
+     [:span.Swarmpit-form-card-icon-item-id id]]))
 
 (defn item-labels [labels]
   (html

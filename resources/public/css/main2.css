@@ -559,6 +559,23 @@ a {
     font-weight: bold;
 }
 
+.Swarmpit-card-header-responsive-title {
+  word-break: break-word;
+}
+
+.volume-mountpoint {
+  word-break: break-all;
+}
+
+.Swarmpit-form-card-icon-item {
+  display: flex;
+  align-items: center;
+}
+
+.Swarmpit-form-card-icon-item-id {
+  word-break: break-all;
+}
+
 /**** MEDIA ****/
 
 @media (min-width: 960px) {
