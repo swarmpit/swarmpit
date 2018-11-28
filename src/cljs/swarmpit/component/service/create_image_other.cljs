@@ -123,14 +123,14 @@
         repositories (state/react form-value-cursor)
         filtered-repositories (filter-items repositories repository)]
     (if (some? registry)
-      [:div.Swarmpit-form-context
+      [:div.Swarmpit-image-search
        (form-registry registry registries)
        (form-repository repository)
        (form-list searching? registry filtered-repositories)]
-      [:div.Swarmpit-form-context
+      [:div.Swarmpit-image-search
        (html
          [:span.Swarmpit-message
-          (comp/svg icon/info)
+          (html icon/info)
           (if (storage/admin?)
             [:span "No custom registries found. Add new " [:a {:href (routes/path-for-frontend :registry-create)} "registry."]]
             [:span "No custom registries found. Please ask your admin to setup."])])])))

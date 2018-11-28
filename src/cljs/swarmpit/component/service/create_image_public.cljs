@@ -79,6 +79,6 @@
                  mixin-init-form []
   (let [{:keys [repository searching?]} (state/react form-state-cursor)
         repositories (state/react form-value-cursor)]
-    [:div.Swarmpit-form-context
+    [:div.Swarmpit-image-search
      (form-repository repository)
      (form-list searching? repositories)]))

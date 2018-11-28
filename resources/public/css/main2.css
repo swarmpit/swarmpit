@@ -498,6 +498,14 @@ a {
     padding-bottom: 10px;
 }
 
+.Swarmpit-image-search {
+    margin-top: 10px;
+}
+
+.Swarmpit-list-image {
+    color: rgba(0, 0, 0, 0.54);
+}
+
 /* NODE */
 
 .node-item-header {
@@ -561,20 +569,20 @@ a {
 }
 
 .Swarmpit-card-header-responsive-title {
-  word-break: break-word;
+    word-break: break-word;
 }
 
 .volume-mountpoint {
-  word-break: break-all;
+    word-break: break-all;
 }
 
 .Swarmpit-form-card-icon-item {
-  display: flex;
-  align-items: center;
+    display: flex;
+    align-items: center;
 }
 
 .Swarmpit-form-card-icon-item-id {
-  word-break: break-all;
+    word-break: break-all;
 }
 
 /**** MEDIA ****/

@@ -29,9 +29,9 @@
   (html
     [:div
      [:div
-      [:span [:b (:serviceName item)]]]
+      [:span (:serviceName item)]]
      [:div
-      [:span (get-in item [:repository :image])]]]))
+      [:span.Swarmpit-list-image (get-in item [:repository :image])]]]))
 
 (defn- render-item-update-state [value]
   (case value

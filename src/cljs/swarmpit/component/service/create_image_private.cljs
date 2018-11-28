@@ -121,14 +121,14 @@
         repositories (state/react form-value-cursor)
         filtered-repositories (filter-items repositories repository)]
     (if (some? user)
-      [:div.Swarmpit-form-context
+      [:div.Swarmpit-image-search
        (form-username user users)
        (form-repository repository)
        (form-list searching? filtered-repositories)]
-      [:div.Swarmpit-form-context
+      [:div.Swarmpit-image-search
        (html
          [:span.Swarmpit-message
-          (comp/svg icon/info)
+          icon/info
           (if (storage/admin?)
             [:span "No dockerhub users found. Add new " [:a {:href (routes/path-for-frontend :dockerhub-user-create)} "user."]]
             [:span "No dockerhub users found. Please ask your admin to setup."])])])))

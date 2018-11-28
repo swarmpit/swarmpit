@@ -57,38 +57,41 @@
     [:div.Swarmpit-form
      [:div.Swarmpit-form-context
       (comp/mui
-        (html
-          [:div
-           (comp/tabs
-             {:key            "tabs"
-              ;:style          {:backgroundColor "#f5f5f5"
-              ;                 :borderBottom    "1px solid rgba(0, 0, 0, 0.12)"}
-              :value          tab
-              :onChange       (fn [e v]
-                                (state/update-value [:tab] v state/form-state-cursor))
-              :fullWidth      true
-              :indicatorColor "primary"
-              :textColor      "primary"
-              :centered       true}
-             (comp/tab
-               {:key   "tab1"
-                :label "SEARCH PUBLIC"
-                :icon  icon/search})
-             (comp/tab
-               {:key   "tab2"
-                :label "SEARCH PRIVATE"
-                :icon  (comp/svg icon/docker)})
-             (comp/tab
-               {:key   "tab3"
-                :label "OTHER REGISTRIES"
-                :icon  (comp/svg icon/registries)}))
-           (comp/paper
-             {:className "Swarmpit-paper"
-              :elevation 0}
-             (case tab
-               0 (cip/form)
-               1 (ciu/form users)
-               2 (cio/form registries)))]))]]))
+        (comp/card
+          {:className "Swarmpit-form-card"}
+          (comp/card-header
+            {:className "Swarmpit-form-card-header"
+             :title     "Image Registry"
+             :subheader "Search for images accross public and private registries"})
+          (comp/card-content
+            {}
+            (comp/tabs
+              {:key            "tabs"
+               :style          {:backgroundColor "#f5f5f5"
+                                :border          "1px solid rgba(0, 0, 0, 0.12)"}
+               :value          tab
+               :onChange       (fn [e v]
+                                 (state/update-value [:tab] v state/form-state-cursor))
+               :fullWidth      true
+               :indicatorColor "primary"
+               :textColor      "primary"
+               :centered       true}
+              (comp/tab
+                {:key   "tab1"
+                 :label "SEARCH PUBLIC"
+                 :icon  icon/search})
+              (comp/tab
+                {:key   "tab2"
+                 :label "SEARCH PRIVATE"
+                 :icon  (comp/svg icon/docker)})
+              (comp/tab
+                {:key   "tab3"
+                 :label "OTHER REGISTRIES"
+                 :icon  (comp/svg icon/registries)}))
+            (case tab
+              0 (cip/form)
+              1 (ciu/form users)
+              2 (cio/form registries)))))]]))
 
 (rum/defc form < rum/reactive
                  mixin-init-form [_]

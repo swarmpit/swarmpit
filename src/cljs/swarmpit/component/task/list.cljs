@@ -49,9 +49,9 @@
   (html
     [:div
      [:div
-      [:span [:b (:taskName item)]]]
+      [:span (:taskName item)]]
      [:div
-      [:span (get-in item [:repository :image])]]]))
+      [:span.Swarmpit-list-image (get-in item [:repository :image])]]]))
 
 (def render-metadata
   {:table {:title     "Overview"
