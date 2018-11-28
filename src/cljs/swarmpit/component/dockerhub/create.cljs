@@ -100,28 +100,35 @@
       (html
         [:div.Swarmpit-form
          [:div.Swarmpit-form-context
-          (comp/paper
-            {:className "Swarmpit-paper Swarmpit-form-context"
-             :elevation 0}
-            (comp/grid
-              {:container true
-               :spacing   40}
-              (comp/grid
-                {:item true
-                 :xs   12
-                 :sm   6}
-                (form-username username)
-                (form-password password showPassword)
-                (comp/form-control
-                  {:component "fieldset"}
-                  (comp/form-group
-                    {}
-                    (comp/form-control-label
-                      {:control (form-public public)
-                       :label   "Public"})))))
-            (html
-              [:div.Swarmpit-form-buttons
-               (comp/button
-                 {:variant "contained"
-                  :onClick add-user-handler
-                  :color   "primary"} "Add Dockerhub user")]))]]))))
+          (comp/grid
+            {:item true
+             :xs   12
+             :sm   6}
+            (comp/card
+              {:className "Swarmpit-form-card"}
+              (comp/card-header
+                {:className "Swarmpit-form-card-header"
+                 :title     "New Hub Account"})
+              (comp/card-content
+                {}
+                (comp/grid
+                  {:container true
+                   :spacing   40}
+                  (comp/grid
+                    {:item true
+                     :xs   12}
+                    (form-username username)
+                    (form-password password showPassword)
+                    (comp/form-control
+                      {:component "fieldset"}
+                      (comp/form-group
+                        {}
+                        (comp/form-control-label
+                          {:control (form-public public)
+                           :label   "Public"})))))
+                (html
+                  [:div.Swarmpit-form-buttons
+                   (comp/button
+                     {:variant "contained"
+                      :onClick add-user-handler
+                      :color   "primary"} "Add Dockerhub user")]))))]]))))

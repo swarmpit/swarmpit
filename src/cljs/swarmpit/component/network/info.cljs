@@ -134,7 +134,7 @@
       (network-handler id)
       (network-services-handler id))))
 
-(rum/defc form-info < rum/static [{:keys [network]}]
+(rum/defc form-info < rum/static [{:keys [network services]}]
   (comp/mui
     (html
       [:div.Swarmpit-form
@@ -152,7 +152,13 @@
               {:item true
                :xs   12
                :sm   6}
-              (section-driver network))))]])))
+              (section-driver network)))
+          (when (not-empty services)
+            (comp/grid
+              {:item true
+               :xs   12}
+              (services/linked-services services)))
+          )]])))
 
 (rum/defc form < rum/reactive
                  mixin-init-form

@@ -46,6 +46,8 @@
      :variant         "outlined"
      :value           value
      :required        true
+     :helperText      "Specify volume name or leave empty for random"
+     :margin          "normal"
      :InputLabelProps {:shrink true}
      :onChange        #(state/update-value [:volumeName] (-> % .-target .-value) state/form-value-cursor)}))
 
@@ -58,6 +60,7 @@
      :select          true
      :value           value
      :variant         "outlined"
+     :margin          "normal"
      :InputLabelProps {:shrink true}
      :onChange        #(state/update-value [:driver] (-> % .-target .-value) state/form-value-cursor)}
     (->> plugins
@@ -158,27 +161,31 @@
       (html
         [:div.Swarmpit-form
          [:div.Swarmpit-form-context
-          (comp/paper
-            {:className "Swarmpit-paper Swarmpit-form-context"
-             :elevation 0}
-            (comp/grid
-              {:container true
-               :spacing   40}
+          (comp/card
+            {:className "Swarmpit-form-card"}
+            (comp/card-header
+              {:className "Swarmpit-form-card-header"
+               :title     "New Volume"})
+            (comp/card-content
+              {}
               (comp/grid
-                {:item true
-                 :xs   12
-                 :sm   6}
-                (form-name volumeName))
-              (comp/grid
-                {:item true
-                 :xs   12}
-                (comp/typography
-                  {:variant      "h6"
-                   :gutterBottom true} "Driver")
-                (section-driver item plugins)))
-            (html
-              [:div.Swarmpit-form-buttons
-               (comp/button
-                 {:variant "contained"
-                  :onClick #(create-volume-handler)
-                  :color   "primary"} "Create")]))]]))))
+                {:container true
+                 :spacing   40}
+                (comp/grid
+                  {:item true
+                   :xs   12
+                   :sm   6}
+                  (form-name volumeName))
+                (comp/grid
+                  {:item true
+                   :xs   12}
+                  (comp/typography
+                    {:variant      "h6"
+                     :gutterBottom true} "Driver")
+                  (section-driver item plugins)))
+              (html
+                [:div.Swarmpit-form-buttons
+                 (comp/button
+                   {:variant "contained"
+                    :onClick #(create-volume-handler)
+                    :color   "primary"} "Create")])))]]))))

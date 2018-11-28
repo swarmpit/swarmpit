@@ -31,15 +31,13 @@
     {:className "Swarmpit-form-card"}
     (comp/card-header
       {:title     volumeName
-       :classes {:title "Swarmpit-card-header-responsive-title"}
+       :classes   {:title "Swarmpit-card-header-responsive-title"}
        :className "Swarmpit-form-card-header"})
     (comp/card-content
       {}
       (html
         [:div
-         [:span "Volume is mount at " [:b.volume-mountpoint mountpoint] "."]
-         [:br]
-         [:span "Scope is " [:b scope] "."]]))
+         [:span "Volume is mount at " [:b.volume-mountpoint mountpoint] "."]]))
     (comp/card-content
       {}
       (form/item-labels
@@ -107,7 +105,7 @@
   [{:keys [params]}]
   [{:button (comp/icon-button
               {:color   "inherit"
-               :onClick #(delete-volume-handler (:id params))} (comp/svg icon/trash))
+               :onClick #(delete-volume-handler (:name params))} (comp/svg icon/trash))
     :name   "Delete volume"}])
 
 (defn- init-form-state

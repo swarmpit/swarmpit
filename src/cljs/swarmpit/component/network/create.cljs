@@ -2,6 +2,7 @@
   (:require [material.icon :as icon]
             [material.component :as comp]
             [material.component.form :as form]
+            [material.component.composite :as composite]
             [material.component.list.edit :as list]
             [swarmpit.component.mixin :as mixin]
             [swarmpit.component.state :as state]
@@ -20,6 +21,7 @@
      :fullWidth       true
      :name            "name"
      :key             "name"
+     :margin          "normal"
      :variant         "outlined"
      :value           value
      :required        true
@@ -34,6 +36,7 @@
      :helperText      "Driver to manage the Network "
      :select          true
      :value           value
+     :margin          "normal"
      :variant         "outlined"
      :InputLabelProps {:shrink true}
      :onChange        #(state/update-value [:driver] (-> % .-target .-value) state/form-value-cursor)}
@@ -104,6 +107,7 @@
      :key             "subnet"
      :placeholder     "e.g. 10.0.0.0/24"
      :helperText      "Subnet in CIDR format that represents a network segment"
+     :margin          "normal"
      :value           value
      :InputLabelProps {:shrink true}
      :onChange        #(state/update-value [:ipam :subnet] (-> % .-target .-value) state/form-value-cursor)}))
@@ -262,38 +266,42 @@
       (html
         [:div.Swarmpit-form
          [:div.Swarmpit-form-context
-          (comp/paper
-            {:className "Swarmpit-paper Swarmpit-form-context"
-             :elevation 0}
-            (comp/grid
-              {:container true
-               :spacing   40}
+          (comp/card
+            {:className "Swarmpit-form-card"}
+            (comp/card-header
+              {:className "Swarmpit-form-card-header"
+               :title     "New Network"})
+            (comp/card-content
+              {}
               (comp/grid
-                {:item true
-                 :xs   12
-                 :sm   6}
-                (comp/typography
-                  {:variant      "h6"
-                   :gutterBottom true} "General")
-                (section-general item))
-              (comp/grid
-                {:item true
-                 :xs   12
-                 :sm   6}
-                (comp/typography
-                  {:variant      "h6"
-                   :gutterBottom true} "IPAM")
-                (section-ipam item))
-              (comp/grid
-                {:item true
-                 :xs   12}
-                (comp/typography
-                  {:variant      "h6"
-                   :gutterBottom true} "Driver")
-                (section-driver item plugins)))
-            (html
-              [:div.Swarmpit-form-buttons
-               (comp/button
-                 {:variant "contained"
-                  :onClick #(create-network-handler)
-                  :color   "primary"} "Create")]))]]))))
+                {:container true
+                 :spacing   40}
+                (comp/grid
+                  {:item true
+                   :xs   12
+                   :sm   6}
+                  (comp/typography
+                    {:variant      "h6"
+                     :gutterBottom true} "General")
+                  (section-general item))
+                (comp/grid
+                  {:item true
+                   :xs   12
+                   :sm   6}
+                  (comp/typography
+                    {:variant      "h6"
+                     :gutterBottom true} "IPAM")
+                  (section-ipam item))
+                (comp/grid
+                  {:item true
+                   :xs   12}
+                  (comp/typography
+                    {:variant      "h6"
+                     :gutterBottom true} "Driver")
+                  (section-driver item plugins)))
+              (html
+                [:div.Swarmpit-form-buttons
+                 (composite/progress-button
+                   "Create"
+                   #(create-network-handler)
+                   processing?)])))]]))))

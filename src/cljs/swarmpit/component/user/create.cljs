@@ -123,23 +123,30 @@
       (html
         [:div.Swarmpit-form
          [:div.Swarmpit-form-context
-          (comp/paper
-            {:className "Swarmpit-paper Swarmpit-form-context"
-             :elevation 0}
-            (comp/grid
-              {:container true
-               :spacing   40}
-              (comp/grid
-                {:item true
-                 :xs   12
-                 :sm   6}
-                (form-username username)
-                (form-password password showPassword)
-                (form-role role)
-                (form-email email)))
-            (html
-              [:div.Swarmpit-form-buttons
-               (comp/button
-                 {:variant "contained"
-                  :onClick create-user-handler
-                  :color   "primary"} "New user")]))]]))))
+          (comp/grid
+            {:item true
+             :xs   12
+             :sm   6}
+            (comp/card
+              {:className "Swarmpit-form-card"}
+              (comp/card-header
+                {:className "Swarmpit-form-card-header"
+                 :title     "New User"})
+              (comp/card-content
+                {}
+                (comp/grid
+                  {:container true
+                   :spacing   40}
+                  (comp/grid
+                    {:item true
+                     :xs   12}
+                    (form-username username)
+                    (form-password password showPassword)
+                    (form-role role)
+                    (form-email email)))
+                (html
+                  [:div.Swarmpit-form-buttons
+                   (comp/button
+                     {:variant "contained"
+                      :onClick create-user-handler
+                      :color   "primary"} "Create")]))))]]))))

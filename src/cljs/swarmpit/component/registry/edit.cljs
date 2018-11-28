@@ -87,35 +87,42 @@
     (html
       [:div.Swarmpit-form
        [:div.Swarmpit-form-context
-        (comp/paper
-          {:className "Swarmpit-paper Swarmpit-form-context"
-           :elevation 0}
-          (comp/grid
-            {:container true
-             :spacing   40}
-            (comp/grid
-              {:item true
-               :xs   12
-               :sm   6}
-              (form-name name)
-              (form-url url)
-              (comp/form-control
-                {:component "fieldset"}
-                (comp/form-group
-                  {}
-                  (comp/form-control-label
-                    {:control (form-public public)
-                     :label   "Public"})))))
-          (html
-            [:div.Swarmpit-form-buttons
-             (comp/button
-               {:variant "contained"
-                :onClick #(dispatch! (routes/path-for-frontend :registry-info {:id _id}))
-                :color   "primary"} "Back")
-             (comp/button
-               {:variant "contained"
-                :onClick #(update-registry-handler _id)
-                :color   "primary"} "Save")]))]])))
+        (comp/grid
+          {:item true
+           :xs   12
+           :sm   6}
+          (comp/card
+            {:className "Swarmpit-form-card"}
+            (comp/card-header
+              {:className "Swarmpit-form-card-header"
+               :title     "Edit Registry"})
+            (comp/card-content
+              {}
+              (comp/grid
+                {:container true
+                 :spacing   40}
+                (comp/grid
+                  {:item true
+                   :xs   12}
+                  (form-name name)
+                  (form-url url)
+                  (comp/form-control
+                    {:component "fieldset"}
+                    (comp/form-group
+                      {}
+                      (comp/form-control-label
+                        {:control (form-public public)
+                         :label   "Public"})))))
+              (html
+                [:div.Swarmpit-form-buttons
+                 (comp/button
+                   {:variant "contained"
+                    :onClick #(dispatch! (routes/path-for-frontend :registry-info {:id _id}))
+                    :color   "primary"} "Back")
+                 (comp/button
+                   {:variant "contained"
+                    :onClick #(update-registry-handler _id)
+                    :color   "primary"} "Save")]))))]])))
 
 (rum/defc form < rum/reactive
                  mixin-init-form [_]

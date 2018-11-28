@@ -41,7 +41,7 @@
      :disabled        true
      :required        true
      :InputLabelProps {:shrink true}
-     :value           value} ))
+     :value           value}))
 
 (defn- update-stack-handler
   [name]

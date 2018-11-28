@@ -97,16 +97,19 @@
       (init-form-state)
       (services-handler))))
 
-;(defn linked-services
-;  [services]
-;  (when (not-empty services)
-;    [:div.form-layout-group.form-layout-group-border
-;     (form/section "Linked Services")
-;     (list-auto/table (map :name headers)
-;                      services
-;                      render-item
-;                      render-item-keys
-;                      onclick-handler)]))
+(defn linked-services
+  [services]
+  (comp/card
+    {:className "Swarmpit-card"}
+    (comp/card-header
+      {:className "Swarmpit-table-card-header"
+       :title     "Linked Services"})
+    (comp/card-content
+      {:className "Swarmpit-table-card-content"}
+      (list/responsive
+        render-metadata
+        services
+        onclick-handler))))
 
 (rum/defc form < rum/reactive
                  mixin-init-form
@@ -125,16 +128,6 @@
               {:className "Swarmpit-table-card-header"
                :title     "Overview"
                :subheader (str "You're running " (count items) " services.")})
-            ;(comp/card-content
-            ;  {}
-            ;  (comp/button
-            ;    {:variant   "outlined"
-            ;     :className "Swarmpit-icon-button"
-            ;     :size      "small"
-            ;     :onClick   #(dispatch! (routes/path-for-frontend :service-create-image))
-            ;     :color     "primary"}
-            ;    (comp/svg {:style {:marginRight "8px"}} icon/add-small)
-            ;    "New service"))
             (comp/card-content
               {:className "Swarmpit-table-card-content"}
               (list/responsive

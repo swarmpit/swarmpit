@@ -85,24 +85,28 @@
       (html
         [:div.Swarmpit-form
          [:div.Swarmpit-form-context
-          (comp/paper
-            {:className "Swarmpit-paper Swarmpit-form-context"
-             :elevation 0}
-            (comp/grid
-              {:container true
-               :spacing   40}
+          (comp/card
+            {:className "Swarmpit-form-card"}
+            (comp/card-header
+              {:className "Swarmpit-form-card-header"
+               :title     "Create Config"})
+            (comp/card-content
+              {}
               (comp/grid
-                {:item true
-                 :xs   12
-                 :sm   6}
-                (form-name configName))
-              (comp/grid
-                {:item true
-                 :xs   12}
-                (form-data data)))
-            (html
-              [:div.Swarmpit-form-buttons
-               (comp/button
-                 {:variant "contained"
-                  :onClick create-config-handler
-                  :color   "primary"} "Create")]))]]))))
+                {:container true
+                 :spacing   40}
+                (comp/grid
+                  {:item true
+                   :xs   12
+                   :sm   6}
+                  (form-name configName))
+                (comp/grid
+                  {:item true
+                   :xs   12}
+                  (form-data data)))
+              (html
+                [:div.Swarmpit-form-buttons
+                 (comp/button
+                   {:variant "contained"
+                    :onClick create-config-handler
+                    :color   "primary"} "Create")])))]]))))
