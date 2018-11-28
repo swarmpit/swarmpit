@@ -124,6 +124,7 @@
       [:div.Swarmpit-image-search
        (form-username user users)
        (form-repository repository)
+       [:span.Swarmpit-message (str "Found " (count filtered-repositories) " repositories.")]
        (form-list searching? filtered-repositories)]
       [:div.Swarmpit-image-search
        (html

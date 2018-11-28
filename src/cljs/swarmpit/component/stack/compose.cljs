@@ -2,6 +2,7 @@
   (:require [material.icon :as icon]
             [material.component :as comp]
             [material.component.form :as form]
+            [material.component.composite :as composite]
             [swarmpit.component.editor :as editor]
             [swarmpit.component.state :as state]
             [swarmpit.component.mixin :as mixin]
@@ -25,6 +26,7 @@
      :key             "name"
      :variant         "outlined"
      :value           value
+     :margin          "normal"
      :required        true
      :disabled        true
      :InputLabelProps {:shrink true}}))
@@ -33,12 +35,13 @@
   (comp/text-field
     {:id              editor-id
      :fullWidth       true
-     :name            "data"
-     :key             "data"
+     :name            "config-view"
+     :key             "config-view"
      :multiline       true
+     :disabled        true
      :required        true
      :InputLabelProps {:shrink true}
-     :value           value}))
+     :value           value} ))
 
 (defn- update-stack-handler
   [name]
@@ -107,6 +110,7 @@
   (form-editor spec))
 
 (defn- form-select [name value last? previous?]
+  (print value)
   (comp/text-field
     {:fullWidth       true
      :label           "Compose file"
@@ -114,18 +118,19 @@
      :select          true
      :value           value
      :variant         "outlined"
+     :margin          "normal"
      :InputLabelProps {:shrink true}
      :onChange        #(dispatch! (routes/path-for-frontend (keyword (-> % .-target .-value)) {:name name}))}
     (comp/menu-item
       {:key   "current"
-       :value :stack-compose} "Current engine state")
+       :value :current} "Current engine state")
     (comp/menu-item
       {:key      "last"
-       :value    :stack-last
+       :value    :last
        :disabled (not last?)} "Last deployed")
     (comp/menu-item
       {:key      "previous"
-       :value    :stack-previous
+       :value    :previous
        :disabled (not previous?)} "Previously deployed (rollback)")))
 
 (rum/defc form-edit < rum/reactive
@@ -136,28 +141,31 @@
     (html
       [:div.Swarmpit-form
        [:div.Swarmpit-form-context
-        (comp/paper
-          {:className "Swarmpit-paper Swarmpit-form-context"
-           :elevation 0}
-          (comp/grid
-            {:container true
-             :spacing   40}
+        (comp/card
+          {:className "Swarmpit-form-card"}
+          (comp/card-header
+            {:className "Swarmpit-form-card-header"
+             :title     "Edit Stack"})
+          (comp/card-content
+            {}
             (comp/grid
-              {:item true
-               :xs   12
-               :sm   6}
-              (form-name name)
-              (form-select name :current last? previous?))
-            (comp/grid
-              {:item true
-               :xs   12}
-              (form-editor (:compose spec))))
-          (html
-            [:div.Swarmpit-form-buttons
-             (comp/button
-               {:variant "contained"
-                :onClick #(update-stack-handler name)
-                :color   "primary"} "Deploy")]))]])))
+              {:container true
+               :spacing   40}
+              (comp/grid
+                {:item true
+                 :xs   12}
+                (form-name name)
+                (form-select name :current last? previous?))
+              (comp/grid
+                {:item true
+                 :xs   12}
+                (form-editor (:compose spec))))
+            (html
+              [:div.Swarmpit-form-buttons
+               (composite/progress-button
+                 "Deploy"
+                 #(update-stack-handler name)
+                 processing?)])))]])))
 
 (rum/defc form < rum/reactive
                  mixin-init-form [_]

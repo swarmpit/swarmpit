@@ -1,6 +1,7 @@
 (ns swarmpit.component.stack.create
   (:require [material.icon :as icon]
             [material.component :as comp]
+            [material.component.composite :as composite]
             [swarmpit.component.editor :as editor]
             [swarmpit.component.state :as state]
             [swarmpit.component.mixin :as mixin]
@@ -23,6 +24,8 @@
      :name            "name"
      :key             "name"
      :variant         "outlined"
+     :helperText      "Specify stacfile name"
+     :margin          "normal"
      :value           value
      :required        true
      :InputLabelProps {:shrink true}
@@ -102,27 +105,34 @@
       (html
         [:div.Swarmpit-form
          [:div.Swarmpit-form-context
-          (comp/paper
-            {:className "Swarmpit-paper Swarmpit-form-context"
-             :elevation 0}
-            (comp/grid
-              {:container true
-               :spacing   40}
+          (comp/card
+            {:className "Swarmpit-form-card"}
+            (comp/card-header
+              {:className "Swarmpit-form-card-header"
+               :title     "New Stack"})
+            (comp/card-content
+              {}
               (comp/grid
-                {:item true
-                 :xs   12
-                 :sm   6}
-                (form-name name))
-              (comp/grid
-                {:item true
-                 :xs   12}
-                (form-editor (:compose spec))))
-            (html
-              [:div.Swarmpit-form-buttons
-               (comp/button
-                 {:variant "contained"
-                  :onClick create-stack-handler
-                  :color   "primary"} "Deploy")]))]]))))
+                {:container true
+                 :spacing   40}
+                (comp/grid
+                  {:item true
+                   :xs   12
+                   :lx   4}
+                  (form-name name))
+                (comp/grid
+                  {:item true
+                   :xs   12
+                   :lx   4}
+                  (when-not from
+                    (html [:span.Swarmpit-message icon/info "Please drag & drop or paste a compose file."]))
+                  (form-editor (:compose spec))))
+              (html
+                [:div.Swarmpit-form-buttons
+                 (composite/progress-button
+                   "Deploy"
+                   create-stack-handler
+                   processing?)])))]]))))
 
 (rum/defc form < rum/reactive
                  mixin-init-form [params]

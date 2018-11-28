@@ -126,6 +126,7 @@
       [:div.Swarmpit-image-search
        (form-registry registry registries)
        (form-repository repository)
+       [:span.Swarmpit-message (str "Found " (count filtered-repositories) " repositories.")]
        (form-list searching? registry filtered-repositories)]
       [:div.Swarmpit-image-search
        (html

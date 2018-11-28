@@ -1,6 +1,7 @@
 (ns swarmpit.component.stack.edit
   (:require [material.icon :as icon]
             [material.component :as comp]
+            [material.component.composite :as composite]
             [swarmpit.component.editor :as editor]
             [swarmpit.component.state :as state]
             [swarmpit.component.mixin :as mixin]
@@ -26,6 +27,7 @@
      :key             "name"
      :variant         "outlined"
      :value           value
+     :margin          "normal"
      :required        true
      :disabled        true
      :InputLabelProps {:shrink true}}))
@@ -100,28 +102,32 @@
     (html
       [:div.Swarmpit-form
        [:div.Swarmpit-form-context
-        (comp/paper
-          {:className "Swarmpit-paper Swarmpit-form-context"
-           :elevation 0}
-          (comp/grid
-            {:container true
-             :spacing   40}
+        (comp/card
+          {:className "Swarmpit-form-card"}
+          (comp/card-header
+            {:className "Swarmpit-form-card-header"
+             :title     "Edit Stack"})
+          (comp/card-content
+            {}
             (comp/grid
-              {:item true
-               :xs   12
-               :sm   6}
-              (form-name name)
-              (compose/form-select name select true previous?))
-            (comp/grid
-              {:item true
-               :xs   12}
-              (form-editor (:compose spec))))
-          (html
-            [:div.Swarmpit-form-buttons
-             (comp/button
-               {:variant "contained"
-                :onClick #(update-stack-handler name)
-                :color   "primary"} "Deploy")]))]])))
+              {:container true
+               :spacing   40}
+              (comp/grid
+                {:item true
+                 :xs   12
+                 :sm   6}
+                (form-name name)
+                (compose/form-select name select true previous?))
+              (comp/grid
+                {:item true
+                 :xs   12}
+                (form-editor (:compose spec))))
+            (html
+              [:div.Swarmpit-form-buttons
+               (composite/progress-button
+                 "Deploy"
+                 #(update-stack-handler name)
+                 processing?)])))]])))
 
 (rum/defc form-last < rum/reactive
                       mixin-init-form [_]

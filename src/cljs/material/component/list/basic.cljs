@@ -46,13 +46,14 @@
     (table-body render-metadata items onclick-handler-fn)))
 
 (defn list-item
-  [render-metadata index item onclick-handler-fn]
+  [render-metadata index item last onclick-handler-fn]
   (let [status-fn (:status-fn render-metadata)
         primary-key (:primary render-metadata)
         secodary-key (:secondary render-metadata)]
     (cmp/list-item
       {:key     (str "Swarmpit-list-item-" index)
        :button  true
+       :divider (false? (= item last))
        :onClick #(onclick-handler-fn item)}
       (cmp/list-item-text
         (merge
@@ -78,6 +79,7 @@
           render-metadata
           index
           item
+          (last items)
           onclick-handler-fn)) items)))
 
 (rum/defc responsive < rum/reactive

@@ -79,6 +79,8 @@
                  mixin-init-form []
   (let [{:keys [repository searching?]} (state/react form-state-cursor)
         repositories (state/react form-value-cursor)]
+    (print repositories)
     [:div.Swarmpit-image-search
      (form-repository repository)
+     [:span.Swarmpit-message (str "Found " (count (:results repositories)) " repositories.")]
      (form-list searching? repositories)]))
