@@ -3,6 +3,7 @@
             [material.component :as comp]
             [material.component.label :as label]
             [material.component.form :as form]
+            [material.component.grid.masonry :as masonry]
             [swarmpit.component.state :as state]
             [swarmpit.component.mixin :as mixin]
             [swarmpit.component.progress :as progress]
@@ -168,7 +169,7 @@
       (html
         [:div.Swarmpit-form
          [:div.Swarmpit-form-context
-          (comp/masonry-like-grid
+          (masonry/grid
             {:first-col-pred is-even-and-not-third?}
             (settings/form service)
             (deployment/form deployment)
