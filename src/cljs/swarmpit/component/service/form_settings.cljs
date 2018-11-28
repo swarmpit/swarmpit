@@ -1,6 +1,5 @@
 (ns swarmpit.component.service.form-settings
-  (:require [goog.object]
-            [material.component :as comp]
+  (:require [material.component :as comp]
             [swarmpit.component.state :as state]
             [material.component.composite :as composite]
             [swarmpit.component.service.form-ports :as ports]
@@ -42,18 +41,26 @@
                         :helperText      "Specify image tag or leave empty for latest"
                         :InputLabelProps {:shrink true}}
        :onChange       #(state/update-value [:repository :tag] (-> % .-value) form-value-cursor)
+       :value          {:label (:tag value)
+                        :value (:tag value)}
        :placeholder    "Search a tag"})))
-;
-;(defn- form-image-tag-preloaded [value tags]
-;  "Preload ports for services created via swarmpit"
-;  (form/comp
-;    "IMAGE TAG"
-;    (comp/autocomplete {:name          "imageTagAuto"
-;                        :key           "imageTagAuto"
-;                        :searchText    (:tag value)
-;                        :onUpdateInput (fn [v] (state/update-value [:repository :tag] v form-value-cursor))
-;                        :onNewRequest  (fn [_] (ports/load-suggestable-ports value))
-;                        :dataSource    tags})))
+
+(defn- form-image-tag-preloaded [value tags]
+  "Preload ports for services created via swarmpit"
+  (let [suggestions (map #(hash-map :label %
+                                    :value %) tags)]
+    (composite/autocomplete
+      {:options        suggestions
+       :textFieldProps {:label           "Tag"
+                        :margin          "normal"
+                        :helperText      "Specify image tag or leave empty for latest"
+                        :InputLabelProps {:shrink true}}
+       :onChange       (fn [v]
+                         (state/update-value [:repository :tag] (-> v .-value) form-value-cursor)
+                         (ports/load-suggestable-ports (-> v .-value)))
+       :value          {:label (:tag value)
+                        :value (:tag value)}
+       :placeholder    "Search a tag"})))
 
 (defn- form-name [value update-form?]
   (comp/text-field
@@ -131,7 +138,7 @@
 
 (rum/defc form < rum/reactive [update-form?]
   (let [{:keys [repository serviceName mode replicas command]} (state/react form-value-cursor)
-        {:keys [tags tagMenuSuggestions]} (state/react form-state-cursor)]
+        {:keys [tags]} (state/react form-state-cursor)]
     (comp/grid
       {:container true
        :spacing   24}
@@ -143,7 +150,9 @@
         {:item true
          :xs   12
          :sm   6}
-        (form-image-tag repository tags))
+        (if update-form?
+          (form-image-tag repository tags)
+          (form-image-tag-preloaded repository tags)))
       (comp/grid
         {:item true
          :xs   12} (form-name serviceName update-form?))

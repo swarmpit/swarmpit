@@ -125,6 +125,16 @@
               {:className "Swarmpit-table-card-header"
                :title     "Overview"})
             (comp/card-content
+              {}
+              (comp/button
+                {:variant   "outlined"
+                 :className "Swarmpit-icon-button"
+                 :size      "small"
+                 :onClick   #(dispatch! (routes/path-for-frontend :service-create-image))
+                 :color     "primary"}
+                (comp/svg {:style {:marginRight "8px"}} icon/add-small)
+                "New service"))
+            (comp/card-content
               {:className "Swarmpit-table-card-content"}
               (list/responsive
                 render-metadata

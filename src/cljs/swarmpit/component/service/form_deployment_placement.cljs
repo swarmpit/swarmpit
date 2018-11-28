@@ -18,7 +18,7 @@
     {:on-success (fn [{:keys [response]}]
                    (state/update-value [:list] response form-state-cursor))}))
 
-(defn- form-placement [placement-list]
+(defn- form-placement [placement placement-list]
   (let [suggestions (map #(hash-map :label %
                                     :value %) placement-list)]
     (composite/autocomplete
@@ -31,9 +31,12 @@
                          (state/set-value
                            (->> (js->clj value)
                                 (map #(hash-map :rule (get % "value")))) form-value-cursor))
+       :value          (map #(hash-map :label (:rule %)
+                                       :value (:rule %)) placement)
        :placeholder    "Add placement"
        :isMulti        true})))
 
 (rum/defc form < rum/reactive []
-  (let [{:keys [list]} (state/react form-state-cursor)]
-    (form-placement list)))
+  (let [{:keys [list]} (state/react form-state-cursor)
+        placement (state/react form-value-cursor)]
+    (form-placement placement list)))

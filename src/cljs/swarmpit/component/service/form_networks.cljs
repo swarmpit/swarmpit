@@ -22,7 +22,7 @@
                                    (into []))]
                      (state/update-value [:list] resp form-state-cursor)))}))
 
-(defn- form-network [network-list]
+(defn- form-network [networks network-list]
   (let [suggestions (map #(hash-map :label (:networkName %)
                                     :value (:networkName %)) network-list)]
     (composite/autocomplete
@@ -35,9 +35,12 @@
                          (state/set-value
                            (->> (js->clj value)
                                 (map #(hash-map :networkName (get % "value")))) form-value-cursor))
+       :value          (map #(hash-map :label (:networkName %)
+                                       :value (:networkName %)) networks)
        :placeholder    "Add network"
        :isMulti        true})))
 
 (rum/defc form < rum/reactive []
-  (let [{:keys [list]} (state/react form-state-cursor)]
-    (form-network list)))
+  (let [{:keys [list]} (state/react form-state-cursor)
+        networks (state/react form-value-cursor)]
+    (form-network networks list)))

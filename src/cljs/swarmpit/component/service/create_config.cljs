@@ -65,9 +65,8 @@
 (defn- init-form-state
   []
   (state/set-value {:processing? false} state/form-state-cursor)
-  (state/set-value {:valid?             false
-                    :tagMenuSuggestions []
-                    :tags               []} settings/form-state-cursor)
+  (state/set-value {:valid? false
+                    :tags   []} settings/form-state-cursor)
   (state/set-value {:volumes []} mounts/form-state-cursor)
   (state/set-value {:list []} secrets/form-state-cursor)
   (state/set-value {:list []} configs/form-state-cursor)

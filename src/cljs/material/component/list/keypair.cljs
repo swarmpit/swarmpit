@@ -1,4 +1,4 @@
-(ns material.component.list.info-kv
+(ns material.component.list.keypair
   (:require [material.component :as comp]))
 
 (defn list [kv-map]
