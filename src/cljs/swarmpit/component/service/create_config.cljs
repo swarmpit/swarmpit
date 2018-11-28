@@ -144,19 +144,6 @@
         (comp/svg icon/add-small) "Add port"))
     (ports/form)))
 
-;(rum/defc form-networks < rum/static []
-;  (comp/grid
-;    {:item true
-;     :xs   12}
-;    (form/section
-;      "Networks"
-;      ;(comp/button
-;      ;  {:color   "primary"
-;      ;   :onClick networks/add-item}
-;      ;  (comp/svg icon/add-small) "Add network")
-;      )
-;    (networks/form)))
-
 (rum/defc form-mounts < rum/static []
   (comp/grid
     {:item true
@@ -262,7 +249,6 @@
                 {:container true
                  :spacing   40}
                 (form-settings)
-                ;(form-networks)
                 (form-ports)
                 (form-mounts)
                 (form-secrets)

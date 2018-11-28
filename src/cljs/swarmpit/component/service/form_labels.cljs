@@ -1,6 +1,7 @@
 (ns swarmpit.component.service.form-labels
   (:require [material.component :as comp]
             [material.component.list.edit :as list]
+            [material.component.composite :as composite]
             [swarmpit.component.state :as state]
             [swarmpit.ajax :as ajax]
             [swarmpit.routes :as routes]
@@ -12,6 +13,17 @@
 (def form-value-cursor (conj state/form-value-cursor :labels))
 
 (def form-state-cursor (conj state/form-state-cursor :labels))
+
+;(defn- form-name [value index names]
+;  (let [suggestions (map #(hash-map :label %
+;                                    :value %) names)]
+;    (composite/autocomplete
+;      {:options        suggestions
+;       :textFieldProps {:label           "Name"
+;                        :margin          "dense"
+;                        :required        true
+;                        :InputLabelProps {:shrink true}}
+;       :onChange       #(state/update-item index :name (-> % .-value) form-value-cursor)})))
 
 (defn- form-name [value index]
   (comp/text-field
@@ -37,7 +49,8 @@
      :InputLabelProps {:shrink true}
      :onChange        #(state/update-item index :value (-> % .-target .-value) form-value-cursor)}))
 
-(def form-metadata
+(defn form-metadata
+  [names]
   [{:name      "Name"
     :primary   true
     :key       [:name]
@@ -49,7 +62,7 @@
 (defn- form-table
   [labels names]
   (list/list
-    form-metadata
+    (form-metadata names)
     labels
     (fn [index] (state/remove-item index form-value-cursor))))
 

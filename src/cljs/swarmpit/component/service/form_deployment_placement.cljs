@@ -24,6 +24,7 @@
     (composite/autocomplete
       {:options        suggestions
        :textFieldProps {:label           "Placement"
+                        :margin          "normal"
                         :helperText      "Speficy placement constraints"
                         :InputLabelProps {:shrink true}}
        :onChange       (fn [value]

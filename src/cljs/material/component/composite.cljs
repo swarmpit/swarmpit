@@ -75,16 +75,20 @@
        :overflow   "hidden"}} (goog.object/get props "children")]))
 
 (defn autocomplete-control [props]
-  (let [{:keys [innerRef innerProps children selectProps]} (keywordize-keys (js->clj props))]
+  (let [{:keys [innerRef innerProps children selectProps]} (keywordize-keys (js->clj props))
+        margin (get-in selectProps [:textFieldProps :margin])]
     (cmp/text-field
       (merge (:textFieldProps selectProps)
              {:fullWidth  true
               :variant    "outlined"
-              :margin     "normal"
               :InputProps {:inputComponent autocomplete-input
                            :inputProps     (merge innerProps
-                                                  {:style    {:display "flex"
-                                                              :padding "10px 15px"}
+                                                  {:style    (merge
+                                                               {:display "flex"}
+                                                               (when (= "normal" margin)
+                                                                 {:padding "10px 15px"})
+                                                               (when (= "dense" margin)
+                                                                 {:padding "6.5px 15px"}))
                                                    :inputRef innerRef
                                                    :children children})}}))))
 

@@ -38,6 +38,7 @@
     (composite/autocomplete
       {:options        suggestions
        :textFieldProps {:label           "Tag"
+                        :margin          "normal"
                         :helperText      "Specify image tag or leave empty for latest"
                         :InputLabelProps {:shrink true}}
        :onChange       #(state/update-value [:repository :tag] (-> % .-value) form-value-cursor)

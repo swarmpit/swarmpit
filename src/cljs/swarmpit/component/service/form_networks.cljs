@@ -29,6 +29,7 @@
       {:options        suggestions
        :textFieldProps {:label           "Network"
                         :helperText      "Attach to network"
+                        :margin          "normal"
                         :InputLabelProps {:shrink true}}
        :onChange       (fn [value]
                          (state/set-value
