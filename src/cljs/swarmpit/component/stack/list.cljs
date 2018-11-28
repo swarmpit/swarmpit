@@ -14,23 +14,19 @@
 (enable-console-print!)
 
 (def render-metadata
-  {:table {:title     "Overview"
-           :subheader "RUNNING: 5, UPDATING: 0"
-           :summary   [{:name      "Name"
-                        :render-fn (fn [item] (:stackName item))}
-                       {:name      "Services"
-                        :render-fn (fn [item] (get-in item [:stackStats :services]))}
-                       {:name      "Networks"
-                        :render-fn (fn [item] (get-in item [:stackStats :networks]))}
-                       {:name      "Volumes"
-                        :render-fn (fn [item] (get-in item [:stackStats :volumes]))}
-                       {:name      "Configs"
-                        :render-fn (fn [item] (get-in item [:stackStats :configs]))}
-                       {:name      "Secrets"
-                        :render-fn (fn [item] (get-in item [:stackStats :secrets]))}]}
-   :list  {:title       "Overview"
-           :subheader   "RUNNING: 5, UPDATING: 0"
-           :primary-key (fn [item] (:stackName item))}})
+  {:table {:summary [{:name      "Name"
+                      :render-fn (fn [item] (:stackName item))}
+                     {:name      "Services"
+                      :render-fn (fn [item] (get-in item [:stackStats :services]))}
+                     {:name      "Networks"
+                      :render-fn (fn [item] (get-in item [:stackStats :networks]))}
+                     {:name      "Volumes"
+                      :render-fn (fn [item] (get-in item [:stackStats :volumes]))}
+                     {:name      "Configs"
+                      :render-fn (fn [item] (get-in item [:stackStats :configs]))}
+                     {:name      "Secrets"
+                      :render-fn (fn [item] (get-in item [:stackStats :secrets]))}]}
+   :list  {:primary (fn [item] (:stackName item))}})
 
 (defn- onclick-handler
   [item]
@@ -86,9 +82,16 @@
       (html
         [:div.Swarmpit-form
          [:div.Swarmpit-form-context
-          (list/responsive
-            render-metadata
-            (->> (list-util/filter items (:query filter))
-                 (format-response)
-                 (sort-by :stackName))
-            onclick-handler)]]))))
+          (comp/card
+            {:className "Swarmpit-card"}
+            (comp/card-header
+              {:className "Swarmpit-table-card-header"
+               :title     "Overview"})
+            (comp/card-content
+              {:className "Swarmpit-table-card-content"}
+              (list/responsive
+                render-metadata
+                (->> (list-util/filter items (:query filter))
+                     (format-response)
+                     (sort-by :stackName))
+                onclick-handler)))]]))))

@@ -15,16 +15,12 @@
 (enable-console-print!)
 
 (def render-metadata
-  {:table {:title     "Overview"
-           :subheader "RUNNING: 5, UPDATING: 0"
-           :summary   [{:name      "Name"
-                        :render-fn (fn [item] (:secretName item))}
-                       {:name      "Created"
-                        :render-fn (fn [item] (time/humanize (:createdAt item)))}]}
-   :list  {:title         "Overview"
-           :subheader     "RUNNING: 5, UPDATING: 0"
-           :primary-key   (fn [item] (:secretName item))
-           :secondary-key (fn [item] (time/humanize (:createdAt item)))}})
+  {:table {:summary [{:name      "Name"
+                      :render-fn (fn [item] (:secretName item))}
+                     {:name      "Created"
+                      :render-fn (fn [item] (time/humanize (:createdAt item)))}]}
+   :list  {:primary   (fn [item] (:secretName item))
+           :secondary (fn [item] (time/humanize (:createdAt item)))}})
 
 (defn- onclick-handler
   [item]
@@ -69,8 +65,15 @@
       (html
         [:div.Swarmpit-form
          [:div.Swarmpit-form-context
-          (list/responsive
-            render-metadata
-            (->> (list-util/filter items (:query filter))
-                 (sort-by :secretName))
-            onclick-handler)]]))))
+          (comp/card
+            {:className "Swarmpit-card"}
+            (comp/card-header
+              {:className "Swarmpit-table-card-header"
+               :title     "Overview"})
+            (comp/card-content
+              {:className "Swarmpit-table-card-content"}
+              (list/responsive
+                render-metadata
+                (->> (list-util/filter items (:query filter))
+                     (sort-by :secretName))
+                onclick-handler)))]]))))

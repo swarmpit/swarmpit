@@ -16,19 +16,15 @@
 (enable-console-print!)
 
 (def render-metadata
-  {:table {:title     "Overview"
-           :subheader "RUNNING: 5, UPDATING: 0"
-           :summary   [{:name      "Username"
-                        :render-fn (fn [item] (:username item))}
-                       {:name      "Name"
-                        :render-fn (fn [item] (:name item))}
-                       {:name      "Company"
-                        :render-fn (fn [item] (:company item))}
-                       {:name      "Name"
-                        :render-fn (fn [item] (if (:public item) "yes" "no"))}]}
-   :list  {:title       "Overview"
-           :subheader   "RUNNING: 5, UPDATING: 0"
-           :primary-key (fn [item] (:username item))}})
+  {:table {:summary [{:name      "Username"
+                      :render-fn (fn [item] (:username item))}
+                     {:name      "Name"
+                      :render-fn (fn [item] (:name item))}
+                     {:name      "Company"
+                      :render-fn (fn [item] (:company item))}
+                     {:name      "Name"
+                      :render-fn (fn [item] (if (:public item) "yes" "no"))}]}
+   :list  {:primary-key (fn [item] (:username item))}})
 
 (defn- onclick-handler
   [item]
@@ -76,7 +72,14 @@
       (html
         [:div.Swarmpit-form
          [:div.Swarmpit-form-context
-          (list/responsive
-            render-metadata
-            (sort-by :username filtered-items)
-            onclick-handler)]]))))
+          (comp/card
+            {:className "Swarmpit-card"}
+            (comp/card-header
+              {:className "Swarmpit-table-card-header"
+               :title     "Overview"})
+            (comp/card-content
+              {:className "Swarmpit-table-card-content"}
+              (list/responsive
+                render-metadata
+                (sort-by :username filtered-items)
+                onclick-handler)))]]))))

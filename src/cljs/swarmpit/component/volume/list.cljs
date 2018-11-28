@@ -14,16 +14,12 @@
 (enable-console-print!)
 
 (def render-metadata
-  {:table {:title     "Overview"
-           :subheader "RUNNING: 5, UPDATING: 0"
-           :summary   [{:name      "Name"
-                        :render-fn (fn [item] (:volumeName item))}
-                       {:name      "Driver"
-                        :render-fn (fn [item] (:driver item))}]}
-   :list  {:title         "Overview"
-           :subheader     "RUNNING: 5, UPDATING: 0"
-           :primary-key   (fn [item] (:volumeName item))
-           :secondary-key (fn [item] (:driver item))}})
+  {:table {:summary [{:name      "Name"
+                      :render-fn (fn [item] (:volumeName item))}
+                     {:name      "Driver"
+                      :render-fn (fn [item] (:driver item))}]}
+   :list  {:primary   (fn [item] (:volumeName item))
+           :secondary (fn [item] (:driver item))}})
 
 (defn- onclick-handler
   [item]
@@ -69,7 +65,14 @@
       (html
         [:div.Swarmpit-form
          [:div.Swarmpit-form-context
-          (list/responsive
-            render-metadata
-            (sort-by :volumeName filtered-items)
-            onclick-handler)]]))))
+          (comp/card
+            {:className "Swarmpit-card"}
+            (comp/card-header
+              {:className "Swarmpit-table-card-header"
+               :title     "Overview"})
+            (comp/card-content
+              {:className "Swarmpit-table-card-content"}
+              (list/responsive
+                render-metadata
+                (sort-by :volumeName filtered-items)
+                onclick-handler)))]]))))

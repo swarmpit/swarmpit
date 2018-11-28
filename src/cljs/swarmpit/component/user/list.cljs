@@ -14,18 +14,14 @@
 (enable-console-print!)
 
 (def render-metadata
-  {:table {:title     "Overview"
-           :subheader "RUNNING: 5, UPDATING: 0"
-           :summary   [{:name      "Username"
-                        :render-fn (fn [item] (:username item))}
-                       {:name      "Email"
-                        :render-fn (fn [item] (:email item))}
-                       {:name      "Is Admin"
-                        :render-fn (fn [item] (if (:role item) "yes" "no"))}]}
-   :list  {:title         "Overview"
-           :subheader     "RUNNING: 5, UPDATING: 0"
-           :primary-key   (fn [item] (:username item))
-           :secondary-key (fn [item] (:email item))}})
+  {:table {:summary [{:name      "Username"
+                      :render-fn (fn [item] (:username item))}
+                     {:name      "Email"
+                      :render-fn (fn [item] (:email item))}
+                     {:name      "Is Admin"
+                      :render-fn (fn [item] (if (:role item) "yes" "no"))}]}
+   :list  {:primary   (fn [item] (:username item))
+           :secondary (fn [item] (:email item))}})
 
 (defn- onclick-handler
   [item]
@@ -71,7 +67,14 @@
       (html
         [:div.Swarmpit-form
          [:div.Swarmpit-form-context
-          (list/responsive
-            render-metadata
-            (sort-by :username filtered-items)
-            onclick-handler)]]))))
+          (comp/card
+            {:className "Swarmpit-card"}
+            (comp/card-header
+              {:className "Swarmpit-table-card-header"
+               :title     "Overview"})
+            (comp/card-content
+              {:className "Swarmpit-table-card-content"}
+              (list/responsive
+                render-metadata
+                (sort-by :username filtered-items)
+                onclick-handler)))]]))))

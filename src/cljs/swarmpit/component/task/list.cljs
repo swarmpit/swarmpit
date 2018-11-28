@@ -54,25 +54,21 @@
       [:span.Swarmpit-list-image (get-in item [:repository :image])]]]))
 
 (def render-metadata
-  {:table {:title     "Overview"
-           :subheader "RUNNING: 5, UPDATING: 0"
-           :summary   [{:name      "Task"
-                        :render-fn (fn [item] (render-item-name item))}
-                       {:name      "Node"
-                        :render-fn (fn [item] (:nodeName item))}
-                       {:name      "CPU Usage"
-                        :render-fn (fn [item] (render-percentage (get-in item [:stats :cpuPercentage])))}
-                       {:name      "Memory Usage"
-                        :render-fn (fn [item] (render-percentage (get-in item [:stats :memoryPercentage])))}
-                       {:name      "Memory"
-                        :render-fn (fn [item] (render-capacity (get-in item [:stats :memory])))}
-                       {:name      "State"
-                        :render-fn (fn [item] (render-item-state (:state item)))}]}
-   :list  {:title         "Overview"
-           :subheader     "RUNNING: 5, UPDATING: 0"
-           :primary-key   (fn [item] (:taskName item))
-           :secondary-key (fn [item] (get-in item [:repository :image]))
-           :status-fn     (fn [item] (render-item-state (:state item)))}})
+  {:table {:summary [{:name      "Task"
+                      :render-fn (fn [item] (render-item-name item))}
+                     {:name      "Node"
+                      :render-fn (fn [item] (:nodeName item))}
+                     {:name      "CPU Usage"
+                      :render-fn (fn [item] (render-percentage (get-in item [:stats :cpuPercentage])))}
+                     {:name      "Memory Usage"
+                      :render-fn (fn [item] (render-percentage (get-in item [:stats :memoryPercentage])))}
+                     {:name      "Memory"
+                      :render-fn (fn [item] (render-capacity (get-in item [:stats :memory])))}
+                     {:name      "State"
+                      :render-fn (fn [item] (render-item-state (:state item)))}]}
+   :list  {:primary   (fn [item] (:taskName item))
+           :secondary (fn [item] (get-in item [:repository :image]))
+           :status-fn (fn [item] (render-item-state (:state item)))}})
 
 (defn- onclick-handler
   [item]
@@ -112,7 +108,14 @@
       (html
         [:div.Swarmpit-form
          [:div.Swarmpit-form-context
-          (list/responsive
-            render-metadata
-            (sort-by :serviceName filtered-items)
-            onclick-handler)]]))))
+          (comp/card
+            {:className "Swarmpit-card"}
+            (comp/card-header
+              {:className "Swarmpit-table-card-header"
+               :title     "Overview"})
+            (comp/card-content
+              {:className "Swarmpit-table-card-content"}
+              (list/responsive
+                render-metadata
+                (sort-by :serviceName filtered-items)
+                onclick-handler)))]]))))

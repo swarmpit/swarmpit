@@ -52,21 +52,17 @@
       (render-item-state (:state item)))))
 
 (def render-metadata
-  {:table {:title     "Overview"
-           :subheader "RUNNING: 5, UPDATING: 0"
-           :summary   [{:name      "Service"
-                        :render-fn (fn [item] (render-item-name item))}
-                       {:name      "Replicas"
-                        :render-fn (fn [item] (render-item-replicas item))}
-                       {:name      "Ports"
-                        :render-fn (fn [item] (render-item-ports item))}
-                       {:name      "Status"
-                        :render-fn (fn [item] (render-status item))}]}
-   :list  {:title         "Overview"
-           :subheader     "RUNNING: 5, UPDATING: 0"
-           :primary-key   (fn [item] (:serviceName item))
-           :secondary-key (fn [item] (get-in item [:repository :image]))
-           :status-fn     (fn [item] (render-status item))}})
+  {:table {:summary [{:name      "Service"
+                      :render-fn (fn [item] (render-item-name item))}
+                     {:name      "Replicas"
+                      :render-fn (fn [item] (render-item-replicas item))}
+                     {:name      "Ports"
+                      :render-fn (fn [item] (render-item-ports item))}
+                     {:name      "Status"
+                      :render-fn (fn [item] (render-status item))}]}
+   :list  {:primary   (fn [item] (:serviceName item))
+           :secondary (fn [item] (get-in item [:repository :image]))
+           :status-fn (fn [item] (render-status item))}})
 
 (defn- onclick-handler
   [item]
@@ -123,7 +119,14 @@
       (html
         [:div.Swarmpit-form
          [:div.Swarmpit-form-context
-          (list/responsive
-            render-metadata
-            (sort-by :serviceName filtered-items)
-            onclick-handler)]]))))
+          (comp/card
+            {:className "Swarmpit-card"}
+            (comp/card-header
+              {:className "Swarmpit-table-card-header"
+               :title     "Overview"})
+            (comp/card-content
+              {:className "Swarmpit-table-card-content"}
+              (list/responsive
+                render-metadata
+                (sort-by :serviceName filtered-items)
+                onclick-handler)))]]))))

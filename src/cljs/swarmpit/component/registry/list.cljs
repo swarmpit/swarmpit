@@ -16,20 +16,16 @@
 (enable-console-print!)
 
 (def render-metadata
-  {:table {:title     "Overview"
-           :subheader "RUNNING: 5, UPDATING: 0"
-           :summary   [{:name      "Name"
-                        :render-fn (fn [item] (:name item))}
-                       {:name      "Url"
-                        :render-fn (fn [item] (:url item))}
-                       {:name      "Public"
-                        :render-fn (fn [item] (if (:value item) "yes" "no"))}
-                       {:name      "Secure"
-                        :render-fn (fn [item] (if (:withAuth item) "yes" "no"))}]}
-   :list  {:title         "Overview"
-           :subheader     "RUNNING: 5, UPDATING: 0"
-           :primary-key   (fn [item] (:name item))
-           :secondary-key (fn [item] (:url item))}})
+  {:table {:summary [{:name      "Name"
+                      :render-fn (fn [item] (:name item))}
+                     {:name      "Url"
+                      :render-fn (fn [item] (:url item))}
+                     {:name      "Public"
+                      :render-fn (fn [item] (if (:value item) "yes" "no"))}
+                     {:name      "Secure"
+                      :render-fn (fn [item] (if (:withAuth item) "yes" "no"))}]}
+   :list  {:primary   (fn [item] (:name item))
+           :secondary (fn [item] (:url item))}})
 
 (defn- onclick-handler
   [item]
@@ -76,7 +72,14 @@
       (html
         [:div.Swarmpit-form
          [:div.Swarmpit-form-context
-          (list/responsive
-            render-metadata
-            (sort-by :name filtered-items)
-            onclick-handler)]]))))
+          (comp/card
+            {:className "Swarmpit-card"}
+            (comp/card-header
+              {:className "Swarmpit-table-card-header"
+               :title     "Overview"})
+            (comp/card-content
+              {:className "Swarmpit-table-card-content"}
+              (list/responsive
+                render-metadata
+                (sort-by :name filtered-items)
+                onclick-handler)))]]))))

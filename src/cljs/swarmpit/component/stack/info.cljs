@@ -148,65 +148,65 @@
 
 (rum/defc form-services < rum/static [stack-name services]
   (comp/card
-    {:className "Swarmpit-form-card"}
+    {:className "Swarmpit-card"}
     (comp/card-header
-      {:className "Swarmpit-form-card-header"
+      {:className "Swarmpit-table-card-header"
        :title     "Services"})
     (comp/card-content
-      {}
-      (list/responsive-raw
+      {:className "Swarmpit-table-card-content"}
+      (list/responsive
         services/render-metadata
         (sort-by :serviceName services)
         services/onclick-handler))))
 
 (rum/defc form-networks < rum/static [stack-name networks]
   (comp/card
-    {:className "Swarmpit-form-card"}
+    {:className "Swarmpit-card"}
     (comp/card-header
-      {:className "Swarmpit-form-card-header"
+      {:className "Swarmpit-table-card-header"
        :title     "Networks"})
     (comp/card-content
-      {}
-      (list/responsive-raw
+      {:className "Swarmpit-table-card-content"}
+      (list/responsive
         networks/render-metadata
         (sort-by :networkName networks)
         networks/onclick-handler))))
 
 (rum/defc form-volumes < rum/static [stack-name volumes]
   (comp/card
-    {:className "Swarmpit-form-card"}
+    {:className "Swarmpit-card"}
     (comp/card-header
-      {:className "Swarmpit-form-card-header"
+      {:className "Swarmpit-table-card-header"
        :title     "Volumes"})
     (comp/card-content
-      {}
-      (list/responsive-raw
+      {:className "Swarmpit-table-card-content"}
+      (list/responsive
         volumes/render-metadata
         (sort-by :volumeName volumes)
         volumes/onclick-handler))))
 
 (rum/defc form-configs < rum/static [stack-name configs]
   (comp/card
-    {:className "Swarmpit-form-card"}
+    {:className "Swarmpit-card"}
     (comp/card-header
-      {:className "Swarmpit-form-card-header"
+      {:className "Swarmpit-table-card-header"
        :title     "Configs"})
     (comp/card-content
-      {}
-      (list/responsive-raw
+      {:className "Swarmpit-table-card-content"}
+      (list/responsive
         configs/render-metadata
         (sort-by :configName configs)
         configs/onclick-handler))))
 
 (rum/defc form-secrets < rum/static [stack-name secrets]
   (comp/card
-    {:className "Swarmpit-form-card"}
+    {:className "Swarmpit-card"}
     (comp/card-header
-      {:className "Swarmpit-form-card-header"
+      {:className "Swarmpit-table-card-header"
        :title     "Secrets"})
     (comp/card-content
-      {}
-      (list/responsive-raw
+      {:className "Swarmpit-table-card-content"}
+      (list/responsive
         secrets/render-metadata
         (sort-by :secretName secrets)
         secrets/onclick-handler))))

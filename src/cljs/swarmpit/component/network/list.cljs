@@ -15,22 +15,18 @@
 (enable-console-print!)
 
 (def render-metadata
-  {:table {:title     "Overview"
-           :subheader "RUNNING: 5, UPDATING: 0"
-           :summary   [{:name      "Name"
-                        :render-fn (fn [item] (:networkName item))}
-                       {:name      "Driver"
-                        :render-fn (fn [item] (:driver item))}
-                       {:name      "Subnet"
-                        :render-fn (fn [item] (get-in item [:ipam :subnet]))}
-                       {:name      "Gateway"
-                        :render-fn (fn [item] (get-in item [:ipam :gateway]))}
-                       {:name      "Status"
-                        :render-fn (fn [item] (when (:internal item) (label/blue "internal")))}]}
-   :list  {:title         "Overview"
-           :subheader     "RUNNING: 5, UPDATING: 0"
-           :primary-key   (fn [item] (:networkName item))
-           :secondary-key (fn [item] (:driver item))}})
+  {:table {:summary [{:name      "Name"
+                      :render-fn (fn [item] (:networkName item))}
+                     {:name      "Driver"
+                      :render-fn (fn [item] (:driver item))}
+                     {:name      "Subnet"
+                      :render-fn (fn [item] (get-in item [:ipam :subnet]))}
+                     {:name      "Gateway"
+                      :render-fn (fn [item] (get-in item [:ipam :gateway]))}
+                     {:name      "Status"
+                      :render-fn (fn [item] (when (:internal item) (label/blue "internal")))}]}
+   :list  {:primary   (fn [item] (:networkName item))
+           :secondary (fn [item] (:driver item))}})
 
 (defn- onclick-handler
   [item]
@@ -76,7 +72,14 @@
       (html
         [:div.Swarmpit-form
          [:div.Swarmpit-form-context
-          (list/responsive
-            render-metadata
-            (sort-by :networkName filtered-items)
-            onclick-handler)]]))))
+          (comp/card
+            {:className "Swarmpit-card"}
+            (comp/card-header
+              {:className "Swarmpit-table-card-header"
+               :title     "Overview"})
+            (comp/card-content
+              {:className "Swarmpit-table-card-content"}
+              (list/responsive
+                render-metadata
+                (sort-by :networkName filtered-items)
+                onclick-handler)))]]))))
