@@ -57,7 +57,8 @@
                         :InputLabelProps {:shrink true}}
        :onChange       (fn [v]
                          (state/update-value [:repository :tag] (-> v .-value) form-value-cursor)
-                         (ports/load-suggestable-ports (-> v .-value)))
+                         (ports/load-suggestable-ports (merge value
+                                                              {:tag (-> v .-value)})))
        :value          {:label (:tag value)
                         :value (:tag value)}
        :placeholder    "Search a tag"})))
