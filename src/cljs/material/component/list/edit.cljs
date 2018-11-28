@@ -5,6 +5,44 @@
             [swarmpit.utils :refer [select-keys*]]
             [sablono.core :refer-macros [html]]))
 
+(defn list-item-normal [render-metadata index item delete-handler-fn]
+  (cmp/list-item
+    {:key            (str "Swarmpit-list-item-" index)
+     :className      "Swarmpit-list-item-edit"
+     :disableGutters true}
+    (->> (select-keys* item (render-keys render-metadata))
+         (map-indexed
+           (fn [coll-index coll]
+             (let [render-fn (:render-fn (nth render-metadata coll-index))
+                   value (val coll)]
+               (render-fn value item index)))))
+    (cmp/list-item-secondary-action
+      {:key (str "Swarmpit-list-status-" index)}
+      (cmp/tooltip
+        {:title     "Delete"
+         :placement "top-start"}
+        (cmp/icon-button
+          {:color   "secondary"
+           :onClick #(delete-handler-fn index)}
+          (cmp/svg icon/trash))))))
+
+(defn list-item-small [render-metadata index item delete-handler-fn]
+  (cmp/list-item
+    {:key            (str "Swarmpit-list-item-" index)
+     :className      "Swarmpit-list-item-edit-small"
+     :disableGutters true}
+    (html
+      [:div
+       (->> (select-keys* item (render-keys render-metadata))
+            (map-indexed
+              (fn [coll-index coll]
+                (let [render-fn (:render-fn (nth render-metadata coll-index))
+                      value (val coll)]
+                  (render-fn value item index)))))
+       (cmp/button {:size    "small"
+                    :onClick #(delete-handler-fn index)
+                    :color   "primary"} "Delete")])))
+
 (defn list-item
   [render-metadata index item delete-handler-fn]
   (html
@@ -12,43 +50,11 @@
      (cmp/hidden
        {:only           ["xs" "sm" "md"]
         :implementation "js"}
-       (cmp/list-item
-         {:key            (str "Swarmpit-list-item-" index)
-          :className      "Swarmpit-list-item-edit"
-          :disableGutters true}
-         (->> (select-keys* item (render-keys render-metadata))
-              (map-indexed
-                (fn [coll-index coll]
-                  (let [render-fn (:render-fn (nth render-metadata coll-index))
-                        value (val coll)]
-                    (render-fn value item index)))))
-         (cmp/list-item-secondary-action
-           {:key (str "Swarmpit-list-status-" index)}
-           (cmp/tooltip
-             {:title     "Delete"
-              :placement "top-start"}
-             (cmp/icon-button
-               {:color   "secondary"
-                :onClick #(delete-handler-fn index)}
-               (cmp/svg icon/trash))))))
+       (list-item-normal render-metadata index item delete-handler-fn))
      (cmp/hidden
        {:only           ["lg" "xl"]
         :implementation "js"}
-       (cmp/list-item
-         {:key            (str "Swarmpit-list-item-" index)
-          :className      "Swarmpit-list-item-edit-small"
-          :disableGutters true}
-         (html
-           [:div
-            (->> (select-keys* item (render-keys render-metadata))
-                 (map-indexed
-                   (fn [coll-index coll]
-                     (let [render-fn (:render-fn (nth render-metadata coll-index))
-                           value (val coll)]
-                       (render-fn value item index)))))
-            (cmp/button {:size    "small"
-                         :onClick #(delete-handler-fn index)
-                         :color   "primary"} "Delete")])))]))
+       (list-item-small render-metadata index item delete-handler-fn))]))
 
 (defn list
   [render-metadata items delete-handler-fn]
