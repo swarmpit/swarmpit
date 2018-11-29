@@ -1,10 +1,10 @@
 (ns swarmpit.component.secret.list
   (:require [material.icon :as icon]
             [material.component :as comp]
-            [material.component.list.basic :as list]
             [material.component.list.util :as list-util]
             [swarmpit.component.mixin :as mixin]
             [swarmpit.component.state :as state]
+            [swarmpit.component.common :as common]
             [swarmpit.ajax :as ajax]
             [swarmpit.time :as time]
             [swarmpit.routes :as routes]
@@ -61,19 +61,9 @@
                  mixin/focus-filter [_]
   (let [{:keys [items]} (state/react state/form-value-cursor)
         {:keys [loading? filter]} (state/react state/form-state-cursor)]
-    (comp/mui
-      (html
-        [:div.Swarmpit-form
-         [:div.Swarmpit-form-context
-          (comp/card
-            {:className "Swarmpit-card"}
-            (comp/card-header
-              {:className "Swarmpit-table-card-header"
-               :title     "Overview"})
-            (comp/card-content
-              {:className "Swarmpit-table-card-content"}
-              (list/responsive
-                render-metadata
-                (->> (list-util/filter items (:query filter))
-                     (sort-by :secretName))
-                onclick-handler)))]]))))
+    (common/list "Secrets"
+                 items
+                 (->> (list-util/filter items (:query filter))
+                      (sort-by :secretName))
+                 render-metadata
+                 onclick-handler)))

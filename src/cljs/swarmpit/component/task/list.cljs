@@ -13,7 +13,8 @@
             [clojure.contrib.humanize :as humanize]
             [goog.string :as gstring]
             [goog.string.format]
-            [rum.core :as rum]))
+            [rum.core :as rum]
+            [swarmpit.component.common :as common]))
 
 (enable-console-print!)
 
@@ -104,18 +105,8 @@
   (let [{:keys [items]} (state/react state/form-value-cursor)
         {:keys [loading? filter]} (state/react state/form-state-cursor)
         filtered-items (list-util/filter items (:query filter))]
-    (comp/mui
-      (html
-        [:div.Swarmpit-form
-         [:div.Swarmpit-form-context
-          (comp/card
-            {:className "Swarmpit-card"}
-            (comp/card-header
-              {:className "Swarmpit-table-card-header"
-               :title     "Overview"})
-            (comp/card-content
-              {:className "Swarmpit-table-card-content"}
-              (list/responsive
-                render-metadata
-                (sort-by :serviceName filtered-items)
-                onclick-handler)))]]))))
+    (common/list "Tasks"
+                 items
+                 filtered-items
+                 render-metadata
+                 onclick-handler)))

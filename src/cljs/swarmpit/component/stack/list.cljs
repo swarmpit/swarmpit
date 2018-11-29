@@ -9,7 +9,8 @@
             [swarmpit.routes :as routes]
             [swarmpit.url :refer [dispatch!]]
             [sablono.core :refer-macros [html]]
-            [rum.core :as rum]))
+            [rum.core :as rum]
+            [swarmpit.component.common :as common]))
 
 (enable-console-print!)
 
@@ -78,20 +79,10 @@
                  mixin/focus-filter [_]
   (let [{:keys [items]} (state/react state/form-value-cursor)
         {:keys [loading? filter]} (state/react state/form-state-cursor)]
-    (comp/mui
-      (html
-        [:div.Swarmpit-form
-         [:div.Swarmpit-form-context
-          (comp/card
-            {:className "Swarmpit-card"}
-            (comp/card-header
-              {:className "Swarmpit-table-card-header"
-               :title     "Overview"})
-            (comp/card-content
-              {:className "Swarmpit-table-card-content"}
-              (list/responsive
-                render-metadata
-                (->> (list-util/filter items (:query filter))
-                     (format-response)
-                     (sort-by :stackName))
-                onclick-handler)))]]))))
+    (common/list "Stacks"
+                 items
+                 (->> (list-util/filter items (:query filter))
+                      (format-response)
+                      (sort-by :stackName))
+                 render-metadata
+                 onclick-handler)))

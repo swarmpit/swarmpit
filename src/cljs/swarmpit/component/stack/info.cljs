@@ -194,7 +194,7 @@
     (comp/card-content
       {:className "Swarmpit-table-card-content"}
       (list/responsive
-        configs/render-metadata
+      configs/render-metadata
         (sort-by :configName configs)
         configs/onclick-handler))))
 

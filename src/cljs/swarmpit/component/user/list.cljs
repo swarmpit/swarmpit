@@ -9,7 +9,8 @@
             [swarmpit.routes :as routes]
             [swarmpit.url :refer [dispatch!]]
             [sablono.core :refer-macros [html]]
-            [rum.core :as rum]))
+            [rum.core :as rum]
+            [swarmpit.component.common :as common]))
 
 (enable-console-print!)
 
@@ -63,18 +64,8 @@
   (let [{:keys [items]} (state/react state/form-value-cursor)
         {:keys [loading? filter]} (state/react state/form-state-cursor)
         filtered-items (list-util/filter items (:query filter))]
-    (comp/mui
-      (html
-        [:div.Swarmpit-form
-         [:div.Swarmpit-form-context
-          (comp/card
-            {:className "Swarmpit-card"}
-            (comp/card-header
-              {:className "Swarmpit-table-card-header"
-               :title     "Overview"})
-            (comp/card-content
-              {:className "Swarmpit-table-card-content"}
-              (list/responsive
-                render-metadata
-                (sort-by :username filtered-items)
-                onclick-handler)))]]))))
+    (common/list "Users"
+                 items
+                 filtered-items
+                 render-metadata
+                 onclick-handler)))
