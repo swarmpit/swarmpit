@@ -26,8 +26,7 @@
   [xhrio]
   (try
     (-> (.getResponseJson xhrio)
-        (js->clj)
-        (keywordize-keys))
+        (js->clj :keywordize-keys true))
     (catch js/Error _ {})))
 
 (defn response

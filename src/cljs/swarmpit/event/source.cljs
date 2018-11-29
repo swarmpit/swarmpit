@@ -11,8 +11,7 @@
   [event]
   (-> (.-data event)
       (js/JSON.parse)
-      (js->clj)
-      (keywordize-keys)))
+      (js->clj :keywordize-keys true)))
 
 (defn- event-source-url
   [token subscription]
