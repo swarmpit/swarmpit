@@ -1,9 +1,8 @@
 (ns material.component.composite
-  (:require [goog.object]
+  (:require [goog.object :as gobject]
             [material.icon :as icon]
             [material.component :as cmp]
-            [sablono.core :refer-macros [html]]
-            [clojure.walk :refer [keywordize-keys]]))
+            [sablono.core :refer-macros [html]]))
 
 (defn progress-button [action action-fn processing?]
   (html
@@ -19,20 +18,20 @@
           :className "Swarmpit-progress-button"}))]))
 
 (defn autocomplete-input [props]
-  (let [{:keys [inputRef] :as p} (keywordize-keys (js->clj props))]
+  (let [{:keys [inputRef] :as p} (js->clj props :keywordize-keys true)]
     (html
       [:div (merge {:ref inputRef}
                    (dissoc p :inputRef))])))
 
 (defn autocomplete-no-options-mssg [props]
-  (let [{:keys [innerProps children]} (keywordize-keys (js->clj props))]
+  (let [{:keys [innerProps children]} (js->clj props :keywordize-keys true)]
     (cmp/typography
       (merge innerProps
              {:color "textSecondary"
               :style {:padding "8px 16px"}}) children)))
 
 (defn autocomplete-placeholder [props]
-  (let [{:keys [innerProps children]} (keywordize-keys (js->clj props))]
+  (let [{:keys [innerProps children]} (js->clj props :keywordize-keys true)]
     (cmp/typography
       (merge innerProps
              {:color "textSecondary"
@@ -42,12 +41,12 @@
                       :padding  "10px 15px"}}) children)))
 
 (defn autocomplete-single-value [props]
-  (let [{:keys [children]} (keywordize-keys (js->clj props))]
+  (let [{:keys [children]} (js->clj props :keywordize-keys true)]
     (cmp/typography
       {:style {:fontSize 16}} children)))
 
 (defn autocomplete-multi-value [props]
-  (let [{:keys [removeProps children]} (keywordize-keys (js->clj props))]
+  (let [{:keys [removeProps children]} (js->clj props :keywordize-keys true)]
     (cmp/chip
       {:tabIndex   -1
        :onDelete   (:onClick removeProps)
@@ -55,14 +54,14 @@
        :label      children})))
 
 (defn autocomplete-menu [props]
-  (let [{:keys [innerProps]} (keywordize-keys (js->clj props))]
-    (cmp/paper
-      (merge innerProps
-             {:style {:position  "absolute"
-                      :zIndex    2
-                      :marginTop 8
-                      :left      0
-                      :right     0}}) (goog.object/get props "children"))))
+  (cmp/paper
+    (js/Object.assign (gobject/get props "innerProps")
+           #js {:style #js {:position  "absolute"
+                            :zIndex    2
+                            :marginTop 8
+                            :left      0
+                            :right     0}})
+    (gobject/get props "children")))
 
 (defn autocomplete-value-container [props]
   (html
@@ -72,10 +71,10 @@
        :flexWrap   "wrap"
        :flex       1
        :alignItems "center",
-       :overflow   "hidden"}} (goog.object/get props "children")]))
+       :overflow   "hidden"}} (gobject/get props "children")]))
 
 (defn autocomplete-control [props]
-  (let [{:keys [innerRef innerProps children selectProps]} (keywordize-keys (js->clj props))
+  (let [{:keys [innerRef innerProps children selectProps]} (js->clj props :keywordize-keys true)
         margin (get-in selectProps [:textFieldProps :margin])]
     (cmp/text-field
       (merge (:textFieldProps selectProps)
@@ -93,13 +92,13 @@
                                                    :children children})}}))))
 
 (defn autocomplete-option [props]
-  (let [{:keys [innerRef isFocused children isSelected innerProps]} (keywordize-keys (js->clj props))]
-    (cmp/menu-item
-      (merge innerProps
-             {:buttonRef innerRef
-              :selected  isFocused
-              :component "div"
-              :style     {:fontWeight (if isSelected 500 400)}}) children)))
+  (cmp/menu-item
+    (js/Object.assign (gobject/get props "innerProps")
+      #js {:buttonRef (gobject/get props "innerRef")
+           :selected  (gobject/get props "isFocused")
+           :component "div"
+           :style     #js {:fontWeight (if (gobject/get props "isSelected") 500 400)}})
+    (gobject/get props "children")))
 
 (defn autocomplete [props]
   (cmp/no-ssr
