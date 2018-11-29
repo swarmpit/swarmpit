@@ -29,7 +29,7 @@
             [swarmpit.component.config.info :as config-info]
             [swarmpit.component.config.list :as config-list]
             [swarmpit.component.node.list :as node-list]
-    ;[swarmpit.component.node.info :as node-info]
+            [swarmpit.component.node.info :as node-info]
     ;[swarmpit.component.node.edit :as node-edit]
             [swarmpit.component.task.list :as task-list]
             [swarmpit.component.task.info :as task-info]
@@ -147,8 +147,9 @@
    :search-fn node-list/form-search-fn})
 
 (defmethod render :node-info
-  [_]
-  {:title "Nodes"})
+  [route]
+  {:title   "Nodes"
+   :actions (node-info/form-actions route)})
 
 (defmethod render :node-edit
   [_]

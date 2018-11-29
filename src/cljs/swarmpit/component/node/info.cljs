@@ -2,6 +2,8 @@
   (:require [material.icon :as icon]
             [material.component :as comp]
             [material.component.form :as form]
+            [material.component.label :as label]
+            [material.component.list.basic :as list]
             [swarmpit.component.state :as state]
             [swarmpit.component.mixin :as mixin]
             [swarmpit.component.progress :as progress]
@@ -10,18 +12,10 @@
             [swarmpit.ajax :as ajax]
             [swarmpit.routes :as routes]
             [clojure.contrib.humanize :as humanize]
+            [sablono.core :refer-macros [html]]
             [rum.core :as rum]))
 
 (enable-console-print!)
-
-(def labels-headers ["Name" "Value"])
-
-(def labels-render-keys
-  [[:name] [:value]])
-
-(defn labels-render-item
-  [item]
-  (val item))
 
 (defn resources
   [node]
@@ -33,6 +27,75 @@
       (if (some? disk-bytes)
         (str core-stats ", " (humanize/filesize disk-bytes :binary false) " disk")
         core-stats))))
+
+(defn section-general [node]
+  (comp/card
+    {:className "Swarmpit-form-card"}
+    (comp/card-header
+      {:title     (:nodeName node)
+       :className "Swarmpit-form-card-header"
+       :subheader (:address node)})
+    (comp/card-content
+      {}
+      (html
+        [:div
+         [:span "ENGINE: " (str "docker " (:engine node))]
+         [:br]
+         [:span "OS: " [(:os node) " " (:arch node)]]
+         [:br]
+         [:span "RESOURCES: " (resources node)]]))
+    (comp/card-content
+      {}
+      (html
+        [:div
+         [:span "Network plugins: " (->> node :plugins :networks (interpose ", "))]
+         [:br]
+         [:span "Volume plugins: " (->> node :plugins :volumes (interpose ", "))]]))
+    (comp/card-content
+      {}
+      (form/item-labels
+        [(when (:leader node)
+           (label/grey "Leader"))
+         (label/grey (:state node))
+         (label/grey (:availability node))
+         (label/grey (:role node))]))
+    (comp/divider)
+    (comp/card-content
+      {:style {:paddingBottom "16px"}}
+      (comp/typography
+        {:color "textSecondary"
+         :style {:flexDirection "column"}}
+        (form/item-id (:id node))))))
+
+(def render-labels-metadata
+  {:primary   (fn [item] (:name item))
+   :secondary (fn [item] (:value item))})
+
+(defn section-labels [labels]
+  (comp/card
+    {:className "Swarmpit-card"}
+    (comp/card-header
+      {:className "Swarmpit-table-card-header"
+       :title     "Labels"})
+    (comp/card-content
+      {:className "Swarmpit-table-card-content"}
+      (list/list
+        render-labels-metadata
+        labels
+        nil))))
+
+(defn section-tasks [tasks]
+  (comp/card
+    {:className "Swarmpit-card"}
+    (comp/card-header
+      {:className "Swarmpit-table-card-header"
+       :title     "Tasks"})
+    (comp/card-content
+      {:className "Swarmpit-table-card-content"}
+      (list/responsive
+        tasks/render-metadata
+        tasks
+        tasks/onclick-handler))))
 
 (defn- node-tasks-handler
   [node-id]
@@ -49,6 +112,15 @@
      :on-success (fn [{:keys [response]}]
                    (state/update-value [:node] response state/form-value-cursor))}))
 
+(defn form-actions
+  [{:keys [params]}]
+  [{:button (comp/icon-button
+              {:color   "inherit"
+               :onClick #(dispatch!
+                           (routes/path-for-frontend :node-edit {:id (:id params)}))}
+              (comp/svg icon/edit))
+    :name   "Edit"}])
+
 (defn- init-form-state
   []
   (state/set-value {:loading? true} state/form-state-cursor))
@@ -61,59 +133,29 @@
       (node-tasks-handler id))))
 
 (rum/defc form-info < rum/static [id {:keys [node tasks]}]
-  [:div
-   [:div.form-panel
-    [:div.form-panel-left
-     (panel/info (icon/os (:os node))
-                 (:nodeName node))]
-    [:div.form-panel-right
-     (comp/mui
-       (comp/raised-button
-         {:href    (routes/path-for-frontend :node-edit {:id id})
-          :label   "Edit"
-          :primary true}))
-     [:span.form-panel-delimiter]
-     (comp/mui
-       (comp/raised-button
-         {:href  (routes/path-for-frontend :node-list)
-          :label "Back"}))]]
-   [:div.form-layout
-    [:div.div.form-layout-group
-     (form/subsection "General settings")
-     (form/item "ID" (:id node))
-     (form/item "NAME" (:nodeName node))
-     (form/item "ROLE" (:role node))
-     (form/item "OS" [(:os node) " " (:arch node)])
-     (form/item "RESOURCES" (resources node))
-     (form/item "ENGINE" ["docker " (:engine node)])
-     (form/item "IP" (:address node))]
-    [:div.form-layout-group.form-layout-group-border
-     (form/subsection "Plugins")
-     (form/item "NETWORK " (->> node :plugins :networks (interpose ", ")))
-     (form/item "VOLUME" (->> node :plugins :volumes (interpose ", ")))]
-    [:div.form-layout-group.form-layout-group-border
-     (form/subsection "Status")
-     (form/item "STATE" (:state node))
-     (form/item "AVAILABILITY" (:availability node))
-     (form/item "LEADER" (if (:leader node)
-                           "yes"
-                           "no"))]
-    (when (not-empty (:labels node))
-      [:div.form-layout-group.form-layout-group-border
-       (form/subsection "Labels")
-       (list/table labels-headers
-                   (:labels node)
-                   labels-render-item
-                   labels-render-keys
-                   nil)])
-    (when (not-empty tasks)
-      [:div.form-layout-group.form-layout-group-border
-       (form/subsection "Tasks")
-       (list/table (map :name tasks/headers)
-                   tasks
-                   tasks/render-item
-                   tasks/render-item-keys
-                   tasks/onclick-handler)])]])
+  (comp/mui
+    (html
+      [:div.Swarmpit-form
+       [:div.Swarmpit-form-context
+        (comp/grid
+          {:container true
+           :spacing   40}
+          (comp/grid
+            {:item true
+             :xs   12
+             :sm   6}
+            (section-general node))
+          (when (not-empty (:labels node))
+            (comp/grid
+              {:item true
+               :xs   12
+               :sm   6}
+              (section-labels (:labels node))))
+          (when (not-empty tasks)
+            (comp/grid
+              {:item true
+               :xs   12}
+              (section-tasks tasks))))]])))
 
 (rum/defc form < rum/reactive
                  mixin-init-form
