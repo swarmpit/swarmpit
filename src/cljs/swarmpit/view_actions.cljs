@@ -30,7 +30,7 @@
             [swarmpit.component.config.list :as config-list]
             [swarmpit.component.node.list :as node-list]
             [swarmpit.component.node.info :as node-info]
-    ;[swarmpit.component.node.edit :as node-edit]
+            [swarmpit.component.node.edit :as node-edit]
             [swarmpit.component.task.list :as task-list]
             [swarmpit.component.task.info :as task-info]
             [swarmpit.component.user.list :as user-list]
