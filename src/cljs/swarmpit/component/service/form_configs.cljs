@@ -60,7 +60,7 @@
 
 (defn- form-table
   [configs configs-list]
-  (list/responsive
+  (list/list
     (form-configs-metadata configs-list)
     configs
     (fn [index] (state/remove-item index form-value-cursor))))

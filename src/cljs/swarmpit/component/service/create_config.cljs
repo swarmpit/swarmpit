@@ -236,31 +236,40 @@
       (html
         [:div.Swarmpit-form
          [:div.Swarmpit-form-context
-          (comp/card
-            {:className "Swarmpit-form-card"}
-            (comp/card-header
-              {:className "Swarmpit-form-card-header"
-               :title     "New Service"
-               :subheader (str "from " (get-in (state/get-value settings/form-value-cursor) [:repository :name]))})
-            (comp/card-content
-              {}
-              (comp/grid
-                {:container true
-                 :spacing   40}
-                (form-settings)
-                (form-ports)
-                (form-mounts)
-                (form-secrets)
-                (when (<= 1.30 (state/get-value [:docker :api]))
-                  (form-configs))
-                (form-variables)
-                (form-labels)
-                (form-logdriver)
-                (form-resources)
-                (form-deployment))
-              (html
-                [:div.Swarmpit-form-buttons
-                 (composite/progress-button
-                   "Create"
-                   create-service-handler
-                   processing?)])))]]))))
+          (comp/grid
+            {:container true}
+            (comp/grid
+              {:item true
+               :xs   12
+               :sm   10
+               :md   8
+               :lg   6
+               :xl   4}
+              (comp/card
+                {:className "Swarmpit-form-card"}
+                (comp/card-header
+                  {:className "Swarmpit-form-card-header"
+                   :title     "New Service"
+                   :subheader (str "from " (get-in (state/get-value settings/form-value-cursor) [:repository :name]))})
+                (comp/card-content
+                  {}
+                  (comp/grid
+                    {:container true
+                     :spacing   40}
+                    (form-settings)
+                    (form-ports)
+                    (form-mounts)
+                    (form-secrets)
+                    (when (<= 1.30 (state/get-value [:docker :api]))
+                      (form-configs))
+                    (form-variables)
+                    (form-labels)
+                    (form-logdriver)
+                    (form-resources)
+                    (form-deployment))
+                  (html
+                    [:div.Swarmpit-form-buttons
+                     (composite/progress-button
+                       "Create"
+                       create-service-handler
+                       processing?)])))))]]))))

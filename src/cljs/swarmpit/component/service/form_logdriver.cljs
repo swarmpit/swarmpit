@@ -86,7 +86,7 @@
       (comp/grid
         {:item true
          :xs   12
-         :sm   6} (form-driver name))
+         :sm   4} (form-driver name))
       (comp/grid
         {:item true
          :xs   12}

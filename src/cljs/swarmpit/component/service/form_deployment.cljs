@@ -205,9 +205,8 @@
       {:container true
        :spacing   24}
       (comp/grid
-        {:item      true
-         :xs        12
-         :direction "column"}
+        {:item true
+         :xs   12}
         (comp/form-control
           {:component "fieldset"}
           (comp/form-group
@@ -217,20 +216,18 @@
                :label   "Autoredeploy"})))
         (placement/form))
       (comp/grid
-        {:item      true
-         :xs        12
-         :sm        6
-         :direction "column"}
+        {:item true
+         :xs   12
+         :sm   4}
         (form/subsection "Restart Policy")
         (form-restart-policy-condition (:condition restartPolicy))
         (form-restart-policy-delay (:delay restartPolicy))
         (form-restart-policy-window (:window restartPolicy))
         (form-restart-policy-attempts (:attempts restartPolicy)))
       (comp/grid
-        {:item      true
-         :xs        12
-         :sm        6
-         :direction "column"}
+        {:item true
+         :xs   12
+         :sm   4}
         (form/subsection "Update Config")
         (form-update-parallelism (:parallelism update))
         (form-update-delay (:delay update))
@@ -238,10 +235,9 @@
         (form-update-failure-action (:failureAction update)))
       (when (= "rollback" (:failureAction update))
         (comp/grid
-          {:item      true
-           :xs        12
-           :sm        6
-           :direction "column"}
+          {:item true
+           :xs   12
+           :sm   4}
           (form/subsection "Rollback Config")
           (form-rollback-parallelism (:parallelism rollback))
           (form-rollback-delay (:delay rollback))

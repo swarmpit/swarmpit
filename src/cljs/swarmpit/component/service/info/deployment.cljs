@@ -2,7 +2,6 @@
   (:require [material.icon :as icon]
             [material.component :as comp]
             [material.component.form :as form]
-            [material.component.list.keypair :as list]
             [sablono.core :refer-macros [html]]
             [rum.core :as rum]))
 
