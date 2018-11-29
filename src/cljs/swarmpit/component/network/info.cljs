@@ -154,7 +154,7 @@
             (comp/grid
               {:item true
                :xs   12}
-              (services/linked-services services))))]])))
+              (services/linked services))))]])))
 
 (rum/defc form < rum/reactive
                  mixin-init-form

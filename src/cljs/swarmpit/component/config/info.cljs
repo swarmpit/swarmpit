@@ -119,7 +119,12 @@
                   (form/item-date (:createdAt config) (:updatedAt config)))
                 (comp/typography
                   {:color "textSecondary"}
-                  (form/item-id (:id config)))))))]])))
+                  (form/item-id (:id config))))))
+          (when (not-empty services)
+            (comp/grid
+              {:item true
+               :xs   12}
+              (services/linked services))))]])))
 
 (rum/defc form < rum/reactive
                  mixin-init-form

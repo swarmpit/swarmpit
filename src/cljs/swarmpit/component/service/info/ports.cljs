@@ -14,8 +14,8 @@
                       :render-fn (fn [item] (:mode item))}
                      {:name      "Host port"
                       :render-fn (fn [item] (:hostPort item))}]}
-   :list  {:primary   (fn [item] (:containerPort item))
-           :secondary (fn [item] (:hostPort item))}})
+   :list  {:primary   (fn [item] (str (:hostPort item) ":" (:containerPort item)))
+           :secondary (fn [item] (:protocol item))}})
 
 (rum/defc form < rum/static [ports]
   (comp/card

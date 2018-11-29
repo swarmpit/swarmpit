@@ -134,7 +134,12 @@
               {:item true
                :xs   12
                :sm   6}
-              (section-driver volume))))]])))
+              (section-driver volume)))
+          (when (not-empty services)
+            (comp/grid
+              {:item true
+               :xs   12}
+              (services/linked services))))]])))
 
 (rum/defc form < rum/reactive
                  mixin-init-form

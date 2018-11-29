@@ -4,6 +4,7 @@
             [material.component.label :as label]
             [material.component.form :as form]
             [material.component.grid.masonry :as masonry]
+            [material.component.list.basic :as list]
             [swarmpit.component.state :as state]
             [swarmpit.component.mixin :as mixin]
             [swarmpit.component.progress :as progress]
@@ -88,14 +89,18 @@
                    (message/error
                      (str "Service rollback failed. " (:error response))))}))
 
-;(rum/defc form-tasks < rum/static [tasks]
-;  [:div.form-layout-group.form-layout-group-border
-;   (form/subsection "Tasks")
-;   (list/table (map :name tasks/headers)
-;               (filter #(not (= "shutdown" (:state %))) tasks)
-;               tasks/render-item
-;               tasks/render-item-keys
-;               tasks/onclick-handler)])
+(rum/defc form-tasks < rum/static [tasks]
+  (comp/card
+    {:className "Swarmpit-card"}
+    (comp/card-header
+      {:className "Swarmpit-table-card-header"
+       :title     "Tasks"})
+    (comp/card-content
+      {:className "Swarmpit-table-card-content"}
+      (list/responsive
+        tasks/render-metadata
+        (filter #(not (= "shutdown" (:state %))) tasks)
+        tasks/onclick-handler))))
 
 (defn form-actions
   [{:keys [params]}]
@@ -188,7 +193,8 @@
             (when (not-empty labels)
               (labels/form labels))
             (when (not-empty (:opts logdriver))
-              (logdriver/form logdriver)))]]))))
+              (logdriver/form logdriver))
+            (form-tasks tasks))]]))))
 
 (rum/defc form < rum/reactive
                  mixin-init-form

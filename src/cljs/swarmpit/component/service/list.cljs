@@ -97,7 +97,7 @@
       (init-form-state)
       (services-handler))))
 
-(defn linked-services
+(defn linked
   [services]
   (comp/card
     {:className "Swarmpit-card"}
