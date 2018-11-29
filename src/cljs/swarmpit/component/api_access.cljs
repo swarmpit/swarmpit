@@ -50,55 +50,55 @@
      :on-error   (fn [_]
                    (message/error (str "Failed to remove API token.")))}))
 
-(defn- token-input
-  [value]
-  (form/form
-    nil
-    (form/comp
-      "AUTHORIZATION TOKEN"
-      (comp/vtext-field
-        {:name      "token"
-         :key       "token"
-         :multiLine true
-         :style     {:width      "450px"
-                     :fontFamily "monospace"}
-         :value     value}))))
-
-(rum/defc form-api-token < rum/static [{:keys [api-token token]}]
-  (let [state (if (and api-token (not token))
-                :old (if token
-                       :new :none))]
-    [:div
-     [:div.form-panel
-      [:div.form-panel-left
-       (panel/info icon/password (case state :none "Create API token" :old "API Token" :new "New API token"))]
-      [:div.form-panel-right
-       (comp/progress-button
-         {:label      (case state :none "Generate" "Regenerate")
-          :disabled   false
-          :primary    true
-          :onTouchTap generate-handler}
-         false)
-       [:span.form-panel-delimiter]
-       (comp/progress-button
-         {:label      "Remove"
-          :disabled   (= :none state)
-          :onTouchTap remove-handler}
-         false)]]
-     (case state
-       :old [(form/value ["Token for this user was already created, if you lost it, you can regenerate it and "
-                          "the former token will be revoked."])
-             (token-input (str "Bearer ..." (:mask api-token)))]
-       :new [(form/value ["Copy your generated token and store it safely, value will be displayed only once."])
-             (token-input (:token token))]
-       :none [(form/value "Your user doesn't have any API token.")
-              (form/value "You can create authorization token here. Generated token doesn't expire, but it can be revoked.")])]))
-
-(rum/defc form < rum/reactive
-                 mixin-init-form []
-  (let [state (state/react state/form-state-cursor)
-        item (state/react state/form-value-cursor)]
-    (progress/form
-      (:loading? state)
-      (form-api-token item))))
+;(defn- token-input
+;  [value]
+;  (form/form
+;    nil
+;    (form/comp
+;      "AUTHORIZATION TOKEN"
+;      (comp/vtext-field
+;        {:name      "token"
+;         :key       "token"
+;         :multiLine true
+;         :style     {:width      "450px"
+;                     :fontFamily "monospace"}
+;         :value     value}))))
+;
+;(rum/defc form-api-token < rum/static [{:keys [api-token token]}]
+;  (let [state (if (and api-token (not token))
+;                :old (if token
+;                       :new :none))]
+;    [:div
+;     [:div.form-panel
+;      [:div.form-panel-left
+;       (panel/info icon/password (case state :none "Create API token" :old "API Token" :new "New API token"))]
+;      [:div.form-panel-right
+;       (comp/progress-button
+;         {:label      (case state :none "Generate" "Regenerate")
+;          :disabled   false
+;          :primary    true
+;          :onTouchTap generate-handler}
+;         false)
+;       [:span.form-panel-delimiter]
+;       (comp/progress-button
+;         {:label      "Remove"
+;          :disabled   (= :none state)
+;          :onTouchTap remove-handler}
+;         false)]]
+;     (case state
+;       :old [(form/value ["Token for this user was already created, if you lost it, you can regenerate it and "
+;                          "the former token will be revoked."])
+;             (token-input (str "Bearer ..." (:mask api-token)))]
+;       :new [(form/value ["Copy your generated token and store it safely, value will be displayed only once."])
+;             (token-input (:token token))]
+;       :none [(form/value "Your user doesn't have any API token.")
+;              (form/value "You can create authorization token here. Generated token doesn't expire, but it can be revoked.")])]))
+;
+;(rum/defc form < rum/reactive
+;                 mixin-init-form []
+;  (let [state (state/react state/form-state-cursor)
+;        item (state/react state/form-value-cursor)]
+;    (progress/form
+;      (:loading? state)
+;      (form-api-token item))))
 

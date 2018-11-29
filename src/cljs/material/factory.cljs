@@ -138,17 +138,3 @@
 (def react-autosuggest (create-factory js/Autosuggest))
 (def rc-slider (create-factory (.-default js/Slider)))
 (def rc-slider-handle (create-factory js/Slider.Handle))
-
-
-;;; OLD MESS BELOW -> Clean it up !!!
-
-
-
-
-
-(def dialog (create-factory js/MaterialUI.Dialog))
-
-(def icon-menu (create-factory js/MaterialUI.IconMenu))
-(def flat-button (create-factory js/MaterialUI.FlatButton))
-(def raised-button (create-factory js/MaterialUI.RaisedButton))
-(def select-field (create-factory js/MaterialUI.SelectField))
