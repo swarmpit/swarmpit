@@ -3,7 +3,7 @@
             [material.component :as comp]
             [material.component.form :as form]
             [material.component.label :as label]
-            [material.component.list.info :as list]
+            [material.component.list.basic :as list]
             [swarmpit.component.message :as message]
             [swarmpit.component.mixin :as mixin]
             [swarmpit.component.state :as state]
@@ -19,11 +19,8 @@
 (enable-console-print!)
 
 (def form-driver-opts-render-metadata
-  [{:name    "Name"
-    :primary true
-    :key     [:name]}
-   {:name "Value"
-    :key  [:value]}])
+  {:primary   (fn [item] (:name item))
+   :secondary (fn [item] (:value item))})
 
 (defn- section-general
   [{:keys [id stack volumeName driver mountpoint scope]}]
@@ -61,14 +58,14 @@
 (defn- section-driver
   [{:keys [driver options]}]
   (comp/card
-    {:className "Swarmpit-form-card"}
+    {:className "Swarmpit-card"}
     (comp/card-header
-      {:className "Swarmpit-form-card-header"
-       :subheader (form/subheader "Driver options" icon/settings)})
+      {:className "Swarmpit-table-card-header"
+       :title     "Driver options"})
     (comp/card-content
-      {}
+      {:className "Swarmpit-table-card-content"}
       (when (not-empty options)
-        (list/table
+        (list/list
           form-driver-opts-render-metadata
           options
           nil)))))

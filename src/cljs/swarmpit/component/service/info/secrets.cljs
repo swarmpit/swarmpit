@@ -1,39 +1,39 @@
 (ns swarmpit.component.service.info.secrets
-  (:require [material.icon :as icon]
-            [material.component :as comp]
-            [material.component.form :as form]
-            [material.component.list.info :as list]
+  (:require [material.component :as comp]
+            [material.component.list.basic :as list]
             [swarmpit.routes :as routes]
+            [swarmpit.url :refer [dispatch!]]
             [rum.core :as rum]))
 
 (enable-console-print!)
 
 (defn onclick-handler
   [item]
-  (routes/path-for-frontend :secret-info {:id (:secretName item)}))
+  (dispatch! (routes/path-for-frontend :secret-info {:id (:secretName item)})))
 
 (def render-metadata
-  [{:name    "Name"
-    :primary true
-    :key     [:secretName]}
-   {:name "Target"
-    :key  [:secretTarget]}
-   {:name "UID"
-    :key  [:uid]}
-   {:name "GID"
-    :key  [:gid]}
-   {:name "Mode"
-    :key  [:mode]}])
+  {:table {:summary [{:name      "Name"
+                      :render-fn (fn [item] (:secretName item))}
+                     {:name      "Target"
+                      :render-fn (fn [item] (:secretTarget item))}
+                     {:name      "UID"
+                      :render-fn (fn [item] (:uid item))}
+                     {:name      "GID"
+                      :render-fn (fn [item] (:gid item))}
+                     {:name      "Mode"
+                      :render-fn (fn [item] (:mode item))}]}
+   :list  {:primary   (fn [item] (:secretName item))
+           :secondary (fn [item] (:secretTarget item))}})
 
 (rum/defc form < rum/static [secrets]
   (comp/card
-    {:className "Swarmpit-form-card"}
+    {:className "Swarmpit-card"}
     (comp/card-header
-      {:className "Swarmpit-form-card-header"
-       :subheader (form/subheader "Secrets" icon/settings)})
+      {:className "Swarmpit-table-card-header"
+       :title     "Secrets"})
     (comp/card-content
-      {}
-      (list/table
+      {:className "Swarmpit-table-card-content"}
+      (list/responsive
         render-metadata
         secrets
         onclick-handler))))

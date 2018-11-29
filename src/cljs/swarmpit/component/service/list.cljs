@@ -103,7 +103,7 @@
     {:className "Swarmpit-card"}
     (comp/card-header
       {:className "Swarmpit-table-card-header"
-       :title     "Linked Services"})
+       :title     "Services"})
     (comp/card-content
       {:className "Swarmpit-table-card-content"}
       (list/responsive

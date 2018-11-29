@@ -3,7 +3,7 @@
             [material.component :as comp]
             [material.component.label :as label]
             [material.component.form :as form]
-            [material.component.list.info :as list]
+            [material.component.list.basic :as list]
             [swarmpit.component.mixin :as mixin]
             [swarmpit.component.state :as state]
             [swarmpit.component.message :as message]
@@ -20,11 +20,8 @@
 (enable-console-print!)
 
 (def form-driver-opts-render-metadata
-  [{:name    "Name"
-    :primary true
-    :key     [:name]}
-   {:name "Value"
-    :key  [:value]}])
+  {:primary   (fn [item] (:name item))
+   :secondary (fn [item] (:value item))})
 
 (defn- section-general
   [{:keys [id stack networkName driver created internal attachable ingress enableIPv6 ipam]}]
@@ -76,14 +73,14 @@
 (defn- section-driver
   [{:keys [driver options]}]
   (comp/card
-    {:className "Swarmpit-form-card"}
+    {:className "Swarmpit-card"}
     (comp/card-header
-      {:className "Swarmpit-form-card-header"
-       :subheader (form/subheader "Driver options" icon/settings)})
+      {:className "Swarmpit-table-card-header"
+       :title     "Driver options"})
     (comp/card-content
-      {}
+      {:className "Swarmpit-table-card-content"}
       (when (not-empty options)
-        (list/table
+        (list/list
           form-driver-opts-render-metadata
           options
           nil)))))
@@ -157,8 +154,7 @@
             (comp/grid
               {:item true
                :xs   12}
-              (services/linked-services services)))
-          )]])))
+              (services/linked-services services))))]])))
 
 (rum/defc form < rum/reactive
                  mixin-init-form

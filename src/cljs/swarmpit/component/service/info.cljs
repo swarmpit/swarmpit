@@ -175,6 +175,8 @@
             (deployment/form deployment)
             (when (not-empty networks)
               (networks/form networks))
+            (when (not-empty ports)
+              (ports/form ports))
             (when (not-empty mounts)
               (mounts/form mounts))
             (when (not-empty secrets)

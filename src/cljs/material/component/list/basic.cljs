@@ -52,7 +52,7 @@
         secodary-key (:secondary render-metadata)]
     (cmp/list-item
       {:key     (str "Swarmpit-list-item-" index)
-       :button  true
+       :button  (some? onclick-handler-fn)
        :divider (false? (= item last))
        :onClick #(onclick-handler-fn item)}
       (cmp/list-item-text

@@ -326,7 +326,7 @@ a {
 
 .Swarmpit-list-item-text-primary,
 .Swarmpit-list-item-text-secondary {
-    white-space: nowrap;
+    /*white-space: nowrap;*/
     overflow: hidden;
     text-overflow: ellipsis;
 }

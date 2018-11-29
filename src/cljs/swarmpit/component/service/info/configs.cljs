@@ -1,39 +1,39 @@
 (ns swarmpit.component.service.info.configs
-  (:require [material.icon :as icon]
-            [material.component :as comp]
-            [material.component.form :as form]
-            [material.component.list.info :as list]
+  (:require [material.component :as comp]
+            [material.component.list.basic :as list]
             [swarmpit.routes :as routes]
+            [swarmpit.url :refer [dispatch!]]
             [rum.core :as rum]))
 
 (enable-console-print!)
 
-(def render-metadata
-  [{:name    "Name"
-    :primary true
-    :key     [:configName]}
-   {:name "Target"
-    :key  [:configTarget]}
-   {:name "UID"
-    :key  [:uid]}
-   {:name "GID"
-    :key  [:gid]}
-   {:name "Mode"
-    :key  [:mode]}])
-
 (defn onclick-handler
   [item]
-  (routes/path-for-frontend :config-info {:id (:configName item)}))
+  (dispatch! (routes/path-for-frontend :config-info {:id (:configName item)})))
+
+(def render-metadata
+  {:table {:summary [{:name      "Name"
+                      :render-fn (fn [item] (:configName item))}
+                     {:name      "Target"
+                      :render-fn (fn [item] (:configTarget item))}
+                     {:name      "UID"
+                      :render-fn (fn [item] (:uid item))}
+                     {:name      "GID"
+                      :render-fn (fn [item] (:gid item))}
+                     {:name      "Mode"
+                      :render-fn (fn [item] (:mode item))}]}
+   :list  {:primary   (fn [item] (:secretName item))
+           :secondary (fn [item] (:secretTarget item))}})
 
 (rum/defc form < rum/static [configs]
   (comp/card
-    {:className "Swarmpit-form-card"}
+    {:className "Swarmpit-card"}
     (comp/card-header
-      {:className "Swarmpit-form-card-header"
-       :subheader (form/subheader "Configs" icon/settings)})
+      {:className "Swarmpit-table-card-header"
+       :title     "Configs"})
     (comp/card-content
-      {}
-      (list/table
+      {:className "Swarmpit-table-card-content"}
+      (list/responsive
         render-metadata
         configs
         onclick-handler))))
