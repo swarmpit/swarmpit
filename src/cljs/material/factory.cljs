@@ -8,6 +8,8 @@
             [material-ui]
             [material-ui-icons]))
 
+(set! *warn-on-infer* true)
+
 (def create-factory js/React.createFactory)
 
 ;;; Material-UI
