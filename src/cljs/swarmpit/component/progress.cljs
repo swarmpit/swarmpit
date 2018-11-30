@@ -1,5 +1,5 @@
 (ns swarmpit.component.progress
-  (:require [material.component :as comp]
+  (:require [material.components :as comp]
             [sablono.core :refer-macros [html]]
             [rum.core :as rum]))
 

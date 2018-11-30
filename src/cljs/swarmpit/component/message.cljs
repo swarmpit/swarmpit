@@ -1,6 +1,6 @@
 (ns swarmpit.component.message
   (:require [material.icon :as icon]
-            [material.component :as comp]
+            [material.components :as comp]
             [swarmpit.component.state :as state]
             [sablono.core :refer-macros [html]]
             [rum.core :as rum]))

@@ -1,7 +1,7 @@
 (ns material.component.composite
   (:require [goog.object :as gobject]
             [material.icon :as icon]
-            [material.component :as cmp]
+            [material.components :as cmp]
             [sablono.core :refer-macros [html]]))
 
 (set! *warn-on-infer* true)

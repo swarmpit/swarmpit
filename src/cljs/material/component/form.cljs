@@ -1,6 +1,6 @@
 (ns material.component.form
   (:refer-clojure :exclude [comp])
-  (:require [material.component :as cmp]
+  (:require [material.components :as cmp]
             [material.icon :as icon]
             [sablono.core :refer-macros [html]]
             [swarmpit.time :as time]))

@@ -1,5 +1,5 @@
 (ns swarmpit.component.config.create
-  (:require [material.component :as comp]
+  (:require [material.components :as comp]
             [swarmpit.component.editor :as editor]
             [swarmpit.component.mixin :as mixin]
             [swarmpit.component.state :as state]

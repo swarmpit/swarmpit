@@ -1,4 +1,4 @@
-(ns material.component
+(ns material.components
   (:refer-clojure :exclude [stepper list])
   (:require [material.factory :as f]
             [sablono.core :refer-macros [html]]))

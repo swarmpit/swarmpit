@@ -1,6 +1,6 @@
 (ns swarmpit.component.api-access
   (:require [material.icon :as icon]
-            [material.component :as comp]
+            [material.components :as comp]
             [material.component.form :as form]
             [swarmpit.component.message :as message]
             [swarmpit.url :refer [dispatch!]]

@@ -1,6 +1,6 @@
 (ns swarmpit.component.service.info.labels
   (:require [material.icon :as icon]
-            [material.component :as comp]
+            [material.components :as comp]
             [material.component.form :as form]
             [material.component.list.basic :as list]
             [rum.core :as rum]))

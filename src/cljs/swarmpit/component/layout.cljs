@@ -1,6 +1,6 @@
 (ns swarmpit.component.layout
   (:require [rum.core :as rum]
-            [material.component :as comp]
+            [material.components :as comp]
             [clojure.string :as str]
             [swarmpit.view :as view]
             [swarmpit.view-actions :as view-actions]

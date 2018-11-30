@@ -1,6 +1,6 @@
 (ns swarmpit.component.service.info.deployment
   (:require [material.icon :as icon]
-            [material.component :as comp]
+            [material.components :as comp]
             [material.component.form :as form]
             [sablono.core :refer-macros [html]]
             [rum.core :as rum]))
@@ -71,7 +71,7 @@
               [:td update-order]]
              [:tr
               [:td "ON FAILURE"]
-              [:td update-failure-action]]]]])))
+              [:td update-failure-action]]]]])))))
 
 
 
@@ -107,4 +107,3 @@
     ;    (form/item "ORDER" rollback-order)
     ;    (form/item "ON FAILURE" rollback-failure-action)])]
 
-    ))

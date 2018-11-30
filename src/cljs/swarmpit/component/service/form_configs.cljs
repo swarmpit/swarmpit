@@ -1,6 +1,6 @@
 (ns swarmpit.component.service.form-configs
-  (:require [material.component :as comp]
-            [material.component.list.edit :as list]
+  (:require [material.components :as comp]
+            [material.component.list.basic :as list]
             [swarmpit.component.state :as state]
             [swarmpit.ajax :as ajax]
             [swarmpit.routes :as routes]

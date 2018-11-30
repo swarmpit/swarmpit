@@ -1,6 +1,6 @@
 (ns swarmpit.component.secret.info
   (:require [material.icon :as icon]
-            [material.component :as comp]
+            [material.components :as comp]
             [material.component.form :as form]
             [swarmpit.component.state :as state]
             [swarmpit.component.mixin :as mixin]

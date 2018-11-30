@@ -1,6 +1,6 @@
 (ns swarmpit.component.config.list
   (:require [material.icon :as icon]
-            [material.component :as comp]
+            [material.components :as comp]
             [material.component.list.basic :as list]
             [material.component.list.util :as list-util]
             [swarmpit.component.mixin :as mixin]

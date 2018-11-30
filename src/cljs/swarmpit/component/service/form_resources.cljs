@@ -1,5 +1,5 @@
 (ns swarmpit.component.service.form-resources
-  (:require [material.component :as comp]
+  (:require [material.components :as comp]
             [material.component.form :as form]
             [swarmpit.component.parser :refer [parse-int parse-float]]
             [swarmpit.component.state :as state]

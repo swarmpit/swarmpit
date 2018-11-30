@@ -1,6 +1,6 @@
 (ns swarmpit.component.stack.edit
   (:require [material.icon :as icon]
-            [material.component :as comp]
+            [material.components :as comp]
             [material.component.composite :as composite]
             [swarmpit.component.editor :as editor]
             [swarmpit.component.state :as state]

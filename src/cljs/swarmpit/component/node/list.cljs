@@ -1,6 +1,6 @@
 (ns swarmpit.component.node.list
   (:require [material.icon :as icon]
-            [material.component :as comp]
+            [material.components :as comp]
             [material.component.label :as label]
             [swarmpit.component.mixin :as mixin]
             [swarmpit.component.state :as state]

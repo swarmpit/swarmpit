@@ -1,6 +1,6 @@
 (ns material.component.list.basic
   (:refer-clojure :exclude [list])
-  (:require [material.component :as cmp]
+  (:require [material.components :as cmp]
             [swarmpit.url :refer [dispatch!]]
             [sablono.core :refer-macros [html]]
             [rum.core :as rum]))

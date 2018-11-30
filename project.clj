@@ -73,31 +73,32 @@
                                :asset-path           "js/out"
                                :output-to            "resources/public/js/main.js"
                                :output-dir           "resources/public/js/out"
+                               :infer-externs        true
                                :parallel-build       true
                                :source-map-timestamp true}}
                {:id           "min"
                 :source-paths ["src/cljs" "src/cljc"]
                 :jar          true
                 :compiler     {:main                 swarmpit.app
-                               :externs              ["ext/material-ui.ext.js"]
                                :output-to            "resources/public/js/main.js"
                                :output-dir           "target"
                                :source-map-timestamp true
                                :parallel-build       true
                                :closure-defines      {"goog.DEBUG" false}
                                :optimizations        :advanced
+                               :infer-externs        true
                                :pretty-print         false}}]}
   :figwheel {:css-dirs       ["resources/public/css"]
              :ring-handler   repl.user/http-handler
              :server-logfile "log/figwheel.log"}
   :profiles {:dev
-             {:dependencies [[figwheel "0.5.15"]
-                             [figwheel-sidecar "0.5.15"]
+             {:dependencies [[figwheel "0.5.17"]
+                             [figwheel-sidecar "0.5.17"]
                              [com.cemerick/piggieback "0.2.2"]
                              [org.clojure/tools.nrepl "0.2.13"]
-                             [binaryage/devtools "0.9.9"]
+                             [binaryage/devtools "0.9.10"]
                              [criterium "0.4.4"]]
-              :plugins      [[lein-figwheel "0.5.15"]
+              :plugins      [[lein-figwheel "0.5.17"]
                              [lein-doo "0.1.6"]]
               :source-paths ["dev"]
               :repl-options {:nrepl-middleware [cemerick.piggieback/wrap-cljs-repl]}}

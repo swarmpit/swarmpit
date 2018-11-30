@@ -1,6 +1,6 @@
 (ns swarmpit.component.page-login
   (:require [material.icon :as icon]
-            [material.component :as comp]
+            [material.components :as comp]
             [swarmpit.component.state :as state]
             [swarmpit.url :refer [dispatch!]]
             [swarmpit.storage :as storage]

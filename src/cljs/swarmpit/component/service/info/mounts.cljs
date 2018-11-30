@@ -1,5 +1,5 @@
 (ns swarmpit.component.service.info.mounts
-  (:require [material.component :as comp]
+  (:require [material.components :as comp]
             [material.component.list.basic :as list]
             [swarmpit.routes :as routes]
             [swarmpit.url :refer [dispatch!]]

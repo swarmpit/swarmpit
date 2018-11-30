@@ -1,6 +1,6 @@
 (ns material.component.label
   (:refer-clojure :exclude [update])
-  (:require [material.component :as cmp]
+  (:require [material.components :as cmp]
             [sablono.core :refer-macros [html]]))
 
 (defn base

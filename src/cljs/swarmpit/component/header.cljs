@@ -1,5 +1,5 @@
 (ns swarmpit.component.header
-  (:require [material.component :as comp]
+  (:require [material.components :as comp]
             [material.icon :as icon]
             [swarmpit.routes :as routes]
             [swarmpit.storage :as storage]

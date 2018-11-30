@@ -1,6 +1,6 @@
 (ns swarmpit.component.network.info
   (:require [material.icon :as icon]
-            [material.component :as comp]
+            [material.components :as comp]
             [material.component.label :as label]
             [material.component.form :as form]
             [material.component.list.basic :as list]

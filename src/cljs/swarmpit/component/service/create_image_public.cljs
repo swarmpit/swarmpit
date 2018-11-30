@@ -1,5 +1,5 @@
 (ns swarmpit.component.service.create-image-public
-  (:require [material.component :as comp]
+  (:require [material.components :as comp]
             [swarmpit.component.state :as state]
             [swarmpit.component.mixin :as mixin]
             [swarmpit.component.message :as message]

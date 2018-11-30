@@ -1,6 +1,6 @@
 (ns swarmpit.component.dockerhub.info
   (:require [material.icon :as icon]
-            [material.component :as comp]
+            [material.components :as comp]
             [material.component.form :as form]
             [material.component.label :as label]
             [swarmpit.component.message :as message]

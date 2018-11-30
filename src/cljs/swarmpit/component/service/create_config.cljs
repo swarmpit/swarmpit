@@ -1,6 +1,6 @@
 (ns swarmpit.component.service.create-config
   (:require [material.icon :as icon]
-            [material.component :as comp]
+            [material.components :as comp]
             [material.component.form :as form]
             [material.component.composite :as composite]
             [swarmpit.component.mixin :as mixin]

@@ -1,6 +1,6 @@
 (ns swarmpit.component.secret.list
   (:require [material.icon :as icon]
-            [material.component :as comp]
+            [material.components :as comp]
             [material.component.list.util :as list-util]
             [swarmpit.component.mixin :as mixin]
             [swarmpit.component.state :as state]

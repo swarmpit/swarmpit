@@ -1,5 +1,5 @@
 (ns swarmpit.component.task.info
-  (:require [material.component :as comp]
+  (:require [material.components :as comp]
             [material.component.label :as label]
             [material.component.form :as form]
             [swarmpit.component.mixin :as mixin]

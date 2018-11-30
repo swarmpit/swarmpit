@@ -1,7 +1,7 @@
 (ns swarmpit.component.service.form-secrets
-  (:require [material.component :as comp]
+  (:require [material.components :as comp]
             [material.component.form :as form]
-            [material.component.list.edit :as list]
+            [material.component.list.basic :as list]
             [swarmpit.component.state :as state]
             [swarmpit.routes :as routes]
             [swarmpit.ajax :as ajax]

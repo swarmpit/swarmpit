@@ -1,8 +1,8 @@
 (ns swarmpit.component.service.form-logdriver
   (:require [material.icon :as icon]
-            [material.component :as comp]
+            [material.components :as comp]
             [material.component.form :as form]
-            [material.component.list.edit :as list]
+            [material.component.list.basic :as list]
             [swarmpit.component.state :as state]
             [sablono.core :refer-macros [html]]
             [rum.core :as rum]))

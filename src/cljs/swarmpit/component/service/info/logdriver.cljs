@@ -1,5 +1,5 @@
 (ns swarmpit.component.service.info.logdriver
-  (:require [material.component :as comp]
+  (:require [material.components :as comp]
             [material.component.list.basic :as list]
             [rum.core :as rum]))
 

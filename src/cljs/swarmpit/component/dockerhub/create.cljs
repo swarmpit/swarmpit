@@ -1,6 +1,6 @@
 (ns swarmpit.component.dockerhub.create
   (:require [material.icon :as icon]
-            [material.component :as comp]
+            [material.components :as comp]
             [swarmpit.component.mixin :as mixin]
             [swarmpit.component.state :as state]
             [swarmpit.component.message :as message]

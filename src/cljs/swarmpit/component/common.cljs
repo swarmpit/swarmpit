@@ -1,5 +1,5 @@
 (ns swarmpit.component.common
-  (:require [material.component :as comp]
+  (:require [material.components :as comp]
             [material.component.list.basic :as list]
             [sablono.core :refer-macros [html]]))
 

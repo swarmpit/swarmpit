@@ -1,6 +1,6 @@
 (ns swarmpit.component.menu
   (:require [material.icon :as icon]
-            [material.component :as comp]
+            [material.components :as comp]
             [swarmpit.component.state :as state]
             [swarmpit.storage :as storage]
             [swarmpit.ajax :as ajax]

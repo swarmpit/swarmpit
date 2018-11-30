@@ -1,5 +1,5 @@
 (ns swarmpit.component.service.form-settings
-  (:require [material.component :as comp]
+  (:require [material.components :as comp]
             [swarmpit.component.state :as state]
             [material.component.composite :as composite]
             [swarmpit.component.service.form-ports :as ports]

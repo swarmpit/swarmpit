@@ -1,6 +1,6 @@
 (ns material.component.list.edit
   (:require [material.icon :as icon]
-            [material.component :as cmp]
+            [material.components :as cmp]
             [material.component.list.util :refer [render-keys]]
             [swarmpit.utils :refer [select-keys*]]
             [sablono.core :refer-macros [html]]))

@@ -1,5 +1,5 @@
 (ns material.component.grid.masonry
-  (:require [material.component :as comp]))
+  (:require [material.components :as comp]))
 
 (defn grid
   [{:keys [:first-col-pred] :or {first-col-pred even?} :as opts} & body]

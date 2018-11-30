@@ -1,6 +1,6 @@
 (ns swarmpit.component.service.list
   (:require [material.icon :as icon]
-            [material.component :as comp]
+            [material.components :as comp]
             [material.component.list.basic :as list]
             [material.component.list.util :as list-util]
             [material.component.label :as label]

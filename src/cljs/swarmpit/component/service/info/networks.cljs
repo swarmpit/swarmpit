@@ -1,5 +1,5 @@
 (ns swarmpit.component.service.info.networks
-  (:require [material.component :as comp]
+  (:require [material.components :as comp]
             [material.component.list.basic :as list]
             [swarmpit.component.network.list :as networks]
             [rum.core :as rum]))

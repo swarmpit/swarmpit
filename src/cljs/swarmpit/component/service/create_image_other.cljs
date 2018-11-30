@@ -1,6 +1,6 @@
 (ns swarmpit.component.service.create-image-other
   (:require [material.icon :as icon]
-            [material.component :as comp]
+            [material.components :as comp]
             [swarmpit.component.state :as state]
             [swarmpit.component.mixin :as mixin]
             [swarmpit.component.message :as message]
