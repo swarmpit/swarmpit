@@ -4,6 +4,7 @@
             [material.component.form :as form]
             [swarmpit.component.message :as message]
             [swarmpit.url :refer [dispatch!]]
+            [sablono.core :refer-macros [html]]
             [swarmpit.ajax :as ajax]
             [swarmpit.routes :as routes]
             [rum.core :as rum]
@@ -50,55 +51,72 @@
      :on-error   (fn [_]
                    (message/error (str "Failed to remove API token.")))}))
 
-;(defn- token-input
-;  [value]
-;  (form/form
-;    nil
-;    (form/comp
-;      "AUTHORIZATION TOKEN"
-;      (comp/vtext-field
-;        {:name      "token"
-;         :key       "token"
-;         :multiLine true
-;         :style     {:width      "450px"
-;                     :fontFamily "monospace"}
-;         :value     value}))))
-;
-;(rum/defc form-api-token < rum/static [{:keys [api-token token]}]
-;  (let [state (if (and api-token (not token))
-;                :old (if token
-;                       :new :none))]
-;    [:div
-;     [:div.form-panel
-;      [:div.form-panel-left
-;       (panel/info icon/password (case state :none "Create API token" :old "API Token" :new "New API token"))]
-;      [:div.form-panel-right
-;       (comp/progress-button
-;         {:label      (case state :none "Generate" "Regenerate")
-;          :disabled   false
-;          :primary    true
-;          :onTouchTap generate-handler}
-;         false)
-;       [:span.form-panel-delimiter]
-;       (comp/progress-button
-;         {:label      "Remove"
-;          :disabled   (= :none state)
-;          :onTouchTap remove-handler}
-;         false)]]
-;     (case state
-;       :old [(form/value ["Token for this user was already created, if you lost it, you can regenerate it and "
-;                          "the former token will be revoked."])
-;             (token-input (str "Bearer ..." (:mask api-token)))]
-;       :new [(form/value ["Copy your generated token and store it safely, value will be displayed only once."])
-;             (token-input (:token token))]
-;       :none [(form/value "Your user doesn't have any API token.")
-;              (form/value "You can create authorization token here. Generated token doesn't expire, but it can be revoked.")])]))
-;
-;(rum/defc form < rum/reactive
-;                 mixin-init-form []
-;  (let [state (state/react state/form-state-cursor)
-;        item (state/react state/form-value-cursor)]
-;    (progress/form
-;      (:loading? state)
-;      (form-api-token item))))
+(defn- form-token [value]
+  (comp/text-field
+    {:label           "Authorization Token"
+     :fullWidth       true
+     :name            "token"
+     :key             "token"
+     :variant         "outlined"
+     :margin          "normal"
+     :multiline       true
+     :value           value
+     :InputProps      {:readOnly true
+                       :style    {:fontFamily "monospace"}}
+     :InputLabelProps {:shrink true}}))
+
+(rum/defc form-api-token < rum/static [{:keys [api-token token]}]
+  (let [state (if (and api-token (not token))
+                :old (if token
+                       :new :none))]
+    (comp/mui
+      (html
+        [:div.Swarmpit-form
+         [:div.Swarmpit-form-context
+          (comp/grid
+            {:item true
+             :xs   12
+             :sm   6}
+            (comp/card
+              {:className "Swarmpit-form-card"}
+              (comp/card-header
+                {:className "Swarmpit-form-card-header"
+                 :title     (case state :none "Create API token" :old "API Token" :new "New API token")})
+              (comp/card-content
+                {}
+                (comp/grid
+                  {:container true
+                   :spacing   40}
+                  (comp/grid
+                    {:item true
+                     :xs   12}
+                    (case state
+                      :old [(comp/typography {} ["Token for this user was already created, if you lost it, you can regenerate it and "
+                                                 "the former token will be revoked."])
+                            (form-token (str "Bearer ..." (:mask api-token)))]
+                      :new [(comp/typography {} ["Copy your generated token and store it safely, value will be displayed only once."])
+                            (form-token (:token token))]
+                      :none [(comp/typography {} "Your user doesn't have any API token.")
+                             (comp/typography {} "You can create authorization token here. Generated token doesn't expire, but it can be revoked.")])))
+                (html
+                  [:div.Swarmpit-form-buttons
+                   (comp/button
+                     {:variant  "contained"
+                      :disabled false
+                      :onClick  generate-handler
+                      :color    "primary"}
+                     (case state :none "Generate" "Regenerate"))
+                   (comp/button
+                     {:variant  "contained"
+                      :disabled (= :none state)
+                      :onClick  remove-handler}
+                     "Remove")]))))]]))))
+
+(rum/defc form < rum/reactive
+                 mixin-init-form []
+  (let [state (state/react state/form-state-cursor)
+        item (state/react state/form-value-cursor)]
+    (progress/form
+      (:loading? state)
+      (form-api-token item))))
 

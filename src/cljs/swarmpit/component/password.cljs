@@ -100,7 +100,7 @@
       (init-form-value))))
 
 (rum/defc form < rum/reactive
-                 mixin-init-form [_]
+                 mixin-init-form []
   (let [{:keys [password new-password confirm-password]} (state/react state/form-state-cursor)
         {:keys [error? processing? showPassword]} (state/react state/form-state-cursor)]
     (comp/mui

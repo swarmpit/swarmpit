@@ -68,10 +68,10 @@
   [_]
   (page-login/form))
 
-;(defmethod dispatch :api-access
-;  [_]
-;  (api-access/form))
-;
+(defmethod dispatch :api-access
+  [_]
+  (api-access/form))
+
 (defmethod dispatch :password
   [_]
   (password/form))
