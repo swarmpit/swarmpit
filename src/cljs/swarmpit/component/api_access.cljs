@@ -101,8 +101,8 @@
                {:variant  "contained"
                 :disabled false
                 :onClick  generate-handler
-                :color    "primary"}
-               (case state :none "Generate" "Regenerate"))
+                :color    "primary"
+                (case state :none "Generate" "Regenerate")})
              (comp/button
                {:variant  "outlined"
                 :disabled (= :none state)
