@@ -74,7 +74,7 @@
   [:div
    (when timestamp
      [:span.log-timestamp (:timestamp item)])
-   [:span.log-info (str (:taskName item) "." (subs (:task item) 0 12) "@" (:taskNode item))]
+   ;; [:span.log-info (str (:taskName item) "." (subs (:task item) 0 12) "@" (:taskNode item))]
    [:span.log-body (str " " (:line item))]])
 
 (rum/defc form < rum/reactive
@@ -87,35 +87,21 @@
         filtered-logs (filter-items logs (:predicate filter))]
     (comp/mui
       (html
-        [:div.Swarmpit-form
-         [:div.Swarmpit-form-context
-          (comp/grid
-            {:container true
-             :spacing   40}
-            (comp/grid
-              {:item true
-               :xs   12}
-              (comp/card
-                {:className "Swarmpit-form-card"}
-                (comp/card-header
-                  {:className "Swarmpit-form-card-header"
-                   :title     (:serviceName service)})
-                (comp/card-content
-                  {}
-                  (comp/grid
-                    {:container true
-                     :spacing   40}
-                    (comp/grid
-                      {:item true
-                       :xs   12}
-                      (html
-                        (cond
-                          error [:span "Logs for this service couldn't be fetched."]
-                          (and (empty? filtered-logs) initialized) [:span "Log is empty in this service."]
-                          (not initialized) [:span "Loading..."]
-                          :else (map
-                                  (fn [item]
-                                    (line item timestamp)) filtered-logs)))))))))]]))))
+        [:div.Swarmpit-log
+         (comp/grid
+           {:container true
+            :spacing   0}
+           (comp/grid
+             {:item true
+              :xs   12}
+             (html
+               (cond
+                 error [:span "Logs for this service couldn't be fetched."]
+                 (and (empty? filtered-logs) initialized) [:span "Log is empty in this service."]
+                 (not initialized) [:span "Loading..."]
+                 :else (map
+                         (fn [item]
+                           (line item timestamp)) filtered-logs)))))]))))
 ;    [:div
 ;     [:div.form-panel
 ;      [:div.form-panel-left
