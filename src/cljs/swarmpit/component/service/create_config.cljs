@@ -237,14 +237,15 @@
         [:div.Swarmpit-form
          [:div.Swarmpit-form-context
           (comp/grid
-            {:container true}
+            {:container true
+             :spacing   40}
             (comp/grid
               {:item true
                :xs   12
-               :sm   10
-               :md   8
-               :lg   6
-               :xl   4}
+               :sm   12
+               :md   12
+               :lg   8
+               :xl   8}
               (comp/card
                 {:className "Swarmpit-form-card"}
                 (comp/card-header
@@ -272,4 +273,12 @@
                      (composite/progress-button
                        "Create"
                        create-service-handler
-                       processing?)])))))]]))))
+                       processing?)]))))
+            (comp/grid
+              {:item true
+               :xs   12
+               :sm   12
+               :md   12
+               :lg   4
+               :xl   4}
+              (html [:span "Doc"])))]]))))

@@ -113,14 +113,27 @@
                    (form-host-volume value index volume-list)))}
    {:name      "Read only"
     :key       [:readOnly]
-    :render-fn (fn [value _ index] (form-readonly value index))}])
+    :render-fn (fn [value _ index]
+                 (comp/form-control
+                   {:component "fieldset"
+                    :fullWidth true}
+                   (comp/form-group
+                     {}
+                     (comp/form-control-label
+                       {:control (form-readonly value index)
+                        :label   "Read Only"}))))}])
 
 (defn- form-table
   [mounts volume-list]
-  (list/list
-    (form-mounts-metadata volume-list)
-    mounts
-    (fn [index] (state/remove-item index form-value-cursor))))
+  (comp/list
+    {:dense true}
+    (map-indexed
+      (fn [index item]
+        (list/list-item-small
+          (form-mounts-metadata volume-list)
+          index
+          item
+          (fn [index] (state/remove-item index form-value-cursor)))) mounts)))
 
 (defn- add-item
   []

@@ -83,6 +83,8 @@
         secrets (state/react form-value-cursor)]
     (if (empty? secrets)
       (html [:div "No secrets defined for the service."])
-      (if (empty? list)
-        undefined-info
-        (form-table secrets list)))))
+      (form-table secrets list)
+      ;(if (empty? list)
+      ;  undefined-info
+      ;  (form-table secrets list))
+      )))

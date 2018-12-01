@@ -21,6 +21,7 @@
      :select          true
      :value           value
      :variant         "outlined"
+     :style           {:maxWidth "300px"}
      :margin          "normal"
      :InputLabelProps {:shrink true}
      :onChange        #(state/update-value [:name] (-> % .-target .-value) form-value-cursor)}
@@ -86,7 +87,7 @@
       (comp/grid
         {:item true
          :xs   12
-         :sm   4} (form-driver name))
+         :sm   6} (form-driver name))
       (comp/grid
         {:item true
          :xs   12}

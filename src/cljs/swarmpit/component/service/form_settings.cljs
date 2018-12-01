@@ -24,6 +24,7 @@
      :label           "Image"
      :variant         "outlined"
      :margin          "normal"
+     :style           {:maxWidth "350px"}
      :fullWidth       true
      :disabled        true
      :required        true
@@ -38,6 +39,7 @@
       {:options        suggestions
        :textFieldProps {:label           "Tag"
                         :margin          "normal"
+                        :style           {:maxWidth "350px"}
                         :helperText      "Specify image tag or leave empty for latest"
                         :InputLabelProps {:shrink true}}
        :onChange       #(state/update-value [:repository :tag] (-> % .-value) form-value-cursor)
@@ -53,6 +55,7 @@
       {:options        suggestions
        :textFieldProps {:label           "Tag"
                         :margin          "normal"
+                        :style           {:maxWidth "350px"}
                         :helperText      "Specify image tag or leave empty for latest"
                         :InputLabelProps {:shrink true}}
        :onChange       (fn [v]
@@ -68,6 +71,7 @@
     {:key             "service-name"
      :label           "Service name"
      :variant         "outlined"
+     :style           {:maxWidth "350px"}
      :helperText      "Specify name or leave empty for random"
      :disabled        update-form?
      :fullWidth       true
@@ -77,7 +81,8 @@
 
 (defn- form-mode [value update-form?]
   (comp/form-control
-    {:component "fieldset"}
+    {:component "fieldset"
+     :style     {:width "200px"}}
     (comp/form-label {} "Mode")
     (comp/radio-group
       {:name     "mode"
@@ -106,9 +111,11 @@
      :label           "Replicas"
      :type            "number"
      :variant         "outlined"
+     :style           {:maxWidth "150px"}
      :min             0
      :fullWidth       true
      :required        true
+     :margin          "dense"
      :value           value
      :InputLabelProps {:shrink true}
      :onChange        (fn [event]
@@ -146,7 +153,8 @@
       (comp/grid
         {:item true
          :xs   12
-         :sm   6} (form-image (:name repository)))
+         :sm   6}
+        (form-image (:name repository)))
       (comp/grid
         {:item true
          :xs   12
@@ -156,19 +164,20 @@
           (form-image-tag-preloaded repository tags)))
       (comp/grid
         {:item true
-         :xs   12} (form-name serviceName update-form?))
+         :xs   12}
+        (form-name serviceName update-form?))
       (comp/grid
         {:item true
          :xs   12
-         :sm   6} (form-mode mode update-form?))
-      (when (= "replicated" mode)
-        (comp/grid
-          {:item true
-           :xs   12
-           :sm   6} (form-replicas replicas)))
+         :sm   6}
+        (form-mode mode update-form?)
+        (when (= "replicated" mode)
+          (form-replicas replicas)))
       (comp/grid
         {:item true
-         :xs   12} (networks/form))
+         :xs   12}
+        (networks/form))
       (comp/grid
         {:item true
-         :xs   12} (form-command (str/join " " command))))))
+         :xs   12}
+        (form-command (str/join " " command))))))

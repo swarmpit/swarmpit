@@ -242,37 +242,55 @@
       (html
         [:div.Swarmpit-form
          [:div.Swarmpit-form-context
-          (comp/card
-            {:className "Swarmpit-form-card"}
-            (comp/card-header
-              {:className "Swarmpit-form-card-header"
-               :title     "Edit Service"})
-            (comp/card-content
-              {}
-              (comp/grid
-                {:container true
-                 :spacing   40}
-                (form-settings)
-                (form-ports)
-                (form-mounts)
-                (form-secrets)
-                (when (<= 1.30 (state/get-value [:docker :api]))
-                  (form-configs))
-                (form-variables)
-                (form-labels)
-                (form-logdriver)
-                (form-resources)
-                (form-deployment))
-              (html
-                [:div.Swarmpit-form-buttons
-                 (comp/button
-                   {:variant "contained"
-                    :onClick #(dispatch! (routes/path-for-frontend :service-info {:id id}))
-                    :color   "primary"} "Back")
-                 (composite/progress-button
-                   "Save"
-                   #(update-service-handler id)
-                   processing?)])))]]))))
+          (comp/grid
+            {:container true
+             :spacing   40}
+            (comp/grid
+              {:item true
+               :xs   12
+               :sm   12
+               :md   12
+               :lg   8
+               :xl   8}
+              (comp/card
+                {:className "Swarmpit-form-card"}
+                (comp/card-header
+                  {:className "Swarmpit-form-card-header"
+                   :title     "Edit Service"})
+                (comp/card-content
+                  {}
+                  (comp/grid
+                    {:container true
+                     :spacing   40}
+                    (form-settings)
+                    (form-ports)
+                    (form-mounts)
+                    (form-secrets)
+                    (when (<= 1.30 (state/get-value [:docker :api]))
+                      (form-configs))
+                    (form-variables)
+                    (form-labels)
+                    (form-logdriver)
+                    (form-resources)
+                    (form-deployment))
+                  (html
+                    [:div.Swarmpit-form-buttons
+                     (comp/button
+                       {:variant "outlined"
+                        :onClick #(dispatch! (routes/path-for-frontend :service-info {:id id}))
+                        :color   "primary"} "Back")
+                     (composite/progress-button
+                       "Save"
+                       #(update-service-handler id)
+                       processing?)]))))
+            (comp/grid
+              {:item true
+               :xs   12
+               :sm   12
+               :md   12
+               :lg   4
+               :xl   4}
+              (html [:span "Doc"])))]]))))
 
 (rum/defc form < rum/reactive
                  mixin-init-form [{{:keys [id]} :params}]

@@ -21,6 +21,7 @@
      :value           value
      :variant         "outlined"
      :margin          "normal"
+     :style           {:maxWidth "150px"}
      :InputLabelProps {:shrink true}
      :onChange        #(state/update-value [:restartPolicy :attempts] (parse-int (-> % .-target .-value)) form-value-cursor)}))
 
@@ -33,6 +34,7 @@
      :value           value
      :variant         "outlined"
      :margin          "normal"
+     :style           {:maxWidth "150px"}
      :InputLabelProps {:shrink true}
      :onChange        #(state/update-value [:restartPolicy :delay] (parse-int (-> % .-target .-value)) form-value-cursor)}))
 
@@ -45,6 +47,7 @@
      :value           value
      :variant         "outlined"
      :margin          "normal"
+     :style           {:maxWidth "150px"}
      :InputLabelProps {:shrink true}
      :onChange        #(state/update-value [:restartPolicy :window] (parse-int (-> % .-target .-value)) form-value-cursor)}))
 
@@ -56,6 +59,7 @@
      :value           value
      :variant         "outlined"
      :margin          "normal"
+     :style           {:maxWidth "150px"}
      :InputLabelProps {:shrink true}
      :onChange        #(state/update-value [:restartPolicy :condition] (-> % .-target .-value) form-value-cursor)}
     (comp/menu-item
@@ -77,6 +81,7 @@
      :value           value
      :variant         "outlined"
      :margin          "normal"
+     :style           {:maxWidth "150px"}
      :InputLabelProps {:shrink true}
      :onChange        #(state/update-value [:update :parallelism] (parse-int (-> % .-target .-value)) form-value-cursor)}))
 
@@ -89,6 +94,7 @@
      :value           value
      :variant         "outlined"
      :margin          "normal"
+     :style           {:maxWidth "150px"}
      :InputLabelProps {:shrink true}
      :onChange        #(state/update-value [:update :delay] (parse-int (-> % .-target .-value)) form-value-cursor)}))
 
@@ -100,6 +106,7 @@
      :value           value
      :variant         "outlined"
      :margin          "normal"
+     :style           {:maxWidth "150px"}
      :InputLabelProps {:shrink true}
      :onChange        #(state/update-value [:update :order] (-> % .-target .-value) form-value-cursor)}
     (comp/menu-item
@@ -117,6 +124,7 @@
      :value           value
      :variant         "outlined"
      :margin          "normal"
+     :style           {:maxWidth "150px"}
      :InputLabelProps {:shrink true}
      :onChange        #(state/update-value [:update :failureAction] (-> % .-target .-value) form-value-cursor)}
     (comp/menu-item
@@ -138,6 +146,7 @@
      :value           value
      :variant         "outlined"
      :margin          "normal"
+     :style           {:maxWidth "150px"}
      :InputLabelProps {:shrink true}
      :onChange        #(state/update-value [:rollback :parallelism] (parse-int (-> % .-target .-value)) form-value-cursor)}))
 
@@ -150,6 +159,7 @@
      :value           value
      :variant         "outlined"
      :margin          "normal"
+     :style           {:maxWidth "150px"}
      :InputLabelProps {:shrink true}
      :onChange        #(state/update-value [:rollback :delay] (parse-int (-> % .-target .-value)) form-value-cursor)}))
 
@@ -161,6 +171,7 @@
      :value           value
      :variant         "outlined"
      :margin          "normal"
+     :style           {:maxWidth "150px"}
      :InputLabelProps {:shrink true}
      :onChange        #(state/update-value [:rollback :order] (-> % .-target .-value) form-value-cursor)}
     (comp/menu-item
@@ -178,6 +189,7 @@
      :value           value
      :variant         "outlined"
      :margin          "normal"
+     :style           {:maxWidth "150px"}
      :InputLabelProps {:shrink true}
      :onChange        #(state/update-value [:rollback :failureAction] (-> % .-target .-value) form-value-cursor)}
     (comp/menu-item
@@ -220,26 +232,59 @@
          :xs   12
          :sm   4}
         (form/subsection "Restart Policy")
-        (form-restart-policy-condition (:condition restartPolicy))
-        (form-restart-policy-delay (:delay restartPolicy))
-        (form-restart-policy-window (:window restartPolicy))
-        (form-restart-policy-attempts (:attempts restartPolicy)))
+        (comp/grid
+          {:container true
+           :direction "column"}
+          (comp/grid
+            {:item true}
+            (form-restart-policy-condition (:condition restartPolicy)))
+          (comp/grid
+            {:item true}
+            (form-restart-policy-delay (:delay restartPolicy)))
+          (comp/grid
+            {:item true}
+            (form-restart-policy-window (:window restartPolicy)))
+          (comp/grid
+            {:item true}
+            (form-restart-policy-attempts (:attempts restartPolicy)))))
       (comp/grid
         {:item true
          :xs   12
          :sm   4}
         (form/subsection "Update Config")
-        (form-update-parallelism (:parallelism update))
-        (form-update-delay (:delay update))
-        (form-update-order (:order update))
-        (form-update-failure-action (:failureAction update)))
+        (comp/grid
+          {:container true
+           :direction "column"}
+          (comp/grid
+            {:item true}
+            (form-update-parallelism (:parallelism update)))
+          (comp/grid
+            {:item true}
+            (form-update-delay (:delay update)))
+          (comp/grid
+            {:item true}
+            (form-update-order (:order update)))
+          (comp/grid
+            {:item true}
+            (form-update-failure-action (:failureAction update)))))
       (when (= "rollback" (:failureAction update))
         (comp/grid
           {:item true
            :xs   12
            :sm   4}
           (form/subsection "Rollback Config")
-          (form-rollback-parallelism (:parallelism rollback))
-          (form-rollback-delay (:delay rollback))
-          (form-rollback-order (:order rollback))
-          (form-rollback-failure-action (:failureAction rollback)))))))
+          (comp/grid
+            {:container true
+             :direction "column"}
+            (comp/grid
+              {:item true}
+              (form-rollback-parallelism (:parallelism rollback)))
+            (comp/grid
+              {:item true}
+              (form-rollback-delay (:delay rollback)))
+            (comp/grid
+              {:item true}
+              (form-rollback-order (:order rollback)))
+            (comp/grid
+              {:item true}
+              (form-rollback-failure-action (:failureAction rollback)))))))))

@@ -67,6 +67,11 @@ a {
     border: 1px solid rgba(0, 0, 0, 0.12);
 }
 
+.Swarmpit-row {
+    display: flex;
+    flex-wrap: wrap;
+}
+
 .Swarmpit-icon-button {
     margin: 8px;
 }
@@ -338,6 +343,7 @@ a {
 
 .Swarmpit-list-item-edit-small > div {
     flex-direction: column;
+    max-width: 350px;
 }
 
 /** Form content **/

@@ -31,6 +31,7 @@
          :step         0.10
          :defaultValue 0
          :value        value
+         :style        {:maxWidth "300px"}
          :onChange     #(state/update-value [:reservation :cpu] (parse-float %) form-value-cursor)})]]))
 
 (defn- form-memory-reservation [value]
@@ -40,6 +41,7 @@
      :type            "number"
      :variant         "outlined"
      :margin          "normal"
+     :style           {:maxWidth "300px"}
      :helperText      "Use minimum of 4 MB or leave blank for unlimited"
      :min             4
      :fullWidth       true
@@ -60,6 +62,7 @@
          :step         0.10
          :defaultValue 0
          :value        value
+         :style        {:maxWidth "300px"}
          :onChange     #(state/update-value [:limit :cpu] (parse-float %) form-value-cursor)})]]))
 
 (defn- form-memory-limit [value]
@@ -69,6 +72,7 @@
      :type            "number"
      :variant         "outlined"
      :margin          "normal"
+     :style           {:maxWidth "300px"}
      :helperText      "Use minimum of 4 MB or leave blank for unlimited"
      :min             4
      :fullWidth       true

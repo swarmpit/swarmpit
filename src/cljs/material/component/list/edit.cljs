@@ -48,11 +48,11 @@
   (html
     [:div
      (cmp/hidden
-       {:only           ["xs" "sm" "md"]
+       {:only           ["xs" "sm"]
         :implementation "js"}
        (list-item-normal render-metadata index item delete-handler-fn))
      (cmp/hidden
-       {:only           ["lg" "xl"]
+       {:only           ["md" "lg" "xl"]
         :implementation "js"}
        (list-item-small render-metadata index item delete-handler-fn))]))
 
