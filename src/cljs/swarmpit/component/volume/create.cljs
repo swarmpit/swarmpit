@@ -1,7 +1,7 @@
 (ns swarmpit.component.volume.create
   (:require [material.icon :as icon]
             [material.components :as comp]
-            [material.component.list.basic :as list]
+            [material.component.list.edit :as list]
             [material.component.form :as form]
             [swarmpit.component.mixin :as mixin]
             [swarmpit.component.state :as state]

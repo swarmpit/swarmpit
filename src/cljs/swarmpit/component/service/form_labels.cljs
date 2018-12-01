@@ -1,6 +1,6 @@
 (ns swarmpit.component.service.form-labels
   (:require [material.components :as comp]
-            [material.component.list.basic :as list]
+            [material.component.list.edit :as list]
             [material.component.composite :as composite]
             [swarmpit.component.state :as state]
             [swarmpit.ajax :as ajax]

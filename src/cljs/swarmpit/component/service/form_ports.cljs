@@ -1,7 +1,7 @@
 (ns swarmpit.component.service.form-ports
   (:require [material.components :as comp]
             [material.component.form :as form]
-            [material.component.list.basic :as list]
+            [material.component.list.edit :as list]
             [swarmpit.component.state :as state]
             [swarmpit.component.parser :refer [parse-int]]
             [swarmpit.ajax :as ajax]

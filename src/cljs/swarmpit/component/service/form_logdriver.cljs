@@ -2,7 +2,7 @@
   (:require [material.icon :as icon]
             [material.components :as comp]
             [material.component.form :as form]
-            [material.component.list.basic :as list]
+            [material.component.list.edit :as list]
             [swarmpit.component.state :as state]
             [sablono.core :refer-macros [html]]
             [rum.core :as rum]))
