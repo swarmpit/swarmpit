@@ -510,6 +510,8 @@ a {
 
 .Swarmpit-image-search {
     margin-top: 10px;
+    flex-direction: column;
+    display: flex;
 }
 
 .Swarmpit-list-image {

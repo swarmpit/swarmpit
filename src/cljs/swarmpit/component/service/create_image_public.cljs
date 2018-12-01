@@ -1,5 +1,6 @@
 (ns swarmpit.component.service.create-image-public
   (:require [material.components :as comp]
+            [material.component.list.basic :as list]
             [swarmpit.component.state :as state]
             [swarmpit.component.mixin :as mixin]
             [swarmpit.component.message :as message]
@@ -42,6 +43,7 @@
      :margin          "normal"
      :variant         "outlined"
      :placeholder     "Find repository"
+     :style           {:maxWidth "400px"}
      :InputLabelProps {:shrink true}
      :onChange        (fn [event]
                         (state/update-value [:repository] (-> event .-target .-value) form-state-cursor)
@@ -57,29 +59,30 @@
     (fn []
       (init-form-state))))
 
-(rum/defc form-list < rum/static [searching? {:keys [results page limit total query]}]
-  (html
-    [:div
-     (when searching?
-       (comp/linear-progress))
-     (comp/list
-       {:dense true}
-       (->> results
-            (map (fn [item]
-                   (comp/list-item
-                     {:button         true
-                      :onClick        #(onclick-handler (:name item))
-                      :disableGutters true
-                      :divider        true}
-                     (comp/list-item-text
-                       {:primary   (:name item)
-                        :secondary (:description item)}))))))]))
+(def render-list-metadata
+  {:primary   (fn [item] (:name item))
+   :secondary (fn [item] (:description item))})
+
+(rum/defc form-list < rum/reactive []
+  (let [{:keys [searching?]} (state/react form-state-cursor)
+        repositories (state/react form-value-cursor)]
+    (html
+      [:div
+       (when searching?
+         (comp/linear-progress))
+       (comp/list
+         {:dense true}
+         (map-indexed
+           (fn [index item]
+             (list/list-item
+               render-list-metadata
+               index
+               item
+               (last (:results repositories))
+               #(onclick-handler (:name item)))) (:results repositories)))])))
 
 (rum/defc form < rum/reactive
                  mixin-init-form []
-  (let [{:keys [repository searching?]} (state/react form-state-cursor)
-        repositories (state/react form-value-cursor)]
+  (let [{:keys [repository]} (state/react form-state-cursor)]
     [:div.Swarmpit-image-search
-     (form-repository repository)
-     [:span.Swarmpit-message (str "Found " (count (:results repositories)) " repositories.")]
-     (form-list searching? repositories)]))
+     (form-repository repository)]))

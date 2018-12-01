@@ -64,11 +64,12 @@
              :title     "Image Registry"
              :subheader "Search for images accross public and private registries"})
           (comp/card-content
-            {}
+            {:className "Swarmpit-table-card-content"}
             (comp/tabs
               {:key            "tabs"
                :style          {:backgroundColor "#f5f5f5"
-                                :border          "1px solid rgba(0, 0, 0, 0.12)"}
+                                :borderTop       "1px solid rgba(0, 0, 0, 0.12)"
+                                :borderBottom    "1px solid rgba(0, 0, 0, 0.12)"}
                :value          tab
                :onChange       (fn [e v]
                                  (state/update-value [:tab] v state/form-state-cursor))
@@ -87,11 +88,19 @@
               (comp/tab
                 {:key   "tab3"
                  :label "OTHER REGISTRIES"
-                 :icon  (comp/svg icon/registries)}))
+                 :icon  (comp/svg icon/registries)})))
+          (comp/card-content
+            {}
             (case tab
               0 (cip/form)
               1 (ciu/form users)
-              2 (cio/form registries)))))]]))
+              2 (cio/form registries)))
+          (comp/card-content
+            {:className "Swarmpit-table-card-content"}
+            (case tab
+              0 (cip/form-list)
+              1 (ciu/form-list)
+              2 (cio/form-list)))))]]))
 
 (rum/defc form < rum/reactive
                  mixin-init-form [_]

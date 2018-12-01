@@ -1,6 +1,7 @@
 (ns swarmpit.component.service.create-image-other
   (:require [material.icon :as icon]
             [material.components :as comp]
+            [material.component.list.basic :as list]
             [swarmpit.component.state :as state]
             [swarmpit.component.mixin :as mixin]
             [swarmpit.component.message :as message]
@@ -81,6 +82,7 @@
      :margin          "normal"
      :variant         "outlined"
      :placeholder     "Find repository"
+     :style           {:maxWidth "400px"}
      :InputLabelProps {:shrink true}
      :onChange        (fn [event]
                         (state/update-value [:repository] (-> event .-target .-value) form-state-cursor))}))
@@ -99,35 +101,36 @@
         (when (some? init-registry)
           (repository-handler (:_id init-registry)))))))
 
-(rum/defc form-list < rum/static [searching? registry repositories]
-  (html
-    [:div
-     (when searching?
-       (comp/linear-progress))
-     (comp/list
-       {:dense true}
-       (->> repositories
-            (map (fn [item]
-                   (comp/list-item
-                     {:button         true
-                      :onClick        #(onclick-handler (:name item) registry)
-                      :disableGutters true
-                      :divider        true}
-                     (comp/list-item-text
-                       {:primary   (:name item)
-                        :secondary (:description item)}))))))]))
+(def render-list-metadata
+  {:primary   (fn [item] (:name item))
+   :secondary (fn [item] (:description item))})
 
-(rum/defc form < rum/reactive
-                 mixin-init-form [registries]
+(rum/defc form-list < rum/reactive []
   (let [{:keys [repository registry searching?]} (state/react form-state-cursor)
         repositories (state/react form-value-cursor)
         filtered-repositories (filter-items repositories repository)]
+    (html
+      [:div
+       (when searching?
+         (comp/linear-progress))
+       (comp/list
+         {:dense true}
+         (map-indexed
+           (fn [index item]
+             (list/list-item
+               render-list-metadata
+               index
+               item
+               (last filtered-repositories)
+               #(onclick-handler (:name item) registry))) filtered-repositories))])))
+
+(rum/defc form < rum/reactive
+                 mixin-init-form [registries]
+  (let [{:keys [repository registry]} (state/react form-state-cursor)]
     (if (some? registry)
       [:div.Swarmpit-image-search
        (form-registry registry registries)
-       (form-repository repository)
-       [:span.Swarmpit-message (str "Found " (count filtered-repositories) " repositories.")]
-       (form-list searching? registry filtered-repositories)]
+       (form-repository repository)]
       [:div.Swarmpit-image-search
        (html
          [:span.Swarmpit-message
