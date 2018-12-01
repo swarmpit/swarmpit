@@ -72,9 +72,9 @@
 ;  [_]
 ;  (api-access/form))
 ;
-;(defmethod dispatch :password
-;  [_]
-;  (password/form))
+(defmethod dispatch :password
+  [_]
+  (password/form))
 
 ;;; Stack view
 
