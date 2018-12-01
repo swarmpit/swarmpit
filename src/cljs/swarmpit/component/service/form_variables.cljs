@@ -1,6 +1,6 @@
 (ns swarmpit.component.service.form-variables
   (:require [material.components :as comp]
-            [material.component.list.basic :as list]
+            [material.component.list.edit :as list]
             [swarmpit.component.state :as state]
             [sablono.core :refer-macros [html]]
             [rum.core :as rum]))
