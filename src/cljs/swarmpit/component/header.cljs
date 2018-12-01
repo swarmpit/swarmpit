@@ -56,15 +56,10 @@
                                   [:span.Swarmpit-appbar-user-menu-logged-user (storage/user)]]))
        (comp/divider)
        (comp/menu-item
-         {:key     "Swarmpit-appbar-user-menu-api-token"
+         {:key     "Swarmpit-appbar-user-menu-account-settings"
           :onClick (fn []
                      (dispatch!
-                       (routes/path-for-frontend :api-access)))} "API access")
-       (comp/menu-item
-         {:key     "Swarmpit-appbar-user-menu-settings"
-          :onClick (fn []
-                     (dispatch!
-                       (routes/path-for-frontend :password)))} "Change password")
+                       (routes/path-for-frontend :account-settings)))} "Settings")
        (comp/menu-item
          {:key     "Swarmpit-appbar-user-menu-logout"
           :onClick (fn []

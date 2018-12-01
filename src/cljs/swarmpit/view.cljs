@@ -5,6 +5,7 @@
             [swarmpit.component.page-error :as page-error]
             [swarmpit.component.password :as password]
             [swarmpit.component.api-access :as api-access]
+            [swarmpit.component.account-settings :as account-settings]
             [swarmpit.component.stack.edit :as stack-edit]
             [swarmpit.component.stack.compose :as stack-compose]
             [swarmpit.component.stack.create :as stack-create]
@@ -68,13 +69,9 @@
   [_]
   (page-login/form))
 
-(defmethod dispatch :api-access
+(defmethod dispatch :account-settings
   [_]
-  (api-access/form))
-
-(defmethod dispatch :password
-  [_]
-  (password/form))
+  (account-settings/form))
 
 ;;; Stack view
 

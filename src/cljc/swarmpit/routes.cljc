@@ -93,10 +93,9 @@
 
 (def frontend ["" {"/"                        :index
                    "/login"                   :login
-                   "/api-access"              :api-access
                    "/error"                   :error
                    "/unauthorized"            :unauthorized
-                   "/password"                :password
+                   "/account-settings"        :account-settings
                    "/services"                {""               :service-list
                                                "/create/wizard" {"/image"  :service-create-image
                                                                  "/config" :service-create-config}

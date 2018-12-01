@@ -56,13 +56,9 @@
   [_]
   {:title "Home"})
 
-(defmethod render :api-access
+(defmethod render :account-settings
   [_]
-  {:title "API access"})
-
-(defmethod render :password
-  [_]
-  {:title "Change password"})
+  {:title "Account Settings"})
 
 ;;; Stack view
 
