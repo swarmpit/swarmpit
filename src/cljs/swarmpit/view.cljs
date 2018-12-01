@@ -3,8 +3,6 @@
             [swarmpit.component.page-403 :as page-403]
             [swarmpit.component.page-404 :as page-404]
             [swarmpit.component.page-error :as page-error]
-            [swarmpit.component.password :as password]
-            [swarmpit.component.api-access :as api-access]
             [swarmpit.component.account-settings :as account-settings]
             [swarmpit.component.stack.edit :as stack-edit]
             [swarmpit.component.stack.compose :as stack-compose]
@@ -15,7 +13,7 @@
             [swarmpit.component.service.create-image :as service-image]
             [swarmpit.component.service.edit :as service-edit]
             [swarmpit.component.service.info :as service-info]
-    ;[swarmpit.component.service.log :as service-log]
+            [swarmpit.component.service.log :as service-log]
             [swarmpit.component.service.list :as service-list]
             [swarmpit.component.network.create :as network-create]
             [swarmpit.component.network.info :as network-info]
@@ -109,9 +107,9 @@
   [route]
   (service-info/form route))
 
-;(defmethod dispatch :service-log
-;  [route]
-;  (service-log/form route))
+(defmethod dispatch :service-log
+  [route]
+  (service-log/form route))
 
 (defmethod dispatch :service-create-image
   [route]
