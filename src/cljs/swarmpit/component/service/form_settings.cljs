@@ -130,6 +130,7 @@
      :fullWidth       true
      :multiline       true
      :value           value
+     :InputProps      {:style    {:fontFamily "monospace"}}
      :InputLabelProps {:shrink true}
      :onChange        (fn [event]
                         (let [value (-> event .-target .-value)]
