@@ -9,22 +9,10 @@
             [sablono.core :refer-macros [html]]
             [rum.core :as rum]
             [swarmpit.component.mixin :as mixin]
-            [swarmpit.component.state :as state]))
+            [swarmpit.component.state :as state]
+            [swarmpit.component.common :as common]))
 
 (enable-console-print!)
-
-(defn- form-password-adornment [show-password?]
-  (comp/input-adornment
-    {:position "end"}
-    (comp/icon-button
-      {:aria-label  "Toggle password visibility"
-       :onClick     #(state/update-value [:showPassword?] (not show-password?) state/form-state-cursor)
-       :onMouseDown (fn [event]
-                      (.preventDefault event))}
-      (if show-password?
-        icon/visibility-off
-        icon/visibility))))
-
 
 (defn- form-password [password show-password?]
   (comp/text-field
@@ -41,7 +29,7 @@
      :required        true
      :onChange        #(state/update-value [:password] (-> % .-target .-value) state/form-value-cursor)
      :InputLabelProps {:shrink true}
-     :InputProps      {:endAdornment (form-password-adornment show-password?)}}))
+     :InputProps      {:endAdornment (common/show-password-adornment show-password?)}}))
 
 (defn- form-new-password [password show-password?]
   (comp/text-field
@@ -58,7 +46,7 @@
      :required        true
      :onChange        #(state/update-value [:new-password] (-> % .-target .-value) state/form-value-cursor)
      :InputLabelProps {:shrink true}
-     :InputProps      {:endAdornment (form-password-adornment show-password?)}}))
+     :InputProps      {:endAdornment (common/show-password-adornment show-password?)}}))
 
 (defn- form-confirm-password [confirm-password error? show-password?]
   (comp/text-field
@@ -77,7 +65,7 @@
      :onChange        #(and (state/update-value [:confirm-password] (-> % .-target .-value) state/form-value-cursor)
                             (state/update-value [:error?] (not= (:new-password (state/get-value state/form-value-cursor)) (-> % .-target .-value)) state/form-state-cursor))
      :InputLabelProps {:shrink true}
-     :InputProps      {:endAdornment (form-password-adornment show-password?)}}))
+     :InputProps      {:endAdornment (common/show-password-adornment show-password?)}}))
 
 (defn- change-password-handler
   []
@@ -114,7 +102,7 @@
 (rum/defc form < rum/reactive
                  mixin-init-form [_]
   (let [{:keys [password new-password confirm-password]} (state/react state/form-state-cursor)
-        {:keys [error? processing? showPassword?]} (state/react state/form-state-cursor)]
+        {:keys [error? processing? showPassword]} (state/react state/form-state-cursor)]
     (comp/mui
       (html
         [:div.Swarmpit-form
@@ -137,9 +125,9 @@
                   (comp/grid
                     {:item true
                      :xs   12}
-                    (form-password password showPassword?)
-                    (form-new-password new-password showPassword?)
-                    (form-confirm-password confirm-password error? showPassword?)))
+                    (form-password password showPassword)
+                    (form-new-password new-password showPassword)
+                    (form-confirm-password confirm-password error? showPassword)))
                 (html
                   [:div.Swarmpit-form-buttons
                    (comp/button

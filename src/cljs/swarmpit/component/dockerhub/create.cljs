@@ -8,7 +8,8 @@
             [swarmpit.ajax :as ajax]
             [swarmpit.routes :as routes]
             [sablono.core :refer-macros [html]]
-            [rum.core :as rum]))
+            [rum.core :as rum]
+            [swarmpit.component.common :as common]))
 
 (enable-console-print!)
 
@@ -25,18 +26,6 @@
      :InputLabelProps {:shrink true}
      :onChange        #(state/update-value [:username] (-> % .-target .-value) state/form-value-cursor)}))
 
-(defn- form-password-adornment [show-password?]
-  (comp/input-adornment
-    {:position "end"}
-    (comp/icon-button
-      {:aria-label  "Toggle password visibility"
-       :onClick     #(state/update-value [:showPassword] (not show-password?) state/form-state-cursor)
-       :onMouseDown (fn [event]
-                      (.preventDefault event))}
-      (if show-password?
-        icon/visibility-off
-        icon/visibility))))
-
 (defn- form-password [value show-password?]
   (comp/text-field
     {:label           "Password"
@@ -50,7 +39,7 @@
      :value           value
      :onChange        #(state/update-value [:password] (-> % .-target .-value) state/form-value-cursor)
      :InputLabelProps {:shrink true}
-     :InputProps      {:endAdornment (form-password-adornment show-password?)}}))
+     :InputProps      {:endAdornment (common/show-password-adornment show-password?)}}))
 
 (defn- form-public [value]
   (comp/checkbox
@@ -103,7 +92,8 @@
           (comp/grid
             {:item true
              :xs   12
-             :sm   6}
+             :sm   6
+             :md   3}
             (comp/card
               {:className "Swarmpit-form-card"}
               (comp/card-header

@@ -1,7 +1,9 @@
 (ns swarmpit.component.common
   (:require [material.components :as comp]
             [material.component.list.basic :as list]
-            [sablono.core :refer-macros [html]]))
+            [sablono.core :refer-macros [html]]
+            [material.icon :as icon]
+            [swarmpit.component.state :as state]))
 
 (defn list
   [title items filtered-items render-metadata onclick-handler]
@@ -23,3 +25,15 @@
                 render-metadata
                 filtered-items
                 onclick-handler))))]])))
+
+(defn show-password-adornment [show-password]
+  (comp/input-adornment
+    {:position "end"}
+    (comp/icon-button
+      {:aria-label  "Toggle password visibility"
+       :onClick     #(state/update-value [:showPassword] (not show-password) state/form-state-cursor)
+       :onMouseDown (fn [event]
+                      (.preventDefault event))}
+      (if show-password
+        icon/visibility-off
+        icon/visibility))))
