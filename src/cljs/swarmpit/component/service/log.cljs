@@ -15,6 +15,10 @@
     (let [el (.getElementById js/document "service-log")]
       (.scrollTo js/window 0 (.-scrollHeight el)))))
 
+(defn form-search-fn
+  [e]
+  (state/update-value [:filter :predicate] (-> e .-target .-value) state/form-state-cursor))
+
 (defn- filter-items
   [items predicate]
   (filter #(string/includes? (:line %) predicate) items))
@@ -106,89 +110,8 @@
                 [:div#service-log
                  (cond
                    error [:span "Logs for this service couldn't be fetched."]
-                   (and (empty? filtered-logs) initialized) [:span "Log is empty in this service."]
+                   (and (empty? logs) initialized) [:span "Log is empty in this service."]
                    (not initialized) [:span "Loading..."]
                    :else (map
                            (fn [item]
                              (line item timestamp)) filtered-logs))])))]]))))
-;    [:div
-;     [:div.form-panel
-;      [:div.form-panel-left
-;       (panel/info icon/services
-;                   (:serviceName service))]
-;      [:div.form-panel-right
-;       (comp/mui
-;         (comp/raised-button
-;           {:href  (routes/path-for-frontend :service-info {:id id})
-;            :label "Back"}))]]
-;     [:div.log-panel
-;      [:div.form-panel-left
-;       (panel/text-field
-;         {:hintText "Search in log"
-;          :onChange (fn [_ v]
-;                      (state/update-value [:filter :predicate] v state/form-state-cursor))})
-;       [:span.form-panel-space]
-;       (panel/checkbox
-;         {:checked timestamp
-;          :label   "Show timestamp"
-;          :onCheck (fn [_ v]
-;                     (state/update-value [:timestamp] v state/form-state-cursor))})]
-;      [:div.form-panel-right
-;       (panel/checkbox
-;         {:checked autoscroll
-;          :label   "Auto-scroll logs"
-;          :onCheck (fn [_ v]
-;                     (state/update-value [:autoscroll] v state/form-state-cursor))})]]
-;     [:div.log#service-log
-;      (cond
-;        error [:span "Logs for this service couldn't be fetched."]
-;        (and (empty? filtered-logs) initialized) [:span "Log is empty in this service."]
-;        (not initialized) [:span "Loading..."]
-;        :else (map
-;                (fn [item]
-;                  (line item timestamp)) filtered-logs))]]))
-
-;(rum/defc form < rum/reactive
-;                 mixin-init-form
-;                 mixin-refresh-form
-;                 {:did-mount  (fn [state] (auto-scroll!) state)
-;                  :did-update (fn [state] (auto-scroll!) state)} [{{:keys [id]} :params}]
-;  (let [{:keys [filter autoscroll timestamp initialized error service]} (state/react state/form-state-cursor)
-;        logs (state/react state/form-value-cursor)
-;        filtered-logs (filter-items logs (:predicate filter))]
-;    [:div
-;     [:div.form-panel
-;      [:div.form-panel-left
-;       (panel/info icon/services
-;                   (:serviceName service))]
-;      [:div.form-panel-right
-;       (comp/mui
-;         (comp/raised-button
-;           {:href  (routes/path-for-frontend :service-info {:id id})
-;            :label "Back"}))]]
-;     [:div.log-panel
-;      [:div.form-panel-left
-;       (panel/text-field
-;         {:hintText "Search in log"
-;          :onChange (fn [_ v]
-;                      (state/update-value [:filter :predicate] v state/form-state-cursor))})
-;       [:span.form-panel-space]
-;       (panel/checkbox
-;         {:checked timestamp
-;          :label   "Show timestamp"
-;          :onCheck (fn [_ v]
-;                     (state/update-value [:timestamp] v state/form-state-cursor))})]
-;      [:div.form-panel-right
-;       (panel/checkbox
-;         {:checked autoscroll
-;          :label   "Auto-scroll logs"
-;          :onCheck (fn [_ v]
-;                     (state/update-value [:autoscroll] v state/form-state-cursor))})]]
-;     [:div.log#service-log
-;      (cond
-;        error [:span "Logs for this service couldn't be fetched."]
-;        (and (empty? filtered-logs) initialized) [:span "Log is empty in this service."]
-;        (not initialized) [:span "Loading..."]
-;        :else (map
-;                (fn [item]
-;                  (line item timestamp)) filtered-logs))]]))

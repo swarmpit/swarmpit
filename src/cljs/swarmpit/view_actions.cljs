@@ -14,7 +14,7 @@
             [swarmpit.component.service.create-image :as service-image]
             [swarmpit.component.service.edit :as service-edit]
             [swarmpit.component.service.info :as service-info]
-    ;[swarmpit.component.service.log :as service-log]
+            [swarmpit.component.service.log :as service-log]
             [swarmpit.component.service.list :as service-list]
             [swarmpit.component.network.create :as network-create]
             [swarmpit.component.network.info :as network-info]
@@ -103,8 +103,9 @@
    :actions (service-info/form-actions route)})
 
 (defmethod render :service-log
-  [_]
-  {:title "Services"})
+  [route]
+  {:title (str "Logs " (-> route :params :id))
+   :search-fn service-log/form-search-fn})
 
 (defmethod render :service-create-image
   [_]
