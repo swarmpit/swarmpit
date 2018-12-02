@@ -108,7 +108,7 @@
               {:color   "inherit"
                :onClick #(dispatch!
                            (routes/path-for-frontend :service-log {:id (:id params)}))}
-              (comp/svg icon/log-18))
+              icon/logs)
     :name   "Service logs"}
    {:button (comp/icon-button
               {:color   "inherit"
