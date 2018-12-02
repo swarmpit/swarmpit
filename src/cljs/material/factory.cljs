@@ -122,6 +122,7 @@
 (def more-icon (create-factory js/MaterialUIIcons.MoreVert))
 (def label-icon (create-factory js/MaterialUIIcons.Label))
 (def info-icon (create-factory js/MaterialUIIcons.Info))
+(def vertical-align-bottom-icon (create-factory js/MaterialUIIcons.VerticalAlignBottom))
 
 (def create-mui-theme js/MaterialUI.createMuiTheme)
 

@@ -9,10 +9,6 @@ html > body {
     color: rgb(117, 117, 117);
 }
 
-html, body, .Swarmpit-route, .Swarmpit-root, .Swarmpit-context, #layout {
-    min-height: 100%;
-}
-
 html > button {
     font-family: "Roboto", "Helvetica", "Arial", sans-serif;
 }
@@ -696,6 +692,12 @@ a {
     font-size: 13px;
     background: black;
     color: #CCC;
-    height: 100vh;
+    min-height: calc(100vh - 64px);
+}
+
+.Swarmpit-log-fab {
+    position: fixed;
+    bottom: 20px;
+    right: 20px;
 }
 

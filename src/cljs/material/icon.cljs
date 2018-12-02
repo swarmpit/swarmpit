@@ -77,6 +77,8 @@
 (def add-circle (f/add-circle-icon))
 (def more (f/more-icon))
 
+(def scroll-down (f/vertical-align-bottom-icon))
+
 (defn cancel
   [props]
   (f/cancel-icon (clj->js props)))

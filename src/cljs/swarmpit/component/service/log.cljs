@@ -5,6 +5,7 @@
             [swarmpit.ajax :as ajax]
             [swarmpit.routes :as routes]
             [clojure.string :as string]
+            [material.icon :as icon]
             [sablono.core :refer-macros [html]]
             [rum.core :as rum]))
 
@@ -12,8 +13,7 @@
   []
   (when (true? (:autoscroll (state/get-value state/form-state-cursor)))
     (let [el (.getElementById js/document "service-log")]
-      (set! (.-scrollTop el)
-            (.-scrollHeight el)))))
+      (.scrollTo js/window 0 (.-scrollHeight el)))))
 
 (defn- filter-items
   [items predicate]
@@ -72,8 +72,8 @@
 
 (rum/defc line < rum/static [item timestamp]
   [:div
-   (when timestamp
-     [:span.log-timestamp (:timestamp item)])
+   ;;   (when timestamp
+   ;;   [:span.log-timestamp (:timestamp item)])
    ;; [:span.log-info (str (:taskName item) "." (subs (:task item) 0 12) "@" (:taskNode item))]
    [:span.log-body (str " " (:line item))]])
 
@@ -87,21 +87,30 @@
         filtered-logs (filter-items logs (:predicate filter))]
     (comp/mui
       (html
-        [:div.Swarmpit-log
-         (comp/grid
-           {:container true
-            :spacing   0}
-           (comp/grid
-             {:item true
-              :xs   12}
-             (html
-               (cond
-                 error [:span "Logs for this service couldn't be fetched."]
-                 (and (empty? filtered-logs) initialized) [:span "Log is empty in this service."]
-                 (not initialized) [:span "Loading..."]
-                 :else (map
-                         (fn [item]
-                           (line item timestamp)) filtered-logs)))))]))))
+        [:div
+         [:div.Swarmpit-log-fab
+          (comp/button
+            {:variant "fab"
+             :color   (if autoscroll "primary")
+             :mini    true
+             :onClick #(state/update-value [:autoscroll] (not autoscroll) state/form-state-cursor)}
+            icon/scroll-down)]
+         [:div.Swarmpit-log
+          (comp/grid
+            {:container true
+             :spacing   0}
+            (comp/grid
+              {:item true
+               :xs   12}
+              (html
+                [:div#service-log
+                 (cond
+                   error [:span "Logs for this service couldn't be fetched."]
+                   (and (empty? filtered-logs) initialized) [:span "Log is empty in this service."]
+                   (not initialized) [:span "Loading..."]
+                   :else (map
+                           (fn [item]
+                             (line item timestamp)) filtered-logs))])))]]))))
 ;    [:div
 ;     [:div.form-panel
 ;      [:div.form-panel-left
