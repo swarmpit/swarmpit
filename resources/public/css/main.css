@@ -10,7 +10,7 @@ html > body {
 }
 
 html, body, .Swarmpit-route, .Swarmpit-root, .Swarmpit-context, #layout {
-    height: 100%;
+    min-height: 100%;
 }
 
 html > button {
