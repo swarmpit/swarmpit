@@ -182,11 +182,12 @@
                     {:aria-haspopup "true"
                      :onClick       #(state/update-value [:mobileSearchOpened] true state/layout-cursor)
                      :color         "inherit"} icon/search))
-                (comp/icon-button
-                  {:aria-haspopup "true"
-                   :onClick       (fn [e]
-                                    (state/update-value [:mobileMoreAnchorEl] (.-currentTarget e) state/layout-cursor))
-                   :color         "inherit"} icon/more)])
+                (when (some? actions)
+                  (comp/icon-button
+                    {:aria-haspopup "true"
+                     :onClick       (fn [e]
+                                      (state/update-value [:mobileMoreAnchorEl] (.-currentTarget e) state/layout-cursor))
+                     :color         "inherit"} icon/more))])
              (user-menu menuAnchorEl)))
          (mobile-actions-menu actions mobileMoreAnchorEl)
          (mobile-search search-fn mobileSearchOpened)]))))
