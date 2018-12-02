@@ -465,6 +465,10 @@ a {
     background-color: #1976d2;
 }
 
+.Swarmpit-label-primary {
+    background-color: #65519f;
+}
+
 .Swarmpit-label-grey {
     background-color: #6c757d;
 }
@@ -520,64 +524,9 @@ a {
 
 /* NODE */
 
-.node-item-header {
+.Swarmpit-node-stat {
     display: flex;
-    align-items: center;
-}
-
-.node-item-header-os-icon {
-    display: flex;
-    align-items: center;
-    margin-right: 16px;
-}
-
-.node-item-engine-and-address {
-    display: flex;
-    justify-content: space-between;
-}
-
-.node-item-states {
-    display: flex;
-    flex-wrap: wrap;
-}
-
-.node-item-state {
-    display: flex;
-    align-items: center;
-}
-
-.node-item-states > .node-item-state {
-    margin-right: 8px;
-    margin-top: 4px;
-    margin-bottom: 4px;
-}
-
-.node-item-states > .node-item-state:last-child {
-    margin-right: 0;
-}
-
-.hardware-icon {
-    max-height: 42px;
-    max-width: 48px;
-}
-
-.node-progress-table-icons {
-    height: 80px;
-    text-align: center;
-}
-
-.node-progress-table-name {
-    text-align: center;
-}
-
-.node-progress-table-values {
-    text-align: center;
-}
-
-.node-progress-table-usage {
-    height: 40px;
-    text-align: center;
-    font-weight: bold;
+    flex-direction: row;
 }
 
 .Swarmpit-card-header-responsive-title {

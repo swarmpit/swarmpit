@@ -31,3 +31,7 @@
 (defn blue
   [label]
   (base label "blue"))
+
+(defn primary
+  [label]
+  (base label "primary"))
