@@ -78,7 +78,7 @@
   [:div
    ;;   (when timestamp
    ;;   [:span.log-timestamp (:timestamp item)])
-   ;; [:span.log-info (str (:taskName item) "." (subs (:task item) 0 12) "@" (:taskNode item))]
+   [:span.log-info (str (subs (:task item) 0 12))]
    [:span.log-body (str " " (:line item))]])
 
 (rum/defc form < rum/reactive
