@@ -36,13 +36,13 @@
   (cond
     (< stat 75) {:name  "actual"
                  :value stat
-                 :color "#509E50"}
+                 :color "#43a047"}
     (> stat 90) {:name  "actual"
                  :value stat
-                 :color "rgb(244, 67, 54)"}
+                 :color "#d32f2f"}
     :else {:name  "actual"
            :value stat
-           :color "#9e931b"}))
+           :color "#ffa000"}))
 
 (rum/defc node-graph [stat label]
   (let [data [(node-used stat)
@@ -68,17 +68,6 @@
                {:width    30
                 :position "center"} label))))])))
 
-
-;(html
-;  [:div.node-item
-;   [:a {:href (str "/#/nodes/" (:id item))
-;        :style {:color "inherit"
-;                :textDecoration "inherit"}}
-;    (node-item-header item)
-;    (node-item-engine-and-address item)
-;    (node-item-states item)
-;    (node-item-stats item)]])
-
 (defn- node-item
   [item]
   (let [cpu (-> item :resources :cpu (int))
@@ -87,7 +76,7 @@
     (comp/grid
       {:item true}
       (html
-        [:a {:href  (str "/#/nodes/" (:id item))
+        [:a {:href  (routes/path-for-frontend :node-info {:id (:id item)})
              :style {:color          "inherit"
                      :textDecoration "inherit"}}
          (comp/card
