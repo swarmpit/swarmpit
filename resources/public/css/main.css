@@ -514,6 +514,11 @@ a {
     padding-bottom: 10px;
 }
 
+.Swarmpit-service-replicas-graph {
+    width: 150px;
+    height: 150px;
+}
+
 .Swarmpit-image-search {
     margin-top: 10px;
     flex-direction: column;

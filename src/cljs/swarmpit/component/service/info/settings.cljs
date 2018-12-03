@@ -1,7 +1,7 @@
 (ns swarmpit.component.service.info.settings
-  (:require [material.icon :as icon]
-            [material.components :as comp]
+  (:require [material.components :as comp]
             [material.component.form :as form]
+            [material.component.chart :as chart]
             [material.component.label :as label]
             [swarmpit.docker.utils :as utils]
             [swarmpit.routes :as routes]
@@ -37,7 +37,7 @@
                       :style   {:cursor "pointer"}} image])))
     (html [:span image])))
 
-(rum/defc form-replicas [tasks]
+(rum/defc form-replicas < rum/static [tasks]
   (let [data (->> (range 0 (:total tasks))
                   (map (fn [num]
                          (if (< num (:running tasks))
@@ -48,26 +48,11 @@
                             :value 1
                             :color "#6c757d"})))
                   (into []))]
-    (html
-      [:div {:style {:width  "150px"
-                     :height "150px"}}
-       (comp/responsive-container
-         (comp/pie-chart
-           {}
-           (comp/pie
-             {:data        data
-              :cx          "50"
-              ;:cy          "50"
-              :innerRadius "60%"
-              :outerRadius "80%"
-              :startAngle  90
-              :endAngle    -270
-              :fill        "#8884d8"}
-             (map #(comp/cell {:fill (:color %)}) data)
-             (comp/re-label
-               {:width    30
-                :position "center"}
-               (str (:total tasks) " " (inflect/pluralize-noun (:total tasks) "replica"))))))])))
+    (chart/pie
+      data
+      (str (:total tasks) " " (inflect/pluralize-noun (:total tasks) "replica"))
+      "Swarmpit-service-replicas-graph"
+      "replicas-pie")))
 
 (defn- form-command [command]
   (when command
@@ -84,7 +69,7 @@
     "not running" (label/info state)
     "partly running" (label/yellow state)))
 
-(defn- form-dashboard [{:keys [limit reservation]} tasks]
+(rum/defc form-dashboard < rum/static [{:keys [limit reservation]} tasks]
   (html
     (cond
       (and (resource-provided? reservation)

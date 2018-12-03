@@ -4,6 +4,7 @@
             [material.component.list.util :as list-util]
             [material.component.form :as form]
             [material.component.label :as label]
+            [material.component.chart :as chart]
             [swarmpit.component.mixin :as mixin]
             [swarmpit.component.state :as state]
             [swarmpit.ajax :as ajax]
@@ -44,31 +45,19 @@
            :value stat
            :color "#ffa000"}))
 
-(rum/defc node-graph [stat label]
+(rum/defc node-graph [stat label id]
   (let [data [(node-used stat)
               {:name  "rest"
                :value (- 100 stat)
                :color "#ccc"}]]
-    (html
-      [:div.Swarmpit-node-stat-graph
-       (comp/responsive-container
-         (comp/pie-chart
-           {}
-           (comp/pie
-             {:data        data
-              :cx          "50"
-              :innerRadius "60%"
-              :outerRadius "80%"
-              :startAngle  90
-              :endAngle    -270
-              :fill        "#8884d8"}
-             (map #(comp/cell {:fill (:color %)}) data)
-             (comp/re-label
-               {:width    30
-                :position "center"} label))))])))
+    (chart/pie
+      data
+      label
+      "Swarmpit-node-stat-graph"
+      id)))
 
 (defn- node-item
-  [item]
+  [item index]
   (let [cpu (-> item :resources :cpu (int))
         memory-bytes (-> item :resources :memory (* 1024 1024))
         disk-bytes (-> item :stats :disk :total)]
@@ -96,13 +85,16 @@
                [:div.Swarmpit-node-stat
                 (node-graph
                   (get-in item [:stats :cpu :usedPercentage])
-                  (str cpu " " (inflect/pluralize-noun cpu "core")))
+                  (str cpu " " (inflect/pluralize-noun cpu "core"))
+                  (str "graph-cpu-" index))
                 (node-graph
                   (get-in item [:stats :disk :usedPercentage])
-                  (str (humanize/filesize disk-bytes :binary false) " disk"))
+                  (str (humanize/filesize disk-bytes :binary false) " disk")
+                  (str "graph-disk-" index))
                 (node-graph
                   (get-in item [:stats :memory :usedPercentage])
-                  (str (humanize/filesize memory-bytes :binary false) " ram"))])))]))))
+                  (str (humanize/filesize memory-bytes :binary false) " ram")
+                  (str "graph-memory-" index))])))]))))
 
 (defn- nodes-handler
   []
@@ -139,7 +131,7 @@
           (comp/grid
             {:container true
              :spacing   40}
-            (->> (sort-by :nodeName filtered-items)
-                 ;(map #(rum/with-key (node-item %) (:id %)))
-                 (map #(node-item %))))]]))))
+            (map-indexed
+              (fn [index item]
+                (node-item item index)) (sort-by :nodeName filtered-items)))]]))))
 
