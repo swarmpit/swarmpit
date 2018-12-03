@@ -125,7 +125,7 @@
                    :xs   12
                    :lx   4}
                   (when-not from
-                    (html [:span.Swarmpit-message icon/info "Please drag & drop or paste a compose file."]))
+                    (html [:span.Swarmpit-message (icon/info {}) "Please drag & drop or paste a compose file."]))
                   (form-editor (:compose spec))))
               (html
                 [:div.Swarmpit-form-buttons

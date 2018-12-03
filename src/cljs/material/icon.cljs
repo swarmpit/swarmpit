@@ -61,15 +61,12 @@
 (def account-circle (f/account-circle-icon))
 (def search (f/search-icon))
 (def expand-more (f/expand-more-icon))
-(def check-circle (f/check-circle-icon))
 (def key (f/key-icon))
 (def settings (f/settings-icon))
 (def receipt (f/receipt-icon))
 (def dns (f/dns-icon))
 (def storage (f/storage-icon))
 (def device-hub (f/device-hub-icon))
-(def error (f/error-icon))
-(def info (f/info-icon))
 
 (def warning (f/warning-icon))
 (def sync (f/sync-icon))
@@ -106,3 +103,17 @@
 (defn close
   [props]
   (f/close-icon (clj->js props)))
+
+(defn info
+  [props]
+  (f/info-icon (clj->js props)))
+
+(defn error
+  [props]
+  (f/error-icon (clj->js props)))
+
+(defn check-circle
+  [props]
+  (f/check-circle-icon (clj->js props)))
+
+

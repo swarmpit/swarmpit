@@ -133,7 +133,7 @@
       [:div.Swarmpit-image-search
        (html
          [:span.Swarmpit-message
-          icon/info
+          (icon/info {:style {:marginRight "8px"}})
           (if (storage/admin?)
             [:span "No dockerhub users found. Add new " [:a {:href (routes/path-for-frontend :dockerhub-user-create)} "user."]]
             [:span "No dockerhub users found. Please ask your admin to setup."])])])))

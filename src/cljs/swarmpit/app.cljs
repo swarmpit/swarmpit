@@ -14,4 +14,4 @@
 
 ;; Mounting message
 
-;(message/mount!)
+(message/mount!)

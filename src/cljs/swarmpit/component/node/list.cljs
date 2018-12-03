@@ -50,8 +50,7 @@
                :value (- 100 stat)
                :color "#ccc"}]]
     (html
-      [:div {:style {:width  "120px"
-                     :height "120px"}}
+      [:div.Swarmpit-node-stat-graph
        (comp/responsive-container
          (comp/pie-chart
            {}
@@ -76,9 +75,8 @@
     (comp/grid
       {:item true}
       (html
-        [:a {:href  (routes/path-for-frontend :node-info {:id (:id item)})
-             :style {:color          "inherit"
-                     :textDecoration "inherit"}}
+        [:a.Swarmpit-node-href
+         {:href (routes/path-for-frontend :node-info {:id (:id item)})}
          (comp/card
            {:className "Swarmpit-form-card"}
            (comp/card-header

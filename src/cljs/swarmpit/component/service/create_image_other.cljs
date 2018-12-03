@@ -134,7 +134,7 @@
       [:div.Swarmpit-image-search
        (html
          [:span.Swarmpit-message
-          (html icon/info)
+          (html (icon/info {:style {:marginRight "8px"}}))
           (if (storage/admin?)
             [:span "No custom registries found. Add new " [:a {:href (routes/path-for-frontend :registry-create)} "registry."]]
             [:span "No custom registries found. Please ask your admin to setup."])])])))

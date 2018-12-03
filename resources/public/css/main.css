@@ -63,6 +63,11 @@ a {
     align-items: center;
 }
 
+.Swarmpit-message-icon {
+    opacity: 0.9;
+    margin-right: 8px;
+}
+
 .Swarmpit-paper {
     border: 1px solid rgba(0, 0, 0, 0.12);
 }
@@ -450,31 +455,28 @@ a {
 }
 
 .Swarmpit-label-green {
-    background-color: #43a047;
+    background-color: #43a047 !important;
 }
 
 .Swarmpit-label-red {
-    background-color: #d32f2f;
+    background-color: #d32f2f !important;
 }
 
 .Swarmpit-label-yellow {
-    background-color: #ffa000;
+    background-color: #ffa000 !important;
 }
 
 .Swarmpit-label-blue {
-    background-color: #1976d2;
+    background-color: #1976d2 !important;
 }
 
 .Swarmpit-label-primary {
-    background-color: #65519f;
+    background-color: #65519f !important;
 }
 
-.Swarmpit-label-grey {
-    background-color: #6c757d;
-}
-
+.Swarmpit-label-grey,
 .Swarmpit-label-info {
-    background-color: #6c757d;
+    background-color: #6c757d !important;
 }
 
 .Swarmpit-icon-ok > svg {
@@ -528,6 +530,16 @@ a {
     display: flex;
     flex-direction: row;
     padding-left: 10px;
+}
+
+.Swarmpit-node-stat-graph {
+    width: 120px;
+    height: 120px;
+}
+
+.Swarmpit-node-href {
+    color: inherit;
+    text-decoration: inherit;
 }
 
 .Swarmpit-card-header-responsive-title {

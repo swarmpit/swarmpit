@@ -122,7 +122,7 @@
                               :alignItems "center"
                               :color      "#d32f2f"
                               :padding    20}}
-               icon/error message]))
+               (icon/error {}) message]))
           (html
             [:div.Swarmpit-login-form {:key "Swarmpit-login-form"}
              (form-username username local-state)
