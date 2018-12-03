@@ -527,6 +527,7 @@ a {
 .Swarmpit-node-stat {
     display: flex;
     flex-direction: row;
+    padding-left: 10px;
 }
 
 .Swarmpit-card-header-responsive-title {

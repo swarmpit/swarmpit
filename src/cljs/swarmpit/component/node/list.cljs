@@ -1,6 +1,7 @@
 (ns swarmpit.component.node.list
   (:require [material.icon :as icon]
             [material.components :as comp]
+            [material.component.list.util :as list-util]
             [material.component.form :as form]
             [material.component.label :as label]
             [swarmpit.component.mixin :as mixin]
@@ -26,9 +27,9 @@
     [(node-item-state (:state item))
      (when (:leader item)
        (label/primary "leader"))
-     (label/primary (:role item))
+     (label/grey (:role item))
      (if (= "active" (:availability item))
-       (label/primary "active")
+       (label/green "active")
        (label/grey (:availability item)))]))
 
 (defn node-used [stat]
@@ -67,40 +68,54 @@
                {:width    30
                 :position "center"} label))))])))
 
+
+;(html
+;  [:div.node-item
+;   [:a {:href (str "/#/nodes/" (:id item))
+;        :style {:color "inherit"
+;                :textDecoration "inherit"}}
+;    (node-item-header item)
+;    (node-item-engine-and-address item)
+;    (node-item-states item)
+;    (node-item-stats item)]])
+
 (defn- node-item
   [item]
-
   (let [cpu (-> item :resources :cpu (int))
         memory-bytes (-> item :resources :memory (* 1024 1024))
         disk-bytes (-> item :stats :disk :total)]
     (comp/grid
       {:item true}
-      (comp/card
-        {:className "Swarmpit-form-card"}
-        (comp/card-header
-          {:title     (:nodeName item)
-           :className "Swarmpit-form-card-header"
-           :subheader (:address item)
-           :avatar    (comp/svg (icon/os (:os item)))})
-        (comp/card-content
-          {}
-          (str "docker " (:engine item)))
-        (comp/card-content
-          {}
-          (node-item-labels item))
-        (comp/card-content
-          {:className "Swarmpit-table-card-content"}
-          (html
-            [:div.Swarmpit-node-stat
-             (node-graph
-               (get-in item [:stats :cpu :usedPercentage])
-               (str cpu " " (inflect/pluralize-noun cpu "core")))
-             (node-graph
-               (get-in item [:stats :disk :usedPercentage])
-               (str (humanize/filesize disk-bytes :binary false) " disk"))
-             (node-graph
-               (get-in item [:stats :memory :usedPercentage])
-               (str (humanize/filesize memory-bytes :binary false) " ram"))]))))))
+      (html
+        [:a {:href  (str "/#/nodes/" (:id item))
+             :style {:color          "inherit"
+                     :textDecoration "inherit"}}
+         (comp/card
+           {:className "Swarmpit-form-card"}
+           (comp/card-header
+             {:title     (:nodeName item)
+              :className "Swarmpit-form-card-header"
+              :subheader (:address item)
+              :avatar    (comp/svg (icon/os (:os item)))})
+           (comp/card-content
+             {}
+             (str "docker " (:engine item)))
+           (comp/card-content
+             {}
+             (node-item-labels item))
+           (comp/card-content
+             {:className "Swarmpit-table-card-content"}
+             (html
+               [:div.Swarmpit-node-stat
+                (node-graph
+                  (get-in item [:stats :cpu :usedPercentage])
+                  (str cpu " " (inflect/pluralize-noun cpu "core")))
+                (node-graph
+                  (get-in item [:stats :disk :usedPercentage])
+                  (str (humanize/filesize disk-bytes :binary false) " disk"))
+                (node-graph
+                  (get-in item [:stats :memory :usedPercentage])
+                  (str (humanize/filesize memory-bytes :binary false) " ram"))])))]))))
 
 (defn- nodes-handler
   []
@@ -128,8 +143,8 @@
                  mixin/subscribe-form
                  mixin/focus-filter [_]
   (let [{:keys [items]} (state/react state/form-value-cursor)
-        {:keys [filter]} (state/react state/form-state-cursor)]
-    ;filtered-items (list/filter items (:query filter))
+        {:keys [filter]} (state/react state/form-state-cursor)
+        filtered-items (list-util/filter items (:query filter))]
     (comp/mui
       (html
         [:div.Swarmpit-form
@@ -137,7 +152,7 @@
           (comp/grid
             {:container true
              :spacing   40}
-            (->> (sort-by :nodeName items)
+            (->> (sort-by :nodeName filtered-items)
                  ;(map #(rum/with-key (node-item %) (:id %)))
                  (map #(node-item %))))]]))))
 
