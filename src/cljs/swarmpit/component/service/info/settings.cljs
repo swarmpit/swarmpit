@@ -38,21 +38,26 @@
     (html [:span image])))
 
 (rum/defc form-replicas < rum/static [tasks]
-  (let [data (->> (range 0 (:total tasks))
-                  (map (fn [num]
-                         (if (< num (:running tasks))
-                           {:name  (str "Replica " (inc num))
+  (let [desired-tasks (filter #(= "running" (:desiredState %)) tasks)
+        data (->> desired-tasks
+                  (map (fn [task]
+                         (if (= "running" (:state task))
+                           {:name  (:taskName task)
                             :value 1
-                            :color "#43a047"}
-                           {:name  (str "Replica " (inc num))
+                            :color "#43a047"
+                            :state (:state task)}
+                           {:name  (:taskName task)
                             :value 1
-                            :color "#6c757d"})))
+                            :color "#6c757d"
+                            :state (:state task)})))
                   (into []))]
     (chart/pie
       data
-      (str (:total tasks) " " (inflect/pluralize-noun (:total tasks) "replica"))
+      (str (count desired-tasks) " " (inflect/pluralize-noun (count desired-tasks) "replica"))
       "Swarmpit-service-replicas-graph"
-      "replicas-pie")))
+      "replicas-pie"
+      {:formatter (fn [value name props]
+                    (.-state (.-payload props)))})))
 
 (defn- form-command [command]
   (when command
@@ -120,10 +125,9 @@
           [:span (str (:memory limit) "MB")]]]]]
       :else (form-replicas tasks))))
 
-(rum/defc form < rum/static [service]
+(rum/defc form < rum/static [service tasks]
   (let [image-digest (get-in service [:repository :imageDigest])
         image (get-in service [:repository :image])
-        tasks (get-in service [:status :tasks])
         resources (:resources service)
         command (:command service)
         stack (:stack service)

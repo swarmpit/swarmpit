@@ -176,7 +176,7 @@
          [:div.Swarmpit-form-context
           (masonry/grid
             {:first-col-pred is-even-and-not-third?}
-            (settings/form service)
+            (settings/form service tasks)
             (deployment/form deployment)
             (when (not-empty networks)
               (networks/form networks))

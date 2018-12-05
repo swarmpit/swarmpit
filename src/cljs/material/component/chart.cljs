@@ -2,7 +2,7 @@
   (:require [material.components :as comp]
             [sablono.core :refer-macros [html]]))
 
-(defn pie [data label className id]
+(defn pie [data label className id tooltip]
   (html
     [:div {:className className
            :key       (str "Pie-" id "-" (hash data))}
@@ -21,6 +21,8 @@
            (map #(comp/cell {:fill (:color %)}) data)
            (comp/re-label
              {:width    30
-              :position "center"} label))))]))
+              :position "center"} label))
+         (when tooltip
+           (comp/tooltip-chart tooltip))))]))
 
 

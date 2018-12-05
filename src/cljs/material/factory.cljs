@@ -131,6 +131,7 @@
 
 (def pie-chart (create-factory js/Recharts.PieChart))
 (def pie (create-factory js/Recharts.Pie))
+(def tooltip-chart (create-factory js/Recharts.Tooltip))
 (def cell (create-factory js/Recharts.Cell))
 (def legend (create-factory js/Recharts.Legend))
 (def label (create-factory js/Recharts.Label))

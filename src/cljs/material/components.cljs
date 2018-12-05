@@ -6,11 +6,11 @@
 ;;; Theme components
 
 (def theme-props
-  {:palette {:primary   {:main         "#65519f"
-                         :light        "#957ed1"
-                         :dark         "#362870"
-                         :contrastText "#fff"}
-             :secondary {:main "rgb(117, 117, 117)"}}
+  {:palette    {:primary   {:main         "#65519f"
+                            :light        "#957ed1"
+                            :dark         "#362870"
+                            :contrastText "#fff"}
+                :secondary {:main "rgb(117, 117, 117)"}}
    :typography {:headline {:fontSize "1.3rem"}}})
 
 (def theme (f/create-mui-theme (clj->js theme-props)))
@@ -273,6 +273,10 @@
 (defn pie-chart
   [props & childs]
   (f/pie-chart (clj->js props) childs))
+
+(defn tooltip-chart
+  [props]
+  (f/tooltip-chart (clj->js props)))
 
 (defn pie
   [props & childs]

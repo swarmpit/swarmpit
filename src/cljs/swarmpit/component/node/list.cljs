@@ -54,7 +54,8 @@
       data
       label
       "Swarmpit-node-stat-graph"
-      id)))
+      id
+      nil)))
 
 (defn- node-item
   [item index]
