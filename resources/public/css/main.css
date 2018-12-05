@@ -77,6 +77,11 @@ a {
     flex-wrap: wrap;
 }
 
+.Swarmoit-row-space {
+    display: flex;
+    justify-content: space-between;
+}
+
 .Swarmpit-icon-button {
     margin: 8px;
 }
