@@ -34,8 +34,8 @@
 
 (defn form-state [value]
   (case value
-    "preparing" (label/yellow value)
-    "starting" (label/yellow value)
+    "preparing" (label/pulsing value)
+    "starting" (label/pulsing value)
     "pending" (label/yellow value)
     "new" (label/blue value)
     "ready" (label/blue value)

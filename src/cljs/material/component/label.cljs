@@ -1,7 +1,6 @@
 (ns material.component.label
   (:refer-clojure :exclude [update])
-  (:require [material.components :as cmp]
-            [sablono.core :refer-macros [html]]))
+  (:require [sablono.core :refer-macros [html]]))
 
 (defn base
   [label color]
@@ -11,6 +10,10 @@
 (defn green
   [label]
   (base label "green"))
+
+(defn pulsing
+  [label]
+  (base label "pulsing"))
 
 (defn info
   [label]

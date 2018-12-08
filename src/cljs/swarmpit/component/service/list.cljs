@@ -36,8 +36,8 @@
 
 (defn- render-item-update-state [value]
   (case value
-    "rollback_started" (label/info "rollback")
-    (label/info value)))
+    "rollback_started" (label/pulsing "rollback")
+    (label/pulsing value)))
 
 (defn- render-item-state [value]
   (case value
