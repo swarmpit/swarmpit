@@ -1,6 +1,7 @@
 (ns swarmpit.component.volume.create
   (:require [material.icon :as icon]
             [material.components :as comp]
+            [material.component.composite :as composite]
             [material.component.list.edit :as list]
             [material.component.form :as form]
             [swarmpit.component.mixin :as mixin]
@@ -185,7 +186,7 @@
                   (section-driver item plugins)))
               (html
                 [:div.Swarmpit-form-buttons
-                 (comp/button
-                   {:variant "contained"
-                    :onClick #(create-volume-handler)
-                    :color   "primary"} "Create")])))]]))))
+                 (composite/progress-button
+                   "Create"
+                   #(create-volume-handler)
+                   processing?)])))]]))))

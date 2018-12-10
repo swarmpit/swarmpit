@@ -37,17 +37,12 @@
 
 (defn form-actions
   [{:keys [params]}]
-  [{:button (comp/icon-button
-              {:color   "inherit"
-               :onClick #(dispatch!
-                           (routes/path-for-frontend :registry-edit {:id (:id params)}))}
-              (comp/svg icon/edit))
-    :name   "Edit"}
-   {:button (comp/icon-button
-              {:color   "inherit"
-               :onClick #(delete-registry-handler (:id params))}
-              (comp/svg icon/trash))
-    :name   "Delete"}])
+  [{:onClick #(dispatch! (routes/path-for-frontend :registry-edit {:id (:id params)}))
+    :icon    (comp/svg icon/edit)
+    :name    "Edit registry"}
+   {:onClick #(delete-registry-handler (:id params))
+    :icon    (comp/svg icon/trash)
+    :name    "Delete registry"}])
 
 (defn- init-form-state
   []

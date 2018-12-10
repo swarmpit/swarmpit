@@ -100,10 +100,9 @@
 
 (defn form-actions
   [{:keys [params]}]
-  [{:button (comp/icon-button
-              {:color   "inherit"
-               :onClick #(delete-volume-handler (:name params))} (comp/svg icon/trash))
-    :name   "Delete volume"}])
+  [{:onClick #(delete-volume-handler (:name params))
+    :icon    (comp/svg icon/trash)
+    :name    "Delete volume"}])
 
 (defn- init-form-state
   []

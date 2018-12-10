@@ -1,6 +1,6 @@
 (ns swarmpit.component.dockerhub.create
-  (:require [material.icon :as icon]
-            [material.components :as comp]
+  (:require [material.components :as comp]
+            [material.component.composite :as composite]
             [swarmpit.component.mixin :as mixin]
             [swarmpit.component.state :as state]
             [swarmpit.component.message :as message]
@@ -118,7 +118,7 @@
                            :label   "Public"})))))
                 (html
                   [:div.Swarmpit-form-buttons
-                   (comp/button
-                     {:variant "contained"
-                      :onClick add-user-handler
-                      :color   "primary"} "Add Dockerhub user")]))))]]))))
+                   (composite/progress-button
+                     "Add Dockerhub user"
+                     add-user-handler
+                     processing?)]))))]]))))

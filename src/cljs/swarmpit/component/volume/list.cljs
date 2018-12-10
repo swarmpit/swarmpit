@@ -39,10 +39,9 @@
   (state/update-value [:filter :query] (-> event .-target .-value) state/form-state-cursor))
 
 (def form-actions
-  [{:button (comp/icon-button
-              {:color   "inherit"
-               :onClick #(dispatch! (routes/path-for-frontend :volume-create))} icon/add-circle)
-    :name   "New volume"}])
+  [{:onClick #(dispatch! (routes/path-for-frontend :volume-create))
+    :icon    icon/add-circle
+    :name    "New volume"}])
 
 (defn- init-form-state
   []

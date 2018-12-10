@@ -117,7 +117,9 @@
     (merge {:button    true
             :className "Swarmpit-drawer-item"
             :key       (str "Swarmpit-drawer-item-" name)
-            :onClick   #(dispatch! (routes/path-for-frontend handler))}
+            :onClick   (fn []
+                         (state/update-value [:mobileOpened] false state/layout-cursor)
+                         (dispatch! (routes/path-for-frontend handler)))}
            (when selected?
              {:className "Swarmpit-drawer-item-selected"}))
     (comp/list-item-icon

@@ -1,6 +1,6 @@
 (ns swarmpit.component.user.create
-  (:require [material.icon :as icon]
-            [material.components :as comp]
+  (:require [material.components :as comp]
+            [material.component.composite :as composite]
             [swarmpit.component.mixin :as mixin]
             [swarmpit.component.state :as state]
             [swarmpit.component.message :as message]
@@ -136,7 +136,7 @@
                     (form-email email)))
                 (html
                   [:div.Swarmpit-form-buttons
-                   (comp/button
-                     {:variant "contained"
-                      :onClick create-user-handler
-                      :color   "primary"} "Create")]))))]]))))
+                   (composite/progress-button
+                     "Create"
+                     create-user-handler
+                     processing?)]))))]]))))

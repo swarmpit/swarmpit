@@ -114,12 +114,9 @@
 
 (defn form-actions
   [{:keys [params]}]
-  [{:button (comp/icon-button
-              {:color   "inherit"
-               :onClick #(dispatch!
-                           (routes/path-for-frontend :node-edit {:id (:id params)}))}
-              (comp/svg icon/edit))
-    :name   "Edit"}])
+  [{:onClick #(dispatch! (routes/path-for-frontend :node-edit {:id (:id params)}))
+    :icon    (comp/svg icon/edit)
+    :name    "Edit node"}])
 
 (defn- init-form-state
   []

@@ -108,31 +108,21 @@
 
 (defn form-actions
   [{:keys [params]}]
-  (let [stackfile (state/react state/form-value-cursor)]
-    [{:button (comp/icon-button
-                {:color   "inherit"
-                 :onClick (fn []
-                            (dispatch!
-                              (routes/path-for-frontend :stack-compose {:name (:name params)})))}
-                (comp/svg icon/edit))
-      :name   "Edit stack"}
-     {:button (comp/icon-button
-                {:color    "inherit"
-                 :disabled (not (some? (:spec stackfile)))
-                 :onClick  #(redeploy-stack-handler (:name params))}
-                (comp/svg icon/redeploy))
-      :name   "Redeploy stack"}
-     {:button (comp/icon-button
-                {:color    "inherit"
-                 :onClick  #(rollback-stack-handler (:name params))
-                 :disabled (not (some? (:previousSpec stackfile)))}
-                (comp/svg icon/rollback))
-      :name   "Rollback stack"}
-     {:button (comp/icon-button
-                {:color   "inherit"
-                 :onClick #(delete-stack-handler (:name params))}
-                (comp/svg icon/trash))
-      :name   "Delete stack"}]))
+  (let [form-value (state/react state/form-value-cursor)]
+    [{:onClick #(dispatch! (routes/path-for-frontend :stack-compose {:name (:name params)}))
+      :icon    (comp/svg icon/edit)
+      :name    "Edit stack"}
+     {:onClick  #(redeploy-stack-handler (:name params))
+      :disabled (not (some? (get-in form-value [:stackfile :spec])))
+      :icon     (comp/svg icon/redeploy)
+      :name     "Redeploy stack"}
+     {:onClick  #(rollback-stack-handler (:name params))
+      :disabled (not (some? (get-in form-value [:stackfile :previousSpec])))
+      :icon     (comp/svg icon/rollback)
+      :name     "Rollback stack"}
+     {:onClick #(delete-stack-handler (:name params))
+      :icon    (comp/svg icon/trash)
+      :name    "Delete stack"}]))
 
 ;(defn- stack-render-item
 ;  [stack-name name-key default-render-item]
@@ -194,7 +184,7 @@
     (comp/card-content
       {:className "Swarmpit-table-card-content"}
       (list/responsive
-      configs/render-metadata
+        configs/render-metadata
         (sort-by :configName configs)
         configs/onclick-handler))))
 

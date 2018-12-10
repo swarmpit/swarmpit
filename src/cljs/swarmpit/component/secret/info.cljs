@@ -45,11 +45,9 @@
 
 (defn form-actions
   [{:keys [params]}]
-  [{:button (comp/icon-button
-              {:color   "inherit"
-               :onClick #(delete-secret-handler (:id params))}
-              (comp/svg icon/trash))
-    :name   "Delete secret"}])
+  [{:onClick #(delete-secret-handler (:id params))
+    :icon    (comp/svg icon/trash)
+    :name    "Delete secret"}])
 
 (defn- init-form-state
   []

@@ -6,18 +6,21 @@
 
 (set! *warn-on-infer* true)
 
-(defn progress-button [action action-fn processing?]
-  (html
-    [:div.Swarmpit-progress-button-wrapper
-     (cmp/button
-       {:variant  "contained"
-        :color    "primary"
-        :disabled processing?
-        :onClick  action-fn} action)
-     (when processing?
-       (cmp/circular-progress
-         {:size      24
-          :className "Swarmpit-progress-button"}))]))
+(defn progress-button
+  ([action action-fn processing?]
+   (progress-button action action-fn processing? false))
+  ([action action-fn processing? disabled?]
+   (html
+     [:div.Swarmpit-progress-button-wrapper
+      (cmp/button
+        {:variant  "contained"
+         :color    "primary"
+         :disabled (or processing? disabled?)
+         :onClick  action-fn} action)
+      (when processing?
+        (cmp/circular-progress
+          {:size      24
+           :className "Swarmpit-progress-button"}))])))
 
 (defn autocomplete-input [props]
   (let [{:keys [inputRef] :as p} (js->clj props :keywordize-keys true)]

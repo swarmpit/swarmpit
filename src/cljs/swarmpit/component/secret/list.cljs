@@ -39,10 +39,9 @@
   (state/update-value [:filter :query] (-> event .-target .-value) state/form-state-cursor))
 
 (def form-actions
-  [{:button (comp/icon-button
-              {:color   "inherit"
-               :onClick #(dispatch! (routes/path-for-frontend :secret-create))} icon/add-circle)
-    :name   "New Secret"}])
+  [{:onClick #(dispatch! (routes/path-for-frontend :secret-create))
+    :icon    icon/add-circle
+    :name    "New Secret"}])
 
 (defn- init-form-state
   []

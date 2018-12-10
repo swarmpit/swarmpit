@@ -1,16 +1,14 @@
 (ns swarmpit.component.api-access
-  (:require [material.icon :as icon]
-            [material.components :as comp]
-            [material.component.form :as form]
+  (:require [material.components :as comp]
             [swarmpit.component.message :as message]
-            [swarmpit.url :refer [dispatch!]]
-            [sablono.core :refer-macros [html]]
-            [swarmpit.ajax :as ajax]
-            [swarmpit.routes :as routes]
-            [rum.core :as rum]
             [swarmpit.component.state :as state]
             [swarmpit.component.mixin :as mixin]
-            [swarmpit.component.progress :as progress]))
+            [swarmpit.component.progress :as progress]
+            [swarmpit.url :refer [dispatch!]]
+            [swarmpit.ajax :as ajax]
+            [swarmpit.routes :as routes]
+            [sablono.core :refer-macros [html]]
+            [rum.core :as rum]))
 
 (enable-console-print!)
 

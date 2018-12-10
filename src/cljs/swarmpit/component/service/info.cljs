@@ -104,39 +104,26 @@
 
 (defn form-actions
   [{:keys [params]}]
-  [{:button (comp/icon-button
-              {:color   "inherit"
-               :onClick #(dispatch!
-                           (routes/path-for-frontend :service-log {:id (:id params)}))}
-              icon/logs)
-    :name   "Service logs"}
-   {:button (comp/icon-button
-              {:color   "inherit"
-               :onClick #(dispatch!
-                           (routes/path-for-frontend :service-edit {:id (:id params)}))}
-              (comp/svg icon/edit))
-    :name   "Edit service"}
-   {:button (comp/icon-button
-              {:color   "inherit"
-               :onClick #(dispatch!
-                           (routes/path-for-frontend :stack-create nil {:from (:id params)}))}
-              (comp/svg icon/stacks))
-    :name   "Compose stack"}
-   {:button (comp/icon-button
-              {:color   "inherit"
-               :onClick #(redeploy-service-handler (:id params))}
-              (comp/svg icon/redeploy))
-    :name   "Redeploy service"}
-   {:button (comp/icon-button
-              {:color   "inherit"
-               :onClick #(rollback-service-handler (:id params))}
-              (comp/svg icon/rollback))
-    :name   "Rollback service"}
-   {:button (comp/icon-button
-              {:color   "inherit"
-               :onClick #(delete-service-handler (:id params))}
-              (comp/svg icon/trash))
-    :name   "Delete service"}])
+  (let [form-value (state/react state/form-value-cursor)]
+    [{:onClick #(dispatch! (routes/path-for-frontend :service-log {:id (:id params)}))
+      :icon    icon/logs
+      :name    "Service logs"}
+     {:onClick #(dispatch! (routes/path-for-frontend :service-edit {:id (:id params)}))
+      :icon    (comp/svg icon/edit)
+      :name    "Edit service"}
+     {:onClick #(dispatch! (routes/path-for-frontend :stack-create nil {:from (:id params)}))
+      :icon    (comp/svg icon/stacks)
+      :name    "Compose stack"}
+     {:onClick #(redeploy-service-handler (:id params))
+      :icon    (comp/svg icon/redeploy)
+      :name    "Redeploy service"}
+     {:onClick  #(rollback-service-handler (:id params))
+      :disabled (not (get-in form-value [:service :deployment :rollbackAllowed]))
+      :icon     (comp/svg icon/rollback)
+      :name     "Rollback service"}
+     {:onClick #(delete-service-handler (:id params))
+      :icon    (comp/svg icon/trash)
+      :name    "Delete service"}]))
 
 (defn- init-form-state
   []

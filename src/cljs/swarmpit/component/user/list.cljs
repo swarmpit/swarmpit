@@ -41,10 +41,9 @@
   (state/update-value [:filter :query] (-> event .-target .-value) state/form-state-cursor))
 
 (def form-actions
-  [{:button (comp/icon-button
-              {:color   "inherit"
-               :onClick #(dispatch! (routes/path-for-frontend :user-create))} icon/add-circle)
-    :name   "New user"}])
+  [{:onClick #(dispatch! (routes/path-for-frontend :user-create))
+    :icon    icon/add-circle
+    :name    "New user"}])
 
 (defn- init-form-state
   []

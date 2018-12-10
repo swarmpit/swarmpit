@@ -2,6 +2,7 @@
   (:require [material.icon :as icon]
             [material.components :as comp]
             [material.component.form :as form]
+            [material.component.composite :as composite]
             [material.component.list.basic :as list]
             [swarmpit.component.mixin :as mixin]
             [swarmpit.component.state :as state]
@@ -184,14 +185,10 @@
                 (form-label-table labels)))
             (html
               [:div.Swarmpit-form-buttons
-               (comp/button
-                 {:variant "contained"
-                  :onClick #(dispatch! (routes/path-for-frontend :node-info {:id id}))
-                  :color   "primary"} "Back")
-               (comp/button
-                 {:variant "contained"
-                  :onClick #(update-node-handler id version)
-                  :color   "primary"} "Save")])))]])))
+               (composite/progress-button
+                 "Save"
+                 #(update-node-handler id version)
+                 processing?)])))]])))
 
 (rum/defc form < rum/reactive
                  mixin-init-form [_]

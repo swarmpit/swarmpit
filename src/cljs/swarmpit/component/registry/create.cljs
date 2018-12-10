@@ -1,6 +1,6 @@
 (ns swarmpit.component.registry.create
-  (:require [material.icon :as icon]
-            [material.components :as comp]
+  (:require [material.components :as comp]
+            [material.component.composite :as composite]
             [swarmpit.component.mixin :as mixin]
             [swarmpit.component.state :as state]
             [swarmpit.component.message :as message]
@@ -175,7 +175,7 @@
                          (form-password password showPassword)]))))
                 (html
                   [:div.Swarmpit-form-buttons
-                   (comp/button
-                     {:variant "contained"
-                      :onClick create-registry-handler
-                      :color   "primary"} "Add registry")]))))]]))))
+                   (composite/progress-button
+                     "Add registry"
+                     create-registry-handler
+                     processing?)]))))]]))))

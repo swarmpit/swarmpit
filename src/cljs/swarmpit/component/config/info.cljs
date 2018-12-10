@@ -67,11 +67,9 @@
 
 (defn form-actions
   [{:keys [params]}]
-  [{:button (comp/icon-button
-              {:color   "inherit"
-               :onClick #(delete-config-handler (:id params))}
-              (comp/svg icon/trash))
-    :name   "Delete config"}])
+  [{:onClick #(delete-config-handler (:id params))
+    :icon    (comp/svg icon/trash)
+    :name    "Delete config"}])
 
 (defn- init-form-state
   []

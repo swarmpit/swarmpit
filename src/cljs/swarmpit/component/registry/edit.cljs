@@ -1,7 +1,6 @@
 (ns swarmpit.component.registry.edit
-  (:require [material.icon :as icon]
-            [material.components :as comp]
-            [material.component.form :as form]
+  (:require [material.components :as comp]
+            [material.component.composite :as composite]
             [swarmpit.component.mixin :as mixin]
             [swarmpit.component.state :as state]
             [swarmpit.component.message :as message]
@@ -115,14 +114,10 @@
                          :label   "Public"})))))
               (html
                 [:div.Swarmpit-form-buttons
-                 (comp/button
-                   {:variant "contained"
-                    :onClick #(dispatch! (routes/path-for-frontend :registry-info {:id _id}))
-                    :color   "primary"} "Back")
-                 (comp/button
-                   {:variant "contained"
-                    :onClick #(update-registry-handler _id)
-                    :color   "primary"} "Save")]))))]])))
+                 (composite/progress-button
+                   "Save"
+                   #(update-registry-handler _id)
+                   processing?)]))))]])))
 
 (rum/defc form < rum/reactive
                  mixin-init-form [_]

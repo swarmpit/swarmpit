@@ -1,5 +1,6 @@
 (ns swarmpit.component.secret.create
   (:require [material.components :as comp]
+            [material.component.composite :as composite]
             [swarmpit.component.mixin :as mixin]
             [swarmpit.component.editor :as editor]
             [swarmpit.component.state :as state]
@@ -107,7 +108,7 @@
                   (form-data data)))
               (html
                 [:div.Swarmpit-form-buttons
-                 (comp/button
-                   {:variant "contained"
-                    :onClick create-secret-handler
-                    :color   "primary"} "Create")])))]]))))
+                 (composite/progress-button
+                   "Create"
+                   create-secret-handler
+                   processing?)])))]]))))

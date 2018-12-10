@@ -115,10 +115,9 @@
 
 (defn form-actions
   [{:keys [params]}]
-  [{:button (comp/icon-button
-              {:color   "inherit"
-               :onClick #(delete-network-handler (:id params))} (comp/svg icon/trash))
-    :name   "Delete network"}])
+  [{:onClick #(delete-network-handler (:id params))
+    :icon    (comp/svg icon/trash)
+    :name    "Delete network"}])
 
 (defn- init-form-state
   []

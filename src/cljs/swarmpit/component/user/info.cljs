@@ -39,17 +39,14 @@
 
 (defn form-actions
   [{:keys [params]}]
-  [{:button (comp/icon-button
-              {:color   "inherit"
-               :onClick #(dispatch!
-                           (routes/path-for-frontend :user-edit {:id (:id params)}))}
-              (comp/svg icon/edit))
-    :name   "Edit"}
-   {:button (comp/icon-button
-              {:color   "inherit"
-               :onClick #(delete-user-handler (:id params))}
-              (comp/svg icon/trash))
-    :name   "Delete"}])
+  (let [user (state/react state/form-value-cursor)]
+    [{:onClick #(dispatch! (routes/path-for-frontend :user-edit {:id (:id params)}))
+      :icon    (comp/svg icon/edit)
+      :name    "Edit user"}
+     {:onClick  #(delete-user-handler (:id params))
+      :disabled (= (storage/user) (:username user))
+      :icon     (comp/svg icon/trash)
+      :name     "Delete user"}]))
 
 (defn- init-form-state
   []

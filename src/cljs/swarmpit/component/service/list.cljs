@@ -82,10 +82,9 @@
   (state/update-value [:filter :query] (-> event .-target .-value) state/form-state-cursor))
 
 (def form-actions
-  [{:button (comp/icon-button
-              {:color   "inherit"
-               :onClick #(dispatch! (routes/path-for-frontend :service-create-image))} icon/add-circle)
-    :name   "New service"}])
+  [{:onClick #(dispatch! (routes/path-for-frontend :service-create-image))
+    :icon    icon/add-circle
+    :name    "New service"}])
 
 (defn- init-form-state
   []

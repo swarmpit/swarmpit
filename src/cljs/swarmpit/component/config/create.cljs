@@ -1,5 +1,6 @@
 (ns swarmpit.component.config.create
   (:require [material.components :as comp]
+            [material.component.composite :as composite]
             [swarmpit.component.editor :as editor]
             [swarmpit.component.mixin :as mixin]
             [swarmpit.component.state :as state]
@@ -106,7 +107,7 @@
                   (form-data data)))
               (html
                 [:div.Swarmpit-form-buttons
-                 (comp/button
-                   {:variant "contained"
-                    :onClick create-config-handler
-                    :color   "primary"} "Create")])))]]))))
+                 (composite/progress-button
+                   "Create"
+                   create-config-handler
+                   processing?)])))]]))))

@@ -57,10 +57,9 @@
   (state/update-value [:filter :query] (-> event .-target .-value) state/form-state-cursor))
 
 (def form-actions
-  [{:button (comp/icon-button
-              {:color   "inherit"
-               :onClick #(dispatch! (routes/path-for-frontend :stack-create))} icon/add-circle)
-    :name   "New stack"}])
+  [{:onClick #(dispatch! (routes/path-for-frontend :stack-create))
+    :icon    icon/add-circle
+    :name    "New stack"}])
 
 (defn- init-form-state
   []
