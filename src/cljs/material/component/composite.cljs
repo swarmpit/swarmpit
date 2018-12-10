@@ -53,16 +53,19 @@
       {:tabIndex   -1
        :onDelete   (:onClick removeProps)
        :deleteIcon (icon/cancel removeProps)
+       :style      {:marginRight "5px"}
+       :color      "primary"
+       :variant    "outlined"
        :label      children})))
 
 (defn autocomplete-menu [props]
   (cmp/paper
     (js/Object.assign (gobject/get props "innerProps")
-           #js {:style #js {:position  "absolute"
-                            :zIndex    2
-                            :marginTop 8
-                            :left      0
-                            :right     0}})
+                      #js {:style #js {:position  "absolute"
+                                       :zIndex    2
+                                       :marginTop 8
+                                       :left      0
+                                       :right     0}})
     (gobject/get props "children")))
 
 (defn autocomplete-value-container [props]
@@ -95,7 +98,8 @@
 
 (defn autocomplete-option [props]
   (cmp/menu-item
-    (js/Object.assign (gobject/get props "innerProps")
+    (js/Object.assign
+      (gobject/get props "innerProps")
       #js {:buttonRef (gobject/get props "innerRef")
            :selected  (gobject/get props "isFocused")
            :component "div"
@@ -106,12 +110,14 @@
   (cmp/no-ssr
     {}
     (cmp/react-select
-      (merge props
-             {:components {:Control          autocomplete-control
-                           :Option           autocomplete-option
-                           :ValueContainer   autocomplete-value-container
-                           :SingleValue      autocomplete-single-value
-                           :MultiValue       autocomplete-multi-value
-                           :Placeholder      autocomplete-placeholder
-                           :NoOptionsMessage autocomplete-no-options-mssg
-                           :Menu             autocomplete-menu}}))))
+      (merge
+        props
+        {:components
+         {:Control          autocomplete-control
+          :Option           autocomplete-option
+          :ValueContainer   autocomplete-value-container
+          :SingleValue      autocomplete-single-value
+          :MultiValue       autocomplete-multi-value
+          :Placeholder      autocomplete-placeholder
+          :NoOptionsMessage autocomplete-no-options-mssg
+          :Menu             autocomplete-menu}}))))
