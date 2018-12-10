@@ -1,6 +1,8 @@
 (ns swarmpit.component.service.info.logdriver
-  (:require [material.components :as comp]
+  (:require [material.icon :as icon]
+            [material.components :as comp]
             [material.component.list.basic :as list]
+            [swarmpit.routes :as routes]
             [rum.core :as rum]))
 
 (enable-console-print!)
@@ -9,12 +11,19 @@
   {:primary   (fn [item] (:name item))
    :secondary (fn [item] (:value item))})
 
-(rum/defc form < rum/static [{:keys [name opts]}]
+(rum/defc form < rum/static [{:keys [name opts]} service-id]
   (comp/card
     {:className "Swarmpit-card"}
     (comp/card-header
       {:className "Swarmpit-table-card-header"
-       :title     "Log driver options"})
+       :title     "Log driver options"
+       :action    (comp/icon-button
+                    {:aria-label "Edit"
+                     :href       (routes/path-for-frontend
+                                   :service-edit
+                                   {:id service-id}
+                                   {:section "Logging"})}
+                    (comp/svg icon/edit))})
     (comp/card-content
       {:className "Swarmpit-table-card-content"}
       (list/list

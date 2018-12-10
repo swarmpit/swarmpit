@@ -1,6 +1,8 @@
 (ns swarmpit.component.service.info.deployment
-  (:require [material.components :as comp]
+  (:require [material.icon :as icon]
+            [material.components :as comp]
             [material.component.form :as form]
+            [swarmpit.routes :as routes]
             [sablono.core :refer-macros [html]]
             [rum.core :as rum]))
 
@@ -12,7 +14,7 @@
      [:span name]
      [:span value]]))
 
-(rum/defc form < rum/static [deployment]
+(rum/defc form < rum/static [deployment service-id]
   (let [autoredeploy (:autoredeploy deployment)
         update-delay (get-in deployment [:update :delay])
         update-parallelism (get-in deployment [:update :parallelism])
@@ -31,7 +33,14 @@
       {:className "Swarmpit-form-card"}
       (comp/card-header
         {:className "Swarmpit-form-card-header"
-         :title     "Deployment"})
+         :title     "Deployment"
+         :action    (comp/icon-button
+                      {:aria-label "Edit"
+                       :href       (routes/path-for-frontend
+                                     :service-edit
+                                     {:id service-id}
+                                     {:section "Deployment"})}
+                      (comp/svg icon/edit))})
       (comp/card-content
         {}
         (comp/grid

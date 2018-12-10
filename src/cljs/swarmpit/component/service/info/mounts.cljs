@@ -1,5 +1,6 @@
 (ns swarmpit.component.service.info.mounts
-  (:require [material.components :as comp]
+  (:require [material.icon :as icon]
+            [material.components :as comp]
             [material.component.list.basic :as list]
             [swarmpit.routes :as routes]
             [swarmpit.url :refer [dispatch!]]
@@ -47,14 +48,21 @@
       volume
       onclick-volume-handler)))
 
-(rum/defc form < rum/static [mounts]
+(rum/defc form < rum/static [mounts service-id]
   (let [bind (filter #(= "bind" (:type %)) mounts)
         volume (filter #(= "volume" (:type %)) mounts)]
     (comp/card
       {:className "Swarmpit-card"}
       (comp/card-header
         {:className "Swarmpit-table-card-header"
-         :title     "Mounts"})
+         :title     "Mounts"
+         :action    (comp/icon-button
+                      {:aria-label "Edit"
+                       :href       (routes/path-for-frontend
+                                     :service-edit
+                                     {:id service-id}
+                                     {:section "Mounts"})}
+                      (comp/svg icon/edit))})
       (comp/card-content
         {:className "Swarmpit-table-card-content"}
         (form-bind bind)

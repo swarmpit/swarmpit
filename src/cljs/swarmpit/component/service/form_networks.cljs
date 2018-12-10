@@ -27,7 +27,8 @@
                                     :value (:networkName %)) network-list)]
     (composite/autocomplete
       {:options        suggestions
-       :textFieldProps {:label           "Network"
+       :textFieldProps {:id              "Networks"
+                        :label           "Network"
                         :helperText      "Attach to network"
                         :margin          "normal"
                         :InputLabelProps {:shrink true}}

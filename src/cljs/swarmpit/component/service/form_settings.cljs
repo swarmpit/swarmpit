@@ -92,15 +92,17 @@
                    (state/update-value [:mode] (-> event .-target .-value) form-value-cursor))}
       (comp/form-control-label
         {:control  (comp/radio
-                     {:name "replicated-mode"
-                      :key  "replicated-mode"})
+                     {:name  "replicated-mode"
+                      :color "primary"
+                      :key   "replicated-mode"})
          :disabled update-form?
          :value    "replicated"
          :label    "Replicated"})
       (comp/form-control-label
         {:control  (comp/radio
-                     {:name "global-mode"
-                      :key  "global-mode"})
+                     {:name  "global-mode"
+                      :color "primary"
+                      :key   "global-mode"})
          :disabled update-form?
          :value    "global"
          :label    "Global"}))))
@@ -130,7 +132,7 @@
      :fullWidth       true
      :multiline       true
      :value           value
-     :InputProps      {:style    {:fontFamily "monospace"}}
+     :InputProps      {:style {:fontFamily "monospace"}}
      :InputLabelProps {:shrink true}
      :onChange        (fn [event]
                         (let [value (-> event .-target .-value)]

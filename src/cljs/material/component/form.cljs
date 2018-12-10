@@ -50,7 +50,7 @@
   ([name]
    (section name nil))
   ([name button]
-   (html [:div.Swarmpit-form-section
+   (html [:div.Swarmpit-form-section {:id name}
           [:div (cmp/typography {:variant "h6"} name)]
           [:div button]])))
 

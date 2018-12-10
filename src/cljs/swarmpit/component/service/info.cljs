@@ -177,24 +177,30 @@
           (masonry/grid
             {:first-col-pred is-even-and-not-third?}
             (settings/form service tasks)
-            (deployment/form deployment)
+            (deployment/form deployment id)
             (when (not-empty networks)
-              (networks/form networks))
+              (networks/form networks id))
             (when (not-empty ports)
-              (ports/form ports))
+              (ports/form ports id))
             (when (not-empty mounts)
-              (mounts/form mounts))
+              (mounts/form mounts id))
             (when (not-empty secrets)
-              (secrets/form secrets))
+              (secrets/form secrets id))
             (when (not-empty configs)
-              (configs/form configs))
+              (configs/form configs id))
             (when (not-empty variables)
-              (variables/form variables))
+              (variables/form variables id))
             (when (not-empty labels)
-              (labels/form labels))
+              (labels/form labels id))
             (when (not-empty (:opts logdriver))
-              (logdriver/form logdriver))
-            (form-tasks tasks))]]))))
+              (logdriver/form logdriver id)))
+          (comp/grid
+            {:container true
+             :spacing   40}
+            (comp/grid
+              {:item true
+               :xs   12}
+              (form-tasks tasks)))]]))))
 
 (rum/defc form < rum/reactive
                  mixin-init-form

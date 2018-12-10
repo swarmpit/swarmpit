@@ -1,5 +1,6 @@
 (ns swarmpit.component.service.info.secrets
-  (:require [material.components :as comp]
+  (:require [material.icon :as icon]
+            [material.components :as comp]
             [material.component.list.basic :as list]
             [swarmpit.routes :as routes]
             [swarmpit.url :refer [dispatch!]]
@@ -25,12 +26,19 @@
    :list  {:primary   (fn [item] (:secretName item))
            :secondary (fn [item] (:secretTarget item))}})
 
-(rum/defc form < rum/static [secrets]
+(rum/defc form < rum/static [secrets service-id]
   (comp/card
     {:className "Swarmpit-card"}
     (comp/card-header
       {:className "Swarmpit-table-card-header"
-       :title     "Secrets"})
+       :title     "Secrets"
+       :action    (comp/icon-button
+                    {:aria-label "Edit"
+                     :href       (routes/path-for-frontend
+                                   :service-edit
+                                   {:id service-id}
+                                   {:section "Secrets"})}
+                    (comp/svg icon/edit))})
     (comp/card-content
       {:className "Swarmpit-table-card-content"}
       (list/responsive

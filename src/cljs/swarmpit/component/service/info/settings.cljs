@@ -1,5 +1,6 @@
 (ns swarmpit.component.service.info.settings
-  (:require [material.components :as comp]
+  (:require [material.icon :as icon]
+            [material.components :as comp]
             [material.component.form :as form]
             [material.component.chart :as chart]
             [material.component.label :as label]
@@ -137,7 +138,14 @@
       (comp/card-header
         {:title     (utils/trim-stack stack (:serviceName service))
          :className "Swarmpit-form-card-header"
-         :subheader (form-subheader image image-digest)})
+         :subheader (form-subheader image image-digest)
+         :action    (comp/icon-button
+                      {:aria-label "Edit"
+                       :href       (routes/path-for-frontend
+                                     :service-edit
+                                     {:id (:id service)}
+                                     {:section "General"})}
+                      (comp/svg icon/edit))})
       (comp/card-content
         {}
         (form-dashboard resources tasks)

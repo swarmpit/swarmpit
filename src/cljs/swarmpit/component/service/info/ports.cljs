@@ -1,6 +1,8 @@
 (ns swarmpit.component.service.info.ports
-  (:require [material.components :as comp]
+  (:require [material.icon :as icon]
+            [material.components :as comp]
             [material.component.list.basic :as list]
+            [swarmpit.routes :as routes]
             [rum.core :as rum]))
 
 (enable-console-print!)
@@ -17,12 +19,19 @@
    :list  {:primary   (fn [item] (str (:hostPort item) ":" (:containerPort item)))
            :secondary (fn [item] (:protocol item))}})
 
-(rum/defc form < rum/static [ports]
+(rum/defc form < rum/static [ports service-id]
   (comp/card
     {:className "Swarmpit-card"}
     (comp/card-header
       {:className "Swarmpit-table-card-header"
-       :title     "Ports"})
+       :title     "Ports"
+       :action    (comp/icon-button
+                    {:aria-label "Edit"
+                     :href       (routes/path-for-frontend
+                                   :service-edit
+                                   {:id service-id}
+                                   {:section "Ports"})}
+                    (comp/svg icon/edit))})
     (comp/card-content
       {:className "Swarmpit-table-card-content"}
       (list/responsive
