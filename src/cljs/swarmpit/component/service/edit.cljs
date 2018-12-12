@@ -334,12 +334,15 @@
 (def scroll-to-section
   {:after-render
    (fn [state]
-     (let [section (-> state :rum/args first :params :section)
-           el (.getElementById js/document section)]
-       (when (and el section)
-         (do
-           (.scrollIntoView el true)
-           (.scrollBy js/window 0 -74))))
+     (let [loaded? (state/get-value (conj state/form-state-cursor :scrolled))]
+       (when (nil? loaded?)
+         (let [section (-> state :rum/args first :params :section)
+               el (.getElementById js/document section)]
+           (when (and el section)
+             (do
+               (.scrollIntoView el true)
+               (.scrollBy js/window 0 -74)
+               (state/update-value [:scrolled] true state/form-state-cursor))))))
      state)})
 
 (rum/defc form < rum/reactive
