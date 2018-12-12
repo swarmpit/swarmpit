@@ -106,17 +106,17 @@
   (comp/list-item
     {:disabled  true
      :className "Swarmpit-drawer-category"
-     :key       (str "Swarmpit-drawer-category-" name)}
+     :key       (str "drawer-category-" name)}
     (comp/list-item-text
       {:primary   name
        :className "Swarmpit-drawer-category-text"
-       :key       (str "Swarmpit-drawer-category-text-" name)})))
+       :key       (str "drawer-category-text-" name)})))
 
 (rum/defc drawer-item < rum/static [name icon handler selected?]
   (comp/list-item
     (merge {:button    true
             :className "Swarmpit-drawer-item"
-            :key       (str "Swarmpit-drawer-item-" name)
+            :key       (str "drawer-item-" name)
             :onClick   (fn []
                          (state/update-value [:mobileOpened] false state/layout-cursor)
                          (dispatch! (routes/path-for-frontend handler)))}
@@ -124,13 +124,13 @@
              {:className "Swarmpit-drawer-item-selected"}))
     (comp/list-item-icon
       (merge {:color "primary"
-              :key   (str "Swarmpit-drawer-item-icon-" name)}
+              :key   (str "drawer-item-icon-" name)}
              (if selected?
                {:className "Swarmpit-drawer-item-icon-selected"}
                {:className "Swarmpit-drawer-item-icon"})) icon)
     (comp/list-item-text
       (merge {:primary name
-              :key     (str "Swarmpit-drawer-item-text-" name)}
+              :key     (str "drawer-item-text-" name)}
              (if selected?
                {:className "Swarmpit-drawer-item-text-selected"}
                {:className "Swarmpit-drawer-item-text"})))))
@@ -176,20 +176,24 @@
          (comp/hidden
            {:mdUp true}
            (comp/drawer
-             {:key        "Swarmpit-drawer"
+             {:key        "drawer"
               :className  "Swarmpit-drawer"
               :anchor     "left"
               :open       mobileOpened
               :variant    "temporary"
               :onClose    #(state/update-value [:mobileOpened] false state/layout-cursor)
               :ModalProps {:keepMounted true}}
-             (drawer-content version page-domain docker-api)))
+             (rum/with-key
+               (drawer-content version page-domain docker-api)
+               "drawer-content")))
          (comp/hidden
            {:smDown         true
             :implementation "css"}
            (comp/drawer
-             {:key       "Swarmpit-drawer"
+             {:key       "drawer"
               :className "Swarmpit-drawer"
               :open      true
               :variant   "permanent"}
-             (drawer-content version page-domain docker-api)))]))))
+             (rum/with-key
+               (drawer-content version page-domain docker-api)
+               "drawer-content")))]))))

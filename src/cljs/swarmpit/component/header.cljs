@@ -28,7 +28,14 @@
                      (user-gravatar-hash (storage/email))
                      "?d=https://raw.githubusercontent.com/swarmpit/swarmpit/issues/159/resources/public/img/user.png")}))
 
-(defn- user-menu [anchorEl]
+(rum/defc user-info < rum/static []
+  (html
+    [:div
+     [:span "Signed in as"]
+     [:br]
+     [:span.Swarmpit-appbar-user-menu-logged-user (storage/user)]]))
+
+(rum/defc user-menu < rum/static [anchorEl]
   (html
     [:div
      (comp/icon-button
@@ -39,7 +46,7 @@
         :color         "inherit"} (user-avatar))
      (comp/menu
        {:id              "Swarmpit-appbar-user-menu"
-        :key             "Swarmpit-appbar-user-menu"
+        :key             "appbar-user-menu"
         :anchorEl        anchorEl
         :anchorOrigin    {:vertical   "top"
                           :horizontal "right"}
@@ -48,21 +55,21 @@
         :open            (some? anchorEl)
         :onClose         #(state/update-value [:menuAnchorEl] nil state/layout-cursor)}
        (comp/menu-item
-         {:key       "Swarmpit-appbar-user-menu-logged-info"
+         {:key       "appbar-user-menu-logged-info"
           :className "Swarmpit-appbar-user-menu-logged-info"
-          :disabled  true} (html [:div
-                                  [:span "Signed in as"]
-                                  [:br]
-                                  [:span.Swarmpit-appbar-user-menu-logged-user (storage/user)]]))
-       (comp/divider)
+          :disabled  true}
+         (rum/with-key
+           (user-info) "appbar-user-menu-sign-info"))
+       (comp/divider
+         {:key "appbar-user-menu-divider"})
        (comp/menu-item
-         {:key     "Swarmpit-appbar-user-menu-account-settings"
+         {:key     "appbar-user-menu-account-settings"
           :onClick (fn []
                      (state/update-value [:menuAnchorEl] nil state/layout-cursor)
                      (dispatch!
                        (routes/path-for-frontend :account-settings)))} "Settings")
        (comp/menu-item
-         {:key     "Swarmpit-appbar-user-menu-logout"
+         {:key     "appbar-user-menu-logout"
           :onClick (fn []
                      (storage/remove "token")
                      (eventsource/close!)
@@ -105,6 +112,7 @@
         :classes          {:root  "Swarmpit-appbar-search-root"
                            :input "Swarmpit-appbar-search-input"}
         :id               "Swarmpit-appbar-search-filter"
+        :key              "appbar-search"
         :disableUnderline true})]))
 
 (defn- mobile-search-message [on-change-fn]
@@ -143,17 +151,38 @@
        :message          (mobile-search-message on-change-fn)
        :action           (mobile-search-action)})))
 
-(defn- appbar-desktop-section
-  [items]
-  (html
-    [:div.Swarmpit-appbar-section-desktop
-     items]))
-
-(defn- appbar-mobile-section
-  [items]
+(rum/defc appbar-mobile-section < rum/static [search-fn actions]
   (html
     [:div.Swarmpit-appbar-section-mobile
-     items]))
+     (when search-fn
+       (comp/icon-button
+         {:key           "menu-search"
+          :aria-haspopup "true"
+          :onClick       #(state/update-value [:mobileSearchOpened] true state/layout-cursor)
+          :color         "inherit"} icon/search))
+     (when (some? actions)
+       (comp/icon-button
+         {:key           "menu-more"
+          :aria-haspopup "true"
+          :onClick       (fn [e]
+                           (state/update-value [:mobileMoreAnchorEl] (.-currentTarget e) state/layout-cursor))
+          :color         "inherit"} icon/more))]))
+
+(rum/defc appbar-desktop-section < rum/static [search-fn actions]
+  (html
+    [:div.Swarmpit-appbar-section-desktop
+     (when search-fn
+       (search-input search-fn))
+     (->> actions
+          (filter #(or (nil? (:disabled %))
+                       (false? (:disabled %))))
+          (map #(comp/tooltip
+                  {:title (:name %)
+                   :key   (str "menu-tooltip-" (:name %))}
+                  (comp/icon-button
+                    {:color   "inherit"
+                     :key     (str "menu-btn-" (:name %))
+                     :onClick (:onClick %)} (:icon %)))))]))
 
 (rum/defc appbar < rum/reactive [{:keys [title search-fn actions]}]
   (let [{:keys [mobileSearchOpened menuAnchorEl mobileMoreAnchorEl]} (state/react state/layout-cursor)]
@@ -161,55 +190,33 @@
       (html
         [:div
          (comp/app-bar
-           {:key       "Swarmpit-appbar"
+           {:key       "appbar"
             :color     "primary"
             :className "Swarmpit-appbar"}
            (comp/toolbar
-             {:key            "Swarmpit-appbar-toolbar"
+             {:key            "appbar-toolbar"
               :disableGutters false}
              (comp/icon-button
-               {:key        "Swarmpit-appbar-menu-btn"
+               {:key        "appbar-menu-btn"
                 :color      "inherit"
                 :aria-label "Open drawer"
                 :onClick    #(state/update-value [:mobileOpened] true state/layout-cursor)
                 :className  "Swarmpit-appbar-menu-btn"}
                icon/menu)
              (comp/typography
-               {:key       "Swarmpit-appbar-title"
+               {:key       "appbar-title"
                 :className "Swarmpit-appbar-title"
                 :variant   "h6"
                 :color     "inherit"
                 :noWrap    true}
                title)
-             (html [:div.grow])
-             (appbar-desktop-section
-               [(when search-fn
-                  (search-input search-fn))
-                (->> actions
-                     (filter #(or (nil? (:disabled %))
-                                  (false? (:disabled %))))
-                     (map #(comp/tooltip
-                             {:title (:name %)
-                              :key   (str "menu-tooltip-" (:name %))}
-                             (comp/icon-button
-                               {:color   "inherit"
-                                :key     (str "menu-btn-" (:name %))
-                                :onClick (:onClick %)} (:icon %)))))])
-             (appbar-mobile-section
-               [(when search-fn
-                  (comp/icon-button
-                    {:key           "menu-search"
-                     :aria-haspopup "true"
-                     :onClick       #(state/update-value [:mobileSearchOpened] true state/layout-cursor)
-                     :color         "inherit"} icon/search))
-                (when (some? actions)
-                  (comp/icon-button
-                    {:key           "menu-more"
-                     :aria-owns     (when mobileMoreAnchorEl "Swarmpit-appbar-action-menu")
-                     :aria-haspopup "true"
-                     :onClick       (fn [e]
-                                      (state/update-value [:mobileMoreAnchorEl] (.-currentTarget e) state/layout-cursor))
-                     :color         "inherit"} icon/more))])
-             (user-menu menuAnchorEl)))
+             (rum/with-key
+               (html [:div.grow]) "appbar-grow")
+             (rum/with-key
+               (appbar-desktop-section search-fn actions) "appbar-section-desktop")
+             (rum/with-key
+               (appbar-mobile-section search-fn actions) "appbar-section-mobile")
+             (rum/with-key
+               (user-menu menuAnchorEl) "appbar-section-user")))
          (mobile-actions-menu actions mobileMoreAnchorEl)
          (mobile-search search-fn mobileSearchOpened)]))))
