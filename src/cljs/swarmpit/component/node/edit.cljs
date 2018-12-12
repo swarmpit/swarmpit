@@ -3,7 +3,7 @@
             [material.components :as comp]
             [material.component.form :as form]
             [material.component.composite :as composite]
-            [material.component.list.basic :as list]
+            [material.component.list.edit :as list]
             [swarmpit.component.mixin :as mixin]
             [swarmpit.component.state :as state]
             [swarmpit.component.message :as message]
@@ -34,6 +34,7 @@
 (defn- form-role [value]
   (comp/text-field
     {:fullWidth       true
+     :key             "role"
      :label           "Role"
      :select          true
      :value           value
@@ -51,6 +52,7 @@
 (defn- form-availability [value]
   (comp/text-field
     {:fullWidth       true
+     :key             "availability"
      :label           "Availability"
      :select          true
      :value           value
@@ -103,10 +105,11 @@
 
 (defn- form-label-table
   [labels]
-  (list/list
-    form-label-metadata
-    labels
-    (fn [index] (state/remove-item index form-node-labels-cursor))))
+  (rum/with-key
+    (list/list
+      form-label-metadata
+      labels
+      (fn [index] (state/remove-item index form-node-labels-cursor))) "necccill"))
 
 (defn- add-label
   []
@@ -157,17 +160,21 @@
       [:div.Swarmpit-form
        [:div.Swarmpit-form-context
         (comp/card
-          {:className "Swarmpit-form-card"}
+          {:className "Swarmpit-form-card"
+           :key       "nec"}
           (comp/card-header
             {:className "Swarmpit-form-card-header"
+             :key       "nech"
              :title     "Edit Node"})
           (comp/card-content
-            {}
+            {:key "necc"}
             (comp/grid
               {:container true
+               :key       "neccc"
                :spacing   40}
               (comp/grid
                 {:item true
+                 :key  "necccig"
                  :xs   12
                  :sm   6}
                 (form-name nodeName)
@@ -175,16 +182,19 @@
                 (form-availability availability))
               (comp/grid
                 {:item true
+                 :key  "necccil"
                  :xs   12}
                 (form/section
                   "Labels"
                   (comp/button
                     {:color   "primary"
                      :onClick add-label}
-                    (comp/svg icon/add-small) "Add label"))
+                    (comp/svg
+                      {:key "necccilbtn"} icon/add-small) "Add label"))
                 (form-label-table labels)))
             (html
-              [:div.Swarmpit-form-buttons
+              [:div {:class "Swarmpit-form-buttons"
+                     :key   "neccbtn"}
                (composite/progress-button
                  "Save"
                  #(update-node-handler id version)

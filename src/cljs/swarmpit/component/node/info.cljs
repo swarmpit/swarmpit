@@ -30,42 +30,43 @@
 
 (defn section-general [node]
   (comp/card
-    {:className "Swarmpit-form-card"}
+    {:className "Swarmpit-form-card"
+     :key       "ngc"}
     (comp/card-header
       {:title     (:nodeName node)
        :className "Swarmpit-form-card-header"
+       :key       "ngch"
        :subheader (:address node)})
     (comp/card-content
-      {}
+      {:key "ngcc"}
       (html
-        [:div
+        [:div {:key "ngccd"}
          [:span "ENGINE: " (str "docker " (:engine node))]
          [:br]
          [:span "OS: " [(:os node) " " (:arch node)]]
          [:br]
          [:span "RESOURCES: " (resources node)]]))
     (comp/card-content
-      {}
+      {:key "ngccp"}
       (html
-        [:div
+        [:div {:key "ngccpd"}
          [:span "Network plugins: " (->> node :plugins :networks (interpose ", "))]
          [:br]
          [:span "Volume plugins: " (->> node :plugins :volumes (interpose ", "))]]))
     (comp/card-content
-      {}
+      {:key "ngccl"}
       (form/item-labels
         [(when (:leader node)
            (label/grey "Leader"))
          (label/grey (:state node))
          (label/grey (:availability node))
          (label/grey (:role node))]))
-    (comp/divider)
+    (comp/divider
+      {:key "ncd"})
     (comp/card-content
-      {:style {:paddingBottom "16px"}}
-      (comp/typography
-        {:color "textSecondary"
-         :style {:flexDirection "column"}}
-        (form/item-id (:id node))))))
+      {:style {:paddingBottom "16px"}
+       :key   "ngccf"}
+      (form/item-id (:id node)))))
 
 (def render-labels-metadata
   {:primary   (fn [item] (:name item))
@@ -73,29 +74,37 @@
 
 (defn section-labels [labels]
   (comp/card
-    {:className "Swarmpit-card"}
+    {:className "Swarmpit-card"
+     :key       "nlc"}
     (comp/card-header
       {:className "Swarmpit-table-card-header"
+       :key       "nlch"
        :title     "Labels"})
     (comp/card-content
-      {:className "Swarmpit-table-card-content"}
-      (list/list
-        render-labels-metadata
-        labels
-        nil))))
+      {:className "Swarmpit-table-card-content"
+       :key       "nlcc"}
+      (rum/with-key
+        (list/list
+          render-labels-metadata
+          labels
+          nil) "nlccrl"))))
 
 (defn section-tasks [tasks]
   (comp/card
-    {:className "Swarmpit-card"}
+    {:className "Swarmpit-card"
+     :key       "ntc"}
     (comp/card-header
       {:className "Swarmpit-table-card-header"
+       :key       "ntch"
        :title     "Tasks"})
     (comp/card-content
-      {:className "Swarmpit-table-card-content"}
-      (list/responsive
-        tasks/render-metadata
-        tasks
-        tasks/onclick-handler))))
+      {:className "Swarmpit-table-card-content"
+       :key       "ntcc"}
+      (rum/with-key
+        (list/responsive
+          tasks/render-metadata
+          tasks
+          tasks/onclick-handler) "ntccrl"))))
 
 (defn- node-tasks-handler
   [node-id]
@@ -139,18 +148,21 @@
            :spacing   40}
           (comp/grid
             {:item true
+             :key  "ngg"
              :xs   12
              :sm   6}
             (section-general node))
           (when (not-empty (:labels node))
             (comp/grid
               {:item true
+               :key  "ngl"
                :xs   12
                :sm   6}
               (section-labels (:labels node))))
           (when (not-empty tasks)
             (comp/grid
               {:item true
+               :key  "ngt"
                :xs   12}
               (section-tasks tasks))))]])))
 

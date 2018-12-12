@@ -63,27 +63,33 @@
         memory-bytes (-> item :resources :memory (* 1024 1024))
         disk-bytes (-> item :stats :disk :total)]
     (comp/grid
-      {:item true}
+      {:item true
+       :key  (str "nlig-" index)}
       (html
-        [:a.Swarmpit-node-href
-         {:href (routes/path-for-frontend :node-info {:id (:id item)})}
+        [:a {:class "Swarmpit-node-href"
+             :key   (str "nligah-" index)
+             :href  (routes/path-for-frontend :node-info {:id (:id item)})}
          (comp/card
-           {:className "Swarmpit-form-card"}
+           {:className "Swarmpit-form-card"
+            :key       (str "nlic-" index)}
            (comp/card-header
              {:title     (:nodeName item)
               :className "Swarmpit-form-card-header"
+              :key       (str "nlich-" index)
               :subheader (:address item)
               :avatar    (comp/svg (icon/os (:os item)))})
            (comp/card-content
-             {}
+             {:key (str "nlicc-" index)}
              (str "docker " (:engine item)))
            (comp/card-content
-             {}
+             {:key (str "nliccl-" index)}
              (node-item-labels item))
            (comp/card-content
-             {:className "Swarmpit-table-card-content"}
+             {:className "Swarmpit-table-card-content"
+              :key       (str "nliccs-" index)}
              (html
-               [:div.Swarmpit-node-stat
+               [:div {:class "Swarmpit-node-stat"
+                      :key   (str "nliccsc-" index)}
                 (node-graph
                   (get-in item [:stats :cpu :usedPercentage])
                   (str cpu " " (inflect/pluralize-noun cpu "core"))
