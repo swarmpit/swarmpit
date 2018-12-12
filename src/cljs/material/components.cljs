@@ -14,8 +14,7 @@
                             :light        "#957ed1"
                             :dark         "#362870"
                             :contrastText "#fff"}}
-   :typography {:useNextVariants true
-                :headline        {:fontSize "1.3rem"}}})
+   :typography {:useNextVariants true}})
 
 (def theme (f/create-mui-theme (clj->js theme-props)))
 
@@ -299,8 +298,8 @@
   (f/label (clj->js props) label))
 
 (defn responsive-container
-  [comp]
-  (f/responsive-container {} comp))
+  [props comp]
+  (f/responsive-container (clj->js props) comp))
 
 ;;; Single react components
 

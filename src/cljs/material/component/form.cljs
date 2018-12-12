@@ -7,57 +7,68 @@
 
 (defn item-date [created updated]
   (html
-    [:div.Swarmpit-form-card-icon-item
+    [:div {:class "Swarmpit-form-card-icon-item"
+           :key   "item-date"}
      (icon/access-time
        {:className "Swarmpit-form-card-icon"})
      (when created
        [:time {:date-time created
                :title     (time/simplify created)}
-        (str "created " (time/humanize created))])
+        (cmp/typography
+          {:color     "textSecondary"
+           :className "Swarmpit-form-card-icon-text"
+           :key       "idct"}
+          (str "created " (time/humanize created)))])
      (when updated
        [:time {:date-time updated
                :title     (time/simplify updated)}
-        (str (when created ", ") "last update " (time/humanize updated))])]))
+        (cmp/typography
+          {:color     "textSecondary"
+           :className "Swarmpit-form-card-icon-text"
+           :key       "idut"}
+          (str (when created ", ") "last update " (time/humanize updated)))])]))
 
 (defn item-id [id]
   (html
-    [:div.Swarmpit-form-card-icon-item
+    [:div {:class "Swarmpit-form-card-icon-item"
+           :key   "item-id"}
      (icon/fingerprint
        {:className "Swarmpit-form-card-icon"})
-     [:span.Swarmpit-form-card-icon-item-id id]]))
+     [:span.Swarmpit-form-card-icon-item-id
+      (cmp/typography
+        {:color     "textSecondary"
+         :className "Swarmpit-form-card-icon-text"
+         :key       "iit"} id)]]))
 
 (defn item-labels [labels]
   (html
-    [:div.Swarmpit-form-card-labels
+    [:div {:class "Swarmpit-form-card-labels"
+           :key   "item-labels"}
      labels]))
-
-(defn subheader [label icon]
-  (html
-    [:div.Swarmpit-form-card-subheader
-     (icon
-       {:className "Swarmpit-form-card-subheader-icon"}) label]))
-
-(defn item-yn [value label]
-  (html
-    [:div.Swarmpit-form-card-icon-item
-     (if value
-       (icon/check
-         {:className "Swarmpit-form-card-subheader-icon Swarmpit-label-green"})
-       (icon/close
-         {:className "Swarmpit-form-card-subheader-icon Swarmpit-label-red"})) label]))
 
 (defn section
   ([name]
    (section name nil))
   ([name button]
-   (html [:div.Swarmpit-form-section {:id name}
-          [:div (cmp/typography {:variant "h6"} name)]
-          [:div button]])))
+   (html
+     [:div {:class "Swarmpit-form-section"
+            :id    name
+            :key   (str "sec-" name)}
+      [:div
+       (cmp/typography
+         {:variant "h6"
+          :key     (str "sect-" name)} name)]
+      [:div button]])))
 
 (defn subsection
   ([name]
    (subsection name nil))
   ([name button]
-   (html [:div.Swarmpit-form-section
-          [:div (cmp/typography {:variant "subtitle1"} name)]
-          [:div button]])))
+   (html
+     [:div {:class "Swarmpit-form-section"
+            :key   (str "subsec-" name)}
+      [:div
+       (cmp/typography
+         {:variant "subtitle1"
+          :key     (str "subsect-" name)} name)]
+      [:div button]])))

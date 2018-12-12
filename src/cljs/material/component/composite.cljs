@@ -64,7 +64,8 @@
 (defn autocomplete-menu [props]
   (cmp/paper
     (js/Object.assign (gobject/get props "innerProps")
-                      #js {:style #js {:position  "absolute"
+                      #js {:key   "acm"
+                           :style #js {:position  "absolute"
                                        :zIndex    2
                                        :marginTop 8
                                        :left      0
@@ -72,14 +73,14 @@
     (gobject/get props "children")))
 
 (defn autocomplete-value-container [props]
-  (html
-    [:div
-     {:style
-      {:display    "flex"
-       :flexWrap   "wrap"
-       :flex       1
-       :alignItems "center",
-       :overflow   "hidden"}} (gobject/get props "children")]))
+  (let [childs (gobject/get props "children")]
+    (html
+      [:div
+       {:style {:display    "flex"
+                :flexWrap   "wrap"
+                :flex       1
+                :alignItems "center"
+                :overflow   "hidden"}} childs])))
 
 (defn autocomplete-control [props]
   (let [{:keys [innerRef innerProps children selectProps]} (js->clj props :keywordize-keys true)
@@ -96,6 +97,7 @@
                                                                  {:padding "10px 15px"})
                                                                (when (= "dense" margin)
                                                                  {:padding "6.5px 15px"}))
+                                                   :key      "input-key"
                                                    :inputRef innerRef
                                                    :children children})}}))))
 

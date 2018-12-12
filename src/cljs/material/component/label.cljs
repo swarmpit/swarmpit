@@ -5,7 +5,8 @@
 (defn base
   [label color]
   (html
-    [:span {:class (str "Swarmpit-label Swarmpit-label-" color)} label]))
+    [:span {:class (str "Swarmpit-label Swarmpit-label-" color)
+            :key   (str "label-" label)} label]))
 
 (defn green
   [label]
