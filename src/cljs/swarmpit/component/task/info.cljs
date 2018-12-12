@@ -67,34 +67,34 @@
 (defn- section-general
   [{:keys [id taskName nodeName state status createdAt updatedAt repository]}]
   (comp/card
-    {:className "Swarmpit-form-card"}
+    {:className "Swarmpit-form-card"
+     :key       "tgc"}
     (comp/card-header
       {:title     taskName
+       :key       "tgch"
        :className "Swarmpit-form-card-header"
-       :subheader (form-subheader (:image repository)
-                                  (:imageDigest repository))})
-
+       :subheader (form-subheader
+                    (:image repository)
+                    (:imageDigest repository))})
     (comp/card-content
-      {}
+      {:key "tgcc"}
       (html
-        [:div
+        [:div {:key "tgccid"}
          [:span "Container is running on node " [:a {:href (routes/path-for-frontend :node-info {:id nodeName})} nodeName]]
          [:br]
          (when (:error status)
            [:span "Container crashed with following error: " (:error status) "."])]))
     (comp/card-content
-      {}
+      {:key "tgccl"}
       (form/item-labels
         [(form-state state)]))
-    (comp/divider)
+    (comp/divider
+      {:key "tgd"})
     (comp/card-content
-      {:style {:paddingBottom "16px"}}
-      (comp/typography
-        {:color "textSecondary"}
-        (form/item-date createdAt updatedAt))
-      (comp/typography
-        {:color "textSecondary"}
-        (form/item-id id)))))
+      {:style {:paddingBottom "16px"}
+       :key   "tgccf"}
+      (form/item-date createdAt updatedAt)
+      (form/item-id id))))
 
 (rum/defc form-info < rum/static [{:keys [repository status] :as item}]
   (comp/mui
@@ -106,6 +106,7 @@
            :spacing   40}
           (comp/grid
             {:item true
+             :key  "tgg"
              :xs   12
              :sm   6}
             (section-general item)))]])))

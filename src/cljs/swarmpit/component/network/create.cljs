@@ -335,7 +335,8 @@
                      :gutterBottom true} "Driver")
                   (section-driver item plugins)))
               (html
-                [:div.Swarmpit-form-buttons {:key "nbs"}
+                [:div {:class "Swarmpit-form-buttons"
+                       :key   "nbs"}
                  (composite/progress-button
                    "Create"
                    #(create-network-handler)
