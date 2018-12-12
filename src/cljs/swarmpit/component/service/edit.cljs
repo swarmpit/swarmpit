@@ -293,17 +293,27 @@
                     {:container true
                      :key       "secgifcccg"
                      :spacing   40}
-                    (form-settings)
-                    (form-ports)
-                    (form-mounts)
-                    (form-secrets)
+                    (rum/with-key
+                      (form-settings) "secgifcccgfs")
+                    (rum/with-key
+                      (form-ports) "secgifcccgfp")
+                    (rum/with-key
+                      (form-mounts) "secgifcccgfm")
+                    (rum/with-key
+                      (form-secrets) "secgifcccgfse")
                     (when (<= 1.30 (state/get-value [:docker :api]))
-                      (form-configs))
-                    (form-variables)
-                    (form-labels)
-                    (form-logdriver)
-                    (form-resources)
-                    (form-deployment))
+                      (rum/with-key
+                        (form-configs) "secgifcccgfc"))
+                    (rum/with-key
+                      (form-variables) "secgifcccgfv")
+                    (rum/with-key
+                      (form-labels) "secgifcccgfl")
+                    (rum/with-key
+                      (form-logdriver) "secgifcccgfld")
+                    (rum/with-key
+                      (form-resources) "secgifcccgfr")
+                    (rum/with-key
+                      (form-deployment) "secgifcccgfd"))
                   (html
                     [:div {:class "Swarmpit-form-buttons"
                            :key   "secgifccbtn"}
