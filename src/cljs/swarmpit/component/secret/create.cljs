@@ -62,7 +62,7 @@
 
 (defn- init-form-value
   []
-  (state/set-value {:secretName nil
+  (state/set-value {:secretName ""
                     :data       ""} state/form-value-cursor))
 
 (def mixin-init-form
@@ -88,26 +88,32 @@
         [:div.Swarmpit-form
          [:div.Swarmpit-form-context
           (comp/card
-            {:className "Swarmpit-form-card"}
+            {:className "Swarmpit-form-card"
+             :key       "scc"}
             (comp/card-header
               {:className "Swarmpit-form-card-header"
+               :key       "scch"
                :title     "Create Secret"})
             (comp/card-content
-              {}
+              {:key "sccc"}
               (comp/grid
                 {:container true
+                 :key       "scccc"
                  :spacing   40}
                 (comp/grid
                   {:item true
+                   :key  "scccig"
                    :xs   12
                    :sm   6}
                   (form-name secretName))
                 (comp/grid
                   {:item true
+                   :key  "scccid"
                    :xs   12}
                   (form-data data)))
               (html
-                [:div.Swarmpit-form-buttons
+                [:div {:class "Swarmpit-form-buttons"
+                       :key   "scccbtn"}
                  (composite/progress-button
                    "Create"
                    create-secret-handler

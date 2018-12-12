@@ -70,25 +70,27 @@
            :spacing   40}
           (comp/grid
             {:item true
+             :key  "sgg"
              :xs   12
              :sm   6}
             (comp/card
-              {:className "Swarmpit-form-card"}
+              {:className "Swarmpit-form-card"
+               :key       "sgc"}
               (comp/card-header
                 {:title     (:secretName secret)
-                 :className "Swarmpit-form-card-header"})
-              (comp/divider)
+                 :className "Swarmpit-form-card-header"
+                 :key       "sgch"})
+              (comp/divider
+                {:key "sgd"})
               (comp/card-content
-                {:style {:paddingBottom "16px"}}
-                (comp/typography
-                  {:color "textSecondary"}
-                  (form/item-date (:createdAt secret) (:updatedAt secret)))
-                (comp/typography
-                  {:color "textSecondary"}
-                  (form/item-id (:id secret))))))
+                {:style {:paddingBottom "16px"}
+                 :key   "sgccf"}
+                (form/item-date (:createdAt secret) (:updatedAt secret))
+                (form/item-id (:id secret)))))
           (when (not-empty services)
             (comp/grid
               {:item true
+               :key  "slsg"
                :xs   12}
               (services/linked services))))]])))
 
