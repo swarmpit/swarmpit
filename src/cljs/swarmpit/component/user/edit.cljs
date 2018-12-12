@@ -30,6 +30,7 @@
   (comp/text-field
     {:fullWidth       true
      :label           "Role"
+     :key             "role"
      :select          true
      :value           value
      :variant         "outlined"
@@ -48,6 +49,7 @@
     {:label           "Email"
      :fullWidth       true
      :variant         "outlined"
+     :key             "email"
      :value           value
      :required        true
      :margin          "normal"
@@ -101,23 +103,28 @@
            :xs   12
            :sm   6}
           (comp/card
-            {:className "Swarmpit-form-card"}
+            {:className "Swarmpit-form-card"
+             :key       "uec"}
             (comp/card-header
               {:className "Swarmpit-form-card-header"
+               :key       "uech"
                :title     "Edit User"})
             (comp/card-content
-              {}
+              {:key "uecc"}
               (comp/grid
                 {:container true
+                 :key       "ueccc"
                  :spacing   40}
                 (comp/grid
                   {:item true
+                   :key  "uecccig"
                    :xs   12}
                   (form-username username)
                   (form-role role)
                   (form-email email)))
               (html
-                [:div.Swarmpit-form-buttons
+                [:div {:class "Swarmpit-form-buttons"
+                       :key   "ueccbtn"}
                  (composite/progress-button
                    "Save"
                    #(update-user-handler _id)

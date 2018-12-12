@@ -30,6 +30,7 @@
   (comp/text-field
     {:label           "Password"
      :variant         "outlined"
+     :key             "password"
      :fullWidth       true
      :required        true
      :margin          "normal"
@@ -45,6 +46,7 @@
   (comp/text-field
     {:fullWidth       true
      :label           "Role"
+     :key             "role"
      :select          true
      :value           value
      :variant         "outlined"
@@ -62,6 +64,7 @@
   (comp/text-field
     {:label           "Email"
      :fullWidth       true
+     :key             "email"
      :variant         "outlined"
      :value           value
      :required        true
@@ -106,7 +109,7 @@
 
 (rum/defc form < rum/reactive
                  mixin-init-form [_]
-  (let [{:keys [username password role email]} (state/react state/form-state-cursor)
+  (let [{:keys [username password role email]} (state/react state/form-value-cursor)
         {:keys [valid? processing? showPassword]} (state/react state/form-state-cursor)]
     (comp/mui
       (html
@@ -118,24 +121,29 @@
              :sm   6
              :md   3}
             (comp/card
-              {:className "Swarmpit-form-card"}
+              {:className "Swarmpit-form-card"
+               :key       "ucc"}
               (comp/card-header
                 {:className "Swarmpit-form-card-header"
+                 :key       "ucch"
                  :title     "New User"})
               (comp/card-content
-                {}
+                {:key "uccc"}
                 (comp/grid
                   {:container true
+                   :key       "ucccc"
                    :spacing   40}
                   (comp/grid
                     {:item true
+                     :key  "uccccig"
                      :xs   12}
                     (form-username username)
                     (form-password password showPassword)
                     (form-role role)
                     (form-email email)))
                 (html
-                  [:div.Swarmpit-form-buttons
+                  [:div {:class "Swarmpit-form-buttons"
+                         :key   "ucccbtn"}
                    (composite/progress-button
                      "Create"
                      create-user-handler

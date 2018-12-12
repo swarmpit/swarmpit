@@ -68,24 +68,27 @@
            :spacing   40}
           (comp/grid
             {:item true
+             :key  "ugg"
              :xs   12
              :sm   6}
             (comp/card
-              {:className "Swarmpit-form-card"}
+              {:className "Swarmpit-form-card"
+               :key       "ugc"}
               (comp/card-header
                 {:title     username
                  :className "Swarmpit-form-card-header"
+                 :key       "ugch"
                  :subheader email})
               (comp/card-content
-                {}
+                {:key "ugccl"}
                 (form/item-labels
                   [(label/grey role)]))
-              (comp/divider)
+              (comp/divider
+                {:key "ugd"})
               (comp/card-content
-                {:style {:paddingBottom "16px"}}
-                (comp/typography
-                  {:color "textSecondary"}
-                  (form/item-id _id))))))]])))
+                {:style {:paddingBottom "16px"}
+                 :key   "ugccf"}
+                (form/item-id _id)))))]])))
 
 (rum/defc form < rum/reactive
                  mixin-init-form
