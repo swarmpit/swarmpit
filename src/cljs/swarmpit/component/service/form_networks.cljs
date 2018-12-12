@@ -37,7 +37,8 @@
                            (->> (js->clj value)
                                 (map #(hash-map :networkName (get % "value")))) form-value-cursor))
        :value          (map #(hash-map :label (:networkName %)
-                                       :value (:networkName %)) networks)
+                                       :value (:networkName %)
+                                       :key (:networkName %)) networks)
        :placeholder    "Add network"
        :isMulti        true})))
 

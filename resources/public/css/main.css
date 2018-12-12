@@ -77,7 +77,7 @@ a {
     flex-wrap: wrap;
 }
 
-.Swarmoit-row-space {
+.Swarmpit-row-space {
     display: flex;
     justify-content: space-between;
 }
@@ -378,32 +378,13 @@ a {
     align-items: center;
 }
 
-.Swarmpit-form-item {
-    padding-bottom: 10px;
-}
-
-.Swarmpit-form-item-label {
-    font-weight: 400;
-    color: rgba(0, 0, 0, 0.54);
-    text-transform: uppercase;
-}
-
 .Swarmpit-form-card {
     box-shadow: none !important;
     border: 1px solid rgba(0, 0, 0, 0.12);
 }
 
-.Swarmpit-form-card-media {
-    float: left;
-    padding: 15px;
-    margin-top: -20px;
-    margin-right: 15px;
-    border-radius: 3px;
-    background-color: #999;
-}
-
 .Swarmpit-form-card-icon {
-    top: 2px;
+    top: 1px;
     position: relative;
     margin-right: 3px;
     height: 16px !important;
@@ -412,7 +393,14 @@ a {
 
 .Swarmpit-form-card-icon-item {
     display: flex;
-    font-size: 12px;
+}
+
+.Swarmpit-form-card-icon-item-id {
+    word-break: break-all;
+}
+
+.Swarmpit-form-card-icon-text {
+    font-size: 12px !important;
 }
 
 .Swarmpit-form-card-labels {
@@ -423,25 +411,25 @@ a {
     margin-right: 5px;
 }
 
-.Swarmpit-form-card-subheader {
-    font-size: 0.875rem;
-    font-weight: 400;
-    font-family: "Roboto", "Helvetica", "Arial", sans-serif;
-    line-height: 1.46429em;
-    color: rgba(0, 0, 0, 0.54);
+/* Logs */
+
+.Swarmpit-log {
+    padding: 1em;
+    font-family: monospace;
+    font-size: 13px;
+    background: black;
+    color: #CCC;
+    min-height: calc(100vh - 64px);
 }
 
-.Swarmpit-form-card-subheader-icon {
-    top: 5px;
-    position: relative;
-    margin-right: 3px;
-    height: 20px !important;
-    width: 20px !important;
+.Swarmpit-log-fab {
+    position: fixed;
+    bottom: 20px;
+    right: 20px;
 }
 
-.Swarmpit-form-card-header:first-child:before {
-    content: '';
-    background: linear-gradient(60deg, #362870, #957ed1);
+.log-info {
+    color: #FFF;
 }
 
 /* Labels & Status ico  */
@@ -461,27 +449,28 @@ a {
 
 @-webkit-keyframes pulse {
     0% {
-        -webkit-box-shadow: 0 0 0 0 rgba(204,169,44, 0.6);
+        -webkit-box-shadow: 0 0 0 0 rgba(204, 169, 44, 0.6);
     }
     70% {
-        -webkit-box-shadow: 0 0 0 10px rgba(204,169,44, 0);
+        -webkit-box-shadow: 0 0 0 10px rgba(204, 169, 44, 0);
     }
     100% {
-        -webkit-box-shadow: 0 0 0 0 rgba(204,169,44, 0);
+        -webkit-box-shadow: 0 0 0 0 rgba(204, 169, 44, 0);
     }
 }
+
 @keyframes pulse {
     0% {
-        -moz-box-shadow: 0 0 0 0 rgba(204,169,44, 0.6);
-        box-shadow: 0 0 0 0 rgba(204,169,44, 0.6);
+        -moz-box-shadow: 0 0 0 0 rgba(204, 169, 44, 0.6);
+        box-shadow: 0 0 0 0 rgba(204, 169, 44, 0.6);
     }
     70% {
-        -moz-box-shadow: 0 0 0 10px rgba(204,169,44, 0);
-        box-shadow: 0 0 0 10px rgba(204,169,44, 0);
+        -moz-box-shadow: 0 0 0 10px rgba(204, 169, 44, 0);
+        box-shadow: 0 0 0 10px rgba(204, 169, 44, 0);
     }
     100% {
-        -moz-box-shadow: 0 0 0 0 rgba(204,169,44, 0);
-        box-shadow: 0 0 0 0 rgba(204,169,44, 0);
+        -moz-box-shadow: 0 0 0 0 rgba(204, 169, 44, 0);
+        box-shadow: 0 0 0 0 rgba(204, 169, 44, 0);
     }
 }
 
@@ -535,6 +524,8 @@ a {
     color: #6c757d;
 }
 
+/* Codemirror custom */
+
 .Swarmpit-codemirror-view > div:before {
     border-bottom: none !important;
 }
@@ -553,6 +544,12 @@ a {
 .Swarmpit-service-replicas-graph {
     width: 150px;
     height: 150px;
+}
+
+.Swarmpit-service-tabs {
+    background-color: #f5f5f5;
+    border-top: 1px solid rgba(0, 0, 0, 0.12);
+    border-bottom: 1px solid rgba(0, 0, 0, 0.12);
 }
 
 .Swarmpit-image-search {
@@ -588,10 +585,6 @@ a {
 }
 
 .volume-mountpoint {
-    word-break: break-all;
-}
-
-.Swarmpit-form-card-icon-item-id {
     word-break: break-all;
 }
 
@@ -687,23 +680,4 @@ a {
         margin-left: auto;
         margin-right: auto;
     }
-}
-
-.Swarmpit-log {
-    padding: 1em;
-    font-family: monospace;
-    font-size: 13px;
-    background: black;
-    color: #CCC;
-    min-height: calc(100vh - 64px);
-}
-
-.Swarmpit-log-fab {
-    position: fixed;
-    bottom: 20px;
-    right: 20px;
-}
-
-.log-info {
-    color: #FFF;
 }

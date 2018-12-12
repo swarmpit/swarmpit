@@ -38,6 +38,7 @@
     (composite/autocomplete
       {:options        suggestions
        :textFieldProps {:label           "Tag"
+                        :key             "tag"
                         :margin          "normal"
                         :style           {:maxWidth "350px"}
                         :helperText      "Specify image tag or leave empty for latest"
@@ -54,6 +55,7 @@
     (composite/autocomplete
       {:options        suggestions
        :textFieldProps {:label           "Tag"
+                        :key             "tag"
                         :margin          "normal"
                         :style           {:maxWidth "350px"}
                         :helperText      "Specify image tag or leave empty for latest"
@@ -82,8 +84,10 @@
 (defn- form-mode [value update-form?]
   (comp/form-control
     {:component "fieldset"
+     :key       "modef"
      :style     {:width "200px"}}
-    (comp/form-label {} "Mode")
+    (comp/form-label
+      {:key "model"} "Mode")
     (comp/radio-group
       {:name     "mode"
        :key      "mode"
@@ -96,6 +100,7 @@
                       :color "primary"
                       :key   "replicated-mode"})
          :disabled update-form?
+         :key      "repl-mode"
          :value    "replicated"
          :label    "Replicated"})
       (comp/form-control-label
@@ -104,6 +109,7 @@
                       :color "primary"
                       :key   "global-mode"})
          :disabled update-form?
+         :key      "glob-mode"
          :value    "global"
          :label    "Global"}))))
 
@@ -152,14 +158,17 @@
         {:keys [tags]} (state/react form-state-cursor)]
     (comp/grid
       {:container true
+       :key       "sfscg"
        :spacing   24}
       (comp/grid
         {:item true
+         :key  "sfscgii"
          :xs   12
          :sm   6}
         (form-image (:name repository)))
       (comp/grid
         {:item true
+         :key  "sfscgit"
          :xs   12
          :sm   6}
         (if update-form?
@@ -167,10 +176,12 @@
           (form-image-tag-preloaded repository tags)))
       (comp/grid
         {:item true
+         :key  "sfscgin"
          :xs   12}
         (form-name serviceName update-form?))
       (comp/grid
         {:item true
+         :key  "sfscgimar"
          :xs   12
          :sm   6}
         (form-mode mode update-form?)
@@ -178,9 +189,11 @@
           (form-replicas replicas)))
       (comp/grid
         {:item true
+         :key  "sfscginet"
          :xs   12}
         (networks/form))
       (comp/grid
         {:item true
+         :key  "sfscgicomm"
          :xs   12}
         (form-command (str/join " " command))))))

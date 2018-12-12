@@ -117,10 +117,11 @@
 
 (defn- form-table
   [ports]
-  (list/list
-    form-ports-metadata
-    ports
-    (fn [index] (state/remove-item index form-value-cursor))))
+  (rum/with-key
+    (list/list
+      form-ports-metadata
+      ports
+      (fn [index] (state/remove-item index form-value-cursor))) "form-port-table"))
 
 (defn- add-item
   []

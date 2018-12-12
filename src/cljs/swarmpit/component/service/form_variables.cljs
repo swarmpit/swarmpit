@@ -44,10 +44,11 @@
 
 (defn- form-table
   [variables]
-  (list/list
-    form-metadata
-    variables
-    (fn [index] (state/remove-item index form-value-cursor))))
+  (rum/with-key
+    (list/list
+      form-metadata
+      variables
+      (fn [index] (state/remove-item index form-value-cursor))) "form-ev-table"))
 
 (defn- add-item
   []

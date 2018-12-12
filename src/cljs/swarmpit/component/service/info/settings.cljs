@@ -82,7 +82,7 @@
            (resource-provided? limit))
       [:table
        [:tr
-        [:td {:rowspan 2} (form-replicas tasks)]
+        [:td {:rowSpan 2} (form-replicas tasks)]
         [:td
          [:div "Reservation"]
          [:div
@@ -134,10 +134,12 @@
         stack (:stack service)
         mode (:mode service)]
     (comp/card
-      {:className "Swarmpit-form-card"}
+      {:className "Swarmpit-form-card"
+       :key       "ssc"}
       (comp/card-header
         {:title     (utils/trim-stack stack (:serviceName service))
          :className "Swarmpit-form-card-header"
+         :key       "ssch"
          :subheader (form-subheader image image-digest)
          :action    (comp/icon-button
                       {:aria-label "Edit"
@@ -147,31 +149,28 @@
                                      {:section "General"})}
                       (comp/svg icon/edit))})
       (comp/card-content
-        {}
-        (form-dashboard resources tasks)
+        {:key "ssccd"}
+        (rum/with-key (form-replicas tasks) "ssccdd")
         (form-command command))
       (comp/card-content
-        {}
+        {:key "ssccl"}
         (form/item-labels
           [(form-state (:state service))
            (label/grey mode)]))
       (comp/card-actions
-        {}
+        {:key "ssca"}
         (when stack
           (comp/button
             {:size  "small"
+             :key   "sscasb"
              :color "primary"
              :href  (routes/path-for-frontend :stack-info {:name stack})}
             "See stack")))
-      (comp/divider)
+      (comp/divider
+        {:key "ssd"})
       (comp/card-content
-        {:style {:paddingBottom "16px"}}
-        (comp/typography
-          {:color "textSecondary"
-           :style {:flexDirection "column"}}
-          (form/item-date (:createdAt service)
-                          (:updatedAt service)))
-        (comp/typography
-          {:color "textSecondary"
-           :style {:flexDirection "column"}}
-          (form/item-id (:id service)))))))
+        {:key   "ssccf"
+         :style {:paddingBottom "16px"}}
+        (form/item-date (:createdAt service)
+                        (:updatedAt service))
+        (form/item-id (:id service))))))

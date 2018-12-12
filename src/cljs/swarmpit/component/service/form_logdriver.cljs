@@ -26,13 +26,13 @@
      :InputLabelProps {:shrink true}
      :onChange        #(state/update-value [:name] (-> % .-target .-value) form-value-cursor)}
     (comp/menu-item
-      {:key   "none"
+      {:key   "dr-none"
        :value "none"} "none")
     (comp/menu-item
-      {:key   "json-file"
+      {:key   "dr-json-file"
        :value "json-file"} "json-file")
     (comp/menu-item
-      {:key   "journald"
+      {:key   "dr-journald"
        :value "journald"} "journald")))
 
 (defn- form-name [value index]
@@ -70,10 +70,11 @@
 
 (defn- form-table
   [opts]
-  (list/list
-    form-metadata
-    opts
-    (fn [index] (state/remove-item index form-value-opts-cursor))))
+  (rum/with-key
+    (list/list
+      form-metadata
+      opts
+      (fn [index] (state/remove-item index form-value-opts-cursor))) "form-ldriver-table"))
 
 (defn- add-item
   []
@@ -83,19 +84,23 @@
 (rum/defc form < rum/reactive []
   (let [{:keys [name opts]} (state/react form-value-cursor)]
     (comp/grid
-      {:container true}
+      {:container true
+       :key       "seflogcg"}
       (comp/grid
         {:item true
+         :key  "seflogcgid"
          :xs   12
          :sm   6} (form-driver name))
       (comp/grid
         {:item true
+         :key  "seflogcgio"
          :xs   12}
         (form/subsection
           "Driver options"
           (comp/button
             {:color   "primary"
              :onClick add-item}
-            (comp/svg icon/add-small) "Add option"))
+            (comp/svg
+              {:key "seflogcgiobico"} icon/add-small) "Add option"))
         (when (not (empty? opts))
           (form-table opts))))))

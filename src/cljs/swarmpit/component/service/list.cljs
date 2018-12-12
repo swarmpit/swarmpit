@@ -15,12 +15,13 @@
 
 (enable-console-print!)
 
-(defn- render-item-ports [item]
+(defn- render-item-ports [item index]
   (html
-    (for [port (:ports item)]
-      [:div
-       [:span (:hostPort port)
-        [:span.Swarmpit-service-list-port (str " [" (:protocol port) "]")]]])))
+    (map-indexed
+      (fn [i item]
+        [:div {:key (str "port-" i "-" index)}
+         [:span (:hostPort item)
+          [:span.Swarmpit-service-list-port (str " [" (:protocol item) "]")]]]) (:ports item))))
 
 (defn- render-item-replicas [item]
   (let [tasks (get-in item [:status :tasks])]
@@ -58,7 +59,7 @@
                      {:name      "Replicas"
                       :render-fn (fn [item] (render-item-replicas item))}
                      {:name      "Ports"
-                      :render-fn (fn [item] (render-item-ports item))}
+                      :render-fn (fn [item index] (render-item-ports item index))}
                      {:name      "Status"
                       :render-fn (fn [item] (render-status item))}]}
    :list  {:primary   (fn [item] (:serviceName item))
@@ -100,16 +101,20 @@
 (defn linked
   [services]
   (comp/card
-    {:className "Swarmpit-card"}
+    {:className "Swarmpit-card"
+     :key       "lsc"}
     (comp/card-header
       {:className "Swarmpit-table-card-header"
+       :key       "lsch"
        :title     "Services"})
     (comp/card-content
-      {:className "Swarmpit-table-card-content"}
-      (list/responsive
-        render-metadata
-        services
-        onclick-handler))))
+      {:className "Swarmpit-table-card-content"
+       :key       "lscc"}
+      (rum/with-key
+        (list/responsive
+          render-metadata
+          services
+          onclick-handler) "lsccrl"))))
 
 (rum/defc form < rum/reactive
                  mixin-init-form

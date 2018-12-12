@@ -28,9 +28,11 @@
 
 (rum/defc form < rum/static [configs service-id]
   (comp/card
-    {:className "Swarmpit-card"}
+    {:className "Swarmpit-card"
+     :key       "scc"}
     (comp/card-header
       {:className "Swarmpit-table-card-header"
+       :key       "scch"
        :title     "Configs"
        :action    (comp/icon-button
                     {:aria-label "Edit"
@@ -40,9 +42,12 @@
                                    {:section "Configs"})}
                     (comp/svg icon/edit))})
     (comp/card-content
-      {:className "Swarmpit-table-card-content"}
-      (list/responsive
-        render-metadata
-        configs
-        onclick-handler))))
+      {:className "Swarmpit-table-card-content"
+       :key       "sccc"}
+      (rum/with-key
+        (list/responsive
+          render-metadata
+          configs
+          onclick-handler)
+        "scccrl"))))
 

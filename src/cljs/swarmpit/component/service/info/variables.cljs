@@ -13,9 +13,11 @@
 
 (rum/defc form < rum/static [variables service-id]
   (comp/card
-    {:className "Swarmpit-card"}
+    {:className "Swarmpit-card"
+     :key       "svc"}
     (comp/card-header
       {:className "Swarmpit-table-card-header"
+       :key       "svch"
        :title     "Environment variables"
        :action    (comp/icon-button
                     {:aria-label "Edit"
@@ -25,8 +27,10 @@
                                    {:section "Environment variables"})}
                     (comp/svg icon/edit))})
     (comp/card-content
-      {:className "Swarmpit-table-card-content"}
-      (list/list
-        render-metadata
-        variables
-        nil))))
+      {:className "Swarmpit-table-card-content"
+       :key       "svcc"}
+      (rum/with-key
+        (list/list
+          render-metadata
+          variables
+          nil) "svccl"))))

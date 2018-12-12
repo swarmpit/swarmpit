@@ -14,7 +14,8 @@
                      {:name      "Host path"
                       :render-fn (fn [item] (:host item))}
                      {:name      "Read only"
-                      :render-fn (fn [item] (:readOnly item))}]}
+                      :render-fn (fn [item] (when (true? (:readOnly item))
+                                              "yes"))}]}
    :list  {:primary   (fn [item] (:containerPath item))
            :secondary (fn [item] (:host item))}})
 
@@ -52,10 +53,12 @@
   (let [bind (filter #(= "bind" (:type %)) mounts)
         volume (filter #(= "volume" (:type %)) mounts)]
     (comp/card
-      {:className "Swarmpit-card"}
+      {:className "Swarmpit-card"
+       :key       "smc"}
       (comp/card-header
         {:className "Swarmpit-table-card-header"
          :title     "Mounts"
+         :key       "smch"
          :action    (comp/icon-button
                       {:aria-label "Edit"
                        :href       (routes/path-for-frontend
@@ -64,6 +67,7 @@
                                      {:section "Mounts"})}
                       (comp/svg icon/edit))})
       (comp/card-content
-        {:className "Swarmpit-table-card-content"}
-        (form-bind bind)
-        (form-volume volume)))))
+        {:className "Swarmpit-table-card-content"
+         :key       "smcc"}
+        (rum/with-key (form-bind bind) "smccrlb")
+        (rum/with-key (form-volume volume) "smccrlv")))))

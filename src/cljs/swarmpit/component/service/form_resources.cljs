@@ -21,12 +21,15 @@
 
 (defn- form-cpu-reservation [value]
   (html
-    [:div.Swarmpit-margin-normal
-     [:div.Swarmpit-service-slider-title
+    [:div {:class "Swarmpit-margin-normal"
+           :key   "cpu-reservation-wrap"}
+     [:div {:class "Swarmpit-service-slider-title"
+            :key   "cpu-reservation-label"}
       (str "CPU  " "(" (cpu-value value) ")")]
-     [:div
+     [:div {:key "cpu-reservation-slider"}
       (comp/rc-slider
-        {:min          0
+        {:key          "cpu-reservation"
+         :min          0
          :max          2
          :step         0.10
          :defaultValue 0
@@ -52,12 +55,15 @@
 
 (defn- form-cpu-limit [value]
   (html
-    [:div.Swarmpit-margin-normal
-     [:div.Swarmpit-service-slider-title
+    [:div {:class "Swarmpit-margin-normal"
+           :key   "cpu-limit-wrap"}
+     [:div {:class "Swarmpit-service-slider-title"
+            :key   "cpu-limit-label"}
       (str "CPU  " "(" (cpu-value value) ")")]
-     [:div
+     [:div {:key "cpu-limit-slider"}
       (comp/rc-slider
-        {:min          0
+        {:key          "cpu-limit"
+         :min          0
          :max          2
          :step         0.10
          :defaultValue 0
@@ -85,21 +91,22 @@
   (let [{:keys [reservation limit]} (state/react form-value-cursor)]
     (comp/grid
       {:container true
+       :key       "sfrcg"
        :spacing   40}
       (comp/grid
-        {:item      true
-         :xs        12
-         :sm        6
-         :direction "column"}
+        {:item true
+         :key  "sfrcgir"
+         :xs   12
+         :sm   6}
         (form/subsection "Reservation")
         ;(html [:div "Minimal resource availability to run a task. Empty for unlimited."])
         (form-memory-reservation (:memory reservation))
         (form-cpu-reservation (:cpu reservation)))
       (comp/grid
-        {:item      true
-         :xs        12
-         :sm        6
-         :direction "column"}
+        {:item true
+         :key  "sfrcgil"
+         :xs   12
+         :sm   6}
         (form/subsection "Limit")
         ;(html [:div "Maximal resource usage per task. Empty for unlimited."])
         (form-memory-limit (:memory limit))

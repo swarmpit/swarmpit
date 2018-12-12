@@ -89,18 +89,22 @@
                    (message/error
                      (str "Service rollback failed. " (:error response))))}))
 
-(rum/defc form-tasks < rum/static [tasks]
+(defn form-tasks [tasks]
   (comp/card
-    {:className "Swarmpit-card"}
+    {:className "Swarmpit-card"
+     :key       "ftc"}
     (comp/card-header
       {:className "Swarmpit-table-card-header"
+       :key       "ftch"
        :title     "Tasks"})
     (comp/card-content
-      {:className "Swarmpit-table-card-content"}
-      (list/responsive
-        tasks/render-metadata
-        (filter #(not (= "shutdown" (:state %))) tasks)
-        tasks/onclick-handler))))
+      {:className "Swarmpit-table-card-content"
+       :key       "ftcc"}
+      (rum/with-key
+        (list/responsive
+          tasks/render-metadata
+          (filter #(not (= "shutdown" (:state %))) tasks)
+          tasks/onclick-handler) "ftccrl"))))
 
 (defn form-actions
   [{:keys [params]}]
@@ -183,9 +187,11 @@
               (logdriver/form logdriver id)))
           (comp/grid
             {:container true
+             :key       "scg"
              :spacing   40}
             (comp/grid
               {:item true
+               :key  "scitg"
                :xs   12}
               (form-tasks tasks)))]]))))
 

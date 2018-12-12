@@ -28,9 +28,11 @@
 
 (rum/defc form < rum/static [secrets service-id]
   (comp/card
-    {:className "Swarmpit-card"}
+    {:className "Swarmpit-card"
+     :key       "ssec"}
     (comp/card-header
       {:className "Swarmpit-table-card-header"
+       :key       "ssech"
        :title     "Secrets"
        :action    (comp/icon-button
                     {:aria-label "Edit"
@@ -40,9 +42,11 @@
                                    {:section "Secrets"})}
                     (comp/svg icon/edit))})
     (comp/card-content
-      {:className "Swarmpit-table-card-content"}
-      (list/responsive
-        render-metadata
-        secrets
-        onclick-handler))))
+      {:className "Swarmpit-table-card-content"
+       :key       "ssecc"}
+      (rum/with-key
+        (list/responsive
+          render-metadata
+          secrets
+          onclick-handler) "sseccrl"))))
 

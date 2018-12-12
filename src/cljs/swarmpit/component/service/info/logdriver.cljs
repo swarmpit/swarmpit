@@ -13,9 +13,11 @@
 
 (rum/defc form < rum/static [{:keys [name opts]} service-id]
   (comp/card
-    {:className "Swarmpit-card"}
+    {:className "Swarmpit-card"
+     :key       "sldc"}
     (comp/card-header
       {:className "Swarmpit-table-card-header"
+       :key       "sldch"
        :title     "Log driver options"
        :action    (comp/icon-button
                     {:aria-label "Edit"
@@ -25,8 +27,10 @@
                                    {:section "Logging"})}
                     (comp/svg icon/edit))})
     (comp/card-content
-      {:className "Swarmpit-table-card-content"}
-      (list/list
-        render-metadata
-        opts
-        nil))))
+      {:className "Swarmpit-table-card-content"
+       :key       "sldcc"}
+      (rum/with-key
+        (list/list
+          render-metadata
+          opts
+          nil) "sldccl"))))

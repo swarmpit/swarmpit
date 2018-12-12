@@ -21,9 +21,11 @@
 
 (rum/defc form < rum/static [ports service-id]
   (comp/card
-    {:className "Swarmpit-card"}
+    {:className "Swarmpit-card"
+     :key       "spc"}
     (comp/card-header
       {:className "Swarmpit-table-card-header"
+       :key       "spch"
        :title     "Ports"
        :action    (comp/icon-button
                     {:aria-label "Edit"
@@ -33,8 +35,10 @@
                                    {:section "Ports"})}
                     (comp/svg icon/edit))})
     (comp/card-content
-      {:className "Swarmpit-table-card-content"}
-      (list/responsive
-        render-metadata
-        ports
-        nil))))
+      {:className "Swarmpit-table-card-content"
+       :key       "spcc"}
+      (rum/with-key
+        (list/responsive
+          render-metadata
+          ports
+          nil) "spccrl"))))

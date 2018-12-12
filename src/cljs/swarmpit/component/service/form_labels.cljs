@@ -61,10 +61,11 @@
 
 (defn- form-table
   [labels names]
-  (list/list
-    (form-metadata names)
-    labels
-    (fn [index] (state/remove-item index form-value-cursor))))
+  (rum/with-key
+    (list/list
+      (form-metadata names)
+      labels
+      (fn [index] (state/remove-item index form-value-cursor))) "form-label-table"))
 
 (defn- add-item
   []

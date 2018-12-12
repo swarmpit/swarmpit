@@ -114,11 +114,13 @@
           {:className "Swarmpit-login-paper"}
           (html
             [:img {:src    "img/swarmpit.png"
+                   :key    "Swarmpit-login-img"
                    :width  "100%"
                    :height "100%"}])
           (when (not-empty message)
             (html
-              [:span {:style {:display    "flex"
+              [:span {:key   "Swarmpit-login-mssg"
+                      :style {:display    "flex"
                               :alignItems "center"
                               :color      "#d32f2f"
                               :padding    20}}

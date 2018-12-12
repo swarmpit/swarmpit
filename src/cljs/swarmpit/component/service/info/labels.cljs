@@ -13,9 +13,11 @@
 
 (rum/defc form < rum/static [labels service-id]
   (comp/card
-    {:className "Swarmpit-card"}
+    {:className "Swarmpit-card"
+     :key       "slc"}
     (comp/card-header
       {:className "Swarmpit-table-card-header"
+       :key       "slch"
        :title     "Labels"
        :action    (comp/icon-button
                     {:aria-label "Edit"
@@ -25,8 +27,10 @@
                                    {:section "Labels"})}
                     (comp/svg icon/edit))})
     (comp/card-content
-      {:className "Swarmpit-table-card-content"}
-      (list/list
-        render-metadata
-        labels
-        nil))))
+      {:className "Swarmpit-table-card-content"
+       :key       "slcc"}
+      (rum/with-key
+        (list/list
+          render-metadata
+          labels
+          nil) "slccl"))))
