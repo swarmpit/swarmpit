@@ -61,7 +61,7 @@
 
 (defn- init-form-value
   []
-  (state/set-value {:configName nil
+  (state/set-value {:configName ""
                     :data       ""} state/form-value-cursor))
 
 (def mixin-init-form
@@ -87,26 +87,32 @@
         [:div.Swarmpit-form
          [:div.Swarmpit-form-context
           (comp/card
-            {:className "Swarmpit-form-card"}
+            {:className "Swarmpit-form-card"
+             :key       "ccc"}
             (comp/card-header
               {:className "Swarmpit-form-card-header"
+               :key       "ccch"
                :title     "Create Config"})
             (comp/card-content
-              {}
+              {:key "cccc"}
               (comp/grid
                 {:container true
+                 :key       "ccccc"
                  :spacing   40}
                 (comp/grid
                   {:item true
+                   :key  "ccccig"
                    :xs   12
                    :sm   6}
                   (form-name configName))
                 (comp/grid
                   {:item true
+                   :key  "ccccid"
                    :xs   12}
                   (form-data data)))
               (html
-                [:div.Swarmpit-form-buttons
+                [:div {:class "Swarmpit-form-buttons"
+                       :key   "ccccbtn"}
                  (composite/progress-button
                    "Create"
                    create-config-handler
