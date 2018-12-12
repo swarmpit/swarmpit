@@ -138,68 +138,88 @@
 
 (rum/defc form-services < rum/static [stack-name services]
   (comp/card
-    {:className "Swarmpit-card"}
+    {:className "Swarmpit-card"
+     :key       "fsc"}
     (comp/card-header
       {:className "Swarmpit-table-card-header"
+       :key       "fsch"
        :title     "Services"})
     (comp/card-content
-      {:className "Swarmpit-table-card-content"}
-      (list/responsive
-        services/render-metadata
-        (sort-by :serviceName services)
-        services/onclick-handler))))
+      {:className "Swarmpit-table-card-content"
+       :key       "fscc"}
+      (rum/with-key
+        (list/responsive
+          services/render-metadata
+          (sort-by :serviceName services)
+          services/onclick-handler) "fsccrl"))))
 
 (rum/defc form-networks < rum/static [stack-name networks]
   (comp/card
-    {:className "Swarmpit-card"}
+    {:className "Swarmpit-card"
+     :key       "fnc"}
     (comp/card-header
       {:className "Swarmpit-table-card-header"
+       :key       "fnch"
        :title     "Networks"})
     (comp/card-content
-      {:className "Swarmpit-table-card-content"}
-      (list/responsive
-        networks/render-metadata
-        (sort-by :networkName networks)
-        networks/onclick-handler))))
+      {:className "Swarmpit-table-card-content"
+       :key       "fncc"}
+      (rum/with-key
+        (list/responsive
+          networks/render-metadata
+          (sort-by :networkName networks)
+          networks/onclick-handler) "fnccrl"))))
 
 (rum/defc form-volumes < rum/static [stack-name volumes]
   (comp/card
-    {:className "Swarmpit-card"}
+    {:className "Swarmpit-card"
+     :key       "fvc"}
     (comp/card-header
       {:className "Swarmpit-table-card-header"
+       :key       "fvch"
        :title     "Volumes"})
     (comp/card-content
-      {:className "Swarmpit-table-card-content"}
-      (list/responsive
-        volumes/render-metadata
-        (sort-by :volumeName volumes)
-        volumes/onclick-handler))))
+      {:className "Swarmpit-table-card-content"
+       :key       "fvcc"}
+      (rum/with-key
+        (list/responsive
+          volumes/render-metadata
+          (sort-by :volumeName volumes)
+          volumes/onclick-handler) "fvccrl"))))
 
 (rum/defc form-configs < rum/static [stack-name configs]
   (comp/card
-    {:className "Swarmpit-card"}
+    {:className "Swarmpit-card"
+     :key       "fcc"}
     (comp/card-header
       {:className "Swarmpit-table-card-header"
+       :key       "fcch"
        :title     "Configs"})
     (comp/card-content
-      {:className "Swarmpit-table-card-content"}
-      (list/responsive
-        configs/render-metadata
-        (sort-by :configName configs)
-        configs/onclick-handler))))
+      {:className "Swarmpit-table-card-content"
+       :key       "fccc"}
+      (rum/with-key
+        (list/responsive
+          configs/render-metadata
+          (sort-by :configName configs)
+          configs/onclick-handler) "fcccrl"))))
 
 (rum/defc form-secrets < rum/static [stack-name secrets]
   (comp/card
-    {:className "Swarmpit-card"}
+    {:className "Swarmpit-card"
+     :key       "fsec"}
     (comp/card-header
       {:className "Swarmpit-table-card-header"
+       :key       "fsech"
        :title     "Secrets"})
     (comp/card-content
-      {:className "Swarmpit-table-card-content"}
-      (list/responsive
-        secrets/render-metadata
-        (sort-by :secretName secrets)
-        secrets/onclick-handler))))
+      {:className "Swarmpit-table-card-content"
+       :key       "fsecc"}
+      (rum/with-key
+        (list/responsive
+          secrets/render-metadata
+          (sort-by :secretName secrets)
+          secrets/onclick-handler) "fseccrl"))))
 
 (defn- init-form-state
   []
@@ -228,28 +248,38 @@
            :spacing   40}
           (comp/grid
             {:item true
+             :key  "ssg"
              :xs   12}
-            (form-services stack-name services))
+            (rum/with-key
+              (form-services stack-name services) "ssgfs"))
           (when (not-empty networks)
             (comp/grid
               {:item true
+               :key  "sng"
                :xs   12}
-              (form-networks stack-name networks)))
+              (rum/with-key
+                (form-networks stack-name networks) "sngfn")))
           (when (not-empty secrets)
             (comp/grid
               {:item true
+               :key  "sseg"
                :xs   12}
-              (form-secrets stack-name secrets)))
+              (rum/with-key
+                (form-secrets stack-name secrets) "ssegfs")))
           (when (not-empty configs)
             (comp/grid
               {:item true
+               :key  "scg"
                :xs   12}
-              (form-configs stack-name configs)))
+              (rum/with-key
+                (form-configs stack-name configs) "scgfc")))
           (when (not-empty volumes)
             (comp/grid
               {:item true
+               :key  "svg"
                :xs   12}
-              (form-volumes stack-name volumes))))]])))
+              (rum/with-key
+                (form-volumes stack-name volumes) "svgfv"))))]])))
 
 (rum/defc form < rum/reactive
                  mixin-init-form

@@ -110,9 +110,9 @@
   (form-editor spec))
 
 (defn- form-select [name value last? previous?]
-  (print value)
   (comp/text-field
     {:fullWidth       true
+     :key             "compose-select"
      :label           "Compose file"
      :helperText      "Compose file source"
      :select          true
@@ -142,26 +142,32 @@
       [:div.Swarmpit-form
        [:div.Swarmpit-form-context
         (comp/card
-          {:className "Swarmpit-form-card"}
+          {:className "Swarmpit-form-card"
+           :key       "scfec"}
           (comp/card-header
             {:className "Swarmpit-form-card-header"
+             :key       "scfech"
              :title     "Edit Stack"})
           (comp/card-content
-            {}
+            {:key "scfecc"}
             (comp/grid
               {:container true
+               :key       "scfeccgc"
                :spacing   40}
               (comp/grid
                 {:item true
+                 :key  "scfeccgig"
                  :xs   12}
                 (form-name name)
                 (form-select name :current last? previous?))
               (comp/grid
                 {:item true
+                 :key  "scfeccgie"
                  :xs   12}
                 (form-editor (:compose spec))))
             (html
-              [:div.Swarmpit-form-buttons
+              [:div {:class "Swarmpit-form-buttons"
+                     :key   "scfeccbtn"}
                (composite/progress-button
                  "Deploy"
                  #(update-stack-handler name)

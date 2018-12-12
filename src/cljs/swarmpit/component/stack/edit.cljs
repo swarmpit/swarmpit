@@ -39,7 +39,6 @@
      :name            "data"
      :key             "data"
      :variant         "outlined"
-     :multiline       true
      :required        true
      :InputLabelProps {:shrink true}
      :value           value}))
@@ -103,27 +102,33 @@
       [:div.Swarmpit-form
        [:div.Swarmpit-form-context
         (comp/card
-          {:className "Swarmpit-form-card"}
+          {:className "Swarmpit-form-card"
+           :key       "sefec"}
           (comp/card-header
             {:className "Swarmpit-form-card-header"
+             :key       "sefech"
              :title     "Edit Stack"})
           (comp/card-content
-            {}
+            {:key "sefecc"}
             (comp/grid
               {:container true
+               :key       "sefeccg"
                :spacing   40}
               (comp/grid
                 {:item true
+                 :key  "sefecigg"
                  :xs   12
                  :sm   6}
                 (form-name name)
                 (compose/form-select name select true previous?))
               (comp/grid
                 {:item true
+                 :key  "sefecige"
                  :xs   12}
                 (form-editor (:compose spec))))
             (html
-              [:div.Swarmpit-form-buttons
+              [:div {:class "Swarmpit-form-buttons"
+                     :key   "sefeccbtn"}
                (composite/progress-button
                  "Deploy"
                  #(update-stack-handler name)

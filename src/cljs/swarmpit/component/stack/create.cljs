@@ -37,7 +37,6 @@
      :fullWidth       true
      :name            "data"
      :key             "data"
-     :multiLine       true
      :rowsMax         10
      :variant         "outlined"
      :required        true
@@ -106,29 +105,37 @@
         [:div.Swarmpit-form
          [:div.Swarmpit-form-context
           (comp/card
-            {:className "Swarmpit-form-card"}
+            {:className "Swarmpit-form-card"
+             :key       "scfcc"}
             (comp/card-header
               {:className "Swarmpit-form-card-header"
+               :key       "scfcch"
                :title     "New Stack"})
             (comp/card-content
-              {}
+              {:key "scfccc"}
               (comp/grid
                 {:container true
+                 :key       "scfcccc"
                  :spacing   40}
                 (comp/grid
                   {:item true
+                   :key  "scfccccig"
                    :xs   12
                    :lx   4}
                   (form-name name))
                 (comp/grid
                   {:item true
+                   :key  "scfccccie"
                    :xs   12
                    :lx   4}
                   (when-not from
-                    (html [:span.Swarmpit-message (icon/info {}) "Please drag & drop or paste a compose file."]))
+                    (html [:span {:class "Swarmpit-message"
+                                  :key   "scfcccciem"}
+                           (icon/info {}) "Please drag & drop or paste a compose file."]))
                   (form-editor (:compose spec))))
               (html
-                [:div.Swarmpit-form-buttons
+                [:div {:class "Swarmpit-form-buttons"
+                       :key   "scfcccbtn"}
                  (composite/progress-button
                    "Deploy"
                    create-stack-handler
