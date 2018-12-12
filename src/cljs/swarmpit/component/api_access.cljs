@@ -65,44 +65,58 @@
 
 (rum/defc form-api-token < rum/static [{:keys [api-token token]}]
   (let [state (if (and api-token (not token))
-                :old (if token
-                       :new :none))]
+                :old
+                (if token :new :none))]
     (comp/grid
       {:item true
+       :key  "aag"
        :xs   12
        :sm   8
        :lg   6}
       (comp/card
-        {:className "Swarmpit-form-card"}
+        {:className "Swarmpit-form-card"
+         :key       "aagc"}
         (comp/card-header
           {:className "Swarmpit-form-card-header"
+           :key       "aagch"
            :title     (case state :none "Create API token" :old "API Token" :new "New API token")})
         (comp/card-content
-          {}
+          {:key "aagcc"}
           (comp/grid
             {:container true
+             :key       "aagccc"
              :spacing   40}
             (comp/grid
               {:item true
+               :key  "aagcccig"
                :xs   12}
               (case state
-                :old [(comp/typography {} ["Token for this user was already created, if you lost it, you can regenerate it and "
-                                           "the former token will be revoked."])
+                :old [(comp/typography
+                        {:key "ost"}
+                        ["Token for this user was already created, if you lost it, you can regenerate it and "
+                         "the former token will be revoked."])
                       (form-token (str "Bearer ..." (:mask api-token)))]
-                :new [(comp/typography {} ["Copy your generated token and store it safely, value will be displayed only once."])
+                :new [(comp/typography
+                        {:key "nst"}
+                        ["Copy your generated token and store it safely, value will be displayed only once."])
                       (form-token (:token token))]
-                :none [(comp/typography {} "Your user doesn't have any API token.")
-                       (comp/typography {} "You can create authorization token here. Generated token doesn't expire, but it can be revoked.")])))
+                :none [(comp/typography
+                         {:key "nost1"} "Your user doesn't have any API token.")
+                       (comp/typography
+                         {:key "nost2"} "You can create authorization token here. Generated token doesn't expire, but it can be revoked.")])))
           (html
-            [:div.Swarmpit-form-buttons
+            [:div {:class "Swarmpit-form-buttons"
+                   :key   "aagccbtn"}
              (comp/button
                {:variant  "contained"
+                :key      "aagccbtnc"
                 :disabled false
                 :onClick  generate-handler
                 :color    "primary"}
-                (case state :none "Generate" "Regenerate"))
+               (case state :none "Generate" "Regenerate"))
              (comp/button
                {:variant  "outlined"
+                :key      "aagccbtnr"
                 :disabled (= :none state)
                 :onClick  remove-handler}
                "Remove")]))))))

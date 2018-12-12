@@ -15,6 +15,6 @@
         (comp/grid
           {:container true
            :spacing   40}
-          (password/form)
-          (api-access/form))]])))
+          (rum/with-key (password/form) "pf")
+          (rum/with-key (api-access/form) "aaf"))]])))
 

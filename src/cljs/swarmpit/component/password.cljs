@@ -104,27 +104,33 @@
         {:keys [error? processing? showPassword]} (state/react state/form-state-cursor)]
     (comp/grid
       {:item true
+       :key  "pg"
        :xs   12
        :sm   4
        :lg   3}
       (comp/card
-        {:className "Swarmpit-form-card"}
+        {:className "Swarmpit-form-card"
+         :key       "pgc"}
         (comp/card-header
           {:className "Swarmpit-form-card-header"
+           :key       "pgch"
            :title     "Change password"})
         (comp/card-content
-          {}
+          {:key "pgcc"}
           (comp/grid
             {:container true
+             :key       "pgccc"
              :spacing   40}
             (comp/grid
               {:item true
+               :key  "pgcccig"
                :xs   12}
               (form-password password showPassword)
               (form-new-password new-password showPassword)
               (form-confirm-password confirm-password error? showPassword)))
           (html
-            [:div.Swarmpit-form-buttons
+            [:div {:class "Swarmpit-form-buttons"
+                   :key   "pgccbtn"}
              (composite/progress-button
                "Change"
                change-password-handler
