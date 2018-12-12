@@ -42,7 +42,7 @@
 (defn- form-public [value]
   (comp/checkbox
     {:checked  value
-     :value    value
+     :value    (str value)
      :onChange #(state/update-value [:public] (-> % .-target .-checked) state/form-value-cursor)}))
 
 (defn- registry-handler
@@ -91,29 +91,36 @@
            :xs   12
            :sm   6}
           (comp/card
-            {:className "Swarmpit-form-card"}
+            {:className "Swarmpit-form-card"
+             :key       "rec"}
             (comp/card-header
               {:className "Swarmpit-form-card-header"
+               :key       "rech"
                :title     "Edit Registry"})
             (comp/card-content
-              {}
+              {:key "recc"}
               (comp/grid
                 {:container true
+                 :key       "reccc"
                  :spacing   40}
                 (comp/grid
                   {:item true
+                   :key  "recccig"
                    :xs   12}
                   (form-name name)
                   (form-url url)
                   (comp/form-control
-                    {:component "fieldset"}
+                    {:component "fieldset"
+                     :key       "recccigc"}
                     (comp/form-group
-                      {}
+                      {:key "recccigcg"}
                       (comp/form-control-label
                         {:control (form-public public)
+                         :key     "recccigcgp"
                          :label   "Public"})))))
               (html
-                [:div.Swarmpit-form-buttons
+                [:div {:class "Swarmpit-form-buttons"
+                       :key   "reccbtn"}
                  (composite/progress-button
                    "Save"
                    #(update-registry-handler _id)

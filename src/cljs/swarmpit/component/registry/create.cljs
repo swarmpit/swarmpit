@@ -45,14 +45,14 @@
     {:name     "authentication"
      :label    "Authentication"
      :color    "primary"
-     :value    value
+     :value    (str value)
      :checked  value
      :onChange #(state/update-value [:withAuth] (-> % .-target .-checked) state/form-value-cursor)}))
 
 (defn- form-public [value]
   (comp/checkbox
     {:checked  value
-     :value    value
+     :value    (str value)
      :onChange #(state/update-value [:public] (-> % .-target .-checked) state/form-value-cursor)}))
 
 (defn- form-username [value]
@@ -82,12 +82,6 @@
      :onChange        #(state/update-value [:password] (-> % .-target .-value) state/form-value-cursor)
      :InputLabelProps {:shrink true}
      :InputProps      {:endAdornment (common/show-password-adornment show-password?)}}))
-
-(defn- form-public [value]
-  (comp/checkbox
-    {:checked  value
-     :value    value
-     :onChange #(state/update-value [:public] (-> % .-target .-checked) state/form-value-cursor)}))
 
 (defn- create-registry-handler
   []
@@ -140,41 +134,45 @@
              :sm   6
              :md   3}
             (comp/card
-              {:className "Swarmpit-form-card"}
+              {:className "Swarmpit-form-card"
+               :key       "rcc"}
               (comp/card-header
                 {:className "Swarmpit-form-card-header"
+                 :key       "rcch"
                  :title     "New Registry"})
               (comp/card-content
-                {}
+                {:key "rccc"}
                 (comp/grid
                   {:container true
+                   :key       "rcccc"
                    :spacing   40}
                   (comp/grid
                     {:item true
+                     :key  "rcccig"
                      :xs   12}
                     (form-name name)
                     (form-url url)
                     (comp/form-control
-                      {:component "fieldset"}
+                      {:component "fieldset"
+                       :key       "rcccigc"}
                       (comp/form-group
-                        {}
+                        {:key "rcccigcg"}
                         (comp/form-control-label
                           {:control (form-public public)
-                           :label   "Public"})))
-                    (comp/form-control
-                      {:component "fieldset"}
-                      (comp/form-group
-                        {}
+                           :key     "rcccigcgp"
+                           :label   "Public"})
                         (comp/form-control-label
                           {:control (form-auth withAuth)
+                           :key     "rcccigcga"
                            :label   "Authentication"})))
                     (when withAuth
                       (html
-                        [:div
+                        [:div {:key "rcccigaut"}
                          (form-username username)
                          (form-password password showPassword)]))))
                 (html
-                  [:div.Swarmpit-form-buttons
+                  [:div {:class "Swarmpit-form-buttons"
+                         :key   "rcccbtn"}
                    (composite/progress-button
                      "Add registry"
                      create-registry-handler

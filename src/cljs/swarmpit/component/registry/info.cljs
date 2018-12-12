@@ -64,28 +64,31 @@
            :spacing   40}
           (comp/grid
             {:item true
+             :key  "rgg"
              :xs   12
              :sm   6}
             (comp/card
-              {:className "Swarmpit-form-card"}
+              {:className "Swarmpit-form-card"
+               :key       "rgc"}
               (comp/card-header
                 {:title     name
                  :className "Swarmpit-form-card-header"
+                 :key       "rgch"
                  :subheader url})
               (comp/card-content
-                {}
+                {:key "rgcc"}
                 (html
-                  [:div
+                  [:div {:key "rgccd"}
                    (when withAuth
                      [:span "Authenticated with user " [:b username] "."])
                    [:br]
                    [:span "Registry is " [:b (if public "public." "private.")]]]))
-              (comp/divider)
+              (comp/divider
+                {:key "rgd"})
               (comp/card-content
-                {:style {:paddingBottom "16px"}}
-                (comp/typography
-                  {:color "textSecondary"}
-                  (form/item-id _id))))))]])))
+                {:style {:paddingBottom "16px"}
+                 :key   "rgccf"}
+                (form/item-id _id)))))]])))
 
 (rum/defc form < rum/reactive
                  mixin-init-form
