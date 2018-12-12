@@ -25,50 +25,56 @@
 (defn- section-general
   [{:keys [id stack volumeName driver mountpoint scope]}]
   (comp/card
-    {:className "Swarmpit-form-card"}
+    {:className "Swarmpit-form-card"
+     :key       "vgc"}
     (comp/card-header
       {:title     volumeName
        :classes   {:title "Swarmpit-card-header-responsive-title"}
+       :key       "vgch"
        :className "Swarmpit-form-card-header"})
     (comp/card-content
-      {}
+      {:key "vgcc"}
       (html
-        [:div
+        [:div {:key "vgccd"}
          [:span "Volume is mount at " [:b.volume-mountpoint mountpoint] "."]]))
     (comp/card-content
-      {}
+      {:key "vgccl"}
       (form/item-labels
         [(when driver
            (label/grey driver))]))
     (comp/card-actions
-      {}
+      {:key "vgca"}
       (when stack
         (comp/button
           {:size  "small"
            :color "primary"
            :href  (routes/path-for-frontend :stack-info {:name stack})}
           "See stack")))
-    (comp/divider)
+    (comp/divider
+      {:key "vgd"})
     (comp/card-content
-      {:style {:paddingBottom "16px"}}
-      (comp/typography
-        {:color "textSecondary"}
-        (form/item-id id)))))
+      {:style {:paddingBottom "16px"}
+       :key   "vgccf"}
+      (form/item-id id))))
 
 (defn- section-driver
   [{:keys [driver options]}]
   (comp/card
-    {:className "Swarmpit-card"}
+    {:className "Swarmpit-card"
+     :key       "vdc"}
     (comp/card-header
       {:className "Swarmpit-table-card-header"
+       :key       "vdch"
        :title     "Driver options"})
     (comp/card-content
-      {:className "Swarmpit-table-card-content"}
+      {:className "Swarmpit-table-card-content"
+       ::key      "vdcc"}
       (when (not-empty options)
-        (list/list
-          form-driver-opts-render-metadata
-          options
-          nil)))))
+        (rum/with-key
+          (list/list
+            form-driver-opts-render-metadata
+            options
+            nil) "vdccrl")))))
 
 (defn- volume-services-handler
   [volume-name]
@@ -125,18 +131,21 @@
            :spacing   40}
           (comp/grid
             {:item true
+             :key  "vgg"
              :xs   12
              :sm   6}
             (section-general volume))
           (when (not-empty (:options volume))
             (comp/grid
               {:item true
+               :key  "vdog"
                :xs   12
                :sm   6}
               (section-driver volume)))
           (when (not-empty services)
             (comp/grid
               {:item true
+               :key  "vlsg"
                :xs   12}
               (services/linked services))))]])))
 
