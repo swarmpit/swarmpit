@@ -31,7 +31,7 @@
 (defn- form-driver [value plugins]
   (comp/text-field
     {:fullWidth       true
-     :id              "driver"
+     :key             "driver"
      :label           "Network driver"
      :helperText      "Driver to manage the Network "
      :select          true
@@ -48,54 +48,65 @@
 (defn- form-internal [value]
   (comp/checkbox
     {:checked  value
-     :value    value
+     :key      "internal"
+     :value    (str value)
      :onChange #(state/update-value [:internal] (-> % .-target .-checked) state/form-value-cursor)}))
 
 (defn- form-attachable [value ingres?]
   (comp/checkbox
     {:checked  value
+     :key      "attachable"
      :disabled ingres?
-     :value    value
+     :value    (str value)
      :onChange #(state/update-value [:attachable] (-> % .-target .-checked) state/form-value-cursor)}))
 
 (defn- form-ingress [value attachable?]
   (comp/checkbox
     {:checked  value
+     :key      "ingress"
      :disabled attachable?
-     :value    value
+     :value    (str value)
      :onChange #(state/update-value [:ingress] (-> % .-target .-checked) state/form-value-cursor)}))
 
 (defn- section-general
-  [{:keys [name internal attachable ingress]}]
+  [{:keys [networkName internal attachable ingress]}]
   (comp/grid
     {:container true
+     :key       "sgg"
      :spacing   24}
     (comp/grid
       {:item true
+       :key  "sggn"
        :xs   12}
-      (form-name name))
+      (form-name networkName))
     (comp/grid
       {:item true
+       :key  "sgfcg"
        :xs   12
        :sm   6}
       (comp/form-control
-        {:component "fieldset"}
+        {:component "fieldset"
+         :key       "sgfc"}
         (comp/form-group
-          {}
+          {:key "sgfcg"}
           (comp/form-control-label
             {:control (form-internal internal)
+             :key     "sgfclint"
              :label   "Is Internal"})
           (comp/form-control-label
             {:control (form-attachable attachable ingress)
+             :key     "sgfclat"
              :label   "Is Attachable"})
           (comp/form-control-label
             {:control (form-ingress ingress attachable)
+             :key     "sgfcling"
              :label   "Is Ingress"}))))))
 
 (defn- form-ipv6 [value]
   (comp/checkbox
     {:checked  value
-     :value    value
+     :key      "ipv6"
+     :value    (str value)
      :onChange #(state/update-value [:enableIPv6] (-> % .-target .-checked) state/form-value-cursor)}))
 
 (defn- form-subnet [value]
@@ -129,19 +140,26 @@
   [{:keys [ipam enableIPv6]}]
   (comp/grid
     {:container true
+     :key       "nsicg"
      :spacing   24}
     (comp/grid
       {:item true
-       :xs   12} (form-subnet (:subnet ipam)))
+       :key  "nsiigs"
+       :xs   12}
+      (form-subnet (:subnet ipam)))
     (comp/grid
       {:item true
-       :xs   12} (form-gateway (:gateway ipam)))
+       :key  "nsiigg"
+       :xs   12}
+      (form-gateway (:gateway ipam)))
     (comp/grid
       {:item true
+       :key  "nsiigipv6"
        :xs   12
        :sm   6}
       (comp/form-control-label
         {:control (form-ipv6 enableIPv6)
+         :key     "nsiigipv6cl"
          :label   "Enable IPV6"}))))
 
 (def form-driver-opts-cursor (conj state/form-value-cursor :options))
@@ -186,29 +204,36 @@
   [{:keys [driver options]} plugins]
   (comp/grid
     {:container true
+     :key       "nsdcg"
      :spacing   24}
     (comp/grid
       {:item true
+       :key  "nsdigd"
        :xs   12}
       (form-driver driver plugins))
     (comp/grid
       {:item true
+       :key  "nsdigo"
        :xs   12
        :sm   6}
       (form/subsection
         "Driver options"
         (comp/button
           {:color   "primary"
+           :key     "nsdigob"
            :onClick add-driver-opt}
-          (comp/svg icon/add-small) "Add option")))
+          (comp/svg
+            {:key "nsdigobi"} icon/add-small) "Add option")))
     (when (not (empty? options))
       (comp/grid
         {:item true
+         :key  "nsdigol"
          :xs   12}
-        (list/list
-          form-driver-opts-render-metadata
-          options
-          (fn [index] (state/remove-item index form-driver-opts-cursor)))))))
+        (rum/with-key
+          (list/list
+            form-driver-opts-render-metadata
+            options
+            (fn [index] (state/remove-item index form-driver-opts-cursor))) "nsdigoll")))))
 
 (defn- network-plugin-handler
   []
@@ -242,14 +267,15 @@
 
 (defn- init-form-value
   []
-  (state/set-value {:networkName nil
+  (state/set-value {:networkName ""
                     :driver      "overlay"
                     :internal    false
                     :attachable  false
                     :ingress     false
                     :enableIPv6  false
                     :options     []
-                    :ipam        nil} state/form-value-cursor))
+                    :ipam        {:subnet  ""
+                                  :gateway ""}} state/form-value-cursor))
 
 (def mixin-init-form
   (mixin/init-form
@@ -267,40 +293,49 @@
         [:div.Swarmpit-form
          [:div.Swarmpit-form-context
           (comp/card
-            {:className "Swarmpit-form-card"}
+            {:className "Swarmpit-form-card"
+             :key       "network-card"}
             (comp/card-header
               {:className "Swarmpit-form-card-header"
-               :title     "New Network"})
+               :title     "New Network"
+               :key       "network-card-header"})
             (comp/card-content
-              {}
+              {:key "network-card-content"}
               (comp/grid
                 {:container true
+                 :key       "ncg"
                  :spacing   40}
                 (comp/grid
                   {:item true
+                   :key  "nigg"
                    :xs   12
                    :sm   6}
                   (comp/typography
                     {:variant      "h6"
+                     :key          "niggt"
                      :gutterBottom true} "General")
                   (section-general item))
                 (comp/grid
                   {:item true
+                   :key  "niig"
                    :xs   12
                    :sm   6}
                   (comp/typography
                     {:variant      "h6"
+                     :key          "niigt"
                      :gutterBottom true} "IPAM")
                   (section-ipam item))
                 (comp/grid
                   {:item true
+                   :key  "nidg"
                    :xs   12}
                   (comp/typography
                     {:variant      "h6"
+                     :key          "nidgt"
                      :gutterBottom true} "Driver")
                   (section-driver item plugins)))
               (html
-                [:div.Swarmpit-form-buttons
+                [:div.Swarmpit-form-buttons {:key "nbs"}
                  (composite/progress-button
                    "Create"
                    #(create-network-handler)
