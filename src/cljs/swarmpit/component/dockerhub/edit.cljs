@@ -29,7 +29,7 @@
 (defn- form-public [value]
   (comp/checkbox
     {:checked  value
-     :value    value
+     :value    (str value)
      :onChange #(state/update-value [:public] (-> % .-target .-checked) state/form-value-cursor)}))
 
 (defn- user-handler
@@ -78,28 +78,35 @@
            :xs   12
            :sm   6}
           (comp/card
-            {:className "Swarmpit-form-card"}
+            {:className "Swarmpit-form-card"
+             :key       "dec"}
             (comp/card-header
               {:className "Swarmpit-form-card-header"
+               :key       "dech"
                :title     "Edit Hub Account"})
             (comp/card-content
-              {}
+              {:key "decc"}
               (comp/grid
                 {:container true
+                 :key       "deccc"
                  :spacing   40}
                 (comp/grid
                   {:item true
+                   :key  "decccig"
                    :xs   12}
                   (form-username username)
                   (comp/form-control
-                    {:component "fieldset"}
+                    {:component "fieldset"
+                     :key       "decccigc"}
                     (comp/form-group
-                      {}
+                      {:key "decccigcg"}
                       (comp/form-control-label
                         {:control (form-public public)
+                         :key     "decccigcgp"
                          :label   "Public"})))))
               (html
-                [:div.Swarmpit-form-buttons
+                [:div {:class "Swarmpit-form-buttons"
+                       :key   "deccbtn"}
                  (composite/progress-button
                    "Save"
                    #(update-user-handler _id)

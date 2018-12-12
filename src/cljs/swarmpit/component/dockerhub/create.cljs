@@ -30,6 +30,7 @@
   (comp/text-field
     {:label           "Password"
      :variant         "outlined"
+     :key             "password"
      :fullWidth       true
      :required        true
      :margin          "normal"
@@ -44,7 +45,7 @@
 (defn- form-public [value]
   (comp/checkbox
     {:checked  value
-     :value    value
+     :value    (str value)
      :onChange #(state/update-value [:public] (-> % .-target .-checked) state/form-value-cursor)}))
 
 (defn- add-user-handler
@@ -95,29 +96,36 @@
              :sm   6
              :md   3}
             (comp/card
-              {:className "Swarmpit-form-card"}
+              {:className "Swarmpit-form-card"
+               :key       "dcc"}
               (comp/card-header
                 {:className "Swarmpit-form-card-header"
+                 :key       "dcch"
                  :title     "New Hub Account"})
               (comp/card-content
-                {}
+                {:key "dccc"}
                 (comp/grid
                   {:container true
+                   :key       "dcccc"
                    :spacing   40}
                   (comp/grid
                     {:item true
+                     :key  "dcccig"
                      :xs   12}
                     (form-username username)
                     (form-password password showPassword)
                     (comp/form-control
-                      {:component "fieldset"}
+                      {:component "fieldset"
+                       :key       "dcccigfc"}
                       (comp/form-group
-                        {}
+                        {:key "dcccigfcg"}
                         (comp/form-control-label
                           {:control (form-public public)
+                           :key     "dcccigfcgp"
                            :label   "Public"})))))
                 (html
-                  [:div.Swarmpit-form-buttons
+                  [:div {:class "Swarmpit-form-buttons"
+                         :key   "dcccbtn"}
                    (composite/progress-button
                      "Add Dockerhub user"
                      add-user-handler

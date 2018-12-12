@@ -294,49 +294,49 @@
          [:div.Swarmpit-form-context
           (comp/card
             {:className "Swarmpit-form-card"
-             :key       "network-card"}
+             :key       "ncc"}
             (comp/card-header
               {:className "Swarmpit-form-card-header"
                :title     "New Network"
-               :key       "network-card-header"})
+               :key       "ncch"})
             (comp/card-content
-              {:key "network-card-content"}
+              {:key "nccc"}
               (comp/grid
                 {:container true
-                 :key       "ncg"
+                 :key       "nccccg"
                  :spacing   40}
                 (comp/grid
                   {:item true
-                   :key  "nigg"
+                   :key  "ncccigg"
                    :xs   12
                    :sm   6}
                   (comp/typography
                     {:variant      "h6"
-                     :key          "niggt"
+                     :key          "nccciggt"
                      :gutterBottom true} "General")
                   (section-general item))
                 (comp/grid
                   {:item true
-                   :key  "niig"
+                   :key  "nccciig"
                    :xs   12
                    :sm   6}
                   (comp/typography
                     {:variant      "h6"
-                     :key          "niigt"
+                     :key          "nccciigt"
                      :gutterBottom true} "IPAM")
                   (section-ipam item))
                 (comp/grid
                   {:item true
-                   :key  "nidg"
+                   :key  "ncccidg"
                    :xs   12}
                   (comp/typography
                     {:variant      "h6"
-                     :key          "nidgt"
+                     :key          "ncccidgt"
                      :gutterBottom true} "Driver")
                   (section-driver item plugins)))
               (html
                 [:div {:class "Swarmpit-form-buttons"
-                       :key   "nbs"}
+                       :key   "ncccbtn"}
                  (composite/progress-button
                    "Create"
                    #(create-network-handler)

@@ -65,30 +65,33 @@
            :spacing   40}
           (comp/grid
             {:item true
+             :key  "dgg"
              :xs   12
              :sm   6}
             (comp/card
-              {:className "Swarmpit-form-card"}
+              {:className "Swarmpit-form-card"
+               :key       "dgc"}
               (comp/card-header
                 {:title     username
-                 :className "Swarmpit-form-card-header"})
+                 :className "Swarmpit-form-card-header"
+                 :key       "dgch"})
               (comp/card-content
-                {}
+                {:key "dgcc"}
                 (html
-                  [:div
+                  [:div {:key "dgccd"}
                    [:span "Authenticated with user " [:b username] "."]
                    [:br]
                    [:span "Hub is " [:b (if public "public." "private.")]]]))
               (comp/card-content
-                {}
+                {:key "dgccl"}
                 (form/item-labels
                   [(label/grey role)]))
-              (comp/divider)
+              (comp/divider
+                {:key "dgd"})
               (comp/card-content
-                {:style {:paddingBottom "16px"}}
-                (comp/typography
-                  {:color "textSecondary"}
-                  (form/item-id _id))))))]])))
+                {:style {:paddingBottom "16px"}
+                 :key   "dgccf"}
+                (form/item-id _id)))))]])))
 
 (rum/defc form < rum/reactive
                  mixin-init-form
