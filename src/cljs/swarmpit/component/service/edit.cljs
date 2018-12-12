@@ -334,8 +334,8 @@
 (def scroll-to-section
   {:after-render
    (fn [state]
-     (let [loaded? (state/get-value (conj state/form-state-cursor :scrolled))]
-       (when (nil? loaded?)
+     (let [scrolled? (state/get-value (conj state/form-state-cursor :scrolled))]
+       (when (nil? scrolled?)
          (let [section (-> state :rum/args first :params :section)
                el (.getElementById js/document section)]
            (when (and el section)
