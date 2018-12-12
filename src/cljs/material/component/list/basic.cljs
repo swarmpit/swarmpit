@@ -8,24 +8,24 @@
 (defn table-head
   [render-metadata]
   (cmp/table-head
-    {:key "Swarmpit-table-head"}
+    {:key "table-head"}
     (cmp/table-row
-      {:key "Swarmpit-table-head-row"}
+      {:key "table-head-row"}
       (map-indexed
         (fn [index header]
           (cmp/table-cell
-            {:key       (str "Swarmpit-table-head-cell-" index)
+            {:key       (str "table-head-cell-" index)
              :className "Swarmpit-table-head-cell"}
             (:name header))) (:summary render-metadata)))))
 
 (defn table-body
   [render-metadata items onclick-handler-fn]
   (cmp/table-body
-    {:key "Swarmpit-table-body"}
+    {:key "table-body"}
     (map-indexed
       (fn [index item]
         (cmp/table-row
-          {:key     (str "Swarmpit-table-row-" index)
+          {:key     (str "table-row-" index)
            :onClick #(onclick-handler-fn item)
            :hover   true}
           (->> (:summary render-metadata)
@@ -33,14 +33,14 @@
                  (fn [coll-index coll]
                    (let [render-fn (:render-fn coll)]
                      (cmp/table-cell
-                       {:key       (str "Swarmpit-table-row-cell-" index "-" coll-index)
+                       {:key       (str "table-row-cell-" index "-" coll-index)
                         :className "Swarmpit-table-row-cell"}
-                       (render-fn item)))))))) items)))
+                       (render-fn item index)))))))) items)))
 
-(defn table
+(rum/defc table < rum/static
   [render-metadata items onclick-handler-fn]
   (cmp/table
-    {:key       "Swarmpit-table"
+    {:key       "rtable"
      :className "Swarmpit-table"}
     (table-head render-metadata)
     (table-body render-metadata items onclick-handler-fn)))
@@ -51,13 +51,13 @@
         primary-key (:primary render-metadata)
         secodary-key (:secondary render-metadata)]
     (cmp/list-item
-      {:key     (str "Swarmpit-list-item-" index)
+      {:key     (str "list-item-" index)
        :button  (some? onclick-handler-fn)
        :divider (false? (= item last))
        :onClick #(onclick-handler-fn item)}
       (cmp/list-item-text
         (merge
-          {:key     (str "Swarmpit-list-item-text-" index)
+          {:key     (str "list-item-text-" index)
            :classes {:primary   "Swarmpit-list-item-text-primary"
                      :secondary "Swarmpit-list-item-text-secondary"}
            :primary (primary-key item)}
@@ -65,14 +65,14 @@
             {:secondary (secodary-key item)})))
       (when status-fn
         (cmp/list-item-secondary-action
-          {:key   (str "Swarmpit-list-status-" index)
+          {:key   (str "list-status-" index)
            :style {:marginRight "10px"}}
           (status-fn item))))))
 
-(defn list
-  [render-metadata items onclick-handler-fn]
+(rum/defc list < rum/static [render-metadata items onclick-handler-fn]
   (cmp/list
-    {:dense true}
+    {:key   "rlist"
+     :dense true}
     (map-indexed
       (fn [index item]
         (list-item
@@ -82,15 +82,20 @@
           (last items)
           onclick-handler-fn)) items)))
 
-(rum/defc responsive < rum/reactive
+(rum/defc responsive < rum/static
   [render-metadata items onclick-handler-fn]
-  (html
-    [:div
-     (cmp/hidden
-       {:only           ["xs" "sm" "md"]
-        :implementation "js"}
-       (table (:table render-metadata) items onclick-handler-fn))
-     (cmp/hidden
-       {:only           ["lg" "xl"]
-        :implementation "js"}
-       (list (:list render-metadata) items onclick-handler-fn))]))
+  (cmp/mui
+    (html
+      [:div
+       (cmp/hidden
+         {:only           ["xs" "sm" "md"]
+          :implementation "js"}
+         (rum/with-key
+           (table (:table render-metadata) items onclick-handler-fn)
+           "rtable-wrapper"))
+       (cmp/hidden
+         {:only           ["lg" "xl"]
+          :implementation "js"}
+         (rum/with-key
+           (list (:list render-metadata) items onclick-handler-fn)
+           "rlist-wrapper"))])))

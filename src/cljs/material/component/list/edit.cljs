@@ -3,11 +3,12 @@
             [material.components :as cmp]
             [material.component.list.util :refer [render-keys]]
             [swarmpit.utils :refer [select-keys*]]
-            [sablono.core :refer-macros [html]]))
+            [sablono.core :refer-macros [html]]
+            [rum.core :as rum]))
 
 (defn list-item-normal [render-metadata index item delete-handler-fn]
   (cmp/list-item
-    {:key            (str "Swarmpit-list-item-" index)
+    {:key            (str "list-in-" index)
      :className      "Swarmpit-list-item-edit"
      :disableGutters true}
     (->> (select-keys* item (render-keys render-metadata))
@@ -17,9 +18,10 @@
                    value (val coll)]
                (render-fn value item index)))))
     (cmp/list-item-secondary-action
-      {:key (str "Swarmpit-list-status-" index)}
+      {:key (str "list-ins-" index)}
       (cmp/tooltip
-        {:title     "Delete"
+        {:key       (str "list-inst-" index)
+         :title     "Delete"
          :placement "top-start"}
         (cmp/icon-button
           {:color   "secondary"
@@ -28,11 +30,11 @@
 
 (defn list-item-small [render-metadata index item delete-handler-fn]
   (cmp/list-item
-    {:key            (str "Swarmpit-list-item-" index)
+    {:key            (str "list-is-" index)
      :className      "Swarmpit-list-item-edit-small"
      :disableGutters true}
     (html
-      [:div
+      [:div {:key (str "list-isb-" index)}
        (->> (select-keys* item (render-keys render-metadata))
             (map-indexed
               (fn [coll-index coll]
@@ -46,7 +48,7 @@
 (defn list-item
   [render-metadata index item delete-handler-fn]
   (html
-    [:div
+    [:div {:key (str "list-i-" index)}
      (cmp/hidden
        {:only           ["xs" "sm"]
         :implementation "js"}
@@ -56,7 +58,7 @@
         :implementation "js"}
        (list-item-small render-metadata index item delete-handler-fn))]))
 
-(defn list
+(rum/defc list < rum/static
   [render-metadata items delete-handler-fn]
   (cmp/list
     {:dense true}
