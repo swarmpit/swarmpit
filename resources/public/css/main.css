@@ -527,7 +527,11 @@ a {
 
 /* Codemirror custom */
 
-.Swarmpit-codemirror-view > div:before {
+.Swarmpit-codemirror {
+    border: 1px solid rgba(0, 0, 0, 0.23);
+}
+
+.Swarmpit-codemirror > div:before {
     border-bottom: none !important;
 }
 
