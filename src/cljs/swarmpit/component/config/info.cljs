@@ -27,7 +27,7 @@
 (defn- form-data [value]
   (comp/text-field
     {:id              editor-id
-     :className       "Swarmpit-codemirror-view"
+     :className       "Swarmpit-codemirror"
      :fullWidth       true
      :name            "config-view"
      :key             "config-view"

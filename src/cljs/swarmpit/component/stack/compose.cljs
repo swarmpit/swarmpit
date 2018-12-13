@@ -35,6 +35,7 @@
   (comp/text-field
     {:id              editor-id
      :fullWidth       true
+     :className       "Swarmpit-codemirror"
      :name            "config-view"
      :key             "config-view"
      :multiline       true

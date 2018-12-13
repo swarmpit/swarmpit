@@ -72,13 +72,17 @@
 (def sync (f/sync-icon))
 (def add-circle (f/add-circle-icon))
 (def more (f/more-icon))
-(def logs (f/logs))
+(def logs (f/logs-icon))
 
 (def scroll-down (f/vertical-align-bottom-icon))
 
 (defn cancel
   [props]
   (f/cancel-icon (clj->js props)))
+
+(defn circle
+  [props]
+  (f/circle-icon (clj->js props)))
 
 (defn access-time
   [props]

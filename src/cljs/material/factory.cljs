@@ -123,7 +123,8 @@
 (def label-icon (create-factory js/MaterialUIIcons.Label))
 (def info-icon (create-factory js/MaterialUIIcons.Info))
 (def vertical-align-bottom-icon (create-factory js/MaterialUIIcons.VerticalAlignBottom))
-(def logs (create-factory js/MaterialUIIcons.Subject))
+(def logs-icon (create-factory js/MaterialUIIcons.Subject))
+(def circle-icon (create-factory js/MaterialUIIcons.FiberManualRecord))
 
 (def create-mui-theme js/MaterialUI.createMuiTheme)
 
