@@ -21,7 +21,7 @@ The only dependency for Swarmpit deployment is Docker with Swarm initialized, we
 The simplest way to deploy Swarmpit is by using a Compose file from our git repo.
 
 ```
-git clone https://github.com/swarmpit/swarmpit
+git clone https://github.com/swarmpit/swarmpit -b 1.5.1
 docker stack deploy -c swarmpit/docker-compose.yml swarmpit
 ```
 
