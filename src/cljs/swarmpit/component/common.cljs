@@ -6,6 +6,18 @@
             [sablono.core :refer-macros [html]]
             [rum.core :as rum]))
 
+(defn list-empty [title]
+  (comp/card-content
+    {:key "scclcc"}
+    (comp/typography
+      {:key "scclcct"} (str "There are no " title " configured."))))
+
+(defn list-no-items-found []
+  (comp/card-content
+    {:key "scclcci"}
+    (comp/typography
+      {:key "scclccit"} "Nothing matches this filter.")))
+
 (defn list
   [title items filtered-items render-metadata onclick-handler]
   (comp/mui
@@ -13,16 +25,8 @@
       [:div.Swarmpit-form
        [:div.Swarmpit-form-context
         (cond
-          (empty? items)
-          (comp/card-content
-            {:key "scclcc"}
-            (comp/typography
-              {:key "scclcct"} (str "There are no " title " configured.")))
-          (empty? filtered-items)
-          (comp/card-content
-            {:key "scclcci"}
-            (comp/typography
-              {:key "scclccit"} "Nothing matches this filter."))
+          (empty? items) (list-empty title)
+          (empty? filtered-items) (list-no-items-found)
           :else
           (comp/card
             {:className "Swarmpit-card"
@@ -46,5 +50,5 @@
        :onMouseDown (fn [event]
                       (.preventDefault event))}
       (if show-password
-        icon/visibility-off
-        icon/visibility))))
+        icon/visibility
+        icon/visibility-off))))

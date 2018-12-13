@@ -6,6 +6,7 @@
             [material.component.label :as label]
             [swarmpit.component.mixin :as mixin]
             [swarmpit.component.state :as state]
+            [swarmpit.component.progress :as progress]
             [swarmpit.ajax :as ajax]
             [swarmpit.routes :as routes]
             [swarmpit.url :refer [dispatch!]]
@@ -68,8 +69,10 @@
   (let [{:keys [items]} (state/react state/form-value-cursor)
         {:keys [loading? filter]} (state/react state/form-state-cursor)
         filtered-items (list-util/filter items (:query filter))]
-    (common/list "Networks"
-                 items
-                 filtered-items
-                 render-metadata
-                 onclick-handler)))
+    (progress/form
+      loading?
+      (common/list "Networks"
+                   items
+                   filtered-items
+                   render-metadata
+                   onclick-handler))))

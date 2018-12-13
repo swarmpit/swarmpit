@@ -5,6 +5,7 @@
             [material.component.list.util :as list-util]
             [swarmpit.component.state :as state]
             [swarmpit.component.mixin :as mixin]
+            [swarmpit.component.progress :as progress]
             [swarmpit.ajax :as ajax]
             [swarmpit.routes :as routes]
             [swarmpit.url :refer [dispatch!]]
@@ -78,10 +79,12 @@
                  mixin/focus-filter [_]
   (let [{:keys [items]} (state/react state/form-value-cursor)
         {:keys [loading? filter]} (state/react state/form-state-cursor)]
-    (common/list "Stacks"
-                 items
-                 (->> (list-util/filter items (:query filter))
-                      (format-response)
-                      (sort-by :stackName))
-                 render-metadata
-                 onclick-handler)))
+    (progress/form
+      loading?
+      (common/list "Stacks"
+                   items
+                   (->> (list-util/filter items (:query filter))
+                        (format-response)
+                        (sort-by :stackName))
+                   render-metadata
+                   onclick-handler))))

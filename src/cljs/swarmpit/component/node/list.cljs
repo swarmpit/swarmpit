@@ -7,6 +7,7 @@
             [material.component.chart :as chart]
             [swarmpit.component.mixin :as mixin]
             [swarmpit.component.state :as state]
+            [swarmpit.component.common :as common]
             [swarmpit.ajax :as ajax]
             [swarmpit.routes :as routes]
             [swarmpit.url :refer [dispatch!]]
@@ -135,10 +136,12 @@
       (html
         [:div.Swarmpit-form
          [:div.Swarmpit-form-context
-          (comp/grid
-            {:container true
-             :spacing   40}
-            (map-indexed
-              (fn [index item]
-                (node-item item index)) (sort-by :nodeName filtered-items)))]]))))
+          (if (empty? filtered-items)
+            (common/list-no-items-found)
+            (comp/grid
+              {:container true
+               :spacing   40}
+              (map-indexed
+                (fn [index item]
+                  (node-item item index)) (sort-by :nodeName filtered-items))))]]))))
 

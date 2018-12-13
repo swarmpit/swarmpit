@@ -5,6 +5,7 @@
             [swarmpit.component.mixin :as mixin]
             [swarmpit.component.state :as state]
             [swarmpit.component.common :as common]
+            [swarmpit.component.progress :as progress]
             [swarmpit.ajax :as ajax]
             [swarmpit.time :as time]
             [swarmpit.routes :as routes]
@@ -60,9 +61,11 @@
                  mixin/focus-filter [_]
   (let [{:keys [items]} (state/react state/form-value-cursor)
         {:keys [loading? filter]} (state/react state/form-state-cursor)]
-    (common/list "Secrets"
-                 items
-                 (->> (list-util/filter items (:query filter))
-                      (sort-by :secretName))
-                 render-metadata
-                 onclick-handler)))
+    (progress/form
+      loading?
+      (common/list "Secrets"
+                   items
+                   (->> (list-util/filter items (:query filter))
+                        (sort-by :secretName))
+                   render-metadata
+                   onclick-handler))))

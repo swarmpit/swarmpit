@@ -6,6 +6,7 @@
             [material.component.label :as label]
             [swarmpit.component.state :as state]
             [swarmpit.component.mixin :as mixin]
+            [swarmpit.component.progress :as progress]
             [swarmpit.ajax :as ajax]
             [swarmpit.routes :as routes]
             [swarmpit.url :refer [dispatch!]]
@@ -60,7 +61,7 @@
                       :render-fn (fn [item] (render-item-replicas item))}
                      {:name      "Ports"
                       :render-fn (fn [item index] (render-item-ports item index))}
-                     {:name      "Status"
+                     {:name      ""
                       :render-fn (fn [item] (render-status item))}]}
    :list  {:primary   (fn [item] (:serviceName item))
            :secondary (fn [item] (get-in item [:repository :image]))
@@ -123,8 +124,10 @@
   (let [{:keys [items]} (state/react state/form-value-cursor)
         {:keys [loading? filter]} (state/react state/form-state-cursor)
         filtered-items (list-util/filter items (:query filter))]
-    (common/list "Services"
-                 items
-                 filtered-items
-                 render-metadata
-                 onclick-handler)))
+    (progress/form
+      loading?
+      (common/list "Services"
+                   items
+                   filtered-items
+                   render-metadata
+                   onclick-handler))))

@@ -6,6 +6,7 @@
             [material.component.label :as label]
             [swarmpit.component.state :as state]
             [swarmpit.component.mixin :as mixin]
+            [swarmpit.component.progress :as progress]
             [swarmpit.ajax :as ajax]
             [swarmpit.routes :as routes]
             [swarmpit.url :refer [dispatch!]]
@@ -34,7 +35,7 @@
   (case value
     "preparing" (label/pulsing value)
     "starting" (label/pulsing value)
-    "pending" (label/yellow value)
+    "pending" (label/pulsing value)
     "new" (label/blue value)
     "ready" (label/blue value)
     "assigned" (label/blue value)
@@ -105,8 +106,10 @@
   (let [{:keys [items]} (state/react state/form-value-cursor)
         {:keys [loading? filter]} (state/react state/form-state-cursor)
         filtered-items (list-util/filter items (:query filter))]
-    (common/list "Tasks"
-                 items
-                 filtered-items
-                 render-metadata
-                 onclick-handler)))
+    (progress/form
+      loading?
+      (common/list "Tasks"
+                   items
+                   filtered-items
+                   render-metadata
+                   onclick-handler))))

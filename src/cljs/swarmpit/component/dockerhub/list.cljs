@@ -5,6 +5,7 @@
             [material.component.list.util :as list-util]
             [swarmpit.component.mixin :as mixin]
             [swarmpit.component.state :as state]
+            [swarmpit.component.progress :as progress]
             [swarmpit.ajax :as ajax]
             [swarmpit.routes :as routes]
             [swarmpit.storage :as storage]
@@ -67,8 +68,10 @@
         {:keys [loading? filter]} (state/react state/form-state-cursor)
         filtered-items (-> (core/filter #(= (:owner %) (storage/user)) items)
                            (list-util/filter (:query filter)))]
-    (common/list "Docker Hub Accounts"
-                 items
-                 filtered-items
-                 render-metadata
-                 onclick-handler)))
+    (progress/form
+      loading?
+      (common/list "Docker Hub Accounts"
+                   items
+                   filtered-items
+                   render-metadata
+                   onclick-handler))))
