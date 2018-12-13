@@ -39,8 +39,7 @@
     (html [:span image])))
 
 (rum/defc form-replicas < rum/static [tasks]
-  (let [desired-tasks (filter #(= "running" (:desiredState %)) tasks)
-        data (->> desired-tasks
+  (let [data (->> tasks
                   (map (fn [task]
                          (if (= "running" (:state task))
                            {:name  (:taskName task)
@@ -54,7 +53,7 @@
                   (into []))]
     (chart/pie
       data
-      (str (count desired-tasks) " " (inflect/pluralize-noun (count desired-tasks) "replica"))
+      (str (count tasks) " " (inflect/pluralize-noun (count tasks) "replica"))
       "Swarmpit-service-replicas-graph"
       "replicas-pie"
       {:formatter (fn [value name props]
@@ -62,7 +61,8 @@
 
 (defn- form-command [command]
   (when command
-    (html [:pre {:style {:fontSize "0.9em"
+    (html [:pre {:key   "command"
+                 :style {:fontSize "0.9em"
                          :margin   0}}
            (let [merged (str/join " " command)]
              (if (< 100 (count merged))
@@ -130,6 +130,7 @@
   (let [image-digest (get-in service [:repository :imageDigest])
         image (get-in service [:repository :image])
         resources (:resources service)
+        desired-tasks (filter #(not= "shutdown" (:desiredState %)) tasks)
         command (:command service)
         stack (:stack service)
         mode (:mode service)]
@@ -150,7 +151,13 @@
                       (comp/svg icon/edit))})
       (comp/card-content
         {:key "ssccd"}
-        (rum/with-key (form-replicas tasks) "ssccdd")
+        (if (not (empty? desired-tasks))
+          (rum/with-key (form-replicas desired-tasks) "ssccddr")
+          (html
+            [:span {:class "Swarmpit-message"
+                    :key   "ssccddm"}
+             (icon/info {:style {:marginRight "8px"}})
+             [:span "Service has been shut down."]]))
         (form-command command))
       (comp/card-content
         {:key "ssccl"}
