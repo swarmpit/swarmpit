@@ -101,12 +101,12 @@
                    {:variant "inherit"
                     :key     (str "mobile-menu-item-text-" (:name %))} (:name %)))))))
 
-(defn- search-input [on-change-fn]
+(defn- search-input [on-change-fn title]
   (html
     [:div.Swarmpit-appbar-search
      [:div.Swarmpit-appbar-search-icon icon/search]
      (comp/input
-       {:placeholder      "Search..."
+       {:placeholder      (str "Search " (string/lower-case title) " ...")
         :onChange         on-change-fn
         :fullWidth        true
         :classes          {:root  "Swarmpit-appbar-search-root"
@@ -115,11 +115,11 @@
         :key              "appbar-search"
         :disableUnderline true})]))
 
-(defn- mobile-search-message [on-change-fn]
+(defn- mobile-search-message [on-change-fn title]
   (html
     [:span#snackbar-mobile-search.Swarmpit-appbar-search-mobile-message
      (comp/input
-       {:placeholder      "Search..."
+       {:placeholder      (str "Search " (string/lower-case title) " ...")
         :onChange         on-change-fn
         :fullWidth        true
         :classes          {:root  "Swarmpit-appbar-search-mobile-root"
@@ -137,7 +137,7 @@
        (icon/close
          {:className "Swarmpit-appbar-search-mobile-close"}))]))
 
-(defn- mobile-search [on-change-fn opened]
+(defn- mobile-search [on-change-fn title opened]
   (comp/snackbar
     {:open         opened
      :anchorOrigin {:vertical   "top"
@@ -148,7 +148,7 @@
       {:aria-describedby "snackbar-mobile-search"
        :className        "Swarmpit-appbar-search-mobile-content"
        :classes          {:message "Swarmpit-appbar-search-mobile-content-message"}
-       :message          (mobile-search-message on-change-fn)
+       :message          (mobile-search-message on-change-fn title)
        :action           (mobile-search-action)})))
 
 (rum/defc appbar-mobile-section < rum/static [search-fn actions]
@@ -168,11 +168,11 @@
                            (state/update-value [:mobileMoreAnchorEl] (.-currentTarget e) state/layout-cursor))
           :color         "inherit"} icon/more))]))
 
-(rum/defc appbar-desktop-section < rum/static [search-fn actions]
+(rum/defc appbar-desktop-section < rum/static [search-fn actions title]
   (html
     [:div.Swarmpit-appbar-section-desktop
      (when search-fn
-       (search-input search-fn))
+       (search-input search-fn title))
      (->> actions
           (filter #(or (nil? (:disabled %))
                        (false? (:disabled %))))
@@ -184,7 +184,7 @@
                      :key     (str "menu-btn-" (:name %))
                      :onClick (:onClick %)} (:icon %)))))]))
 
-(rum/defc appbar < rum/reactive [{:keys [title search-fn actions]}]
+(rum/defc appbar < rum/reactive [{:keys [title subtitle search-fn actions]}]
   (let [{:keys [mobileSearchOpened menuAnchorEl mobileMoreAnchorEl]} (state/react state/layout-cursor)]
     (comp/mui
       (html
@@ -210,13 +210,20 @@
                 :color     "inherit"
                 :noWrap    true}
                title)
+             (comp/typography
+               {:key       "appbar-subtitle"
+                :className "Swarmpit-appbar-subtitle"
+                :variant   "subtitle1"
+                :color     "inherit"
+                :noWrap    false}
+               subtitle)
              (rum/with-key
                (html [:div.grow]) "appbar-grow")
              (rum/with-key
-               (appbar-desktop-section search-fn actions) "appbar-section-desktop")
+               (appbar-desktop-section search-fn actions title) "appbar-section-desktop")
              (rum/with-key
                (appbar-mobile-section search-fn actions) "appbar-section-mobile")
              (rum/with-key
                (user-menu menuAnchorEl) "appbar-section-user")))
          (mobile-actions-menu actions mobileMoreAnchorEl)
-         (mobile-search search-fn mobileSearchOpened)]))))
+         (mobile-search search-fn title mobileSearchOpened)]))))
