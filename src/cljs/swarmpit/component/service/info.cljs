@@ -105,27 +105,26 @@
           tasks/onclick-handler) "ftccrl"))))
 
 (defn form-actions
-  [{:keys [params]}]
-  (let [form-value (state/react state/form-value-cursor)]
-    [{:onClick #(dispatch! (routes/path-for-frontend :service-log {:id (:id params)}))
-      :icon    icon/logs
-      :name    "Service logs"}
-     {:onClick #(dispatch! (routes/path-for-frontend :service-edit {:id (:id params)}))
-      :icon    (comp/svg icon/edit)
-      :name    "Edit service"}
-     {:onClick #(dispatch! (routes/path-for-frontend :stack-create nil {:from (:id params)}))
-      :icon    (comp/svg icon/stacks)
-      :name    "Compose stack"}
-     {:onClick #(redeploy-service-handler (:id params))
-      :icon    (comp/svg icon/redeploy)
-      :name    "Redeploy service"}
-     {:onClick  #(rollback-service-handler (:id params))
-      :disabled (not (get-in form-value [:service :deployment :rollbackAllowed]))
-      :icon     (comp/svg icon/rollback)
-      :name     "Rollback service"}
-     {:onClick #(delete-service-handler (:id params))
-      :icon    (comp/svg icon/trash)
-      :name    "Delete service"}]))
+  [service service-id]
+  [{:onClick #(dispatch! (routes/path-for-frontend :service-edit {:id service-id}))
+    :icon    (comp/svg icon/edit)
+    :name    "Edit service"}
+   {:onClick #(dispatch! (routes/path-for-frontend :stack-create nil {:from service-id}))
+    :icon    (comp/svg icon/stacks)
+    :more    true
+    :name    "Compose stack"}
+   {:onClick #(redeploy-service-handler service-id)
+    :icon    (comp/svg icon/redeploy)
+    :more    true
+    :name    "Redeploy service"}
+   {:onClick  #(rollback-service-handler service-id)
+    :disabled (not (get-in service [:deployment :rollbackAllowed]))
+    :icon     (comp/svg icon/rollback)
+    :more     true
+    :name     "Rollback service"}
+   {:onClick #(delete-service-handler service-id)
+    :icon    (comp/svg icon/trash)
+    :name    "Delete service"}])
 
 (defn- init-form-state
   []
@@ -147,7 +146,7 @@
       (service-networks-handler id)
       (service-tasks-handler id))))
 
-(rum/defc form-info < rum/reactive [{:keys [service networks tasks]}]
+(rum/defc form-info < rum/static [{:keys [service networks tasks]}]
   (let [ports (:ports service)
         mounts (:mounts service)
         secrets (:secrets service)
@@ -165,7 +164,7 @@
          [:div.Swarmpit-form-context
           (masonry/grid
             {:first-col-pred is-even-and-not-third?}
-            (settings/form service tasks)
+            (settings/form service tasks (form-actions service id))
             (deployment/form deployment id)
             (when (not-empty networks)
               (networks/form networks id))

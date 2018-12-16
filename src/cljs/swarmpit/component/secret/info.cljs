@@ -79,7 +79,14 @@
               (comp/card-header
                 {:title     (:secretName secret)
                  :className "Swarmpit-form-card-header"
-                 :key       "sgch"})
+                 :key       "sgch"
+                 :action    (comp/tooltip
+                              {:title "Delete secret"
+                               :key   "sgchadt"}
+                              (comp/icon-button
+                                {:aria-label "Delete"
+                                 :onClick    #(delete-secret-handler (:id secret))}
+                                (comp/svg icon/trash)))})
               (comp/divider
                 {:key "sgd"})
               (comp/card-content

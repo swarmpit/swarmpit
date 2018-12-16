@@ -18,6 +18,34 @@
 
 (enable-console-print!)
 
+(defn- volume-services-handler
+  [volume-name]
+  (ajax/get
+    (routes/path-for-backend :volume-services {:name volume-name})
+    {:on-success (fn [{:keys [response]}]
+                   (state/update-value [:services] response state/form-value-cursor))}))
+
+(defn- volume-handler
+  [volume-name]
+  (ajax/get
+    (routes/path-for-backend :volume {:name volume-name})
+    {:state      [:loading?]
+     :on-success (fn [{:keys [response]}]
+                   (state/update-value [:volume] response state/form-value-cursor))}))
+
+(defn- delete-volume-handler
+  [volume-name]
+  (ajax/delete
+    (routes/path-for-backend :volume-delete {:name volume-name})
+    {:on-success (fn [_]
+                   (dispatch!
+                     (routes/path-for-frontend :volume-list))
+                   (message/info
+                     (str "Volume " volume-name " has been removed.")))
+     :on-error   (fn [{:keys [response]}]
+                   (message/error
+                     (str "Volume removing failed. " (:error response))))}))
+
 (def form-driver-opts-render-metadata
   {:primary   (fn [item] (:name item))
    :secondary (fn [item] (:value item))})
@@ -31,7 +59,14 @@
       {:title     volumeName
        :classes   {:title "Swarmpit-card-header-responsive-title"}
        :key       "vgch"
-       :className "Swarmpit-form-card-header"})
+       :className "Swarmpit-form-card-header"
+       :action    (comp/tooltip
+                    {:title "Delete volume"
+                     :key   "vgchadt"}
+                    (comp/icon-button
+                      {:aria-label "Delete"
+                       :onClick    #(delete-volume-handler volumeName)}
+                      (comp/svg icon/trash)))})
     (comp/card-content
       {:key "vgcc"}
       (html
@@ -75,40 +110,6 @@
             form-driver-opts-render-metadata
             options
             nil) "vdccrl")))))
-
-(defn- volume-services-handler
-  [volume-name]
-  (ajax/get
-    (routes/path-for-backend :volume-services {:name volume-name})
-    {:on-success (fn [{:keys [response]}]
-                   (state/update-value [:services] response state/form-value-cursor))}))
-
-(defn- volume-handler
-  [volume-name]
-  (ajax/get
-    (routes/path-for-backend :volume {:name volume-name})
-    {:state      [:loading?]
-     :on-success (fn [{:keys [response]}]
-                   (state/update-value [:volume] response state/form-value-cursor))}))
-
-(defn- delete-volume-handler
-  [volume-name]
-  (ajax/delete
-    (routes/path-for-backend :volume-delete {:name volume-name})
-    {:on-success (fn [_]
-                   (dispatch!
-                     (routes/path-for-frontend :volume-list))
-                   (message/info
-                     (str "Volume " volume-name " has been removed.")))
-     :on-error   (fn [{:keys [response]}]
-                   (message/error
-                     (str "Volume removing failed. " (:error response))))}))
-
-(defn form-actions
-  [{:keys [params]}]
-  [{:onClick #(delete-volume-handler (:name params))
-    :icon    (comp/svg icon/trash)
-    :name    "Delete volume"}])
 
 (defn- init-form-state
   []

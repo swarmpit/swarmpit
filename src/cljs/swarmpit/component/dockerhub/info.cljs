@@ -7,6 +7,7 @@
             [swarmpit.component.state :as state]
             [swarmpit.component.mixin :as mixin]
             [swarmpit.component.progress :as progress]
+            [swarmpit.component.common :as common]
             [swarmpit.url :refer [dispatch!]]
             [swarmpit.ajax :as ajax]
             [swarmpit.routes :as routes]
@@ -37,11 +38,11 @@
                      (str "User removing failed. " (:error response))))}))
 
 (defn form-actions
-  [{:keys [params]}]
-  [{:onClick #(dispatch! (routes/path-for-frontend :dockerhub-user-edit {:id (:id params)}))
+  [id]
+  [{:onClick #(dispatch! (routes/path-for-frontend :dockerhub-user-edit {:id id}))
     :icon    (comp/svg icon/edit)
     :name    "Edit account"}
-   {:onClick #(delete-user-handler (:id params))
+   {:onClick #(delete-user-handler id)
     :icon    (comp/svg icon/trash)
     :name    "Delete account"}])
 
@@ -74,7 +75,11 @@
               (comp/card-header
                 {:title     username
                  :className "Swarmpit-form-card-header"
-                 :key       "dgch"})
+                 :key       "dgch"
+                 :action    (common/actions-menu
+                              (form-actions _id)
+                              :dockerhubMenuAnchor
+                              :dockerhubMenuOpened)})
               (comp/card-content
                 {:key "dgcc"}
                 (html

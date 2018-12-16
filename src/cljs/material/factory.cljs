@@ -86,6 +86,7 @@
 
 (def popper (create-factory js/MaterialUI.Popper))
 (def grow (create-factory js/MaterialUI.Grow))
+(def fade (create-factory js/MaterialUI.Fade))
 (def no-ssr (create-factory js/MaterialUI.NoSsr))
 
 (def linear-progress (create-factory js/MaterialUI.LinearProgress))

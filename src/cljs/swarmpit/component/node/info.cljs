@@ -36,7 +36,14 @@
       {:title     (:nodeName node)
        :className "Swarmpit-form-card-header"
        :key       "ngch"
-       :subheader (:address node)})
+       :subheader (:address node)
+       :action    (comp/tooltip
+                    {:title "Edit node"
+                     :key   "ngchaet"}
+                    (comp/icon-button
+                      {:aria-label "Edit"
+                       :href       (routes/path-for-frontend :node-edit {:id (:id node)})}
+                      (comp/svg icon/edit)))})
     (comp/card-content
       {:key "ngcc"}
       (html
@@ -72,14 +79,20 @@
   {:primary   (fn [item] (:name item))
    :secondary (fn [item] (:value item))})
 
-(defn section-labels [labels]
+(defn section-labels [labels id]
   (comp/card
     {:className "Swarmpit-card"
      :key       "nlc"}
     (comp/card-header
       {:className "Swarmpit-table-card-header"
        :key       "nlch"
-       :title     "Labels"})
+       :title     "Labels"
+       :action    (comp/icon-button
+                    {:aria-label "Edit"
+                     :href       (routes/path-for-frontend
+                                   :node-edit {:id id}
+                                   {:section "Labels"})}
+                    (comp/svg icon/edit))})
     (comp/card-content
       {:className "Swarmpit-table-card-content"
        :key       "nlcc"}
@@ -121,12 +134,6 @@
      :on-success (fn [{:keys [response]}]
                    (state/update-value [:node] response state/form-value-cursor))}))
 
-(defn form-actions
-  [{:keys [params]}]
-  [{:onClick #(dispatch! (routes/path-for-frontend :node-edit {:id (:id params)}))
-    :icon    (comp/svg icon/edit)
-    :name    "Edit node"}])
-
 (defn- init-form-state
   []
   (state/set-value {:loading? true} state/form-state-cursor))
@@ -158,7 +165,7 @@
                :key  "ngl"
                :xs   12
                :sm   6}
-              (section-labels (:labels node))))
+              (section-labels (:labels node) id)))
           (when (not-empty tasks)
             (comp/grid
               {:item true

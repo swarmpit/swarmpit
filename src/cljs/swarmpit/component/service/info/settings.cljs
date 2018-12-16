@@ -4,6 +4,8 @@
             [material.component.form :as form]
             [material.component.chart :as chart]
             [material.component.label :as label]
+            [swarmpit.component.common :as common]
+            [swarmpit.component.state :as state]
             [swarmpit.docker.utils :as utils]
             [swarmpit.routes :as routes]
             [sablono.core :refer-macros [html]]
@@ -126,7 +128,7 @@
           [:span (str (:memory limit) "MB")]]]]]
       :else (form-replicas tasks))))
 
-(rum/defc form < rum/static [service tasks]
+(rum/defc form < rum/static [service tasks actions]
   (let [image-digest (get-in service [:repository :imageDigest])
         image (get-in service [:repository :image])
         resources (:resources service)
@@ -142,13 +144,10 @@
          :className "Swarmpit-form-card-header"
          :key       "ssch"
          :subheader (form-subheader image image-digest)
-         :action    (comp/icon-button
-                      {:aria-label "Edit"
-                       :href       (routes/path-for-frontend
-                                     :service-edit
-                                     {:id (:id service)}
-                                     {:section "General"})}
-                      (comp/svg icon/edit))})
+         :action    (common/actions-menu
+                      actions
+                      :serviceGeneralMenuAnchor
+                      :serviceGeneralMenuOpened)})
       (comp/card-content
         {:key "ssccd"}
         (if (not (empty? desired-tasks))
@@ -169,10 +168,16 @@
         (when stack
           (comp/button
             {:size  "small"
-             :key   "sscasb"
+             :key   "sscasbs"
              :color "primary"
              :href  (routes/path-for-frontend :stack-info {:name stack})}
-            "See stack")))
+            "See stack"))
+        (comp/button
+          {:size  "small"
+           :key   "sscasbl"
+           :color "primary"
+           :href  (routes/path-for-frontend :service-log {:id (:id service)})}
+          "View log"))
       (comp/divider
         {:key "ssd"})
       (comp/card-content

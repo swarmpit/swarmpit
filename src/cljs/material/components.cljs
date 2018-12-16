@@ -243,6 +243,10 @@
   [props comp]
   (f/grow (clj->js props) comp))
 
+(defn fade
+  [props comp]
+  (f/fade (clj->js props) comp))
+
 (defn no-ssr
   [props & childs]
   (f/no-ssr (clj->js props) childs))

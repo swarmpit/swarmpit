@@ -6,6 +6,7 @@
             [swarmpit.component.state :as state]
             [swarmpit.component.mixin :as mixin]
             [swarmpit.component.progress :as progress]
+            [swarmpit.component.common :as common]
             [swarmpit.url :refer [dispatch!]]
             [swarmpit.ajax :as ajax]
             [swarmpit.routes :as routes]
@@ -36,11 +37,11 @@
                      (str "Registry removing failed. " (:error response))))}))
 
 (defn form-actions
-  [{:keys [params]}]
-  [{:onClick #(dispatch! (routes/path-for-frontend :registry-edit {:id (:id params)}))
+  [id]
+  [{:onClick #(dispatch! (routes/path-for-frontend :registry-edit {:id id}))
     :icon    (comp/svg icon/edit)
     :name    "Edit registry"}
-   {:onClick #(delete-registry-handler (:id params))
+   {:onClick #(delete-registry-handler id)
     :icon    (comp/svg icon/trash)
     :name    "Delete registry"}])
 
@@ -74,7 +75,11 @@
                 {:title     name
                  :className "Swarmpit-form-card-header"
                  :key       "rgch"
-                 :subheader url})
+                 :subheader url
+                 :action    (common/actions-menu
+                              (form-actions _id)
+                              :registryGeneralMenuAnchor
+                              :registryGeneralMenuOpened)})
               (comp/card-content
                 {:key "rgcc"}
                 (html

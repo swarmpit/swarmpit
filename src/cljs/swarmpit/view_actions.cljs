@@ -69,9 +69,8 @@
    :actions   stack-list/form-actions})
 
 (defmethod render :stack-info
-  [route]
-  {:title   "Stacks"
-   :actions (stack-info/form-actions route)})
+  [_]
+  {:title "Stacks"})
 
 (defmethod render :stack-create
   [_]
@@ -98,13 +97,13 @@
    :actions   service-list/form-actions})
 
 (defmethod render :service-info
-  [route]
-  {:title   "Services"
-   :actions (service-info/form-actions route)})
+  [_]
+  {:title "Services"})
 
 (defmethod render :service-log
   [route]
-  {:title (str "Logs " (-> route :params :id))
+  {:title     "Logs"
+   :subtitle  (-> route :params :id)
    :search-fn service-log/form-search-fn})
 
 (defmethod render :service-create-image
@@ -128,9 +127,8 @@
    :actions   network-list/form-actions})
 
 (defmethod render :network-info
-  [route]
-  {:title   "Networks"
-   :actions (network-info/form-actions route)})
+  [_]
+  {:title "Networks"})
 
 (defmethod render :network-create
   [_]
@@ -144,9 +142,8 @@
    :search-fn node-list/form-search-fn})
 
 (defmethod render :node-info
-  [route]
-  {:title   "Nodes"
-   :actions (node-info/form-actions route)})
+  [_]
+  {:title "Nodes"})
 
 (defmethod render :node-edit
   [_]
@@ -161,9 +158,8 @@
    :actions   volume-list/form-actions})
 
 (defmethod render :volume-info
-  [route]
-  {:title   "Volumes"
-   :actions (volume-info/form-actions route)})
+  [_]
+  {:title "Volumes"})
 
 (defmethod render :volume-create
   [_]
@@ -178,9 +174,8 @@
    :actions   secret-list/form-actions})
 
 (defmethod render :secret-info
-  [route]
-  {:title   "Secrets"
-   :actions (secret-info/form-actions route)})
+  [_]
+  {:title "Secrets"})
 
 (defmethod render :secret-create
   [_]
@@ -195,9 +190,8 @@
    :actions   config-list/form-actions})
 
 (defmethod render :config-info
-  [route]
-  {:title   "Configs"
-   :actions (config-info/form-actions route)})
+  [_]
+  {:title "Configs"})
 
 (defmethod render :config-create
   [_]
@@ -223,9 +217,8 @@
    :actions   user-list/form-actions})
 
 (defmethod render :user-info
-  [route]
-  {:title   "Users"
-   :actions (user-info/form-actions route)})
+  [_]
+  {:title "Users"})
 
 (defmethod render :user-create
   [_]
@@ -244,9 +237,8 @@
    :actions   registry-list/form-actions})
 
 (defmethod render :registry-info
-  [route]
-  {:title   "Registries"
-   :actions (registry-info/form-actions route)})
+  [_]
+  {:title "Registries"})
 
 (defmethod render :registry-create
   [_]
@@ -265,9 +257,8 @@
    :actions   dockerhub-list/form-actions})
 
 (defmethod render :dockerhub-user-info
-  [route]
-  {:title   "Dockerhub"
-   :actions (dockerhub-info/form-actions route)})
+  [_]
+  {:title "Dockerhub"})
 
 (defmethod render :dockerhub-user-create
   [_]

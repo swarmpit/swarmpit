@@ -201,7 +201,8 @@
                  processing?)])))]])))
 
 (rum/defc form < rum/reactive
-                 mixin-init-form [_]
+                 mixin-init-form
+                 mixin/scroll-to-section [_]
   (let [state (state/react state/form-state-cursor)
         node (state/react state/form-value-cursor)]
     (progress/form

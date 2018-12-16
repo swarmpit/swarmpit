@@ -17,6 +17,34 @@
 
 (enable-console-print!)
 
+(defn- network-services-handler
+  [network-id]
+  (ajax/get
+    (routes/path-for-backend :network-services {:id network-id})
+    {:on-success (fn [{:keys [response]}]
+                   (state/update-value [:services] response state/form-value-cursor))}))
+
+(defn- network-handler
+  [network-id]
+  (ajax/get
+    (routes/path-for-backend :network {:id network-id})
+    {:state      [:loading?]
+     :on-success (fn [{:keys [response]}]
+                   (state/update-value [:network] response state/form-value-cursor))}))
+
+(defn- delete-network-handler
+  [network-id]
+  (ajax/delete
+    (routes/path-for-backend :network-delete {:id network-id})
+    {:on-success (fn [_]
+                   (dispatch!
+                     (routes/path-for-frontend :network-list))
+                   (message/info
+                     (str "Network " network-id " has been removed.")))
+     :on-error   (fn [{:keys [response]}]
+                   (message/error
+                     (str "Network removing failed. " (:error response))))}))
+
 (def form-driver-opts-render-metadata
   {:primary   (fn [item] (:name item))
    :secondary (fn [item] (:value item))})
@@ -29,7 +57,14 @@
     (comp/card-header
       {:title     networkName
        :className "Swarmpit-form-card-header"
-       :key       "ngch"})
+       :key       "ngch"
+       :action    (comp/tooltip
+                    {:title "Delete network"
+                     :key   "ngchadt"}
+                    (comp/icon-button
+                      {:aria-label "Delete"
+                       :onClick    #(delete-network-handler id)}
+                      (comp/svg icon/trash)))})
     (when (and (:subnet ipam)
                (:gateway ipam))
       (comp/card-content
@@ -87,40 +122,6 @@
             form-driver-opts-render-metadata
             options
             nil) "ndccl")))))
-
-(defn- network-services-handler
-  [network-id]
-  (ajax/get
-    (routes/path-for-backend :network-services {:id network-id})
-    {:on-success (fn [{:keys [response]}]
-                   (state/update-value [:services] response state/form-value-cursor))}))
-
-(defn- network-handler
-  [network-id]
-  (ajax/get
-    (routes/path-for-backend :network {:id network-id})
-    {:state      [:loading?]
-     :on-success (fn [{:keys [response]}]
-                   (state/update-value [:network] response state/form-value-cursor))}))
-
-(defn- delete-network-handler
-  [network-id]
-  (ajax/delete
-    (routes/path-for-backend :network-delete {:id network-id})
-    {:on-success (fn [_]
-                   (dispatch!
-                     (routes/path-for-frontend :network-list))
-                   (message/info
-                     (str "Network " network-id " has been removed.")))
-     :on-error   (fn [{:keys [response]}]
-                   (message/error
-                     (str "Network removing failed. " (:error response))))}))
-
-(defn form-actions
-  [{:keys [params]}]
-  [{:onClick #(delete-network-handler (:id params))
-    :icon    (comp/svg icon/trash)
-    :name    "Delete network"}])
 
 (defn- init-form-state
   []

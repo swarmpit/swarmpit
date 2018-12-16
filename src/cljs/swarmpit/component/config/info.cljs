@@ -108,7 +108,14 @@
               (comp/card-header
                 {:title     (:configName config)
                  :className "Swarmpit-form-card-header"
-                 :key       "cgch"})
+                 :key       "cgch"
+                 :action    (comp/tooltip
+                              {:title "Delete config"
+                               :key   "cgchadt"}
+                              (comp/icon-button
+                                {:aria-label "Delete"
+                                 :onClick    #(delete-config-handler (:id config))}
+                                (comp/svg icon/trash)))})
               (comp/card-content
                 {:key "cgcc"}
                 (form-data (parse-data (:data config))))

@@ -114,10 +114,12 @@
       :name    "Edit stack"}
      {:onClick  #(redeploy-stack-handler (:name params))
       :disabled (not (some? (get-in form-value [:stackfile :spec])))
+      :more     true
       :icon     (comp/svg icon/redeploy)
       :name     "Redeploy stack"}
      {:onClick  #(rollback-stack-handler (:name params))
       :disabled (not (some? (get-in form-value [:stackfile :previousSpec])))
+      :more     true
       :icon     (comp/svg icon/rollback)
       :name     "Rollback stack"}
      {:onClick #(delete-stack-handler (:name params))

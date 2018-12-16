@@ -6,6 +6,7 @@
             [swarmpit.component.message :as message]
             [swarmpit.component.mixin :as mixin]
             [swarmpit.component.state :as state]
+            [swarmpit.component.common :as common]
             [swarmpit.component.progress :as progress]
             [swarmpit.url :refer [dispatch!]]
             [swarmpit.storage :as storage]
@@ -38,15 +39,14 @@
                      (str "User removing failed. " (:error response))))}))
 
 (defn form-actions
-  [{:keys [params]}]
-  (let [user (state/react state/form-value-cursor)]
-    [{:onClick #(dispatch! (routes/path-for-frontend :user-edit {:id (:id params)}))
-      :icon    (comp/svg icon/edit)
-      :name    "Edit user"}
-     {:onClick  #(delete-user-handler (:id params))
-      :disabled (= (storage/user) (:username user))
-      :icon     (comp/svg icon/trash)
-      :name     "Delete user"}]))
+  [username id]
+  [{:onClick #(dispatch! (routes/path-for-frontend :user-edit {:id id}))
+    :icon    (comp/svg icon/edit)
+    :name    "Edit user"}
+   {:onClick  #(delete-user-handler id)
+    :disabled (= (storage/user) username)
+    :icon     (comp/svg icon/trash)
+    :name     "Delete user"}])
 
 (defn- init-form-state
   []
@@ -78,7 +78,11 @@
                 {:title     username
                  :className "Swarmpit-form-card-header"
                  :key       "ugch"
-                 :subheader email})
+                 :subheader email
+                 :action    (common/actions-menu
+                              (form-actions username _id)
+                              :userGeneralMenuAnchor
+                              :userGeneralMenuOpened)})
               (comp/card-content
                 {:key "ugccl"}
                 (form/item-labels
