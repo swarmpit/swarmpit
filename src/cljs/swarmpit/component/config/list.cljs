@@ -48,11 +48,6 @@
   [event]
   (state/update-value [:filter :query] (-> event .-target .-value) state/form-state-cursor))
 
-(def form-actions
-  [{:onClick #(dispatch! (routes/path-for-frontend :config-create))
-    :icon    icon/add-circle
-    :name    "New Config"}])
-
 (defn- init-form-state
   []
   (state/set-value {:loading? false
@@ -63,6 +58,14 @@
     (fn [_]
       (init-form-state)
       (configs-handler))))
+
+(def form-toolbar
+  {:buttons [(comp/button
+               {:color "primary"
+                :key   "lctt"
+                :href  (routes/path-for-frontend :config-create)}
+               (comp/svg
+                 {:key "slt"} icon/add-small) "New Comfig")]})
 
 (rum/defc form < rum/reactive
                  mixin-init-form
@@ -77,4 +80,5 @@
                    (->> (list-util/filter items (:query filter))
                         (sort-by :configName))
                    render-metadata
-                   onclick-handler))))
+                   onclick-handler
+                   form-toolbar))))

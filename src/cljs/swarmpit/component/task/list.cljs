@@ -112,4 +112,5 @@
                    items
                    filtered-items
                    render-metadata
-                   onclick-handler))))
+                   onclick-handler
+                   nil))))

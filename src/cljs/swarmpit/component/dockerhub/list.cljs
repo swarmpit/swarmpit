@@ -26,7 +26,7 @@
                       :render-fn (fn [item] (:company item))}
                      {:name      "Name"
                       :render-fn (fn [item] (if (:public item) "yes" "no"))}]}
-   :list  {:primary-key (fn [item] (:username item))}})
+   :list  {:primary (fn [item] (:username item))}})
 
 (defn- onclick-handler
   [item]
@@ -44,11 +44,6 @@
   [event]
   (state/update-value [:filter :query] (-> event .-target .-value) state/form-state-cursor))
 
-(def form-actions
-  [{:onClick #(dispatch! (routes/path-for-frontend :dockerhub-user-create))
-    :icon    icon/add-circle
-    :name    "Add account"}])
-
 (defn- init-form-state
   []
   (state/set-value {:loading? false
@@ -59,6 +54,14 @@
     (fn [_]
       (init-form-state)
       (users-handler))))
+
+(def form-toolbar
+  {:buttons [(comp/button
+               {:color "primary"
+                :key   "ldhtt"
+                :href  (routes/path-for-frontend :dockerhub-user-create)}
+               (comp/svg
+                 {:key "slt"} icon/add-small) "Add account")]})
 
 (rum/defc form < rum/reactive
                  mixin-init-form
@@ -74,4 +77,5 @@
                    items
                    filtered-items
                    render-metadata
-                   onclick-handler))))
+                   onclick-handler
+                   form-toolbar))))

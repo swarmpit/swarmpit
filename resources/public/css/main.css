@@ -368,6 +368,11 @@ a {
     padding: 24px 24px;
 }
 
+.Swarmpit-form-toolbar,
+.Swarmpit-form-toolbar-context {
+    padding: 0 24px;
+}
+
 .Swarmpit-form-buttons {
     margin-top: 10px;
     display: flex;
@@ -639,6 +644,15 @@ a {
         width: 100%;
     }
 
+    .Swarmpit-form-toolbar {
+        padding: 0 10px;
+    }
+
+    .Swarmpit-form-toolbar-context {
+        margin-top: 10px;
+        padding: 0 10px;
+    }
+
     .Swarmpit-form-panel {
         flex-direction: column;
     }
@@ -677,11 +691,14 @@ a {
     }
 
     .Swarmpit-appbar-search-input {
-        width: 120px;
+        /*width: 120px;*/
+        width: 100%;
     }
 
     .Swarmpit-appbar-search-input:focus {
-        width: 200px;
+        /*width: 200px;*/
+        width: 100%;
+
     }
 }
 

@@ -120,4 +120,8 @@
   [props]
   (f/check-circle-icon (clj->js props)))
 
+(defn filter-list
+  [props]
+  (f/filter-list-icon (clj->js props)))
+
 

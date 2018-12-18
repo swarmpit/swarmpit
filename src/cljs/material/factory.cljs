@@ -126,6 +126,8 @@
 (def vertical-align-bottom-icon (create-factory js/MaterialUIIcons.VerticalAlignBottom))
 (def logs-icon (create-factory js/MaterialUIIcons.Subject))
 (def circle-icon (create-factory js/MaterialUIIcons.FiberManualRecord))
+(def filter-list-icon (create-factory js/MaterialUIIcons.FilterList))
+
 
 (def create-mui-theme js/MaterialUI.createMuiTheme)
 

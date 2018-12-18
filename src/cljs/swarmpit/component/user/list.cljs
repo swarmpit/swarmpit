@@ -41,11 +41,6 @@
   [event]
   (state/update-value [:filter :query] (-> event .-target .-value) state/form-state-cursor))
 
-(def form-actions
-  [{:onClick #(dispatch! (routes/path-for-frontend :user-create))
-    :icon    icon/add-circle
-    :name    "New user"}])
-
 (defn- init-form-state
   []
   (state/set-value {:loading? false
@@ -56,6 +51,14 @@
     (fn [_]
       (init-form-state)
       (users-handler))))
+
+(def form-toolbar
+  {:buttons [(comp/button
+               {:color "primary"
+                :key   "lstt"
+                :href  (routes/path-for-frontend :user-create)}
+               (comp/svg
+                 {:key "slt"} icon/add-small) "New user")]})
 
 (rum/defc form < rum/reactive
                  mixin-init-form
@@ -70,4 +73,5 @@
                    items
                    filtered-items
                    render-metadata
-                   onclick-handler))))
+                   onclick-handler
+                   form-toolbar))))

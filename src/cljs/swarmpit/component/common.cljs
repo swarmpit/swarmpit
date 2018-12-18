@@ -7,23 +7,65 @@
             [rum.core :as rum]))
 
 (defn list-empty [title]
-  (comp/card-content
-    {:key "scclcc"}
-    (comp/typography
-      {:key "scclcct"} (str "There are no " title " configured."))))
+  (comp/typography
+    {:key "scclcct"} (str "There are no " title " configured.")))
 
 (defn list-no-items-found []
-  (comp/card-content
-    {:key "scclcci"}
-    (comp/typography
-      {:key "scclccit"} "Nothing matches this filter.")))
+  (comp/typography
+    {:key "scclccit"} "Nothing matches this filter."))
+
+(defn list-toobar
+  [title items {:keys [buttons] :as toolbar}]
+  (comp/mui
+    (comp/toolbar
+      {:key            "ltt"
+       :disableGutters true
+       :className      "Swarmpit-form-toolbar-context"}
+      (comp/typography
+        {:key     "lttt"
+         :variant "subtitle1"
+         :color   "inherit"
+         :noWrap  false}
+        (str title " (" (count items) ")"))
+      (when buttons
+        (html
+          [:div {:style {:borderRight "0.1em solid black"
+                         :padding     "0.5em"
+                         :height      0}}]))
+      (when buttons
+        buttons)
+      (html [:div.grow])
+      ;(comp/typography
+      ;  {:key     "filter-label"
+      ;   :variant "subtitle2"
+      ;   :style   {:paddingRight "10px"}
+      ;   :color   "inherit"
+      ;   :noWrap  false}
+      ;  "Filters: ")
+      ;(comp/chip
+      ;  {:onDelete   #(print "test")
+      ;   :deleteIcon (icon/cancel {})
+      ;   :style      {:marginRight "5px"}
+      ;   :color      "primary"
+      ;   :variant    "outlined"
+      ;   :label      "Running"})
+      ;(comp/chip
+      ;  {:onDelete   #(print "test")
+      ;   :deleteIcon (icon/cancel {})
+      ;   :style      {:marginRight "5px"}
+      ;   :color      "primary"
+      ;   :variant    "outlined"
+      ;   :label      "Something"})
+      )))
 
 (defn list
-  [title items filtered-items render-metadata onclick-handler]
+  [title items filtered-items render-metadata onclick-handler toolbar]
   (comp/mui
     (html
       [:div.Swarmpit-form
-       [:div.Swarmpit-form-context
+       [:div
+        (list-toobar title items toolbar)]
+       [:div.Swarmpit-form-toolbar
         (cond
           (empty? items) (list-empty title)
           (empty? filtered-items) (list-no-items-found)

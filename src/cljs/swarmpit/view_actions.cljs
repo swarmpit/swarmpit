@@ -1,51 +1,16 @@
 (ns swarmpit.view-actions
-  (:require [swarmpit.component.page-login :as page-login]
-            [swarmpit.component.page-403 :as page-403]
-            [swarmpit.component.page-404 :as page-404]
-            [swarmpit.component.page-error :as page-error]
-            [swarmpit.component.password :as password]
-            [swarmpit.component.api-access :as api-access]
-            [swarmpit.component.stack.edit :as stack-edit]
-            [swarmpit.component.stack.compose :as stack-compose]
-            [swarmpit.component.stack.create :as stack-create]
-            [swarmpit.component.stack.info :as stack-info]
-            [swarmpit.component.stack.list :as stack-list]
-            [swarmpit.component.service.create-config :as service-config]
-            [swarmpit.component.service.create-image :as service-image]
-            [swarmpit.component.service.edit :as service-edit]
-            [swarmpit.component.service.info :as service-info]
+  (:require [swarmpit.component.stack.list :as stack-list]
             [swarmpit.component.service.log :as service-log]
             [swarmpit.component.service.list :as service-list]
-            [swarmpit.component.network.create :as network-create]
-            [swarmpit.component.network.info :as network-info]
             [swarmpit.component.network.list :as network-list]
-            [swarmpit.component.volume.create :as volume-create]
-            [swarmpit.component.volume.info :as volume-info]
             [swarmpit.component.volume.list :as volume-list]
-            [swarmpit.component.secret.create :as secret-create]
-            [swarmpit.component.secret.info :as secret-info]
             [swarmpit.component.secret.list :as secret-list]
-            [swarmpit.component.config.create :as config-create]
-            [swarmpit.component.config.info :as config-info]
             [swarmpit.component.config.list :as config-list]
             [swarmpit.component.node.list :as node-list]
-            [swarmpit.component.node.info :as node-info]
-            [swarmpit.component.node.edit :as node-edit]
             [swarmpit.component.task.list :as task-list]
-            [swarmpit.component.task.info :as task-info]
             [swarmpit.component.user.list :as user-list]
-            [swarmpit.component.user.info :as user-info]
-            [swarmpit.component.user.create :as user-create]
-            [swarmpit.component.user.edit :as user-edit]
-            [swarmpit.component.registry.info :as registry-info]
             [swarmpit.component.registry.list :as registry-list]
-            [swarmpit.component.registry.create :as registry-create]
-            [swarmpit.component.registry.edit :as registry-edit]
-            [swarmpit.component.dockerhub.info :as dockerhub-info]
-            [swarmpit.component.dockerhub.list :as dockerhub-list]
-            [swarmpit.component.dockerhub.create :as dockerhub-create]
-            [swarmpit.component.dockerhub.edit :as dockerhub-edit]
-            ))
+            [swarmpit.component.dockerhub.list :as dockerhub-list]))
 
 (defmulti render (fn [route] (:handler route)))
 
@@ -65,8 +30,7 @@
 (defmethod render :stack-list
   [_]
   {:title     "Stacks"
-   :search-fn stack-list/form-search-fn
-   :actions   stack-list/form-actions})
+   :search-fn stack-list/form-search-fn})
 
 (defmethod render :stack-info
   [_]
@@ -93,8 +57,7 @@
 (defmethod render :service-list
   [_]
   {:title     "Services"
-   :search-fn service-list/form-search-fn
-   :actions   service-list/form-actions})
+   :search-fn service-list/form-search-fn})
 
 (defmethod render :service-info
   [_]
@@ -123,8 +86,7 @@
 (defmethod render :network-list
   [_]
   {:title     "Networks"
-   :search-fn network-list/form-search-fn
-   :actions   network-list/form-actions})
+   :search-fn network-list/form-search-fn})
 
 (defmethod render :network-info
   [_]
@@ -154,8 +116,7 @@
 (defmethod render :volume-list
   [_]
   {:title     "Volumes"
-   :search-fn volume-list/form-search-fn
-   :actions   volume-list/form-actions})
+   :search-fn volume-list/form-search-fn})
 
 (defmethod render :volume-info
   [_]
@@ -170,8 +131,7 @@
 (defmethod render :secret-list
   [_]
   {:title     "Secrets"
-   :search-fn secret-list/form-search-fn
-   :actions   secret-list/form-actions})
+   :search-fn secret-list/form-search-fn})
 
 (defmethod render :secret-info
   [_]
@@ -186,8 +146,7 @@
 (defmethod render :config-list
   [_]
   {:title     "Configs"
-   :search-fn config-list/form-search-fn
-   :actions   config-list/form-actions})
+   :search-fn config-list/form-search-fn})
 
 (defmethod render :config-info
   [_]
@@ -213,8 +172,7 @@
 (defmethod render :user-list
   [_]
   {:title     "Users"
-   :search-fn user-list/form-search-fn
-   :actions   user-list/form-actions})
+   :search-fn user-list/form-search-fn})
 
 (defmethod render :user-info
   [_]
@@ -233,8 +191,7 @@
 (defmethod render :registry-list
   [_]
   {:title     "Registries"
-   :search-fn registry-list/form-search-fn
-   :actions   registry-list/form-actions})
+   :search-fn registry-list/form-search-fn})
 
 (defmethod render :registry-info
   [_]
@@ -253,8 +210,7 @@
 (defmethod render :dockerhub-user-list
   [_]
   {:title     "Dockerhub"
-   :search-fn dockerhub-list/form-search-fn
-   :actions   dockerhub-list/form-actions})
+   :search-fn dockerhub-list/form-search-fn})
 
 (defmethod render :dockerhub-user-info
   [_]

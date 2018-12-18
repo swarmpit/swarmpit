@@ -3,6 +3,7 @@
             [material.components :as comp]
             [material.component.list.basic :as list]
             [material.component.list.util :as list-util]
+            [material.component.composite :as composite]
             [material.component.label :as label]
             [swarmpit.component.state :as state]
             [swarmpit.component.mixin :as mixin]
@@ -117,6 +118,14 @@
           services
           onclick-handler) "lsccrl"))))
 
+(def form-toolbar
+  {:buttons [(comp/button
+               {:color "primary"
+                :key   "lttbn"
+                :href  (routes/path-for-frontend :service-create-image)}
+               (comp/svg
+                 {:key "slt"} icon/add-small) "New service")]})
+
 (rum/defc form < rum/reactive
                  mixin-init-form
                  mixin/subscribe-form
@@ -130,4 +139,5 @@
                    items
                    filtered-items
                    render-metadata
-                   onclick-handler))))
+                   onclick-handler
+                   form-toolbar))))
