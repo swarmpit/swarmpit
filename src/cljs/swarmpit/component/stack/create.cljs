@@ -37,10 +37,11 @@
   (comp/text-field
     {:id              editor-id
      :fullWidth       true
+     :className       "Swarmpit-codemirror"
      :name            "data"
      :key             "data"
-     :rowsMax         10
-     :variant         "outlined"
+     :multiline       true
+     :disabled        true
      :required        true
      :InputLabelProps {:shrink true}
      :value           value}))
