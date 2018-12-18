@@ -1,8 +1,7 @@
 (ns swarmpit.component.config.info
   (:require [material.icon :as icon]
-            [material.component :as comp]
+            [material.components :as comp]
             [material.component.form :as form]
-            [material.component.panel :as panel]
             [swarmpit.component.state :as state]
             [swarmpit.component.mixin :as mixin]
             [swarmpit.component.editor :as editor]
@@ -13,15 +12,12 @@
             [swarmpit.ajax :as ajax]
             [swarmpit.routes :as routes]
             [swarmpit.base64 :as base64]
-            [rum.core :as rum]
-            [sablono.core :refer-macros [html]]))
+            [sablono.core :refer-macros [html]]
+            [rum.core :as rum]))
 
 (enable-console-print!)
 
 (def editor-id "config-view")
-
-(def form-data-style {:top       "-7px"
-                      :maxHeight "400px"})
 
 (defn- parse-data [data]
   (if (base64/base64? data)
@@ -29,17 +25,17 @@
     data))
 
 (defn- form-data [value]
-  (html
-    (comp/mui
-      (comp/text-field
-        {:id            editor-id
-         :name          "config-view"
-         :key           "config-view"
-         :multiLine     true
-         :value         value
-         :style         form-data-style
-         :underlineShow false
-         :fullWidth     true}))))
+  (comp/text-field
+    {:id              editor-id
+     :className       "Swarmpit-codemirror"
+     :fullWidth       true
+     :name            "config-view"
+     :key             "config-view"
+     :multiline       true
+     :disabled        true
+     :required        true
+     :InputLabelProps {:shrink true}
+     :value           value}))
 
 (defn- config-services-handler
   [config-id]
@@ -69,6 +65,12 @@
                    (message/error
                      (str "Config removing failed. " (:error response))))}))
 
+(defn form-actions
+  [{:keys [params]}]
+  [{:onClick #(delete-config-handler (:id params))
+    :icon    (comp/svg icon/trash)
+    :name    "Delete config"}])
+
 (defn- init-form-state
   []
   (state/set-value {:loading? true} state/form-state-cursor))
@@ -88,27 +90,48 @@
 
 (rum/defc form-info < rum/static
                       mixin-init-editor [{:keys [config services]}]
-  [:div
-   [:div.form-panel
-    [:div.form-panel-left
-     (panel/info icon/configs
-                 (:configName config))]
-    [:div.form-panel-right
-     (comp/mui
-       (comp/raised-button
-         {:onTouchTap #(delete-config-handler (:id config))
-          :label      "Delete"}))]]
-   [:div.form-layout
-    [:div.div.form-layout-group
-     (form/section "General settings")
-     (form/item "ID" (:id config))
-     (form/item "NAME" (:configName config))
-     (form/item-date "CREATED" (:createdAt config))
-     (form/item-date "UPDATED" (:updatedAt config))]
-    [:div.form-layout-group.form-layout-group-border
-     (form/section "Data")
-     (form-data (parse-data (:data config)))]
-    (services/linked-services services)]])
+  (comp/mui
+    (html
+      [:div.Swarmpit-form
+       [:div.Swarmpit-form-context
+        (comp/grid
+          {:container true
+           :spacing   40}
+          (comp/grid
+            {:item true
+             :key  "cgg"
+             :xs   12
+             :sm   6}
+            (comp/card
+              {:className "Swarmpit-form-card"
+               :key       "cgc"}
+              (comp/card-header
+                {:title     (:configName config)
+                 :className "Swarmpit-form-card-header"
+                 :key       "cgch"
+                 :action    (comp/tooltip
+                              {:title "Delete config"
+                               :key   "cgchadt"}
+                              (comp/icon-button
+                                {:aria-label "Delete"
+                                 :onClick    #(delete-config-handler (:id config))}
+                                (comp/svg icon/trash)))})
+              (comp/card-content
+                {:key "cgcc"}
+                (form-data (parse-data (:data config))))
+              (comp/divider
+                {:key "cgd"})
+              (comp/card-content
+                {:style {:paddingBottom "16px"}
+                 :key   "cgccf"}
+                (form/item-date (:createdAt config) (:updatedAt config))
+                (form/item-id (:id config)))))
+          (when (not-empty services)
+            (comp/grid
+              {:item true
+               :key  "clsg"
+               :xs   12}
+              (services/linked services))))]])))
 
 (rum/defc form < rum/reactive
                  mixin-init-form

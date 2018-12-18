@@ -1,56 +1,73 @@
 (ns swarmpit.component.service.info.mounts
-  (:require [material.component.form :as form]
-            [material.component.list-table-auto :as list]
-            [rum.core :as rum]
-            [swarmpit.routes :as routes]))
+  (:require [material.icon :as icon]
+            [material.components :as comp]
+            [material.component.list.basic :as list]
+            [swarmpit.routes :as routes]
+            [swarmpit.url :refer [dispatch!]]
+            [rum.core :as rum]))
 
 (enable-console-print!)
 
-(def headers-bind ["Container path" "Host path" "Read only"])
+(def render-bind-metadata
+  {:table {:summary [{:name      "Container path"
+                      :render-fn (fn [item] (:containerPath item))}
+                     {:name      "Host path"
+                      :render-fn (fn [item] (:host item))}
+                     {:name      "Read only"
+                      :render-fn (fn [item] (when (true? (:readOnly item))
+                                              "yes"))}]}
+   :list  {:primary   (fn [item] (:containerPath item))
+           :secondary (fn [item] (:host item))}})
 
-(def headers-volume ["Container path" "Volume" "Read only" "Driver"])
+(def render-volume-metadata
+  {:table {:summary [{:name      "Container path"
+                      :render-fn (fn [item] (:containerPath item))}
+                     {:name      "Volume"
+                      :render-fn (fn [item] (:host item))}
+                     {:name      "Read only"
+                      :render-fn (fn [item] (:readOnly item))}
+                     {:name      "Driver"
+                      :render-fn (fn [item] (get-in item [:volumeOptions :driver :name]))}]}
+   :list  {:primary   (fn [item] (:containerPath item))
+           :secondary (fn [item] (:host item))}})
 
-(def render-item-keys
-  [[:containerPath] [:host] [:readOnly] [:volumeOptions :driver :name]])
-
-(defn render-item
-  [item _]
-  (let [value (val item)]
-    (case (key item)
-      :readOnly (if value
-                  "Yes"
-                  "No")
-      (val item))))
-
-(defn onclick-handler
+(defn onclick-volume-handler
   [item]
-  (routes/path-for-frontend :volume-info {:name (:host item)}))
+  (dispatch! (routes/path-for-frontend :volume-info {:name (:host item)})))
 
 (rum/defc form-bind < rum/static [bind]
   (when (not-empty bind)
-    [:div
-     (form/subsection "Bind")
-     (list/table headers-bind
-                 bind
-                 render-item
-                 render-item-keys
-                 nil)]))
+    (list/responsive
+      render-bind-metadata
+      bind
+      nil)))
 
 (rum/defc form-volume < rum/static [volume]
   (when (not-empty volume)
-    [:div
-     (form/subsection "Volume")
-     (list/table headers-volume
-                 volume
-                 render-item
-                 render-item-keys
-                 onclick-handler)]))
+    (list/responsive
+      render-volume-metadata
+      volume
+      onclick-volume-handler)))
 
-(rum/defc form < rum/static [mounts]
-  (when (not-empty mounts)
-    (let [bind (filter #(= "bind" (:type %)) mounts)
-          volume (filter #(= "volume" (:type %)) mounts)]
-      [:div.form-layout-group.form-layout-group-border
-       (form/section "Mounts")
-       (form-bind bind)
-       (form-volume volume)])))
+(rum/defc form < rum/static [mounts service-id]
+  (let [bind (filter #(= "bind" (:type %)) mounts)
+        volume (filter #(= "volume" (:type %)) mounts)]
+    (comp/card
+      {:className "Swarmpit-card"
+       :key       "smc"}
+      (comp/card-header
+        {:className "Swarmpit-table-card-header"
+         :title     "Mounts"
+         :key       "smch"
+         :action    (comp/icon-button
+                      {:aria-label "Edit"
+                       :href       (routes/path-for-frontend
+                                     :service-edit
+                                     {:id service-id}
+                                     {:section "Mounts"})}
+                      (comp/svg icon/edit))})
+      (comp/card-content
+        {:className "Swarmpit-table-card-content"
+         :key       "smcc"}
+        (rum/with-key (form-bind bind) "smccrlb")
+        (rum/with-key (form-volume volume) "smccrlv")))))

@@ -1,10 +1,10 @@
 (ns swarmpit.component.service.form-resources
-  (:require [material.icon :as icon]
-            [material.component :as comp]
+  (:require [material.components :as comp]
             [material.component.form :as form]
             [swarmpit.component.parser :refer [parse-int parse-float]]
             [swarmpit.component.state :as state]
             [sablono.core :refer-macros [html]]
+            [clojure.walk :refer [keywordize-keys]]
             [rum.core :as rum]))
 
 (enable-console-print!)
@@ -20,69 +20,94 @@
     value))
 
 (defn- form-cpu-reservation [value]
-  (form/comp
-    (str "CPU  " "(" (cpu-value value) ")")
-    (comp/slider {:min          0
-                  :max          2
-                  :step         0.10
-                  :defaultValue 0
-                  :value        value
-                  :onChange     (fn [_ v]
-                                  (state/update-value [:reservation :cpu] (parse-float v) form-value-cursor))
-                  :sliderStyle  {:marginTop "14px"}})))
+  (html
+    [:div {:class "Swarmpit-margin-normal"
+           :key   "cpu-reservation-wrap"}
+     [:div {:class "Swarmpit-service-slider-title"
+            :key   "cpu-reservation-label"}
+      (str "CPU  " "(" (cpu-value value) ")")]
+     [:div {:key "cpu-reservation-slider"}
+      (comp/rc-slider
+        {:key          "cpu-reservation"
+         :min          0
+         :max          2
+         :step         0.10
+         :defaultValue 0
+         :value        value
+         :style        {:maxWidth "300px"}
+         :onChange     #(state/update-value [:reservation :cpu] (parse-float %) form-value-cursor)})]]))
 
 (defn- form-memory-reservation [value]
-  (form/comp
-    "MEMORY (MB)"
-    (comp/vtext-field
-      {:name            "memory-reservation"
-       :key             "memory-reservation"
-       :type            "number"
-       :min             4
-       :validations     "isValidMemoryValue"
-       :validationError "Please use minimum of 4 MB or leave blank for unlimited"
-       :value           value
-       :onChange        (fn [_ v]
-                          (state/update-value [:reservation :memory] (parse-int v) form-value-cursor))})))
+  (comp/text-field
+    {:label           "Memory"
+     :key             "memory-reservation"
+     :type            "number"
+     :variant         "outlined"
+     :margin          "normal"
+     :style           {:maxWidth "300px"}
+     :helperText      "Use minimum of 4 MB or leave blank for unlimited"
+     :min             4
+     :fullWidth       true
+     :required        true
+     :value           value
+     :InputLabelProps {:shrink true}
+     :onChange        #(state/update-value [:reservation :memory] (parse-int (-> % .-target .-value)) form-value-cursor)}))
 
 (defn- form-cpu-limit [value]
-  (form/comp
-    (str "CPU  " "(" (cpu-value value) ")")
-    (comp/slider {:min          0
-                  :max          2
-                  :step         0.10
-                  :defaultValue 0
-                  :value        value
-                  :onChange     (fn [_ v]
-                                  (state/update-value [:limit :cpu] (parse-float v) form-value-cursor))
-                  :sliderStyle  {:marginTop "14px"}})))
+  (html
+    [:div {:class "Swarmpit-margin-normal"
+           :key   "cpu-limit-wrap"}
+     [:div {:class "Swarmpit-service-slider-title"
+            :key   "cpu-limit-label"}
+      (str "CPU  " "(" (cpu-value value) ")")]
+     [:div {:key "cpu-limit-slider"}
+      (comp/rc-slider
+        {:key          "cpu-limit"
+         :min          0
+         :max          2
+         :step         0.10
+         :defaultValue 0
+         :value        value
+         :style        {:maxWidth "300px"}
+         :onChange     #(state/update-value [:limit :cpu] (parse-float %) form-value-cursor)})]]))
 
 (defn- form-memory-limit [value]
-  (form/comp
-    "MEMORY (MB)"
-    (comp/vtext-field
-      {:name            "memory-limit"
-       :key             "memory-limit"
-       :type            "number"
-       :min             4
-       :validations     "isValidMemoryValue"
-       :validationError "Please use minimum of 4 MB or leave blank for unlimited"
-       :value           value
-       :onChange        (fn [_ v]
-                          (state/update-value [:limit :memory] (parse-int v) form-value-cursor))})))
+  (comp/text-field
+    {:label           "Memory"
+     :key             "memory-limit"
+     :type            "number"
+     :variant         "outlined"
+     :margin          "normal"
+     :style           {:maxWidth "300px"}
+     :helperText      "Use minimum of 4 MB or leave blank for unlimited"
+     :min             4
+     :fullWidth       true
+     :required        true
+     :value           value
+     :InputLabelProps {:shrink true}
+     :onChange        #(state/update-value [:limit :memory] (parse-int (-> % .-target .-value)) form-value-cursor)}))
 
 (rum/defc form < rum/reactive []
   (let [{:keys [reservation limit]} (state/react form-value-cursor)]
-    [:div.form-edit
-     (form/form
-       {:onValid   #(state/update-value [:valid?] true form-state-cursor)
-        :onInvalid #(state/update-value [:valid?] false form-state-cursor)}
-       (html (form/subsection "Reservation"))
-       (html (form/icon-value icon/info [:span "Minimal resource availability to run a task. Empty for unlimited."]))
-       (form-cpu-reservation (:cpu reservation))
-       (form-memory-reservation (:memory reservation))
-       (html (form/subsection "Limit"))
-       (html (form/icon-value icon/info [:span "Maximal resource usage per task. Empty for unlimited."]))
-       (form-cpu-limit (:cpu limit))
-       (form-memory-limit (:memory limit))
-       (html [:div {:style {:height "20px"}}]))]))
+    (comp/grid
+      {:container true
+       :key       "sfrcg"
+       :spacing   40}
+      (comp/grid
+        {:item true
+         :key  "sfrcgir"
+         :xs   12
+         :sm   6}
+        (form/subsection "Reservation")
+        ;(html [:div "Minimal resource availability to run a task. Empty for unlimited."])
+        (form-memory-reservation (:memory reservation))
+        (form-cpu-reservation (:cpu reservation)))
+      (comp/grid
+        {:item true
+         :key  "sfrcgil"
+         :xs   12
+         :sm   6}
+        (form/subsection "Limit")
+        ;(html [:div "Maximal resource usage per task. Empty for unlimited."])
+        (form-memory-limit (:memory limit))
+        (form-cpu-limit (:cpu limit))))))

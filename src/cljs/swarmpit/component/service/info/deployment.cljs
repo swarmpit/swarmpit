@@ -1,18 +1,21 @@
 (ns swarmpit.component.service.info.deployment
-  (:require [material.component.form :as form]
-            [material.component.list-table-info :as list]
+  (:require [material.icon :as icon]
+            [material.components :as comp]
+            [material.component.form :as form]
+            [swarmpit.routes :as routes]
+            [sablono.core :refer-macros [html]]
             [rum.core :as rum]))
 
 (enable-console-print!)
 
-(def placement-render-item-keys
-  [[:rule]])
+(defn item [name value]
+  (html
+    [:div {:class "Swarmpit-row-space"
+           :key   (str "sdcci-" name)}
+     [:span name]
+     [:span value]]))
 
-(defn- placement-render-item
-  [item]
-  (val item))
-
-(rum/defc form < rum/static [deployment]
+(rum/defc form < rum/static [deployment service-id]
   (let [autoredeploy (:autoredeploy deployment)
         update-delay (get-in deployment [:update :delay])
         update-parallelism (get-in deployment [:update :parallelism])
@@ -27,31 +30,115 @@
         restart-policy-delay (get-in deployment [:restartPolicy :delay])
         restart-policy-window (get-in deployment [:restartPolicy :window])
         restart-policy-attempts (get-in deployment [:restartPolicy :attempts])]
-    [:div.form-layout-group.form-layout-group-border
-     (form/section "Deployment")
-     (form/item "AUTOREDEPLOY" (if autoredeploy
-                                 "on"
-                                 "off"))
-     (if (not-empty placement)
-       [:div
-        (form/subsection "Placement")
-        (list/table-headless placement
-                             placement-render-item
-                             placement-render-item-keys)])
-     (form/subsection "Restart Policy")
-     (form/item "CONDITION" restart-policy-condition)
-     (form/item "DELAY" (str restart-policy-delay "s"))
-     (form/item "WINDOW" (str restart-policy-window "s"))
-     (form/item "MAX ATTEMPTS" restart-policy-attempts)
-     (form/subsection "Update Config")
-     (form/item "PARALLELISM" update-parallelism)
-     (form/item "DELAY" (str update-delay "s"))
-     (form/item "ORDER" update-order)
-     (form/item "ON FAILURE" update-failure-action)
-     (if (= "rollback" update-failure-action)
-       [:div
-        (form/subsection "Rollback Config")
-        (form/item "PARALLELISM" rollback-parallelism)
-        (form/item "DELAY" (str rollback-delay "s"))
-        (form/item "ORDER" rollback-order)
-        (form/item "ON FAILURE" rollback-failure-action)])]))
+    (comp/card
+      {:className "Swarmpit-form-card"
+       :key       "sdc"}
+      (comp/card-header
+        {:className "Swarmpit-form-card-header"
+         :key       "sdch"
+         :title     "Deployment"
+         :action    (comp/icon-button
+                      {:aria-label "Edit"
+                       :href       (routes/path-for-frontend
+                                     :service-edit
+                                     {:id service-id}
+                                     {:section "Deployment"})}
+                      (comp/svg icon/edit))})
+      (comp/card-content
+        {:key "sdcc"}
+        (comp/grid
+          {:container true
+           :key       "sdcccg"
+           :spacing   40}
+          (comp/grid
+            {:item true
+             :key  "sdccggi"
+             :xs   6}
+            (item "Autoredeploy" (str autoredeploy)))
+          (comp/grid
+            {:item true
+             :key  "sdccplgi"
+             :xs   12}
+            (form/subsection "Placements")
+            (map #(comp/chip {:label (:rule %)
+                              :key   (str "lp-" (:rule %))}) placement))
+          (comp/grid
+            {:item true
+             :key  "sdccpogi"
+             :xs   12
+             :sm   6}
+            (form/subsection "Restart Policy")
+            (comp/grid
+              {:container true
+               :key       "sdccpogic"
+               :direction "column"}
+              (comp/grid
+                {:item true
+                 :key  "sdccpogicic"}
+                (item "Condition" restart-policy-condition))
+              (comp/grid
+                {:item true
+                 :key  "sdccpogicid"}
+                (item "Delay" (str restart-policy-delay "s")))
+              (comp/grid
+                {:item true
+                 :key  "sdccpogiciw"}
+                (item "Window" (str restart-policy-window "s")))
+              (comp/grid
+                {:item true
+                 :key  "sdccpogicima"}
+                (item "Max Attempts" restart-policy-attempts))))
+          (comp/grid
+            {:item true
+             :key  "sdccugi"
+             :xs   12
+             :sm   6}
+            (form/subsection "Update Config")
+            (comp/grid
+              {:container true
+               :key       "sdccugic"
+               :direction "column"}
+              (comp/grid
+                {:item true
+                 :key  "sdccugicip"}
+                (item "Parallelism" update-parallelism))
+              (comp/grid
+                {:item true
+                 :key  "sdccugicid"}
+                (item "Delay" (str update-delay "s")))
+              (comp/grid
+                {:item true
+                 :key  "sdccugicio"}
+                (item "Order" update-order))
+              (comp/grid
+                {:item true
+                 :key  "sdccugiciof"}
+                (item "On Failure" update-failure-action))))
+          (when (= "rollback" (:failureAction update))
+            (comp/grid
+              {:item true
+               :key  "sdccrgi"
+               :xs   12
+               :sm   6}
+              (form/subsection "Rollback Config")
+              (comp/grid
+                {:container true
+                 :key       "sdccrgic"
+                 :direction "column"}
+                (comp/grid
+                  {:item true
+                   :key  "sdccrgicip"}
+                  (item "Parallelism" rollback-parallelism))
+                (comp/grid
+                  {:item true
+                   :key  "sdccrgicid"}
+                  (item "Delay" (str rollback-delay "s")))
+                (comp/grid
+                  {:item true
+                   :key  "sdccrgicio"}
+                  (item "Order" rollback-order))
+                (comp/grid
+                  {:item true
+                   :key  "sdccrgiciof"}
+                  (item "On Failure" rollback-failure-action))))))))))
+

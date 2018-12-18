@@ -1,31 +1,21 @@
 (ns swarmpit.component.network.info
   (:require [material.icon :as icon]
-            [material.component :as comp]
+            [material.components :as comp]
+            [material.component.label :as label]
             [material.component.form :as form]
-            [material.component.panel :as panel]
-            [material.component.list-table-auto :as list]
-            [swarmpit.component.message :as message]
-            [swarmpit.component.state :as state]
+            [material.component.list.basic :as list]
             [swarmpit.component.mixin :as mixin]
+            [swarmpit.component.state :as state]
+            [swarmpit.component.message :as message]
             [swarmpit.component.progress :as progress]
             [swarmpit.component.service.list :as services]
-            [swarmpit.docker.utils :as utils]
             [swarmpit.url :refer [dispatch!]]
             [swarmpit.ajax :as ajax]
             [swarmpit.routes :as routes]
-            [swarmpit.time :as time]
+            [sablono.core :refer-macros [html]]
             [rum.core :as rum]))
 
 (enable-console-print!)
-
-(def driver-opts-headers ["Name" "Value"])
-
-(def driver-opts-render-keys
-  [[:name] [:value]])
-
-(defn driver-opts-render-item
-  [item]
-  (val item))
 
 (defn- network-services-handler
   [network-id]
@@ -55,6 +45,84 @@
                    (message/error
                      (str "Network removing failed. " (:error response))))}))
 
+(def form-driver-opts-render-metadata
+  {:primary   (fn [item] (:name item))
+   :secondary (fn [item] (:value item))})
+
+(defn- section-general
+  [{:keys [id stack networkName driver created internal attachable ingress enableIPv6 ipam]}]
+  (comp/card
+    {:className "Swarmpit-form-card"
+     :key       "ngc"}
+    (comp/card-header
+      {:title     networkName
+       :className "Swarmpit-form-card-header"
+       :key       "ngch"
+       :action    (comp/tooltip
+                    {:title "Delete network"
+                     :key   "ngchadt"}
+                    (comp/icon-button
+                      {:aria-label "Delete"
+                       :onClick    #(delete-network-handler id)}
+                      (comp/svg icon/trash)))})
+    (when (and (:subnet ipam)
+               (:gateway ipam))
+      (comp/card-content
+        {:key "ngcci"}
+        (html
+          [:div {:key "ngccid"}
+           [:span "The subnet is listed as " [:b (:subnet ipam)]]
+           [:br]
+           [:span "The gateway IP in the above instance is " [:b (:gateway ipam)]]])))
+    (comp/card-content
+      {:key "ngccl"}
+      (form/item-labels
+        [(when driver
+           (label/grey driver))
+         (when internal
+           (label/grey "Internal"))
+         (when ingress
+           (label/grey "Ingress"))
+         (when attachable
+           (label/grey "Attachable"))
+         (when enableIPv6
+           (label/grey "IPv6"))]))
+    (comp/card-actions
+      {:key "ngca"}
+      (when stack
+        (comp/button
+          {:size  "small"
+           :key   "ngcasb"
+           :color "primary"
+           :href  (routes/path-for-frontend :stack-info {:name stack})}
+          "See stack")))
+    (comp/divider
+      {:key "ngd"})
+    (comp/card-content
+      {:key   "ngccf"
+       :style {:paddingBottom "16px"}}
+      (form/item-date created nil)
+      (form/item-id id))))
+
+(defn- section-driver
+  [{:keys [driver options]}]
+  (comp/card
+    {:className "Swarmpit-card"
+     :key       "ndc"}
+    (comp/card-header
+      {:className "Swarmpit-table-card-header"
+       :title     "Driver options"
+       :key       "ndch"})
+    (comp/card-content
+      {:className "Swarmpit-table-card-content"
+       :key       "ndcc"}
+      (when (not-empty options)
+        (rum/with-key
+          (list/list
+            form-driver-opts-render-metadata
+            options
+            nil) "ndccl")))))
+
 (defn- init-form-state
   []
   (state/set-value {:loading? true} state/form-state-cursor))
@@ -67,49 +135,32 @@
       (network-services-handler id))))
 
 (rum/defc form-info < rum/static [{:keys [network services]}]
-  (let [subnet (get-in network [:ipam :subnet])
-        gateway (get-in network [:ipam :gateway])]
-    [:div
-     [:div.form-panel
-      [:div.form-panel-left
-       (panel/info icon/networks
-                   (:networkName network))]
-      [:div.form-panel-right
-       (comp/mui
-         (comp/raised-button
-           {:onTouchTap #(delete-network-handler (:id network))
-            :label      "Delete"}))]]
-     [:div.form-layout
-      [:div.form-layout-group
-       (form/section "General settings")
-       (form/item "ID" (:id network))
-       (form/item-stack (:stack network))
-       (form/item "NAME" (utils/trim-stack (:stack network)
-                                           (:networkName network)))
-       (when (time/valid? (:created network))
-         (form/item-date "CREATED" (:created network)))
-       (form/item "INTERNAL" (if (:internal network) "yes" "no"))
-       (form/item "ATTACHABLE" (if (:attachable network) "yes" "no"))
-       (form/item "INGRESS" (if (:ingress network) "yes" "no"))
-       (form/item "ENABLED IPv6" (if (:enableIPv6 network) "yes" "no"))]
-      [:div.form-layout-group.form-layout-group-border
-       (form/section "Driver")
-       (form/item "NAME" (:driver network))
-       (when (not-empty (:options network))
-         [:div
-          (form/subsection "Network driver options")
-          (list/table driver-opts-headers
-                      (:options network)
-                      driver-opts-render-item
-                      driver-opts-render-keys
-                      nil)])]
-      (when (and (some? subnet)
-                 (some? gateway))
-        [:div.form-layout-group.form-layout-group-border
-         (form/section "IP address management")
-         (form/item "SUBNET" subnet)
-         (form/item "GATEWAY" gateway)])
-      (services/linked-services services)]]))
+  (comp/mui
+    (html
+      [:div.Swarmpit-form
+       [:div.Swarmpit-form-context
+        (comp/grid
+          {:container true
+           :spacing   40}
+          (comp/grid
+            {:item true
+             :key  "ngg"
+             :xs   12
+             :sm   6}
+            (section-general network))
+          (when (not-empty (:options network))
+            (comp/grid
+              {:item true
+               :key  "nog"
+               :xs   12
+               :sm   6}
+              (section-driver network)))
+          (when (not-empty services)
+            (comp/grid
+              {:item true
+               :key  "nsg"
+               :xs   12}
+              (services/linked services))))]])))
 
 (rum/defc form < rum/reactive
                  mixin-init-form

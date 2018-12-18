@@ -1,73 +1,76 @@
 (ns swarmpit.component.user.create
-  (:require [material.icon :as icon]
-            [material.component :as comp]
-            [material.component.form :as form]
-            [material.component.panel :as panel]
+  (:require [material.components :as comp]
+            [material.component.composite :as composite]
             [swarmpit.component.mixin :as mixin]
             [swarmpit.component.state :as state]
             [swarmpit.component.message :as message]
             [swarmpit.url :refer [dispatch!]]
             [swarmpit.ajax :as ajax]
             [swarmpit.routes :as routes]
-            [rum.core :as rum]))
+            [sablono.core :refer-macros [html]]
+            [rum.core :as rum]
+            [swarmpit.component.common :as common]))
 
 (enable-console-print!)
 
 (defn- form-username [value]
-  (form/comp
-    "USERNAME"
-    (comp/vtext-field
-      {:name            "username"
-       :key             "username"
-       :required        true
-       :validations     "minLength:4"
-       :validationError "Username must be at least 4 characters long"
-       :value           value
-       :onChange        (fn [_ v]
-                          (state/update-value [:username] v state/form-value-cursor))})))
+  (comp/text-field
+    {:label           "Username"
+     :fullWidth       true
+     :name            "username"
+     :key             "username"
+     :variant         "outlined"
+     :margin          "normal"
+     :value           value
+     :required        true
+     :InputLabelProps {:shrink true}
+     :onChange        #(state/update-value [:username] (-> % .-target .-value) state/form-value-cursor)}))
 
-(defn- form-password [value]
-  (form/comp
-    "PASSWORD"
-    (comp/vtext-field
-      {:name            "password"
-       :key             "password"
-       :required        true
-       :validations     "minLength:6"
-       :validationError "Password must be at least 6 characters long"
-       :type            "password"
-       :value           value
-       :onChange        (fn [_ v]
-                          (state/update-value [:password] v state/form-value-cursor))})))
+(defn- form-password [value show-password?]
+  (comp/text-field
+    {:label           "Password"
+     :variant         "outlined"
+     :key             "password"
+     :fullWidth       true
+     :required        true
+     :margin          "normal"
+     :type            (if show-password?
+                        "text"
+                        "password")
+     :value           value
+     :onChange        #(state/update-value [:password] (-> % .-target .-value) state/form-value-cursor)
+     :InputLabelProps {:shrink true}
+     :InputProps      {:endAdornment (common/show-password-adornment show-password?)}}))
 
 (defn- form-role [value]
-  (form/comp
-    "ROLE"
-    (comp/select-field
-      {:value    value
-       :onChange (fn [_ _ v]
-                   (state/update-value [:role] v state/form-value-cursor))}
-      (comp/menu-item
-        {:key         "fru"
-         :value       "admin"
-         :primaryText "admin"})
-      (comp/menu-item
-        {:key         "fra"
-         :value       "user"
-         :primaryText "user"}))))
+  (comp/text-field
+    {:fullWidth       true
+     :label           "Role"
+     :key             "role"
+     :select          true
+     :value           value
+     :variant         "outlined"
+     :margin          "normal"
+     :InputLabelProps {:shrink true}
+     :onChange        #(state/update-value [:role] (-> % .-target .-value) state/form-value-cursor)}
+    (comp/menu-item
+      {:key   "admin"
+       :value "admin"} "admin")
+    (comp/menu-item
+      {:key   "user"
+       :value "user"} "user")))
 
 (defn- form-email [value]
-  (form/comp
-    "EMAIL"
-    (comp/vtext-field
-      {:name            "email"
-       :key             "email"
-       :required        true
-       :validations     "isEmail"
-       :validationError "Please provide a valid Email"
-       :value           value
-       :onChange        (fn [_ v]
-                          (state/update-value [:email] v state/form-value-cursor))})))
+  (comp/text-field
+    {:label           "Email"
+     :fullWidth       true
+     :key             "email"
+     :variant         "outlined"
+     :value           value
+     :required        true
+     :margin          "normal"
+     :InputLabelProps {:shrink true}
+     :onChange        #(state/update-value [:email] (-> % .-target .-value) state/form-value-cursor)}))
 
 (defn- create-user-handler
   []
@@ -87,8 +90,9 @@
 
 (defn- init-form-state
   []
-  (state/set-value {:valid?      false
-                    :processing? false} state/form-state-cursor))
+  (state/set-value {:valid?       false
+                    :processing?  false
+                    :showPassword false} state/form-state-cursor))
 
 (defn- init-form-value
   []
@@ -105,23 +109,42 @@
 
 (rum/defc form < rum/reactive
                  mixin-init-form [_]
-  (let [{:keys [username password role email]} (state/react state/form-state-cursor)
-        {:keys [valid? processing?]} (state/react state/form-state-cursor)]
-    [:div
-     [:div.form-panel
-      [:div.form-panel-left
-       (panel/info icon/users "New user")]
-      [:div.form-panel-right
-       (comp/progress-button
-         {:label      "Create"
-          :disabled   (not valid?)
-          :primary    true
-          :onTouchTap create-user-handler} processing?)]]
-     [:div.form-edit
-      (form/form
-        {:onValid   #(state/update-value [:valid?] true state/form-state-cursor)
-         :onInvalid #(state/update-value [:valid?] false state/form-state-cursor)}
-        (form-username username)
-        (form-password password)
-        (form-role role)
-        (form-email email))]]))
+  (let [{:keys [username password role email]} (state/react state/form-value-cursor)
+        {:keys [valid? processing? showPassword]} (state/react state/form-state-cursor)]
+    (comp/mui
+      (html
+        [:div.Swarmpit-form
+         [:div.Swarmpit-form-context
+          (comp/grid
+            {:item true
+             :xs   12
+             :sm   6
+             :md   4}
+            (comp/card
+              {:className "Swarmpit-form-card"
+               :key       "ucc"}
+              (comp/card-header
+                {:className "Swarmpit-form-card-header"
+                 :key       "ucch"
+                 :title     "New User"})
+              (comp/card-content
+                {:key "uccc"}
+                (comp/grid
+                  {:container true
+                   :key       "ucccc"
+                   :spacing   40}
+                  (comp/grid
+                    {:item true
+                     :key  "uccccig"
+                     :xs   12}
+                    (form-username username)
+                    (form-password password showPassword)
+                    (form-role role)
+                    (form-email email)))
+                (html
+                  [:div {:class "Swarmpit-form-buttons"
+                         :key   "ucccbtn"}
+                   (composite/progress-button
+                     "Create"
+                     create-user-handler
+                     processing?)]))))]]))))

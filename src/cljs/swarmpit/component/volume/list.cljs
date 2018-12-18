@@ -1,30 +1,31 @@
 (ns swarmpit.component.volume.list
-  (:require [material.component :as comp]
-            [material.component.panel :as panel]
-            [material.component.list-table :as list]
-            [swarmpit.component.mixin :as mixin]
+  (:require [material.icon :as icon]
+            [material.components :as comp]
+            [material.component.list.basic :as list]
+            [material.component.list.util :as list-util]
             [swarmpit.component.state :as state]
+            [swarmpit.component.mixin :as mixin]
+            [swarmpit.component.progress :as progress]
             [swarmpit.ajax :as ajax]
             [swarmpit.routes :as routes]
-            [rum.core :as rum]))
+            [swarmpit.url :refer [dispatch!]]
+            [sablono.core :refer-macros [html]]
+            [rum.core :as rum]
+            [swarmpit.component.common :as common]))
 
 (enable-console-print!)
 
-(def headers [{:name  "Name"
-               :width "50%"}
-              {:name  "Driver"
-               :width "50%"}])
-
-(def render-item-keys
-  [[:volumeName] [:driver]])
-
-(defn- render-item
-  [item _]
-  (val item))
+(def render-metadata
+  {:table {:summary [{:name      "Name"
+                      :render-fn (fn [item] (:volumeName item))}
+                     {:name      "Driver"
+                      :render-fn (fn [item] (:driver item))}]}
+   :list  {:primary   (fn [item] (:volumeName item))
+           :secondary (fn [item] (:driver item))}})
 
 (defn- onclick-handler
   [item]
-  (routes/path-for-frontend :volume-info {:name (:volumeName item)}))
+  (dispatch! (routes/path-for-frontend :volume-info {:name (:volumeName item)})))
 
 (defn- volumes-handler
   []
@@ -33,6 +34,10 @@
     {:state      [:loading?]
      :on-success (fn [{:keys [response]}]
                    (state/update-value [:items] response state/form-value-cursor))}))
+
+(defn form-search-fn
+  [event]
+  (state/update-value [:filter :query] (-> event .-target .-value) state/form-state-cursor))
 
 (defn- init-form-state
   []
@@ -45,30 +50,26 @@
       (init-form-state)
       (volumes-handler))))
 
+(def form-toolbar
+  {:buttons [(comp/button
+               {:color "primary"
+                :key   "lstt"
+                :href  (routes/path-for-frontend :volume-create)}
+               (comp/svg
+                 {:key "slt"} icon/add-small) "New volume")]})
+
 (rum/defc form < rum/reactive
                  mixin-init-form
                  mixin/subscribe-form
                  mixin/focus-filter [_]
   (let [{:keys [items]} (state/react state/form-value-cursor)
         {:keys [loading? filter]} (state/react state/form-state-cursor)
-        filtered-items (list/filter items (:query filter))]
-    [:div
-     [:div.form-panel
-      [:div.form-panel-left
-       (panel/text-field
-         {:id       "filter"
-          :hintText "Search volumes"
-          :onChange (fn [_ v]
-                      (state/update-value [:filter :query] v state/form-state-cursor))})]
-      [:div.form-panel-right
-       (comp/mui
-         (comp/raised-button
-           {:href    (routes/path-for-frontend :volume-create)
-            :label   "New volume"
-            :primary true}))]]
-     (list/table headers
-                 (sort-by :volumeName filtered-items)
-                 loading?
-                 render-item
-                 render-item-keys
-                 onclick-handler)]))
+        filtered-items (list-util/filter items (:query filter))]
+    (progress/form
+      loading?
+      (common/list "Volumes"
+                   items
+                   filtered-items
+                   render-metadata
+                   onclick-handler
+                   form-toolbar))))

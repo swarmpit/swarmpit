@@ -306,3 +306,24 @@
                                  :password      (:password distribution)
                                  :serveraddress (or (:url distribution) "https://index.docker.io/v2")}}})
       :body))
+
+(defn exec-create
+  []
+  (-> (execute {:method  :POST
+                :api     "/containers/f58f1834b10e/exec"
+                :options {:headers {:Content-Type "application/json"}
+                          :body    {:AttachStdin  false
+                                    :AttachStdout true
+                                    :AttachStderr true
+                                    :Tty          false
+                                    :Cmd          ["ls"]}}})
+      :body))
+
+(defn exec-start
+  []
+  (-> (execute {:method  :POST
+                :api     "/exec/47bce3a1a29fcc70de44eea43b4e71792585f5fb190b1f63a4c8de2670a3d406/start"
+                :options {:headers {:Content-Type "application/json"}
+                          :body    {:Detach false
+                                    :Tty    false}}})
+      :body))

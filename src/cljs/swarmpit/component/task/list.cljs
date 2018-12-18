@@ -1,47 +1,41 @@
 (ns swarmpit.component.task.list
-  (:require [material.component.label :as label]
-            [material.component.panel :as panel]
-            [material.component.list-table :as list]
-            [swarmpit.component.mixin :as mixin]
+  (:require [material.icon :as icon]
+            [material.components :as comp]
+            [material.component.list.basic :as list]
+            [material.component.list.util :as list-util]
+            [material.component.label :as label]
             [swarmpit.component.state :as state]
+            [swarmpit.component.mixin :as mixin]
+            [swarmpit.component.progress :as progress]
             [swarmpit.ajax :as ajax]
             [swarmpit.routes :as routes]
+            [swarmpit.url :refer [dispatch!]]
+            [sablono.core :refer-macros [html]]
             [clojure.contrib.humanize :as humanize]
             [goog.string :as gstring]
             [goog.string.format]
-            [rum.core :as rum]))
+            [rum.core :as rum]
+            [swarmpit.component.common :as common]))
 
 (enable-console-print!)
 
-(def headers [{:name  "Name"
-               :width "20%"}
-              {:name  "Image"
-               :width "20%"}
-              {:name  "Node"
-               :width "20%"}
-              {:name  "CPU Usage"
-               :width "10%"}
-              {:name  "Memory Usage"
-               :width "10%"}
-              {:name  "Memory"
-               :width "10%"}
-              {:name  "Status"
-               :width "10%"}])
+(defn- render-percentage
+  [val]
+  (if (some? val)
+    (str (gstring/format "%.2f" val) "%")
+    "-"))
 
-(def render-item-keys
-  [[:taskName]
-   [:repository :image]
-   [:nodeName]
-   [:stats :cpuPercentage]
-   [:stats :memoryPercentage]
-   [:stats :memory]
-   [:state]])
+(defn- render-capacity
+  [val]
+  (if (some? val)
+    (humanize/filesize val :binary false)
+    "-"))
 
 (defn render-item-state [value]
   (case value
-    "preparing" (label/yellow value)
-    "starting" (label/yellow value)
-    "pending" (label/yellow value)
+    "preparing" (label/pulsing value)
+    "starting" (label/pulsing value)
+    "pending" (label/pulsing value)
     "new" (label/blue value)
     "ready" (label/blue value)
     "assigned" (label/blue value)
@@ -53,6 +47,7 @@
     "rejected" (label/red value)
     "failed" (label/red value)))
 
+<<<<<<< HEAD
 (defn- render-percentage
   [val]
   (if (some? val)
@@ -64,20 +59,36 @@
   (if (some? val)
     (humanize/filesize val :binary true)
     "-"))
+=======
+(defn- render-item-name [item]
+  (html
+    [:div
+     [:div
+      [:span (:taskName item)]]
+     [:div
+      [:span.Swarmpit-list-image (get-in item [:repository :image])]]]))
+>>>>>>> origin / issues/159
 
-(defn- render-item
-  [item _]
-  (let [value (val item)]
-    (case (key item)
-      :state (render-item-state value)
-      :cpuPercentage (render-percentage value)
-      :memoryPercentage (render-percentage value)
-      :memory (render-capacity value)
-      value)))
+(def render-metadata
+  {:table {:summary [{:name      "Task"
+                      :render-fn (fn [item] (render-item-name item))}
+                     {:name      "Node"
+                      :render-fn (fn [item] (:nodeName item))}
+                     {:name      "CPU Usage"
+                      :render-fn (fn [item] (render-percentage (get-in item [:stats :cpuPercentage])))}
+                     {:name      "Memory Usage"
+                      :render-fn (fn [item] (render-percentage (get-in item [:stats :memoryPercentage])))}
+                     {:name      "Memory"
+                      :render-fn (fn [item] (render-capacity (get-in item [:stats :memory])))}
+                     {:name      "State"
+                      :render-fn (fn [item] (render-item-state (:state item)))}]}
+   :list  {:primary   (fn [item] (:taskName item))
+           :secondary (fn [item] (get-in item [:repository :image]))
+           :status-fn (fn [item] (render-item-state (:state item)))}})
 
 (defn- onclick-handler
   [item]
-  (routes/path-for-frontend :task-info (select-keys item [:id])))
+  (dispatch! (routes/path-for-frontend :task-info (select-keys item [:id]))))
 
 (defn- tasks-handler
   []
@@ -86,6 +97,10 @@
     {:state      [:loading?]
      :on-success (fn [{:keys [response]}]
                    (state/update-value [:items] response state/form-value-cursor))}))
+
+(defn form-search-fn
+  [event]
+  (state/update-value [:filter :query] (-> event .-target .-value) state/form-state-cursor))
 
 (defn- init-form-state
   []
@@ -104,18 +119,12 @@
                  mixin/focus-filter [_]
   (let [{:keys [items]} (state/react state/form-value-cursor)
         {:keys [loading? filter]} (state/react state/form-state-cursor)
-        filtered-items (list/filter items (:query filter))]
-    [:div
-     [:div.form-panel
-      [:div.form-panel-left
-       (panel/text-field
-         {:id       "filter"
-          :hintText "Search tasks"
-          :onChange (fn [_ v]
-                      (state/update-value [:filter :query] v state/form-state-cursor))})]]
-     (list/table headers
-                 (sort-by :serviceName filtered-items)
-                 loading?
-                 render-item
-                 render-item-keys
-                 onclick-handler)]))
+        filtered-items (list-util/filter items (:query filter))]
+    (progress/form
+      loading?
+      (common/list "Tasks"
+                   items
+                   filtered-items
+                   render-metadata
+                   onclick-handler
+                   nil))))

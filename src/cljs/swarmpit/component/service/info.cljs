@@ -1,10 +1,8 @@
 (ns swarmpit.component.service.info
   (:require [material.icon :as icon]
-            [material.component :as comp]
-            [material.component.label :as label]
-            [material.component.panel :as panel]
-            [material.component.form :as form]
-            [material.component.list-table-auto :as list]
+            [material.components :as comp]
+            [material.component.grid.masonry :as masonry]
+            [material.component.list.basic :as list]
             [swarmpit.component.state :as state]
             [swarmpit.component.mixin :as mixin]
             [swarmpit.component.progress :as progress]
@@ -24,6 +22,7 @@
             [swarmpit.url :refer [dispatch!]]
             [swarmpit.ajax :as ajax]
             [swarmpit.routes :as routes]
+            [sablono.core :refer-macros [html]]
             [rum.core :as rum]))
 
 (enable-console-print!)
@@ -88,65 +87,44 @@
                    (message/error
                      (str "Service rollback failed. " (:error response))))}))
 
-(def action-menu-style
-  {:position   "relative"
-   :marginTop  "13px"
-   :marginLeft "66px"})
+(defn form-tasks [tasks]
+  (comp/card
+    {:className "Swarmpit-card"
+     :key       "ftc"}
+    (comp/card-header
+      {:className "Swarmpit-table-card-header"
+       :key       "ftch"
+       :title     "Tasks"})
+    (comp/card-content
+      {:className "Swarmpit-table-card-content"
+       :key       "ftcc"}
+      (rum/with-key
+        (list/responsive
+          tasks/render-metadata
+          (filter #(not (= "shutdown" (:state %))) tasks)
+          tasks/onclick-handler) "ftccrl"))))
 
-(def action-menu-item-style
-  {:padding "0px 10px 0px 52px"})
-
-(defn- form-action-menu [service-id service-rollback-allowed opened?]
-  (comp/mui
-    (comp/icon-menu
-      {:iconButtonElement (comp/icon-button nil nil)
-       :open              opened?
-       :style             action-menu-style
-       :onRequestChange   (fn [state] (state/update-value [:menu?] state state/form-state-cursor))}
-      (comp/menu-item
-        {:key           "action-edit"
-         :innerDivStyle action-menu-item-style
-         :leftIcon      (comp/svg nil icon/edit)
-         :onClick       (fn []
-                          (dispatch!
-                            (routes/path-for-frontend :service-edit {:id service-id})))
-         :primaryText   "Edit"})
-      (comp/menu-item
-        {:key           "action-compose"
-         :innerDivStyle action-menu-item-style
-         :leftIcon      (comp/svg nil icon/stacks)
-         :onClick       (fn []
-                          (dispatch!
-                            (routes/path-for-frontend :stack-create nil {:from service-id})))
-         :primaryText   "Compose"})
-      (comp/menu-item
-        {:key           "action-redeploy"
-         :innerDivStyle action-menu-item-style
-         :leftIcon      (comp/svg nil icon/redeploy)
-         :onClick       #(redeploy-service-handler service-id)
-         :primaryText   "Redeploy"})
-      (comp/menu-item
-        {:key           "action-rollback"
-         :innerDivStyle action-menu-item-style
-         :leftIcon      (comp/svg nil icon/rollback)
-         :onClick       #(rollback-service-handler service-id)
-         :disabled      (not service-rollback-allowed)
-         :primaryText   "Rollback"})
-      (comp/menu-item
-        {:key           "action-delete"
-         :innerDivStyle action-menu-item-style
-         :leftIcon      (comp/svg nil icon/trash)
-         :onClick       #(delete-service-handler service-id)
-         :primaryText   "Delete"}))))
-
-(rum/defc form-tasks < rum/static [tasks]
-  [:div.form-layout-group.form-layout-group-border
-   (form/section "Tasks")
-   (list/table (map :name tasks/headers)
-               (filter #(not (= "shutdown" (:state %))) tasks)
-               tasks/render-item
-               tasks/render-item-keys
-               tasks/onclick-handler)])
+(defn form-actions
+  [service service-id]
+  [{:onClick #(dispatch! (routes/path-for-frontend :service-edit {:id service-id}))
+    :icon    (comp/svg icon/edit)
+    :name    "Edit service"}
+   {:onClick #(dispatch! (routes/path-for-frontend :stack-create nil {:from service-id}))
+    :icon    (comp/svg icon/stacks)
+    :more    true
+    :name    "Compose stack"}
+   {:onClick #(redeploy-service-handler service-id)
+    :icon    (comp/svg icon/redeploy)
+    :more    true
+    :name    "Redeploy service"}
+   {:onClick  #(rollback-service-handler service-id)
+    :disabled (not (get-in service [:deployment :rollbackAllowed]))
+    :icon     (comp/svg icon/rollback)
+    :more     true
+    :name     "Rollback service"}
+   {:onClick #(delete-service-handler service-id)
+    :icon    (comp/svg icon/trash)
+    :name    "Delete service"}])
 
 (defn- init-form-state
   []
@@ -168,8 +146,7 @@
       (service-networks-handler id)
       (service-tasks-handler id))))
 
-(rum/defc form-info < rum/reactive [{:keys [service networks tasks]}
-                                    {:keys [menu?]}]
+(rum/defc form-info < rum/static [{:keys [service networks tasks]}]
   (let [ports (:ports service)
         mounts (:mounts service)
         secrets (:secrets service)
@@ -179,42 +156,41 @@
         logdriver (:logdriver service)
         resources (:resources service)
         deployment (:deployment service)
-        id (:id service)]
-    [:div
-     [:div.form-panel
-      [:div.form-panel-left
-       (panel/info icon/services
-                   (:serviceName service)
-                   (label/info
-                     (label service)))]
-      [:div.form-panel-right
-       (comp/mui
-         (comp/raised-button
-           {:href  (routes/path-for-frontend :service-log {:id id})
-            :icon  (comp/button-icon icon/log-18)
-            :label "Logs"}))
-       [:span.form-panel-delimiter]
-       [:div
-        (comp/mui
-          (comp/raised-button
-            {:onClick       (fn [_] (state/update-value [:menu?] true state/form-state-cursor))
-             :icon          (comp/button-icon icon/expand-18)
-             :labelPosition "before"
-             :label         "Actions"}))
-        (form-action-menu id (:rollbackAllowed deployment) menu?)]]]
-     [:div.form-layout
-      (settings/form service)
-      (ports/form ports)
-      (networks/form networks)
-      (mounts/form mounts)
-      (secrets/form secrets)
-      (configs/form configs)
-      (variables/form variables)
-      (labels/form labels)
-      (logdriver/form logdriver)
-      (resources/form resources)
-      (deployment/form deployment)
-      (form-tasks tasks)]]))
+        id (:id service)
+        is-even-and-not-third? #(and (even? %) (not (= 2 %)))]
+    (comp/mui
+      (html
+        [:div.Swarmpit-form
+         [:div.Swarmpit-form-context
+          (masonry/grid
+            {:first-col-pred is-even-and-not-third?}
+            (settings/form service tasks (form-actions service id))
+            (deployment/form deployment id)
+            (when (not-empty networks)
+              (networks/form networks id))
+            (when (not-empty ports)
+              (ports/form ports id))
+            (when (not-empty mounts)
+              (mounts/form mounts id))
+            (when (not-empty secrets)
+              (secrets/form secrets id))
+            (when (not-empty configs)
+              (configs/form configs id))
+            (when (not-empty variables)
+              (variables/form variables id))
+            (when (not-empty labels)
+              (labels/form labels id))
+            (when (not-empty (:opts logdriver))
+              (logdriver/form logdriver id)))
+          (comp/grid
+            {:container true
+             :key       "scg"
+             :spacing   40}
+            (comp/grid
+              {:item true
+               :key  "scitg"
+               :xs   12}
+              (form-tasks tasks)))]]))))
 
 (rum/defc form < rum/reactive
                  mixin-init-form
@@ -223,4 +199,4 @@
         item (state/react state/form-value-cursor)]
     (progress/form
       (:loading? state)
-      (form-info item state))))
+      (form-info item))))

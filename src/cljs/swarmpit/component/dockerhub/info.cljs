@@ -1,15 +1,17 @@
 (ns swarmpit.component.dockerhub.info
   (:require [material.icon :as icon]
-            [material.component :as comp]
+            [material.components :as comp]
             [material.component.form :as form]
-            [material.component.panel :as panel]
+            [material.component.label :as label]
             [swarmpit.component.message :as message]
             [swarmpit.component.state :as state]
             [swarmpit.component.mixin :as mixin]
             [swarmpit.component.progress :as progress]
+            [swarmpit.component.common :as common]
             [swarmpit.url :refer [dispatch!]]
             [swarmpit.ajax :as ajax]
             [swarmpit.routes :as routes]
+            [sablono.core :refer-macros [html]]
             [rum.core :as rum]))
 
 (enable-console-print!)
@@ -35,6 +37,15 @@
                    (message/error
                      (str "User removing failed. " (:error response))))}))
 
+(defn form-actions
+  [id]
+  [{:onClick #(dispatch! (routes/path-for-frontend :dockerhub-user-edit {:id id}))
+    :icon    (comp/svg icon/edit)
+    :name    "Edit account"}
+   {:onClick #(delete-user-handler id)
+    :icon    (comp/svg icon/trash)
+    :name    "Delete account"}])
+
 (defn- init-form-state
   []
   (state/set-value {:loading? true} state/form-state-cursor))
@@ -45,32 +56,47 @@
       (init-form-state)
       (user-handler id))))
 
-(rum/defc form-info < rum/static [{:keys [_id username] :as user}]
-  [:div
-   [:div.form-panel
-    [:div.form-panel-left
-     (panel/info icon/docker username)]
-    [:div.form-panel-right
-     (comp/mui
-       (comp/raised-button
-         {:href    (routes/path-for-frontend :dockerhub-user-edit {:id _id})
-          :label   "Edit"
-          :primary true}))
-     [:span.form-panel-delimiter]
-     (comp/mui
-       (comp/raised-button
-         {:onTouchTap #(delete-user-handler _id)
-          :label      "Delete"}))]]
-   [:div.form-view
-    [:div.form-view-group
-     (form/item "ID" (:_id user))
-     (form/item "NAME" (:name user))
-     (form/item "PUBLIC" (if (:public user)
-                           "yes"
-                           "no"))
-     (form/item "USERNAME" (:username user))
-     (form/item "LOCATION" (:location user))
-     (form/item "ROLE" (:role user))]]])
+(rum/defc form-info < rum/static [{:keys [_id username role public]}]
+  (comp/mui
+    (html
+      [:div.Swarmpit-form
+       [:div.Swarmpit-form-context
+        (comp/grid
+          {:container true
+           :spacing   40}
+          (comp/grid
+            {:item true
+             :key  "dgg"
+             :xs   12
+             :sm   6}
+            (comp/card
+              {:className "Swarmpit-form-card"
+               :key       "dgc"}
+              (comp/card-header
+                {:title     username
+                 :className "Swarmpit-form-card-header"
+                 :key       "dgch"
+                 :action    (common/actions-menu
+                              (form-actions _id)
+                              :dockerhubMenuAnchor
+                              :dockerhubMenuOpened)})
+              (comp/card-content
+                {:key "dgcc"}
+                (html
+                  [:div {:key "dgccd"}
+                   [:span "Authenticated with user " [:b username] "."]
+                   [:br]
+                   [:span "Hub is " [:b (if public "public." "private.")]]]))
+              (comp/card-content
+                {:key "dgccl"}
+                (form/item-labels
+                  [(label/grey role)]))
+              (comp/divider
+                {:key "dgd"})
+              (comp/card-content
+                {:style {:paddingBottom "16px"}
+                 :key   "dgccf"}
+                (form/item-id _id)))))]])))
 
 (rum/defc form < rum/reactive
                  mixin-init-form

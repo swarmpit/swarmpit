@@ -1,97 +1,108 @@
 (ns swarmpit.component.node.list
   (:require [material.icon :as icon]
+            [material.components :as comp]
+            [material.component.list.util :as list-util]
+            [material.component.form :as form]
             [material.component.label :as label]
-            [material.component.panel :as panel]
+            [material.component.chart :as chart]
             [swarmpit.component.mixin :as mixin]
             [swarmpit.component.state :as state]
-            [material.component.list-table :as list]
+            [swarmpit.component.common :as common]
             [swarmpit.ajax :as ajax]
             [swarmpit.routes :as routes]
+            [swarmpit.url :refer [dispatch!]]
             [sablono.core :refer-macros [html]]
             [rum.core :as rum]
-            [goog.string :as gstring]
             [goog.string.format]
+            [clojure.contrib.inflect :as inflect]
             [clojure.contrib.humanize :as humanize]))
 
 (enable-console-print!)
-
-(defn- node-item-header [item]
-  [:div
-   [:span
-    [:svg.node-item-ico {:width  "24"
-                         :height "24"
-                         :fill   "rgb(117, 117, 117)"}
-     [:path {:d (icon/os (:os item))}]]]
-   [:span [:b (:nodeName item)]]])
 
 (defn- node-item-state [value]
   (case value
     "ready" (label/green value)
     "down" (label/red value)))
 
-(defn- node-item-states [item]
-  [:div.node-item-states
-   [:span.node-item-state (node-item-state (:state item))]
-   (when (:leader item)
-     [:span.node-item-state (label/blue "leader")])
-   [:span.node-item-state (label/blue (:role item))]
-   [:span.node-item-state (if (= "active" (:availability item))
-                            (label/blue "active")
-                            (label/yellow (:availability item)))]])
+(defn- node-item-labels [item]
+  (form/item-labels
+    [(node-item-state (:state item))
+     (when (:leader item)
+       (label/primary "leader"))
+     (label/grey (:role item))
+     (if (= "active" (:availability item))
+       (label/green "active")
+       (label/grey (:availability item)))]))
 
-(defn- node-item-engine [item]
-  [:div
-   [:span.node-item-secondary "docker " (:engine item)]])
+(defn node-used [stat]
+  (cond
+    (< stat 75) {:name  "actual"
+                 :value stat
+                 :color "#43a047"}
+    (> stat 90) {:name  "actual"
+                 :value stat
+                 :color "#d32f2f"}
+    :else {:name  "actual"
+           :value stat
+           :color "#ffa000"}))
 
-(defn- node-item-address [item]
-  [:div
-   [:span.node-item-secondary (:address item)]])
+(rum/defc node-graph [stat label id]
+  (let [data [(node-used stat)
+              {:name  "rest"
+               :value (- 100 stat)
+               :color "#ccc"}]]
+    (chart/pie
+      data
+      label
+      "Swarmpit-node-stat-graph"
+      id
+      nil)))
 
-(defn- node-item-usage [stat]
-  (let [stat-string (str (gstring/format "%.2f" stat) "%")]
-    (cond
-      (< stat 75) [:td {:style {:color "#509E50"}} stat-string]
-      (> stat 90) [:td {:style {:color "rgb(244, 67, 54)"}} stat-string]
-      :else [:td {:style {:color "#9e931b"}} stat-string])))
-
-(defn- node-item-stats [item]
+(defn- node-item
+  [item index]
   (let [cpu (-> item :resources :cpu (int))
         memory-bytes (-> item :resources :memory (* 1024 1024))
         disk-bytes (-> item :stats :disk :total)]
-    [:div
-     [:table.node-progress-table
-      [:tr
-       [:td]
-       [:td]
-       [:td]]
-      [:tr.node-progress-table-name
-       [:td "CPU"]
-       [:td "DISK"]
-       [:td "MEMORY"]]
-      [:tr
-       [:td (str cpu " " (clojure.contrib.inflect/pluralize-noun cpu "core"))]
-       [:td (if (some? disk-bytes)
-              (humanize/filesize disk-bytes :binary true)
-              "-")]
-       [:td (humanize/filesize memory-bytes :binary true)]]
-      (when (some? (:stats item))
-        [:tr.node-progress-table-usage
-         (node-item-usage (get-in item [:stats :cpu :usedPercentage]))
-         (node-item-usage (get-in item [:stats :disk :usedPercentage]))
-         (node-item-usage (get-in item [:stats :memory :usedPercentage]))])]]))
-
-(defn- node-item
-  [item]
-  (html
-    [:div.mdl-cell.node-item {:key (:id item)}
-     [:a {:href  (routes/path-for-frontend :node-info item)
-          :style {:color          "inherit"
-                  :textDecoration "inherit"}}
-      (node-item-header item)
-      (node-item-engine item)
-      (node-item-address item)
-      (node-item-states item)
-      (node-item-stats item)]]))
+    (comp/grid
+      {:item true
+       :key  (str "nlig-" index)}
+      (html
+        [:a {:class "Swarmpit-node-href"
+             :key   (str "nligah-" index)
+             :href  (routes/path-for-frontend :node-info {:id (:id item)})}
+         (comp/card
+           {:className "Swarmpit-form-card"
+            :key       (str "nlic-" index)}
+           (comp/card-header
+             {:title     (:nodeName item)
+              :className "Swarmpit-form-card-header"
+              :key       (str "nlich-" index)
+              :subheader (:address item)
+              :avatar    (comp/svg (icon/os (:os item)))})
+           (comp/card-content
+             {:key (str "nlicc-" index)}
+             (str "docker " (:engine item)))
+           (comp/card-content
+             {:key (str "nliccl-" index)}
+             (node-item-labels item))
+           (comp/card-content
+             {:className "Swarmpit-table-card-content"
+              :key       (str "nliccs-" index)}
+             (html
+               [:div {:class "Swarmpit-node-stat"
+                      :key   (str "nliccsc-" index)}
+                (node-graph
+                  (get-in item [:stats :cpu :usedPercentage])
+                  (str cpu " " (inflect/pluralize-noun cpu "core"))
+                  (str "graph-cpu-" index))
+                (node-graph
+                  (get-in item [:stats :disk :usedPercentage])
+                  (str (humanize/filesize disk-bytes :binary false) " disk")
+                  (str "graph-disk-" index))
+                (node-graph
+                  (get-in item [:stats :memory :usedPercentage])
+                  (str (humanize/filesize memory-bytes :binary false) " ram")
+                  (str "graph-memory-" index))])))]))))
 
 (defn- nodes-handler
   []
@@ -99,6 +110,10 @@
     (routes/path-for-backend :nodes)
     {:on-success (fn [{:keys [response]}]
                    (state/update-value [:items] response state/form-value-cursor))}))
+
+(defn form-search-fn
+  [event]
+  (state/update-value [:filter :query] (-> event .-target .-value) state/form-state-cursor))
 
 (defn- init-form-state
   []
@@ -116,15 +131,17 @@
                  mixin/focus-filter [_]
   (let [{:keys [items]} (state/react state/form-value-cursor)
         {:keys [filter]} (state/react state/form-state-cursor)
-        filtered-items (list/filter items (:query filter))]
-    [:div
-     [:div.form-panel
-      [:div.form-panel-left
-       (panel/text-field
-         {:id       "filter"
-          :hintText "Search nodes"
-          :onChange (fn [_ v]
-                      (state/update-value [:filter :query] v state/form-state-cursor))})]]
-     [:div.content-grid.mdl-grid
-      (->> (sort-by :nodeName filtered-items)
-           (map #(node-item %)))]]))
+        filtered-items (list-util/filter items (:query filter))]
+    (comp/mui
+      (html
+        [:div.Swarmpit-form
+         [:div.Swarmpit-form-context
+          (if (empty? filtered-items)
+            (common/list-no-items-found)
+            (comp/grid
+              {:container true
+               :spacing   40}
+              (map-indexed
+                (fn [index item]
+                  (node-item item index)) (sort-by :nodeName filtered-items))))]]))))
+

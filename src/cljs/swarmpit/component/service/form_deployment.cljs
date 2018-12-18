@@ -1,5 +1,6 @@
 (ns swarmpit.component.service.form-deployment
-  (:require [material.component :as comp]
+  (:require [material.icon :as icon]
+            [material.components :as comp]
             [material.component.form :as form]
             [swarmpit.component.state :as state]
             [swarmpit.component.service.form-deployment-placement :as placement]
@@ -12,213 +13,313 @@
 (def form-value-cursor (conj state/form-value-cursor :deployment))
 
 (defn- form-restart-policy-attempts [value]
-  (form/comp
-    "MAX ATTEMPTS"
-    (comp/vtext-field
-      {:name     "restart-policy-attempts"
-       :key      "restart-policy-attempts"
-       :type     "number"
-       :min      0
-       :value    (str value)
-       :onChange (fn [_ v]
-                   (state/update-value [:restartPolicy :attempts] (parse-int v) form-value-cursor))})))
+  (comp/text-field
+    {:fullWidth       true
+     :label           "Attempts"
+     :type            "number"
+     :key             "pattempts"
+     :min             0
+     :value           value
+     :variant         "outlined"
+     :margin          "normal"
+     :style           {:maxWidth "150px"}
+     :InputLabelProps {:shrink true}
+     :onChange        #(state/update-value [:restartPolicy :attempts] (parse-int (-> % .-target .-value)) form-value-cursor)}))
 
 (defn- form-restart-policy-delay [value]
-  (form/comp
-    "DELAY"
-    (comp/vtext-field
-      {:name     "restart-policy-delay"
-       :key      "restart-policy-delay"
-       :type     "number"
-       :min      0
-       :value    (str value)
-       :onChange (fn [_ v]
-                   (state/update-value [:restartPolicy :delay] (parse-int v) form-value-cursor))})))
+  (comp/text-field
+    {:fullWidth       true
+     :label           "Delay"
+     :type            "number"
+     :key             "pdelay"
+     :min             0
+     :value           value
+     :variant         "outlined"
+     :margin          "normal"
+     :style           {:maxWidth "150px"}
+     :InputLabelProps {:shrink true}
+     :onChange        #(state/update-value [:restartPolicy :delay] (parse-int (-> % .-target .-value)) form-value-cursor)}))
 
 (defn- form-restart-policy-window [value]
-  (form/comp
-    "WINDOW"
-    (comp/vtext-field
-      {:name     "restart-policy-window"
-       :key      "restart-policy-window"
-       :type     "number"
-       :min      0
-       :value    (str value)
-       :onChange (fn [_ v]
-                   (state/update-value [:restartPolicy :window] (parse-int v) form-value-cursor))})))
+  (comp/text-field
+    {:fullWidth       true
+     :label           "Window"
+     :type            "number"
+     :key             "pwindow"
+     :min             0
+     :value           value
+     :variant         "outlined"
+     :margin          "normal"
+     :style           {:maxWidth "150px"}
+     :InputLabelProps {:shrink true}
+     :onChange        #(state/update-value [:restartPolicy :window] (parse-int (-> % .-target .-value)) form-value-cursor)}))
 
 (defn- form-restart-policy-condition [value]
-  (form/comp
-    "CONDITION"
-    (comp/select-field
-      {:value    value
-       :onChange (fn [_ _ v]
-                   (state/update-value [:restartPolicy :condition] v form-value-cursor))}
-      (comp/menu-item
-        {:key         "frpc1"
-         :value       "any"
-         :primaryText "any"})
-      (comp/menu-item
-        {:key         "frpc2"
-         :value       "on-failure"
-         :primaryText "on-failure"})
-      (comp/menu-item
-        {:key         "frpc3"
-         :value       "none"
-         :primaryText "none"}))))
+  (comp/text-field
+    {:fullWidth       true
+     :label           "Condition"
+     :key             "pcond"
+     :select          true
+     :value           value
+     :variant         "outlined"
+     :margin          "normal"
+     :style           {:maxWidth "150px"}
+     :InputLabelProps {:shrink true}
+     :onChange        #(state/update-value [:restartPolicy :condition] (-> % .-target .-value) form-value-cursor)}
+    (comp/menu-item
+      {:key   "p-any"
+       :value "any"} "any")
+    (comp/menu-item
+      {:key   "p-on-failure"
+       :value "on-failure"} "on-failure")
+    (comp/menu-item
+      {:key   "p-none"
+       :value "none"} "none")))
 
 (defn- form-update-parallelism [value]
-  (form/comp
-    "PARALLELISM"
-    (comp/vtext-field
-      {:name     "update-parallelism"
-       :key      "update-parallelism"
-       :type     "number"
-       :min      0
-       :value    (str value)
-       :onChange (fn [_ v]
-                   (state/update-value [:update :parallelism] (parse-int v) form-value-cursor))})))
+  (comp/text-field
+    {:fullWidth       true
+     :label           "Parallelism"
+     :type            "number"
+     :key             "udparallel"
+     :min             0
+     :value           value
+     :variant         "outlined"
+     :margin          "normal"
+     :style           {:maxWidth "150px"}
+     :InputLabelProps {:shrink true}
+     :onChange        #(state/update-value [:update :parallelism] (parse-int (-> % .-target .-value)) form-value-cursor)}))
 
 (defn- form-update-delay [value]
-  (form/comp
-    "DELAY"
-    (comp/vtext-field
-      {:name     "update-delay"
-       :key      "update-delay"
-       :type     "number"
-       :min      0
-       :value    (str value)
-       :onChange (fn [_ v]
-                   (state/update-value [:update :delay] (parse-int v) form-value-cursor))})))
+  (comp/text-field
+    {:fullWidth       true
+     :label           "Delay"
+     :type            "number"
+     :key             "udelay"
+     :min             0
+     :value           value
+     :variant         "outlined"
+     :margin          "normal"
+     :style           {:maxWidth "150px"}
+     :InputLabelProps {:shrink true}
+     :onChange        #(state/update-value [:update :delay] (parse-int (-> % .-target .-value)) form-value-cursor)}))
 
 (defn- form-update-order [value]
-  (form/comp
-    "ORDER"
-    (comp/select-field
-      {:value    value
-       :onChange (fn [_ _ v]
-                   (state/update-value [:update :order] v form-value-cursor))}
-      (comp/menu-item
-        {:key         "fuo1"
-         :value       "start-first"
-         :primaryText "start-first"})
-      (comp/menu-item
-        {:key         "fuo2"
-         :value       "stop-first"
-         :primaryText "stop-first"}))))
+  (comp/text-field
+    {:fullWidth       true
+     :label           "Order"
+     :select          true
+     :key             "uorder"
+     :value           value
+     :variant         "outlined"
+     :margin          "normal"
+     :style           {:maxWidth "150px"}
+     :InputLabelProps {:shrink true}
+     :onChange        #(state/update-value [:update :order] (-> % .-target .-value) form-value-cursor)}
+    (comp/menu-item
+      {:key   "u-start-first"
+       :value "start-first"} "start-first")
+    (comp/menu-item
+      {:key   "u-stop-first"
+       :value "stop-first"} "stop-first")))
 
 (defn- form-update-failure-action [value]
-  (form/comp
-    "FAILURE ACTION"
-    (comp/select-field
-      {:value    value
-       :onChange (fn [_ _ v]
-                   (state/update-value [:update :failureAction] v form-value-cursor))}
-      (comp/menu-item
-        {:key         "fufa1"
-         :value       "pause"
-         :primaryText "pause"})
-      (comp/menu-item
-        {:key         "fufa2"
-         :value       "continue"
-         :primaryText "continue"})
-      (comp/menu-item
-        {:key         "fufa3"
-         :value       "rollback"
-         :primaryText "rollback"}))))
+  (comp/text-field
+    {:fullWidth       true
+     :label           "Failure action"
+     :key             "ufailaction"
+     :select          true
+     :value           value
+     :variant         "outlined"
+     :margin          "normal"
+     :style           {:maxWidth "150px"}
+     :InputLabelProps {:shrink true}
+     :onChange        #(state/update-value [:update :failureAction] (-> % .-target .-value) form-value-cursor)}
+    (comp/menu-item
+      {:key   "upause"
+       :value "pause"} "pause")
+    (comp/menu-item
+      {:key   "ucontinue"
+       :value "continue"} "continue")
+    (comp/menu-item
+      {:key   "urollback"
+       :value "rollback"} "rollback")))
 
 (defn- form-rollback-parallelism [value]
-  (form/comp
-    "PARALLELISM"
-    (comp/vtext-field
-      {:name     "rollback-parallelism"
-       :key      "rollback-parallelism"
-       :type     "number"
-       :min      0
-       :value    (str value)
-       :onChange (fn [_ v]
-                   (state/update-value [:rollback :parallelism] (parse-int v) form-value-cursor))})))
+  (comp/text-field
+    {:fullWidth       true
+     :label           "Parallelism"
+     :type            "number"
+     :key             "rparallel"
+     :min             0
+     :value           value
+     :variant         "outlined"
+     :margin          "normal"
+     :style           {:maxWidth "150px"}
+     :InputLabelProps {:shrink true}
+     :onChange        #(state/update-value [:rollback :parallelism] (parse-int (-> % .-target .-value)) form-value-cursor)}))
 
 (defn- form-rollback-delay [value]
-  (form/comp
-    "DELAY"
-    (comp/vtext-field
-      {:name     "rollback-delay"
-       :key      "rollback-delay"
-       :type     "number"
-       :min      0
-       :value    (str value)
-       :onChange (fn [_ v]
-                   (state/update-value [:rollback :delay] (parse-int v) form-value-cursor))})))
+  (comp/text-field
+    {:fullWidth       true
+     :label           "Delay"
+     :type            "number"
+     :key             "rdelay"
+     :min             0
+     :value           value
+     :variant         "outlined"
+     :margin          "normal"
+     :style           {:maxWidth "150px"}
+     :InputLabelProps {:shrink true}
+     :onChange        #(state/update-value [:rollback :delay] (parse-int (-> % .-target .-value)) form-value-cursor)}))
 
 (defn- form-rollback-order [value]
-  (form/comp
-    "ORDER"
-    (comp/select-field
-      {:value    value
-       :onChange (fn [_ _ v]
-                   (state/update-value [:rollback :order] v form-value-cursor))}
-      (comp/menu-item
-        {:key         "fro1"
-         :value       "stop-first"
-         :primaryText "stop-first"})
-      (comp/menu-item
-        {:key         "fro2"
-         :value       "start-first"
-         :primaryText "start-first"}))))
+  (comp/text-field
+    {:fullWidth       true
+     :label           "Order"
+     :select          true
+     :key             "rorder"
+     :value           value
+     :variant         "outlined"
+     :margin          "normal"
+     :style           {:maxWidth "150px"}
+     :InputLabelProps {:shrink true}
+     :onChange        #(state/update-value [:rollback :order] (-> % .-target .-value) form-value-cursor)}
+    (comp/menu-item
+      {:key   "r-stop-first"
+       :value "stop-first"} "stop-first")
+    (comp/menu-item
+      {:key   "r-start-first"
+       :value "start-first"} "start-first")))
 
 (defn- form-rollback-failure-action [value]
-  (form/comp
-    "FAILURE ACTION"
-    (comp/select-field
-      {:value    value
-       :onChange (fn [_ _ v]
-                   (state/update-value [:rollback :failureAction] v form-value-cursor))}
-      (comp/menu-item
-        {:key         "frfa1"
-         :value       "pause"
-         :primaryText "pause"})
-      (comp/menu-item
-        {:key         "frfa2"
-         :value       "continue"
-         :primaryText "continue"}))))
+  (comp/text-field
+    {:fullWidth       true
+     :label           "Failure action"
+     :key             "raction"
+     :select          true
+     :value           value
+     :variant         "outlined"
+     :margin          "normal"
+     :style           {:maxWidth "150px"}
+     :InputLabelProps {:shrink true}
+     :onChange        #(state/update-value [:rollback :failureAction] (-> % .-target .-value) form-value-cursor)}
+    (comp/menu-item
+      {:key   "rpause"
+       :value "pause"} "pause")
+    (comp/menu-item
+      {:key   "rcontinue"
+       :value "continue"} "continue")))
 
 (defn- form-autoredeploy [value]
-  (form/comp
-    "AUTOREDEPLOY"
-    (form/toogle
-      {:name     "autoredeploy"
-       :key      "autoredeploy"
-       :toggled  value
-       :onToggle (fn [_ v]
-                   (state/update-value [:autoredeploy] v form-value-cursor))})))
+  (comp/switch
+    {:name     "autoredeploy"
+     :key      "autoredeploy"
+     :label    "Autoredeploy"
+     :color    "primary"
+     :value    (str value)
+     :checked  value
+     :onChange #(state/update-value [:autoredeploy] (-> % .-target .-checked) form-value-cursor)}))
 
 (rum/defc form < rum/reactive []
   (let [{:keys [autoredeploy
                 update
                 rollback
                 restartPolicy]} (state/react form-value-cursor)]
-    [:div.form-edit
-     (form/form
-       {}
-       (form-autoredeploy autoredeploy)
-       (html (form/subsection-add "Placement" placement/add-item))
-       (placement/form)
-       (html (form/subsection "Restart Policy"))
-       (form-restart-policy-condition (:condition restartPolicy))
-       (form-restart-policy-delay (:delay restartPolicy))
-       (form-restart-policy-window (:window restartPolicy))
-       (form-restart-policy-attempts (:attempts restartPolicy))
-       (html (form/subsection "Update Config"))
-       (form-update-parallelism (:parallelism update))
-       (form-update-delay (:delay update))
-       (form-update-order (:order update))
-       (form-update-failure-action (:failureAction update))
-       (when (= "rollback" (:failureAction update))
-         (html
-           [:div
-            (form/subsection "Rollback Config")
-            (form-rollback-parallelism (:parallelism rollback))
-            (form-rollback-delay (:delay rollback))
-            (form-rollback-order (:order rollback))
-            (form-rollback-failure-action (:failureAction rollback))])))]))
+    (comp/grid
+      {:container true
+       :key       "sfdcg"
+       :spacing   24}
+      (comp/grid
+        {:item true
+         :key  "sfdcgig"
+         :xs   12}
+        (comp/form-control
+          {:component "fieldset"
+           :key       "sfdcgigc"}
+          (comp/form-group
+            {:key "sfdcgigcg"}
+            (comp/form-control-label
+              {:control (form-autoredeploy autoredeploy)
+               :key     "sfdcgigcga"
+               :label   "Autoredeploy"})))
+        (placement/form))
+      (comp/grid
+        {:item true
+         :key  "sfdcgip"
+         :xs   12
+         :sm   4}
+        (form/subsection "Restart Policy")
+        (comp/grid
+          {:container true
+           :key       "sfdcgipcg"
+           :direction "column"}
+          (comp/grid
+            {:item true
+             :key  "sfdcgipcgic"}
+            (form-restart-policy-condition (:condition restartPolicy)))
+          (comp/grid
+            {:item true
+             :key  "sfdcgipcgid"}
+            (form-restart-policy-delay (:delay restartPolicy)))
+          (comp/grid
+            {:item true
+             :key  "sfdcgipcgiw"}
+            (form-restart-policy-window (:window restartPolicy)))
+          (comp/grid
+            {:item true
+             :key  "sfdcgipcgia"}
+            (form-restart-policy-attempts (:attempts restartPolicy)))))
+      (comp/grid
+        {:item true
+         :key  "sfdcgiu"
+         :xs   12
+         :sm   4}
+        (form/subsection "Update Config")
+        (comp/grid
+          {:container true
+           :key       "sfdcgiucg"
+           :direction "column"}
+          (comp/grid
+            {:item true
+             :key  "sfdcgiucgip"}
+            (form-update-parallelism (:parallelism update)))
+          (comp/grid
+            {:item true
+             :key  "sfdcgiucgid"}
+            (form-update-delay (:delay update)))
+          (comp/grid
+            {:item true
+             :key  "sfdcgiucgio"}
+            (form-update-order (:order update)))
+          (comp/grid
+            {:item true
+             :key  "sfdcgiucgfa"}
+            (form-update-failure-action (:failureAction update)))))
+      (when (= "rollback" (:failureAction update))
+        (comp/grid
+          {:item true
+           :key  "sfdcgir"
+           :xs   12
+           :sm   4}
+          (form/subsection "Rollback Config")
+          (comp/grid
+            {:container true
+             :key       "sfdcgircg"
+             :direction "column"}
+            (comp/grid
+              {:item true
+               :key  "sfdcgircgip"}
+              (form-rollback-parallelism (:parallelism rollback)))
+            (comp/grid
+              {:item true
+               :key  "sfdcgircgid"}
+              (form-rollback-delay (:delay rollback)))
+            (comp/grid
+              {:item true
+               :key  "sfdcgircgio"}
+              (form-rollback-order (:order rollback)))
+            (comp/grid
+              {:item true
+               :key  "sfdcgircgifa"}
+              (form-rollback-failure-action (:failureAction rollback)))))))))

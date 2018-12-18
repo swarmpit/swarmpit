@@ -1,0 +1,26 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<svg width="354px" height="180px" viewBox="0 0 354 180" version="1.1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink">
+    <!-- Generator: Sketch 43.1 (39012) - http://www.bohemiancoding.com/sketch -->
+    <title>Artboard</title>
+    <desc>Created with Sketch.</desc>
+    <defs>
+        <polygon id="path-1" points="21.172 0.3176 21.172 23.5456 0.4077 23.5456 0.4077 0.3176 21.172 0.3176"></polygon>
+        <polygon id="path-3" points="113.9452 0.109 0.9672 0.109 0.9672 97.9507 113.9452 97.9507 113.9452 0.109"></polygon>
+    </defs>
+    <g id="Page-1" stroke="none" stroke-width="1" fill="none" fill-rule="evenodd">
+        <g id="Artboard">
+            <g id="Page-1">
+                <g id="Group-26" transform="translate(124.000000, 0.891000)">
+                    <mask id="mask-4" fill="white">
+                        <use xlink:href="#path-3"></use>
+                    </mask>
+                    <g id="Clip-25"></g>
+                    <path d="M79.8772,87.8637 L35.0352,87.8637 L12.6152,49.0297 L35.0352,10.1957 L79.8772,10.1957 L102.2982,49.0297 L79.8772,87.8637 Z M85.7012,0.1087 L29.2122,0.1087 L0.9672,49.0297 L29.2122,97.9507 L85.7012,97.9507 L113.9452,49.0297 L85.7012,0.1087 Z" id="Fill-24" fill="#FEFEFE" mask="url(#mask-4)"></path>
+                </g>
+                <polygon id="Fill-27" fill="#FEFEFE" points="165.4433 23.8385 150.2583 50.1385 149.9553 50.1385 165.1403 76.4395 180.3243 50.1385 180.6273 50.1385"></polygon>
+                <polygon id="Fill-29" fill="#FEFEFE" points="211.7527 51.249 181.5797 51.249 181.4567 51.035 166.2717 77.336 196.4447 77.336 196.5677 77.549"></polygon>
+                <polygon id="Fill-31" fill="#FEFEFE" points="197.0867 23.5233 197.1597 23.3973 166.7907 23.3973 181.9017 49.5713 181.8297 49.6973 212.1987 49.6973"></polygon>
+            </g>
+        </g>
+    </g>
+</svg>

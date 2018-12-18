@@ -1,7 +1,7 @@
 (ns swarmpit.component.service.form-secrets
-  (:require [material.component :as comp]
+  (:require [material.components :as comp]
             [material.component.form :as form]
-            [material.component.list-table-form :as list]
+            [material.component.list.edit :as list]
             [swarmpit.component.state :as state]
             [swarmpit.routes :as routes]
             [swarmpit.ajax :as ajax]
@@ -15,55 +15,57 @@
 
 (def form-state-cursor (conj state/form-state-cursor :secrets))
 
-(def headers [{:name  "Name"
-               :width "35%"}
-              {:name  "Target"
-               :width "35%"}])
-
 (def undefined-info
-  (form/value
-    [:span "No secrets found. Create new "
-     [:a {:href (routes/path-for-frontend :secret-create)} "secret."]]))
+  (html
+    [:span.Swarmpit-message
+     [:span "No secrets found. Create new "
+      [:a {:href (routes/path-for-frontend :secret-create)} "secret."]]]))
 
 (defn- form-secret [value index secrets-list]
-  (list/selectfield
-    {:name     (str "form-secret-select-" index)
-     :key      (str "form-secret-select-" index)
-     :value    value
-     :onChange (fn [_ _ v]
-                 (state/update-item index :secretName v form-value-cursor))}
+  (comp/text-field
+    {:fullWidth       true
+     :label           "Name"
+     :key             (str "form-secret-name-" index)
+     :select          true
+     :value           value
+     :variant         "outlined"
+     :margin          "dense"
+     :InputLabelProps {:shrink true}
+     :onChange        #(state/update-item index :secretName (-> % .-target .-value) form-value-cursor)}
     (->> secrets-list
          (map #(comp/menu-item
-                 {:name        (str "form-secret-item-" (:secretName %))
-                  :key         (str "form-secret-item-" (:secretName %))
-                  :value       (:secretName %)
-                  :primaryText (:secretName %)})))))
+                 {:key   (str "form-secret-item-" (:secretName %))
+                  :value (:secretName %)} (:secretName %))))))
 
 (defn- form-secret-target [value name index]
-  (list/textfield
-    {:name     (str "form-secret-target-" index)
-     :key      (str "form-secret-target-" index)
-     :hintText (when (str/blank? value)
-                 name)
-     :value    value
-     :onChange (fn [_ v]
-                 (state/update-item index :secretTarget v form-value-cursor))}))
+  (comp/text-field
+    {:label           "Target"
+     :fullWidth       true
+     :key             (str "form-secret-target-" index)
+     :placeholder     (when (str/blank? value) name)
+     :variant         "outlined"
+     :margin          "dense"
+     :value           value
+     :required        true
+     :InputLabelProps {:shrink true}
+     :onChange        #(state/update-item index :secretTarget (-> % .-target .-value) form-value-cursor)}))
 
-(defn- render-secrets
-  [item index data]
-  (let [{:keys [secretName secretTarget]} item]
-    [(form-secret secretName index data)
-     (form-secret-target secretTarget secretName index)]))
+(defn- form-secrets-metadata [secrets-list]
+  [{:name      "Name"
+    :primary   true
+    :key       [:secretName]
+    :render-fn (fn [value _ index] (form-secret value index secrets-list))}
+   {:name      "Target"
+    :key       [:secretTarget]
+    :render-fn (fn [value item index] (form-secret-target value (:secretName item) index))}])
 
 (defn- form-table
   [secrets secrets-list]
-  (form/form
-    {}
-    (list/table-raw headers
-                    secrets
-                    secrets-list
-                    render-secrets
-                    (fn [index] (state/remove-item index form-value-cursor)))))
+  (rum/with-key
+    (list/list
+      (form-secrets-metadata secrets-list)
+      secrets
+      (fn [index] (state/remove-item index form-value-cursor))) "form-secrets-table"))
 
 (defn- add-item
   []
@@ -81,7 +83,9 @@
   (let [{:keys [list]} (state/react form-state-cursor)
         secrets (state/react form-value-cursor)]
     (if (empty? secrets)
-      (form/value "No secrets defined for the service.")
-      (if (empty? list)
-        undefined-info
-        (form-table secrets list)))))
+      (html [:div "No secrets defined for the service."])
+      (form-table secrets list)
+      ;(if (empty? list)
+      ;  undefined-info
+      ;  (form-table secrets list))
+      )))

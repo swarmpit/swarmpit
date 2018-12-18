@@ -1,12 +1,11 @@
 (ns swarmpit.component.service.log
-  (:require [material.icon :as icon]
-            [material.component :as comp]
-            [material.component.panel :as panel]
+  (:require [material.components :as comp]
             [swarmpit.component.state :as state]
             [swarmpit.component.mixin :as mixin]
             [swarmpit.ajax :as ajax]
             [swarmpit.routes :as routes]
             [clojure.string :as string]
+            [material.icon :as icon]
             [sablono.core :refer-macros [html]]
             [rum.core :as rum]))
 
@@ -14,8 +13,11 @@
   []
   (when (true? (:autoscroll (state/get-value state/form-state-cursor)))
     (let [el (.getElementById js/document "service-log")]
-      (set! (.-scrollTop el)
-            (.-scrollHeight el)))))
+      (.scrollTo js/window 0 (.-scrollHeight el)))))
+
+(defn form-search-fn
+  [e]
+  (state/update-value [:filter :predicate] (-> e .-target .-value) state/form-state-cursor))
 
 (defn- filter-items
   [items predicate]
@@ -74,9 +76,9 @@
 
 (rum/defc line < rum/static [item timestamp]
   [:div
-   (when timestamp
-     [:span.log-timestamp (:timestamp item)])
-   [:span.log-info (str (:taskName item) "." (subs (:task item) 0 12) "@" (:taskNode item))]
+   ;;   (when timestamp
+   ;;   [:span.log-timestamp (:timestamp item)])
+   [:span.log-info (str (subs (:task item) 0 12))]
    [:span.log-body (str " " (:line item))]])
 
 (rum/defc form < rum/reactive
@@ -87,39 +89,29 @@
   (let [{:keys [filter autoscroll timestamp initialized error service]} (state/react state/form-state-cursor)
         logs (state/react state/form-value-cursor)
         filtered-logs (filter-items logs (:predicate filter))]
-    [:div
-     [:div.form-panel
-      [:div.form-panel-left
-       (panel/info icon/services
-                   (:serviceName service))]
-      [:div.form-panel-right
-       (comp/mui
-         (comp/raised-button
-           {:href  (routes/path-for-frontend :service-info {:id id})
-            :label "Back"}))]]
-     [:div.log-panel
-      [:div.form-panel-left
-       (panel/text-field
-         {:hintText "Search in log"
-          :onChange (fn [_ v]
-                      (state/update-value [:filter :predicate] v state/form-state-cursor))})
-       [:span.form-panel-space]
-       (panel/checkbox
-         {:checked timestamp
-          :label   "Show timestamp"
-          :onCheck (fn [_ v]
-                     (state/update-value [:timestamp] v state/form-state-cursor))})]
-      [:div.form-panel-right
-       (panel/checkbox
-         {:checked autoscroll
-          :label   "Auto-scroll logs"
-          :onCheck (fn [_ v]
-                     (state/update-value [:autoscroll] v state/form-state-cursor))})]]
-     [:div.log#service-log
-      (cond
-        error [:span "Logs for this service couldn't be fetched."]
-        (and (empty? filtered-logs) initialized) [:span "Log is empty in this service."]
-        (not initialized) [:span "Loading..."]
-        :else (map
-                (fn [item]
-                  (line item timestamp)) filtered-logs))]]))
+    (comp/mui
+      (html
+        [:div
+         [:div.Swarmpit-log-fab
+          (comp/button
+            {:variant "fab"
+             :color   (if autoscroll "primary")
+             :mini    true
+             :onClick #(state/update-value [:autoscroll] (not autoscroll) state/form-state-cursor)}
+            icon/scroll-down)]
+         [:div.Swarmpit-log
+          (comp/grid
+            {:container true
+             :spacing   0}
+            (comp/grid
+              {:item true
+               :xs   12}
+              (html
+                [:div#service-log
+                 (cond
+                   error [:span "Logs for this service couldn't be fetched."]
+                   (and (empty? logs) initialized) [:span "Log is empty in this service."]
+                   (not initialized) [:span "Loading..."]
+                   :else (map
+                           (fn [item]
+                             (line item timestamp)) filtered-logs))])))]]))))

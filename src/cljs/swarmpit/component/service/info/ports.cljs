@@ -1,25 +1,44 @@
 (ns swarmpit.component.service.info.ports
-  (:require [material.component.form :as form]
-            [material.component.list-table-auto :as list]
+  (:require [material.icon :as icon]
+            [material.components :as comp]
+            [material.component.list.basic :as list]
+            [swarmpit.routes :as routes]
             [rum.core :as rum]))
 
 (enable-console-print!)
 
-(def headers ["Container port" "Protocol" "Mode" "Host port"])
+(def render-metadata
+  {:table {:summary [{:name      "Container port"
+                      :render-fn (fn [item] (:containerPort item))}
+                     {:name      "Protocol"
+                      :render-fn (fn [item] (:protocol item))}
+                     {:name      "Mode"
+                      :render-fn (fn [item] (:mode item))}
+                     {:name      "Host port"
+                      :render-fn (fn [item] (:hostPort item))}]}
+   :list  {:primary   (fn [item] (str (:hostPort item) ":" (:containerPort item)))
+           :secondary (fn [item] (:protocol item))}})
 
-(def render-item-keys
-  [[:containerPort] [:protocol] [:mode] [:hostPort]])
-
-(defn render-item
-  [item]
-  (val item))
-
-(rum/defc form < rum/static [ports]
-  (when (not-empty ports)
-    [:div.form-layout-group.form-layout-group-border
-     (form/section "Ports")
-     (list/table headers
-                 ports
-                 render-item
-                 render-item-keys
-                 nil)]))
+(rum/defc form < rum/static [ports service-id]
+  (comp/card
+    {:className "Swarmpit-card"
+     :key       "spc"}
+    (comp/card-header
+      {:className "Swarmpit-table-card-header"
+       :key       "spch"
+       :title     "Ports"
+       :action    (comp/icon-button
+                    {:aria-label "Edit"
+                     :href       (routes/path-for-frontend
+                                   :service-edit
+                                   {:id service-id}
+                                   {:section "Ports"})}
+                    (comp/svg icon/edit))})
+    (comp/card-content
+      {:className "Swarmpit-table-card-content"
+       :key       "spcc"}
+      (rum/with-key
+        (list/responsive
+          render-metadata
+          ports
+          nil) "spccrl"))))

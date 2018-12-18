@@ -1,6 +1,6 @@
 (ns swarmpit.component.service.form-variables
-  (:require [material.component.form :as form]
-            [material.component.list-table-form :as list]
+  (:require [material.components :as comp]
+            [material.component.list.edit :as list]
             [swarmpit.component.state :as state]
             [sablono.core :refer-macros [html]]
             [rum.core :as rum]))
@@ -9,43 +9,46 @@
 
 (def form-value-cursor (conj state/form-value-cursor :variables))
 
-(def headers [{:name  "Name"
-               :width "35%"}
-              {:name  "Value"
-               :width "35%"}])
-
 (defn- form-name [value index]
-  (list/textfield
-    {:name     (str "form-name-text-" index)
-     :key      (str "form-name-text-" index)
-     :value    value
-     :onChange (fn [_ v]
-                 (state/update-item index :name v form-value-cursor))}))
+  (comp/text-field
+    {:fullWidth       true
+     :label           "Name"
+     :key             (str "form-variable-name-" index)
+     :value           value
+     :required        true
+     :variant         "outlined"
+     :margin          "dense"
+     :InputLabelProps {:shrink true}
+     :onChange        #(state/update-item index :name (-> % .-target .-value) form-value-cursor)}))
 
 (defn- form-value [value index]
-  (list/textfield
-    {:name     (str "form-value-text-" index)
-     :key      (str "form-value-text-" index)
-     :value    value
-     :onChange (fn [_ v]
-                 (state/update-item index :value v form-value-cursor))}))
+  (comp/text-field
+    {:fullWidth       true
+     :label           "Value"
+     :key             (str "form-variable-value-" index)
+     :value           value
+     :required        true
+     :variant         "outlined"
+     :margin          "dense"
+     :InputLabelProps {:shrink true}
+     :onChange        #(state/update-item index :value (-> % .-target .-value) form-value-cursor)}))
 
-(defn- render-variables
-  [item index]
-  (let [{:keys [name
-                value]} item]
-    [(form-name name index)
-     (form-value value index)]))
+(def form-metadata
+  [{:name      "Name"
+    :primary   true
+    :key       [:name]
+    :render-fn (fn [value _ index] (form-name value index))}
+   {:name      "Value"
+    :key       [:value]
+    :render-fn (fn [value _ index] (form-value value index))}])
 
 (defn- form-table
   [variables]
-  (form/form
-    {}
-    (list/table-raw headers
-                    variables
-                    nil
-                    render-variables
-                    (fn [index] (state/remove-item index form-value-cursor)))))
+  (rum/with-key
+    (list/list
+      form-metadata
+      variables
+      (fn [index] (state/remove-item index form-value-cursor))) "form-ev-table"))
 
 (defn- add-item
   []
@@ -55,5 +58,5 @@
 (rum/defc form < rum/reactive []
   (let [variables (state/react form-value-cursor)]
     (if (empty? variables)
-      (form/value "No environment variables defined for the service.")
+      (html [:div "No environment variables defined for the service."])
       (form-table variables))))

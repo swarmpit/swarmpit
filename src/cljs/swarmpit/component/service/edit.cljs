@@ -1,8 +1,8 @@
 (ns swarmpit.component.service.edit
   (:require [material.icon :as icon]
-            [material.component :as comp]
+            [material.components :as comp]
+            [material.component.composite :as composite]
             [material.component.form :as form]
-            [material.component.panel :as panel]
             [swarmpit.component.mixin :as mixin]
             [swarmpit.component.state :as state]
             [swarmpit.component.progress :as progress]
@@ -22,9 +22,12 @@
             [swarmpit.ajax :as ajax]
             [swarmpit.url :refer [dispatch!]]
             [swarmpit.routes :as routes]
+            [sablono.core :refer-macros [html]]
             [rum.core :as rum]))
 
 (enable-console-print!)
+
+(def doc-services-link "https://docs.docker.com/engine/swarm/services/")
 
 (defn render-item
   [val]
@@ -130,95 +133,214 @@
       (labels/labels-handler))))
 
 (rum/defc form-settings < rum/static []
-  [:div.form-layout-group
-   (form/section "General settings")
-   (settings/form true)])
+  (comp/grid
+    {:item true
+     :key  "secgifccgigs"
+     :xs   12}
+    (form/section
+      "General")
+    (rum/with-key
+      (settings/form true) "sefgss")))
 
 (rum/defc form-ports < rum/static []
-  [:div.form-layout-group.form-layout-group-border
-   (form/section-add "Ports" ports/add-item)
-   (ports/form)])
-
-(rum/defc form-networks < rum/static []
-  [:div.form-layout-group.form-layout-group-border
-   (form/section-add "Networks" networks/add-item)
-   (networks/form)])
+  (comp/grid
+    {:item true
+     :key  "secgifccgip"
+     :xs   12}
+    (form/section
+      "Ports"
+      (comp/button
+        {:color   "primary"
+         :onClick ports/add-item}
+        (comp/svg
+          {:key "sefpsico"} icon/add-small) "Add port"))
+    (rum/with-key
+      (ports/form) "sefps")))
 
 (rum/defc form-mounts < rum/static []
-  [:div.form-layout-group.form-layout-group-border
-   (form/section-add "Mounts" mounts/add-item)
-   (mounts/form)])
+  (comp/grid
+    {:item true
+     :key  "secgifccgicm"
+     :xs   12}
+    (form/section
+      "Mounts"
+      (comp/button
+        {:color   "primary"
+         :onClick mounts/add-item}
+        (comp/svg
+          {:key "sefmsico"} icon/add-small) "Add mount"))
+    (rum/with-key
+      (mounts/form) "sefms")))
 
 (rum/defc form-secrets < rum/reactive []
-  [:div.form-layout-group.form-layout-group-border
-   (form/section-add "Secrets" secrets/add-item)
-   (secrets/form)])
+  (comp/grid
+    {:item true
+     :key  "secgifccgisec"
+     :xs   12}
+    (form/section
+      "Secrets"
+      (comp/button
+        {:color   "primary"
+         :onClick secrets/add-item}
+        (comp/svg
+          {:key "sefssico"} icon/add-small) "Add secret"))
+    (rum/with-key
+      (secrets/form) "sefss")))
 
 (rum/defc form-configs < rum/reactive []
-  [:div.form-layout-group.form-layout-group-border
-   (form/section-add "Configs" configs/add-item)
-   (configs/form)])
+  (comp/grid
+    {:item true
+     :key  "secgifccgic"
+     :xs   12}
+    (form/section
+      "Configs"
+      (comp/button
+        {:color   "primary"
+         :onClick configs/add-item}
+        (comp/svg
+          {:key "sefcsico"} icon/add-small) "Add config"))
+    (rum/with-key
+      (configs/form) "sefcs")))
 
 (rum/defc form-variables < rum/static []
-  [:div.form-layout-group.form-layout-group-border
-   (form/section-add "Environment Variables" variables/add-item)
-   (variables/form)])
+  (comp/grid
+    {:item true
+     :key  "secgifccgiev"
+     :xs   12}
+    (form/section
+      "Environment variables"
+      (comp/button
+        {:color   "primary"
+         :onClick variables/add-item}
+        (comp/svg
+          {:key "sefevsico"} icon/add-small) "Add variable"))
+    (rum/with-key
+      (variables/form) "sefevs")))
 
 (rum/defc form-labels < rum/static []
-  [:div.form-layout-group.form-layout-group-border
-   (form/section-add "Labels" labels/add-item)
-   (labels/form)])
+  (comp/grid
+    {:item true
+     :key  "secgifccgil"
+     :xs   12}
+    (form/section
+      "Labels"
+      (comp/button
+        {:color   "primary"
+         :onClick labels/add-item}
+        (comp/svg
+          {:key "seflasico"} icon/add-small) "Add label"))
+    (rum/with-key
+      (labels/form) "seflas")))
 
 (rum/defc form-logdriver < rum/static []
-  [:div.form-layout-group.form-layout-group-border
-   (form/section "Logging")
-   (logdriver/form)])
+  (comp/grid
+    {:item true
+     :key  "secgifccgild"
+     :xs   12}
+    (form/section
+      "Logging")
+    (rum/with-key
+      (logdriver/form) "sefls")))
 
 (rum/defc form-resources < rum/static []
-  [:div.form-layout-group.form-layout-group-border
-   (form/section "Resources")
-   (resources/form)])
+  (comp/grid
+    {:item true
+     :key  "secgifccgir"
+     :xs   12}
+    (form/section
+      "Resources")
+    (rum/with-key
+      (resources/form) "sefrs")))
 
 (rum/defc form-deployment < rum/static []
-  [:div.form-layout-group.form-layout-group-border
-   (form/section "Deployment")
-   (deployment/form)])
+  (comp/grid
+    {:item true
+     :key  "secgifccgid"
+     :xs   12}
+    (form/section
+      "Deployment")
+    (rum/with-key
+      (deployment/form) "sefds")))
 
 (rum/defc form-edit < rum/reactive [id
                                     {:keys [settings]}
                                     {:keys [processing?]}]
   (let [resources-state (state/react resources/form-state-cursor)]
-    [:div
-     [:div.form-panel
-      [:div.form-panel-left
-       (panel/info icon/services (:serviceName settings))]
-      [:div.form-panel-right
-       (comp/progress-button
-         {:label      "Save"
-          :disabled   (not (:valid? resources-state))
-          :primary    true
-          :onTouchTap #(update-service-handler id)} processing?)
-       [:span.form-panel-delimiter]
-       (comp/mui
-         (comp/raised-button
-           {:href  (routes/path-for-frontend :service-info {:id id})
-            :label "Back"}))]]
-     [:div.form-layout
-      (form-settings)
-      (form-ports)
-      (form-networks)
-      (form-mounts)
-      (form-secrets)
-      (when (<= 1.30 (state/get-value [:docker :api]))
-        (form-configs))
-      (form-variables)
-      (form-labels)
-      (form-logdriver)
-      (form-resources)
-      (form-deployment)]]))
+    (comp/mui
+      (html
+        [:div.Swarmpit-form
+         [:div.Swarmpit-form-context
+          (comp/grid
+            {:container true
+             :key       "secg"
+             :spacing   40}
+            (comp/grid
+              {:item true
+               :key  "secgif"
+               :xs   12
+               :sm   12
+               :md   12
+               :lg   8
+               :xl   8}
+              (comp/card
+                {:className "Swarmpit-form-card"
+                 :key       "secgifc"}
+                (comp/card-header
+                  {:className "Swarmpit-form-card-header"
+                   :key       "secgifch"
+                   :title     "Edit Service"})
+                (comp/card-content
+                  {:key "secgifcc"}
+                  (comp/grid
+                    {:container true
+                     :key       "secgifcccg"
+                     :spacing   40}
+                    (rum/with-key
+                      (form-settings) "secgifcccgfs")
+                    (rum/with-key
+                      (form-ports) "secgifcccgfp")
+                    (rum/with-key
+                      (form-mounts) "secgifcccgfm")
+                    (rum/with-key
+                      (form-secrets) "secgifcccgfse")
+                    (when (<= 1.30 (state/get-value [:docker :api]))
+                      (rum/with-key
+                        (form-configs) "secgifcccgfc"))
+                    (rum/with-key
+                      (form-variables) "secgifcccgfv")
+                    (rum/with-key
+                      (form-labels) "secgifcccgfl")
+                    (rum/with-key
+                      (form-logdriver) "secgifcccgfld")
+                    (rum/with-key
+                      (form-resources) "secgifcccgfr")
+                    (rum/with-key
+                      (form-deployment) "secgifcccgfd"))
+                  (html
+                    [:div {:class "Swarmpit-form-buttons"
+                           :key   "secgifccbtn"}
+                     (composite/progress-button
+                       "Save"
+                       #(update-service-handler id)
+                       processing?)]))))
+            (comp/grid
+              {:item true
+               :key  "secgid"
+               :xs   12
+               :sm   12
+               :md   12
+               :lg   4
+               :xl   4}
+              (html
+                [:span
+                 {:key "stcoccgidoc"}
+                 "Learn more about "
+                 [:a {:href   doc-services-link
+                      :target "_blank"} "compose"]])))]]))))
 
 (rum/defc form < rum/reactive
-                 mixin-init-form [{{:keys [id]} :params}]
+                 mixin-init-form
+                 mixin/scroll-to-section [{{:keys [id]} :params}]
   (let [state (state/react state/form-state-cursor)
         service (state/react state/form-value-cursor)]
     (progress/form

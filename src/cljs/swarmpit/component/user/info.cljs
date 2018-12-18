@@ -1,16 +1,18 @@
 (ns swarmpit.component.user.info
   (:require [material.icon :as icon]
-            [material.component :as comp]
+            [material.components :as comp]
             [material.component.form :as form]
-            [material.component.panel :as panel]
+            [material.component.label :as label]
             [swarmpit.component.message :as message]
             [swarmpit.component.mixin :as mixin]
             [swarmpit.component.state :as state]
+            [swarmpit.component.common :as common]
             [swarmpit.component.progress :as progress]
             [swarmpit.url :refer [dispatch!]]
             [swarmpit.storage :as storage]
             [swarmpit.ajax :as ajax]
             [swarmpit.routes :as routes]
+            [sablono.core :refer-macros [html]]
             [rum.core :as rum]))
 
 (enable-console-print!)
@@ -36,6 +38,16 @@
                    (message/error
                      (str "User removing failed. " (:error response))))}))
 
+(defn form-actions
+  [username id]
+  [{:onClick #(dispatch! (routes/path-for-frontend :user-edit {:id id}))
+    :icon    (comp/svg icon/edit)
+    :name    "Edit user"}
+   {:onClick  #(delete-user-handler id)
+    :disabled (= (storage/user) username)
+    :icon     (comp/svg icon/trash)
+    :name     "Delete user"}])
+
 (defn- init-form-state
   []
   (state/set-value {:loading? true} state/form-state-cursor))
@@ -46,32 +58,41 @@
       (init-form-state)
       (user-handler id))))
 
-(rum/defc form-info < rum/static [{:keys [_id] :as item}]
-  [:div
-   [:div.form-panel
-    [:div.form-panel-left
-     (panel/info icon/users
-                 (:username item))]
-    [:div.form-panel-right
-     (comp/mui
-       (comp/raised-button
-         {:href    (routes/path-for-frontend :user-edit {:id _id})
-          :label   "Edit"
-          :primary true}))
-     [:span.form-panel-delimiter]
-     (comp/mui
-       (comp/raised-button
-         {:onTouchTap #(delete-user-handler _id)
-          :disabled   (= (storage/user) (:username item))
-          :label      "Delete"}))]]
-   [:div.form-view
-    [:div.form-view-group
-     (form/item "ID" (:_id item))
-     (form/item "USERNAME" (:username item))
-     (form/item "EMAIL" (:email item))
-     (form/item "IS ADMIN" (if (= "admin" (:role item))
-                             "yes"
-                             "no"))]]])
+(rum/defc form-info < rum/static [{:keys [_id username email role]}]
+  (comp/mui
+    (html
+      [:div.Swarmpit-form
+       [:div.Swarmpit-form-context
+        (comp/grid
+          {:container true
+           :spacing   40}
+          (comp/grid
+            {:item true
+             :key  "ugg"
+             :xs   12
+             :sm   6}
+            (comp/card
+              {:className "Swarmpit-form-card"
+               :key       "ugc"}
+              (comp/card-header
+                {:title     username
+                 :className "Swarmpit-form-card-header"
+                 :key       "ugch"
+                 :subheader email
+                 :action    (common/actions-menu
+                              (form-actions username _id)
+                              :userGeneralMenuAnchor
+                              :userGeneralMenuOpened)})
+              (comp/card-content
+                {:key "ugccl"}
+                (form/item-labels
+                  [(label/grey role)]))
+              (comp/divider
+                {:key "ugd"})
+              (comp/card-content
+                {:style {:paddingBottom "16px"}
+                 :key   "ugccf"}
+                (form/item-id _id)))))]])))
 
 (rum/defc form < rum/reactive
                  mixin-init-form

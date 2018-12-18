@@ -1,30 +1,33 @@
 (ns swarmpit.component.service.info.networks
-  (:require [material.component.form :as form]
-            [material.component.list-table-auto :as list]
+  (:require [material.icon :as icon]
+            [material.components :as comp]
+            [material.component.list.basic :as list]
             [swarmpit.routes :as routes]
+            [swarmpit.component.network.list :as networks]
             [rum.core :as rum]))
 
 (enable-console-print!)
 
-(def headers ["Name" "Driver" "Subnet" "Gateway" ""])
-
-(def render-item-keys
-  [[:networkName] [:driver] [:ipam :subnet] [:ipam :gateway] [:internal]])
-
-(defn render-item
-  [item _]
-  (val item))
-
-(defn onclick-handler
-  [item]
-  (routes/path-for-frontend :network-info {:id (:networkName item)}))
-
-(rum/defc form < rum/static [networks]
-  (when (not-empty networks)
-    [:div.form-layout-group.form-layout-group-border
-     (form/section "Networks")
-     (list/table headers
-                 networks
-                 render-item
-                 render-item-keys
-                 onclick-handler)]))
+(rum/defc form < rum/static [networks service-id]
+  (comp/card
+    {:className "Swarmpit-card"
+     :key       "snc"}
+    (comp/card-header
+      {:className "Swarmpit-table-card-header"
+       :key       "snch"
+       :title     "Networks"
+       :action    (comp/icon-button
+                    {:aria-label "Edit"
+                     :href       (routes/path-for-frontend
+                                   :service-edit
+                                   {:id service-id}
+                                   {:section "Networks"})}
+                    (comp/svg icon/edit))})
+    (comp/card-content
+      {:className "Swarmpit-table-card-content"
+       :key       "sncc"}
+      (rum/with-key
+        (list/responsive
+          networks/render-metadata
+          networks
+          networks/onclick-handler) "snccrl"))))

@@ -338,9 +338,10 @@
        :state (if (= service-mode "replicated")
                 (->service-state replicas-running replicas)
                 (->service-state replicas-running replicas-no-shutdown))
-       :status {:info    (if (= service-mode "replicated")
-                           (->service-info-status replicas-running replicas)
-                           (->service-info-status replicas-running replicas-no-shutdown))
+       :status {:tasks   {:running replicas-running
+                          :total   (if (= service-mode "replicated")
+                                     replicas
+                                     replicas-no-shutdown)}
                 :update  (get-in service [:UpdateStatus :State])
                 :message (get-in service [:UpdateStatus :Message])}
        :ports (->service-ports service)

@@ -1,33 +1,40 @@
 (ns swarmpit.component.config.list
-  (:require [material.component :as comp]
-            [material.component.panel :as panel]
-            [material.component.list-table :as list]
+  (:require [material.icon :as icon]
+            [material.components :as comp]
+            [material.component.list.basic :as list]
+            [material.component.list.util :as list-util]
             [swarmpit.component.mixin :as mixin]
             [swarmpit.component.state :as state]
+            [swarmpit.component.progress :as progress]
             [swarmpit.ajax :as ajax]
-            [swarmpit.routes :as routes]
             [swarmpit.time :as time]
-            [rum.core :as rum]))
+            [swarmpit.routes :as routes]
+            [swarmpit.url :refer [dispatch!]]
+            [sablono.core :refer-macros [html]]
+            [rum.core :as rum]
+            [swarmpit.component.common :as common]))
 
 (enable-console-print!)
 
-(def headers [{:name  "Name"
-               :width "50%"}
-              {:name  "Created"
-               :width "50%"}])
+(defn- render-item-name [item]
+  (html
+    [:div
+     [:div
+      [:span [:b (:serviceName item)]]]
+     [:div
+      [:span (get-in item [:repository :image])]]]))
 
-(def render-item-keys
-  [[:configName] [:createdAt]])
-
-(defn- render-item
-  [item _]
-  (case (key item)
-    :createdAt (time/humanize (val item))
-    (val item)))
+(def render-metadata
+  {:table {:summary [{:name      "Name"
+                      :render-fn (fn [item] (:configName item))}
+                     {:name      "Created"
+                      :render-fn (fn [item] (time/humanize (:createdAt item)))}]}
+   :list  {:primary   (fn [item] (:configName item))
+           :secondary (fn [item] (time/humanize (:createdAt item)))}})
 
 (defn- onclick-handler
   [item]
-  (routes/path-for-frontend :config-info {:id (:configName item)}))
+  (dispatch! (routes/path-for-frontend :config-info {:id (:configName item)})))
 
 (defn- configs-handler
   []
@@ -36,6 +43,10 @@
     {:state      [:loading?]
      :on-success (fn [{:keys [response]}]
                    (state/update-value [:items] response state/form-value-cursor))}))
+
+(defn form-search-fn
+  [event]
+  (state/update-value [:filter :query] (-> event .-target .-value) state/form-state-cursor))
 
 (defn- init-form-state
   []
@@ -48,30 +59,26 @@
       (init-form-state)
       (configs-handler))))
 
+(def form-toolbar
+  {:buttons [(comp/button
+               {:color "primary"
+                :key   "lctt"
+                :href  (routes/path-for-frontend :config-create)}
+               (comp/svg
+                 {:key "slt"} icon/add-small) "New Comfig")]})
+
 (rum/defc form < rum/reactive
                  mixin-init-form
                  mixin/subscribe-form
                  mixin/focus-filter [_]
   (let [{:keys [items]} (state/react state/form-value-cursor)
         {:keys [loading? filter]} (state/react state/form-state-cursor)]
-    [:div
-     [:div.form-panel
-      [:div.form-panel-left
-       (panel/text-field
-         {:id       "filter"
-          :hintText "Search configs"
-          :onChange (fn [_ v]
-                      (state/update-value [:filter :query] v state/form-state-cursor))})]
-      [:div.form-panel-right
-       (comp/mui
-         (comp/raised-button
-           {:href    (routes/path-for-frontend :config-create)
-            :label   "New config"
-            :primary true}))]]
-     (list/table headers
-                 (->> (list/filter items (:query filter))
-                      (sort-by :configName))
-                 loading?
-                 render-item
-                 render-item-keys
-                 onclick-handler)]))
+    (progress/form
+      loading?
+      (common/list "Configs"
+                   items
+                   (->> (list-util/filter items (:query filter))
+                        (sort-by :configName))
+                   render-metadata
+                   onclick-handler
+                   form-toolbar))))

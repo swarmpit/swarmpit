@@ -1,8 +1,6 @@
 (ns swarmpit.component.secret.create
-  (:require [material.icon :as icon]
-            [material.component :as comp]
-            [material.component.form :as form]
-            [material.component.panel :as panel]
+  (:require [material.components :as comp]
+            [material.component.composite :as composite]
             [swarmpit.component.mixin :as mixin]
             [swarmpit.component.editor :as editor]
             [swarmpit.component.state :as state]
@@ -18,28 +16,30 @@
 
 (def editor-id "secret-editor")
 
+(def doc-secrets-link "https://docs.docker.com/engine/swarm/secrets/")
+
 (defn- form-name [value]
-  (form/comp
-    "NAME"
-    (comp/vtext-field
-      {:name     "name"
-       :key      "name"
-       :required true
-       :value    value
-       :onChange (fn [_ v]
-                   (state/update-value [:secretName] v state/form-value-cursor))})))
+  (comp/text-field
+    {:label           "Name"
+     :fullWidth       true
+     :name            "name"
+     :key             "name"
+     :variant         "outlined"
+     :value           value
+     :required        true
+     :InputLabelProps {:shrink true}
+     :onChange        #(state/update-value [:secretName] (-> % .-target .-value) state/form-value-cursor)}))
 
 (defn- form-data [value]
-  (comp/vtext-field
-    {:id            editor-id
-     :name          "secret-editor"
-     :key           "secret-editor"
-     :multiLine     true
-     :rows          10
-     :rowsMax       10
-     :value         value
-     :underlineShow false
-     :fullWidth     true}))
+  (comp/text-field
+    {:id              editor-id
+     :fullWidth       true
+     :name            "data"
+     :key             "data"
+     :variant         "outlined"
+     :required        true
+     :InputLabelProps {:shrink true}
+     :value           value}))
 
 (defn- create-secret-handler
   []
@@ -64,7 +64,7 @@
 
 (defn- init-form-value
   []
-  (state/set-value {:secretName nil
+  (state/set-value {:secretName ""
                     :data       ""} state/form-value-cursor))
 
 (def mixin-init-form
@@ -85,19 +85,63 @@
                  mixin-init-editor [_]
   (let [{:keys [secretName data encode]} (state/react state/form-value-cursor)
         {:keys [valid? processing?]} (state/react state/form-state-cursor)]
-    [:div
-     [:div.form-panel
-      [:div.form-panel-left
-       (panel/info icon/secrets "New secret")]
-      [:div.form-panel-right
-       (comp/progress-button
-         {:label      "Create"
-          :disabled   (not valid?)
-          :primary    true
-          :onTouchTap create-secret-handler} processing?)]]
-     [:div.form-edit
-      (form/form
-        {:onValid   #(state/update-value [:valid?] true state/form-state-cursor)
-         :onInvalid #(state/update-value [:valid?] false state/form-state-cursor)}
-        (form-name secretName)
-        (form-data data))]]))
+    (comp/mui
+      (html
+        [:div.Swarmpit-form
+         [:div.Swarmpit-form-context
+          (comp/grid
+            {:container true
+             :key       "sccg"
+             :spacing   40}
+            (comp/grid
+              {:item true
+               :key  "ssecoccgif"
+               :xs   12
+               :sm   12
+               :md   12
+               :lg   8
+               :xl   8}
+              (comp/card
+                {:className "Swarmpit-form-card"
+                 :key       "scc"}
+                (comp/card-header
+                  {:className "Swarmpit-form-card-header"
+                   :key       "scch"
+                   :title     "Create Secret"})
+                (comp/card-content
+                  {:key "sccc"}
+                  (comp/grid
+                    {:container true
+                     :key       "scccc"
+                     :spacing   40}
+                    (comp/grid
+                      {:item true
+                       :key  "scccig"
+                       :xs   12}
+                      (form-name secretName))
+                    (comp/grid
+                      {:item true
+                       :key  "scccid"
+                       :xs   12}
+                      (form-data data)))
+                  (html
+                    [:div {:class "Swarmpit-form-buttons"
+                           :key   "scccbtn"}
+                     (composite/progress-button
+                       "Create"
+                       create-secret-handler
+                       processing?)]))))
+            (comp/grid
+              {:item true
+               :key  "ssecoccgid"
+               :xs   12
+               :sm   12
+               :md   12
+               :lg   4
+               :xl   4}
+              (html
+                [:span
+                 {:key "ssecoccgidoc"}
+                 "Learn more about "
+                 [:a {:href   doc-secrets-link
+                      :target "_blank"} "secrets"]])))]]))))

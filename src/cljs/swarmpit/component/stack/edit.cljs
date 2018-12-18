@@ -1,8 +1,7 @@
 (ns swarmpit.component.stack.edit
   (:require [material.icon :as icon]
-            [material.component :as comp]
-            [material.component.form :as form]
-            [material.component.panel :as panel]
+            [material.components :as comp]
+            [material.component.composite :as composite]
             [swarmpit.component.editor :as editor]
             [swarmpit.component.state :as state]
             [swarmpit.component.mixin :as mixin]
@@ -20,18 +19,33 @@
 
 (def editor-id "compose")
 
+(def doc-compose-link "https://docs.docker.com/get-started/part3/#your-first-docker-composeyml-file")
+
+(defn- form-name [value]
+  (comp/text-field
+    {:label           "Name"
+     :fullWidth       true
+     :name            "name"
+     :key             "name"
+     :variant         "outlined"
+     :value           value
+     :margin          "normal"
+     :required        true
+     :disabled        true
+     :InputLabelProps {:shrink true}}))
+
 (defn- form-editor [value]
-  (comp/vtext-field
-    {:id            editor-id
-     :name          "stack-editor"
-     :key           "stack-editor"
-     :validations   "isValidCompose"
-     :multiLine     true
-     :rows          10
-     :rowsMax       10
-     :value         value
-     :underlineShow false
-     :fullWidth     true}))
+  (comp/text-field
+    {:id              editor-id
+     :fullWidth       true
+     :className       "Swarmpit-codemirror"
+     :name            "data"
+     :key             "data"
+     :multiline       true
+     :disabled        true
+     :required        true
+     :InputLabelProps {:shrink true}
+     :value           value}))
 
 (defn- update-stack-handler
   [name]
@@ -87,35 +101,80 @@
 (rum/defc form-edit < mixin-init-editor [{:keys [name spec]}
                                          select
                                          {:keys [processing? valid? previous?]}]
-  [:div
-   [:div.form-panel
-    [:div.form-panel-left
-     (panel/info icon/stacks name)]
-    [:div.form-panel-right
-     (comp/progress-button
-       {:label      "Deploy"
-        :disabled   (not valid?)
-        :primary    true
-        :onTouchTap #(update-stack-handler name)} processing?)]]
-   (form/form
-     {:onValid   #(state/update-value [:valid?] true state/form-state-cursor)
-      :onInvalid #(state/update-value [:valid?] false state/form-state-cursor)}
-     (compose/form-name name)
-     (html (compose/file-select name select true previous?))
-     (form-editor (:compose spec)))])
+  (comp/mui
+    (html
+      [:div.Swarmpit-form
+       [:div.Swarmpit-form-context
+        (comp/grid
+          {:container true
+           :key       "sccg"
+           :spacing   40}
+          (comp/grid
+            {:item true
+             :key  "steoccgif"
+             :xs   12
+             :sm   12
+             :md   12
+             :lg   8
+             :xl   8}
+            (comp/card
+              {:className "Swarmpit-form-card"
+               :key       "sefec"}
+              (comp/card-header
+                {:className "Swarmpit-form-card-header"
+                 :key       "sefech"
+                 :title     "Edit Stack"})
+              (comp/card-content
+                {:key "sefecc"}
+                (comp/grid
+                  {:container true
+                   :key       "sefeccg"
+                   :spacing   40}
+                  (comp/grid
+                    {:item true
+                     :key  "sefecigg"
+                     :xs   12}
+                    (form-name name)
+                    (compose/form-select name select true previous?))
+                  (comp/grid
+                    {:item true
+                     :key  "sefecige"
+                     :xs   12}
+                    (form-editor (:compose spec))))
+                (html
+                  [:div {:class "Swarmpit-form-buttons"
+                         :key   "sefeccbtn"}
+                   (composite/progress-button
+                     "Deploy"
+                     #(update-stack-handler name)
+                     processing?)]))))
+          (comp/grid
+            {:item true
+             :key  "steoccgid"
+             :xs   12
+             :sm   12
+             :md   12
+             :lg   4
+             :xl   4}
+            (html
+              [:span
+               {:key "stcoccgidoc"}
+               "Learn more about "
+               [:a {:href   doc-compose-link
+                    :target "_blank"} "compose"]])))]])))
 
 (rum/defc form-last < rum/reactive
-                 mixin-init-form [_]
+                      mixin-init-form [_]
   (let [state (state/react state/form-state-cursor)
         stackfile (state/react state/form-value-cursor)]
     (progress/form
       (:loading? state)
-      (form-edit stackfile :last state))))
+      (form-edit stackfile :stack-last state))))
 
 (rum/defc form-previous < rum/reactive
-                 mixin-init-form [_]
+                          mixin-init-form [_]
   (let [state (state/react state/form-state-cursor)
         stackfile (state/react state/form-value-cursor)]
     (progress/form
       (:loading? state)
-      (form-edit stackfile :previous state))))
+      (form-edit stackfile :stack-previous state))))

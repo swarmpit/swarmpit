@@ -1,44 +1,38 @@
 (ns swarmpit.component.stack.list
   (:require [material.icon :as icon]
-            [material.component :as comp]
-            [material.component.panel :as panel]
-            [material.component.list-table :as list]
-            [swarmpit.component.mixin :as mixin]
+            [material.components :as comp]
+            [material.component.list.basic :as list]
+            [material.component.list.util :as list-util]
             [swarmpit.component.state :as state]
+            [swarmpit.component.mixin :as mixin]
+            [swarmpit.component.progress :as progress]
             [swarmpit.ajax :as ajax]
             [swarmpit.routes :as routes]
-            [rum.core :as rum]))
+            [swarmpit.url :refer [dispatch!]]
+            [sablono.core :refer-macros [html]]
+            [rum.core :as rum]
+            [swarmpit.component.common :as common]))
 
 (enable-console-print!)
 
-(def headers [{:name  "Name"
-               :width "40%"}
-              {:name  "Services"
-               :width "10%"}
-              {:name  "Networks"
-               :width "10%"}
-              {:name  "Volumes"
-               :width "10%"}
-              {:name  "Configs"
-               :width "10%"}
-              {:name  "Secrets"
-               :width "10%"}])
-
-(def render-item-keys
-  [[:stackName]
-   [:stackStats :services]
-   [:stackStats :networks]
-   [:stackStats :volumes]
-   [:stackStats :configs]
-   [:stackStats :secrets]])
-
-(defn- render-item
-  [item _]
-  (val item))
+(def render-metadata
+  {:table {:summary [{:name      "Name"
+                      :render-fn (fn [item] (:stackName item))}
+                     {:name      "Services"
+                      :render-fn (fn [item] (get-in item [:stackStats :services]))}
+                     {:name      "Networks"
+                      :render-fn (fn [item] (get-in item [:stackStats :networks]))}
+                     {:name      "Volumes"
+                      :render-fn (fn [item] (get-in item [:stackStats :volumes]))}
+                     {:name      "Configs"
+                      :render-fn (fn [item] (get-in item [:stackStats :configs]))}
+                     {:name      "Secrets"
+                      :render-fn (fn [item] (get-in item [:stackStats :secrets]))}]}
+   :list  {:primary (fn [item] (:stackName item))}})
 
 (defn- onclick-handler
   [item]
-  (routes/path-for-frontend :stack-info {:name (:stackName item)}))
+  (dispatch! (routes/path-for-frontend :stack-info {:name (:stackName item)})))
 
 (defn- format-response
   [response]
@@ -59,6 +53,10 @@
      :on-success (fn [{:keys [response]}]
                    (state/update-value [:items] response state/form-value-cursor))}))
 
+(defn form-search-fn
+  [event]
+  (state/update-value [:filter :query] (-> event .-target .-value) state/form-state-cursor))
+
 (defn- init-form-state
   []
   (state/set-value {:loading? false
@@ -70,31 +68,27 @@
       (init-form-state)
       (stack-handler))))
 
+(def form-toolbar
+  {:buttons [(comp/button
+               {:color "primary"
+                :key   "lstt"
+                :href  (routes/path-for-frontend :stack-create)}
+               (comp/svg
+                 {:key "slt"} icon/add-small) "New stack")]})
+
 (rum/defc form < rum/reactive
                  mixin-init-form
                  mixin/subscribe-form
                  mixin/focus-filter [_]
   (let [{:keys [items]} (state/react state/form-value-cursor)
         {:keys [loading? filter]} (state/react state/form-state-cursor)]
-    [:div
-     [:div.form-panel
-      [:div.form-panel-left
-       (panel/text-field
-         {:id       "filter"
-          :hintText "Search stacks"
-          :onChange (fn [_ v]
-                      (state/update-value [:filter :query] v state/form-state-cursor))})]
-      [:div.form-panel-right
-       (comp/mui
-         (comp/raised-button
-           {:href    (routes/path-for-frontend :stack-create)
-            :label   "New stack"
-            :primary true}))]]
-     (list/table headers
-                 (->> (list/filter items (:query filter))
-                      (format-response)
-                      (sort-by :stackName))
-                 loading?
-                 render-item
-                 render-item-keys
-                 onclick-handler)]))
+    (progress/form
+      loading?
+      (common/list "Stacks"
+                   items
+                   (->> (list-util/filter items (:query filter))
+                        (format-response)
+                        (sort-by :stackName))
+                   render-metadata
+                   onclick-handler
+                   form-toolbar))))

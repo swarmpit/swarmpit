@@ -1,16 +1,14 @@
 (ns swarmpit.component.service.create-image-private
   (:require [material.icon :as icon]
-            [material.component :as comp]
-            [material.component.form :as form]
-            [material.component.list-table :as list]
+            [material.components :as comp]
+            [material.component.list.basic :as list]
             [swarmpit.component.state :as state]
-            [swarmpit.component.progress :as progress]
             [swarmpit.component.mixin :as mixin]
             [swarmpit.component.message :as message]
             [swarmpit.storage :as storage]
-            [swarmpit.ajax :as ajax]
             [swarmpit.url :refer [dispatch!]]
             [swarmpit.routes :as routes]
+            [swarmpit.ajax :as ajax]
             [clojure.string :as string]
             [sablono.core :refer-macros [html]]
             [rum.core :as rum]))
@@ -18,15 +16,6 @@
 (def form-value-cursor (conj state/form-value-cursor :private))
 
 (def form-state-cursor (conj state/form-state-cursor :private))
-
-(def headers [{:name  "Name"
-               :width "50%"}
-              {:name  "Description"
-               :width "50%"}])
-
-(defn- render-item
-  [item]
-  (val item))
 
 (defn- filter-items
   [items predicate]
@@ -38,12 +27,11 @@
       (first)))
 
 (defn- onclick-handler
-  [index repositories]
-  (let [repository (fn [index] (:name (nth repositories index)))]
-    (dispatch!
-      (routes/path-for-frontend :service-create-config
-                                {}
-                                {:repository (repository index)}))))
+  [repository]
+  (dispatch!
+    (routes/path-for-frontend :service-create-config
+                              {}
+                              {:repository repository})))
 
 (defn- repository-handler
   [user-id]
@@ -65,27 +53,38 @@
            [:span.owner-item (str " [" (:owner user) "]")]])))
 
 (defn- form-username [user users]
-  (form/comp
-    "DOCKER USER"
-    (comp/select-field
-      {:value    (:_id user)
-       :onChange (fn [_ _ v]
-                   (state/update-value [:user] (selected-user v users) form-state-cursor)
-                   (repository-handler v))}
-      (->> users
-           (map #(comp/menu-item
-                   {:key         (:_id %)
-                    :value       (:_id %)
-                    :primaryText (form-username-label %)}))))))
+  (comp/text-field
+    {:fullWidth       true
+     :id              "user"
+     :label           "Docker user"
+     :select          true
+     :value           (:_id user)
+     :margin          "normal"
+     :variant         "outlined"
+     :style           {:maxWidth "400px"}
+     :InputLabelProps {:shrink true}
+     :onChange        (fn [event]
+                        (let [value (-> event .-target .-value)]
+                          (state/update-value [:user] (selected-user value users) form-state-cursor)
+                          (repository-handler value)))}
+    (->> users
+         (map #(comp/menu-item
+                 {:key   (:_id %)
+                  :value (:_id %)} (form-username-label %))))))
 
 (defn- form-repository [repository]
-  (form/comp
-    "REPOSITORY"
-    (comp/text-field
-      {:hintText "Filter by name"
-       :value    repository
-       :onChange (fn [_ v]
-                   (state/update-value [:repository] v form-state-cursor))})))
+  (comp/text-field
+    {:fullWidth       true
+     :id              "repository"
+     :label           "Repository"
+     :value           repository
+     :margin          "normal"
+     :variant         "outlined"
+     :placeholder     "Find repository"
+     :style           {:maxWidth "400px"}
+     :InputLabelProps {:shrink true}
+     :onChange        (fn [event]
+                        (state/update-value [:repository] (-> event .-target .-value) form-state-cursor))}))
 
 (defn- init-form-state
   [user]
@@ -96,35 +95,45 @@
 (def mixin-init-form
   (mixin/init-tab
     (fn [users]
-      (init-form-state (first users)))))
+      (let [init-user (first users)]
+        (init-form-state init-user)
+        (when (some? init-user)
+          (repository-handler (:_id init-user)))))))
 
-(rum/defc form-list < rum/static [searching? repositories]
-  [:div.form-edit-loader
-   (if searching?
-     (progress/loading)
-     (progress/loaded))
-   (comp/mui
-     (comp/table
-       {:key         "tbl"
-        :selectable  false
-        :onCellClick (fn [i] (onclick-handler i repositories))}
-       (list/table-header headers)
-       (list/table-body headers
-                        repositories
-                        render-item
-                        [[:name] [:description]])))])
+(def render-list-metadata
+  {:primary   (fn [item] (:name item))
+   :secondary (fn [item] (:description item))})
+
+(rum/defc form-list < rum/reactive []
+  (let [{:keys [repository searching?]} (state/react form-state-cursor)
+        repositories (state/react form-value-cursor)
+        filtered-repositories (filter-items repositories repository)]
+    (html
+      [:div
+       (when searching?
+         (comp/linear-progress))
+       (comp/list
+         {:dense true}
+         (map-indexed
+           (fn [index item]
+             (list/list-item
+               render-list-metadata
+               index
+               item
+               (last filtered-repositories)
+               #(onclick-handler (:name item)))) filtered-repositories))])))
 
 (rum/defc form < rum/reactive
                  mixin-init-form [users]
-  (let [{:keys [user repository searching?]} (state/react form-state-cursor)
-        repositories (state/react form-value-cursor)
-        filtered-repositories (filter-items repositories repository)]
+  (let [{:keys [user repository]} (state/react form-state-cursor)]
     (if (some? user)
-      [:div.form-edit
+      [:div.Swarmpit-image-search
        (form-username user users)
-       (form-repository repository)
-       (form-list searching? filtered-repositories)]
-      [:div.form-edit
-       (if (storage/admin?)
-         (form/icon-value icon/info [:span "No dockerhub users found. Add new " [:a {:href (routes/path-for-frontend :dockerhub-user-create)} "user."]])
-         (form/icon-value icon/info "No dockerhub users found. Please ask your admin to setup."))])))
+       (form-repository repository)]
+      [:div.Swarmpit-image-search
+       (html
+         [:span.Swarmpit-message
+          (icon/info {:style {:marginRight "8px"}})
+          (if (storage/admin?)
+            [:span "No dockerhub users found. Add new " [:a {:href (routes/path-for-frontend :dockerhub-user-create)} "user."]]
+            [:span "No dockerhub users found. Please ask your admin to setup."])])])))

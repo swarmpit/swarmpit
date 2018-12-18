@@ -1,9 +1,9 @@
 (ns swarmpit.component.volume.info
   (:require [material.icon :as icon]
-            [material.component :as comp]
+            [material.components :as comp]
             [material.component.form :as form]
-            [material.component.panel :as panel]
-            [material.component.list-table-auto :as list]
+            [material.component.label :as label]
+            [material.component.list.basic :as list]
             [swarmpit.component.message :as message]
             [swarmpit.component.mixin :as mixin]
             [swarmpit.component.state :as state]
@@ -13,18 +13,10 @@
             [swarmpit.url :refer [dispatch!]]
             [swarmpit.ajax :as ajax]
             [swarmpit.routes :as routes]
+            [sablono.core :refer-macros [html]]
             [rum.core :as rum]))
 
 (enable-console-print!)
-
-(def driver-opts-headers ["Name" "Value"])
-
-(def driver-opts-render-keys
-  [[:name] [:value]])
-
-(defn driver-opts-render-item
-  [item]
-  (val item))
 
 (defn- volume-services-handler
   [volume-name]
@@ -54,6 +46,71 @@
                    (message/error
                      (str "Volume removing failed. " (:error response))))}))
 
+(def form-driver-opts-render-metadata
+  {:primary   (fn [item] (:name item))
+   :secondary (fn [item] (:value item))})
+
+(defn- section-general
+  [{:keys [id stack volumeName driver mountpoint scope]}]
+  (comp/card
+    {:className "Swarmpit-form-card"
+     :key       "vgc"}
+    (comp/card-header
+      {:title     volumeName
+       :classes   {:title "Swarmpit-card-header-responsive-title"}
+       :key       "vgch"
+       :className "Swarmpit-form-card-header"
+       :action    (comp/tooltip
+                    {:title "Delete volume"
+                     :key   "vgchadt"}
+                    (comp/icon-button
+                      {:aria-label "Delete"
+                       :onClick    #(delete-volume-handler volumeName)}
+                      (comp/svg icon/trash)))})
+    (comp/card-content
+      {:key "vgcc"}
+      (html
+        [:div {:key "vgccd"}
+         [:span "Volume is mount at " [:b.volume-mountpoint mountpoint] "."]]))
+    (comp/card-content
+      {:key "vgccl"}
+      (form/item-labels
+        [(when driver
+           (label/grey driver))]))
+    (comp/card-actions
+      {:key "vgca"}
+      (when stack
+        (comp/button
+          {:size  "small"
+           :color "primary"
+           :href  (routes/path-for-frontend :stack-info {:name stack})}
+          "See stack")))
+    (comp/divider
+      {:key "vgd"})
+    (comp/card-content
+      {:style {:paddingBottom "16px"}
+       :key   "vgccf"}
+      (form/item-id id))))
+
+(defn- section-driver
+  [{:keys [driver options]}]
+  (comp/card
+    {:className "Swarmpit-card"
+     :key       "vdc"}
+    (comp/card-header
+      {:className "Swarmpit-table-card-header"
+       :key       "vdch"
+       :title     "Driver options"})
+    (comp/card-content
+      {:className "Swarmpit-table-card-content"
+       ::key      "vdcc"}
+      (when (not-empty options)
+        (rum/with-key
+          (list/list
+            form-driver-opts-render-metadata
+            options
+            nil) "vdccrl")))))
+
 (defn- init-form-state
   []
   (state/set-value {:loading? true} state/form-state-cursor))
@@ -66,35 +123,32 @@
       (volume-services-handler name))))
 
 (rum/defc form-info < rum/static [{:keys [volume services]}]
-  [:div
-   [:div.form-panel
-    [:div.form-panel-left
-     (panel/info icon/volumes
-                 (:volumeName volume))]
-    [:div.form-panel-right
-     (comp/mui
-       (comp/raised-button
-         {:onTouchTap #(delete-volume-handler (:volumeName volume))
-          :label      "Delete"}))]]
-   [:div.form-layout
-    [:div.form-layout-group
-     (form/section "General settings")
-     (form/item-stack (:stack volume))
-     (form/item "NAME" (utils/trim-stack (:stack volume) (:volumeName volume)))
-     (form/item "SCOPE" (:scope volume))
-     (form/item "MOUNTPOINT" (:mountpoint volume))]
-    [:div.form-layout-group.form-layout-group-border
-     (form/section "Driver")
-     (form/item "NAME" (:driver volume))
-     (when (not-empty (:options volume))
-       [:div
-        (form/subsection "Volume driver options")
-        (list/table driver-opts-headers
-                    (:options volume)
-                    driver-opts-render-item
-                    driver-opts-render-keys
-                    nil)])]
-    (services/linked-services services)]])
+  (comp/mui
+    (html
+      [:div.Swarmpit-form
+       [:div.Swarmpit-form-context
+        (comp/grid
+          {:container true
+           :spacing   40}
+          (comp/grid
+            {:item true
+             :key  "vgg"
+             :xs   12
+             :sm   6}
+            (section-general volume))
+          (when (not-empty (:options volume))
+            (comp/grid
+              {:item true
+               :key  "vdog"
+               :xs   12
+               :sm   6}
+              (section-driver volume)))
+          (when (not-empty services)
+            (comp/grid
+              {:item true
+               :key  "vlsg"
+               :xs   12}
+              (services/linked services))))]])))
 
 (rum/defc form < rum/reactive
                  mixin-init-form

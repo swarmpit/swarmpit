@@ -2,30 +2,40 @@
   (:refer-clojure :exclude [update])
   (:require [sablono.core :refer-macros [html]]))
 
-(defn red
-  [text]
-  (html [:span.label.label-red text]))
-
-(defn yellow
-  [text]
-  (html [:span.label.label-yellow text]))
+(defn base
+  [label color]
+  (html
+    [:span {:class (str "Swarmpit-label Swarmpit-label-" color)
+            :key   (str "label-" label)} label]))
 
 (defn green
-  [text]
-  (html [:span.label.label-green text]))
+  [label]
+  (base label "green"))
 
-(defn blue
-  [text]
-  (html [:span.label.label-blue text]))
-
-(defn grey
-  [text]
-  (html [:span.label.label-grey text]))
-
-(defn update
-  [text]
-  (html [:span.label.label-update text]))
+(defn pulsing
+  [label]
+  (base label "pulsing"))
 
 (defn info
-  [text]
-  (html [:span.label.label-info text]))
+  [label]
+  (base label "info"))
+
+(defn grey
+  [label]
+  (base label "grey"))
+
+(defn red
+  [label]
+  (base label "red"))
+
+(defn yellow
+  [label]
+  (base label "yellow"))
+
+(defn blue
+  [label]
+  (base label "blue"))
+
+(defn primary
+  [label]
+  (base label "primary"))

@@ -1,16 +1,14 @@
 (ns swarmpit.component.api-access
-  (:require [material.icon :as icon]
-            [material.component :as comp]
-            [material.component.form :as form]
-            [material.component.panel :as panel]
+  (:require [material.components :as comp]
             [swarmpit.component.message :as message]
+            [swarmpit.component.state :as state]
+            [swarmpit.component.mixin :as mixin]
+            [swarmpit.component.progress :as progress]
             [swarmpit.url :refer [dispatch!]]
             [swarmpit.ajax :as ajax]
             [swarmpit.routes :as routes]
-            [rum.core :as rum]
-            [swarmpit.component.state :as state]
-            [swarmpit.component.mixin :as mixin]
-            [swarmpit.component.progress :as progress]))
+            [sablono.core :refer-macros [html]]
+            [rum.core :as rum]))
 
 (enable-console-print!)
 
@@ -51,49 +49,77 @@
      :on-error   (fn [_]
                    (message/error (str "Failed to remove API token.")))}))
 
-(defn- token-input
-  [value]
-  (form/form
-    nil
-    (form/comp
-      "AUTHORIZATION TOKEN"
-      (comp/vtext-field
-        {:name      "token"
-         :key       "token"
-         :multiLine true
-         :style     {:width      "450px"
-                     :fontFamily "monospace"}
-         :value     value}))))
+(defn- form-token [value]
+  (comp/text-field
+    {:label           "Authorization Token"
+     :fullWidth       true
+     :name            "token"
+     :key             "token"
+     :variant         "outlined"
+     :margin          "normal"
+     :multiline       true
+     :value           value
+     :InputProps      {:readOnly true
+                       :style    {:fontFamily "monospace"}}
+     :InputLabelProps {:shrink true}}))
 
 (rum/defc form-api-token < rum/static [{:keys [api-token token]}]
   (let [state (if (and api-token (not token))
-                :old (if token
-                       :new :none))]
-    [:div
-     [:div.form-panel
-      [:div.form-panel-left
-       (panel/info icon/password (case state :none "Create API token" :old "API Token" :new "New API token"))]
-      [:div.form-panel-right
-       (comp/progress-button
-         {:label      (case state :none "Generate" "Regenerate")
-          :disabled   false
-          :primary    true
-          :onTouchTap generate-handler}
-         false)
-       [:span.form-panel-delimiter]
-       (comp/progress-button
-         {:label      "Remove"
-          :disabled   (= :none state)
-          :onTouchTap remove-handler}
-         false)]]
-     (case state
-       :old [(form/value ["Token for this user was already created, if you lost it, you can regenerate it and "
-                          "the former token will be revoked."])
-             (token-input (str "Bearer ..." (:mask api-token)))]
-       :new [(form/value ["Copy your generated token and store it safely, value will be displayed only once."])
-             (token-input (:token token))]
-       :none [(form/value "Your user doesn't have any API token.")
-              (form/value "You can create authorization token here. Generated token doesn't expire, but it can be revoked.")])]))
+                :old
+                (if token :new :none))]
+    (comp/grid
+      {:item true
+       :key  "aag"
+       :xs   12
+       :sm   8
+       :lg   6}
+      (comp/card
+        {:className "Swarmpit-form-card"
+         :key       "aagc"}
+        (comp/card-header
+          {:className "Swarmpit-form-card-header"
+           :key       "aagch"
+           :title     (case state :none "Create API token" :old "API Token" :new "New API token")})
+        (comp/card-content
+          {:key "aagcc"}
+          (comp/grid
+            {:container true
+             :key       "aagccc"
+             :spacing   40}
+            (comp/grid
+              {:item true
+               :key  "aagcccig"
+               :xs   12}
+              (case state
+                :old [(comp/typography
+                        {:key "ost"}
+                        ["Token for this user was already created, if you lost it, you can regenerate it and "
+                         "the former token will be revoked."])
+                      (form-token (str "Bearer ..." (:mask api-token)))]
+                :new [(comp/typography
+                        {:key "nst"}
+                        ["Copy your generated token and store it safely, value will be displayed only once."])
+                      (form-token (:token token))]
+                :none [(comp/typography
+                         {:key "nost1"} "Your user doesn't have any API token.")
+                       (comp/typography
+                         {:key "nost2"} "You can create authorization token here. Generated token doesn't expire, but it can be revoked.")])))
+          (html
+            [:div {:class "Swarmpit-form-buttons"
+                   :key   "aagccbtn"}
+             (comp/button
+               {:variant  "contained"
+                :key      "aagccbtnc"
+                :disabled false
+                :onClick  generate-handler
+                :color    "primary"}
+               (case state :none "Generate" "Regenerate"))
+             (comp/button
+               {:variant  "outlined"
+                :key      "aagccbtnr"
+                :disabled (= :none state)
+                :onClick  remove-handler}
+               "Remove")]))))))
 
 (rum/defc form < rum/reactive
                  mixin-init-form []

@@ -1,9 +1,9 @@
 (ns swarmpit.component.node.info
   (:require [material.icon :as icon]
-            [material.component :as comp]
+            [material.components :as comp]
             [material.component.form :as form]
-            [material.component.panel :as panel]
-            [material.component.list-table-auto :as list]
+            [material.component.label :as label]
+            [material.component.list.basic :as list]
             [swarmpit.component.state :as state]
             [swarmpit.component.mixin :as mixin]
             [swarmpit.component.progress :as progress]
@@ -12,18 +12,10 @@
             [swarmpit.ajax :as ajax]
             [swarmpit.routes :as routes]
             [clojure.contrib.humanize :as humanize]
+            [sablono.core :refer-macros [html]]
             [rum.core :as rum]))
 
 (enable-console-print!)
-
-(def labels-headers ["Name" "Value"])
-
-(def labels-render-keys
-  [[:name] [:value]])
-
-(defn labels-render-item
-  [item]
-  (val item))
 
 (defn resources
   [node]
@@ -35,6 +27,97 @@
       (if (some? disk-bytes)
         (str core-stats ", " (humanize/filesize disk-bytes :binary true) " disk")
         core-stats))))
+
+(defn section-general [node]
+  (comp/card
+    {:className "Swarmpit-form-card"
+     :key       "ngc"}
+    (comp/card-header
+      {:title     (:nodeName node)
+       :className "Swarmpit-form-card-header"
+       :key       "ngch"
+       :subheader (:address node)
+       :action    (comp/tooltip
+                    {:title "Edit node"
+                     :key   "ngchaet"}
+                    (comp/icon-button
+                      {:aria-label "Edit"
+                       :href       (routes/path-for-frontend :node-edit {:id (:id node)})}
+                      (comp/svg icon/edit)))})
+    (comp/card-content
+      {:key "ngcc"}
+      (html
+        [:div {:key "ngccd"}
+         [:span "ENGINE: " (str "docker " (:engine node))]
+         [:br]
+         [:span "OS: " [(:os node) " " (:arch node)]]
+         [:br]
+         [:span "RESOURCES: " (resources node)]]))
+    (comp/card-content
+      {:key "ngccp"}
+      (html
+        [:div {:key "ngccpd"}
+         [:span "Network plugins: " (->> node :plugins :networks (interpose ", "))]
+         [:br]
+         [:span "Volume plugins: " (->> node :plugins :volumes (interpose ", "))]]))
+    (comp/card-content
+      {:key "ngccl"}
+      (form/item-labels
+        [(when (:leader node)
+           (label/grey "Leader"))
+         (label/grey (:state node))
+         (label/grey (:availability node))
+         (label/grey (:role node))]))
+    (comp/divider
+      {:key "ncd"})
+    (comp/card-content
+      {:style {:paddingBottom "16px"}
+       :key   "ngccf"}
+      (form/item-id (:id node)))))
+
+(def render-labels-metadata
+  {:primary   (fn [item] (:name item))
+   :secondary (fn [item] (:value item))})
+
+(defn section-labels [labels id]
+  (comp/card
+    {:className "Swarmpit-card"
+     :key       "nlc"}
+    (comp/card-header
+      {:className "Swarmpit-table-card-header"
+       :key       "nlch"
+       :title     "Labels"
+       :action    (comp/icon-button
+                    {:aria-label "Edit"
+                     :href       (routes/path-for-frontend
+                                   :node-edit {:id id}
+                                   {:section "Labels"})}
+                    (comp/svg icon/edit))})
+    (comp/card-content
+      {:className "Swarmpit-table-card-content"
+       :key       "nlcc"}
+      (rum/with-key
+        (list/list
+          render-labels-metadata
+          labels
+          nil) "nlccrl"))))
+
+(defn section-tasks [tasks]
+  (comp/card
+    {:className "Swarmpit-card"
+     :key       "ntc"}
+    (comp/card-header
+      {:className "Swarmpit-table-card-header"
+       :key       "ntch"
+       :title     "Tasks"})
+    (comp/card-content
+      {:className "Swarmpit-table-card-content"
+       :key       "ntcc"}
+      (rum/with-key
+        (list/responsive
+          tasks/render-metadata
+          tasks
+          tasks/onclick-handler) "ntccrl"))))
 
 (defn- node-tasks-handler
   [node-id]
@@ -63,59 +146,32 @@
       (node-tasks-handler id))))
 
 (rum/defc form-info < rum/static [id {:keys [node tasks]}]
-  [:div
-   [:div.form-panel
-    [:div.form-panel-left
-     (panel/info (icon/os (:os node))
-                 (:nodeName node))]
-    [:div.form-panel-right
-     (comp/mui
-       (comp/raised-button
-         {:href    (routes/path-for-frontend :node-edit {:id id})
-          :label   "Edit"
-          :primary true}))
-     [:span.form-panel-delimiter]
-     (comp/mui
-       (comp/raised-button
-         {:href  (routes/path-for-frontend :node-list)
-          :label "Back"}))]]
-   [:div.form-layout
-    [:div.div.form-layout-group
-     (form/section "General settings")
-     (form/item "ID" (:id node))
-     (form/item "NAME" (:nodeName node))
-     (form/item "ROLE" (:role node))
-     (form/item "OS" [(:os node) " " (:arch node)])
-     (form/item "RESOURCES" (resources node))
-     (form/item "ENGINE" ["docker " (:engine node)])
-     (form/item "IP" (:address node))]
-    [:div.form-layout-group.form-layout-group-border
-     (form/section "Plugins")
-     (form/item "NETWORK " (->> node :plugins :networks (interpose ", ")))
-     (form/item "VOLUME" (->> node :plugins :volumes (interpose ", ")))]
-    [:div.form-layout-group.form-layout-group-border
-     (form/section "Status")
-     (form/item "STATE" (:state node))
-     (form/item "AVAILABILITY" (:availability node))
-     (form/item "LEADER" (if (:leader node)
-                           "yes"
-                           "no"))]
-    (when (not-empty (:labels node))
-      [:div.form-layout-group.form-layout-group-border
-       (form/section "Labels")
-       (list/table labels-headers
-                   (:labels node)
-                   labels-render-item
-                   labels-render-keys
-                   nil)])
-    (when (not-empty tasks)
-      [:div.form-layout-group.form-layout-group-border
-       (form/section "Tasks")
-       (list/table (map :name tasks/headers)
-                   tasks
-                   tasks/render-item
-                   tasks/render-item-keys
-                   tasks/onclick-handler)])]])
+  (comp/mui
+    (html
+      [:div.Swarmpit-form
+       [:div.Swarmpit-form-context
+        (comp/grid
+          {:container true
+           :spacing   40}
+          (comp/grid
+            {:item true
+             :key  "ngg"
+             :xs   12
+             :sm   6}
+            (section-general node))
+          (when (not-empty (:labels node))
+            (comp/grid
+              {:item true
+               :key  "ngl"
+               :xs   12
+               :sm   6}
+              (section-labels (:labels node) id)))
+          (when (not-empty tasks)
+            (comp/grid
+              {:item true
+               :key  "ngt"
+               :xs   12}
+              (section-tasks tasks))))]])))
 
 (rum/defc form < rum/reactive
                  mixin-init-form

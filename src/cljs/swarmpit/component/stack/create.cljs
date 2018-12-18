@@ -1,46 +1,50 @@
 (ns swarmpit.component.stack.create
   (:require [material.icon :as icon]
-            [material.component :as comp]
-            [material.component.form :as form]
-            [material.component.panel :as panel]
+            [material.components :as comp]
+            [material.component.composite :as composite]
             [swarmpit.component.editor :as editor]
             [swarmpit.component.state :as state]
             [swarmpit.component.mixin :as mixin]
             [swarmpit.component.message :as message]
+            [swarmpit.component.progress :as progress]
             [swarmpit.ajax :as ajax]
             [swarmpit.routes :as routes]
             [swarmpit.url :refer [dispatch!]]
             [sablono.core :refer-macros [html]]
-            [rum.core :as rum]
-            [swarmpit.component.progress :as progress]))
+            [rum.core :as rum]))
 
 (enable-console-print!)
 
 (def editor-id "compose")
 
+(def doc-compose-link "https://docs.docker.com/get-started/part3/#your-first-docker-composeyml-file")
+
 (defn- form-name [value]
-  (form/comp
-    "STACK NAME"
-    (comp/vtext-field
-      {:name     "stack-name"
-       :key      "stack-name"
-       :required true
-       :value    value
-       :onChange (fn [_ v]
-                   (state/update-value [:name] v state/form-value-cursor))})))
+  (comp/text-field
+    {:label           "Name"
+     :fullWidth       true
+     :name            "name"
+     :key             "name"
+     :variant         "outlined"
+     :helperText      "Specify stacfile name"
+     :margin          "normal"
+     :value           value
+     :required        true
+     :InputLabelProps {:shrink true}
+     :onChange        #(state/update-value [:name] (-> % .-target .-value) state/form-value-cursor)}))
 
 (defn- form-editor [value]
-  (comp/vtext-field
-    {:id            editor-id
-     :name          "stack-editor"
-     :key           "stack-editor"
-     :validations   "isValidCompose"
-     :multiLine     true
-     :rows          10
-     :rowsMax       10
-     :value         value
-     :underlineShow false
-     :fullWidth     true}))
+  (comp/text-field
+    {:id              editor-id
+     :fullWidth       true
+     :className       "Swarmpit-codemirror"
+     :name            "data"
+     :key             "data"
+     :multiline       true
+     :disabled        true
+     :required        true
+     :InputLabelProps {:shrink true}
+     :value           value}))
 
 (defn- compose-handler
   [service-name]
@@ -99,23 +103,72 @@
                       mixin-init-editor [{{:keys [from]} :params}]
   (let [{:keys [spec name]} (state/react state/form-value-cursor)
         {:keys [valid? processing?]} (state/react state/form-state-cursor)]
-    [:div
-     [:div.form-panel
-      [:div.form-panel-left
-       (panel/info icon/stacks "New stack")]
-      [:div.form-panel-right
-       (comp/progress-button
-         {:label      "Deploy"
-          :disabled   (not valid?)
-          :primary    true
-          :onTouchTap create-stack-handler} processing?)]]
-     (form/form
-       {:onValid   #(state/update-value [:valid?] true state/form-state-cursor)
-        :onInvalid #(state/update-value [:valid?] false state/form-state-cursor)}
-       (form-name name)
-       (when-not from
-         (html (form/icon-value icon/info "Please drag & drop or paste a compose file.")))
-       (form-editor (:compose spec)))]))
+    (comp/mui
+      (html
+        [:div.Swarmpit-form
+         [:div.Swarmpit-form-context
+          (comp/grid
+            {:container true
+             :key       "sccg"
+             :spacing   40}
+            (comp/grid
+              {:item true
+               :key  "stccgif"
+               :xs   12
+               :sm   12
+               :md   12
+               :lg   8
+               :xl   8}
+              (comp/card
+                {:className "Swarmpit-form-card"
+                 :key       "scfcc"}
+                (comp/card-header
+                  {:className "Swarmpit-form-card-header"
+                   :key       "scfcch"
+                   :title     "New Stack"})
+                (comp/card-content
+                  {:key "scfccc"}
+                  (comp/grid
+                    {:container true
+                     :key       "scfcccc"
+                     :spacing   40}
+                    (comp/grid
+                      {:item true
+                       :key  "scfccccig"
+                       :xs   12
+                       :lx   4}
+                      (form-name name))
+                    (comp/grid
+                      {:item true
+                       :key  "scfccccie"
+                       :xs   12
+                       :lx   4}
+                      (when-not from
+                        (html [:span {:class "Swarmpit-message"
+                                      :key   "scfcccciem"}
+                               "Drag & drop or paste a compose file."]))
+                      (form-editor (:compose spec))))
+                  (html
+                    [:div {:class "Swarmpit-form-buttons"
+                           :key   "scfcccbtn"}
+                     (composite/progress-button
+                       "Deploy"
+                       create-stack-handler
+                       processing?)]))))
+            (comp/grid
+              {:item true
+               :key  "stccgid"
+               :xs   12
+               :sm   12
+               :md   12
+               :lg   4
+               :xl   4}
+              (html
+                [:span
+                 {:key "stcoccgidoc"}
+                 "Learn more about "
+                 [:a {:href   doc-compose-link
+                      :target "_blank"} "compose"]])))]]))))
 
 (rum/defc form < rum/reactive
                  mixin-init-form [params]

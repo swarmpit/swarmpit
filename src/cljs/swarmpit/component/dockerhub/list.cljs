@@ -1,41 +1,36 @@
 (ns swarmpit.component.dockerhub.list
-  (:require [material.component :as comp]
-            [material.component.panel :as panel]
-            [material.component.list-table :as list]
+  (:require [material.icon :as icon]
+            [material.components :as comp]
+            [material.component.list.basic :as list]
+            [material.component.list.util :as list-util]
             [swarmpit.component.mixin :as mixin]
             [swarmpit.component.state :as state]
+            [swarmpit.component.progress :as progress]
             [swarmpit.ajax :as ajax]
             [swarmpit.routes :as routes]
             [swarmpit.storage :as storage]
+            [swarmpit.url :refer [dispatch!]]
+            [sablono.core :refer-macros [html]]
             [cljs.core :as core]
-            [rum.core :as rum]))
+            [rum.core :as rum]
+            [swarmpit.component.common :as common]))
 
 (enable-console-print!)
 
-(def headers [{:name  "Username"
-               :width "30%"}
-              {:name  "Name"
-               :width "30%"}
-              {:name  "Company"
-               :width "30%"}
-              {:name  "Public"
-               :width "10%"}])
-
-(def render-item-keys
-  [[:username] [:name] [:company] [:public]])
-
-(defn- render-item
-  [item _]
-  (let [value (val item)]
-    (case (key item)
-      :public (if value
-                "yes"
-                "no")
-      value)))
+(def render-metadata
+  {:table {:summary [{:name      "Username"
+                      :render-fn (fn [item] (:username item))}
+                     {:name      "Name"
+                      :render-fn (fn [item] (:name item))}
+                     {:name      "Company"
+                      :render-fn (fn [item] (:company item))}
+                     {:name      "Name"
+                      :render-fn (fn [item] (if (:public item) "yes" "no"))}]}
+   :list  {:primary (fn [item] (:username item))}})
 
 (defn- onclick-handler
   [item]
-  (routes/path-for-frontend :dockerhub-user-info {:id (:_id item)}))
+  (dispatch! (routes/path-for-frontend :dockerhub-user-info {:id (:_id item)})))
 
 (defn- users-handler
   []
@@ -44,6 +39,10 @@
     {:state      [:loading?]
      :on-success (fn [{:keys [response]}]
                    (state/update-value [:items] response state/form-value-cursor))}))
+
+(defn form-search-fn
+  [event]
+  (state/update-value [:filter :query] (-> event .-target .-value) state/form-state-cursor))
 
 (defn- init-form-state
   []
@@ -56,6 +55,14 @@
       (init-form-state)
       (users-handler))))
 
+(def form-toolbar
+  {:buttons [(comp/button
+               {:color "primary"
+                :key   "ldhtt"
+                :href  (routes/path-for-frontend :dockerhub-user-create)}
+               (comp/svg
+                 {:key "slt"} icon/add-small) "Add account")]})
+
 (rum/defc form < rum/reactive
                  mixin-init-form
                  mixin/subscribe-form
@@ -63,24 +70,12 @@
   (let [{:keys [items]} (state/react state/form-value-cursor)
         {:keys [loading? filter]} (state/react state/form-state-cursor)
         filtered-items (-> (core/filter #(= (:owner %) (storage/user)) items)
-                           (list/filter (:query filter)))]
-    [:div
-     [:div.form-panel
-      [:div.form-panel-left
-       (panel/text-field
-         {:id       "filter"
-          :hintText "Search hub users"
-          :onChange (fn [_ v]
-                      (state/update-value [:filter :query] v state/form-state-cursor))})]
-      [:div.form-panel-right
-       (comp/mui
-         (comp/raised-button
-           {:href    (routes/path-for-frontend :dockerhub-user-create)
-            :label   "Add user"
-            :primary true}))]]
-     (list/table headers
-                 (sort-by :username filtered-items)
-                 loading?
-                 render-item
-                 render-item-keys
-                 onclick-handler)]))
+                           (list-util/filter (:query filter)))]
+    (progress/form
+      loading?
+      (common/list "Docker Hub Accounts"
+                   items
+                   filtered-items
+                   render-metadata
+                   onclick-handler
+                   form-toolbar))))

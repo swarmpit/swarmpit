@@ -1,18 +1,16 @@
 (ns swarmpit.component.page-login
-  (:require [material.component :as comp]
-            [material.icon :as icon]
+  (:require [material.icon :as icon]
+            [material.components :as comp]
             [swarmpit.component.state :as state]
             [swarmpit.url :refer [dispatch!]]
             [swarmpit.storage :as storage]
             [swarmpit.ajax :as ajax]
             [swarmpit.token :as token]
             [swarmpit.routes :as routes]
-            [rum.core :as rum]))
+            [rum.core :as rum]
+            [sablono.core :refer-macros [html]]))
 
 (enable-console-print!)
-
-(def login-button-style
-  {:marginTop "30px"})
 
 (defn- login-headers
   [local-state]
@@ -41,69 +39,94 @@
     (login-handler local-state)))
 
 (defn- form-username [value local-state]
-  (comp/vtext-field
-    {:id                "loginUsername"
-     :key               "username"
-     :name              "username"
-     :required          true
-     :floatingLabelText "Username"
-     :value             value
-     :onKeyPress        (fn [event]
-                          (on-enter event local-state))
-     :onChange          (fn [_ v]
-                          (swap! local-state assoc :username v))}))
+  (comp/text-field
+    {:id              "user"
+     :key             "Swarmpit-login-username-input"
+     :label           "Username"
+     :variant         "outlined"
+     :fullWidth       true
+     :required        true
+     :autoComplete    "user"
+     :autoFocus       true
+     :value           value
+     :onChange        (fn [event]
+                        (swap! local-state assoc :username (-> event .-target .-value)))
+     :InputLabelProps {:shrink true}}))
+
+(defn- form-password-adornment [local-state]
+  (let [show-password? (:showPassword @local-state)]
+    (comp/input-adornment
+      {:position "end"}
+      (comp/icon-button
+        {:aria-label  "Toggle password visibility"
+         :onClick     (fn []
+                        (swap! local-state assoc :showPassword (not show-password?)))
+         :onMouseDown (fn [event]
+                        (.preventDefault event))}
+        (if show-password?
+          icon/visibility
+          icon/visibility-off)))))
 
 (defn- form-password [value local-state]
-  (comp/vtext-field
-    {:id                "loginPassword"
-     :key               "password"
-     :name              "password"
-     :required          true
-     :floatingLabelText "Password"
-     :type              "password"
-     :value             value
-     :onKeyPress        (fn [event]
+  (let [show-password? (:showPassword @local-state)]
+    (comp/text-field
+      {:id              "password"
+       :key             "Swarmpit-login-password-input"
+       :label           "Password"
+       :variant         "outlined"
+       :fullWidth       true
+       :required        true
+       :type            (if show-password?
+                          "text"
+                          "password")
+       :value           value
+       :onChange        (fn [event]
+                          (swap! local-state assoc :password (-> event .-target .-value)))
+       :onKeyPress      (fn [event]
                           (on-enter event local-state))
-     :onChange          (fn [_ v]
-                          (swap! local-state assoc :password v))}))
+       :InputLabelProps {:shrink true}
+       :InputProps      {:endAdornment (form-password-adornment local-state)}})))
 
-(defn- error-message
-  [message]
-  [:div
-   [:svg.node-item-ico {:width  "24"
-                        :height "24"
-                        :fill   "rgb(117, 117, 117)"}
-    [:path {:d icon/error}]]
-   [:span message]])
+(defn- form-button [local-state]
+  (let [canSubmit? (:canSubmit @local-state)]
+    (comp/button
+      {:className "Swarmpit-login-form-submit"
+       :disabled  (not canSubmit?)
+       :type      "submit"
+       :variant   "contained"
+       :fullWidth true
+       :color     "primary"
+       :onClick   #(login-handler local-state)} "Sign in")))
 
-(rum/defcs form < (rum/local {:username  ""
-                              :password  ""
-                              :message   ""
-                              :canSubmit false} ::login) [state]
+(rum/defcs form < (rum/local {:username     ""
+                              :password     ""
+                              :message      ""
+                              :canSubmit    true
+                              :showPassword false} ::login) [state]
   (let [local-state (::login state)
         username (:username @local-state)
         password (:password @local-state)
-        message (:message @local-state)
-        canSubmit (:canSubmit @local-state)]
-    [:div.page-back
-     [:div.page
-      [:div.page-logo
-       [:img {:src    "img/logo.svg"
-              :width  "177px"
-              :height "90px"}]]
-      [:div.page-form
-       (if (not-empty message)
-         (error-message message))
-       (comp/mui
-         (comp/vform
-           {:onValid   #(swap! local-state assoc :canSubmit true)
-            :onInvalid #(swap! local-state assoc :canSubmit false)}
-           (form-username username local-state)
-           (form-password password local-state)))
-       (comp/mui
-         (comp/raised-button
-           {:style      login-button-style
-            :disabled   (not canSubmit)
-            :label      "Login"
-            :primary    true
-            :onTouchTap #(login-handler local-state)}))]]]))
+        message (:message @local-state)]
+    [:div.Swarmpit-page
+     [:div.Swarmpit-login-layout
+      (comp/mui
+        (comp/paper
+          {:className "Swarmpit-login-paper"}
+          (html
+            [:img {:src    "img/swarmpit.png"
+                   :key    "Swarmpit-login-img"
+                   :width  "100%"
+                   :height "100%"}])
+          (when (not-empty message)
+            (html
+              [:span {:key   "Swarmpit-login-mssg"
+                      :style {:display    "flex"
+                              :alignItems "center"
+                              :color      "#d32f2f"
+                              :padding    20}}
+               (icon/error {}) message]))
+          (html
+            [:div.Swarmpit-login-form {:key "Swarmpit-login-form"}
+             (form-username username local-state)
+             (form-password password local-state)
+             (form-button local-state)])))]]))

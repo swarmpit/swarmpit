@@ -1,45 +1,37 @@
 (ns swarmpit.component.registry.list
   (:require [material.icon :as icon]
-            [material.component :as comp]
-            [material.component.panel :as panel]
-            [material.component.list-table :as list]
+            [material.components :as comp]
+            [material.component.list.basic :as list]
+            [material.component.list.util :as list-util]
             [swarmpit.component.mixin :as mixin]
             [swarmpit.component.state :as state]
+            [swarmpit.component.progress :as progress]
             [swarmpit.ajax :as ajax]
             [swarmpit.routes :as routes]
             [swarmpit.storage :as storage]
+            [swarmpit.url :refer [dispatch!]]
+            [sablono.core :refer-macros [html]]
             [cljs.core :as core]
-            [rum.core :as rum]))
+            [rum.core :as rum]
+            [swarmpit.component.common :as common]))
 
 (enable-console-print!)
 
-(def headers [{:name  "Name"
-               :width "30%"}
-              {:name  "Url"
-               :width "50%"}
-              {:name  "Public"
-               :width "10%"}
-              {:name  "Secure"
-               :width "10%"}])
-
-(def render-item-keys
-  [[:name] [:url] [:public] [:withAuth]])
-
-(defn- render-item
-  [item _]
-  (let [value (val item)]
-    (case (key item)
-      :withAuth (if value
-                  (comp/svg icon/ok)
-                  "")
-      :public (if value
-                "yes"
-                "no")
-      value)))
+(def render-metadata
+  {:table {:summary [{:name      "Name"
+                      :render-fn (fn [item] (:name item))}
+                     {:name      "Url"
+                      :render-fn (fn [item] (:url item))}
+                     {:name      "Public"
+                      :render-fn (fn [item] (if (:value item) "yes" "no"))}
+                     {:name      "Secure"
+                      :render-fn (fn [item] (if (:withAuth item) "yes" "no"))}]}
+   :list  {:primary   (fn [item] (:name item))
+           :secondary (fn [item] (:url item))}})
 
 (defn- onclick-handler
   [item]
-  (routes/path-for-frontend :registry-info {:id (:_id item)}))
+  (dispatch! (routes/path-for-frontend :registry-info {:id (:_id item)})))
 
 (defn- registries-handler
   []
@@ -48,6 +40,10 @@
     {:state      [:loading?]
      :on-success (fn [{:keys [response]}]
                    (state/update-value [:items] response state/form-value-cursor))}))
+
+(defn form-search-fn
+  [event]
+  (state/update-value [:filter :query] (-> event .-target .-value) state/form-state-cursor))
 
 (defn- init-form-state
   []
@@ -60,6 +56,14 @@
       (init-form-state)
       (registries-handler))))
 
+(def form-toolbar
+  {:buttons [(comp/button
+               {:color "primary"
+                :key   "lrett"
+                :href  (routes/path-for-frontend :registry-create)}
+               (comp/svg
+                 {:key "slt"} icon/add-small) "Add registry")]})
+
 (rum/defc form < rum/reactive
                  mixin-init-form
                  mixin/subscribe-form
@@ -67,24 +71,12 @@
   (let [{:keys [items]} (state/react state/form-value-cursor)
         {:keys [loading? filter]} (state/react state/form-state-cursor)
         filtered-items (-> (core/filter #(= (:owner %) (storage/user)) items)
-                           (list/filter (:query filter)))]
-    [:div
-     [:div.form-panel
-      [:div.form-panel-left
-       (panel/text-field
-         {:id       "filter"
-          :hintText "Search registries"
-          :onChange (fn [_ v]
-                      (state/update-value [:filter :query] v state/form-state-cursor))})]
-      [:div.form-panel-right
-       (comp/mui
-         (comp/raised-button
-           {:href    (routes/path-for-frontend :registry-create)
-            :label   "Add registry"
-            :primary true}))]]
-     (list/table headers
-                 (sort-by :name filtered-items)
-                 loading?
-                 render-item
-                 render-item-keys
-                 onclick-handler)]))
+                           (list-util/filter (:query filter)))]
+    (progress/form
+      loading?
+      (common/list "Registries"
+                   items
+                   filtered-items
+                   render-metadata
+                   onclick-handler
+                   form-toolbar))))

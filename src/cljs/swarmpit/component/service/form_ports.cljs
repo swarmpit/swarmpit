@@ -1,7 +1,7 @@
 (ns swarmpit.component.service.form-ports
-  (:require [material.component :as comp]
+  (:require [material.components :as comp]
             [material.component.form :as form]
-            [material.component.list-table-form :as list]
+            [material.component.list.edit :as list]
             [swarmpit.component.state :as state]
             [swarmpit.component.parser :refer [parse-int]]
             [swarmpit.ajax :as ajax]
@@ -32,93 +32,96 @@
                                               {:mode "ingress"}) form-value-cursor))))
      :on-error   (fn [_])}))
 
-(def headers [{:name  "Container port"
-               :width "100px"}
-              {:name  "Protocol"
-               :width "100px"}
-              {:name  "Mode"
-               :width "150px"}
-              {:name  "Host port"
-               :width "100px"}])
-
 (defn- form-container [value index]
-  (list/textfield
-    {:name     (str "form-container-text-" index)
-     :key      (str "form-container-text-" index)
-     :type     "number"
-     :min      1
-     :max      65535
-     :value    value
-     :onChange (fn [_ v]
-                 (state/update-item index :containerPort (parse-int v) form-value-cursor))}))
+  (comp/text-field
+    {:fullWidth       true
+     :key             (str "form-port-container" index)
+     :id              "container"
+     :label           "Container port"
+     :type            "number"
+     :min             1
+     :max             65535
+     :value           value
+     :variant         "outlined"
+     :margin          "dense"
+     :InputLabelProps {:shrink true}
+     :onChange        #(state/update-item index :containerPort (parse-int (-> % .-target .-value)) form-value-cursor)}))
 
 (defn- form-protocol [value index]
-  (list/selectfield
-    {:name     (str "form-protocol-select-" index)
-     :key      (str "form-protocol-select-" index)
-     :value    value
-     :onChange (fn [_ _ v]
-                 (state/update-item index :protocol v form-value-cursor))}
+  (comp/text-field
+    {:fullWidth       true
+     :key             (str "form-protocol-port-" index)
+     :id              "protocol"
+     :label           "Protocol"
+     :select          true
+     :value           value
+     :variant         "outlined"
+     :margin          "dense"
+     :InputLabelProps {:shrink true}
+     :onChange        #(state/update-item index :protocol (-> % .-target .-value) form-value-cursor)}
     (comp/menu-item
-      {:name        (str "form-protocol-tcp-" index)
-       :key         (str "form-protocol-tcp-" index)
-       :value       "tcp"
-       :primaryText "TCP"})
+      {:key   "tcp"
+       :value "tcp"} "TCP")
     (comp/menu-item
-      {:name        (str "form-protocol-udp-" index)
-       :key         (str "form-protocol-udp-" index)
-       :value       "udp"
-       :primaryText "UDP"})))
+      {:key   "udp"
+       :value "udp"} "UDP")))
 
 (defn- form-mode [value index]
-  (list/selectfield
-    {:name     (str "form-mode-select-" index)
-     :key      (str "form-mode-select-" index)
-     :value    value
-     :onChange (fn [_ _ v]
-                 (state/update-item index :mode v form-value-cursor))}
+  (comp/text-field
+    {:fullWidth       true
+     :key             (str "form-port-mode-" index)
+     :id              "mode"
+     :label           "Mode"
+     :select          true
+     :value           value
+     :variant         "outlined"
+     :margin          "dense"
+     :InputLabelProps {:shrink true}
+     :onChange        #(state/update-item index :mode (-> % .-target .-value) form-value-cursor)}
     (comp/menu-item
-      {:name        (str "form-mode-ingress-" index)
-       :key         (str "form-mode-ingress-" index)
-       :value       "ingress"
-       :primaryText "ingress"})
+      {:key   "ingress"
+       :value "ingress"} "ingress")
     (comp/menu-item
-      {:name        (str "form-mode-host-" index)
-       :key         (str "form-mode-host-" index)
-       :value       "host"
-       :primaryText "host"})))
+      {:key   "host"
+       :value "host"} "host")))
 
 (defn- form-host [value index]
-  (list/textfield
-    {:name     (str "form-host-text-" index)
-     :key      (str "form-host-text-" index)
-     :type     "number"
-     :min      1
-     :max      65535
-     :value    value
-     :onChange (fn [_ v]
-                 (state/update-item index :hostPort (parse-int v) form-value-cursor))}))
+  (comp/text-field
+    {:fullWidth       true
+     :key             (str "form-port-host-" index)
+     :id              "host"
+     :label           "Host port"
+     :type            "number"
+     :min             1
+     :max             65535
+     :value           value
+     :variant         "outlined"
+     :margin          "dense"
+     :InputLabelProps {:shrink true}
+     :onChange        #(state/update-item index :hostPort (parse-int (-> % .-target .-value)) form-value-cursor)}))
 
-(defn- render-ports
-  [item index _]
-  (let [{:keys [containerPort
-                protocol
-                mode
-                hostPort]} item]
-    [(form-container containerPort index)
-     (form-protocol protocol index)
-     (form-mode mode index)
-     (form-host hostPort index)]))
+(def form-ports-metadata
+  [{:name      "Container port"
+    :primary   true
+    :key       [:containerPort]
+    :render-fn (fn [value _ index] (form-container value index))}
+   {:name      "Protocol"
+    :key       [:protocol]
+    :render-fn (fn [value _ index] (form-protocol value index))}
+   {:name      "Mode"
+    :key       [:mode]
+    :render-fn (fn [value _ index] (form-mode value index))}
+   {:name      "Host port"
+    :key       [:hostPort]
+    :render-fn (fn [value _ index] (form-host value index))}])
 
 (defn- form-table
   [ports]
-  (form/form
-    {}
-    (list/table-raw headers
-                    ports
-                    nil
-                    render-ports
-                    (fn [index] (state/remove-item index form-value-cursor)))))
+  (rum/with-key
+    (list/list
+      form-ports-metadata
+      ports
+      (fn [index] (state/remove-item index form-value-cursor))) "form-port-table"))
 
 (defn- add-item
   []
@@ -130,5 +133,5 @@
 (rum/defc form < rum/reactive []
   (let [ports (state/react form-value-cursor)]
     (if (empty? ports)
-      (form/value "Service has no published ports.")
+      (html [:div "Service has no published ports."])
       (form-table ports))))

@@ -1,9 +1,9 @@
 (ns swarmpit.component.node.edit
   (:require [material.icon :as icon]
-            [material.component :as comp]
+            [material.components :as comp]
             [material.component.form :as form]
-            [material.component.list-table-form :as list]
-            [material.component.panel :as panel]
+            [material.component.composite :as composite]
+            [material.component.list.edit :as list]
             [swarmpit.component.mixin :as mixin]
             [swarmpit.component.state :as state]
             [swarmpit.component.message :as message]
@@ -18,77 +18,98 @@
 
 (def form-node-labels-cursor (conj state/form-value-cursor :labels))
 
-(def form-node-labels-headers
-  [{:name  "Name"
-    :width "35%"}
-   {:name  "Value"
-    :width "35%"}])
+(defn- form-name [value]
+  (comp/text-field
+    {:label           "Name"
+     :fullWidth       true
+     :name            "name"
+     :key             "name"
+     :variant         "outlined"
+     :margin          "normal"
+     :value           value
+     :required        true
+     :disabled        true
+     :InputLabelProps {:shrink true}}))
 
 (defn- form-role [value]
-  (form/comp
-    "ROLE"
-    (comp/select-field
-      {:value    value
-       :onChange (fn [_ _ v]
-                   (state/update-value [:role] v state/form-value-cursor))}
-      (comp/menu-item
-        {:key         "frm"
-         :value       "manager"
-         :primaryText "manager"})
-      (comp/menu-item
-        {:key         "frw"
-         :value       "worker"
-         :primaryText "worker"}))))
+  (comp/text-field
+    {:fullWidth       true
+     :key             "role"
+     :label           "Role"
+     :select          true
+     :value           value
+     :variant         "outlined"
+     :margin          "normal"
+     :InputLabelProps {:shrink true}
+     :onChange        #(state/update-value [:role] (-> % .-target .-value) state/form-value-cursor)}
+    (comp/menu-item
+      {:key   "worker"
+       :value "worker"} "worker")
+    (comp/menu-item
+      {:key   "manager"
+       :value "manager"} "manager")))
 
 (defn- form-availability [value]
-  (form/comp
-    "AVAILABILITY"
-    (comp/select-field
-      {:value    value
-       :onChange (fn [_ _ v]
-                   (state/update-value [:availability] v state/form-value-cursor))}
-      (comp/menu-item
-        {:key         "faa"
-         :value       "active"
-         :primaryText "active"})
-      (comp/menu-item
-        {:key         "faw"
-         :value       "pause"
-         :primaryText "pause"})
-      (comp/menu-item
-        {:key         "fad"
-         :value       "drain"
-         :primaryText "drain"}))))
+  (comp/text-field
+    {:fullWidth       true
+     :key             "availability"
+     :label           "Availability"
+     :select          true
+     :value           value
+     :variant         "outlined"
+     :margin          "normal"
+     :InputLabelProps {:shrink true}
+     :onChange        #(state/update-value [:availability] (-> % .-target .-value) state/form-value-cursor)}
+    (comp/menu-item
+      {:key   "active"
+       :value "active"} "active")
+    (comp/menu-item
+      {:key   "active"
+       :value "active"} "active")
+    (comp/menu-item
+      {:key   "drain"
+       :value "drain"} "drain")))
 
-(defn- form-labels-name [value index]
-  (list/textfield
-    {:name     (str "form-labels-name-" index)
-     :key      (str "form-labels-name-" index)
-     :value    value
-     :onChange (fn [_ v]
-                 (state/update-item index :name v form-node-labels-cursor))}))
+(defn- form-label-name [value index]
+  (comp/text-field
+    {:fullWidth       true
+     :label           "Name"
+     :key             (str "form-label-name-" index)
+     :value           value
+     :required        true
+     :variant         "outlined"
+     :margin          "dense"
+     :InputLabelProps {:shrink true}
+     :onChange        #(state/update-item index :name (-> % .-target .-value) form-node-labels-cursor)}))
 
-(defn- form-labels-value [value index]
-  (list/textfield
-    {:name     (str "form-labels-value-" index)
-     :key      (str "form-labels-value-" index)
-     :value    value
-     :onChange (fn [_ v]
-                 (state/update-item index :value v form-node-labels-cursor))}))
+(defn- form-label-value [value index]
+  (comp/text-field
+    {:fullWidth       true
+     :label           "Value"
+     :key             (str "form-label-value-" index)
+     :value           value
+     :required        true
+     :variant         "outlined"
+     :margin          "dense"
+     :InputLabelProps {:shrink true}
+     :onChange        #(state/update-item index :value (-> % .-target .-value) form-node-labels-cursor)}))
 
-(defn- form-labels-render
-  [item index]
-  (let [{:keys [name value]} item]
-    [(form-labels-name name index)
-     (form-labels-value value index)]))
+(def form-label-metadata
+  [{:name      "Name"
+    :primary   true
+    :key       [:name]
+    :render-fn (fn [value _ index] (form-label-name value index))}
+   {:name      "Value"
+    :key       [:value]
+    :render-fn (fn [value _ index] (form-label-value value index))}])
 
-(defn- form-labels-table
+(defn- form-label-table
   [labels]
-  (list/table-raw form-node-labels-headers
-                  labels
-                  nil
-                  form-labels-render
-                  (fn [index] (state/remove-item index form-node-labels-cursor))))
+  (rum/with-key
+    (list/list
+      form-label-metadata
+      labels
+      (fn [index] (state/remove-item index form-node-labels-cursor))) "necccill"))
 
 (defn- add-label
   []
@@ -134,38 +155,54 @@
 
 (rum/defc form-edit < rum/static [{:keys [id version nodeName role availability labels]}
                                   {:keys [processing? valid?]}]
-  [:div
-   [:div.form-panel
-    [:div.form-panel-left
-     (panel/info icon/nodes nodeName)]
-    [:div.form-panel-right
-     (comp/progress-button
-       {:label      "Save"
-        :disabled   (not valid?)
-        :primary    true
-        :onTouchTap #(update-node-handler id version)} processing?)
-     [:span.form-panel-delimiter]
-     (comp/mui
-       (comp/raised-button
-         {:href  (routes/path-for-frontend :node-info {:id id})
-          :label "Back"}))]]
-   [:div.form-layout
-    [:div.form-layout-group
-     (form/section "General settings")
-     (form/form
-       {:onValid   #(state/update-value [:valid?] true state/form-state-cursor)
-        :onInvalid #(state/update-value [:valid?] false state/form-state-cursor)}
-       (form-role role)
-       (form-availability availability))]
-    [:div.form-layout-group.form-layout-group-border
-     (form/section "Labels")
-     (form/form
-       {}
-       (html (form/subsection-add "Add label" add-label))
-       (form-labels-table labels))]]])
+  (comp/mui
+    (html
+      [:div.Swarmpit-form
+       [:div.Swarmpit-form-context
+        (comp/card
+          {:className "Swarmpit-form-card"
+           :key       "nec"}
+          (comp/card-header
+            {:className "Swarmpit-form-card-header"
+             :key       "nech"
+             :title     "Edit Node"})
+          (comp/card-content
+            {:key "necc"}
+            (comp/grid
+              {:container true
+               :key       "neccc"
+               :spacing   40}
+              (comp/grid
+                {:item true
+                 :key  "necccig"
+                 :xs   12
+                 :sm   6}
+                (form-name nodeName)
+                (form-role role)
+                (form-availability availability))
+              (comp/grid
+                {:item true
+                 :key  "necccil"
+                 :xs   12}
+                (form/section
+                  "Labels"
+                  (comp/button
+                    {:color   "primary"
+                     :onClick add-label}
+                    (comp/svg
+                      {:key "necccilbtn"} icon/add-small) "Add label"))
+                (form-label-table labels)))
+            (html
+              [:div {:class "Swarmpit-form-buttons"
+                     :key   "neccbtn"}
+               (composite/progress-button
+                 "Save"
+                 #(update-node-handler id version)
+                 processing?)])))]])))
 
 (rum/defc form < rum/reactive
-                 mixin-init-form [_]
+                 mixin-init-form
+                 mixin/scroll-to-section [_]
   (let [state (state/react state/form-state-cursor)
         node (state/react state/form-value-cursor)]
     (progress/form

@@ -1,48 +1,52 @@
 (ns swarmpit.component.dockerhub.create
-  (:require [material.icon :as icon]
-            [material.component :as comp]
-            [material.component.form :as form]
-            [material.component.panel :as panel]
+  (:require [material.components :as comp]
+            [material.component.composite :as composite]
             [swarmpit.component.mixin :as mixin]
             [swarmpit.component.state :as state]
             [swarmpit.component.message :as message]
             [swarmpit.url :refer [dispatch!]]
             [swarmpit.ajax :as ajax]
             [swarmpit.routes :as routes]
-            [rum.core :as rum]))
+            [sablono.core :refer-macros [html]]
+            [rum.core :as rum]
+            [swarmpit.component.common :as common]))
 
 (enable-console-print!)
 
 (defn- form-username [value]
-  (form/comp
-    "USERNAME"
-    (comp/vtext-field
-      {:name     "username"
-       :key      "username"
-       :required true
-       :value    value
-       :onChange (fn [_ v]
-                   (state/update-value [:username] v state/form-value-cursor))})))
+  (comp/text-field
+    {:label           "Name"
+     :fullWidth       true
+     :name            "username"
+     :key             "username"
+     :variant         "outlined"
+     :margin          "normal"
+     :value           value
+     :required        true
+     :InputLabelProps {:shrink true}
+     :onChange        #(state/update-value [:username] (-> % .-target .-value) state/form-value-cursor)}))
 
-(defn- form-password [value]
-  (form/comp
-    "PASSWORD"
-    (comp/vtext-field
-      {:name     "password"
-       :key      "password"
-       :type     "password"
-       :required true
-       :value    value
-       :onChange (fn [_ v]
-                   (state/update-value [:password] v state/form-value-cursor))})))
+(defn- form-password [value show-password?]
+  (comp/text-field
+    {:label           "Password"
+     :variant         "outlined"
+     :key             "password"
+     :fullWidth       true
+     :required        true
+     :margin          "normal"
+     :type            (if show-password?
+                        "text"
+                        "password")
+     :value           value
+     :onChange        #(state/update-value [:password] (-> % .-target .-value) state/form-value-cursor)
+     :InputLabelProps {:shrink true}
+     :InputProps      {:endAdornment (common/show-password-adornment show-password?)}}))
 
 (defn- form-public [value]
-  (form/comp
-    "PUBLIC"
-    (form/checkbox
-      {:checked value
-       :onCheck (fn [_ v]
-                  (state/update-value [:public] v state/form-value-cursor))})))
+  (comp/checkbox
+    {:checked  value
+     :value    (str value)
+     :onChange #(state/update-value [:public] (-> % .-target .-checked) state/form-value-cursor)}))
 
 (defn- add-user-handler
   []
@@ -62,8 +66,9 @@
 
 (defn- init-form-state
   []
-  (state/set-value {:valid?      false
-                    :processing? false} state/form-state-cursor))
+  (state/set-value {:valid?       false
+                    :processing?  false
+                    :showPassword false} state/form-state-cursor))
 
 (defn- init-form-value
   []
@@ -80,21 +85,48 @@
 (rum/defc form < rum/reactive
                  mixin-init-form [_]
   (let [{:keys [username password public]} (state/react state/form-value-cursor)
-        {:keys [valid? processing?]} (state/react state/form-state-cursor)]
-    [:div
-     [:div.form-panel
-      [:div.form-panel-left
-       (panel/info icon/docker "Add Dockerhub user")]
-      [:div.form-panel-right
-       (comp/progress-button
-         {:label      "Save"
-          :disabled   (not valid?)
-          :primary    true
-          :onTouchTap add-user-handler} processing?)]]
-     [:div.form-edit
-      (form/form
-        {:onValid   #(state/update-value [:valid?] true state/form-state-cursor)
-         :onInvalid #(state/update-value [:valid?] false state/form-state-cursor)}
-        (form-username username)
-        (form-password password)
-        (form-public public))]]))
+        {:keys [valid? processing? showPassword]} (state/react state/form-state-cursor)]
+    (comp/mui
+      (html
+        [:div.Swarmpit-form
+         [:div.Swarmpit-form-context
+          (comp/grid
+            {:item true
+             :xs   12
+             :sm   6
+             :md   4}
+            (comp/card
+              {:className "Swarmpit-form-card"
+               :key       "dcc"}
+              (comp/card-header
+                {:className "Swarmpit-form-card-header"
+                 :key       "dcch"
+                 :title     "New Hub Account"})
+              (comp/card-content
+                {:key "dccc"}
+                (comp/grid
+                  {:container true
+                   :key       "dcccc"
+                   :spacing   40}
+                  (comp/grid
+                    {:item true
+                     :key  "dcccig"
+                     :xs   12}
+                    (form-username username)
+                    (form-password password showPassword)
+                    (comp/form-control
+                      {:component "fieldset"
+                       :key       "dcccigfc"}
+                      (comp/form-group
+                        {:key "dcccigfcg"}
+                        (comp/form-control-label
+                          {:control (form-public public)
+                           :key     "dcccigfcgp"
+                           :label   "Public"})))))
+                (html
+                  [:div {:class "Swarmpit-form-buttons"
+                         :key   "dcccbtn"}
+                   (composite/progress-button
+                     "Add Dockerhub user"
+                     add-user-handler
+                     processing?)]))))]]))))
