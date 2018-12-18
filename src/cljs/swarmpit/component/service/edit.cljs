@@ -27,6 +27,8 @@
 
 (enable-console-print!)
 
+(def doc-services-link "https://docs.docker.com/engine/swarm/services/")
+
 (defn render-item
   [val]
   (if (boolean? val)
@@ -329,7 +331,12 @@
                :md   12
                :lg   4
                :xl   4}
-              (html [:span {:key "secgidoc"} "Doc"])))]]))))
+              (html
+                [:span
+                 {:key "stcoccgidoc"}
+                 "Learn more about "
+                 [:a {:href   doc-services-link
+                      :target "_blank"} "compose"]])))]]))))
 
 (rum/defc form < rum/reactive
                  mixin-init-form

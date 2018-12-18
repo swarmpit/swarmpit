@@ -16,6 +16,8 @@
 
 (def editor-id "secret-editor")
 
+(def doc-secrets-link "https://docs.docker.com/engine/swarm/secrets/")
+
 (defn- form-name [value]
   (comp/text-field
     {:label           "Name"
@@ -87,34 +89,59 @@
       (html
         [:div.Swarmpit-form
          [:div.Swarmpit-form-context
-          (comp/card
-            {:className "Swarmpit-form-card"
-             :key       "scc"}
-            (comp/card-header
-              {:className "Swarmpit-form-card-header"
-               :key       "scch"
-               :title     "Create Secret"})
-            (comp/card-content
-              {:key "sccc"}
-              (comp/grid
-                {:container true
-                 :key       "scccc"
-                 :spacing   40}
-                (comp/grid
-                  {:item true
-                   :key  "scccig"
-                   :xs   12
-                   :sm   6}
-                  (form-name secretName))
-                (comp/grid
-                  {:item true
-                   :key  "scccid"
-                   :xs   12}
-                  (form-data data)))
+          (comp/grid
+            {:container true
+             :key       "sccg"
+             :spacing   40}
+            (comp/grid
+              {:item true
+               :key  "ssecoccgif"
+               :xs   12
+               :sm   12
+               :md   12
+               :lg   8
+               :xl   8}
+              (comp/card
+                {:className "Swarmpit-form-card"
+                 :key       "scc"}
+                (comp/card-header
+                  {:className "Swarmpit-form-card-header"
+                   :key       "scch"
+                   :title     "Create Secret"})
+                (comp/card-content
+                  {:key "sccc"}
+                  (comp/grid
+                    {:container true
+                     :key       "scccc"
+                     :spacing   40}
+                    (comp/grid
+                      {:item true
+                       :key  "scccig"
+                       :xs   12}
+                      (form-name secretName))
+                    (comp/grid
+                      {:item true
+                       :key  "scccid"
+                       :xs   12}
+                      (form-data data)))
+                  (html
+                    [:div {:class "Swarmpit-form-buttons"
+                           :key   "scccbtn"}
+                     (composite/progress-button
+                       "Create"
+                       create-secret-handler
+                       processing?)]))))
+            (comp/grid
+              {:item true
+               :key  "ssecoccgid"
+               :xs   12
+               :sm   12
+               :md   12
+               :lg   4
+               :xl   4}
               (html
-                [:div {:class "Swarmpit-form-buttons"
-                       :key   "scccbtn"}
-                 (composite/progress-button
-                   "Create"
-                   create-secret-handler
-                   processing?)])))]]))))
+                [:span
+                 {:key "ssecoccgidoc"}
+                 "Learn more about "
+                 [:a {:href   doc-secrets-link
+                      :target "_blank"} "secrets"]])))]]))))

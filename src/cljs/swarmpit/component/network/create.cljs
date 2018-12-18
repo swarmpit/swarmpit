@@ -15,6 +15,8 @@
 
 (enable-console-print!)
 
+(def doc-network-link "https://docs.docker.com/network/")
+
 (defn- form-name [value]
   (comp/text-field
     {:label           "Name"
@@ -23,6 +25,7 @@
      :key             "name"
      :margin          "normal"
      :variant         "outlined"
+     :style           {:maxWidth "350px"}
      :value           value
      :required        true
      :InputLabelProps {:shrink true}
@@ -34,6 +37,7 @@
      :key             "driver"
      :label           "Network driver"
      :helperText      "Driver to manage the Network "
+     :style           {:maxWidth "350px"}
      :select          true
      :value           value
      :margin          "normal"
@@ -118,6 +122,7 @@
      :key             "subnet"
      :placeholder     "e.g. 10.0.0.0/24"
      :helperText      "Subnet in CIDR format that represents a network segment"
+     :style           {:maxWidth "350px"}
      :margin          "normal"
      :value           value
      :InputLabelProps {:shrink true}
@@ -130,8 +135,9 @@
      :variant         "outlined"
      :name            "gateway"
      :key             "gateway"
-     :placeholder     "e.g. 10.0.0.1 "
+     :placeholder     "e.g. 10.0.0.1"
      :helperText      "IPv4 or IPv6 Gateway for the master subnet"
+     :style           {:maxWidth "350px"}
      :value           value
      :InputLabelProps {:shrink true}
      :onChange        #(state/update-value [:ipam :gateway] (-> % .-target .-value) state/form-value-cursor)}))
@@ -292,52 +298,78 @@
       (html
         [:div.Swarmpit-form
          [:div.Swarmpit-form-context
-          (comp/card
-            {:className "Swarmpit-form-card"
-             :key       "ncc"}
-            (comp/card-header
-              {:className "Swarmpit-form-card-header"
-               :title     "New Network"
-               :key       "ncch"})
-            (comp/card-content
-              {:key "nccc"}
-              (comp/grid
-                {:container true
-                 :key       "nccccg"
-                 :spacing   40}
-                (comp/grid
-                  {:item true
-                   :key  "ncccigg"
-                   :xs   12
-                   :sm   6}
-                  (comp/typography
-                    {:variant      "h6"
-                     :key          "nccciggt"
-                     :gutterBottom true} "General")
-                  (section-general item))
-                (comp/grid
-                  {:item true
-                   :key  "nccciig"
-                   :xs   12
-                   :sm   6}
-                  (comp/typography
-                    {:variant      "h6"
-                     :key          "nccciigt"
-                     :gutterBottom true} "IPAM")
-                  (section-ipam item))
-                (comp/grid
-                  {:item true
-                   :key  "ncccidg"
-                   :xs   12}
-                  (comp/typography
-                    {:variant      "h6"
-                     :key          "ncccidgt"
-                     :gutterBottom true} "Driver")
-                  (section-driver item plugins)))
+          (comp/grid
+            {:container true
+             :key       "sccg"
+             :spacing   40}
+            (comp/grid
+              {:item true
+               :key  "snoccgif"
+               :xs   12
+               :sm   12
+               :md   12
+               :lg   8
+               :xl   8}
+              (comp/card
+                {:className "Swarmpit-form-card"
+                 :key       "ncc"}
+                (comp/card-header
+                  {:className "Swarmpit-form-card-header"
+                   :title     "New Network"
+                   :key       "ncch"})
+                (comp/card-content
+                  {:key "nccc"}
+                  (comp/grid
+                    {:container true
+                     :key       "nccccg"
+                     :spacing   40}
+                    (comp/grid
+                      {:item true
+                       :key  "ncccigg"
+                       :xs   12
+                       :sm   6}
+                      (comp/typography
+                        {:variant      "h6"
+                         :key          "nccciggt"
+                         :gutterBottom true} "General")
+                      (section-general item))
+                    (comp/grid
+                      {:item true
+                       :key  "nccciig"
+                       :xs   12
+                       :sm   6}
+                      (comp/typography
+                        {:variant      "h6"
+                         :key          "nccciigt"
+                         :gutterBottom true} "IPAM")
+                      (section-ipam item))
+                    (comp/grid
+                      {:item true
+                       :key  "ncccidg"
+                       :xs   12}
+                      (comp/typography
+                        {:variant      "h6"
+                         :key          "ncccidgt"
+                         :gutterBottom true} "Driver")
+                      (section-driver item plugins)))
+                  (html
+                    [:div {:class "Swarmpit-form-buttons"
+                           :key   "ncccbtn"}
+                     (composite/progress-button
+                       "Create"
+                       #(create-network-handler)
+                       processing?)]))))
+            (comp/grid
+              {:item true
+               :key  "snoccgid"
+               :xs   12
+               :sm   12
+               :md   12
+               :lg   4
+               :xl   4}
               (html
-                [:div {:class "Swarmpit-form-buttons"
-                       :key   "ncccbtn"}
-                 (composite/progress-button
-                   "Create"
-                   #(create-network-handler)
-                   processing?)])))]]))))
+                [:span
+                 {:key "snoccgidoc"}
+                 "Learn more about "
+                 [:a {:href   doc-network-link
+                      :target "_blank"} "networks"]])))]]))))

@@ -26,6 +26,8 @@
 
 (enable-console-print!)
 
+(def doc-services-link "https://docs.docker.com/engine/swarm/services/")
+
 (defn- create-service-handler
   []
   (let [settings (state/get-value settings/form-value-cursor)
@@ -330,4 +332,9 @@
                :md   12
                :lg   4
                :xl   4}
-              (html [:span {:key "sccgidoc"} "Doc"])))]]))))
+              (html
+                [:span
+                 {:key "stcoccgidoc"}
+                 "Learn more about "
+                 [:a {:href   doc-services-link
+                      :target "_blank"} "compose"]])))]]))))

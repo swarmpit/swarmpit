@@ -18,6 +18,8 @@
 
 (def editor-id "compose")
 
+(def doc-compose-link "https://docs.docker.com/get-started/part3/#your-first-docker-composeyml-file")
+
 (defn- form-name [value]
   (comp/text-field
     {:label           "Name"
@@ -124,14 +126,14 @@
      :onChange        #(dispatch! (routes/path-for-frontend (keyword (-> % .-target .-value)) {:name name}))}
     (comp/menu-item
       {:key   "current"
-       :value :current} "Current engine state")
+       :value :stack-compose} "Current engine state")
     (comp/menu-item
       {:key      "last"
-       :value    :last
+       :value    :stack-last
        :disabled (not last?)} "Last deployed")
     (comp/menu-item
       {:key      "previous"
-       :value    :previous
+       :value    :stack-previous
        :disabled (not previous?)} "Previously deployed (rollback)")))
 
 (rum/defc form-edit < rum/reactive
@@ -142,37 +144,63 @@
     (html
       [:div.Swarmpit-form
        [:div.Swarmpit-form-context
-        (comp/card
-          {:className "Swarmpit-form-card"
-           :key       "scfec"}
-          (comp/card-header
-            {:className "Swarmpit-form-card-header"
-             :key       "scfech"
-             :title     "Edit Stack"})
-          (comp/card-content
-            {:key "scfecc"}
-            (comp/grid
-              {:container true
-               :key       "scfeccgc"
-               :spacing   40}
-              (comp/grid
-                {:item true
-                 :key  "scfeccgig"
-                 :xs   12}
-                (form-name name)
-                (form-select name :current last? previous?))
-              (comp/grid
-                {:item true
-                 :key  "scfeccgie"
-                 :xs   12}
-                (form-editor (:compose spec))))
+        (comp/grid
+          {:container true
+           :key       "sccg"
+           :spacing   40}
+          (comp/grid
+            {:item true
+             :key  "stcoccgif"
+             :xs   12
+             :sm   12
+             :md   12
+             :lg   8
+             :xl   8}
+            (comp/card
+              {:className "Swarmpit-form-card"
+               :key       "scfec"}
+              (comp/card-header
+                {:className "Swarmpit-form-card-header"
+                 :key       "scfech"
+                 :title     "Edit Stack"})
+              (comp/card-content
+                {:key "scfecc"}
+                (comp/grid
+                  {:container true
+                   :key       "scfeccgc"
+                   :spacing   40}
+                  (comp/grid
+                    {:item true
+                     :key  "scfeccgig"
+                     :xs   12}
+                    (form-name name)
+                    (form-select name :stack-compose last? previous?))
+                  (comp/grid
+                    {:item true
+                     :key  "scfeccgie"
+                     :xs   12}
+                    (form-editor (:compose spec))))
+                (html
+                  [:div {:class "Swarmpit-form-buttons"
+                         :key   "scfeccbtn"}
+                   (composite/progress-button
+                     "Deploy"
+                     #(update-stack-handler name)
+                     processing?)]))))
+          (comp/grid
+            {:item true
+             :key  "stcoccgid"
+             :xs   12
+             :sm   12
+             :md   12
+             :lg   4
+             :xl   4}
             (html
-              [:div {:class "Swarmpit-form-buttons"
-                     :key   "scfeccbtn"}
-               (composite/progress-button
-                 "Deploy"
-                 #(update-stack-handler name)
-                 processing?)])))]])))
+              [:span
+               {:key "stcoccgidoc"}
+               "Learn more about "
+               [:a {:href   doc-compose-link
+                    :target "_blank"} "compose"]])))]])))
 
 (rum/defc form < rum/reactive
                  mixin-init-form [_]

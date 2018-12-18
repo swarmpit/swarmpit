@@ -89,7 +89,8 @@
         (comp/grid
           {:item true
            :xs   12
-           :sm   6}
+           :sm   6
+           :md   4}
           (comp/card
             {:className "Swarmpit-form-card"
              :key       "rec"}

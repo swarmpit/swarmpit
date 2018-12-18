@@ -19,6 +19,8 @@
 
 (def editor-id "compose")
 
+(def doc-compose-link "https://docs.docker.com/get-started/part3/#your-first-docker-composeyml-file")
+
 (defn- form-name [value]
   (comp/text-field
     {:label           "Name"
@@ -36,9 +38,11 @@
   (comp/text-field
     {:id              editor-id
      :fullWidth       true
+     :className       "Swarmpit-codemirror"
      :name            "data"
      :key             "data"
-     :variant         "outlined"
+     :multiline       true
+     :disabled        true
      :required        true
      :InputLabelProps {:shrink true}
      :value           value}))
@@ -101,38 +105,63 @@
     (html
       [:div.Swarmpit-form
        [:div.Swarmpit-form-context
-        (comp/card
-          {:className "Swarmpit-form-card"
-           :key       "sefec"}
-          (comp/card-header
-            {:className "Swarmpit-form-card-header"
-             :key       "sefech"
-             :title     "Edit Stack"})
-          (comp/card-content
-            {:key "sefecc"}
-            (comp/grid
-              {:container true
-               :key       "sefeccg"
-               :spacing   40}
-              (comp/grid
-                {:item true
-                 :key  "sefecigg"
-                 :xs   12
-                 :sm   6}
-                (form-name name)
-                (compose/form-select name select true previous?))
-              (comp/grid
-                {:item true
-                 :key  "sefecige"
-                 :xs   12}
-                (form-editor (:compose spec))))
+        (comp/grid
+          {:container true
+           :key       "sccg"
+           :spacing   40}
+          (comp/grid
+            {:item true
+             :key  "steoccgif"
+             :xs   12
+             :sm   12
+             :md   12
+             :lg   8
+             :xl   8}
+            (comp/card
+              {:className "Swarmpit-form-card"
+               :key       "sefec"}
+              (comp/card-header
+                {:className "Swarmpit-form-card-header"
+                 :key       "sefech"
+                 :title     "Edit Stack"})
+              (comp/card-content
+                {:key "sefecc"}
+                (comp/grid
+                  {:container true
+                   :key       "sefeccg"
+                   :spacing   40}
+                  (comp/grid
+                    {:item true
+                     :key  "sefecigg"
+                     :xs   12}
+                    (form-name name)
+                    (compose/form-select name select true previous?))
+                  (comp/grid
+                    {:item true
+                     :key  "sefecige"
+                     :xs   12}
+                    (form-editor (:compose spec))))
+                (html
+                  [:div {:class "Swarmpit-form-buttons"
+                         :key   "sefeccbtn"}
+                   (composite/progress-button
+                     "Deploy"
+                     #(update-stack-handler name)
+                     processing?)]))))
+          (comp/grid
+            {:item true
+             :key  "steoccgid"
+             :xs   12
+             :sm   12
+             :md   12
+             :lg   4
+             :xl   4}
             (html
-              [:div {:class "Swarmpit-form-buttons"
-                     :key   "sefeccbtn"}
-               (composite/progress-button
-                 "Deploy"
-                 #(update-stack-handler name)
-                 processing?)])))]])))
+              [:span
+               {:key "stcoccgidoc"}
+               "Learn more about "
+               [:a {:href   doc-compose-link
+                    :target "_blank"} "compose"]])))]])))
 
 (rum/defc form-last < rum/reactive
                       mixin-init-form [_]
@@ -140,7 +169,7 @@
         stackfile (state/react state/form-value-cursor)]
     (progress/form
       (:loading? state)
-      (form-edit stackfile :last state))))
+      (form-edit stackfile :stack-last state))))
 
 (rum/defc form-previous < rum/reactive
                           mixin-init-form [_]
@@ -148,4 +177,4 @@
         stackfile (state/react state/form-value-cursor)]
     (progress/form
       (:loading? state)
-      (form-edit stackfile :previous state))))
+      (form-edit stackfile :stack-previous state))))

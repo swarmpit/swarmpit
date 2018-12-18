@@ -17,6 +17,8 @@
 
 (def editor-id "compose")
 
+(def doc-compose-link "https://docs.docker.com/get-started/part3/#your-first-docker-composeyml-file")
+
 (defn- form-name [value]
   (comp/text-field
     {:label           "Name"
@@ -104,42 +106,68 @@
       (html
         [:div.Swarmpit-form
          [:div.Swarmpit-form-context
-          (comp/card
-            {:className "Swarmpit-form-card"
-             :key       "scfcc"}
-            (comp/card-header
-              {:className "Swarmpit-form-card-header"
-               :key       "scfcch"
-               :title     "New Stack"})
-            (comp/card-content
-              {:key "scfccc"}
-              (comp/grid
-                {:container true
-                 :key       "scfcccc"
-                 :spacing   40}
-                (comp/grid
-                  {:item true
-                   :key  "scfccccig"
-                   :xs   12
-                   :lx   4}
-                  (form-name name))
-                (comp/grid
-                  {:item true
-                   :key  "scfccccie"
-                   :xs   12
-                   :lx   4}
-                  (when-not from
-                    (html [:span {:class "Swarmpit-message"
-                                  :key   "scfcccciem"}
-                           (icon/info {}) "Please drag & drop or paste a compose file."]))
-                  (form-editor (:compose spec))))
+          (comp/grid
+            {:container true
+             :key       "sccg"
+             :spacing   40}
+            (comp/grid
+              {:item true
+               :key  "stccgif"
+               :xs   12
+               :sm   12
+               :md   12
+               :lg   8
+               :xl   8}
+              (comp/card
+                {:className "Swarmpit-form-card"
+                 :key       "scfcc"}
+                (comp/card-header
+                  {:className "Swarmpit-form-card-header"
+                   :key       "scfcch"
+                   :title     "New Stack"})
+                (comp/card-content
+                  {:key "scfccc"}
+                  (comp/grid
+                    {:container true
+                     :key       "scfcccc"
+                     :spacing   40}
+                    (comp/grid
+                      {:item true
+                       :key  "scfccccig"
+                       :xs   12
+                       :lx   4}
+                      (form-name name))
+                    (comp/grid
+                      {:item true
+                       :key  "scfccccie"
+                       :xs   12
+                       :lx   4}
+                      (when-not from
+                        (html [:span {:class "Swarmpit-message"
+                                      :key   "scfcccciem"}
+                               "Drag & drop or paste a compose file."]))
+                      (form-editor (:compose spec))))
+                  (html
+                    [:div {:class "Swarmpit-form-buttons"
+                           :key   "scfcccbtn"}
+                     (composite/progress-button
+                       "Deploy"
+                       create-stack-handler
+                       processing?)]))))
+            (comp/grid
+              {:item true
+               :key  "stccgid"
+               :xs   12
+               :sm   12
+               :md   12
+               :lg   4
+               :xl   4}
               (html
-                [:div {:class "Swarmpit-form-buttons"
-                       :key   "scfcccbtn"}
-                 (composite/progress-button
-                   "Deploy"
-                   create-stack-handler
-                   processing?)])))]]))))
+                [:span
+                 {:key "stcoccgidoc"}
+                 "Learn more about "
+                 [:a {:href   doc-compose-link
+                      :target "_blank"} "compose"]])))]]))))
 
 (rum/defc form < rum/reactive
                  mixin-init-form [params]

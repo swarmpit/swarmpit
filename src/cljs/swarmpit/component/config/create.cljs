@@ -15,6 +15,8 @@
 
 (def editor-id "config-editor")
 
+(def doc-configs-link "https://docs.docker.com/engine/swarm/configs/")
+
 (defn- form-name [value]
   (comp/text-field
     {:label           "Name"
@@ -86,34 +88,59 @@
       (html
         [:div.Swarmpit-form
          [:div.Swarmpit-form-context
-          (comp/card
-            {:className "Swarmpit-form-card"
-             :key       "ccc"}
-            (comp/card-header
-              {:className "Swarmpit-form-card-header"
-               :key       "ccch"
-               :title     "Create Config"})
-            (comp/card-content
-              {:key "cccc"}
-              (comp/grid
-                {:container true
-                 :key       "ccccc"
-                 :spacing   40}
-                (comp/grid
-                  {:item true
-                   :key  "ccccig"
-                   :xs   12
-                   :sm   6}
-                  (form-name configName))
-                (comp/grid
-                  {:item true
-                   :key  "ccccid"
-                   :xs   12}
-                  (form-data data)))
+          (comp/grid
+            {:container true
+             :key       "sccg"
+             :spacing   40}
+            (comp/grid
+              {:item true
+               :key  "scfgoccgif"
+               :xs   12
+               :sm   12
+               :md   12
+               :lg   8
+               :xl   8}
+              (comp/card
+                {:className "Swarmpit-form-card"
+                 :key       "ccc"}
+                (comp/card-header
+                  {:className "Swarmpit-form-card-header"
+                   :key       "ccch"
+                   :title     "Create Config"})
+                (comp/card-content
+                  {:key "cccc"}
+                  (comp/grid
+                    {:container true
+                     :key       "ccccc"
+                     :spacing   40}
+                    (comp/grid
+                      {:item true
+                       :key  "ccccig"
+                       :xs   12}
+                      (form-name configName))
+                    (comp/grid
+                      {:item true
+                       :key  "ccccid"
+                       :xs   12}
+                      (form-data data)))
+                  (html
+                    [:div {:class "Swarmpit-form-buttons"
+                           :key   "ccccbtn"}
+                     (composite/progress-button
+                       "Create"
+                       create-config-handler
+                       processing?)]))))
+            (comp/grid
+              {:item true
+               :key  "scfgoccgid"
+               :xs   12
+               :sm   12
+               :md   12
+               :lg   4
+               :xl   4}
               (html
-                [:div {:class "Swarmpit-form-buttons"
-                       :key   "ccccbtn"}
-                 (composite/progress-button
-                   "Create"
-                   create-config-handler
-                   processing?)])))]]))))
+                [:span
+                 {:key "scfgoccgidoc"}
+                 "Learn more about "
+                 [:a {:href   doc-configs-link
+                      :target "_blank"} "configs"]])))]]))))

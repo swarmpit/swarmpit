@@ -15,6 +15,8 @@
 
 (enable-console-print!)
 
+(def doc-volume-link "https://docs.docker.com/storage/volumes/")
+
 (defn- volume-plugin-handler
   []
   (ajax/get
@@ -169,38 +171,63 @@
       (html
         [:div.Swarmpit-form
          [:div.Swarmpit-form-context
-          (comp/card
-            {:className "Swarmpit-form-card"
-             :key       "vcc"}
-            (comp/card-header
-              {:className "Swarmpit-form-card-header"
-               :key       "vcch"
-               :title     "New Volume"})
-            (comp/card-content
-              {:key "vccc"}
-              (comp/grid
-                {:container true
-                 :key       "vcccc"
-                 :spacing   40}
-                (comp/grid
-                  {:item true
-                   :key  "vccccg"
-                   :xs   12
-                   :sm   6}
-                  (form-name volumeName))
-                (comp/grid
-                  {:item true
-                   :key  "vccccd"
-                   :xs   12}
-                  (comp/typography
-                    {:variant      "h6"
-                     :key          "vccccdt"
-                     :gutterBottom true} "Driver")
-                  (section-driver item plugins)))
+          (comp/grid
+            {:container true
+             :key       "sccg"
+             :spacing   40}
+            (comp/grid
+              {:item true
+               :key  "svoloccgif"
+               :xs   12
+               :sm   12
+               :md   12
+               :lg   8
+               :xl   8}
+              (comp/card
+                {:className "Swarmpit-form-card"
+                 :key       "vcc"}
+                (comp/card-header
+                  {:className "Swarmpit-form-card-header"
+                   :key       "vcch"
+                   :title     "New Volume"})
+                (comp/card-content
+                  {:key "vccc"}
+                  (comp/grid
+                    {:container true
+                     :key       "vcccc"
+                     :spacing   40}
+                    (comp/grid
+                      {:item true
+                       :key  "vccccg"
+                       :xs   12}
+                      (form-name volumeName))
+                    (comp/grid
+                      {:item true
+                       :key  "vccccd"
+                       :xs   12}
+                      (comp/typography
+                        {:variant      "h6"
+                         :key          "vccccdt"
+                         :gutterBottom true} "Driver")
+                      (section-driver item plugins)))
+                  (html
+                    [:div {:class "Swarmpit-form-buttons"
+                           :key   "vcccbtn"}
+                     (composite/progress-button
+                       "Create"
+                       #(create-volume-handler)
+                       processing?)]))))
+            (comp/grid
+              {:item true
+               :key  "svoloccgid"
+               :xs   12
+               :sm   12
+               :md   12
+               :lg   4
+               :xl   4}
               (html
-                [:div {:class "Swarmpit-form-buttons"
-                       :key   "vcccbtn"}
-                 (composite/progress-button
-                   "Create"
-                   #(create-volume-handler)
-                   processing?)])))]]))))
+                [:span
+                 {:key "svoloccgidoc"}
+                 "Learn more about "
+                 [:a {:href   doc-volume-link
+                      :target "_blank"} "volumes"]])))]]))))
