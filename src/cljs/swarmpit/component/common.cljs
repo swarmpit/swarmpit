@@ -1,4 +1,5 @@
 (ns swarmpit.component.common
+  (:refer-clojure :exclude [list])
   (:require [material.icon :as icon]
             [material.components :as comp]
             [material.component.list.basic :as list]
@@ -95,7 +96,7 @@
         icon/visibility
         icon/visibility-off))))
 
-(rum/defc action-menu-popper < rum/reactive [hash items anchorKey menuOpenKey]
+(rum/defc action-menu-popper < rum/reactive [items-hash items anchorKey menuOpenKey]
   (let [mobileMoreAnchorEl (state/react (conj state/form-state-cursor anchorKey))
         mobileMenuOpen? (state/react (conj state/form-state-cursor menuOpenKey))]
     (comp/popper
@@ -110,28 +111,28 @@
             (merge TransitionProps
                    {:timeout 450})
             (comp/paper
-              {:key (str "cmpop-" hash "-" (:name %))}
+              {:key (str "cmpop-" items-hash "-" (:name %))}
               (comp/click-away-listener
-                {:key         (str "cmpocal-" hash "-" (:name %))
+                {:key         (str "cmpocal-" items-hash "-" (:name %))
                  :onClickAway #(state/update-value [menuOpenKey] false state/form-state-cursor)}
                 (comp/menu-list
-                  {:key (str "cmml-" hash "-" (:name %))}
+                  {:key (str "cmml-" items-hash "-" (:name %))}
                   (map
                     #(comp/menu-item
-                       {:key      (str "cmmi-" hash "-" (:name %))
+                       {:key      (str "cmmi-" items-hash "-" (:name %))
                         :disabled (:disabled %)
                         :onClick  (fn []
                                     ((:onClick %))
                                     (state/update-value [menuOpenKey] false state/form-state-cursor))}
                        (comp/list-item-icon
-                         {:key (str "cmmii-" hash "-" (:name %))} (:icon %))
+                         {:key (str "cmmii-" items-hash "-" (:name %))} (:icon %))
                        (comp/typography
                          {:variant "inherit"
-                          :key     (str "cmmit-" hash "-" (:name %))} (:name %))) items))))))))))
+                          :key     (str "cmmit-" items-hash "-" (:name %))} (:name %))) items))))))))))
 
-(rum/defc action-menu-more < rum/static [hash anchorKey menuOpenKey]
+(rum/defc action-menu-more < rum/static [items-hash anchorKey menuOpenKey]
   (comp/icon-button
-    {:key           (str "cmm-" hash)
+    {:key           (str "cmm-" items-hash)
      :aria-haspopup "true"
      :buttonRef     (fn [n]
                       (when n
@@ -148,7 +149,7 @@
         menu-open-desktop-key (generate-key menuOpenKey "desktop")
         menu-open-mobile-key (generate-key menuOpenKey "mobile")
         more-items-desktop (filter #(:more %) items)
-        has (hash items)]
+        items-hash (hash items)]
     (html
       [:div
        [:div.Swarmpit-appbar-section-desktop
@@ -158,14 +159,14 @@
                                (false? (:disabled %)))))
              (map #(comp/tooltip
                      {:title (:name %)
-                      :key   (str "cmt-" has "-" (:name %))}
+                      :key   (str "cmt-" items-hash "-" (:name %))}
                      (comp/icon-button
                        {:color   "inherit"
-                        :key     (str "cmb-" has "-" (:name %))
+                        :key     (str "cmb-" items-hash "-" (:name %))
                         :onClick (:onClick %)} (:icon %)))))
         (when (not-empty more-items-desktop)
-          (action-menu-more has anchor-desktop-key menu-open-desktop-key))
-        (action-menu-popper has more-items-desktop anchor-desktop-key menu-open-desktop-key)]
+          (action-menu-more items-hash anchor-desktop-key menu-open-desktop-key))
+        (action-menu-popper items-hash more-items-desktop anchor-desktop-key menu-open-desktop-key)]
        [:div.Swarmpit-appbar-section-mobile
-        (action-menu-more has anchor-mobile-key menu-open-mobile-key)
-        (action-menu-popper has items anchor-mobile-key menu-open-mobile-key)]])))
+        (action-menu-more items-hash anchor-mobile-key menu-open-mobile-key)
+        (action-menu-popper items-hash items anchor-mobile-key menu-open-mobile-key)]])))

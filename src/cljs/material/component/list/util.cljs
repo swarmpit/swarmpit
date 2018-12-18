@@ -1,9 +1,10 @@
 (ns material.component.list.util
+  (:refer-clojure :exclude [filter])
   (:require [swarmpit.utils :refer [map-values]]))
 
 (defn- primary-key
   [render-metadata]
-  (->> (filter #(= true (:primary %)) render-metadata)
+  (->> (clojure.core/filter #(= true (:primary %)) render-metadata)
        (first)
        :key))
 

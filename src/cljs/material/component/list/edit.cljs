@@ -1,4 +1,5 @@
 (ns material.component.list.edit
+  (:refer-clojure :exclude [list])
   (:require [material.icon :as icon]
             [material.components :as cmp]
             [material.component.list.util :refer [render-keys]]
