@@ -1,7 +1,5 @@
 (ns swarmpit.component.task.list
   (:require [material.icon :as icon]
-            [material.components :as comp]
-            [material.component.list.basic :as list]
             [material.component.list.util :as list-util]
             [material.component.label :as label]
             [swarmpit.component.state :as state]
@@ -47,19 +45,6 @@
     "rejected" (label/red value)
     "failed" (label/red value)))
 
-<<<<<<< HEAD
-(defn- render-percentage
-  [val]
-  (if (some? val)
-    (str (gstring/format "%.2f" val) "%")
-    "-"))
-
-(defn- render-capacity
-  [val]
-  (if (some? val)
-    (humanize/filesize val :binary true)
-    "-"))
-=======
 (defn- render-item-name [item]
   (html
     [:div
@@ -67,7 +52,6 @@
       [:span (:taskName item)]]
      [:div
       [:span.Swarmpit-list-image (get-in item [:repository :image])]]]))
->>>>>>> origin / issues/159
 
 (def render-metadata
   {:table {:summary [{:name      "Task"
