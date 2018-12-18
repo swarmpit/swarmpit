@@ -18,6 +18,8 @@
 
 (def form-node-labels-cursor (conj state/form-value-cursor :labels))
 
+(def doc-node-link "https://docs.docker.com/engine/swarm/manage-nodes/#list-nodes")
+
 (defn- form-name [value]
   (comp/text-field
     {:label           "Name"
@@ -26,6 +28,7 @@
      :key             "name"
      :variant         "outlined"
      :margin          "normal"
+     :style           {:maxWidth "350px"}
      :value           value
      :required        true
      :disabled        true
@@ -40,6 +43,7 @@
      :value           value
      :variant         "outlined"
      :margin          "normal"
+     :style           {:maxWidth "350px"}
      :InputLabelProps {:shrink true}
      :onChange        #(state/update-value [:role] (-> % .-target .-value) state/form-value-cursor)}
     (comp/menu-item
@@ -58,14 +62,15 @@
      :value           value
      :variant         "outlined"
      :margin          "normal"
+     :style           {:maxWidth "350px"}
      :InputLabelProps {:shrink true}
      :onChange        #(state/update-value [:availability] (-> % .-target .-value) state/form-value-cursor)}
     (comp/menu-item
       {:key   "active"
        :value "active"} "active")
     (comp/menu-item
-      {:key   "active"
-       :value "active"} "active")
+      {:key   "pause"
+       :value "pause"} "pause")
     (comp/menu-item
       {:key   "drain"
        :value "drain"} "drain")))
@@ -159,46 +164,72 @@
     (html
       [:div.Swarmpit-form
        [:div.Swarmpit-form-context
-        (comp/card
-          {:className "Swarmpit-form-card"
-           :key       "nec"}
-          (comp/card-header
-            {:className "Swarmpit-form-card-header"
-             :key       "nech"
-             :title     "Edit Node"})
-          (comp/card-content
-            {:key "necc"}
-            (comp/grid
-              {:container true
-               :key       "neccc"
-               :spacing   40}
-              (comp/grid
-                {:item true
-                 :key  "necccig"
-                 :xs   12
-                 :sm   6}
-                (form-name nodeName)
-                (form-role role)
-                (form-availability availability))
-              (comp/grid
-                {:item true
-                 :key  "necccil"
-                 :xs   12}
-                (form/section
-                  "Labels"
-                  (comp/button
-                    {:color   "primary"
-                     :onClick add-label}
-                    (comp/svg
-                      {:key "necccilbtn"} icon/add-small) "Add label"))
-                (form-label-table labels)))
+        (comp/grid
+          {:container true
+           :key       "snoccg"
+           :spacing   40}
+          (comp/grid
+            {:item true
+             :key  "snooccgif"
+             :xs   12
+             :sm   12
+             :md   12
+             :lg   8
+             :xl   8}
+            (comp/card
+              {:className "Swarmpit-form-card"
+               :key       "nec"}
+              (comp/card-header
+                {:className "Swarmpit-form-card-header"
+                 :key       "nech"
+                 :title     "Edit Node"})
+              (comp/card-content
+                {:key "necc"}
+                (comp/grid
+                  {:container true
+                   :key       "neccc"
+                   :spacing   40}
+                  (comp/grid
+                    {:item true
+                     :key  "neccciga"
+                     :xs   12
+                     :sm   6}
+                    (form-name nodeName)
+                    (form-role role)
+                    (form-availability availability))
+                  (comp/grid
+                    {:item true
+                     :key  "necccil"
+                     :xs   12}
+                    (form/section
+                      "Labels"
+                      (comp/button
+                        {:color   "primary"
+                         :onClick add-label}
+                        (comp/svg
+                          {:key "necccilbtn"} icon/add-small) "Add label"))
+                    (form-label-table labels)))
+                (html
+                  [:div {:class "Swarmpit-form-buttons"
+                         :key   "neccbtn"}
+                   (composite/progress-button
+                     "Save"
+                     #(update-node-handler id version)
+                     processing?)]))))
+          (comp/grid
+            {:item true
+             :key  "snoccgid"
+             :xs   12
+             :sm   12
+             :md   12
+             :lg   4
+             :xl   4}
             (html
-              [:div {:class "Swarmpit-form-buttons"
-                     :key   "neccbtn"}
-               (composite/progress-button
-                 "Save"
-                 #(update-node-handler id version)
-                 processing?)])))]])))
+              [:span
+               {:key "snoccgidoc"}
+               "Learn more about "
+               [:a {:href   doc-node-link
+                    :target "_blank"} "nodes"]])))]])))
 
 (rum/defc form < rum/reactive
                  mixin-init-form

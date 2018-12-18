@@ -28,6 +28,11 @@
         (str core-stats ", " (humanize/filesize disk-bytes :binary true) " disk")
         core-stats))))
 
+(defn- node-item-state [value]
+  (case value
+    "ready" (label/green value)
+    "down" (label/red value)))
+
 (defn section-general [node]
   (comp/card
     {:className "Swarmpit-form-card"
@@ -48,26 +53,21 @@
       {:key "ngcc"}
       (html
         [:div {:key "ngccd"}
-         [:span "ENGINE: " (str "docker " (:engine node))]
+         [:span [:b "ENGINE: "] (str "docker " (:engine node))]
          [:br]
-         [:span "OS: " [(:os node) " " (:arch node)]]
+         [:span [:b "OS: "] [(:os node) " " (:arch node)]]
          [:br]
-         [:span "RESOURCES: " (resources node)]]))
-    (comp/card-content
-      {:key "ngccp"}
-      (html
-        [:div {:key "ngccpd"}
-         [:span "Network plugins: " (->> node :plugins :networks (interpose ", "))]
-         [:br]
-         [:span "Volume plugins: " (->> node :plugins :volumes (interpose ", "))]]))
+         [:span [:b "RESOURCES: "] (resources node)]]))
     (comp/card-content
       {:key "ngccl"}
       (form/item-labels
-        [(when (:leader node)
-           (label/grey "Leader"))
-         (label/grey (:state node))
-         (label/grey (:availability node))
-         (label/grey (:role node))]))
+        [(node-item-state (:state node))
+         (when (:leader node)
+           (label/primary "Leader"))
+         (label/grey (:role node))
+         (if (= "active" (:availability node))
+           (label/green "active")
+           (label/grey (:availability node)))]))
     (comp/divider
       {:key "ncd"})
     (comp/card-content
@@ -101,6 +101,31 @@
           render-labels-metadata
           labels
           nil) "nlccrl"))))
+
+(defn section-plugins [networks volumes]
+  (comp/card
+    {:className "Swarmpit-card"
+     :key       "npc"}
+    (comp/card-header
+      {:className "Swarmpit-form-card-header"
+       :key       "npch"
+       :title     "Plugins"})
+    (comp/card-content
+      {:className "Swarmpit-form-card-content"
+       :key       "npccn"}
+      (form/subsection "Network")
+      (map #(comp/chip
+              {:label %
+               :key   (str "np-" %)
+               :style {:marginRight "5px"}}) networks))
+    (comp/card-content
+      {:className "Swarmpit-form-card-content"
+       :key       "npccv"}
+      (form/subsection "Volume")
+      (map #(comp/chip
+              {:label %
+               :key   (str "vp-" %)
+               :style {:marginRight "5px"}}) volumes))))
 
 (defn section-tasks [tasks]
   (comp/card
@@ -159,6 +184,19 @@
              :xs   12
              :sm   6}
             (section-general node))
+          (comp/grid
+            {:item true
+             :key  "ngpn"
+             :xs   12
+             :sm   6}
+            (section-plugins
+              (->> node :plugins :networks)
+              (->> node :plugins :volumes)))
+          (comp/grid
+            {:item true
+             :key  "ngpv"
+             :xs   12
+             :sm   6})
           (when (not-empty (:labels node))
             (comp/grid
               {:item true
