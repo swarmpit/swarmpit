@@ -73,7 +73,7 @@
                            (list-util/filter (:query filter)))]
     (progress/form
       loading?
-      (common/list "Docker Hub Accounts"
+      (common/list "Accounts"
                    items
                    filtered-items
                    render-metadata
