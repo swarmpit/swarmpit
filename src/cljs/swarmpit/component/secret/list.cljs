@@ -23,7 +23,7 @@
    :list  {:primary   (fn [item] (:secretName item))
            :secondary (fn [item] (time/humanize (:createdAt item)))}})
 
-(defn- onclick-handler
+(defn onclick-handler
   [item]
   (dispatch! (routes/path-for-frontend :secret-info {:id (:secretName item)})))
 

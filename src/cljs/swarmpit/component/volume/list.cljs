@@ -23,7 +23,7 @@
    :list  {:primary   (fn [item] (:volumeName item))
            :secondary (fn [item] (:driver item))}})
 
-(defn- onclick-handler
+(defn onclick-handler
   [item]
   (dispatch! (routes/path-for-frontend :volume-info {:name (:volumeName item)})))
 

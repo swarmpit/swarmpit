@@ -68,7 +68,7 @@
            :secondary (fn [item] (get-in item [:repository :image]))
            :status-fn (fn [item] (render-status item))}})
 
-(defn- onclick-handler
+(defn onclick-handler
   [item]
   (dispatch! (routes/path-for-frontend :service-info {:id (:serviceName item)})))
 

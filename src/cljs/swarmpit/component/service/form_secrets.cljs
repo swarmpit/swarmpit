@@ -67,7 +67,7 @@
       secrets
       (fn [index] (state/remove-item index form-value-cursor))) "form-secrets-table"))
 
-(defn- add-item
+(defn add-item
   []
   (state/add-item {:secretName   ""
                    :secretTarget ""} form-value-cursor))

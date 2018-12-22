@@ -67,7 +67,7 @@
       labels
       (fn [index] (state/remove-item index form-value-cursor))) "form-label-table"))
 
-(defn- add-item
+(defn add-item
   []
   (state/add-item {:name  ""
                    :value ""} form-value-cursor))

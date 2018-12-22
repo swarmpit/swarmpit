@@ -1,6 +1,6 @@
 (ns swarmpit.utils
-  #?(:clj
-     (:require [flatland.ordered.map :refer [ordered-map]])))
+  (:require [clojure.walk]
+            #?(:clj [flatland.ordered.map :refer [ordered-map]])))
 
 (defn remove-el
   "Remove element in `vector` on given `index`"

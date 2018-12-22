@@ -112,7 +112,7 @@
 (rum/defc editor < mixin-init-editor [spec]
   (form-editor spec))
 
-(defn- form-select [name value last? previous?]
+(defn form-select [name value last? previous?]
   (comp/text-field
     {:fullWidth       true
      :key             "compose-select"

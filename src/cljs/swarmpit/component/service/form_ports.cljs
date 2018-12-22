@@ -123,7 +123,7 @@
       ports
       (fn [index] (state/remove-item index form-value-cursor))) "form-port-table"))
 
-(defn- add-item
+(defn add-item
   []
   (state/add-item {:containerPort 0
                    :protocol      "tcp"

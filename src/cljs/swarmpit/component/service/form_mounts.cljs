@@ -138,7 +138,7 @@
           item
           (fn [index] (state/remove-item index form-value-cursor)))) mounts)))
 
-(defn- add-item
+(defn add-item
   []
   (state/add-item {:type          "bind"
                    :containerPath ""

@@ -111,12 +111,12 @@
             (merge TransitionProps
                    {:timeout 450})
             (comp/paper
-              {:key (str "cmpop-" items-hash "-" (:name %))}
+              {:key (str "cmpop-" items-hash)}
               (comp/click-away-listener
-                {:key         (str "cmpocal-" items-hash "-" (:name %))
+                {:key         (str "cmpocal-" items-hash)
                  :onClickAway #(state/update-value [menuOpenKey] false state/form-state-cursor)}
                 (comp/menu-list
-                  {:key (str "cmml-" items-hash "-" (:name %))}
+                  {:key (str "cmml-" items-hash)}
                   (map
                     #(comp/menu-item
                        {:key      (str "cmmi-" items-hash "-" (:name %))

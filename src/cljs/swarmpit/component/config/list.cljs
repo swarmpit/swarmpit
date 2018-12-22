@@ -32,7 +32,7 @@
    :list  {:primary   (fn [item] (:configName item))
            :secondary (fn [item] (time/humanize (:createdAt item)))}})
 
-(defn- onclick-handler
+(defn onclick-handler
   [item]
   (dispatch! (routes/path-for-frontend :config-info {:id (:configName item)})))
 

@@ -70,7 +70,7 @@
            :secondary (fn [item] (get-in item [:repository :image]))
            :status-fn (fn [item] (render-item-state (:state item)))}})
 
-(defn- onclick-handler
+(defn onclick-handler
   [item]
   (dispatch! (routes/path-for-frontend :task-info (select-keys item [:id]))))
 

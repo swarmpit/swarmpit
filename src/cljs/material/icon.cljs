@@ -62,7 +62,6 @@
 (def search (f/search-icon))
 (def expand-more (f/expand-more-icon))
 (def key (f/key-icon))
-(def settings (f/settings-icon))
 (def receipt (f/receipt-icon))
 (def dns (f/dns-icon))
 (def storage (f/storage-icon))

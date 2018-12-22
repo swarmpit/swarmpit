@@ -30,7 +30,7 @@
    :list  {:primary   (fn [item] (:networkName item))
            :secondary (fn [item] (:driver item))}})
 
-(defn- onclick-handler
+(defn onclick-handler
   [item]
   (dispatch! (routes/path-for-frontend :network-info {:id (:networkName item)})))
 

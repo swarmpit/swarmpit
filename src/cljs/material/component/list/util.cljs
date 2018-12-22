@@ -8,7 +8,7 @@
        (first)
        :key))
 
-(defn- render-keys
+(defn render-keys
   [render-metadata]
   (->> render-metadata
        (map :key)

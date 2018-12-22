@@ -66,7 +66,7 @@
       configs
       (fn [index] (state/remove-item index form-value-cursor))) "form-configs-table"))
 
-(defn- add-item
+(defn add-item
   []
   (state/add-item {:configName   ""
                    :configTarget ""} form-value-cursor))
