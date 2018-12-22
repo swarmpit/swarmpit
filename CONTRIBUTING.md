@@ -13,6 +13,12 @@ Prerequisites
 - Leiningen 2.6.1 or newer
 - Docker socket accessible on `/var/run/docker.sock`
 
+Install local dependencies
+
+```
+lein deps
+```
+
 Start a REPL session
 
 ```
