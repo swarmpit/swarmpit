@@ -247,7 +247,7 @@
       {:className "Swarmpit-table-card-content"
        :key       "fccc"}
       (rum/with-key
-        (list/responsive
+        (list/list
           configs/render-metadata
           (sort-by :configName configs)
           configs/onclick-handler) "fcccrl"))))
@@ -264,7 +264,7 @@
       {:className "Swarmpit-table-card-content"
        :key       "fsecc"}
       (rum/with-key
-        (list/responsive
+        (list/list
           secrets/render-metadata
           (sort-by :secretName secrets)
           secrets/onclick-handler) "fseccrl"))))
@@ -297,43 +297,80 @@
           (comp/grid
             {:item true
              :key  "sgg"
-             :xs   12}
-            (rum/with-key
-              (form-general stack-name stackfile services) "sggfg"))
+             :xs   12
+             :md   4}
+            (comp/grid
+              {:container true
+               :spacing   40}
+              (comp/grid
+                {:item true
+                 :key  "ssgg"
+                 :xs   12}
+                (rum/with-key
+                  (form-general stack-name stackfile services) "sggfg"))
+              (comp/grid
+                {:item true
+                 :key  "sseg"
+                 :xs   12}
+                (rum/with-key
+                  (form-secrets stack-name secrets) "ssegfs"))
+              (comp/grid
+                {:item true
+                 :key  "scg"
+                 :xs   12}
+                (rum/with-key
+                  (form-configs stack-name configs) "scgfc"))))
           (comp/grid
             {:item true
              :key  "ssg"
-             :xs   12}
-            (rum/with-key
-              (form-services stack-name services) "ssgfs"))
-          (when (not-empty networks)
+             :xs   12
+             :md   8}
             (comp/grid
-              {:item true
-               :key  "sng"
-               :xs   12}
-              (rum/with-key
-                (form-networks stack-name networks) "sngfn")))
-          (when (not-empty secrets)
-            (comp/grid
-              {:item true
-               :key  "sseg"
-               :xs   12}
-              (rum/with-key
-                (form-secrets stack-name secrets) "ssegfs")))
-          (when (not-empty configs)
-            (comp/grid
-              {:item true
-               :key  "scg"
-               :xs   12}
-              (rum/with-key
-                (form-configs stack-name configs) "scgfc")))
-          (when (not-empty volumes)
-            (comp/grid
-              {:item true
-               :key  "svg"
-               :xs   12}
-              (rum/with-key
-                (form-volumes stack-name volumes) "svgfv"))))]])))
+              {:container true
+               :spacing   40}
+              (comp/grid
+                {:item true
+                 :key  "ssg"
+                 :xs   12}
+                (rum/with-key
+                  (form-services stack-name services) "ssgfs"))
+              (comp/grid
+                {:item true
+                 :key  "sng"
+                 :xs   12}
+                (rum/with-key
+                  (form-networks stack-name networks) "sngfn"))))
+
+          ;(when (not-empty networks)
+          ;  (comp/grid
+          ;    {:item true
+          ;     :key  "sng"
+          ;     :xs   12}
+          ;    (rum/with-key
+          ;      (form-networks stack-name networks) "sngfn")))
+          ;(when (not-empty secrets)
+          ;  (comp/grid
+          ;    {:item true
+          ;     :key  "sseg"
+          ;     :xs   12}
+          ;    (rum/with-key
+          ;      (form-secrets stack-name secrets) "ssegfs")))
+          ;(when (not-empty configs)
+          ;  (comp/grid
+          ;    {:item true
+          ;     :key  "scg"
+          ;     :xs   12}
+          ;    (rum/with-key
+          ;      (form-configs stack-name configs) "scgfc")))
+          ;(when (not-empty volumes)
+          ;  (comp/grid
+          ;    {:item true
+          ;     :key  "svg"
+          ;     :xs   12}
+          ;    (rum/with-key
+          ;      (form-volumes stack-name volumes) "svgfv")))
+
+          )]])))
 
 (rum/defc form < rum/reactive
                  mixin-init-form
