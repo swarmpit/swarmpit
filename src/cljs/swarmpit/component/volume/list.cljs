@@ -55,8 +55,9 @@
                {:color "primary"
                 :key   "lstt"
                 :href  (routes/path-for-frontend :volume-create)}
-               (comp/svg
-                 {:key "slt"} icon/add-small) "New volume")]})
+               (html [:span.icon--left
+                      (comp/svg {:key "slt"} icon/add-small)])
+               "New volume")]})
 
 (rum/defc form < rum/reactive
                  mixin-init-form

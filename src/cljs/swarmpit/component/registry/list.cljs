@@ -61,8 +61,9 @@
                {:color "primary"
                 :key   "lrett"
                 :href  (routes/path-for-frontend :registry-create)}
-               (comp/svg
-                 {:key "slt"} icon/add-small) "Add registry")]})
+               (html [:span.icon--left
+                      (comp/svg {:key "slt"} icon/add-small)])
+               "Add registry")]})
 
 (rum/defc form < rum/reactive
                  mixin-init-form

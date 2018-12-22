@@ -73,8 +73,10 @@
                {:color "primary"
                 :key   "lstt"
                 :href  (routes/path-for-frontend :stack-create)}
-               (comp/svg
-                 {:key "slt"} icon/add-small) "New stack")]})
+               (html [:span.icon--left
+                      {:key "slt"}
+                      (comp/svg icon/add-small)])
+               "New stack")]})
 
 (rum/defc form < rum/reactive
                  mixin-init-form

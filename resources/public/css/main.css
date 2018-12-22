@@ -25,6 +25,14 @@ a {
     flex-grow: 1;
 }
 
+.icon--left {
+    margin-right: 8px;
+}
+
+.icon--left svg {
+    vertical-align: middle;
+}
+
 .Swarmpit-root {
     flex-grow: 1;
     z-index: 1;

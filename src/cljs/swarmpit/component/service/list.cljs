@@ -123,8 +123,9 @@
                {:color "primary"
                 :key   "lttbn"
                 :href  (routes/path-for-frontend :service-create-image)}
-               (comp/svg
-                 {:key "slt"} icon/add-small) "New service")]})
+               (html [:span.icon--left
+                      (comp/svg {:key "slt"} icon/add-small)])
+               "New service")]})
 
 (rum/defc form < rum/reactive
                  mixin-init-form

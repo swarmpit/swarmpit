@@ -62,8 +62,9 @@
                {:color "primary"
                 :key   "lnett"
                 :href  (routes/path-for-frontend :network-create)}
-               (comp/svg
-                 {:key "slt"} icon/add-small) "New network")]})
+               (html [:span.icon--left
+                      (comp/svg {:key "slt"} icon/add-small)])
+               "New network")]})
 
 (rum/defc form < rum/reactive
                  mixin-init-form

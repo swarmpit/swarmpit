@@ -64,8 +64,9 @@
                {:color "primary"
                 :key   "lctt"
                 :href  (routes/path-for-frontend :config-create)}
-               (comp/svg
-                 {:key "slt"} icon/add-small) "New Comfig")]})
+               (html [:span.icon--left
+                      (comp/svg {:key "slt"} icon/add-small)])
+               "New Config")]})
 
 (rum/defc form < rum/reactive
                  mixin-init-form

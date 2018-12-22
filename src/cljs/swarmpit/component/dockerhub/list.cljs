@@ -60,8 +60,9 @@
                {:color "primary"
                 :key   "ldhtt"
                 :href  (routes/path-for-frontend :dockerhub-user-create)}
-               (comp/svg
-                 {:key "slt"} icon/add-small) "Add account")]})
+               (html [:span.icon--left
+                      (comp/svg {:key "slt"} icon/add-small)])
+               "Add account")]})
 
 (rum/defc form < rum/reactive
                  mixin-init-form

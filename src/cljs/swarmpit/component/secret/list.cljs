@@ -55,8 +55,9 @@
                {:color "primary"
                 :key   "lstt"
                 :href  (routes/path-for-frontend :secret-create)}
-               (comp/svg
-                 {:key "slt"} icon/add-small) "New Secret")]})
+               (html [:span.icon--left
+                      (comp/svg {:key "slt"} icon/add-small)])
+               "New Secret")]})
 
 (rum/defc form < rum/reactive
                  mixin-init-form
