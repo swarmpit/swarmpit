@@ -16,7 +16,7 @@
     {:key "scclccit"} "Nothing matches this filter."))
 
 (defn list-toobar
-  [title items {:keys [buttons] :as toolbar}]
+  [title items filtered-items {:keys [buttons] :as toolbar}]
   (comp/mui
     (comp/toolbar
       {:key            "ltt"
@@ -27,7 +27,10 @@
          :variant "subtitle1"
          :color   "inherit"
          :noWrap  false}
-        (str title " (" (count items) ")"))
+        (if (= (count items)
+               (count filtered-items))
+          (str title " (" (count items) ")")
+          (str title " (" (count filtered-items) "/" (count items) ")")))
       (when buttons
         (html
           [:div {:style {:borderRight "0.1em solid black"
@@ -65,7 +68,7 @@
     (html
       [:div.Swarmpit-form
        [:div
-        (list-toobar title items toolbar)]
+        (list-toobar title items filtered-items toolbar)]
        [:div.Swarmpit-form-toolbar
         (cond
           (empty? items) (list-empty title)
