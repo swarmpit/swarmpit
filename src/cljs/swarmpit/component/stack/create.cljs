@@ -26,7 +26,7 @@
      :name            "name"
      :key             "name"
      :variant         "outlined"
-     :helperText      "Specify stacfile name"
+     :helperText      "Specify stack name"
      :margin          "normal"
      :value           value
      :required        true
@@ -164,11 +164,17 @@
                :lg   4
                :xl   4}
               (html
-                [:span
+                [:div
                  {:key "stcoccgidoc"}
-                 "Learn more about "
-                 [:a {:href   doc-compose-link
-                      :target "_blank"} "compose"]])))]]))))
+                 [:p
+                  "Learn more about "
+                  [:a {:href   doc-compose-link
+                       :target "_blank"}
+                   "docker compose"]]
+                 [:p
+                  [:a {:href "https://docs.docker.com/compose/compose-file/"
+                       :target "_blank"}
+                   "Format reference"]]])))]]))))
 
 (rum/defc form < rum/reactive
                  mixin-init-form [params]
