@@ -15,8 +15,43 @@
   (comp/typography
     {:key "scclccit"} "Nothing matches this filter."))
 
+(rum/defc filter-menu < rum/reactive [filters]
+  (let [anchorEl (state/react (conj state/form-state-cursor :listFilterAnchorEl))]
+    (html
+      [:div
+       (comp/icon-button
+         {:aria-owns     (when anchorEl "list-filter-menu")
+          :aria-haspopup "true"
+          :onClick       (fn [e]
+                           (state/update-value [:listFilterAnchorEl] (.-currentTarget e) state/form-state-cursor))
+          :color         "primary"} (icon/filter-list {}))
+       (comp/menu
+         {:id              "list-filter-menu"
+          :key             "lfm"
+          :anchorEl        anchorEl
+          :anchorOrigin    {:vertical   "top"
+                            :horizontal "right"}
+          :transformOrigin {:vertical   "top"
+                            :horizontal "right"}
+          :open            (some? anchorEl)
+          :onClose         #(state/update-value [:listFilterAnchorEl] nil state/form-state-cursor)}
+         (comp/menu-item
+           {:key       "lfmi"
+            :className "Swarmpit-menu-info"
+            :disabled  true}
+           (html [:span "Filter services by"]))
+         (map #(comp/menu-item
+                 {:key     (str "mi-" (:name %))
+                  :onClick (:onClick %)}
+                 (comp/checkbox
+                   {:key     (str "cb-" (:name %))
+                    :checked (:checked %)})
+                 (comp/list-item-text
+                   {:key     (str "lit-" (:name %))
+                    :primary (:name %)})) filters))])))
+
 (defn list-toobar
-  [title items filtered-items {:keys [buttons] :as toolbar}]
+  [items filtered-items {:keys [buttons filters] :as toolbar}]
   (comp/mui
     (comp/toolbar
       {:key            "ltt"
@@ -29,8 +64,8 @@
          :noWrap  false}
         (if (= (count items)
                (count filtered-items))
-          (str title " (" (count items) ")")
-          (str title " (" (count filtered-items) "/" (count items) ")")))
+          (str "Total (" (count items) ")")
+          (str "Total (" (count filtered-items) "/" (count items) ")")))
       (when buttons
         (html
           [:div {:style {:borderRight "0.1em solid black"
@@ -39,6 +74,11 @@
       (when buttons
         buttons)
       (html [:div.grow])
+      (when filters
+        (filter-menu filters))
+
+
+
       ;(comp/typography
       ;  {:key     "filter-label"
       ;   :variant "subtitle2"
@@ -68,7 +108,7 @@
     (html
       [:div.Swarmpit-form
        [:div
-        (list-toobar title items filtered-items toolbar)]
+        (list-toobar items filtered-items toolbar)]
        [:div.Swarmpit-form-toolbar
         (cond
           (empty? items) (list-empty title)
@@ -141,7 +181,6 @@
                       (when n
                         (state/update-value [anchorKey] n state/form-state-cursor)))
      :onClick       (fn [e]
-                      (print "fdf")
                       (state/update-value [menuOpenKey] true state/form-state-cursor))
      :color         "inherit"} icon/more))
 

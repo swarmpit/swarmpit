@@ -99,6 +99,10 @@ a {
     margin-bottom: 8px;
 }
 
+.Swarmpit-menu-info {
+    opacity: 0.7;
+}
+
 /** Appbar **/
 
 .Swarmpit-appbar {

@@ -118,14 +118,18 @@
           services
           onclick-handler) "lsccrl"))))
 
-(def form-toolbar
+(defn form-toolbar
+  [filter]
   {:buttons [(comp/button
                {:color "primary"
                 :key   "lttbn"
                 :href  (routes/path-for-frontend :service-create-image)}
                (html [:span.icon--left
                       (comp/svg {:key "slt"} icon/add-small)])
-               "New service")]})
+               "New service")]
+   :filters [{:checked (:running filter)
+              :name    "Running state"
+              :onClick #(state/update-value [:filter :running] (not (:running filter)) state/form-state-cursor)}]})
 
 (rum/defc form < rum/reactive
                  mixin-init-form
@@ -133,7 +137,9 @@
                  mixin/focus-filter [_]
   (let [{:keys [items]} (state/react state/form-value-cursor)
         {:keys [loading? filter]} (state/react state/form-state-cursor)
-        filtered-items (list-util/filter items (:query filter))]
+        filtered-items (->> (list-util/filter items (:query filter))
+                            (clojure.core/filter #(if (:running filter)
+                                                    (= "running" (:state %)) true)))]
     (progress/form
       loading?
       (common/list "Services"
@@ -141,4 +147,4 @@
                    filtered-items
                    render-metadata
                    onclick-handler
-                   form-toolbar))))
+                   (form-toolbar filter)))))
