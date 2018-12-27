@@ -115,7 +115,7 @@
             :key       (str "drawer-item-" name)
             :onClick   (fn []
                          (state/update-value [:mobileOpened] false state/layout-cursor)
-                         (dispatch! (routes/path-for-frontend handler)))}
+                         (swarmpit.router/set-location (routes/path-for-frontend handler)))}
            (when selected?
              {:className "Swarmpit-drawer-item-selected"})
            (when (= :distribution domain)
@@ -148,15 +148,11 @@
        (drawer-title-version version)]])
    (comp/divider)
    (map
-     (fn [menu-item]
-       (let [icon (:icon menu-item)
-             name (:name menu-item)
-             handler (:handler menu-item)
-             domain (:domain menu-item)
-             selected (= page-domain domain)]
+     (fn [{:keys [icon name handler domain]}]
+       (let [selected? (= page-domain domain)]
          (rum/with-key
            (if (some? icon)
-             (drawer-item name icon handler domain selected)
+             (drawer-item name icon handler domain selected?)
              (drawer-category name))
            name)))
      (let [fmenu (filter-menu docker-api)]

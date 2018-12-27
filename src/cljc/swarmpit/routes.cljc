@@ -145,7 +145,7 @@
 (defn path-for-frontend
   ([handler] (path-for-frontend handler {} nil))
   ([handler params] (path-for-frontend handler params nil))
-  ([handler params query] (path frontend "#" handler params query)))
+  ([handler params query] (path frontend "" handler params query)))
 
 (defn path-for-backend
   ([handler] (path-for-backend handler {} nil))
