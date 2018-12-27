@@ -3,16 +3,12 @@
 
 (defn dispatch!
   [url]
-  (-> js/document
-      .-location
-      (set! url)))
+  (set! js/document.location url))
 
 (defn url
   "Get current URL address"
   []
-  (-> js/document
-      .-location
-      .-href))
+  (-> js/document .-location .-href))
 
 (defn query-string
   "Parse query string from URL params"
