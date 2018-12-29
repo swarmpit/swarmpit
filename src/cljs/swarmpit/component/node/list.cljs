@@ -125,23 +125,38 @@
       (init-form-state)
       (nodes-handler))))
 
+(defn toolbar-render-metadata
+  [filter]
+  {:filters [{:checked  (:manager filter)
+              :name     "Manager role"
+              :disabled (or (:worker filter) false)
+              :onClick  #(state/update-value [:filter :manager] (not (:manager filter)) state/form-state-cursor)}
+             {:checked  (:worker filter)
+              :name     "Worker role"
+              :disabled (or (:manager filter) false)
+              :onClick  #(state/update-value [:filter :worker] (not (:worker filter)) state/form-state-cursor)}]})
+
 (rum/defc form < rum/reactive
                  mixin-init-form
                  mixin/subscribe-form
                  mixin/focus-filter [_]
   (let [{:keys [items]} (state/react state/form-value-cursor)
         {:keys [filter]} (state/react state/form-state-cursor)
-        filtered-items (list-util/filter items (:query filter))]
+        filtered-items (->> (list-util/filter items (:query filter))
+                            (clojure.core/filter #(if (:manager filter)
+                                                    (= "manager" (:role %)) true))
+                            (clojure.core/filter #(if (:worker filter)
+                                                    (= "worker" (:role %)) true)))]
     (comp/mui
-      (html
-        [:div.Swarmpit-form
-         [:div.Swarmpit-form-context
-          (if (empty? filtered-items)
-            (common/list-no-items-found)
-            (comp/grid
-              {:container true
-               :spacing   40}
-              (map-indexed
-                (fn [index item]
-                  (node-item item index)) (sort-by :nodeName filtered-items))))]]))))
+      (common/list-grid
+        "Nodes"
+        items
+        filtered-items
+        (comp/grid
+          {:container true
+           :spacing   40}
+          (map-indexed
+            (fn [index item]
+              (node-item item index)) (sort-by :nodeName filtered-items)))
+        (toolbar-render-metadata filter)))))
 

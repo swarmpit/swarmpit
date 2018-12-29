@@ -19,7 +19,7 @@
 (rum/defc list-toolbar-filter-menu < rum/reactive [title filters]
   (let [anchorEl (state/react (conj state/form-state-cursor :listFilterAnchorEl))]
     (html
-      [:div
+      [:div {:key "ltfm"}
        [:div.Swarmpit-appbar-section-desktop
         (comp/button
           {:aria-owns     (when anchorEl "list-filter-menu")
@@ -28,17 +28,20 @@
            :key           "lfmbtn"
            :onClick       (fn [e]
                             (state/update-value [:listFilterAnchorEl] (.-currentTarget e) state/form-state-cursor))}
-          (icon/filter-list {:style {:marginRight 8}})
+          (icon/filter-list {:className "Swarmpit-button-icon"})
           "Filter")]
        [:div.Swarmpit-appbar-section-mobile
-        (comp/icon-button
-          {:aria-owns     (when anchorEl "list-filter-menu")
-           :aria-haspopup "true"
-           :key           "lfmibtn"
-           :onClick       (fn [e]
-                            (state/update-value [:listFilterAnchorEl] (.-currentTarget e) state/form-state-cursor))
-           :color         "primary"}
-          (icon/filter-list {}))]
+        (comp/tooltip
+          {:title "Filter"
+           :key   "lfmitt"}
+          (comp/icon-button
+            {:aria-owns     (when anchorEl "list-filter-menu")
+             :aria-haspopup "true"
+             :key           "lfmibtn"
+             :onClick       (fn [e]
+                              (state/update-value [:listFilterAnchorEl] (.-currentTarget e) state/form-state-cursor))
+             :color         "primary"}
+            (icon/filter-list {})))]
        (comp/menu
          {:id              "list-filter-menu"
           :key             "lfm"
@@ -84,12 +87,41 @@
           (str "Total (" (count filtered-items) "/" (count items) ")")))
       (when actions
         (html
-          [:div {:style {:borderRight "0.1em solid black"
+          [:div {:key   "ltavl"
+                 :style {:borderRight "0.1em solid black"
                          :padding     "0.5em"
                          :height      0}}]))
       (when actions
-        actions)
-      (html [:div.grow])
+        (map-indexed
+          (fn [index action]
+            (html
+              [:div {:key (str "laml-" index)}
+               [:div.Swarmpit-appbar-section-desktop
+                (comp/button
+                  {:color   "primary"
+                   :key     (str "lambtn-" index)
+                   :onClick (:onClick action)}
+                  ((:icon action) {:className "Swarmpit-button-icon"})
+                  (:name action))]
+               [:div.Swarmpit-appbar-section-mobile
+                ;; Make FAB from first only (primary action)
+                (when (= 0 index)
+                  (comp/button
+                    {:variant   "fab"
+                     :className "Swarmpit-fab"
+                     :color     "primary"
+                     :onClick   (:onClick action)}
+                    ((:icon-alt action) {})))
+                (comp/tooltip
+                  {:title (:name action)
+                   :key   (str "lamitt-" index)}
+                  (comp/icon-button
+                    {:key     (str "lamibtn-" index)
+                     :onClick (:onClick action)
+                     :color   "primary"}
+                    ((:icon action) {})))]])) actions))
+      (html [:div {:className "grow"
+                   :key       "ltge"}])
       (when filters
         (list-toolbar-filter-menu title filters)))))
 
@@ -117,6 +149,19 @@
                   filtered-items
                   onclick-handler)
                 "scclccrl"))))]])))
+
+(rum/defc list-grid < rum/reactive
+  [title items filtered-items grid toolbar-render-metadata]
+  (comp/mui
+    (html
+      [:div.Swarmpit-form
+       [:div
+        (list-toobar title items filtered-items toolbar-render-metadata)]
+       [:div.Swarmpit-form-toolbar
+        (cond
+          (empty? items) (list-empty title)
+          (empty? filtered-items) (list-no-items-found)
+          :else grid)]])))
 
 (defn show-password-adornment [show-password]
   (comp/input-adornment

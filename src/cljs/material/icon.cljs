@@ -119,6 +119,14 @@
   [props]
   (f/check-circle-icon (clj->js props)))
 
+(defn add-circle-out
+  [props]
+  (f/add-circle-out-icon (clj->js props)))
+
+(defn add
+  [props]
+  (f/add-icon (clj->js props)))
+
 (defn filter-list
   [props]
   (f/filter-list-icon (clj->js props)))

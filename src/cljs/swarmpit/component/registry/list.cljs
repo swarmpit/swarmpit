@@ -57,13 +57,10 @@
       (registries-handler))))
 
 (def toolbar-render-metadata
-  {:actions [(comp/button
-               {:color "primary"
-                :key   "lrett"
-                :href  (routes/path-for-frontend :registry-create)}
-               (html [:span.icon--left
-                      (comp/svg {:key "slt"} icon/add-small)])
-               "Add registry")]})
+  {:actions [{:name     "Add registry"
+              :onClick  #(dispatch! (routes/path-for-frontend :registry-create))
+              :icon     icon/add-circle-out
+              :icon-alt icon/add}]})
 
 (rum/defc form < rum/reactive
                  mixin-init-form

@@ -51,13 +51,10 @@
       (volumes-handler))))
 
 (def toolbar-render-metadata
-  {:actions [(comp/button
-               {:color "primary"
-                :key   "lstt"
-                :href  (routes/path-for-frontend :volume-create)}
-               (html [:span.icon--left
-                      (comp/svg {:key "slt"} icon/add-small)])
-               "New volume")]})
+  {:actions [{:name     "New volume"
+              :onClick  #(dispatch! (routes/path-for-frontend :volume-create))
+              :icon     icon/add-circle-out
+              :icon-alt icon/add}]})
 
 (rum/defc form < rum/reactive
                  mixin-init-form

@@ -119,6 +119,7 @@
 (def fingerprint-icon (create-factory js/MaterialUIIcons.Fingerprint))
 (def check-icon (create-factory js/MaterialUIIcons.Check))
 (def close-icon (create-factory js/MaterialUIIcons.Close))
+(def add-icon (create-factory js/MaterialUIIcons.Add))
 (def add-circle-icon (create-factory js/MaterialUIIcons.AddCircle))
 (def more-icon (create-factory js/MaterialUIIcons.MoreVert))
 (def label-icon (create-factory js/MaterialUIIcons.Label))
@@ -127,7 +128,7 @@
 (def logs-icon (create-factory js/MaterialUIIcons.Subject))
 (def circle-icon (create-factory js/MaterialUIIcons.FiberManualRecord))
 (def filter-list-icon (create-factory js/MaterialUIIcons.FilterList))
-
+(def add-circle-out-icon (create-factory js/MaterialUIIcons.AddCircleOutline))
 
 (def create-mui-theme js/MaterialUI.createMuiTheme)
 

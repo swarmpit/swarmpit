@@ -58,13 +58,10 @@
       (networks-handler))))
 
 (def toolbar-render-metadata
-  {:actions [(comp/button
-               {:color "primary"
-                :key   "lnett"
-                :href  (routes/path-for-frontend :network-create)}
-               (html [:span.icon--left
-                      (comp/svg {:key "slt"} icon/add-small)])
-               "New network")]})
+  {:actions [{:name     "New network"
+              :onClick  #(dispatch! (routes/path-for-frontend :network-create))
+              :icon     icon/add-circle-out
+              :icon-alt icon/add}]})
 
 (rum/defc form < rum/reactive
                  mixin-init-form

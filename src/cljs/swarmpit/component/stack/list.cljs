@@ -69,14 +69,10 @@
       (stack-handler))))
 
 (def toolbar-render-metadata
-  {:actions [(comp/button
-               {:color "primary"
-                :key   "lstt"
-                :href  (routes/path-for-frontend :stack-create)}
-               (html [:span.icon--left
-                      {:key "slt"}
-                      (comp/svg icon/add-small)])
-               "New stack")]})
+  {:actions [{:name     "New stack"
+              :onClick  #(dispatch! (routes/path-for-frontend :stack-create))
+              :icon     icon/add-circle-out
+              :icon-alt icon/add}]})
 
 (rum/defc form < rum/reactive
                  mixin-init-form

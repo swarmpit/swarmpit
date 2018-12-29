@@ -60,13 +60,10 @@
       (configs-handler))))
 
 (def toolbar-render-metadata
-  {:actions [(comp/button
-               {:color "primary"
-                :key   "lctt"
-                :href  (routes/path-for-frontend :config-create)}
-               (html [:span.icon--left
-                      (comp/svg {:key "slt"} icon/add-small)])
-               "New Config")]})
+  {:actions [{:name     "New Config"
+              :onClick  #(dispatch! (routes/path-for-frontend :config-create))
+              :icon     icon/add-circle-out
+              :icon-alt icon/add}]})
 
 (rum/defc form < rum/reactive
                  mixin-init-form

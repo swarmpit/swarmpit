@@ -120,13 +120,10 @@
 
 (defn toolbar-render-metadata
   [filter]
-  {:actions [(comp/button
-               {:color "primary"
-                :key   "lttbn"
-                :href  (routes/path-for-frontend :service-create-image)}
-               (html [:span.icon--left
-                      (comp/svg {:key "slt"} icon/add-small)])
-               "New service")]
+  {:actions [{:name     "New service"
+              :onClick  #(dispatch! (routes/path-for-frontend :service-create-image))
+              :icon     icon/add-circle-out
+              :icon-alt icon/add}]
    :filters [{:checked  (:running filter)
               :name     "Running state"
               :disabled (or (:shutdown filter) false)

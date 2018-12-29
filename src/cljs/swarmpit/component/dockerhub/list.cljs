@@ -56,13 +56,10 @@
       (users-handler))))
 
 (def toolbar-render-metadata
-  {:actions [(comp/button
-               {:color "primary"
-                :key   "ldhtt"
-                :href  (routes/path-for-frontend :dockerhub-user-create)}
-               (html [:span.icon--left
-                      (comp/svg {:key "slt"} icon/add-small)])
-               "Add account")]})
+  {:actions [{:name     "Add account"
+              :onClick  #(dispatch! (routes/path-for-frontend :dockerhub-user-create))
+              :icon     icon/add-circle-out
+              :icon-alt icon/add}]})
 
 (rum/defc form < rum/reactive
                  mixin-init-form
