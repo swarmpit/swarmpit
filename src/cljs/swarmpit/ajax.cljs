@@ -33,6 +33,9 @@
          (= "swarmpit" (:x-backend-server headers))) (router/set-location {:handler :unauthorized})
     (= 404 status) (router/set-route {:handler :not-found})
     (= 500 status) (message/error (str (or (:cause body) "Server request failed")))
+    (= 502 status) (message/error "Server request failed. Bad Gateway")
+    (= 503 status) (message/error "Server request failed. Service Unavailable")
+    (= 504 status) (message/error "Server request failed. Gateway Timeout")
     :else (message/error (str (or (:error body) body "Server request failed")))))
 
 (defn- command
