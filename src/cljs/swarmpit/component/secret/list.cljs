@@ -50,8 +50,8 @@
       (init-form-state)
       (secrets-handler))))
 
-(def form-toolbar
-  {:buttons [(comp/button
+(def toolbar-render-metadata
+  {:actions [(comp/button
                {:color "primary"
                 :key   "lstt"
                 :href  (routes/path-for-frontend :secret-create)}
@@ -73,4 +73,4 @@
                         (sort-by :secretName))
                    render-metadata
                    onclick-handler
-                   form-toolbar))))
+                   toolbar-render-metadata))))

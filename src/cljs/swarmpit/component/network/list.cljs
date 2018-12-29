@@ -57,8 +57,8 @@
       (init-form-state)
       (networks-handler))))
 
-(def form-toolbar
-  {:buttons [(comp/button
+(def toolbar-render-metadata
+  {:actions [(comp/button
                {:color "primary"
                 :key   "lnett"
                 :href  (routes/path-for-frontend :network-create)}
@@ -80,4 +80,4 @@
                    filtered-items
                    render-metadata
                    onclick-handler
-                   form-toolbar))))
+                   toolbar-render-metadata))))

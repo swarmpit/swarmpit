@@ -1,5 +1,6 @@
 (ns swarmpit.component.task.list
   (:require [material.icon :as icon]
+            [material.components :as comp]
             [material.component.list.util :as list-util]
             [material.component.label :as label]
             [swarmpit.component.state :as state]
@@ -97,13 +98,34 @@
       (init-form-state)
       (tasks-handler))))
 
+(defn toolbar-render-metadata
+  [filter]
+  {:filters [{:checked  (:running filter)
+              :name     "Running state"
+              :disabled (or (:shutdown filter) (:failed filter) false)
+              :onClick  #(state/update-value [:filter :running] (not (:running filter)) state/form-state-cursor)}
+             {:checked  (:shutdown filter)
+              :name     "Shutdown state"
+              :disabled (or (:running filter) (:failed filter) false)
+              :onClick  #(state/update-value [:filter :shutdown] (not (:shutdown filter)) state/form-state-cursor)}
+             {:checked  (:failed filter)
+              :name     "Failed state"
+              :disabled (or (:running filter) (:shutdown filter) false)
+              :onClick  #(state/update-value [:filter :failed] (not (:failed filter)) state/form-state-cursor)}]})
+
 (rum/defc form < rum/reactive
                  mixin-init-form
                  mixin/subscribe-form
                  mixin/focus-filter [_]
   (let [{:keys [items]} (state/react state/form-value-cursor)
         {:keys [loading? filter]} (state/react state/form-state-cursor)
-        filtered-items (list-util/filter items (:query filter))]
+        filtered-items (->> (list-util/filter items (:query filter))
+                            (clojure.core/filter #(if (:running filter)
+                                                    (= "running" (:state %)) true))
+                            (clojure.core/filter #(if (:shutdown filter)
+                                                    (= "shutdown" (:state %)) true))
+                            (clojure.core/filter #(if (:failed filter)
+                                                    (= "failed" (:state %)) true)))]
     (progress/form
       loading?
       (common/list "Tasks"
@@ -111,4 +133,4 @@
                    filtered-items
                    render-metadata
                    onclick-handler
-                   nil))))
+                   (toolbar-render-metadata filter)))))

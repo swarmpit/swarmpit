@@ -56,8 +56,8 @@
       (init-form-state)
       (registries-handler))))
 
-(def form-toolbar
-  {:buttons [(comp/button
+(def toolbar-render-metadata
+  {:actions [(comp/button
                {:color "primary"
                 :key   "lrett"
                 :href  (routes/path-for-frontend :registry-create)}
@@ -80,4 +80,4 @@
                    filtered-items
                    render-metadata
                    onclick-handler
-                   form-toolbar))))
+                   toolbar-render-metadata))))

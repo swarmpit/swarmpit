@@ -62,7 +62,7 @@ a {
 .Swarmpit-page {
     display: flex;
     justify-content: center;
-    background: url("../img/background.png") no-repeat;
+    background: #E1E2E1;
     min-height: 100vh;
 }
 

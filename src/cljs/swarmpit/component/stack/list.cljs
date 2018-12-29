@@ -68,8 +68,8 @@
       (init-form-state)
       (stack-handler))))
 
-(def form-toolbar
-  {:buttons [(comp/button
+(def toolbar-render-metadata
+  {:actions [(comp/button
                {:color "primary"
                 :key   "lstt"
                 :href  (routes/path-for-frontend :stack-create)}
@@ -93,4 +93,4 @@
                         (sort-by :stackName))
                    render-metadata
                    onclick-handler
-                   form-toolbar))))
+                   toolbar-render-metadata))))

@@ -59,8 +59,8 @@
       (init-form-state)
       (configs-handler))))
 
-(def form-toolbar
-  {:buttons [(comp/button
+(def toolbar-render-metadata
+  {:actions [(comp/button
                {:color "primary"
                 :key   "lctt"
                 :href  (routes/path-for-frontend :config-create)}
@@ -82,4 +82,4 @@
                         (sort-by :configName))
                    render-metadata
                    onclick-handler
-                   form-toolbar))))
+                   toolbar-render-metadata))))

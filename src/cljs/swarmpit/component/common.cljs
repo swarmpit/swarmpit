@@ -5,7 +5,8 @@
             [material.component.list.basic :as list]
             [swarmpit.component.state :as state]
             [sablono.core :refer-macros [html]]
-            [rum.core :as rum]))
+            [rum.core :as rum]
+            [clojure.string :as str]))
 
 (defn list-empty [title]
   (comp/typography
@@ -15,16 +16,29 @@
   (comp/typography
     {:key "scclccit"} "Nothing matches this filter."))
 
-(rum/defc filter-menu < rum/reactive [filters]
+(rum/defc list-toolbar-filter-menu < rum/reactive [title filters]
   (let [anchorEl (state/react (conj state/form-state-cursor :listFilterAnchorEl))]
     (html
       [:div
-       (comp/icon-button
-         {:aria-owns     (when anchorEl "list-filter-menu")
-          :aria-haspopup "true"
-          :onClick       (fn [e]
-                           (state/update-value [:listFilterAnchorEl] (.-currentTarget e) state/form-state-cursor))
-          :color         "primary"} (icon/filter-list {}))
+       [:div.Swarmpit-appbar-section-desktop
+        (comp/button
+          {:aria-owns     (when anchorEl "list-filter-menu")
+           :aria-haspopup "true"
+           :color         "primary"
+           :key           "lfmbtn"
+           :onClick       (fn [e]
+                            (state/update-value [:listFilterAnchorEl] (.-currentTarget e) state/form-state-cursor))}
+          (icon/filter-list {:style {:marginRight 8}})
+          "Filter")]
+       [:div.Swarmpit-appbar-section-mobile
+        (comp/icon-button
+          {:aria-owns     (when anchorEl "list-filter-menu")
+           :aria-haspopup "true"
+           :key           "lfmibtn"
+           :onClick       (fn [e]
+                            (state/update-value [:listFilterAnchorEl] (.-currentTarget e) state/form-state-cursor))
+           :color         "primary"}
+          (icon/filter-list {}))]
        (comp/menu
          {:id              "list-filter-menu"
           :key             "lfm"
@@ -39,19 +53,21 @@
            {:key       "lfmi"
             :className "Swarmpit-menu-info"
             :disabled  true}
-           (html [:span "Filter services by"]))
+           (html [:span (str "Filter " (str/lower-case title) " by")]))
          (map #(comp/menu-item
-                 {:key     (str "mi-" (:name %))
-                  :onClick (:onClick %)}
-                 (comp/checkbox
-                   {:key     (str "cb-" (:name %))
-                    :checked (:checked %)})
-                 (comp/list-item-text
-                   {:key     (str "lit-" (:name %))
-                    :primary (:name %)})) filters))])))
+                 {:key      (str "mi-" (:name %))
+                  :disabled (:disabled %)
+                  :onClick  (:onClick %)}
+                 (comp/form-control-label
+                   {:control (comp/checkbox
+                               {:key     (str "mifclcb-" (:name %))
+                                :checked (:checked %)
+                                :value   (str (:checked %))})
+                    :key     (str "mifcl-" (:name %))
+                    :label   (:name %)})) filters))])))
 
-(defn list-toobar
-  [items filtered-items {:keys [buttons filters] :as toolbar}]
+(rum/defc list-toobar < rum/reactive
+  [title items filtered-items {:keys [actions filters] :as metadata}]
   (comp/mui
     (comp/toolbar
       {:key            "ltt"
@@ -66,49 +82,24 @@
                (count filtered-items))
           (str "Total (" (count items) ")")
           (str "Total (" (count filtered-items) "/" (count items) ")")))
-      (when buttons
+      (when actions
         (html
           [:div {:style {:borderRight "0.1em solid black"
                          :padding     "0.5em"
                          :height      0}}]))
-      (when buttons
-        buttons)
+      (when actions
+        actions)
       (html [:div.grow])
       (when filters
-        (filter-menu filters))
+        (list-toolbar-filter-menu title filters)))))
 
-
-
-      ;(comp/typography
-      ;  {:key     "filter-label"
-      ;   :variant "subtitle2"
-      ;   :style   {:paddingRight "10px"}
-      ;   :color   "inherit"
-      ;   :noWrap  false}
-      ;  "Filters: ")
-      ;(comp/chip
-      ;  {:onDelete   #(print "test")
-      ;   :deleteIcon (icon/cancel {})
-      ;   :style      {:marginRight "5px"}
-      ;   :color      "primary"
-      ;   :variant    "outlined"
-      ;   :label      "Running"})
-      ;(comp/chip
-      ;  {:onDelete   #(print "test")
-      ;   :deleteIcon (icon/cancel {})
-      ;   :style      {:marginRight "5px"}
-      ;   :color      "primary"
-      ;   :variant    "outlined"
-      ;   :label      "Something"})
-      )))
-
-(defn list
-  [title items filtered-items render-metadata onclick-handler toolbar]
+(rum/defc list < rum/reactive
+  [title items filtered-items render-metadata onclick-handler toolbar-render-metadata]
   (comp/mui
     (html
       [:div.Swarmpit-form
        [:div
-        (list-toobar items filtered-items toolbar)]
+        (list-toobar title items filtered-items toolbar-render-metadata)]
        [:div.Swarmpit-form-toolbar
         (cond
           (empty? items) (list-empty title)
