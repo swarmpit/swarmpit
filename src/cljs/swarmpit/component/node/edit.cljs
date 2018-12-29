@@ -34,46 +34,90 @@
      :disabled        true
      :InputLabelProps {:shrink true}}))
 
+;(defn- form-role [value]
+;  (comp/text-field
+;    {:fullWidth       true
+;     :key             "role"
+;     :label           "Role"
+;     :select          true
+;     :value           value
+;     :variant         "outlined"
+;     :margin          "normal"
+;     :style           {:maxWidth "350px"}
+;     :InputLabelProps {:shrink true}
+;     :onChange        #(state/update-value [:role] (-> % .-target .-value) state/form-value-cursor)}
+;    (comp/menu-item
+;      {:key   "worker"
+;       :value "worker"} "worker")
+;    (comp/menu-item
+;      {:key   "manager"
+;       :value "manager"} "manager")))
+
 (defn- form-role [value]
-  (comp/text-field
-    {:fullWidth       true
-     :key             "role"
-     :label           "Role"
-     :select          true
-     :value           value
-     :variant         "outlined"
-     :margin          "normal"
-     :style           {:maxWidth "350px"}
-     :InputLabelProps {:shrink true}
-     :onChange        #(state/update-value [:role] (-> % .-target .-value) state/form-value-cursor)}
-    (comp/menu-item
-      {:key   "worker"
-       :value "worker"} "worker")
-    (comp/menu-item
-      {:key   "manager"
-       :value "manager"} "manager")))
+  (comp/form-control
+    {:component "fieldset"
+     :key       "role-f"
+     :style     {:width "200px"}}
+    (comp/form-label
+      {:key "rolel"} "Role")
+    (comp/radio-group
+      {:name     "role"
+       :key      "role-rg"
+       :value    value
+       :onChange #(state/update-value [:role] (-> % .-target .-value) state/form-value-cursor)}
+      (comp/form-control-label
+        {:control (comp/radio
+                    {:name  "manager-role"
+                     :color "primary"
+                     :key   "manager-role"})
+         :key     "mngr-role"
+         :value   "manager"
+         :label   "Manager"})
+      (comp/form-control-label
+        {:control (comp/radio
+                    {:name  "worker-role"
+                     :color "primary"
+                     :key   "worker-role"})
+         :key     "worker-role"
+         :value   "worker"
+         :label   "Worker"}))))
 
 (defn- form-availability [value]
-  (comp/text-field
-    {:fullWidth       true
-     :key             "availability"
-     :label           "Availability"
-     :select          true
-     :value           value
-     :variant         "outlined"
-     :margin          "normal"
-     :style           {:maxWidth "350px"}
-     :InputLabelProps {:shrink true}
-     :onChange        #(state/update-value [:availability] (-> % .-target .-value) state/form-value-cursor)}
-    (comp/menu-item
-      {:key   "active"
-       :value "active"} "active")
-    (comp/menu-item
-      {:key   "pause"
-       :value "pause"} "pause")
-    (comp/menu-item
-      {:key   "drain"
-       :value "drain"} "drain")))
+  (comp/form-control
+    {:component "fieldset"
+     :key       "availability-f"
+     :style     {:width "200px"}}
+    (comp/form-label
+      {:key "availabilityl"} "Availability")
+    (comp/radio-group
+      {:name     "availability"
+       :key      "availability-rg"
+       :value    value
+       :onChange #(state/update-value [:availability] (-> % .-target .-value) state/form-value-cursor)}
+      (comp/form-control-label
+        {:control (comp/radio
+                    {:name  "active"
+                     :color "primary"
+                     :key   "active"})
+         :key     "active-av"
+         :value   "active"
+         :label   "Active"})
+      (comp/form-control-label
+        {:control (comp/radio
+                    {:name  "pause"
+                     :color "primary"
+                     :key   "pause"})
+         :key     "pause-av"
+         :value   "pause"
+         :label   "Pause"})
+      (comp/form-control-label
+        {:control (comp/radio
+                    {:name  "drain"
+                     :color "primary"
+                     :key   "drain"})
+         :key     "drain-av"
+         :value   "drain"
+         :label   "Drain"}))))
 
 (defn- form-label-name [value index]
   (comp/text-field
@@ -182,7 +226,7 @@
               (comp/card-header
                 {:className "Swarmpit-form-card-header"
                  :key       "nech"
-                 :title     "Edit Node"})
+                 :title     (str "Editing " nodeName)})
               (comp/card-content
                 {:key "necc"}
                 (comp/grid
@@ -191,11 +235,15 @@
                    :spacing   40}
                   (comp/grid
                     {:item true
-                     :key  "neccciga"
+                     :key  "necccigar"
                      :xs   12
                      :sm   6}
-                    (form-name nodeName)
-                    (form-role role)
+                    (form-role role))
+                  (comp/grid
+                    {:item true
+                     :key  "necccigaa"
+                     :xs   12
+                     :sm   6}
                     (form-availability availability))
                   (comp/grid
                     {:item true
