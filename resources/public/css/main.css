@@ -25,14 +25,6 @@ a {
     flex-grow: 1;
 }
 
-.icon--left {
-    margin-right: 8px;
-}
-
-.icon--left svg {
-    vertical-align: middle;
-}
-
 .Swarmpit-root {
     flex-grow: 1;
     z-index: 1;
@@ -66,6 +58,13 @@ a {
     min-height: 100vh;
 }
 
+.Swarmpit-fab {
+    position: fixed !important;
+    z-index: 2;
+    bottom: 20px;
+    left: calc(50% - 26px);
+}
+
 .Swarmpit-message {
     display: flex;
     align-items: center;
@@ -73,6 +72,10 @@ a {
 
 .Swarmpit-message-icon {
     opacity: 0.9;
+    margin-right: 8px;
+}
+
+.Swarmpit-button-icon {
     margin-right: 8px;
 }
 
@@ -88,10 +91,6 @@ a {
 .Swarmpit-row-space {
     display: flex;
     justify-content: space-between;
-}
-
-.Swarmpit-icon-button {
-    margin: 8px;
 }
 
 .Swarmpit-margin-normal {
@@ -550,9 +549,15 @@ a {
 /* Codemirror custom */
 
 .Swarmpit-codemirror {
-    border: 1px solid rgba(0, 0, 0, 0.23);
+    border-radius: 4px !important;
+    border: 1px solid rgba(0, 0, 0, 0.23) !important;
 }
 
+.Swarmpit-codemirror > div {
+    padding: 0 !important;
+}
+
+.Swarmpit-codemirror-ro > div:before,
 .Swarmpit-codemirror > div:before {
     border-bottom: none !important;
 }

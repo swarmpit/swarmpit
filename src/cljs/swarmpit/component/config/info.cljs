@@ -27,7 +27,8 @@
 (defn- form-data [value]
   (comp/text-field
     {:id              editor-id
-     :className       "Swarmpit-codemirror"
+     :className       "Swarmpit-codemirror-ro"
+     :style           {:maxWidth "100vh"}
      :fullWidth       true
      :name            "config-view"
      :key             "config-view"
@@ -118,7 +119,11 @@
                                 (comp/svg icon/trash)))})
               (comp/card-content
                 {:key "cgcc"}
-                (form-data (parse-data (:data config))))
+                (form-data (parse-data (:data config)))
+
+                ;(html [:span {:style {:word-break "break-all"}} (parse-data (:data config))])
+
+                )
               (comp/divider
                 {:key "cgd"})
               (comp/card-content

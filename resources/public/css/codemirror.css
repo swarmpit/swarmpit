@@ -6,7 +6,6 @@
     position: relative;
     height: auto;
     min-height: 400px;
-    border: 1px solid rgba(0, 0, 0, 0.23);
     border-radius: 4px;
     width: 100%;
 }
@@ -442,6 +441,7 @@ div.CodeMirror-cursors {
 span.CodeMirror-selectedtext {
     background: none
 }
+
 .cm-tab {
     background: url(data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAADAAAAAMCAYAAAAkuj5RAAAAAXNSR0IArs4c6QAAAGFJREFUSMft1LsRQFAQheHPowAKoACx3IgEKtaEHujDjORSgWTH/ZOdnZOcM/sgk/kFFWY0qV8foQwS4MKBCS3qR6ixBJvElOobYAtivseIE120FaowJPN75GMu8j/LfMwNjh4HUpwg4LUAAAAASUVORK5CYII=);
     background-position: right;

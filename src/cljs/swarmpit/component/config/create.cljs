@@ -32,6 +32,7 @@
 (defn- form-data [value]
   (comp/text-field
     {:id              editor-id
+     :className       "Swarmpit-codemirror"
      :fullWidth       true
      :name            "data"
      :key             "data"

@@ -12,15 +12,14 @@
    (js/CodeMirror.fromTextArea
      (.getElementById js/document editor-id)
      (clj->js
-       (merge editor-settings
-              {:lineNumbers       true
+       (merge {:lineNumbers       true
                :viewportMargin    (.-Infinity js/window)
                :matchBrackets     true
                :smartIndent       true
                :tabSize           2
                :indentWithTabs    false
                :autofocus         true
-               :autoCloseBrackets true})))))
+               :autoCloseBrackets true} editor-settings)))))
 
 (defn yaml
   [editor-id]
@@ -30,4 +29,6 @@
 
 (defn view
   [editor-id]
-  (default editor-id {:readOnly "no-cursor"}))
+  (default editor-id {:readOnly     "no-cursor"
+                      :lineWrapping true
+                      :lineNumbers  false}))
