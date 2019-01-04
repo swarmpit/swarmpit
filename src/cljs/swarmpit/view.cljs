@@ -4,6 +4,8 @@
             [swarmpit.component.page-404 :as page-404]
             [swarmpit.component.page-error :as page-error]
             [swarmpit.component.account-settings :as account-settings]
+            [swarmpit.component.distribution.list :as distribution-list]
+            [swarmpit.component.distribution.create :as distribution-create]
             [swarmpit.component.stack.edit :as stack-edit]
             [swarmpit.component.stack.compose :as stack-compose]
             [swarmpit.component.stack.create :as stack-create]
@@ -37,13 +39,9 @@
             [swarmpit.component.user.create :as user-create]
             [swarmpit.component.user.edit :as user-edit]
             [swarmpit.component.registry.info :as registry-info]
-            [swarmpit.component.registry.list :as registry-list]
             [swarmpit.component.registry.create :as registry-create]
-            [swarmpit.component.registry.edit :as registry-edit]
             [swarmpit.component.dockerhub.info :as dockerhub-info]
-            [swarmpit.component.dockerhub.list :as dockerhub-list]
-            [swarmpit.component.dockerhub.create :as dockerhub-create]
-            [swarmpit.component.dockerhub.edit :as dockerhub-edit]))
+            [swarmpit.component.dockerhub.create :as dockerhub-create]))
 
 (defmulti dispatch (fn [route] (:handler route)))
 
@@ -70,6 +68,16 @@
 (defmethod dispatch :account-settings
   [_]
   (account-settings/form))
+
+;;; Distribution view
+
+(defmethod dispatch :distribution-list
+  [route]
+  (distribution-list/form route))
+
+(defmethod dispatch :distribution-create
+  [route]
+  (distribution-create/form route))
 
 ;;; Stack view
 
@@ -223,10 +231,6 @@
 
 ;;; Registry view
 
-(defmethod dispatch :registry-list
-  [route]
-  (registry-list/form route))
-
 (defmethod dispatch :registry-info
   [route]
   (registry-info/form route))
@@ -235,15 +239,7 @@
   [route]
   (registry-create/form route))
 
-(defmethod dispatch :registry-edit
-  [route]
-  (registry-edit/form route))
-
 ;;; Dockerhub user view
-
-(defmethod dispatch :dockerhub-user-list
-  [route]
-  (dockerhub-list/form route))
 
 (defmethod dispatch :dockerhub-user-info
   [route]
@@ -252,7 +248,3 @@
 (defmethod dispatch :dockerhub-user-create
   [route]
   (dockerhub-create/form route))
-
-(defmethod dispatch :dockerhub-user-edit
-  [route]
-  (dockerhub-edit/form route))

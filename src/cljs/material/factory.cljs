@@ -46,6 +46,7 @@
 (def avatar (create-factory js/MaterialUI.Avatar))
 (def paper (create-factory js/MaterialUI.Paper))
 (def hidden (create-factory js/MaterialUI.Hidden))
+
 (def chip (create-factory js/MaterialUI.Chip))
 (def button (create-factory js/MaterialUI.Button))
 (def icon-button (create-factory js/MaterialUI.IconButton))
@@ -68,6 +69,11 @@
 (def expansion-panel-summary (create-factory js/MaterialUI.ExpansionPanelSummary))
 (def expansion-panel-details (create-factory js/MaterialUI.ExpansionPanelDetails))
 (def expansion-panel-actions (create-factory js/MaterialUI.ExpansionPanelActions))
+
+(def stepper (create-factory js/MaterialUI.Stepper))
+(def step (create-factory js/MaterialUI.Step))
+(def step-label (create-factory js/MaterialUI.StepLabel))
+(def step-content (create-factory js/MaterialUI.StepContent))
 
 (def grid (create-factory js/MaterialUI.Grid))
 
@@ -129,6 +135,11 @@
 (def circle-icon (create-factory js/MaterialUIIcons.FiberManualRecord))
 (def filter-list-icon (create-factory js/MaterialUIIcons.FilterList))
 (def add-circle-out-icon (create-factory js/MaterialUIIcons.AddCircleOutline))
+(def cloud-icon (create-factory js/MaterialUIIcons.Cloud))
+(def storage-icon (create-factory js/MaterialUIIcons.Storage))
+(def computer-icon (create-factory js/MaterialUIIcons.Computer))
+(def share-icon (create-factory js/MaterialUIIcons.Share))
+(def lock-icon (create-factory js/MaterialUIIcons.Lock))
 
 (def create-mui-theme js/MaterialUI.createMuiTheme)
 

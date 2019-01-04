@@ -1,5 +1,6 @@
 (ns swarmpit.view-actions
-  (:require [swarmpit.component.stack.list :as stack-list]
+  (:require [swarmpit.component.distribution.list :as distribution-list]
+            [swarmpit.component.stack.list :as stack-list]
             [swarmpit.component.service.log :as service-log]
             [swarmpit.component.service.list :as service-list]
             [swarmpit.component.network.list :as network-list]
@@ -8,9 +9,7 @@
             [swarmpit.component.config.list :as config-list]
             [swarmpit.component.node.list :as node-list]
             [swarmpit.component.task.list :as task-list]
-            [swarmpit.component.user.list :as user-list]
-            [swarmpit.component.registry.list :as registry-list]
-            [swarmpit.component.dockerhub.list :as dockerhub-list]))
+            [swarmpit.component.user.list :as user-list]))
 
 (defmulti render (fn [route] (:handler route)))
 
@@ -24,6 +23,17 @@
 (defmethod render :account-settings
   [_]
   {:title "Account Settings"})
+
+;;; Distribution view
+
+(defmethod render :distribution-list
+  [_]
+  {:title     "Distributions"
+   :search-fn distribution-list/form-search-fn})
+
+(defmethod render :distribution-create
+  [_]
+  {:title "Distributions"})
 
 ;;; Stack view
 
@@ -188,11 +198,6 @@
 
 ;;; Registry view
 
-(defmethod render :registry-list
-  [_]
-  {:title     "Registries"
-   :search-fn registry-list/form-search-fn})
-
 (defmethod render :registry-info
   [_]
   {:title "Registries"})
@@ -201,25 +206,12 @@
   [_]
   {:title "Registries"})
 
-(defmethod render :registry-edit
-  [_]
-  {:title "Registries"})
-
 ;;; Dockerhub user view
-
-(defmethod render :dockerhub-user-list
-  [_]
-  {:title     "Dockerhub"
-   :search-fn dockerhub-list/form-search-fn})
 
 (defmethod render :dockerhub-user-info
   [_]
   {:title "Dockerhub"})
 
 (defmethod render :dockerhub-user-create
-  [_]
-  {:title "Dockerhub"})
-
-(defmethod render :dockerhub-user-edit
   [_]
   {:title "Dockerhub"})

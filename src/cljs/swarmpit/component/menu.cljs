@@ -16,57 +16,52 @@
 (def swarmpit-revision-page "https://github.com/swarmpit/swarmpit/commit")
 
 (def menu
-  [{:name "APPLICATIONS"}
+  [{:name    "Distributions"
+    :icon    (icon/cloud {})
+    :handler :distribution-list
+    :domain  :distribution}
+   {:name "APPLICATIONS"}
    {:name    "Stacks"
-    :icon    (comp/svg icon/stacks)
+    :icon    (comp/svg icon/stacks-path)
     :handler :stack-list
     :domain  :stack}
    {:name    "Services"
-    :icon    (comp/svg icon/services)
+    :icon    (comp/svg icon/services-path)
     :handler :service-list
     :domain  :service}
    {:name    "Tasks"
-    :icon    (comp/svg icon/tasks)
+    :icon    (comp/svg icon/tasks-path)
     :handler :task-list
     :domain  :task}
    {:name "INFRASTRUCTURE"}
    {:name    "Networks"
-    :icon    (comp/svg icon/networks)
+    :icon    (comp/svg icon/networks-path)
     :handler :network-list
     :domain  :network}
    {:name    "Nodes"
-    :icon    (comp/svg icon/nodes)
+    :icon    (icon/computer {})
     :handler :node-list
     :domain  :node}
    {:name "DATA"}
    {:name    "Volumes"
-    :icon    (comp/svg icon/volumes)
+    :icon    (icon/storage {})
     :handler :volume-list
     :domain  :volume}
    {:name    "Secrets"
-    :icon    (comp/svg icon/secrets)
+    :icon    (comp/svg icon/secrets-path)
     :handler :secret-list
     :route   "secrets"
     :domain  :secret}
    {:name    "Configs"
-    :icon    (comp/svg icon/configs)
+    :icon    (comp/svg icon/configs-path)
     :handler :config-list
     :route   "configs"
-    :domain  :config}
-   {:name "DISTRIBUTION"}
-   {:name    "Dockerhub"
-    :icon    (comp/svg icon/docker)
-    :handler :dockerhub-user-list
-    :domain  :dockerhub}
-   {:name    "Registry"
-    :icon    (comp/svg icon/registries)
-    :handler :registry-list
-    :domain  :registry}])
+    :domain  :config}])
 
 (def admin-menu
   [{:name "ADMIN"}
    {:name    "Users"
-    :icon    (comp/svg icon/users)
+    :icon    (comp/svg icon/users-path)
     :handler :user-list
     :domain  :user}])
 
@@ -112,7 +107,7 @@
        :className "Swarmpit-drawer-category-text"
        :key       (str "drawer-category-text-" name)})))
 
-(rum/defc drawer-item < rum/static [name icon handler selected?]
+(rum/defc drawer-item < rum/static [name icon handler domain selected?]
   (comp/list-item
     (merge {:button    true
             :className "Swarmpit-drawer-item"
@@ -121,7 +116,9 @@
                          (state/update-value [:mobileOpened] false state/layout-cursor)
                          (dispatch! (routes/path-for-frontend handler)))}
            (when selected?
-             {:className "Swarmpit-drawer-item-selected"}))
+             {:className "Swarmpit-drawer-item-selected"})
+           (when (= :distribution domain)
+             {:style {:marginTop "5px"}}))
     (comp/list-item-icon
       (merge {:color "primary"
               :key   (str "drawer-item-icon-" name)}
@@ -158,7 +155,7 @@
              selected (= page-domain domain)]
          (rum/with-key
            (if (some? icon)
-             (drawer-item name icon handler selected)
+             (drawer-item name icon handler domain selected)
              (drawer-category name))
            name)))
      (let [fmenu (filter-menu docker-api)]

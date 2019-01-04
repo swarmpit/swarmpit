@@ -29,20 +29,38 @@
     (routes/path-for-backend :registry-delete {:id registry-id})
     {:on-success (fn [_]
                    (dispatch!
-                     (routes/path-for-frontend :registry-list))
+                     (routes/path-for-frontend :distribution-list))
                    (message/info
                      (str "Registry " registry-id " has been removed.")))
      :on-error   (fn [{:keys [response]}]
                    (message/error
                      (str "Registry removing failed. " (:error response))))}))
 
+(defn- update-registry-handler
+  [registry-id delta]
+  (let [params (state/get-value state/form-value-cursor)]
+    (ajax/post
+      (routes/path-for-backend :registry-update {:id registry-id})
+      {:params     delta
+       :on-success (fn [_]
+                     (state/set-value (merge params delta) state/form-value-cursor)
+                     (message/info
+                       (str "Registry " registry-id " has been updated.")))
+       :on-error   (fn [{:keys [response]}]
+                     (message/error
+                       (str "Registry update failed. " (:error response))))})))
+
 (defn form-actions
-  [id]
-  [{:onClick #(dispatch! (routes/path-for-frontend :registry-edit {:id id}))
-    :icon    (comp/svg icon/edit)
-    :name    "Edit registry"}
+  [id public]
+  [(if (true? public)
+     {:onClick #(update-registry-handler id {:public false})
+      :icon    (icon/lock {})
+      :name    "Hide account"}
+     {:onClick #(update-registry-handler id {:public true})
+      :icon    (icon/share {})
+      :name    "Share account"})
    {:onClick #(delete-registry-handler id)
-    :icon    (comp/svg icon/trash)
+    :icon    (comp/svg icon/trash-path)
     :name    "Delete registry"}])
 
 (defn- init-form-state
@@ -77,7 +95,7 @@
                  :key       "rgch"
                  :subheader url
                  :action    (common/actions-menu
-                              (form-actions _id)
+                              (form-actions _id public)
                               :registryGeneralMenuAnchor
                               :registryGeneralMenuOpened)})
               (comp/card-content
@@ -87,7 +105,7 @@
                    (when withAuth
                      [:span "Authenticated with user " [:b username] "."])
                    [:br]
-                   [:span "Registry is " [:b (if public "public." "private.")]]]))
+                   [:span "Account is " [:b (if public "public." "private.")]]]))
               (comp/divider
                 {:key "rgd"})
               (comp/card-content

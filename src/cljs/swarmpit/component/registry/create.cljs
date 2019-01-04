@@ -1,7 +1,5 @@
 (ns swarmpit.component.registry.create
   (:require [material.components :as comp]
-            [material.component.composite :as composite]
-            [swarmpit.component.mixin :as mixin]
             [swarmpit.component.state :as state]
             [swarmpit.component.message :as message]
             [swarmpit.url :refer [dispatch!]]
@@ -49,12 +47,6 @@
      :checked  value
      :onChange #(state/update-value [:withAuth] (-> % .-target .-checked) state/form-value-cursor)}))
 
-(defn- form-public [value]
-  (comp/checkbox
-    {:checked  value
-     :value    (str value)
-     :onChange #(state/update-value [:public] (-> % .-target .-checked) state/form-value-cursor)}))
-
 (defn- form-username [value]
   (comp/text-field
     {:label           "Name"
@@ -99,13 +91,14 @@
                    (message/error
                      (str "Registry creation failed. " (:error response))))}))
 
-(defn- init-form-state
+(defn init-form-state
   []
-  (state/set-value {:valid?       false
+  (state/set-value {:distribution :registry
+                    :valid?       false
                     :processing?  false
                     :showPassword false} state/form-state-cursor))
 
-(defn- init-form-value
+(defn init-form-value
   []
   (state/set-value {:name     ""
                     :url      ""
@@ -114,66 +107,29 @@
                     :username ""
                     :password ""} state/form-value-cursor))
 
-(def mixin-init-form
-  (mixin/init-form
-    (fn [_]
-      (init-form-state)
-      (init-form-value))))
+(defn reset-form
+  []
+  (init-form-state)
+  (init-form-value))
 
-(rum/defc form < rum/reactive
-                 mixin-init-form [_]
-  (let [{:keys [name url public withAuth username password]} (state/react state/form-value-cursor)
-        {:keys [valid? processing? showPassword]} (state/react state/form-state-cursor)]
-    (comp/mui
-      (html
-        [:div.Swarmpit-form
-         [:div.Swarmpit-form-context
-          (comp/grid
-            {:item true
-             :xs   12
-             :sm   6
-             :md   4}
-            (comp/card
-              {:className "Swarmpit-form-card"
-               :key       "rcc"}
-              (comp/card-header
-                {:className "Swarmpit-form-card-header"
-                 :key       "rcch"
-                 :title     "New Registry"})
-              (comp/card-content
-                {:key "rccc"}
-                (comp/grid
-                  {:container true
-                   :key       "rcccc"
-                   :spacing   40}
-                  (comp/grid
-                    {:item true
-                     :key  "rcccig"
-                     :xs   12}
-                    (form-name name)
-                    (form-url url)
-                    (comp/form-control
-                      {:component "fieldset"
-                       :key       "rcccigc"}
-                      (comp/form-group
-                        {:key "rcccigcg"}
-                        (comp/form-control-label
-                          {:control (form-public public)
-                           :key     "rcccigcgp"
-                           :label   "Public"})
-                        (comp/form-control-label
-                          {:control (form-auth withAuth)
-                           :key     "rcccigcga"
-                           :label   "Authentication"})))
-                    (when withAuth
-                      (html
-                        [:div {:key "rcccigaut"}
-                         (form-username username)
-                         (form-password password showPassword)]))))
-                (html
-                  [:div {:class "Swarmpit-form-buttons"
-                         :key   "rcccbtn"}
-                   (composite/progress-button
-                     "Add registry"
-                     create-registry-handler
-                     processing?)]))))]]))))
+(rum/defc form < rum/reactive [_]
+  (let [{:keys [name url withAuth username password]} (state/react state/form-value-cursor)
+        {:keys [valid? showPassword]} (state/react state/form-state-cursor)]
+    (html
+      [:div
+       (form-name name)
+       (form-url url)
+       (comp/form-control
+         {:component "fieldset"
+          :key       "rcccigc"}
+         (comp/form-group
+           {:key "rcccigcg"}
+           (comp/form-control-label
+             {:control (form-auth withAuth)
+              :key     "rcccigcga"
+              :label   "Secured"})))
+       (when withAuth
+         (html
+           [:div {:key "rcccigaut"}
+            (form-username username)
+            (form-password password showPassword)]))])))

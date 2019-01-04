@@ -91,52 +91,48 @@
                                    :delete {[:id] :user-delete}
                                    :post   {[:id] :user-update}}}}])
 
-(def frontend ["" {"/"                        :index
-                   "/login"                   :login
-                   "/error"                   :error
-                   "/unauthorized"            :unauthorized
-                   "/account-settings"        :account-settings
-                   "/services"                {""               :service-list
-                                               "/create/wizard" {"/image"  :service-create-image
-                                                                 "/config" :service-create-config}
-                                               ["/" :id]        {""      :service-info
-                                                                 "/edit" :service-edit
-                                                                 "/log"  :service-log}}
-                   "/stacks"                  {""                      :stack-list
-                                               "/create"               :stack-create
-                                               ["/" :name]             :stack-info
-                                               ["/" :name "/previous"] :stack-previous
-                                               ["/" :name "/last"]     :stack-last
-                                               ["/" :name "/compose"]  :stack-compose}
-                   "/networks"                {""        :network-list
-                                               "/create" :network-create
-                                               ["/" :id] :network-info}
-                   "/volumes"                 {""          :volume-list
-                                               "/create"   :volume-create
-                                               ["/" :name] :volume-info}
-                   "/secrets"                 {""        :secret-list
-                                               "/create" :secret-create
-                                               ["/" :id] :secret-info}
-                   "/configs"                 {""        :config-list
-                                               "/create" :config-create
-                                               ["/" :id] :config-info}
-                   "/nodes"                   {""                :node-list
-                                               ["/" :id]         :node-info
-                                               ["/" :id "/edit"] :node-edit}
-                   "/tasks"                   {""        :task-list
-                                               ["/" :id] :task-info}
-                   "/distribution/registries" {""                :registry-list
-                                               "/add"            :registry-create
-                                               ["/" :id]         :registry-info
-                                               ["/" :id "/edit"] :registry-edit}
-                   "/distribution/dockerhub"  {""                :dockerhub-user-list
-                                               "/add"            :dockerhub-user-create
-                                               ["/" :id]         :dockerhub-user-info
-                                               ["/" :id "/edit"] :dockerhub-user-edit}
-                   "/users"                   {""                :user-list
-                                               "/create"         :user-create
-                                               ["/" :id]         :user-info
-                                               ["/" :id "/edit"] :user-edit}}])
+(def frontend ["" {"/"                       :index
+                   "/login"                  :login
+                   "/error"                  :error
+                   "/unauthorized"           :unauthorized
+                   "/account-settings"       :account-settings
+                   "/services"               {""               :service-list
+                                              "/create/wizard" {"/image"  :service-create-image
+                                                                "/config" :service-create-config}
+                                              ["/" :id]        {""      :service-info
+                                                                "/edit" :service-edit
+                                                                "/log"  :service-log}}
+                   "/stacks"                 {""                      :stack-list
+                                              "/create"               :stack-create
+                                              ["/" :name]             :stack-info
+                                              ["/" :name "/previous"] :stack-previous
+                                              ["/" :name "/last"]     :stack-last
+                                              ["/" :name "/compose"]  :stack-compose}
+                   "/networks"               {""        :network-list
+                                              "/create" :network-create
+                                              ["/" :id] :network-info}
+                   "/volumes"                {""          :volume-list
+                                              "/create"   :volume-create
+                                              ["/" :name] :volume-info}
+                   "/secrets"                {""        :secret-list
+                                              "/create" :secret-create
+                                              ["/" :id] :secret-info}
+                   "/configs"                {""        :config-list
+                                              "/create" :config-create
+                                              ["/" :id] :config-info}
+                   "/nodes"                  {""                :node-list
+                                              ["/" :id]         :node-info
+                                              ["/" :id "/edit"] :node-edit}
+                   "/tasks"                  {""        :task-list
+                                              ["/" :id] :task-info}
+                   "/distribution"           {""        :distribution-list
+                                              "/create" :distribution-create}
+                   "/distribution/registry"  {["/" :id] :registry-info}
+                   "/distribution/dockerhub" {["/" :id] :dockerhub-user-info}
+                   "/users"                  {""                :user-list
+                                              "/create"         :user-create
+                                              ["/" :id]         :user-info
+                                              ["/" :id "/edit"] :user-edit}}])
 
 (defn- path
   [routes prefix handler params query]

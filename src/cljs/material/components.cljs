@@ -207,6 +207,22 @@
   ([props] (f/checkbox (clj->js props)))
   ([] (f/checkbox nil)))
 
+(defn stepper
+  [props & childs]
+  (f/stepper (clj->js props) childs))
+
+(defn step
+  [props & childs]
+  (f/step (clj->js props) childs))
+
+(defn step-label
+  [props label]
+  (f/step-label (clj->js props) label))
+
+(defn step-content
+  [props & childs]
+  (f/step-content (clj->js props) childs))
+
 (defn select
   [props & childs]
   (f/select (clj->js props) childs))
