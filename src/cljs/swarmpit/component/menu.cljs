@@ -110,6 +110,7 @@
 (rum/defc drawer-item < rum/static [name icon handler domain selected?]
   (comp/list-item
     (merge {:button    true
+            :dense     true
             :className "Swarmpit-drawer-item"
             :key       (str "drawer-item-" name)
             :onClick   (fn []
@@ -118,7 +119,7 @@
            (when selected?
              {:className "Swarmpit-drawer-item-selected"})
            (when (= :distribution domain)
-             {:style {:marginTop "5px"}}))
+             {:style {:marginTop "10px"}}))
     (comp/list-item-icon
       (merge {:color "primary"
               :key   (str "drawer-item-icon-" name)}
@@ -126,7 +127,7 @@
                {:className "Swarmpit-drawer-item-icon-selected"}
                {:className "Swarmpit-drawer-item-icon"})) icon)
     (comp/list-item-text
-      (merge {:primary name
+      (merge {:primary (comp/typography {:variant "subtitle2"} name)
               :key     (str "drawer-item-text-" name)}
              (if selected?
                {:className "Swarmpit-drawer-item-text-selected"}

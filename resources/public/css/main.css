@@ -217,7 +217,7 @@ a {
 
 .Swarmpit-list-item-icon,
 .Swarmpit-drawer-item-icon,
-.Swarmpit-drawer-item-text > span {
+.Swarmpit-drawer-item-text > h6 {
     color: rgb(117, 117, 117) !important;
 }
 
@@ -227,7 +227,7 @@ a {
 }
 
 .Swarmpit-drawer-item-icon-selected,
-.Swarmpit-drawer-item-text-selected > span {
+.Swarmpit-drawer-item-text-selected > h6 {
     color: #65519f !important;
     font-weight: 600 !important;
 }
