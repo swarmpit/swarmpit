@@ -66,7 +66,7 @@
                     (comp/icon-button
                       {:aria-label "Delete"
                        :onClick    #(delete-volume-handler volumeName)}
-                      (comp/svg icon/trash)))})
+                      (comp/svg icon/trash-path)))})
     (comp/card-content
       {:key "vgcc"}
       (html

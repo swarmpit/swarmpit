@@ -112,20 +112,20 @@
 (defn form-actions
   [stack-name stackfile]
   [{:onClick #(dispatch! (routes/path-for-frontend :stack-compose {:name stack-name}))
-    :icon    (comp/svg icon/edit)
+    :icon    (comp/svg icon/edit-path)
     :name    "Edit stack"}
    {:onClick  #(redeploy-stack-handler stack-name)
     :disabled (not (some? (:spec stackfile)))
     :more     true
-    :icon     (comp/svg icon/redeploy)
+    :icon     (comp/svg icon/redeploy-path)
     :name     "Redeploy stack"}
    {:onClick  #(rollback-stack-handler stack-name)
     :disabled (not (some? (:previousSpec stackfile)))
     :more     true
-    :icon     (comp/svg icon/rollback)
+    :icon     (comp/svg icon/rollback-path)
     :name     "Rollback stack"}
    {:onClick #(delete-stack-handler stack-name)
-    :icon    (comp/svg icon/trash)
+    :icon    (comp/svg icon/trash-path)
     :name    "Delete stack"}])
 
 ;(defn- stack-render-item

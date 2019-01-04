@@ -20,7 +20,8 @@
   (let [anchorEl (state/react (conj state/form-state-cursor :listFilterAnchorEl))]
     (html
       [:div {:key "ltfm"}
-       [:div.Swarmpit-appbar-section-desktop
+       [:div {:className "Swarmpit-appbar-section-desktop"
+              :key       "lffmsd"}
         (comp/button
           {:aria-owns     (when anchorEl "list-filter-menu")
            :aria-haspopup "true"
@@ -28,9 +29,11 @@
            :key           "lfmbtn"
            :onClick       (fn [e]
                             (state/update-value [:listFilterAnchorEl] (.-currentTarget e) state/form-state-cursor))}
-          (icon/filter-list {:className "Swarmpit-button-icon"})
+          (icon/filter-list {:className "Swarmpit-button-icon"
+                             :key       "lfmbtnico"})
           "Filter")]
-       [:div.Swarmpit-appbar-section-mobile
+       [:div {:className "Swarmpit-appbar-section-mobile"
+              :key       "lffmsm"}
         (comp/tooltip
           {:title "Filter"
            :key   "lfmitt"}
@@ -56,7 +59,8 @@
            {:key       "lfmi"
             :className "Swarmpit-menu-info"
             :disabled  true}
-           (html [:span (str "Filter " (str/lower-case title) " by")]))
+           (html [:span {:key "lfmicnt"}
+                  (str "Filter " (str/lower-case title) " by")]))
          (map #(comp/menu-item
                  {:key      (str "mi-" (:name %))
                   :disabled (:disabled %)
@@ -232,6 +236,7 @@
       [:div
        [:div.Swarmpit-appbar-section-desktop
         (->> items
+             (filter #(some? %))
              (filter #(and (nil? (:more %))
                            (or (nil? (:disabled %))
                                (false? (:disabled %)))))

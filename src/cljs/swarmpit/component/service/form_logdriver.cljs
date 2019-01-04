@@ -101,6 +101,6 @@
             {:color   "primary"
              :onClick add-item}
             (comp/svg
-              {:key "seflogcgiobico"} icon/add-small) "Add option"))
+              {:key "seflogcgiobico"} icon/add-small-path) "Add option"))
         (when (not (empty? opts))
           (form-table opts))))))

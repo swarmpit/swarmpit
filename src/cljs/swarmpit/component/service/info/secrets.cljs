@@ -40,7 +40,7 @@
                                    :service-edit
                                    {:id service-id}
                                    {:section "Secrets"})}
-                    (comp/svg icon/edit))})
+                    (comp/svg icon/edit-path))})
     (comp/card-content
       {:className "Swarmpit-table-card-content"
        :key       "ssecc"}

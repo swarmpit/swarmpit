@@ -107,23 +107,23 @@
 (defn form-actions
   [service service-id]
   [{:onClick #(dispatch! (routes/path-for-frontend :service-edit {:id service-id}))
-    :icon    (comp/svg icon/edit)
+    :icon    (comp/svg icon/edit-path)
     :name    "Edit service"}
    {:onClick #(dispatch! (routes/path-for-frontend :stack-create nil {:from service-id}))
-    :icon    (comp/svg icon/stacks)
+    :icon    (comp/svg icon/stacks-path)
     :more    true
     :name    "Compose stack"}
    {:onClick #(redeploy-service-handler service-id)
-    :icon    (comp/svg icon/redeploy)
+    :icon    (comp/svg icon/redeploy-path)
     :more    true
     :name    "Redeploy service"}
    {:onClick  #(rollback-service-handler service-id)
     :disabled (not (get-in service [:deployment :rollbackAllowed]))
-    :icon     (comp/svg icon/rollback)
+    :icon     (comp/svg icon/rollback-path)
     :more     true
     :name     "Rollback service"}
    {:onClick #(delete-service-handler service-id)
-    :icon    (comp/svg icon/trash)
+    :icon    (comp/svg icon/trash-path)
     :name    "Delete service"}])
 
 (defn- init-form-state

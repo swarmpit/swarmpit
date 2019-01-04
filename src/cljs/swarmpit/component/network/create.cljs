@@ -229,7 +229,7 @@
            :key     "nsdigob"
            :onClick add-driver-opt}
           (comp/svg
-            {:key "nsdigobi"} icon/add-small) "Add option")))
+            {:key "nsdigobi"} icon/add-small-path) "Add option")))
     (when (not (empty? options))
       (comp/grid
         {:item true

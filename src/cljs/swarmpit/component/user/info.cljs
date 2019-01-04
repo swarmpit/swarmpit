@@ -41,11 +41,11 @@
 (defn form-actions
   [username id]
   [{:onClick #(dispatch! (routes/path-for-frontend :user-edit {:id id}))
-    :icon    (comp/svg icon/edit)
+    :icon    (comp/svg icon/edit-path)
     :name    "Edit user"}
    {:onClick  #(delete-user-handler id)
     :disabled (= (storage/user) username)
-    :icon     (comp/svg icon/trash)
+    :icon     (comp/svg icon/trash-path)
     :name     "Delete user"}])
 
 (defn- init-form-state

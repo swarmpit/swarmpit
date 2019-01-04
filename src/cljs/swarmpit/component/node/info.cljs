@@ -48,7 +48,7 @@
                     (comp/icon-button
                       {:aria-label "Edit"
                        :href       (routes/path-for-frontend :node-edit {:id (:id node)})}
-                      (comp/svg icon/edit)))})
+                      (comp/svg icon/edit-path)))})
     (comp/card-content
       {:key "ngcc"}
       (html
@@ -92,7 +92,7 @@
                      :href       (routes/path-for-frontend
                                    :node-edit {:id id}
                                    {:section "Labels"})}
-                    (comp/svg icon/edit))})
+                    (comp/svg icon/edit-path))})
     (comp/card-content
       {:className "Swarmpit-table-card-content"
        :key       "nlcc"}

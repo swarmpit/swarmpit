@@ -33,7 +33,7 @@
                                    :service-edit
                                    {:id service-id}
                                    {:section "Ports"})}
-                    (comp/svg icon/edit))})
+                    (comp/svg icon/edit-path))})
     (comp/card-content
       {:className "Swarmpit-table-card-content"
        :key       "spcc"}

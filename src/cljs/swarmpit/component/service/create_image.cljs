@@ -85,11 +85,11 @@
               (comp/tab
                 {:key   "scicc-tab2"
                  :label "SEARCH PRIVATE"
-                 :icon  (comp/svg icon/docker)})
+                 :icon  (comp/svg icon/docker-path)})
               (comp/tab
                 {:key   "scicc-tab3"
                  :label "OTHER REGISTRIES"
-                 :icon  (comp/svg icon/registries)})))
+                 :icon  (comp/svg icon/registries-path)})))
           (comp/card-content
             {:key "scicct"}
             (case tab

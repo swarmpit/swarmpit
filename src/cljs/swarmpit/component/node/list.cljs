@@ -78,7 +78,7 @@
               :className "Swarmpit-form-card-header"
               :key       (str "nlich-" index)
               :subheader (:address item)
-              :avatar    (comp/svg (icon/os (:os item)))})
+              :avatar    (comp/svg (icon/os-path (:os item)))})
            (comp/card-content
              {:key (str "nlicc-" index)}
              (str "docker " (:engine item)))

@@ -64,7 +64,7 @@
                     (comp/icon-button
                       {:aria-label "Delete"
                        :onClick    #(delete-network-handler id)}
-                      (comp/svg icon/trash)))})
+                      (comp/svg icon/trash-path)))})
     (when (and (:subnet ipam)
                (:gateway ipam))
       (comp/card-content

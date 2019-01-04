@@ -34,25 +34,6 @@
      :disabled        true
      :InputLabelProps {:shrink true}}))
 
-;(defn- form-role [value]
-;  (comp/text-field
-;    {:fullWidth       true
-;     :key             "role"
-;     :label           "Role"
-;     :select          true
-;     :value           value
-;     :variant         "outlined"
-;     :margin          "normal"
-;     :style           {:maxWidth "350px"}
-;     :InputLabelProps {:shrink true}
-;     :onChange        #(state/update-value [:role] (-> % .-target .-value) state/form-value-cursor)}
-;    (comp/menu-item
-;      {:key   "worker"
-;       :value "worker"} "worker")
-;    (comp/menu-item
-;      {:key   "manager"
-;       :value "manager"} "manager")))
-
 (defn- form-role [value]
   (comp/form-control
     {:component "fieldset"
@@ -255,7 +236,7 @@
                         {:color   "primary"
                          :onClick add-label}
                         (comp/svg
-                          {:key "necccilbtn"} icon/add-small) "Add label"))
+                          {:key "necccilbtn"} icon/add-small-path) "Add label"))
                     (form-label-table labels)))
                 (html
                   [:div {:class "Swarmpit-form-buttons"

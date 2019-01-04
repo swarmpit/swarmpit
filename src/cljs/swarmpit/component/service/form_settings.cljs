@@ -189,11 +189,6 @@
           (form-replicas replicas)))
       (comp/grid
         {:item true
-         :key  "sfscginet"
-         :xs   12}
-        (networks/form))
-      (comp/grid
-        {:item true
          :key  "sfscgicomm"
          :xs   12}
         (form-command (str/join " " command))))))

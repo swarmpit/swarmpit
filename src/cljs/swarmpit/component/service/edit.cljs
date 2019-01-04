@@ -142,6 +142,21 @@
     (rum/with-key
       (settings/form true) "sefgss")))
 
+(rum/defc form-networks < rum/static []
+  (comp/grid
+    {:item    true
+     :key     "secgifccgins"
+     ;:style {:backgroundColor "#F5F5F6"
+     ;        :borderTop       "1px solid rgba(0, 0, 0, 0.06)"
+     ;        :borderBottom    "1px solid rgba(0, 0, 0, 0.06)"
+     ;        :padding         "46px"}
+     :gutters true
+     :xs      12}
+    (form/section
+      "Networks")
+    (rum/with-key
+      (networks/form) "sefns")))
+
 (rum/defc form-ports < rum/static []
   (comp/grid
     {:item true
@@ -153,22 +168,22 @@
         {:color   "primary"
          :onClick ports/add-item}
         (comp/svg
-          {:key "sefpsico"} icon/add-small) "Add port"))
+          {:key "sefpsico"} icon/add-small-path) "Add port"))
     (rum/with-key
       (ports/form) "sefps")))
 
 (rum/defc form-mounts < rum/static []
   (comp/grid
-    {:item true
-     :key  "secgifccgicm"
-     :xs   12}
+    {:item  true
+     :key   "secgifccgicm"
+     :xs    12}
     (form/section
       "Mounts"
       (comp/button
         {:color   "primary"
          :onClick mounts/add-item}
         (comp/svg
-          {:key "sefmsico"} icon/add-small) "Add mount"))
+          {:key "sefmsico"} icon/add-small-path) "Add mount"))
     (rum/with-key
       (mounts/form) "sefms")))
 
@@ -183,22 +198,22 @@
         {:color   "primary"
          :onClick secrets/add-item}
         (comp/svg
-          {:key "sefssico"} icon/add-small) "Add secret"))
+          {:key "sefssico"} icon/add-small-path) "Add secret"))
     (rum/with-key
       (secrets/form) "sefss")))
 
 (rum/defc form-configs < rum/reactive []
   (comp/grid
-    {:item true
-     :key  "secgifccgic"
-     :xs   12}
+    {:item  true
+     :key   "secgifccgic"
+     :xs    12}
     (form/section
       "Configs"
       (comp/button
         {:color   "primary"
          :onClick configs/add-item}
         (comp/svg
-          {:key "sefcsico"} icon/add-small) "Add config"))
+          {:key "sefcsico"} icon/add-small-path) "Add config"))
     (rum/with-key
       (configs/form) "sefcs")))
 
@@ -213,22 +228,22 @@
         {:color   "primary"
          :onClick variables/add-item}
         (comp/svg
-          {:key "sefevsico"} icon/add-small) "Add variable"))
+          {:key "sefevsico"} icon/add-small-path) "Add variable"))
     (rum/with-key
       (variables/form) "sefevs")))
 
 (rum/defc form-labels < rum/static []
   (comp/grid
-    {:item true
-     :key  "secgifccgil"
-     :xs   12}
+    {:item  true
+     :key   "secgifccgil"
+     :xs    12}
     (form/section
       "Labels"
       (comp/button
         {:color   "primary"
          :onClick labels/add-item}
         (comp/svg
-          {:key "seflasico"} icon/add-small) "Add label"))
+          {:key "seflasico"} icon/add-small-path) "Add label"))
     (rum/with-key
       (labels/form) "seflas")))
 
@@ -244,9 +259,9 @@
 
 (rum/defc form-resources < rum/static []
   (comp/grid
-    {:item true
-     :key  "secgifccgir"
-     :xs   12}
+    {:item  true
+     :key   "secgifccgir"
+     :xs    12}
     (form/section
       "Resources")
     (rum/with-key
@@ -290,13 +305,17 @@
                    :key       "secgifch"
                    :title     "Edit Service"})
                 (comp/card-content
-                  {:key "secgifcc"}
+                  {:key   "secgifcc"
+                   ;:style {:padding 0}
+                   }
                   (comp/grid
                     {:container true
                      :key       "secgifcccg"
                      :spacing   40}
                     (rum/with-key
                       (form-settings) "secgifcccgfs")
+                    (rum/with-key
+                      (form-networks) "secgifcccgfnet")
                     (rum/with-key
                       (form-ports) "secgifcccgfp")
                     (rum/with-key

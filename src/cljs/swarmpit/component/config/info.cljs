@@ -69,7 +69,7 @@
 (defn form-actions
   [{:keys [params]}]
   [{:onClick #(delete-config-handler (:id params))
-    :icon    (comp/svg icon/trash)
+    :icon    (comp/svg icon/trash-path)
     :name    "Delete config"}])
 
 (defn- init-form-state
@@ -116,7 +116,7 @@
                               (comp/icon-button
                                 {:aria-label "Delete"
                                  :onClick    #(delete-config-handler (:id config))}
-                                (comp/svg icon/trash)))})
+                                (comp/svg icon/trash-path)))})
               (comp/card-content
                 {:key "cgcc"}
                 (form-data (parse-data (:data config)))

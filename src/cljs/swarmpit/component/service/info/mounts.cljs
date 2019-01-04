@@ -65,7 +65,7 @@
                                      :service-edit
                                      {:id service-id}
                                      {:section "Mounts"})}
-                      (comp/svg icon/edit))})
+                      (comp/svg icon/edit-path))})
       (comp/card-content
         {:className "Swarmpit-table-card-content"
          :key       "smcc"}

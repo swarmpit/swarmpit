@@ -46,7 +46,7 @@
 (defn form-actions
   [{:keys [params]}]
   [{:onClick #(delete-secret-handler (:id params))
-    :icon    (comp/svg icon/trash)
+    :icon    (comp/svg icon/trash-path)
     :name    "Delete secret"}])
 
 (defn- init-form-state
@@ -86,7 +86,7 @@
                               (comp/icon-button
                                 {:aria-label "Delete"
                                  :onClick    #(delete-secret-handler (:id secret))}
-                                (comp/svg icon/trash)))})
+                                (comp/svg icon/trash-path)))})
               (comp/divider
                 {:key "sgd"})
               (comp/card-content

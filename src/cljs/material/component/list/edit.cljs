@@ -27,7 +27,7 @@
         (cmp/icon-button
           {:color   "secondary"
            :onClick #(delete-handler-fn index)}
-          (cmp/svg icon/trash))))))
+          (cmp/svg icon/trash-path))))))
 
 (defn list-item-small [render-metadata index item delete-handler-fn]
   (cmp/list-item

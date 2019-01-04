@@ -50,7 +50,7 @@
          (:owner user))
     (:username user)
     (html [:span (:username user)
-           [:span.owner-item (str " [" (:owner user) "]")]])))
+           [:span.Swarmpit-image-owner (str " [" (:owner user) "]")]])))
 
 (defn- form-username [user users]
   (comp/text-field

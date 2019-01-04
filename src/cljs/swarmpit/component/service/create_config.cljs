@@ -147,7 +147,7 @@
          :key     "scfpsbtn"
          :onClick ports/add-item}
         (comp/svg
-          {:key "scfpsico"} icon/add-small) "Add port"))
+          {:key "scfpsico"} icon/add-small-path) "Add port"))
     (rum/with-key
       (ports/form) "scfps")))
 
@@ -163,7 +163,7 @@
          :key     "scfmsbtn"
          :onClick mounts/add-item}
         (comp/svg
-          {:key "scfmsico"} icon/add-small) "Add mount"))
+          {:key "scfmsico"} icon/add-small-path) "Add mount"))
     (rum/with-key
       (mounts/form) "scfms")))
 
@@ -179,7 +179,7 @@
          :key     "scfssbtn"
          :onClick secrets/add-item}
         (comp/svg
-          {:key "scfssico"} icon/add-small) "Add secret"))
+          {:key "scfssico"} icon/add-small-path) "Add secret"))
     (rum/with-key
       (secrets/form) "scfss")))
 
@@ -195,7 +195,7 @@
          :key     "scfcsbtn"
          :onClick configs/add-item}
         (comp/svg
-          {:key "scfcsico"} icon/add-small) "Add config"))
+          {:key "scfcsico"} icon/add-small-path) "Add config"))
     (rum/with-key
       (configs/form) "scfcs")))
 
@@ -211,7 +211,7 @@
          :key     "scfevsbtn"
          :onClick variables/add-item}
         (comp/svg
-          {:key "scfevsico"} icon/add-small) "Add variable"))
+          {:key "scfevsico"} icon/add-small-path) "Add variable"))
     (rum/with-key
       (variables/form) "scfevs")))
 
@@ -227,7 +227,7 @@
          :key     "scflasbtn"
          :onClick labels/add-item}
         (comp/svg
-          {:key "scflasico"} icon/add-small) "Add label"))
+          {:key "scflasico"} icon/add-small-path) "Add label"))
     (rum/with-key
       (labels/form) "scflas")))
 

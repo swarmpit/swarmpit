@@ -25,7 +25,7 @@
                                    :service-edit
                                    {:id service-id}
                                    {:section "Logging"})}
-                    (comp/svg icon/edit))})
+                    (comp/svg icon/edit-path))})
     (comp/card-content
       {:className "Swarmpit-table-card-content"
        :key       "sldcc"}

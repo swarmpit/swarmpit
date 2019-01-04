@@ -43,7 +43,7 @@
                                      :service-edit
                                      {:id service-id}
                                      {:section "Deployment"})}
-                      (comp/svg icon/edit))})
+                      (comp/svg icon/edit-path))})
       (comp/card-content
         {:key "sdcc"}
         (comp/grid

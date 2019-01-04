@@ -50,7 +50,6 @@
      :value           value
      :required        true
      :helperText      "Specify volume name or leave empty for random"
-     :margin          "normal"
      :InputLabelProps {:shrink true}
      :onChange        #(state/update-value [:volumeName] (-> % .-target .-value) state/form-value-cursor)}))
 
@@ -132,7 +131,7 @@
           {:color   "primary"
            :onClick add-driver-opt}
           (comp/svg
-            {:key "vccccdcioico"} icon/add-small) "Add option")))
+            {:key "vccccdcioico"} icon/add-small-path) "Add option")))
     (when (not (empty? options))
       (comp/grid
         {:item true
