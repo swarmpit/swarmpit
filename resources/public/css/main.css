@@ -609,6 +609,8 @@ a {
 }
 
 .Swarmpit-node-stat-graph {
+    min-width: 96px;
+    min-height: 96px;
     width: 120px;
     height: 120px;
 }
@@ -671,6 +673,10 @@ a {
         padding: 0 10px;
     }
 
+    .Swarmpit-form-context {
+        padding: 20px 10px;
+    }
+
     .Swarmpit-form-toolbar-context {
         margin-top: 10px;
         padding: 0 10px;
@@ -683,6 +689,10 @@ a {
     .Swarmpit-form-panel-search {
         width: 100%;
         margin-bottom: 10px;
+    }
+
+    .Swarmpit-node-stat {
+        padding: 0;
     }
 }
 

@@ -8,7 +8,7 @@
       [:div {:className className
              :key       (str "p-" id "-" hashd)}
        (comp/responsive-container
-         {:key (str "rc-" id)}
+         {:key     (str "rc-" id)}
          (comp/pie-chart
            {:key (str "pc-" id)}
            (comp/pie

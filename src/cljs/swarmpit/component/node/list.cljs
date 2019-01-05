@@ -65,6 +65,11 @@
         disk-bytes (-> item :stats :disk :total)]
     (comp/grid
       {:item true
+       :xs   12
+       :sm   6
+       :md   6
+       :lg   4
+       :xl   3
        :key  (str "nlig-" index)}
       (html
         [:a {:class "Swarmpit-node-href"
