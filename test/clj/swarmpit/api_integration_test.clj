@@ -41,7 +41,7 @@
                     (create-service nil)
                     :id)
             created (service id)]
-        (is (= "nginx" (-> created :repository :name)))
+        (is (= "hello-world" (-> created :repository :name)))
         (is (= 1 (-> created :replicas)))
         (update-service id (merge created {:replicas 2}))
         (is (= 2 (-> id (service) :replicas)))
