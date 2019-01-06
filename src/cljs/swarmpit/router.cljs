@@ -1,43 +1,38 @@
 (ns swarmpit.router
-  (:require [bidi.router :as br]
-            [swarmpit.routes :as routes]
-            [swarmpit.component.state :as state]
+  (:require [bidi.bidi :as bidi]
             [cemerick.url :refer [query->map]]
-            [swarmpit.url :refer [dispatch! query-string]]
-            [clojure.walk :refer [keywordize-keys]]))
+            [clojure.walk :refer [keywordize-keys]]
+            [pushy.core :as pushy]
+            [swarmpit.component.state :as state]
+            [swarmpit.routes :as routes]
+            [swarmpit.url :refer [dispatch! query-string]]))
 
-(defonce !router (atom nil))
+(defonce !route (atom {}))
 
-(defonce !route (atom nil))
+(add-watch !route :watcher
+ (fn [key atom old-location new-location]
+   (let [query-params (keywordize-keys (query->map (query-string)))
+         route-params (:route-params new-location)
+         handler (:handler new-location)]
+     (state/set-value {:handler handler
+                       :params  (merge route-params query-params)} state/route-cursor))))
 
-(defn replace-location
-  [location]
-  (br/replace-location! @!router location))
+(defn- set-page! [match]
+  (if (= :index (:handler match))
+    (reset! !route {:handler :stack-list})
+    (reset! !route match)))
+
+(def history
+  (pushy/pushy set-page! (partial bidi/match-route routes/frontend)))
 
 (defn set-location
   [location]
-  (br/set-location! @!router location))
+  (pushy/set-token! history location))
 
 (defn set-route
   [location]
-  (reset! !route location))
-
-(add-watch !route :watcher
-           (fn [key atom old-location new-location]
-             (let [query-params (keywordize-keys (query->map (query-string)))
-                   route-params (:route-params new-location)
-                   handler (:handler new-location)]
-               (state/set-value {:handler handler
-                                 :params  (merge route-params query-params)} state/route-cursor))))
-
-(defn- on-navigate
-  [location]
-  ;; Render to service list by default as we don't have any index page right now
-  (if (= :index (:handler location))
-    (set-route {:handler :stack-list})
-    (set-route location)))
+  (set-page! location))
 
 (defn start
   []
-  (let [router (br/start-router! routes/frontend {:on-navigate on-navigate})]
-    (reset! !router router)))
+  (pushy/start! history))

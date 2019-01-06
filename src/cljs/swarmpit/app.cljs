@@ -1,8 +1,7 @@
 (ns swarmpit.app
   (:require [swarmpit.router :as router]
             [swarmpit.component.layout :as layout]
-            [swarmpit.component.message :as message]
-            ))
+            [swarmpit.component.message :as message]))
 
 ;; Starting router
 
