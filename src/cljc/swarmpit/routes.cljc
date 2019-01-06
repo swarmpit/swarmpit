@@ -4,92 +4,95 @@
             [clojure.string :as str]))
 
 (def backend
-  ["" {"/"              {:get :index}
-       "/events"        {:get  :events
-                         :post :event-push}
-       "/version"       {:get :version}
-       "/login"         {:post :login}
-       "/slt"           {:get :slt}
-       "/password"      {:post :password}
-       "/me"            {:get :me}
-       "/api-token"     {:post   :api-token-generate
-                         :delete :api-token-remove}
-       "/repository/"   {:get {"tags"  :repository-tags
-                               "ports" :repository-ports}}
-       "/distribution/" {"public"     {:get {"/repositories" :public-repositories}}
-                         "dockerhub"  {""  {:get  :dockerhub-users
-                                            :post :dockerhub-user-create}
-                                       "/" {:get    {[:id "/repositories"] :dockerhub-repositories
-                                                     [:id]                 :dockerhub-user}
-                                            :delete {[:id] :dockerhub-user-delete}
-                                            :post   {[:id] :dockerhub-user-update}}}
-                         "registries" {""  {:get  :registries
-                                            :post :registry-create}
-                                       "/" {:get    {[:id "/repositories"] :registry-repositories
-                                                     [:id]                 :registry}
-                                            :delete {[:id] :registry-delete}
-                                            :post   {[:id] :registry-update}}}}
-       "/stacks"        {:get  :stacks
-                         :post :stack-create}
-       "/stacks/"       {:get    {[:name] {"/file"     :stack-file
-                                           "/compose"  :stack-compose
-                                           "/services" :stack-services
-                                           "/networks" :stack-networks
-                                           "/volumes"  :stack-volumes
-                                           "/configs"  :stack-configs
-                                           "/secrets"  :stack-secrets}}
-                         :delete {[:name] :stack-delete}
-                         :post   {[:name] {""          :stack-update
-                                           "/redeploy" :stack-redeploy
-                                           "/rollback" :stack-rollback}}}
-       "/services"      {:get  :services
-                         :post :service-create}
-       "/services/"     {:get    {[:id] {""          :service
-                                         "/logs"     :service-logs
-                                         "/networks" :service-networks
-                                         "/tasks"    :service-tasks
-                                         "/compose"  :service-compose}}
-                         :delete {[:id] :service-delete}
-                         :post   {[:id] {""          :service-update
-                                         "/redeploy" :service-redeploy
-                                         "/rollback" :service-rollback}}}
-       "/networks"      {:get  :networks
-                         :post :network-create}
-       "/networks/"     {:get    {[:id] {""          :network
-                                         "/services" :network-services}}
-                         :delete {[:id] :network-delete}}
-       "/volumes"       {:get  :volumes
-                         :post :volume-create}
-       "/volumes/"      {:get    {[:name] {""          :volume
-                                           "/services" :volume-services}}
-                         :delete {[:name] :volume-delete}}
-       "/secrets"       {:get  :secrets
-                         :post :secret-create}
-       "/secrets/"      {:get    {[:id] {""          :secret
-                                         "/services" :secret-services}}
-                         :delete {[:id] :secret-delete}
-                         :post   {[:id] :secret-update}}
-       "/configs"       {:get  :configs
-                         :post :config-create}
-       "/configs/"      {:get    {[:id] {""          :config
-                                         "/services" :config-services}}
-                         :delete {[:id] :config-delete}}
-       "/nodes"         {:get :nodes}
-       "/placement"     {:get :placement}
-       "/nodes/"        {:get  {[:id] {""       :node
-                                       "/tasks" :node-tasks}}
-                         :post {[:id] :node-update}}
-       "/tasks"         {:get :tasks}
-       "/tasks/"        {:get {[:id] :task}}
-       "/plugin/"       {:get {"network" :plugin-network
-                               "log"     :plugin-log
-                               "volume"  :plugin-volume}}
-       "/labels/"       {:get {"service" :labels-service}}
-       "/admin/"        {"users"  {:get  :users
-                                   :post :user-create}
-                         "users/" {:get    {[:id] :user}
-                                   :delete {[:id] :user-delete}
-                                   :post   {[:id] :user-update}}}}])
+  ["/" [["" {:get :index}]
+        ["events" {:get  :events
+                   :post :event-push}]
+        ["version" {:get :version}]
+        ["login" {:post :login
+                  :get  :index}]
+        ["slt" {:get :slt}]
+        ["password" {:post :password}]
+        ["api-token" {:get    :index
+                      :post   :api-token-generate
+                      :delete :api-token-remove}]
+        ["api"
+         {"/secrets/"      {:get    {[:id] {""          :secret
+                                            "/services" :secret-services}}
+                            :delete {[:id] :secret-delete}
+                            :post   {[:id] :secret-update}}
+          "/volumes"       {:get :volumes, :post :volume-create}
+          "/nodes/"        {:get  {[:id] {""       :node
+                                          "/tasks" :node-tasks}}
+                            :post {[:id] :node-update}}
+          "/plugin/"       {:get {"network" :plugin-network
+                                  "log"     :plugin-log
+                                  "volume"  :plugin-volume}}
+          "/tasks/"        {:get {[:id] :task}}
+          "/volumes/"      {:get    {[:name] {""          :volume
+                                              "/services" :volume-services}}
+                            :delete {[:name] :volume-delete}}
+          "/stacks"        {:get  :stacks
+                            :post :stack-create}
+          "/admin/"        {"users"  {:get  :users
+                                      :post :user-create}
+                            "users/" {:get    {[:id] :user}
+                                      :delete {[:id] :user-delete}
+                                      :post   {[:id] :user-update}}}
+          "/secrets"       {:get  :secrets
+                            :post :secret-create}
+          "/configs"       {:get  :configs
+                            :post :config-create}
+          "/distribution/" {"public"     {:get {"/repositories" :public-repositories}}
+                            "dockerhub"  {""  {:get  :dockerhub-users
+                                               :post :dockerhub-user-create}
+                                          "/" {:get    {[:id "/repositories"] :dockerhub-repositories
+                                                        [:id]                 :dockerhub-user}
+                                               :delete {[:id] :dockerhub-user-delete}
+                                               :post   {[:id] :dockerhub-user-update}}}
+                            "registries" {""  {:get  :registries
+                                               :post :registry-create}
+                                          "/" {:get    {[:id "/repositories"] :registry-repositories
+                                                        [:id]                 :registry}
+                                               :delete {[:id] :registry-delete}
+                                               :post   {[:id] :registry-update}}}}
+          "/networks"      {:get  :networks
+                            :post :network-create}
+          "/networks/"     {:get    {[:id] {""          :network
+                                            "/services" :network-services}}
+                            :delete {[:id] :network-delete}}
+          "/nodes"         {:get :nodes}
+          "/repository/"   {:get {"tags"  :repository-tags
+                                  "ports" :repository-ports}}
+          "/placement"     {:get :placement}
+          "/configs/"      {:get    {[:id] {""          :config
+                                            "/services" :config-services}}
+                            :delete {[:id] :config-delete}}
+          "/tasks"         {:get :tasks}
+          "/stacks/"       {:get    {[:name] {"/file"     :stack-file
+                                              "/compose"  :stack-compose
+                                              "/services" :stack-services
+                                              "/networks" :stack-networks
+                                              "/volumes"  :stack-volumes
+                                              "/configs"  :stack-configs
+                                              "/secrets"  :stack-secrets}}
+                            :delete {[:name] :stack-delete}
+                            :post   {[:name] {""          :stack-update
+                                              "/redeploy" :stack-redeploy
+                                              "/rollback" :stack-rollback}}}
+          "/me"            {:get :me},
+          "/services/"     {:get    {[:id] {""          :service
+                                            "/logs"     :service-logs
+                                            "/networks" :service-networks
+                                            "/tasks"    :service-tasks
+                                            "/compose"  :service-compose}}
+                            :delete {[:id] :service-delete}
+                            :post   {[:id] {""          :service-update
+                                            "/redeploy" :service-redeploy
+                                            "/rollback" :service-rollback}}}
+          "/labels/"       {:get {"service" :labels-service}}
+          "/services"      {:get  :services
+                            :post :service-create}}]
+        [true {:get :index}]]])
 
 (def frontend ["" {"/"                       :index
                    "/login"                  :login
@@ -150,4 +153,4 @@
 (defn path-for-backend
   ([handler] (path-for-backend handler {} nil))
   ([handler params] (path-for-backend handler params nil))
-  ([handler params query] (str/replace (path backend "" handler params query) #"^/" "")))
+  ([handler params query] (str/replace (path backend "/" handler params query) #"^/" "")))

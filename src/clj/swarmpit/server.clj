@@ -45,7 +45,6 @@
 (def app
   (-> (make-handler routes/backend handler/dispatch)
       (wrap-resource "public")
-      (wrap-resource "react")
       wrap-authorization
       wrap-client-exception
       wrap-fallback-exception

@@ -71,7 +71,7 @@
                 :figwheel     true
                 :compiler     {:main                 swarmpit.app
                                :preloads             [devtools.preload]
-                               :asset-path           "js/out"
+                               :asset-path           "/js/out"
                                :output-to            "resources/public/js/main.js"
                                :output-dir           "resources/public/js/out"
                                :infer-externs        true
