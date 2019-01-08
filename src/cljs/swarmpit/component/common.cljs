@@ -20,7 +20,7 @@
   (let [anchorEl (state/react (conj state/form-state-cursor :listFilterAnchorEl))]
     (html
       [:div {:key "ltfm"}
-       [:div {:className "Swarmpit-appbar-section-desktop"
+       [:div {:className "Swarmpit-section-desktop"
               :key       "lffmsd"}
         (comp/button
           {:aria-owns     (when anchorEl "list-filter-menu")
@@ -32,7 +32,7 @@
           (icon/filter-list {:className "Swarmpit-button-icon"
                              :key       "lfmbtnico"})
           "Filter")]
-       [:div {:className "Swarmpit-appbar-section-mobile"
+       [:div {:className "Swarmpit-section-mobile"
               :key       "lffmsm"}
         (comp/tooltip
           {:title "Filter"
@@ -100,14 +100,14 @@
           (fn [index action]
             (html
               [:div {:key (str "laml-" index)}
-               [:div.Swarmpit-appbar-section-desktop
+               [:div.Swarmpit-section-desktop
                 (comp/button
                   {:color   "primary"
                    :key     (str "lambtn-" index)
                    :onClick (:onClick action)}
                   ((:icon action) {:className "Swarmpit-button-icon"})
                   (:name action))]
-               [:div.Swarmpit-appbar-section-mobile
+               [:div.Swarmpit-section-mobile
                 ;; Make FAB from first only (primary action)
                 (when (= 0 index)
                   (comp/button
@@ -234,7 +234,7 @@
         items-hash (hash items)]
     (html
       [:div
-       [:div.Swarmpit-appbar-section-desktop
+       [:div.Swarmpit-section-desktop
         (->> items
              (filter #(some? %))
              (filter #(and (nil? (:more %))
@@ -250,6 +250,6 @@
         (when (not-empty more-items-desktop)
           (action-menu-more items-hash anchor-desktop-key menu-open-desktop-key))
         (action-menu-popper items-hash more-items-desktop anchor-desktop-key menu-open-desktop-key)]
-       [:div.Swarmpit-appbar-section-mobile
+       [:div.Swarmpit-section-mobile
         (action-menu-more items-hash anchor-mobile-key menu-open-mobile-key)
         (action-menu-popper items-hash items anchor-mobile-key menu-open-mobile-key)]])))

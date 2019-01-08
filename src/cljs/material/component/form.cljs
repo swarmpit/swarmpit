@@ -5,6 +5,13 @@
             [sablono.core :refer-macros [html]]
             [swarmpit.time :as time]))
 
+(defn item [name value]
+  (html
+    [:div {:class "Swarmpit-row-space"
+           :key   (str "sri-" name)}
+     [:span name]
+     [:span value]]))
+
 (defn item-date [created updated]
   (html
     [:div {:class "Swarmpit-form-card-icon-item"
