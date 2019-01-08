@@ -4,6 +4,7 @@
             [material.component.list.basic :as list]
             [swarmpit.routes :as routes]
             [swarmpit.url :refer [dispatch!]]
+            [sablono.core :refer-macros [html]]
             [rum.core :as rum]))
 
 (enable-console-print!)
@@ -13,18 +14,8 @@
   (dispatch! (routes/path-for-frontend :secret-info {:id (:secretName item)})))
 
 (def render-metadata
-  {:table {:summary [{:name      "Name"
-                      :render-fn (fn [item] (:secretName item))}
-                     {:name      "Target"
-                      :render-fn (fn [item] (:secretTarget item))}
-                     {:name      "UID"
-                      :render-fn (fn [item] (:uid item))}
-                     {:name      "GID"
-                      :render-fn (fn [item] (:gid item))}
-                     {:name      "Mode"
-                      :render-fn (fn [item] (:mode item))}]}
-   :list  {:primary   (fn [item] (:secretName item))
-           :secondary (fn [item] (:secretTarget item))}})
+  {:primary   (fn [item] (:secretName item))
+   :secondary (fn [item] (:secretTarget item))})
 
 (rum/defc form < rum/static [secrets service-id]
   (comp/card
@@ -41,12 +32,16 @@
                                    {:id service-id}
                                    {:section "Secrets"})}
                     (comp/svg icon/edit-path))})
-    (comp/card-content
-      {:className "Swarmpit-table-card-content"
-       :key       "ssecc"}
-      (rum/with-key
-        (list/responsive
-          render-metadata
-          secrets
-          onclick-handler) "sseccrl"))))
+    (if (empty? secrets)
+      (comp/card-content
+        {:key "sseccrle"}
+        (html [:div "No secrets defined for the service."]))
+      (comp/card-content
+        {:className "Swarmpit-table-card-content"
+         :key       "ssecc"}
+        (rum/with-key
+          (list/list
+            render-metadata
+            secrets
+            onclick-handler) "sseccrl")))))
 

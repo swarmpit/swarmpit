@@ -4,6 +4,7 @@
             [material.component.list.basic :as list]
             [swarmpit.routes :as routes]
             [swarmpit.component.network.list :as networks]
+            [sablono.core :refer-macros [html]]
             [rum.core :as rum]))
 
 (enable-console-print!)
@@ -23,11 +24,15 @@
                                    {:id service-id}
                                    {:section "Networks"})}
                     (comp/svg icon/edit-path))})
-    (comp/card-content
-      {:className "Swarmpit-table-card-content"
-       :key       "sncc"}
-      (rum/with-key
-        (list/responsive
-          networks/render-metadata
-          networks
-          networks/onclick-handler) "snccrl"))))
+    (if (empty? networks)
+      (comp/card-content
+        {:key "sncce"}
+        (html [:div "No networks attached to the service."]))
+      (comp/card-content
+        {:className "Swarmpit-table-card-content"
+         :key       "sncc"}
+        (rum/with-key
+          (list/responsive
+            networks/render-metadata
+            networks
+            networks/onclick-handler) "snccrl")))))

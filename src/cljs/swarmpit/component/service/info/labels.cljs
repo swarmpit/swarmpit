@@ -3,6 +3,7 @@
             [material.components :as comp]
             [material.component.list.basic :as list]
             [swarmpit.routes :as routes]
+            [sablono.core :refer-macros [html]]
             [rum.core :as rum]))
 
 (enable-console-print!)
@@ -26,11 +27,16 @@
                                    {:id service-id}
                                    {:section "Labels"})}
                     (comp/svg icon/edit-path))})
-    (comp/card-content
-      {:className "Swarmpit-table-card-content"
-       :key       "slcc"}
-      (rum/with-key
-        (list/list
-          render-metadata
-          labels
-          nil) "slccl"))))
+
+    (if (empty? labels)
+      (comp/card-content
+        {:key "slccle"}
+        (html [:div "No labels defined for the service."]))
+      (comp/card-content
+        {:className "Swarmpit-table-card-content"
+         :key       "slcc"}
+        (rum/with-key
+          (list/list
+            render-metadata
+            labels
+            nil) "slccl")))))

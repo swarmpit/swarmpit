@@ -3,6 +3,7 @@
             [material.components :as comp]
             [material.component.list.basic :as list]
             [swarmpit.routes :as routes]
+            [sablono.core :refer-macros [html]]
             [rum.core :as rum]))
 
 (enable-console-print!)
@@ -26,11 +27,15 @@
                                    {:id service-id}
                                    {:section "Environment variables"})}
                     (comp/svg icon/edit-path))})
-    (comp/card-content
-      {:className "Swarmpit-table-card-content"
-       :key       "svcc"}
-      (rum/with-key
-        (list/list
-          render-metadata
-          variables
-          nil) "svccl"))))
+    (if (empty? variables)
+      (comp/card-content
+        {:key "svcce"}
+        (html [:div "No variables defined for the service."]))
+      (comp/card-content
+        {:className "Swarmpit-table-card-content"
+         :key       "svcc"}
+        (rum/with-key
+          (list/list
+            render-metadata
+            variables
+            nil) "svccl")))))

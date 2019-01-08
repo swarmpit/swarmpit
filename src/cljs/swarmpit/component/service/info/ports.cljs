@@ -3,6 +3,7 @@
             [material.components :as comp]
             [material.component.list.basic :as list]
             [swarmpit.routes :as routes]
+            [sablono.core :refer-macros [html]]
             [rum.core :as rum]))
 
 (enable-console-print!)
@@ -34,11 +35,15 @@
                                    {:id service-id}
                                    {:section "Ports"})}
                     (comp/svg icon/edit-path))})
-    (comp/card-content
-      {:className "Swarmpit-table-card-content"
-       :key       "spcc"}
-      (rum/with-key
-        (list/responsive
-          render-metadata
-          ports
-          nil) "spccrl"))))
+    (if (empty? ports)
+      (comp/card-content
+        {:key "spcce"}
+        (html [:div "No ports exposed for the service."]))
+      (comp/card-content
+        {:className "Swarmpit-table-card-content"
+         :key       "spcc"}
+        (rum/with-key
+          (list/responsive
+            render-metadata
+            ports
+            nil) "spccrl")))))

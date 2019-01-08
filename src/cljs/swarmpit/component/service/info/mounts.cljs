@@ -4,6 +4,7 @@
             [material.component.list.basic :as list]
             [swarmpit.routes :as routes]
             [swarmpit.url :refer [dispatch!]]
+            [sablono.core :refer-macros [html]]
             [rum.core :as rum]))
 
 (enable-console-print!)
@@ -66,8 +67,13 @@
                                      {:id service-id}
                                      {:section "Mounts"})}
                       (comp/svg icon/edit-path))})
-      (comp/card-content
-        {:className "Swarmpit-table-card-content"
-         :key       "smcc"}
-        (rum/with-key (form-bind bind) "smccrlb")
-        (rum/with-key (form-volume volume) "smccrlv")))))
+
+      (if (empty? mounts)
+        (comp/card-content
+          {:key "smcce"}
+          (html [:div "No mounts defined for the service."]))
+        (comp/card-content
+          {:className "Swarmpit-table-card-content"
+           :key       "smcc"}
+          (rum/with-key (form-bind bind) "smccrlb")
+          (rum/with-key (form-volume volume) "smccrlv"))))))

@@ -194,11 +194,13 @@ a {
     border: 1px solid #fff;
 }
 
+.Swarmpit-section-desktop,
 .Swarmpit-appbar-section-desktop {
     display: none;
     align-items: center;
 }
 
+.Swarmpit-section-mobile,
 .Swarmpit-appbar-section-mobile {
     display: flex;
     align-items: center;
@@ -643,10 +645,12 @@ a {
         display: none !important;
     }
 
+    .Swarmpit-section-desktop,
     .Swarmpit-appbar-section-desktop {
         display: flex;
     }
 
+    .Swarmpit-section-mobile,
     .Swarmpit-appbar-section-mobile {
         display: none;
     }

@@ -1,8 +1,10 @@
 (ns swarmpit.component.service.info.logdriver
   (:require [material.icon :as icon]
             [material.components :as comp]
+            [material.component.form :as form]
             [material.component.list.basic :as list]
             [swarmpit.routes :as routes]
+            [sablono.core :refer-macros [html]]
             [rum.core :as rum]))
 
 (enable-console-print!)
@@ -18,7 +20,7 @@
     (comp/card-header
       {:className "Swarmpit-table-card-header"
        :key       "sldch"
-       :title     "Log driver options"
+       :title     "Logging"
        :action    (comp/icon-button
                     {:aria-label "Edit"
                      :href       (routes/path-for-frontend
@@ -26,6 +28,10 @@
                                    {:id service-id}
                                    {:section "Logging"})}
                     (comp/svg icon/edit-path))})
+    (comp/card-content
+      {:key "sldcci"}
+      (html
+        [:div {:style {:maxWidth "200px"}} (form/item "Driver" name)]))
     (comp/card-content
       {:className "Swarmpit-table-card-content"
        :key       "sldcc"}

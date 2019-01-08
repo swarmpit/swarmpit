@@ -1,7 +1,6 @@
 (ns swarmpit.component.service.info
   (:require [material.icon :as icon]
             [material.components :as comp]
-            [material.component.grid.masonry :as masonry]
             [material.component.list.basic :as list]
             [swarmpit.component.state :as state]
             [swarmpit.component.mixin :as mixin]
@@ -146,6 +145,93 @@
       (service-networks-handler id)
       (service-tasks-handler id))))
 
+(defn form-settings-grid [service service-id tasks]
+  (comp/grid
+    {:item true
+     :key  "slgg"
+     :xs   12}
+    (rum/with-key
+      (settings/form service tasks (form-actions service service-id)) "slggf")))
+
+(defn form-tasks-grid [tasks]
+  (comp/grid
+    {:item true
+     :key  "srgt"
+     :xs   12}
+    (form-tasks tasks)))
+
+(defn form-networks-grid [networks service-id]
+  (comp/grid
+    {:item true
+     :key  "srgn"
+     :xs   12}
+    (rum/with-key
+      (networks/form networks service-id) "srgnf")))
+
+(defn form-ports-grid [ports service-id]
+  (comp/grid
+    {:item true
+     :key  "srgp"
+     :xs   12}
+    (rum/with-key
+      (ports/form ports service-id) "srgpf")))
+
+(defn form-mounts-grid [mounts service-id]
+  (comp/grid
+    {:item true
+     :key  "srgm"
+     :xs   12}
+    (rum/with-key
+      (mounts/form mounts service-id) "srgmf")))
+
+(defn form-secrets-grid [secrets service-id]
+  (comp/grid
+    {:item true
+     :key  "slgs"
+     :xs   12}
+    (rum/with-key
+      (secrets/form secrets service-id) "slgsf")))
+
+(defn form-configs-grid [configs service-id]
+  (comp/grid
+    {:item true
+     :key  "slgc"
+     :xs   12}
+    (rum/with-key
+      (configs/form configs service-id) "slgcf")))
+
+(defn form-variables-grid [variables service-id]
+  (comp/grid
+    {:item true
+     :key  "slgev"
+     :xs   12}
+    (rum/with-key
+      (variables/form variables service-id) "slgevf")))
+
+(defn form-labels-grid [labels service-id]
+  (comp/grid
+    {:item true
+     :key  "slgl"
+     :xs   12}
+    (rum/with-key
+      (labels/form labels service-id) "slglf")))
+
+(defn form-logdriver-grid [logdriver service-id]
+  (comp/grid
+    {:item true
+     :key  "slgld"
+     :xs   12}
+    (rum/with-key
+      (logdriver/form logdriver service-id) "slgldf")))
+
+(defn form-deployment-grid [deployment service-id]
+  (comp/grid
+    {:item true
+     :key  "slgd"
+     :xs   12}
+    (rum/with-key
+      (deployment/form deployment service-id) "slgdf")))
+
 (rum/defc form-info < rum/static [{:keys [service networks tasks]}]
   (let [ports (:ports service)
         mounts (:mounts service)
@@ -156,41 +242,60 @@
         logdriver (:logdriver service)
         resources (:resources service)
         deployment (:deployment service)
-        id (:id service)
-        is-even-and-not-third? #(and (even? %) (not (= 2 %)))]
+        id (:id service)]
     (comp/mui
       (html
         [:div.Swarmpit-form
          [:div.Swarmpit-form-context
-          (masonry/grid
-            {:first-col-pred is-even-and-not-third?}
-            (settings/form service tasks (form-actions service id))
-            (deployment/form deployment id)
-            (when (not-empty networks)
-              (networks/form networks id))
-            (when (not-empty ports)
-              (ports/form ports id))
-            (when (not-empty mounts)
-              (mounts/form mounts id))
-            (when (not-empty secrets)
-              (secrets/form secrets id))
-            (when (not-empty configs)
-              (configs/form configs id))
-            (when (not-empty variables)
-              (variables/form variables id))
-            (when (not-empty labels)
-              (labels/form labels id))
-            (when (not-empty (:opts logdriver))
-              (logdriver/form logdriver id)))
-          (comp/grid
-            {:container true
-             :key       "scg"
-             :spacing   40}
-            (comp/grid
-              {:item true
-               :key  "scitg"
-               :xs   12}
-              (form-tasks tasks)))]]))))
+
+          [:div {:className "Swarmpit-section-desktop"
+                 :key       "sfisd"}
+           (comp/grid
+             {:container true
+              :spacing   40}
+             (comp/grid
+               {:item true
+                :key  "slg"
+                :md   6
+                :lg   4}
+               (comp/grid
+                 {:container true
+                  :spacing   40}
+                 (form-settings-grid service id tasks)
+                 (form-secrets-grid secrets id)
+                 (form-configs-grid configs id)
+                 (form-variables-grid variables id)
+                 (form-labels-grid labels id)
+                 (form-logdriver-grid logdriver id)
+                 (form-deployment-grid deployment id)))
+             (comp/grid
+               {:item true
+                :key  "srg"
+                :md   6
+                :lg   8}
+               (comp/grid
+                 {:container true
+                  :spacing   40}
+                 (form-tasks-grid tasks)
+                 (form-networks-grid networks id)
+                 (form-ports-grid ports id)
+                 (form-mounts-grid mounts id))))]
+          [:div {:className "Swarmpit-section-mobile"
+                 :key       "sfism"}
+           (comp/grid
+             {:container true
+              :spacing   40}
+             (form-settings-grid service id tasks)
+             (form-tasks-grid tasks)
+             (form-networks-grid networks id)
+             (form-ports-grid ports id)
+             (form-mounts-grid mounts id)
+             (form-secrets-grid secrets id)
+             (form-configs-grid configs id)
+             (form-variables-grid variables id)
+             (form-labels-grid labels id)
+             (form-logdriver-grid logdriver id)
+             (form-deployment-grid deployment id))]]]))))
 
 (rum/defc form < rum/reactive
                  mixin-init-form
