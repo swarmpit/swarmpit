@@ -1,9 +1,10 @@
 (ns swarmpit.url
-  (:require [clojure.string :refer [split]]))
+  (:require [clojure.string :refer [split]]
+            [swarmpit.router :as router]))
 
 (defn dispatch!
   [url]
-  (set! js/document.location url))
+  (router/set-location url))
 
 (defn url
   "Get current URL address"

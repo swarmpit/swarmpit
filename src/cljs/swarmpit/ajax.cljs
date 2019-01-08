@@ -2,6 +2,7 @@
   (:refer-clojure :exclude [get])
   (:require [ajax.core :as ajax]
             [swarmpit.router :as router]
+            [swarmpit.routes]
             [swarmpit.xhrio :as xhrio]
             [swarmpit.storage :as storage]
             [swarmpit.component.state :as state]
@@ -11,10 +12,10 @@
 (defn- login-redirect
   []
   "Redirect to login if authentication failed and store redirect location."
-  (let [location js/window.location.hash]
-    (when (not= "#/login" location)
+  (let [location js/document.location.pathname]
+    (when (not= "/login" location)
       (state/set-value location [:redirect-location]))
-    (router/set-location {:handler :login})))
+    (router/set-route {:handler :login})))
 
 (defn- command-state
   "Update given form state if form origin."
@@ -30,8 +31,8 @@
     (and (= 401 status)
          (= "swarmpit" (:x-backend-server headers))) (login-redirect)
     (and (= 403 status)
-         (= "swarmpit" (:x-backend-server headers))) (router/set-location {:handler :unauthorized})
-    (= 404 status) (router/set-route {:handler :not-found})
+         (= "swarmpit" (:x-backend-server headers))) (router/set-route {:handler :unauthorized})
+    (= 404 status) (router/set-page! {:handler :not-found})
     (= 500 status) (message/error (str (or (:cause body) "Server request failed")))
     (= 502 status) (message/error "Server request failed. Bad Gateway")
     (= 503 status) (message/error "Server request failed. Service Unavailable")
