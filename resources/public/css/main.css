@@ -645,12 +645,10 @@ a {
         display: none !important;
     }
 
-    .Swarmpit-section-desktop,
     .Swarmpit-appbar-section-desktop {
         display: flex;
     }
 
-    .Swarmpit-section-mobile,
     .Swarmpit-appbar-section-mobile {
         display: none;
     }
@@ -735,7 +733,14 @@ a {
     .Swarmpit-appbar-search-input:focus {
         /*width: 200px;*/
         width: 100%;
+    }
 
+    .Swarmpit-section-desktop {
+        display: flex;
+    }
+
+    .Swarmpit-section-mobile {
+        display: none;
     }
 }
 

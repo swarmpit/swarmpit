@@ -256,6 +256,7 @@
              (comp/grid
                {:item true
                 :key  "slg"
+                :sm   6
                 :md   6
                 :lg   4}
                (comp/grid
@@ -271,6 +272,7 @@
              (comp/grid
                {:item true
                 :key  "srg"
+                :sm   6
                 :md   6
                 :lg   8}
                (comp/grid
