@@ -1,5 +1,6 @@
 (ns swarmpit.routes
   (:require [bidi.bidi :as b]
+            #?(:clj [environ.core :refer [env]])
             [cemerick.url :refer [map->query]]
             [clojure.string :as str]))
 
@@ -153,4 +154,4 @@
 (defn path-for-backend
   ([handler] (path-for-backend handler {} nil))
   ([handler params] (path-for-backend handler params nil))
-  ([handler params query] (str/replace (path backend "/" handler params query) #"^/" "")))
+  ([handler params query] (path backend "" handler params query)))
