@@ -57,10 +57,11 @@
        :onClick #(onclick-handler-fn item)}
       (cmp/list-item-text
         (merge
-          {:key     (str "list-item-text-" index)
-           :classes {:primary   "Swarmpit-list-item-text-primary"
-                     :secondary "Swarmpit-list-item-text-secondary"}
-           :primary (primary-key item)}
+          {:key       (str "list-item-text-" index)
+           :className "Swarmpit-list-item-text"
+           :classes   {:primary   "Swarmpit-list-item-text-primary"
+                       :secondary "Swarmpit-list-item-text-secondary"}
+           :primary   (primary-key item)}
           (when secodary-key
             {:secondary (secodary-key item)})))
       (when status-fn
