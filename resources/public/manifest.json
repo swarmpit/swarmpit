@@ -1,5 +1,6 @@
 {
-    "name": "",
+    "name": "Swarmpit",
+    "start_url": "/",
     "icons": [
         {
             "src": "icon/android-chrome-192x192.png",
@@ -12,7 +13,7 @@
             "type": "image/png"
         }
     ],
-    "theme_color": "#ffffff",
-    "background_color": "#ffffff",
+    "theme_color": "#65519f",
+    "background_color": "#fafafa",
     "display": "standalone"
 }
