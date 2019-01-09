@@ -159,7 +159,7 @@
         filtered-items
         (comp/grid
           {:container true
-           :spacing   40}
+           :spacing   16}
           (map-indexed
             (fn [index item]
               (node-item item index)) (sort-by :nodeName filtered-items)))
