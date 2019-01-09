@@ -97,7 +97,7 @@
        [:div.Swarmpit-form-context
         (comp/grid
           {:container true
-           :spacing   40}
+           :spacing   16}
           (comp/grid
             {:item true
              :key  "cgg"
@@ -119,11 +119,7 @@
                                 (comp/svg icon/trash-path)))})
               (comp/card-content
                 {:key "cgcc"}
-                (form-data (parse-data (:data config)))
-
-                ;(html [:span {:style {:word-break "break-all"}} (parse-data (:data config))])
-
-                )
+                (form-data (parse-data (:data config))))
               (comp/divider
                 {:key "cgd"})
               (comp/card-content

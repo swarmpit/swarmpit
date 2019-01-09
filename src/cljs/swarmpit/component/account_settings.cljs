@@ -14,7 +14,7 @@
        [:div.Swarmpit-form-context
         (comp/grid
           {:container true
-           :spacing   40}
+           :spacing   16}
           (rum/with-key (password/form) "pf")
           (rum/with-key (api-access/form) "aaf"))]])))
 

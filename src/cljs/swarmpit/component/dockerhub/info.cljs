@@ -81,7 +81,7 @@
        [:div.Swarmpit-form-context
         (comp/grid
           {:container true
-           :spacing   40}
+           :spacing   16}
           (comp/grid
             {:item true
              :key  "dgg"

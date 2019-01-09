@@ -360,7 +360,7 @@
                :key       "sfisd"}
          (comp/grid
            {:container true
-            :spacing   40}
+            :spacing   16}
            (comp/grid
              {:item true
               :key  "slg"
@@ -369,7 +369,7 @@
               :lg   4}
              (comp/grid
                {:container true
-                :spacing   40}
+                :spacing   16}
                (form-general-grid stack-name stackfile services)
                (form-secrets-grid stack-name secrets)
                (form-configs-grid stack-name configs)))
@@ -381,7 +381,7 @@
               :lg   8}
              (comp/grid
                {:container true
-                :spacing   40}
+                :spacing   16}
                (form-services-grid stack-name services)
                (form-networks-grid stack-name networks)
                (form-volumes-grid stack-name volumes))))]
@@ -389,7 +389,7 @@
                :key       "sfism"}
          (comp/grid
            {:container true
-            :spacing   40}
+            :spacing   16}
            (form-general-grid stack-name stackfile services)
            (form-services-grid stack-name services)
            (form-networks-grid stack-name networks)
