@@ -5,7 +5,7 @@
             [swarmpit.storage :as storage]
             [swarmpit.ajax :as ajax]
             [swarmpit.routes :as routes]
-            [swarmpit.url :refer [dispatch!]]
+            [swarmpit.url :as url]
             [sablono.core :refer-macros [html]]
             [rum.core :as rum]))
 
@@ -115,7 +115,7 @@
             :key       (str "drawer-item-" name)
             :onClick   (fn []
                          (state/update-value [:mobileOpened] false state/layout-cursor)
-                         (swarmpit.router/set-location (routes/path-for-frontend handler)))}
+                         (url/dispatch! (routes/path-for-frontend handler)))}
            (when selected?
              {:className "Swarmpit-drawer-item-selected"})
            (when (= :distribution domain)
