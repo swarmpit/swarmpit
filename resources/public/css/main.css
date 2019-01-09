@@ -276,9 +276,9 @@ a {
 /** Login screen **/
 
 .Swarmpit-login-layout {
-    width: auto;
-    margin-left: 24px;
-    margin-right: 24px;
+    width: 400px;
+    margin-left: auto;
+    margin-right: auto;
 }
 
 .Swarmpit-login-paper {
@@ -358,11 +358,16 @@ a {
     padding: 0 24px;
 }
 
+/*.Swarmpit-list-item-text {*/
+    /*width: calc(100% - 280px);*/
+/*}*/
+
 .Swarmpit-list-item-text-primary,
 .Swarmpit-list-item-text-secondary {
-    /*white-space: nowrap;*/
     overflow: hidden;
-    text-overflow: ellipsis;
+    word-wrap: break-word;
+    white-space: pre-wrap;
+    word-break: normal;
 }
 
 .Swarmpit-list-item-edit > div {
@@ -632,6 +637,7 @@ a {
 
 /**** MEDIA ****/
 
+/* MEDIUM DEVICES [MD] */
 @media (min-width: 960px) {
     .Swarmpit-context {
         margin-left: 200px;
@@ -654,50 +660,7 @@ a {
     }
 }
 
-/* Medium screens */
-@media all and (max-width: 800px) {
-    .Swarmpit-context {
-        width: 100%;
-    }
-
-    .Swarmpit-form-panel {
-        justify-content: space-around;
-    }
-}
-
-/* Small screens */
-@media all and (max-width: 500px) {
-    .Swarmpit-context {
-        width: 100%;
-    }
-
-    .Swarmpit-form-toolbar {
-        padding: 0 10px;
-    }
-
-    .Swarmpit-form-context {
-        padding: 20px 10px;
-    }
-
-    .Swarmpit-form-toolbar-context {
-        margin-top: 10px;
-        padding: 0 10px;
-    }
-
-    .Swarmpit-form-panel {
-        flex-direction: column;
-    }
-
-    .Swarmpit-form-panel-search {
-        width: 100%;
-        margin-bottom: 10px;
-    }
-
-    .Swarmpit-node-stat {
-        padding: 0;
-    }
-}
-
+/* SMALL DEVICES [SM] */
 @media (min-width: 600px) {
     .Swarmpit-toolbar {
         min-height: 64px;
@@ -726,12 +689,10 @@ a {
     }
 
     .Swarmpit-appbar-search-input {
-        /*width: 120px;*/
         width: 100%;
     }
 
     .Swarmpit-appbar-search-input:focus {
-        /*width: 200px;*/
         width: 100%;
     }
 
@@ -744,10 +705,41 @@ a {
     }
 }
 
-@media (min-width: 448px) {
+/* EXTRA SMALL DEVICES [XS] */
+@media all and (max-width: 600px) {
     .Swarmpit-login-layout {
-        width: 400px;
-        margin-left: auto;
-        margin-right: auto;
+        width: auto;
+        margin-left: 24px;
+        margin-right: 24px;
     }
+
+    .Swarmpit-context {
+        width: 100%;
+    }
+
+    .Swarmpit-form-toolbar {
+        padding: 0 10px;
+    }
+
+    .Swarmpit-form-context {
+        padding: 20px 10px;
+    }
+
+    .Swarmpit-form-toolbar-context {
+        margin-top: 10px;
+        padding: 0 10px;
+    }
+
+    .Swarmpit-form-panel-search {
+        width: 100%;
+        margin-bottom: 10px;
+    }
+
+    .Swarmpit-node-stat {
+        padding: 0;
+    }
+
+    /*.Swarmpit-list-item-text {*/
+        /*width: calc(100% - 80px);*/
+    /*}*/
 }
