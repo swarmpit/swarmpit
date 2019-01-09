@@ -34,8 +34,8 @@
   (pushy/set-token! history location))
 
 (defn set-route
-  [route]
-  (set-location (routes/path-for-frontend route)))
+  [{:keys [handler params query]}]
+  (set-location (routes/path-for-frontend handler params query)))
 
 (defn start
   []
