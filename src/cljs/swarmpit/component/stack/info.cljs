@@ -3,13 +3,12 @@
             [material.components :as comp]
             [material.component.form :as form]
             [material.component.chart :as chart]
+            [material.component.list.basic :as list]
             [swarmpit.component.message :as message]
-            [material.component.label :as label]
             [swarmpit.component.state :as state]
             [swarmpit.component.mixin :as mixin]
             [swarmpit.component.progress :as progress]
             [swarmpit.component.common :as common]
-            [material.component.list.basic :as list]
             [swarmpit.component.service.list :as services]
             [swarmpit.component.network.list :as networks]
             [swarmpit.component.volume.list :as volumes]
@@ -18,10 +17,9 @@
             [swarmpit.ajax :as ajax]
             [swarmpit.url :refer [dispatch!]]
             [swarmpit.routes :as routes]
-            [swarmpit.docker.utils :as utils]
             [clojure.string :refer [includes?]]
-            [sablono.core :refer-macros [html]]
             [clojure.contrib.inflect :as inflect]
+            [sablono.core :refer-macros [html]]
             [rum.core :as rum]))
 
 (enable-console-print!)
@@ -162,27 +160,26 @@
                     (.-state (.-payload props)))})))
 
 (rum/defc form-general < rum/static [stack-name stackfile services]
-  (let []
-    (comp/card
-      {:className "Swarmpit-form-card"
-       :key       "fgc"}
-      (comp/card-header
-        {:title     stack-name
-         :className "Swarmpit-form-card-header"
-         :key       "fgch"
-         :action    (common/actions-menu
-                      (form-actions stack-name stackfile)
-                      :stackGeneralMenuAnchor
-                      :stackGeneralMenuOpened)})
-      (comp/card-content
-        {:key "fgccc"}
-        (rum/with-key (form-services-graph services) "fgcccg"))
-      (comp/divider
-        {:key "fgd"})
-      (comp/card-content
-        {:key   "fgcccf"
-         :style {:paddingBottom "16px"}}
-        (form/item-id stack-name)))))
+  (comp/card
+    {:className "Swarmpit-form-card"
+     :key       "fgc"}
+    (comp/card-header
+      {:title     stack-name
+       :className "Swarmpit-form-card-header"
+       :key       "fgch"
+       :action    (common/actions-menu
+                    (form-actions stack-name stackfile)
+                    :stackGeneralMenuAnchor
+                    :stackGeneralMenuOpened)})
+    (comp/card-content
+      {:key "fgccc"}
+      (rum/with-key (form-services-graph services) "fgcccg"))
+    (comp/divider
+      {:key "fgd"})
+    (comp/card-content
+      {:key   "fgcccf"
+       :style {:paddingBottom "16px"}}
+      (form/item-id stack-name))))
 
 (rum/defc form-services < rum/static [stack-name services]
   (comp/card
@@ -356,46 +353,48 @@
     (html
       [:div.Swarmpit-form
        [:div.Swarmpit-form-context
-        [:div {:className "Swarmpit-section-desktop"
-               :key       "sfisd"}
-         (comp/grid
-           {:container true
-            :spacing   16}
-           (comp/grid
-             {:item true
-              :key  "slg"
-              :sm   6
-              :md   6
-              :lg   4}
-             (comp/grid
-               {:container true
-                :spacing   16}
-               (form-general-grid stack-name stackfile services)
-               (form-secrets-grid stack-name secrets)
-               (form-configs-grid stack-name configs)))
-           (comp/grid
-             {:item true
-              :key  "srg"
-              :sm   6
-              :md   6
-              :lg   8}
-             (comp/grid
-               {:container true
-                :spacing   16}
-               (form-services-grid stack-name services)
-               (form-networks-grid stack-name networks)
-               (form-volumes-grid stack-name volumes))))]
-        [:div {:className "Swarmpit-section-mobile"
-               :key       "sfism"}
-         (comp/grid
-           {:container true
-            :spacing   16}
-           (form-general-grid stack-name stackfile services)
-           (form-services-grid stack-name services)
-           (form-networks-grid stack-name networks)
-           (form-volumes-grid stack-name volumes)
-           (form-secrets-grid stack-name secrets)
-           (form-configs-grid stack-name configs))]]])))
+        (comp/hidden
+          {:xsDown         true
+           :implementation "js"}
+          (comp/grid
+            {:container true
+             :spacing   16}
+            (comp/grid
+              {:item true
+               :key  "slg"
+               :sm   6
+               :md   6
+               :lg   4}
+              (comp/grid
+                {:container true
+                 :spacing   16}
+                (form-general-grid stack-name stackfile services)
+                (form-secrets-grid stack-name secrets)
+                (form-configs-grid stack-name configs)))
+            (comp/grid
+              {:item true
+               :key  "srg"
+               :sm   6
+               :md   6
+               :lg   8}
+              (comp/grid
+                {:container true
+                 :spacing   16}
+                (form-services-grid stack-name services)
+                (form-networks-grid stack-name networks)
+                (form-volumes-grid stack-name volumes)))))
+        (comp/hidden
+          {:smUp           true
+           :implementation "js"}
+          (comp/grid
+            {:container true
+             :spacing   16}
+            (form-general-grid stack-name stackfile services)
+            (form-services-grid stack-name services)
+            (form-networks-grid stack-name networks)
+            (form-volumes-grid stack-name volumes)
+            (form-secrets-grid stack-name secrets)
+            (form-configs-grid stack-name configs)))]])))
 
 (rum/defc form < rum/reactive
                  mixin-init-form

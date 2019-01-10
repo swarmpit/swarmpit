@@ -5,8 +5,8 @@
             [material.component.list.basic :as list]
             [swarmpit.component.state :as state]
             [sablono.core :refer-macros [html]]
-            [rum.core :as rum]
-            [clojure.string :as str]))
+            [clojure.string :as str]
+            [rum.core :as rum]))
 
 (defn list-empty [title]
   (comp/typography
@@ -180,11 +180,11 @@
         icon/visibility-off))))
 
 (rum/defc action-menu-popper < rum/reactive [items-hash items anchorKey menuOpenKey]
-  (let [mobileMoreAnchorEl (state/react (conj state/form-state-cursor anchorKey))
-        mobileMenuOpen? (state/react (conj state/form-state-cursor menuOpenKey))]
+  (let [moreAnchorEl (state/react (conj state/form-state-cursor anchorKey))
+        menuOpen? (state/react (conj state/form-state-cursor menuOpenKey))]
     (comp/popper
-      {:open          (or mobileMenuOpen? false)
-       :anchorEl      mobileMoreAnchorEl
+      {:open          (or menuOpen? false)
+       :anchorEl      moreAnchorEl
        :placement     "bottom-end"
        :disablePortal true
        :transition    true}
@@ -213,9 +213,9 @@
                          {:variant "inherit"
                           :key     (str "cmmit-" items-hash "-" (:name %))} (:name %))) items))))))))))
 
-(rum/defc action-menu-more < rum/static [items-hash anchorKey menuOpenKey]
+(rum/defc action-menu-more < rum/static [type items-hash anchorKey menuOpenKey]
   (comp/icon-button
-    {:key           (str "cmm-" items-hash)
+    {:key           (str "cmm-" type "-" items-hash)
      :aria-haspopup "true"
      :buttonRef     (fn [n]
                       (when n
@@ -234,7 +234,7 @@
         items-hash (hash items)]
     (html
       [:div
-       [:div.Swarmpit-section-desktop
+       [:div.Swarmpit-appbar-section-desktop
         (->> items
              (filter #(some? %))
              (filter #(and (nil? (:more %))
@@ -248,8 +248,8 @@
                         :key     (str "cmb-" items-hash "-" (:name %))
                         :onClick (:onClick %)} (:icon %)))))
         (when (not-empty more-items-desktop)
-          (action-menu-more items-hash anchor-desktop-key menu-open-desktop-key))
+          (action-menu-more "desktop" items-hash anchor-desktop-key menu-open-desktop-key))
         (action-menu-popper items-hash more-items-desktop anchor-desktop-key menu-open-desktop-key)]
-       [:div.Swarmpit-section-mobile
-        (action-menu-more items-hash anchor-mobile-key menu-open-mobile-key)
+       [:div.Swarmpit-appbar-section-mobile
+        (action-menu-more "mobile" items-hash anchor-mobile-key menu-open-mobile-key)
         (action-menu-popper items-hash items anchor-mobile-key menu-open-mobile-key)]])))

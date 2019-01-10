@@ -247,58 +247,58 @@
       (html
         [:div.Swarmpit-form
          [:div.Swarmpit-form-context
-
-          [:div {:className "Swarmpit-section-desktop"
-                 :key       "sfisd"}
-           (comp/grid
-             {:container true
-              :spacing   16
-              }
-             (comp/grid
-               {:item true
-                :key  "slg"
-                :sm   6
-                :md   6
-                :lg   4}
-               (comp/grid
-                 {:container true
-                  :spacing   16}
-                 (form-settings-grid service id tasks)
-                 (form-secrets-grid secrets id)
-                 (form-configs-grid configs id)
-                 (form-variables-grid variables id)
-                 (form-labels-grid labels id)
-                 (form-logdriver-grid logdriver id)
-                 (form-deployment-grid deployment id)))
-             (comp/grid
-               {:item true
-                :key  "srg"
-                :sm   6
-                :md   6
-                :lg   8}
-               (comp/grid
-                 {:container true
-                  :spacing   16}
-                 (form-tasks-grid tasks)
-                 (form-networks-grid networks id)
-                 (form-ports-grid ports id)
-                 (form-mounts-grid mounts id))))]
-          [:div {:className "Swarmpit-section-mobile"
-                 :key       "sfism"}
-           (comp/grid
-             {:container true
-              :spacing   16}
-             (form-settings-grid service id tasks)
-             (form-tasks-grid tasks)
-             (form-networks-grid networks id)
-             (form-ports-grid ports id)
-             (form-mounts-grid mounts id)
-             (form-secrets-grid secrets id)
-             (form-configs-grid configs id)
-             (form-variables-grid variables id)
-             (form-labels-grid labels id)
-             (form-logdriver-grid logdriver id)
-             (form-deployment-grid deployment id))]]]))))
+          (comp/hidden
+            {:xsDown         true
+             :implementation "js"}
+            (comp/grid
+              {:container true
+               :spacing   16}
+              (comp/grid
+                {:item true
+                 :key  "slg"
+                 :sm   6
+                 :md   6
+                 :lg   4}
+                (comp/grid
+                  {:container true
+                   :spacing   16}
+                  (form-settings-grid service id tasks)
+                  (form-secrets-grid secrets id)
+                  (form-configs-grid configs id)
+                  (form-variables-grid variables id)
+                  (form-labels-grid labels id)
+                  (form-logdriver-grid logdriver id)
+                  (form-deployment-grid deployment id)))
+              (comp/grid
+                {:item true
+                 :key  "srg"
+                 :sm   6
+                 :md   6
+                 :lg   8}
+                (comp/grid
+                  {:container true
+                   :spacing   16}
+                  (form-tasks-grid tasks)
+                  (form-networks-grid networks id)
+                  (form-ports-grid ports id)
+                  (form-mounts-grid mounts id)))))
+          (comp/hidden
+            {:smUp           true
+             :implementation "js"}
+            (comp/grid
+              {:container true
+               :spacing   16}
+              (form-settings-grid service id tasks)
+              (form-tasks-grid tasks)
+              (form-networks-grid networks id)
+              (form-ports-grid ports id)
+              (form-mounts-grid mounts id)
+              (form-secrets-grid secrets id)
+              (form-configs-grid configs id)
+              (form-variables-grid variables id)
+              (form-labels-grid labels id)
+              (form-logdriver-grid logdriver id)
+              (form-deployment-grid deployment id)))]]))))
 
 (rum/defc form < rum/reactive
                  mixin-init-form
