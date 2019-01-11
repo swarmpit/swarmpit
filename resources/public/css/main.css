@@ -359,7 +359,7 @@ a {
 }
 
 /*.Swarmpit-list-item-text {*/
-    /*width: calc(100% - 280px);*/
+/*width: calc(100% - 280px);*/
 /*}*/
 
 .Swarmpit-list-item-text-primary,
@@ -387,7 +387,10 @@ a {
     padding: 24px 24px;
 }
 
-.Swarmpit-form-toolbar,
+.Swarmpit-form-toolbar {
+    padding: 0 24px 24px;
+}
+
 .Swarmpit-form-toolbar-context {
     padding: 0 24px;
 }
@@ -718,7 +721,7 @@ a {
     }
 
     .Swarmpit-form-toolbar {
-        padding: 0 10px;
+        padding: 0 10px 10px;
     }
 
     .Swarmpit-form-context {
@@ -740,6 +743,6 @@ a {
     }
 
     /*.Swarmpit-list-item-text {*/
-        /*width: calc(100% - 80px);*/
+    /*width: calc(100% - 80px);*/
     /*}*/
 }
