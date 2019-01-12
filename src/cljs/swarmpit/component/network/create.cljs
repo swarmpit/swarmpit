@@ -26,7 +26,7 @@
      :margin          "normal"
      :variant         "outlined"
      :style           {:maxWidth "350px"}
-     :value           value
+     :defaultValue    value
      :required        true
      :InputLabelProps {:shrink true}
      :onChange        #(state/update-value [:networkName] (-> % .-target .-value) state/form-value-cursor)}))
@@ -124,7 +124,7 @@
      :helperText      "Subnet in CIDR format that represents a network segment"
      :style           {:maxWidth "350px"}
      :margin          "normal"
-     :value           value
+     :defaultValue    value
      :InputLabelProps {:shrink true}
      :onChange        #(state/update-value [:ipam :subnet] (-> % .-target .-value) state/form-value-cursor)}))
 
@@ -138,7 +138,7 @@
      :placeholder     "e.g. 10.0.0.1"
      :helperText      "IPv4 or IPv6 Gateway for the master subnet"
      :style           {:maxWidth "350px"}
-     :value           value
+     :defaultValue    value
      :InputLabelProps {:shrink true}
      :onChange        #(state/update-value [:ipam :gateway] (-> % .-target .-value) state/form-value-cursor)}))
 
@@ -172,25 +172,25 @@
 
 (defn- form-driver-opt-name [value index]
   (comp/text-field
-    {:label     "Name"
-     :variant   "outlined"
-     :margin    "dense"
-     :fullWidth true
-     :name      (str "form-driver-opt-name-" index)
-     :key       (str "form-driver-opt-name-" index)
-     :value     value
-     :onChange  #(state/update-item index :name (-> % .-target .-value) form-driver-opts-cursor)}))
+    {:label        "Name"
+     :variant      "outlined"
+     :margin       "dense"
+     :fullWidth    true
+     :name         (str "form-driver-opt-name-" index)
+     :key          (str "form-driver-opt-name-" index)
+     :defaultValue value
+     :onChange     #(state/update-item index :name (-> % .-target .-value) form-driver-opts-cursor)}))
 
 (defn- form-driver-opt-value [value index]
   (comp/text-field
-    {:label     "Value"
-     :variant   "outlined"
-     :margin    "dense"
-     :fullWidth true
-     :name      (str "form-driver-opt-value-" index)
-     :key       (str "form-driver-opt-value-" index)
-     :value     value
-     :onChange  #(state/update-item index :value (-> % .-target .-value) form-driver-opts-cursor)}))
+    {:label        "Value"
+     :variant      "outlined"
+     :margin       "dense"
+     :fullWidth    true
+     :name         (str "form-driver-opt-value-" index)
+     :key          (str "form-driver-opt-value-" index)
+     :defaultValue value
+     :onChange     #(state/update-item index :value (-> % .-target .-value) form-driver-opts-cursor)}))
 
 (def form-driver-opts-render-metadata
   [{:name      "Name"

@@ -21,7 +21,7 @@
      :key             "username"
      :variant         "outlined"
      :margin          "normal"
-     :value           value
+     :defaultValue    value
      :required        true
      :disabled        true
      :InputLabelProps {:shrink true}}))
@@ -50,7 +50,7 @@
      :fullWidth       true
      :variant         "outlined"
      :key             "email"
-     :value           value
+     :defaultValue    value
      :required        true
      :margin          "normal"
      :InputLabelProps {:shrink true}

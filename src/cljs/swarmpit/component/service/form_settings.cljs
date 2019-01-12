@@ -28,7 +28,7 @@
      :fullWidth       true
      :disabled        true
      :required        true
-     :value           value
+     :defaultValue    value
      :InputLabelProps {:shrink true}}))
 
 (defn- form-image-tag [value tags]
@@ -77,7 +77,7 @@
      :helperText      "Specify name or leave empty for random"
      :disabled        update-form?
      :fullWidth       true
-     :value           value
+     :defaultValue    value
      :InputLabelProps {:shrink true}
      :onChange        #(state/update-value [:serviceName] (-> % .-target .-value) form-value-cursor)}))
 
@@ -124,7 +124,7 @@
      :fullWidth       true
      :required        true
      :margin          "dense"
-     :value           value
+     :defaultValue    value
      :InputLabelProps {:shrink true}
      :onChange        (fn [event]
                         (state/update-value [:replicas] (parse-int (-> event .-target .-value)) form-value-cursor))}))
@@ -137,7 +137,7 @@
      :helperText      "The command to be run in the image"
      :fullWidth       true
      :multiline       true
-     :value           value
+     :defaultValue    value
      :InputProps      {:style {:fontFamily "monospace"}}
      :InputLabelProps {:shrink true}
      :onChange        (fn [event]

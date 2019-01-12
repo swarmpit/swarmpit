@@ -58,7 +58,7 @@
      :variant         "outlined"
      :margin          "normal"
      :multiline       true
-     :value           value
+     :defaultValue    value
      :InputProps      {:readOnly true
                        :style    {:fontFamily "monospace"}}
      :InputLabelProps {:shrink true}}))

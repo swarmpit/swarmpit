@@ -39,7 +39,7 @@
     {:fullWidth       true
      :id              "repository"
      :label           "Repository"
-     :value           repository
+     :defaultValue    repository
      :margin          "normal"
      :variant         "outlined"
      :placeholder     "Find repository"

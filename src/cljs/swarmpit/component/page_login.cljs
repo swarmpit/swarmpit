@@ -48,7 +48,7 @@
      :required        true
      :autoComplete    "user"
      :autoFocus       true
-     :value           value
+     :defaultValue    value
      :onChange        (fn [event]
                         (swap! local-state assoc :username (-> event .-target .-value)))
      :InputLabelProps {:shrink true}}))
@@ -79,7 +79,7 @@
        :type            (if show-password?
                           "text"
                           "password")
-       :value           value
+       :defaultValue    value
        :onChange        (fn [event]
                           (swap! local-state assoc :password (-> event .-target .-value)))
        :onKeyPress      (fn [event]

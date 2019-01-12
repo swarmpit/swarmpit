@@ -49,7 +49,7 @@
      :min             4
      :fullWidth       true
      :required        true
-     :value           value
+     :defaultValue    value
      :InputLabelProps {:shrink true}
      :onChange        #(state/update-value [:reservation :memory] (parse-int (-> % .-target .-value)) form-value-cursor)}))
 
@@ -83,7 +83,7 @@
      :min             4
      :fullWidth       true
      :required        true
-     :value           value
+     :defaultValue    value
      :InputLabelProps {:shrink true}
      :onChange        #(state/update-value [:limit :memory] (parse-int (-> % .-target .-value)) form-value-cursor)}))
 

@@ -14,7 +14,7 @@
     {:fullWidth       true
      :label           "Name"
      :key             (str "form-variable-name-" index)
-     :value           value
+     :defaultValue    value
      :required        true
      :variant         "outlined"
      :margin          "dense"
@@ -26,7 +26,7 @@
     {:fullWidth       true
      :label           "Value"
      :key             (str "form-variable-value-" index)
-     :value           value
+     :defaultValue    value
      :required        true
      :variant         "outlined"
      :margin          "dense"

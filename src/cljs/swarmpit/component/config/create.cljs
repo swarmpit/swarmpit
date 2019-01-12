@@ -24,7 +24,7 @@
      :name            "name"
      :key             "name"
      :variant         "outlined"
-     :value           value
+     :defaultValue    value
      :required        true
      :InputLabelProps {:shrink true}
      :onChange        #(state/update-value [:configName] (-> % .-target .-value) state/form-value-cursor)}))

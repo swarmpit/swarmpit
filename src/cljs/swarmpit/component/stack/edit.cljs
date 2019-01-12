@@ -28,7 +28,7 @@
      :name            "name"
      :key             "name"
      :variant         "outlined"
-     :value           value
+     :defaultValue    value
      :margin          "normal"
      :required        true
      :disabled        true

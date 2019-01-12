@@ -29,7 +29,7 @@
      :variant         "outlined"
      :margin          "normal"
      :style           {:maxWidth "350px"}
-     :value           value
+     :defaultValue    value
      :required        true
      :disabled        true
      :InputLabelProps {:shrink true}}))
@@ -105,7 +105,7 @@
     {:fullWidth       true
      :label           "Name"
      :key             (str "form-label-name-" index)
-     :value           value
+     :defaultValue    value
      :required        true
      :variant         "outlined"
      :margin          "dense"
@@ -117,7 +117,7 @@
     {:fullWidth       true
      :label           "Value"
      :key             (str "form-label-value-" index)
-     :value           value
+     :defaultValue    value
      :required        true
      :variant         "outlined"
      :margin          "dense"

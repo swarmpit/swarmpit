@@ -44,7 +44,7 @@
      :placeholder     (when (str/blank? value) name)
      :variant         "outlined"
      :margin          "dense"
-     :value           value
+     :defaultValue    value
      :required        true
      :InputLabelProps {:shrink true}
      :onChange        #(state/update-item index :configTarget (-> % .-target .-value) form-value-cursor)}))

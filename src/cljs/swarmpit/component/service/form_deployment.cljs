@@ -19,7 +19,7 @@
      :type            "number"
      :key             "pattempts"
      :min             0
-     :value           value
+     :defaultValue    value
      :variant         "outlined"
      :margin          "normal"
      :style           {:maxWidth "150px"}
@@ -33,7 +33,7 @@
      :type            "number"
      :key             "pdelay"
      :min             0
-     :value           value
+     :defaultValue    value
      :variant         "outlined"
      :margin          "normal"
      :style           {:maxWidth "150px"}
@@ -47,7 +47,7 @@
      :type            "number"
      :key             "pwindow"
      :min             0
-     :value           value
+     :defaultValue    value
      :variant         "outlined"
      :margin          "normal"
      :style           {:maxWidth "150px"}
@@ -83,7 +83,7 @@
      :type            "number"
      :key             "udparallel"
      :min             0
-     :value           value
+     :defaultValue    value
      :variant         "outlined"
      :margin          "normal"
      :style           {:maxWidth "150px"}
@@ -97,7 +97,7 @@
      :type            "number"
      :key             "udelay"
      :min             0
-     :value           value
+     :defaultValue    value
      :variant         "outlined"
      :margin          "normal"
      :style           {:maxWidth "150px"}
@@ -152,7 +152,7 @@
      :type            "number"
      :key             "rparallel"
      :min             0
-     :value           value
+     :defaultValue    value
      :variant         "outlined"
      :margin          "normal"
      :style           {:maxWidth "150px"}
@@ -166,7 +166,7 @@
      :type            "number"
      :key             "rdelay"
      :min             0
-     :value           value
+     :defaultValue    value
      :variant         "outlined"
      :margin          "normal"
      :style           {:maxWidth "150px"}

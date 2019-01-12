@@ -40,7 +40,7 @@
     {:fullWidth       true
      :label           "Name"
      :key             (str "form-logdriver-opt-name-" index)
-     :value           value
+     :defaultValue    value
      :required        true
      :variant         "outlined"
      :margin          "dense"
@@ -52,7 +52,7 @@
     {:fullWidth       true
      :label           "Value"
      :key             (str "form-logdriver-opt-value-" index)
-     :value           value
+     :defaultValue    value
      :required        true
      :variant         "outlined"
      :margin          "dense"

@@ -41,7 +41,7 @@
      :type            "number"
      :min             1
      :max             65535
-     :value           value
+     :defaultValue    value
      :variant         "outlined"
      :margin          "dense"
      :InputLabelProps {:shrink true}
@@ -94,7 +94,7 @@
      :type            "number"
      :min             1
      :max             65535
-     :value           value
+     :defaultValue    value
      :variant         "outlined"
      :margin          "dense"
      :InputLabelProps {:shrink true}

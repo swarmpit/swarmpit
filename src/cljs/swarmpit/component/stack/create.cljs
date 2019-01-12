@@ -28,7 +28,7 @@
      :variant         "outlined"
      :helperText      "Specify stack name"
      :margin          "normal"
-     :value           value
+     :defaultValue    value
      :required        true
      :InputLabelProps {:shrink true}
      :onChange        #(state/update-value [:name] (-> % .-target .-value) state/form-value-cursor)}))
@@ -172,7 +172,7 @@
                        :target "_blank"}
                    "docker compose"]]
                  [:p
-                  [:a {:href "https://docs.docker.com/compose/compose-file/"
+                  [:a {:href   "https://docs.docker.com/compose/compose-file/"
                        :target "_blank"}
                    "Format reference"]]])))]]))))
 

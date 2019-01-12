@@ -47,7 +47,7 @@
      :name            "name"
      :key             "name"
      :variant         "outlined"
-     :value           value
+     :defaultValue    value
      :required        true
      :helperText      "Specify volume name or leave empty for random"
      :InputLabelProps {:shrink true}
@@ -75,25 +75,25 @@
 
 (defn- form-driver-opt-name [value index]
   (comp/text-field
-    {:label     "Name"
-     :variant   "outlined"
-     :margin    "dense"
-     :fullWidth true
-     :name      (str "form-driver-opt-name-" index)
-     :key       (str "form-driver-opt-name-" index)
-     :value     value
-     :onChange  #(state/update-item index :name (-> % .-target .-value) form-driver-opts-cursor)}))
+    {:label        "Name"
+     :variant      "outlined"
+     :margin       "dense"
+     :fullWidth    true
+     :name         (str "form-driver-opt-name-" index)
+     :key          (str "form-driver-opt-name-" index)
+     :defaultValue value
+     :onChange     #(state/update-item index :name (-> % .-target .-value) form-driver-opts-cursor)}))
 
 (defn- form-driver-opt-value [value index]
   (comp/text-field
-    {:label     "Value"
-     :variant   "outlined"
-     :margin    "dense"
-     :fullWidth true
-     :name      (str "form-driver-opt-value-" index)
-     :key       (str "form-driver-opt-value-" index)
-     :value     value
-     :onChange  #(state/update-item index :value (-> % .-target .-value) form-driver-opts-cursor)}))
+    {:label        "Value"
+     :variant      "outlined"
+     :margin       "dense"
+     :fullWidth    true
+     :name         (str "form-driver-opt-value-" index)
+     :key          (str "form-driver-opt-value-" index)
+     :defaultValue value
+     :onChange     #(state/update-item index :value (-> % .-target .-value) form-driver-opts-cursor)}))
 
 (def form-driver-opts-render-metadata
   [{:name      "Name"

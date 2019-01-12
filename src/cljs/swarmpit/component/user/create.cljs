@@ -21,7 +21,7 @@
      :key             "username"
      :variant         "outlined"
      :margin          "normal"
-     :value           value
+     :defaultValue    value
      :required        true
      :InputLabelProps {:shrink true}
      :onChange        #(state/update-value [:username] (-> % .-target .-value) state/form-value-cursor)}))
@@ -37,7 +37,7 @@
      :type            (if show-password?
                         "text"
                         "password")
-     :value           value
+     :defaultValue    value
      :onChange        #(state/update-value [:password] (-> % .-target .-value) state/form-value-cursor)
      :InputLabelProps {:shrink true}
      :InputProps      {:endAdornment (common/show-password-adornment show-password?)}}))
@@ -78,7 +78,7 @@
      :fullWidth       true
      :key             "email"
      :variant         "outlined"
-     :value           value
+     :defaultValue    value
      :required        true
      :margin          "normal"
      :InputLabelProps {:shrink true}

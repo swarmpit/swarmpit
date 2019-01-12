@@ -41,7 +41,7 @@
      :key             (str "form-mount-container-" index)
      :variant         "outlined"
      :margin          "dense"
-     :value           value
+     :defaultValue    value
      :required        true
      :InputLabelProps {:shrink true}
      :onChange        #(state/update-item index :containerPath (-> % .-target .-value) form-value-cursor)}))
@@ -53,7 +53,7 @@
      :key             (str "form-mount-bind-" index)
      :variant         "outlined"
      :margin          "dense"
-     :value           value
+     :defaultValue    value
      :required        true
      :InputLabelProps {:shrink true}
      :onChange        #(state/update-item index :host (-> % .-target .-value) form-value-cursor)}))

@@ -24,7 +24,7 @@
      :type            (if show-password?
                         "text"
                         "password")
-     :value           password
+     :defaultValue    password
      :required        true
      :onChange        #(state/update-value [:password] (-> % .-target .-value) state/form-value-cursor)
      :InputLabelProps {:shrink true}
@@ -41,7 +41,7 @@
      :type            (if show-password?
                         "text"
                         "password")
-     :value           password
+     :defaultValue    password
      :required        true
      :onChange        #(state/update-value [:new-password] (-> % .-target .-value) state/form-value-cursor)
      :InputLabelProps {:shrink true}
@@ -59,7 +59,7 @@
      :type            (if show-password?
                         "text"
                         "password")
-     :value           confirm-password
+     :defaultValue    confirm-password
      :required        true
      :onChange        #(and (state/update-value [:confirm-password] (-> % .-target .-value) state/form-value-cursor)
                             (state/update-value [:error?] (not= (:new-password (state/get-value state/form-value-cursor)) (-> % .-target .-value)) state/form-state-cursor))
