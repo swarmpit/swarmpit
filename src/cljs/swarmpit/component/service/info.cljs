@@ -87,21 +87,24 @@
                      (str "Service rollback failed. " (:error response))))}))
 
 (defn form-tasks [tasks]
-  (comp/card
-    {:className "Swarmpit-card"
-     :key       "ftc"}
-    (comp/card-header
-      {:className "Swarmpit-table-card-header"
-       :key       "ftch"
-       :title     "Tasks"})
-    (comp/card-content
-      {:className "Swarmpit-table-card-content"
-       :key       "ftcc"}
-      (rum/with-key
-        (list/responsive
-          tasks/render-metadata
-          (filter #(not (= "shutdown" (:state %))) tasks)
-          tasks/onclick-handler) "ftccrl"))))
+  (let [table-summary (-> (get-in tasks/render-metadata [:table :summary])
+                          (assoc-in [0 :render-fn] (fn [item] (:taskName item))))
+        custom-metadata (assoc-in tasks/render-metadata [:table :summary] table-summary)]
+    (comp/card
+      {:className "Swarmpit-card"
+       :key       "ftc"}
+      (comp/card-header
+        {:className "Swarmpit-table-card-header"
+         :key       "ftch"
+         :title     "Tasks"})
+      (comp/card-content
+        {:className "Swarmpit-table-card-content"
+         :key       "ftcc"}
+        (rum/with-key
+          (list/responsive
+            custom-metadata
+            (filter #(not (= "shutdown" (:state %))) tasks)
+            tasks/onclick-handler) "ftccrl")))))
 
 (defn form-actions
   [service service-id]

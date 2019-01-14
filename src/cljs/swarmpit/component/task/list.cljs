@@ -50,9 +50,22 @@
   (html
     [:div
      [:div
-      [:span (:taskName item)]]
+      [:span
+       (:taskName item)]]
      [:div
-      [:span.Swarmpit-list-image (get-in item [:repository :image])]]]))
+      [:span.Swarmpit-table-cell-secondary
+       (get-in item [:repository :image])]]]))
+
+(defn- render-item-memory-usage [item]
+  (if (:stats item)
+    (html
+      [:div
+       [:div
+        [:span
+         (render-percentage (get-in item [:stats :memoryPercentage]))]
+        [:span.Swarmpit-table-cell-secondary
+         (str " (" (render-capacity (get-in item [:stats :memory])) ")")]]])
+    (html [:span "-"])))
 
 (def render-metadata
   {:table {:summary [{:name      "Task"
@@ -62,9 +75,7 @@
                      {:name      "CPU Usage"
                       :render-fn (fn [item] (render-percentage (get-in item [:stats :cpuPercentage])))}
                      {:name      "Memory Usage"
-                      :render-fn (fn [item] (render-percentage (get-in item [:stats :memoryPercentage])))}
-                     {:name      "Memory"
-                      :render-fn (fn [item] (render-capacity (get-in item [:stats :memory])))}
+                      :render-fn (fn [item] (render-item-memory-usage item))}
                      {:name      "State"
                       :render-fn (fn [item] (render-item-state (:state item)))}]}
    :list  {:primary   (fn [item] (:taskName item))

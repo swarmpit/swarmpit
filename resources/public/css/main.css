@@ -341,6 +341,10 @@ a {
     padding: 4px 56px 4px 4px !important;
 }
 
+.Swarmpit-table-cell-secondary {
+    color: rgba(0, 0, 0, 0.54);
+}
+
 .Swarmpit-table-head-cell {
     text-transform: uppercase !important;
 }
@@ -599,10 +603,6 @@ a {
     margin-top: 10px;
     flex-direction: column;
     display: flex;
-}
-
-.Swarmpit-list-image {
-    color: rgba(0, 0, 0, 0.54);
 }
 
 /* NODE */
