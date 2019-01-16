@@ -358,6 +358,11 @@ a {
     height: 26px !important;
 }
 
+.Swarmpit-table-status {
+    width: 150px;
+    text-align: center;
+}
+
 .Swarmpit-list-context {
     padding: 0 24px;
 }

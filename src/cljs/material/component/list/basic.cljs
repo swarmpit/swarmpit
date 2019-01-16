@@ -5,6 +5,10 @@
             [sablono.core :refer-macros [html]]
             [rum.core :as rum]))
 
+(defn status
+  [label]
+  (html [:div.Swarmpit-table-status label]))
+
 (defn table-head
   [render-metadata]
   (cmp/table-head

@@ -24,9 +24,7 @@
                      {:name      "Subnet"
                       :render-fn (fn [item] (get-in item [:ipam :subnet]))}
                      {:name      "Gateway"
-                      :render-fn (fn [item] (get-in item [:ipam :gateway]))}
-                     {:name      "Status"
-                      :render-fn (fn [item] (when (:internal item) (label/blue "internal")))}]}
+                      :render-fn (fn [item] (get-in item [:ipam :gateway]))}]}
    :list  {:primary   (fn [item] (:networkName item))
            :secondary (fn [item] (:driver item))}})
 

@@ -1,6 +1,7 @@
 (ns swarmpit.component.task.list
   (:require [material.icon :as icon]
             [material.components :as comp]
+            [material.component.list.basic :as list]
             [material.component.list.util :as list-util]
             [material.component.label :as label]
             [swarmpit.component.state :as state]
@@ -76,8 +77,8 @@
                       :render-fn (fn [item] (render-percentage (get-in item [:stats :cpuPercentage])))}
                      {:name      "Memory Usage"
                       :render-fn (fn [item] (render-item-memory-usage item))}
-                     {:name      "State"
-                      :render-fn (fn [item] (render-item-state (:state item)))}]}
+                     {:name      ""
+                      :render-fn (fn [item] (list/status (render-item-state (:state item))))}]}
    :list  {:primary   (fn [item] (:taskName item))
            :secondary (fn [item] (get-in item [:repository :image]))
            :status-fn (fn [item] (render-item-state (:state item)))}})
