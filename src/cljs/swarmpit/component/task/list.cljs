@@ -64,8 +64,9 @@
        [:div
         [:span
          (render-percentage (get-in item [:stats :memoryPercentage]))]
+        [:span " "]
         [:span.Swarmpit-table-cell-secondary
-         (str " (" (render-capacity (get-in item [:stats :memory])) ")")]]])
+         (render-capacity (get-in item [:stats :memory]))]]])
     (html [:span "-"])))
 
 (def render-metadata
