@@ -95,14 +95,18 @@
                                    :node-edit {:id id}
                                    {:section "Labels"})}
                     (comp/svg icon/edit-path))})
-    (comp/card-content
-      {:className "Swarmpit-table-card-content"
-       :key       "nlcc"}
-      (rum/with-key
-        (list/list
-          render-labels-metadata
-          labels
-          nil) "nlccrl"))))
+    (if (empty? labels)
+      (comp/card-content
+        {:key "nlcce"}
+        (html [:div "No labels defined for the node."]))
+      (comp/card-content
+        {:className "Swarmpit-table-card-content"
+         :key       "nlcc"}
+        (rum/with-key
+          (list/list
+            render-labels-metadata
+            labels
+            nil) "nlcclc")))))
 
 (rum/defc form-plugins < rum/static [networks volumes]
   (comp/card
@@ -145,14 +149,18 @@
          :title     (comp/typography
                       {:variant "h6"
                        :key     "tasks-title"} "Tasks")})
-      (comp/card-content
-        {:className "Swarmpit-table-card-content"
-         :key       "ftcc"}
-        (rum/with-key
-          (list/responsive
-            custom-metadata
-            (filter #(not (= "shutdown" (:state %))) tasks)
-            tasks/onclick-handler) "ftccrl")))))
+      (if (empty? tasks)
+        (comp/card-content
+          {:key "ftcce"}
+          (html [:div "No tasks running on the node."]))
+        (comp/card-content
+          {:className "Swarmpit-table-card-content"
+           :key       "ftcc"}
+          (rum/with-key
+            (list/responsive
+              custom-metadata
+              (filter #(not (= "shutdown" (:state %))) tasks)
+              tasks/onclick-handler) "ftccrl"))))))
 
 (defn- node-tasks-handler
   [node-id]
