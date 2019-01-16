@@ -19,6 +19,7 @@
             [swarmpit.component.task.list :as tasks]
             [swarmpit.component.message :as message]
             [swarmpit.url :refer [dispatch!]]
+            [swarmpit.docker.utils :as utils]
             [swarmpit.ajax :as ajax]
             [swarmpit.routes :as routes]
             [sablono.core :refer-macros [html]]
@@ -86,9 +87,9 @@
                    (message/error
                      (str "Service rollback failed. " (:error response))))}))
 
-(defn form-tasks [tasks]
+(defn form-tasks [stack tasks]
   (let [table-summary (-> (get-in tasks/render-metadata [:table :summary])
-                          (assoc-in [0 :render-fn] (fn [item] (:taskName item))))
+                          (assoc-in [0 :render-fn] (fn [item] (utils/trim-stack stack (:taskName item)))))
         custom-metadata (assoc-in tasks/render-metadata [:table :summary] table-summary)]
     (comp/card
       {:className "Swarmpit-card"
@@ -156,12 +157,12 @@
     (rum/with-key
       (settings/form service tasks (form-actions service service-id)) "slggf")))
 
-(defn form-tasks-grid [tasks]
+(defn form-tasks-grid [stack tasks]
   (comp/grid
     {:item true
      :key  "srgt"
      :xs   12}
-    (form-tasks tasks)))
+    (form-tasks stack tasks)))
 
 (defn form-networks-grid [networks service-id]
   (comp/grid
@@ -281,7 +282,7 @@
                 (comp/grid
                   {:container true
                    :spacing   16}
-                  (form-tasks-grid tasks)
+                  (form-tasks-grid (:stack service) tasks)
                   (form-networks-grid networks id)
                   (form-ports-grid ports id)
                   (form-mounts-grid mounts id)))))
@@ -292,7 +293,7 @@
               {:container true
                :spacing   16}
               (form-settings-grid service id tasks)
-              (form-tasks-grid tasks)
+              (form-tasks-grid (:stack service) tasks)
               (form-networks-grid networks id)
               (form-ports-grid ports id)
               (form-mounts-grid mounts id)

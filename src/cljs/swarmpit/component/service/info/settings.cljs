@@ -140,7 +140,7 @@
       {:className "Swarmpit-form-card"
        :key       "ssc"}
       (comp/card-header
-        {:title     (utils/trim-stack stack (:serviceName service))
+        {:title     (:serviceName service)
          :className "Swarmpit-form-card-header"
          :key       "ssch"
          :subheader (form-subheader image image-digest)
