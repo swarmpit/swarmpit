@@ -159,7 +159,7 @@
       {:formatter (fn [value name props]
                     (.-state (.-payload props)))})))
 
-(rum/defc form-general < rum/static [stack-name stackfile services]
+(rum/defc form-general < rum/static [stack-name stackfile {:keys [services networks volumes configs secrets]}]
   (comp/card
     {:className "Swarmpit-form-card"
      :key       "fgc"}
@@ -174,6 +174,17 @@
     (comp/card-content
       {:key "fgccc"}
       (rum/with-key (form-services-graph services) "fgcccg"))
+    (comp/card-content
+      {:key "fgccci"}
+      (html
+        [:div {:key "ngcccid"}
+         [:span "Networks: " [:b (count networks)]]
+         [:br]
+         [:span "Volumes: " [:b (count volumes)]]
+         [:br]
+         [:span "Configs: " [:b (count configs)]]
+         [:br]
+         [:span "Secrets: " [:b (count secrets)]]]))
     (comp/divider
       {:key "fgd"})
     (comp/card-content
@@ -298,13 +309,13 @@
       (stack-secrets-handler name)
       (stackfile-handler name))))
 
-(defn form-general-grid [stack-name stackfile services]
+(defn form-general-grid [stack-name stackfile item]
   (comp/grid
     {:item true
      :key  "sgg"
      :xs   12}
     (rum/with-key
-      (form-general stack-name stackfile services) "sggfg")))
+      (form-general stack-name stackfile item) "sggfg")))
 
 (defn form-services-grid [stack-name services]
   (comp/grid
@@ -348,7 +359,7 @@
 
 
 (rum/defc form-info < rum/static [stack-name
-                                  {:keys [services networks volumes configs secrets stackfile]}]
+                                  {:keys [services networks volumes configs secrets stackfile] :as item}]
   (comp/mui
     (html
       [:div.Swarmpit-form
@@ -368,7 +379,7 @@
               (comp/grid
                 {:container true
                  :spacing   16}
-                (form-general-grid stack-name stackfile services)
+                (form-general-grid stack-name stackfile item)
                 (form-secrets-grid stack-name secrets)
                 (form-configs-grid stack-name configs)))
             (comp/grid
@@ -389,7 +400,7 @@
           (comp/grid
             {:container true
              :spacing   16}
-            (form-general-grid stack-name stackfile services)
+            (form-general-grid stack-name stackfile item)
             (form-services-grid stack-name services)
             (form-networks-grid stack-name networks)
             (form-volumes-grid stack-name volumes)
