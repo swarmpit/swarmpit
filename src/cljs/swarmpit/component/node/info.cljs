@@ -33,7 +33,7 @@
     "ready" (label/green value)
     "down" (label/red value)))
 
-(defn section-general [node]
+(rum/defc form-general < rum/static [node]
   (comp/card
     {:className "Swarmpit-form-card"
      :key       "ngc"}
@@ -79,7 +79,7 @@
   {:primary   (fn [item] (:name item))
    :secondary (fn [item] (:value item))})
 
-(defn section-labels [labels id]
+(rum/defc form-labels < rum/static [labels id]
   (comp/card
     {:className "Swarmpit-card"
      :key       "nlc"}
@@ -102,7 +102,7 @@
           labels
           nil) "nlccrl"))))
 
-(defn section-plugins [networks volumes]
+(rum/defc form-plugins < rum/static [networks volumes]
   (comp/card
     {:className "Swarmpit-card"
      :key       "npc"}
@@ -127,22 +127,26 @@
                :key   (str "vp-" %)
                :style {:marginRight "5px"}}) volumes))))
 
-(defn section-tasks [tasks]
-  (comp/card
-    {:className "Swarmpit-card"
-     :key       "ntc"}
-    (comp/card-header
-      {:className "Swarmpit-table-card-header"
-       :key       "ntch"
-       :title     "Tasks"})
-    (comp/card-content
-      {:className "Swarmpit-table-card-content"
-       :key       "ntcc"}
-      (rum/with-key
-        (list/responsive
-          tasks/render-metadata
-          tasks
-          tasks/onclick-handler) "ntccrl"))))
+(rum/defc form-tasks < rum/static [tasks]
+  (let [table-summary (->> (get-in tasks/render-metadata [:table :summary])
+                           (filter #(not= "Node" (:name %)))
+                           (into []))
+        custom-metadata (assoc-in tasks/render-metadata [:table :summary] table-summary)]
+    (comp/card
+      {:className "Swarmpit-card"
+       :key       "ftc"}
+      (comp/card-header
+        {:className "Swarmpit-table-card-header"
+         :key       "ftch"
+         :title     "Tasks"})
+      (comp/card-content
+        {:className "Swarmpit-table-card-content"
+         :key       "ftcc"}
+        (rum/with-key
+          (list/responsive
+            custom-metadata
+            (filter #(not (= "shutdown" (:state %))) tasks)
+            tasks/onclick-handler) "ftccrl")))))
 
 (defn- node-tasks-handler
   [node-id]
@@ -170,46 +174,85 @@
       (node-handler id)
       (node-tasks-handler id))))
 
+(defn form-general-grid [network]
+  (comp/grid
+    {:item true
+     :key  "ngg"
+     :xs   12}
+    (rum/with-key
+      (form-general network) "nggfg")))
+
+(defn form-plugins-grid [networks volumes]
+  (comp/grid
+    {:item true
+     :key  "npg"
+     :xs   12}
+    (rum/with-key
+      (form-plugins networks volumes) "npgfg")))
+
+(defn form-labels-grid [labels id]
+  (comp/grid
+    {:item true
+     :key  "nlg"
+     :xs   12}
+    (rum/with-key
+      (form-labels labels id) "nlgfg")))
+
+(defn form-task-grid [tasks]
+  (comp/grid
+    {:item true
+     :key  "nlg"
+     :xs   12}
+    (rum/with-key
+      (form-tasks tasks) "ntgfg")))
+
 (rum/defc form-info < rum/static [id {:keys [node tasks]}]
   (comp/mui
     (html
       [:div.Swarmpit-form
        [:div.Swarmpit-form-context
-        (comp/grid
-          {:container true
-           :spacing   16}
+        (comp/hidden
+          {:xsDown         true
+           :implementation "js"}
           (comp/grid
-            {:item true
-             :key  "ngg"
-             :xs   12
-             :sm   6}
-            (section-general node))
+            {:container true
+             :spacing   16}
+            (comp/grid
+              {:item true
+               :key  "slg"
+               :sm   6
+               :md   6
+               :lg   4}
+              (comp/grid
+                {:container true
+                 :spacing   16}
+                (form-general-grid node)
+                (form-plugins-grid
+                  (->> node :plugins :networks)
+                  (->> node :plugins :volumes))
+                (form-labels-grid (:labels node) id)))
+            (comp/grid
+              {:item true
+               :key  "srg"
+               :sm   6
+               :md   6
+               :lg   8}
+              (comp/grid
+                {:container true
+                 :spacing   16}
+                (form-task-grid tasks)))))
+        (comp/hidden
+          {:smUp           true
+           :implementation "js"}
           (comp/grid
-            {:item true
-             :key  "ngpn"
-             :xs   12
-             :sm   6}
-            (section-plugins
+            {:container true
+             :spacing   16}
+            (form-general-grid node)
+            (form-task-grid tasks)
+            (form-plugins-grid
               (->> node :plugins :networks)
-              (->> node :plugins :volumes)))
-          (comp/grid
-            {:item true
-             :key  "ngpv"
-             :xs   12
-             :sm   6})
-          (when (not-empty (:labels node))
-            (comp/grid
-              {:item true
-               :key  "ngl"
-               :xs   12
-               :sm   6}
-              (section-labels (:labels node) id)))
-          (when (not-empty tasks)
-            (comp/grid
-              {:item true
-               :key  "ngt"
-               :xs   12}
-              (section-tasks tasks))))]])))
+              (->> node :plugins :volumes))
+            (form-labels-grid (:labels node) id)))]])))
 
 (rum/defc form < rum/reactive
                  mixin-init-form

@@ -50,7 +50,7 @@
   {:primary   (fn [item] (:name item))
    :secondary (fn [item] (:value item))})
 
-(defn- section-general
+(rum/defc form-general < rum/static
   [{:keys [id stack volumeName driver mountpoint scope]}]
   (comp/card
     {:className "Swarmpit-form-card"
@@ -92,8 +92,7 @@
        :key   "vgccf"}
       (form/item-id id))))
 
-(defn- section-driver
-  [{:keys [driver options]}]
+(rum/defc form-driver < rum/static [{:keys [driver options]}]
   (comp/card
     {:className "Swarmpit-card"
      :key       "vdc"}
@@ -122,33 +121,70 @@
       (volume-handler name)
       (volume-services-handler name))))
 
+(defn form-general-grid [network]
+  (comp/grid
+    {:item true
+     :key  "vgg"
+     :xs   12}
+    (rum/with-key
+      (form-general network) "nggfg")))
+
+(defn form-driver-grid [network]
+  (comp/grid
+    {:item true
+     :key  "vdg"
+     :xs   12}
+    (rum/with-key
+      (form-driver network) "ndgfg")))
+
+(defn form-services-grid [services]
+  (comp/grid
+    {:item true
+     :key  "vsg"
+     :xs   12}
+    (services/linked services)))
+
 (rum/defc form-info < rum/static [{:keys [volume services]}]
   (comp/mui
     (html
       [:div.Swarmpit-form
        [:div.Swarmpit-form-context
-        (comp/grid
-          {:container true
-           :spacing   16}
+        (comp/hidden
+          {:xsDown         true
+           :implementation "js"}
           (comp/grid
-            {:item true
-             :key  "vgg"
-             :xs   12
-             :sm   6}
-            (section-general volume))
-          (when (not-empty (:options volume))
+            {:container true
+             :spacing   16}
             (comp/grid
               {:item true
-               :key  "vdog"
-               :xs   12
-               :sm   6}
-              (section-driver volume)))
-          (when (not-empty services)
+               :key  "slg"
+               :sm   6
+               :md   6
+               :lg   4}
+              (comp/grid
+                {:container true
+                 :spacing   16}
+                (form-general-grid volume)
+                (form-driver-grid (:options volume))))
             (comp/grid
               {:item true
-               :key  "vlsg"
-               :xs   12}
-              (services/linked services))))]])))
+               :key  "srg"
+               :sm   6
+               :md   6
+               :lg   8}
+              (comp/grid
+                {:container true
+                 :spacing   16}
+                (form-services-grid services)))))
+        (comp/hidden
+          {:smUp           true
+           :implementation "js"}
+          (comp/grid
+            {:container true
+             :spacing   16}
+            (form-general-grid volume)
+            (form-services-grid services)
+            (form-driver-grid (:options volume))))]])))
 
 (rum/defc form < rum/reactive
                  mixin-init-form

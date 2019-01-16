@@ -11,6 +11,7 @@
             [swarmpit.component.service.list :as services]
             [swarmpit.url :refer [dispatch!]]
             [swarmpit.ajax :as ajax]
+            [swarmpit.time :as time]
             [swarmpit.routes :as routes]
             [sablono.core :refer-macros [html]]
             [rum.core :as rum]))
@@ -49,8 +50,7 @@
   {:primary   (fn [item] (:name item))
    :secondary (fn [item] (:value item))})
 
-(defn- section-general
-  [{:keys [id stack networkName driver created internal attachable ingress enableIPv6 ipam]}]
+(rum/defc form-general < rum/static [{:keys [id stack networkName driver created internal attachable ingress enableIPv6 ipam]}]
   (comp/card
     {:className "Swarmpit-form-card"
      :key       "ngc"}
@@ -101,11 +101,11 @@
     (comp/card-content
       {:key   "ngccf"
        :style {:paddingBottom "16px"}}
-      (form/item-date created nil)
+      (when (time/valid? created)
+        (form/item-date created nil))
       (form/item-id id))))
 
-(defn- section-driver
-  [{:keys [driver options]}]
+(rum/defc form-driver < rum/static [{:keys [driver options]}]
   (comp/card
     {:className "Swarmpit-card"
      :key       "ndc"}
@@ -134,33 +134,70 @@
       (network-handler id)
       (network-services-handler id))))
 
+(defn form-general-grid [network]
+  (comp/grid
+    {:item true
+     :key  "ngg"
+     :xs   12}
+    (rum/with-key
+      (form-general network) "nggfg")))
+
+(defn form-driver-grid [network]
+  (comp/grid
+    {:item true
+     :key  "ncg"
+     :xs   12}
+    (rum/with-key
+      (form-driver network) "ndgfg")))
+
+(defn form-services-grid [services]
+  (comp/grid
+    {:item true
+     :key  "nsg"
+     :xs   12}
+    (services/linked services)))
+
 (rum/defc form-info < rum/static [{:keys [network services]}]
   (comp/mui
     (html
       [:div.Swarmpit-form
        [:div.Swarmpit-form-context
-        (comp/grid
-          {:container true
-           :spacing   16}
+        (comp/hidden
+          {:xsDown         true
+           :implementation "js"}
           (comp/grid
-            {:item true
-             :key  "ngg"
-             :xs   12
-             :sm   6}
-            (section-general network))
-          (when (not-empty (:options network))
+            {:container true
+             :spacing   16}
             (comp/grid
               {:item true
-               :key  "nog"
-               :xs   12
-               :sm   6}
-              (section-driver network)))
-          (when (not-empty services)
+               :key  "slg"
+               :sm   6
+               :md   6
+               :lg   4}
+              (comp/grid
+                {:container true
+                 :spacing   16}
+                (form-general-grid network)
+                (form-driver-grid network)))
             (comp/grid
               {:item true
-               :key  "nsg"
-               :xs   12}
-              (services/linked services))))]])))
+               :key  "srg"
+               :sm   6
+               :md   6
+               :lg   8}
+              (comp/grid
+                {:container true
+                 :spacing   16}
+                (form-services-grid services)))))
+        (comp/hidden
+          {:smUp           true
+           :implementation "js"}
+          (comp/grid
+            {:container true
+             :spacing   16}
+            (form-general-grid network)
+            (form-services-grid services)
+            (form-driver-grid network)))]])))
 
 (rum/defc form < rum/reactive
                  mixin-init-form

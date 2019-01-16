@@ -33,9 +33,11 @@
   (html
     [:div
      [:div
-      [:span (:serviceName item)]]
+      [:span
+       (:serviceName item)]]
      [:div
-      [:span.Swarmpit-list-image (get-in item [:repository :image])]]]))
+      [:span.Swarmpit-table-cell-secondary
+       (get-in item [:repository :image])]]]))
 
 (defn- render-item-update-state [value]
   (case value
@@ -109,14 +111,18 @@
       {:className "Swarmpit-table-card-header"
        :key       "lsch"
        :title     "Services"})
-    (comp/card-content
-      {:className "Swarmpit-table-card-content"
-       :key       "lscc"}
-      (rum/with-key
-        (list/responsive
-          render-metadata
-          services
-          onclick-handler) "lsccrl"))))
+    (if (empty? services)
+      (comp/card-content
+        {:key "fccce"}
+        (html [:div "No linked services found."]))
+      (comp/card-content
+        {:className "Swarmpit-table-card-content"
+         :key       "lscc"}
+        (rum/with-key
+          (list/responsive
+            render-metadata
+            services
+            onclick-handler) "lsccrl")))))
 
 (defn toolbar-render-metadata
   [filter]

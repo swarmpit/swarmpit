@@ -11,6 +11,7 @@
             [swarmpit.ajax :as ajax]
             [swarmpit.routes :as routes]
             [sablono.core :refer-macros [html]]
+            [clojure.contrib.inflect :as inflect]
             [rum.core :as rum]))
 
 (enable-console-print!)
@@ -43,6 +44,35 @@
                    (message/error
                      (str "Secret removing failed. " (:error response))))}))
 
+(rum/defc form-general < rum/static [secret services]
+  (comp/card
+    {:className "Swarmpit-form-card"
+     :key       "sgc"}
+    (comp/card-header
+      {:title     (:secretName secret)
+       :className "Swarmpit-form-card-header"
+       :key       "sgch"
+       :action    (comp/tooltip
+                    {:title "Delete secret"
+                     :key   "sgchadt"}
+                    (comp/icon-button
+                      {:aria-label "Delete"
+                       :onClick    #(delete-secret-handler (:id secret))}
+                      (comp/svg icon/trash-path)))})
+    (comp/card-content
+      {:key "sgcci"}
+      (html
+        (if (empty? services)
+          [:span "Secret is not used by any service"]
+          [:span "Secret is used within " [:b (count services)] " " (inflect/pluralize-noun (count services) "service")])))
+    (comp/divider
+      {:key "sgd"})
+    (comp/card-content
+      {:style {:paddingBottom "16px"}
+       :key   "sgccf"}
+      (form/item-date (:createdAt secret) (:updatedAt secret))
+      (form/item-id (:id secret)))))
+
 (defn form-actions
   [{:keys [params]}]
   [{:onClick #(delete-secret-handler (:id params))
@@ -60,46 +90,60 @@
       (secret-handler id)
       (secret-services-handler id))))
 
+(defn form-general-grid [secret services]
+  (comp/grid
+    {:item true
+     :key  "sgg"
+     :xs   12}
+    (rum/with-key
+      (form-general secret services) "sggfg")))
+
+(defn form-services-grid [services]
+  (comp/grid
+    {:item true
+     :key  "ssg"
+     :xs   12}
+    (services/linked services)))
+
 (rum/defc form-info < rum/static [{:keys [secret services]}]
   (comp/mui
     (html
       [:div.Swarmpit-form
        [:div.Swarmpit-form-context
-        (comp/grid
-          {:container true
-           :spacing   16}
+        (comp/hidden
+          {:xsDown         true
+           :implementation "js"}
           (comp/grid
-            {:item true
-             :key  "sgg"
-             :xs   12
-             :sm   6}
-            (comp/card
-              {:className "Swarmpit-form-card"
-               :key       "sgc"}
-              (comp/card-header
-                {:title     (:secretName secret)
-                 :className "Swarmpit-form-card-header"
-                 :key       "sgch"
-                 :action    (comp/tooltip
-                              {:title "Delete secret"
-                               :key   "sgchadt"}
-                              (comp/icon-button
-                                {:aria-label "Delete"
-                                 :onClick    #(delete-secret-handler (:id secret))}
-                                (comp/svg icon/trash-path)))})
-              (comp/divider
-                {:key "sgd"})
-              (comp/card-content
-                {:style {:paddingBottom "16px"}
-                 :key   "sgccf"}
-                (form/item-date (:createdAt secret) (:updatedAt secret))
-                (form/item-id (:id secret)))))
-          (when (not-empty services)
+            {:container true
+             :spacing   16}
             (comp/grid
               {:item true
-               :key  "slsg"
-               :xs   12}
-              (services/linked services))))]])))
+               :key  "slg"
+               :sm   6
+               :md   6
+               :lg   4}
+              (comp/grid
+                {:container true
+                 :spacing   16}
+                (form-general-grid secret services)))
+            (comp/grid
+              {:item true
+               :key  "srg"
+               :sm   6
+               :md   6
+               :lg   8}
+              (comp/grid
+                {:container true
+                 :spacing   16}
+                (form-services-grid services)))))
+        (comp/hidden
+          {:smUp           true
+           :implementation "js"}
+          (comp/grid
+            {:container true
+             :spacing   16}
+            (form-general-grid secret services)
+            (form-services-grid services)))]])))
 
 (rum/defc form < rum/reactive
                  mixin-init-form
