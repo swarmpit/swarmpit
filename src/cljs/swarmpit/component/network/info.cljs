@@ -50,7 +50,8 @@
   {:primary   (fn [item] (:name item))
    :secondary (fn [item] (:value item))})
 
-(rum/defc form-general < rum/static [{:keys [id stack networkName driver created internal attachable ingress enableIPv6 ipam]}]
+(rum/defc form-general < rum/static [{:keys [id stack networkName driver created internal attachable ingress enableIPv6 ipam]}
+                                     services]
   (comp/card
     {:className "Swarmpit-form-card"
      :key       "ngc"}
@@ -89,7 +90,7 @@
            (label/grey "IPv6"))]))
     (comp/card-actions
       {:key "ngca"}
-      (when stack
+      (when (and stack (not-empty services))
         (comp/button
           {:size  "small"
            :key   "ngcasb"
@@ -136,13 +137,13 @@
       (network-handler id)
       (network-services-handler id))))
 
-(defn form-general-grid [network]
+(defn form-general-grid [network services]
   (comp/grid
     {:item true
      :key  "ngg"
      :xs   12}
     (rum/with-key
-      (form-general network) "nggfg")))
+      (form-general network services) "nggfg")))
 
 (defn form-driver-grid [network]
   (comp/grid
@@ -179,7 +180,7 @@
               (comp/grid
                 {:container true
                  :spacing   16}
-                (form-general-grid network)
+                (form-general-grid network services)
                 (form-driver-grid network)))
             (comp/grid
               {:item true
@@ -197,7 +198,7 @@
           (comp/grid
             {:container true
              :spacing   16}
-            (form-general-grid network)
+            (form-general-grid network services)
             (form-services-grid services)
             (form-driver-grid network)))]])))
 

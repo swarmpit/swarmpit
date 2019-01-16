@@ -50,8 +50,8 @@
   {:primary   (fn [item] (:name item))
    :secondary (fn [item] (:value item))})
 
-(rum/defc form-general < rum/static
-  [{:keys [id stack volumeName driver mountpoint scope]}]
+(rum/defc form-general < rum/static [{:keys [id stack volumeName driver mountpoint scope]}
+                                     services]
   (comp/card
     {:className "Swarmpit-form-card"
      :key       "vgc"}
@@ -79,7 +79,7 @@
            (label/grey driver))]))
     (comp/card-actions
       {:key "vgca"}
-      (when stack
+      (when (and stack (not-empty services))
         (comp/button
           {:size  "small"
            :color "primary"
@@ -123,21 +123,21 @@
       (volume-handler name)
       (volume-services-handler name))))
 
-(defn form-general-grid [network]
+(defn form-general-grid [volume services]
   (comp/grid
     {:item true
      :key  "vgg"
      :xs   12}
     (rum/with-key
-      (form-general network) "nggfg")))
+      (form-general volume services) "nggfg")))
 
-(defn form-driver-grid [network]
+(defn form-driver-grid [volume]
   (comp/grid
     {:item true
      :key  "vdg"
      :xs   12}
     (rum/with-key
-      (form-driver network) "ndgfg")))
+      (form-driver volume) "ndgfg")))
 
 (defn form-services-grid [services]
   (comp/grid
@@ -166,7 +166,7 @@
               (comp/grid
                 {:container true
                  :spacing   16}
-                (form-general-grid volume)
+                (form-general-grid volume services)
                 (form-driver-grid (:options volume))))
             (comp/grid
               {:item true
@@ -184,7 +184,7 @@
           (comp/grid
             {:container true
              :spacing   16}
-            (form-general-grid volume)
+            (form-general-grid volume services)
             (form-services-grid services)
             (form-driver-grid (:options volume))))]])))
 
