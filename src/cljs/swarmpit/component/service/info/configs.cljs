@@ -24,7 +24,9 @@
     (comp/card-header
       {:className "Swarmpit-table-card-header"
        :key       "scch"
-       :title     "Configs"
+       :title     (comp/typography
+                    {:variant "h6"
+                     :key     "configs-title"} "Configs")
        :action    (comp/icon-button
                     {:aria-label "Edit"
                      :href       (routes/path-for-frontend

@@ -19,7 +19,9 @@
     (comp/card-header
       {:className "Swarmpit-table-card-header"
        :key       "slch"
-       :title     "Labels"
+       :title     (comp/typography
+                    {:variant "h6"
+                     :key     "labels-title"} "Labels")
        :action    (comp/icon-button
                     {:aria-label "Edit"
                      :href       (routes/path-for-frontend

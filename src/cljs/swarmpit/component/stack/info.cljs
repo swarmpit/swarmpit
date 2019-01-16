@@ -199,7 +199,9 @@
     (comp/card-header
       {:className "Swarmpit-table-card-header"
        :key       "fsch"
-       :title     "Services"})
+       :title     (comp/typography
+                    {:variant "h6"
+                     :key     "services-title"} "Services")})
     (comp/card-content
       {:className "Swarmpit-table-card-content"
        :key       "fscc"}
@@ -216,7 +218,9 @@
     (comp/card-header
       {:className "Swarmpit-table-card-header"
        :key       "fnch"
-       :title     "Networks"})
+       :title     (comp/typography
+                    {:variant "h6"
+                     :key     "networks-title"} "Networks")})
     (if (empty? networks)
       (comp/card-content
         {:key "fvcce"}
@@ -237,7 +241,9 @@
     (comp/card-header
       {:className "Swarmpit-table-card-header"
        :key       "fvch"
-       :title     "Volumes"})
+       :title     (comp/typography
+                    {:variant "h6"
+                     :key     "volumes-title"} "Volumes")})
     (if (empty? volumes)
       (comp/card-content
         {:key "fvcce"}
@@ -258,7 +264,9 @@
     (comp/card-header
       {:className "Swarmpit-table-card-header"
        :key       "fcch"
-       :title     "Configs"})
+       :title     (comp/typography
+                    {:variant "h6"
+                     :key     "configs-title"} "Configs")})
     (if (empty? configs)
       (comp/card-content
         {:key "fccce"}
@@ -279,7 +287,9 @@
     (comp/card-header
       {:className "Swarmpit-table-card-header"
        :key       "fsech"
-       :title     "Secrets"})
+       :title     (comp/typography
+                    {:variant "h6"
+                     :key     "secrets-title"} "Secrets")})
     (if (empty? secrets)
       (comp/card-content
         {:key "fsecce"}

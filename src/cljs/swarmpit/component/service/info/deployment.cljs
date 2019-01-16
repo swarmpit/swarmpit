@@ -36,7 +36,9 @@
       (comp/card-header
         {:className "Swarmpit-form-card-header"
          :key       "sdch"
-         :title     "Deployment"
+         :title     (comp/typography
+                      {:variant "h6"
+                       :key     "deployment-title"} "Deployment")
          :action    (comp/icon-button
                       {:aria-label "Edit"
                        :href       (routes/path-for-frontend

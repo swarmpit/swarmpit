@@ -24,7 +24,9 @@
     (comp/card-header
       {:className "Swarmpit-table-card-header"
        :key       "ssech"
-       :title     "Secrets"
+       :title     (comp/typography
+                    {:variant "h6"
+                     :key     "secrets-title"} "Secrets")
        :action    (comp/icon-button
                     {:aria-label "Edit"
                      :href       (routes/path-for-frontend

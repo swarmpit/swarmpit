@@ -111,7 +111,9 @@
      :key       "ndc"}
     (comp/card-header
       {:className "Swarmpit-table-card-header"
-       :title     "Driver options"
+       :title     (comp/typography
+                    {:variant "h6"
+                     :key     "driver-title"} "Driver")
        :key       "ndch"})
     (comp/card-content
       {:className "Swarmpit-table-card-content"

@@ -110,7 +110,9 @@
     (comp/card-header
       {:className "Swarmpit-table-card-header"
        :key       "lsch"
-       :title     "Services"})
+       :title     (comp/typography
+                    {:variant "h6"
+                     :key     "services-title"} "Services")})
     (if (empty? services)
       (comp/card-content
         {:key "fccce"}

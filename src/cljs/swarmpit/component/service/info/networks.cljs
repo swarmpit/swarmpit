@@ -16,7 +16,9 @@
     (comp/card-header
       {:className "Swarmpit-table-card-header"
        :key       "snch"
-       :title     "Networks"
+       :title     (comp/typography
+                    {:variant "h6"
+                     :key     "networks-title"} "Networks")
        :action    (comp/icon-button
                     {:aria-label "Edit"
                      :href       (routes/path-for-frontend

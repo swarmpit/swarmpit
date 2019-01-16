@@ -99,7 +99,9 @@
     (comp/card-header
       {:className "Swarmpit-table-card-header"
        :key       "vdch"
-       :title     "Driver options"})
+       :title     (comp/typography
+                    {:variant "h6"
+                     :key     "driver-title"} "Driver")})
     (comp/card-content
       {:className "Swarmpit-table-card-content"
        ::key      "vdcc"}

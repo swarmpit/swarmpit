@@ -20,7 +20,9 @@
     (comp/card-header
       {:className "Swarmpit-table-card-header"
        :key       "sldch"
-       :title     "Logging"
+       :title     (comp/typography
+                    {:variant "h6"
+                     :key     "logging-title"} "Logging")
        :action    (comp/icon-button
                     {:aria-label "Edit"
                      :href       (routes/path-for-frontend

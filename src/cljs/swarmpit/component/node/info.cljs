@@ -86,7 +86,9 @@
     (comp/card-header
       {:className "Swarmpit-table-card-header"
        :key       "nlch"
-       :title     "Labels"
+       :title     (comp/typography
+                    {:variant "h6"
+                     :key     "labels-title"} "Labels")
        :action    (comp/icon-button
                     {:aria-label "Edit"
                      :href       (routes/path-for-frontend
@@ -109,7 +111,9 @@
     (comp/card-header
       {:className "Swarmpit-form-card-header"
        :key       "npch"
-       :title     "Plugins"})
+       :title     (comp/typography
+                    {:variant "h6"
+                     :key     "plugins-title"} "Plugins")})
     (comp/card-content
       {:className "Swarmpit-form-card-content"
        :key       "npccn"}
@@ -138,7 +142,9 @@
       (comp/card-header
         {:className "Swarmpit-table-card-header"
          :key       "ftch"
-         :title     "Tasks"})
+         :title     (comp/typography
+                      {:variant "h6"
+                       :key     "tasks-title"} "Tasks")})
       (comp/card-content
         {:className "Swarmpit-table-card-content"
          :key       "ftcc"}

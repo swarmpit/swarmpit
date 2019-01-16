@@ -58,7 +58,9 @@
        :key       "smc"}
       (comp/card-header
         {:className "Swarmpit-table-card-header"
-         :title     "Mounts"
+         :title     (comp/typography
+                      {:variant "h6"
+                       :key     "mounts-title"} "Mounts")
          :key       "smch"
          :action    (comp/icon-button
                       {:aria-label "Edit"

@@ -27,7 +27,9 @@
     (comp/card-header
       {:className "Swarmpit-table-card-header"
        :key       "spch"
-       :title     "Ports"
+       :title     (comp/typography
+                    {:variant "h6"
+                     :key     "ports-title"} "Ports")
        :action    (comp/icon-button
                     {:aria-label "Edit"
                      :href       (routes/path-for-frontend

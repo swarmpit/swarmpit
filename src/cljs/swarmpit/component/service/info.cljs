@@ -97,7 +97,9 @@
       (comp/card-header
         {:className "Swarmpit-table-card-header"
          :key       "ftch"
-         :title     "Tasks"})
+         :title     (comp/typography
+                      {:variant "h6"
+                       :key     "task-title"} "Tasks")})
       (comp/card-content
         {:className "Swarmpit-table-card-content"
          :key       "ftcc"}

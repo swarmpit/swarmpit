@@ -19,7 +19,9 @@
     (comp/card-header
       {:className "Swarmpit-table-card-header"
        :key       "svch"
-       :title     "Environment variables"
+       :title     (comp/typography
+                    {:variant "h6"
+                     :key     "variables-title"} "Environment variables")
        :action    (comp/icon-button
                     {:aria-label "Edit"
                      :href       (routes/path-for-frontend
