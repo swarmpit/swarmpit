@@ -134,3 +134,7 @@
 (defn lock
   [props]
   (f/lock-icon (clj->js props)))
+
+(defn open-in-new
+  [props]
+  (f/open-in-new-icon (clj->js props)))

@@ -367,9 +367,4 @@
                :md   12
                :lg   4
                :xl   4}
-              (html
-                [:span
-                 {:key "snoccgidoc"}
-                 "Learn more about "
-                 [:a {:href   doc-network-link
-                      :target "_blank"} "networks"]])))]]))))
+              (form/open-in-new "Learn more about networks" doc-network-link)))]]))))

@@ -1,6 +1,7 @@
 (ns swarmpit.component.stack.edit
   (:require [material.icon :as icon]
             [material.components :as comp]
+            [material.component.form :as form]
             [material.component.composite :as composite]
             [swarmpit.component.editor :as editor]
             [swarmpit.component.state :as state]
@@ -156,12 +157,7 @@
              :md   12
              :lg   4
              :xl   4}
-            (html
-              [:span
-               {:key "stcoccgidoc"}
-               "Learn more about "
-               [:a {:href   doc-compose-link
-                    :target "_blank"} "compose"]])))]])))
+            (form/open-in-new "Learn more about compose" doc-compose-link)))]])))
 
 (rum/defc form-last < rum/reactive
                       mixin-init-form [_]

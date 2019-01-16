@@ -195,12 +195,7 @@
              :md   12
              :lg   4
              :xl   4}
-            (html
-              [:span
-               {:key "stcoccgidoc"}
-               "Learn more about "
-               [:a {:href   doc-compose-link
-                    :target "_blank"} "compose"]])))]])))
+            (form/open-in-new "Learn more about compose" doc-compose-link)))]])))
 
 (rum/defc form < rum/reactive
                  mixin-init-form [_]

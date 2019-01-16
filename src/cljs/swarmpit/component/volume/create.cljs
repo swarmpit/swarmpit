@@ -224,9 +224,4 @@
                :md   12
                :lg   4
                :xl   4}
-              (html
-                [:span
-                 {:key "svoloccgidoc"}
-                 "Learn more about "
-                 [:a {:href   doc-volume-link
-                      :target "_blank"} "volumes"]])))]]))))
+              (form/open-in-new "Learn more about volumes" doc-volume-link)))]]))))

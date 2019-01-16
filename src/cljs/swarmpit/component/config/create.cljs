@@ -1,5 +1,6 @@
 (ns swarmpit.component.config.create
   (:require [material.components :as comp]
+            [material.component.form :as form]
             [material.component.composite :as composite]
             [swarmpit.component.editor :as editor]
             [swarmpit.component.mixin :as mixin]
@@ -139,9 +140,4 @@
                :md   12
                :lg   4
                :xl   4}
-              (html
-                [:span
-                 {:key "scfgoccgidoc"}
-                 "Learn more about "
-                 [:a {:href   doc-configs-link
-                      :target "_blank"} "configs"]])))]]))))
+              (form/open-in-new "Learn more about configs" doc-configs-link)))]]))))

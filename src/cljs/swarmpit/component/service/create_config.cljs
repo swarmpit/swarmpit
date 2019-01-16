@@ -332,9 +332,4 @@
                :md   12
                :lg   4
                :xl   4}
-              (html
-                [:span
-                 {:key "stcoccgidoc"}
-                 "Learn more about "
-                 [:a {:href   doc-services-link
-                      :target "_blank"} "compose"]])))]]))))
+              (form/open-in-new "Learn more about compose" doc-services-link)))]]))))

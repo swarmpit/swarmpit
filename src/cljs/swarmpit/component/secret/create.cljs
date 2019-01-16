@@ -1,5 +1,6 @@
 (ns swarmpit.component.secret.create
   (:require [material.components :as comp]
+            [material.component.form :as form]
             [material.component.composite :as composite]
             [swarmpit.component.mixin :as mixin]
             [swarmpit.component.editor :as editor]
@@ -140,9 +141,4 @@
                :md   12
                :lg   4
                :xl   4}
-              (html
-                [:span
-                 {:key "ssecoccgidoc"}
-                 "Learn more about "
-                 [:a {:href   doc-secrets-link
-                      :target "_blank"} "secrets"]])))]]))))
+              (form/open-in-new "Learn more about secrets" doc-secrets-link)))]]))))

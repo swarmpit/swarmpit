@@ -253,12 +253,7 @@
              :md   12
              :lg   4
              :xl   4}
-            (html
-              [:span
-               {:key "snoccgidoc"}
-               "Learn more about "
-               [:a {:href   doc-node-link
-                    :target "_blank"} "nodes"]])))]])))
+            (form/open-in-new "Learn more about nodes" doc-node-link)))]])))
 
 (rum/defc form < rum/reactive
                  mixin-init-form

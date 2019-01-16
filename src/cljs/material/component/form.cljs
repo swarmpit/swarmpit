@@ -79,3 +79,13 @@
          {:variant "subtitle1"
           :key     (str "subsect-" name)} name)]
       [:div button]])))
+
+(defn open-in-new [text href]
+  (html
+    [:a {:href      href
+         :key       (str "oin-" (hash text))
+         :className "Swarmpit-new-tab"
+         :target    "_blank"}
+     [:div {:key "oint"} text]
+     [:div {:key "oini"} (icon/open-in-new
+                           {:className "Swarmpit-new-tab-ico"})]]))

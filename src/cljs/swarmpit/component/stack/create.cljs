@@ -1,6 +1,7 @@
 (ns swarmpit.component.stack.create
   (:require [material.icon :as icon]
             [material.components :as comp]
+            [material.component.form :as form]
             [material.component.composite :as composite]
             [swarmpit.component.editor :as editor]
             [swarmpit.component.state :as state]
@@ -18,6 +19,8 @@
 (def editor-id "compose")
 
 (def doc-compose-link "https://docs.docker.com/get-started/part3/#your-first-docker-composeyml-file")
+
+(def doc-compose-ref-link "https://docs.docker.com/compose/compose-file")
 
 (defn- form-name [value]
   (comp/text-field
@@ -163,18 +166,8 @@
                :md   12
                :lg   4
                :xl   4}
-              (html
-                [:div
-                 {:key "stcoccgidoc"}
-                 [:p
-                  "Learn more about "
-                  [:a {:href   doc-compose-link
-                       :target "_blank"}
-                   "docker compose"]]
-                 [:p
-                  [:a {:href   "https://docs.docker.com/compose/compose-file/"
-                       :target "_blank"}
-                   "Format reference"]]])))]]))))
+              (form/open-in-new "Learn more about compose" doc-compose-link)
+              (form/open-in-new "Format reference" doc-compose-ref-link)))]]))))
 
 (rum/defc form < rum/reactive
                  mixin-init-form [params]

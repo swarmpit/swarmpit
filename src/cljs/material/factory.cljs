@@ -141,6 +141,7 @@
 (def computer-icon (create-factory js/MaterialUIIcons.Computer))
 (def share-icon (create-factory js/MaterialUIIcons.Share))
 (def lock-icon (create-factory js/MaterialUIIcons.Lock))
+(def open-in-new-icon (create-factory js/MaterialUIIcons.OpenInNew))
 
 (def create-mui-theme js/MaterialUI.createMuiTheme)
 
