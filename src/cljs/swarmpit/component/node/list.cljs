@@ -14,10 +14,17 @@
             [sablono.core :refer-macros [html]]
             [rum.core :as rum]
             [goog.string.format]
+            [goog.string :as gstring]
             [clojure.contrib.inflect :as inflect]
             [clojure.contrib.humanize :as humanize]))
 
 (enable-console-print!)
+
+(defn- render-percentage
+  [val]
+  (if (some? val)
+    (str (gstring/format "%.2f" val) "%")
+    "-"))
 
 (defn- node-item-state [value]
   (case value
@@ -36,19 +43,19 @@
 
 (defn node-used [stat]
   (cond
-    (< stat 75) {:name  "actual"
+    (< stat 75) {:name  "used"
                  :value stat
                  :color "#43a047"}
-    (> stat 90) {:name  "actual"
+    (> stat 90) {:name  "used"
                  :value stat
                  :color "#d32f2f"}
-    :else {:name  "actual"
+    :else {:name  "used"
            :value stat
            :color "#ffa000"}))
 
-(rum/defc node-graph [stat label id]
+(rum/defc node-graph < rum/static [stat label id]
   (let [data [(node-used stat)
-              {:name  "rest"
+              {:name  "free"
                :value (- 100 stat)
                :color "#ccc"}]]
     (chart/pie
@@ -56,10 +63,10 @@
       label
       "Swarmpit-node-stat-graph"
       id
-      nil)))
+      {:formatter (fn [value name props]
+                    (render-percentage value))})))
 
-(defn- node-item
-  [item index]
+(rum/defc node-item < rum/static [item index]
   (let [cpu (-> item :resources :cpu (int))
         memory-bytes (-> item :resources :memory (* 1024 1024))
         disk-bytes (-> item :stats :disk :total)]
