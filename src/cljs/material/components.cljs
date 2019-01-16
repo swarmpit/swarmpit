@@ -71,6 +71,10 @@
   [props & childs]
   (f/paper (clj->js props) childs))
 
+(defn dialog
+  [props & childs]
+  (f/dialog (clj->js props) childs))
+
 (defn input
   [props]
   (f/input (clj->js props)))
