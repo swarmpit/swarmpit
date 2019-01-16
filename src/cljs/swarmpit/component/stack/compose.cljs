@@ -162,7 +162,7 @@
               (comp/card-header
                 {:className "Swarmpit-form-card-header"
                  :key       "scfech"
-                 :title     "Edit Stack"})
+                 :title     (html [:span "Editing " [:span.Swarmpit-secondary-title name]])})
               (comp/card-content
                 {:key "scfecc"}
                 (comp/grid

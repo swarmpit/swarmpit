@@ -207,7 +207,7 @@
               (comp/card-header
                 {:className "Swarmpit-form-card-header"
                  :key       "nech"
-                 :title     (str "Editing " nodeName)})
+                 :title     (html [:span "Editing " [:span.Swarmpit-secondary-title nodeName]])})
               (comp/card-content
                 {:key "necc"}
                 (comp/grid

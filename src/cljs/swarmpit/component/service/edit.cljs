@@ -174,9 +174,9 @@
 
 (rum/defc form-mounts < rum/static []
   (comp/grid
-    {:item  true
-     :key   "secgifccgicm"
-     :xs    12}
+    {:item true
+     :key  "secgifccgicm"
+     :xs   12}
     (form/section
       "Mounts"
       (comp/button
@@ -204,9 +204,9 @@
 
 (rum/defc form-configs < rum/reactive []
   (comp/grid
-    {:item  true
-     :key   "secgifccgic"
-     :xs    12}
+    {:item true
+     :key  "secgifccgic"
+     :xs   12}
     (form/section
       "Configs"
       (comp/button
@@ -234,9 +234,9 @@
 
 (rum/defc form-labels < rum/static []
   (comp/grid
-    {:item  true
-     :key   "secgifccgil"
-     :xs    12}
+    {:item true
+     :key  "secgifccgil"
+     :xs   12}
     (form/section
       "Labels"
       (comp/button
@@ -259,9 +259,9 @@
 
 (rum/defc form-resources < rum/static []
   (comp/grid
-    {:item  true
-     :key   "secgifccgir"
-     :xs    12}
+    {:item true
+     :key  "secgifccgir"
+     :xs   12}
     (form/section
       "Resources")
     (rum/with-key
@@ -303,9 +303,9 @@
                 (comp/card-header
                   {:className "Swarmpit-form-card-header"
                    :key       "secgifch"
-                   :title     "Edit Service"})
+                   :title     (html [:span "Editing " [:span.Swarmpit-secondary-title (:serviceName settings)]])})
                 (comp/card-content
-                  {:key   "secgifcc"
+                  {:key "secgifcc"
                    ;:style {:padding 0}
                    }
                   (comp/grid

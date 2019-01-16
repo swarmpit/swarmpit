@@ -44,6 +44,10 @@ a {
     margin-left: 5px;
 }
 
+.Swarmpit-secondary-title {
+    color: rgba(0, 0, 0, 0.54);
+}
+
 .Swarmpit-root {
     flex-grow: 1;
     z-index: 1;

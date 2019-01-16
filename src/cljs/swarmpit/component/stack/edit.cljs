@@ -124,7 +124,7 @@
               (comp/card-header
                 {:className "Swarmpit-form-card-header"
                  :key       "sefech"
-                 :title     "Edit Stack"})
+                 :title     (html [:span "Editing " [:span.Swarmpit-secondary-title name]])})
               (comp/card-content
                 {:key "sefecc"}
                 (comp/grid
