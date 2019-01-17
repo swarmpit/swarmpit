@@ -1,135 +1,167 @@
 (ns swarmpit.component.registry.create
-  (:require [material.components :as comp]
-            [swarmpit.component.state :as state]
-            [swarmpit.component.message :as message]
-            [swarmpit.url :refer [dispatch!]]
-            [swarmpit.ajax :as ajax]
-            [swarmpit.routes :as routes]
+  (:require [rum.core :as rum]
             [sablono.core :refer-macros [html]]
-            [rum.core :as rum]
-            [swarmpit.component.common :as common]))
+            [material.components :as comp]
+            [material.component.composite :as composite]
+            [swarmpit.component.mixin :as mixin]
+            [swarmpit.component.state :as state]
+            [swarmpit.component.registry-v2.create :as v2]
+            [swarmpit.component.registry-dockerhub.create :as dockerhub]))
 
 (enable-console-print!)
 
-(defn- form-name [value]
-  (comp/text-field
-    {:label           "Name"
-     :fullWidth       true
-     :name            "name"
-     :key             "name"
-     :variant         "outlined"
-     :defaultValue    value
-     :required        true
-     :margin          "normal"
-     :InputLabelProps {:shrink true}
-     :onChange        #(state/update-value [:name] (-> % .-target .-value) state/form-value-cursor)}))
+(defonce step-index (atom 0))
 
-(defn- form-url [value]
-  (comp/text-field
-    {:label           "Url"
-     :fullWidth       true
-     :name            "url"
-     :key             "url"
-     :variant         "outlined"
-     :defaultValue    value
-     :required        true
-     :margin          "normal"
-     :placeholder     "e.g. https://my.registry.io"
-     :InputLabelProps {:shrink true}
-     :onChange        #(state/update-value [:url] (-> % .-target .-value) state/form-value-cursor)}))
+(defonce registry (atom "dockerhub"))
 
-(defn- form-auth [value]
-  (comp/switch
-    {:name     "authentication"
-     :label    "Authentication"
-     :color    "primary"
-     :value    (str value)
-     :checked  value
-     :onChange #(state/update-value [:withAuth] (-> % .-target .-checked) state/form-value-cursor)}))
+(def steps ["Choose type"
+            "Provide details"
+            "Share with team"])
 
-(defn- form-username [value]
+(defn last-step?
+  [index]
+  (= index (- (count steps) 1)))
+
+(def registry-type-text
+  "Specify registry account type you would like to use to authenticate
+   your private repositories.")
+
+(defn- registry-type-form [value]
   (comp/text-field
-    {:label           "Name"
-     :fullWidth       true
-     :name            "username"
-     :key             "username"
+    {:fullWidth       true
+     :key             "distrt"
+     :label           "Registry account type"
+     :select          true
+     :value           value
      :variant         "outlined"
      :margin          "normal"
-     :defaultValue    value
-     :required        true
      :InputLabelProps {:shrink true}
-     :onChange        #(state/update-value [:username] (-> % .-target .-value) state/form-value-cursor)}))
+     :onChange        (fn [e]
+                        (let [type (-> e .-target .-value)]
+                          (reset! registry type)
+                          (case type
+                            "dockerhub" (dockerhub/reset-form)
+                            "v2" (v2/reset-form))))}
+    (comp/menu-item
+      {:key   "dockerhub"
+       :value "dockerhub"} "Dockerhub")
+    (comp/menu-item
+      {:key   "v2"
+       :value "v2"} "Registry v2")))
 
-(defn- form-password [value show-password?]
-  (comp/text-field
-    {:label           "Password"
-     :variant         "outlined"
-     :fullWidth       true
-     :required        true
-     :margin          "normal"
-     :type            (if show-password?
-                        "text"
-                        "password")
-     :defaultValue    value
-     :onChange        #(state/update-value [:password] (-> % .-target .-value) state/form-value-cursor)
-     :InputLabelProps {:shrink true}
-     :InputProps      {:endAdornment (common/show-password-adornment show-password?)}}))
+(defn- registry-text [registry]
+  (case registry
+    "dockerhub" "Please enter your docker login credentials. All your
+                 linked namespaces access will be granted."
+    "v2" "Please enter your custom v2 registry name & address.
+          If you are using secured registry provide account
+          credentials as well."))
 
-(defn- create-registry-handler
-  []
-  (ajax/post
-    (routes/path-for-backend :registry-create)
-    {:params     (state/get-value state/form-value-cursor)
-     :state      [:processing?]
-     :on-success (fn [{:keys [response origin?]}]
-                   (when origin?
-                     (dispatch!
-                       (routes/path-for-frontend :registry-info (select-keys response [:id]))))
-                   (message/info
-                     (str "Registry " (:id response) " has been created.")))
-     :on-error   (fn [{:keys [response]}]
-                   (message/error
-                     (str "Registry creation failed. " (:error response))))}))
+(defn- registry-form [registry route]
+  (case registry
+    "dockerhub" (dockerhub/form route)
+    "v2" (v2/form route)))
 
-(defn init-form-state
-  []
-  (state/set-value {:distribution :registry
-                    :valid?       false
-                    :processing?  false
-                    :showPassword false} state/form-state-cursor))
+(def registry-publish-text
+  "By default only user that has created registry account can
+   search & deploy private repositories. If you would like to share
+   this access with other members of your team check the share button.")
 
-(defn init-form-value
-  []
-  (state/set-value {:name     ""
-                    :url      ""
-                    :public   false
-                    :withAuth false
-                    :username ""
-                    :password ""} state/form-value-cursor))
+(defn- registry-publish-form [value]
+  (comp/form-control
+    {:component "fieldset"
+     :key       "fcp"}
+    (comp/form-group
+      {:key "fcpg"}
+      (comp/form-control-label
+        {:control (comp/checkbox
+                    {:checked  value
+                     :value    (str value)
+                     :onChange #(state/update-value [:public] (-> % .-target .-checked) state/form-value-cursor)})
+         :key     "fcpbl"
+         :label   "Share"}))))
 
-(defn reset-form
-  []
-  (init-form-state)
-  (init-form-value))
+(defn step-item
+  ([index valid? text form]
+   (step-item index valid? text form false))
+  ([index valid? text form processing?]
+   (print index valid? text)
+   (comp/step
+     {:key (str "step-" index)}
+     (comp/step-label
+       {:key   (str "step-label-" index)
+        :style {:marginBottom "10px"}}
+       (nth steps index))
+     (comp/step-content
+       {:key (str "step-content-" index)}
+       (comp/typography
+         {:key   (str "step-typo-" index)
+          :style {:marginBottom "10px"}} text)
+       (html
+         [:div {:key (str "step-form-" index)} form])
+       (html
+         [:div {:key       (str "step-actions-" index)
+                :className "Swarmpit-form-buttons"}
+          (comp/button
+            {:disabled (= 0 index)
+             :onClick  #(reset! step-index (dec index))} "Back")
+          (if (last-step? index)
+            (composite/progress-button
+              "Finish"
+              (case @registry
+                "dockerhub" #(dockerhub/add-user-handler)
+                "v2" #(v2/create-registry-handler))
+              processing?)
+            (comp/button
+              {:variant  "contained"
+               :color    "primary"
+               :disabled (not valid?)
+               :onClick  #(reset! step-index (inc index))} "Next"))])))))
 
-(rum/defc form < rum/reactive [_]
-  (let [{:keys [name url withAuth username password]} (state/react state/form-value-cursor)
-        {:keys [valid? showPassword]} (state/react state/form-state-cursor)]
-    (html
-      [:div
-       (form-name name)
-       (form-url url)
-       (comp/form-control
-         {:component "fieldset"
-          :key       "rcccigc"}
-         (comp/form-group
-           {:key "rcccigcg"}
-           (comp/form-control-label
-             {:control (form-auth withAuth)
-              :key     "rcccigcga"
-              :label   "Secured"})))
-       (when withAuth
-         (html
-           [:div {:key "rcccigaut"}
-            (form-username username)
-            (form-password password showPassword)]))])))
+(def mixin-init-form
+  (mixin/init-form
+    (fn [_]
+      (reset! step-index 0)
+      (reset! registry "dockerhub"))))
+
+(rum/defc form < rum/reactive
+                 mixin-init-form [route]
+  (let [index (rum/react step-index)
+        registry (rum/react registry)
+        {:keys [public]} (state/react state/form-value-cursor)
+        {:keys [valid? processing?]} (state/react state/form-state-cursor)]
+    (comp/mui
+      (html
+        [:div.Swarmpit-form
+         [:div.Swarmpit-form-context
+          (comp/card
+            {:className "Swarmpit-form-card"
+             :style     {:maxWidth "400px"}
+             :key       "dfc"}
+            (comp/card-header
+              {:className "Swarmpit-form-card-header"
+               :key       "dfch"
+               :title     "Add registry"})
+            (comp/card-content
+              {:key       "dfcc"
+               :className "Swarmpit-table-card-content"}
+              (comp/stepper
+                {:activeStep  index
+                 :key         "dfccs"
+                 :orientation "vertical"}
+                (step-item
+                  0
+                  true
+                  registry-type-text
+                  (registry-type-form registry))
+                (step-item
+                  1
+                  valid?
+                  (registry-text registry)
+                  (registry-form registry route))
+                (step-item
+                  2
+                  true
+                  registry-publish-text
+                  (registry-publish-form public)
+                  processing?))))]]))))

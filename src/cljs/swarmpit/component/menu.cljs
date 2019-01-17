@@ -16,10 +16,10 @@
 (def swarmpit-revision-page "https://github.com/swarmpit/swarmpit/commit")
 
 (def menu
-  [{:name    "Distributions"
+  [{:name    "Registries"
     :icon    (icon/cloud {})
-    :handler :distribution-list
-    :domain  :distribution}
+    :handler :registry-list
+    :domain  :registry}
    {:name "APPLICATIONS"}
    {:name    "Stacks"
     :icon    (comp/svg icon/stacks-path)
@@ -118,7 +118,7 @@
                          (url/dispatch! (routes/path-for-frontend handler)))}
            (when selected?
              {:className "Swarmpit-drawer-item-selected"})
-           (when (= :distribution domain)
+           (when (= :registry domain)
              {:style {:marginTop "10px"}}))
     (comp/list-item-icon
       (merge {:color "primary"

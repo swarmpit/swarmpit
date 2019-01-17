@@ -1,4 +1,4 @@
-(ns swarmpit.component.dockerhub.info
+(ns swarmpit.component.registry-v2.info
   (:require [material.icon :as icon]
             [material.components :as comp]
             [material.component.form :as form]
@@ -16,53 +16,53 @@
 
 (enable-console-print!)
 
-(defn- user-handler
-  [user-id]
+(defn- registry-handler
+  [registry-id]
   (ajax/get
-    (routes/path-for-backend :dockerhub-user {:id user-id})
+    (routes/path-for-backend :registry {:id registry-id})
     {:state      [:loading?]
      :on-success (fn [{:keys [response]}]
                    (state/set-value response state/form-value-cursor))}))
 
-(defn- delete-user-handler
-  [user-id]
+(defn- delete-registry-handler
+  [registry-id]
   (ajax/delete
-    (routes/path-for-backend :dockerhub-user-delete {:id user-id})
+    (routes/path-for-backend :registry-delete {:id registry-id})
     {:on-success (fn [_]
                    (dispatch!
                      (routes/path-for-frontend :distribution-list))
                    (message/info
-                     (str "Dockerhub account " user-id " has been removed.")))
+                     (str "Registry " registry-id " has been removed.")))
      :on-error   (fn [{:keys [response]}]
                    (message/error
-                     (str "Dockerhub account removal failed. " (:error response))))}))
+                     (str "Registry removing failed. " (:error response))))}))
 
-(defn- update-user-handler
-  [user-id delta]
+(defn- update-registry-handler
+  [registry-id delta]
   (let [params (state/get-value state/form-value-cursor)]
     (ajax/post
-      (routes/path-for-backend :dockerhub-user-update {:id user-id})
+      (routes/path-for-backend :registry-update {:id registry-id})
       {:params     delta
        :on-success (fn [_]
                      (state/set-value (merge params delta) state/form-value-cursor)
                      (message/info
-                       (str "User " user-id " has been updated.")))
+                       (str "Registry " registry-id " has been updated.")))
        :on-error   (fn [{:keys [response]}]
                      (message/error
-                       (str "User update failed. " (:error response))))})))
+                       (str "Registry update failed. " (:error response))))})))
 
 (defn form-actions
   [id public]
   [(if (true? public)
-     {:onClick #(update-user-handler id {:public false})
+     {:onClick #(update-registry-handler id {:public false})
       :icon    (icon/lock {})
       :name    "Hide account"}
-     {:onClick #(update-user-handler id {:public true})
+     {:onClick #(update-registry-handler id {:public true})
       :icon    (icon/share {})
       :name    "Share account"})
-   {:onClick #(delete-user-handler id)
+   {:onClick #(delete-registry-handler id)
     :icon    (comp/svg icon/trash-path)
-    :name    "Delete account"}])
+    :name    "Delete registry"}])
 
 (defn- init-form-state
   []
@@ -72,9 +72,9 @@
   (mixin/init-form
     (fn [{{:keys [id]} :params}]
       (init-form-state)
-      (user-handler id))))
+      (registry-handler id))))
 
-(rum/defc form-info < rum/static [{:keys [_id username role public]}]
+(rum/defc form-info < rum/static [{:keys [_id name url username public withAuth]}]
   (comp/mui
     (html
       [:div.Swarmpit-form
@@ -84,43 +84,45 @@
            :spacing   16}
           (comp/grid
             {:item true
-             :key  "dgg"
+             :key  "rgg"
              :xs   12
              :sm   6}
             (comp/card
               {:className "Swarmpit-form-card"
-               :key       "dgc"}
+               :key       "rgc"}
               (comp/card-header
-                {:title     username
+                {:title     name
                  :className "Swarmpit-form-card-header"
-                 :key       "dgch"
+                 :key       "rgch"
+                 :subheader url
                  :action    (common/actions-menu
                               (form-actions _id public)
-                              :dockerhubMenuAnchor
-                              :dockerhubMenuOpened)})
+                              :registryGeneralMenuAnchor
+                              :registryGeneralMenuOpened)})
               (comp/card-content
-                {:key "dgcc"}
+                {:key "rgcc"}
                 (html
-                  [:div {:key "dgccd"}
-                   [:span "Authenticated with user " [:b username] "."]
+                  [:div {:key "rgccd"}
+                   (when withAuth
+                     [:span "Authenticated with user " [:b username] "."])
                    [:br]
                    [:span "Account is " [:b (if public "public." "private.")]]]))
               (comp/card-content
-                {:key "dgccl"}
+                {:key "rgccl"}
                 (form/item-labels
-                  [(label/grey role)]))
+                  [(label/grey "Custom v2")]))
               (comp/divider
-                {:key "dgd"})
+                {:key "rgd"})
               (comp/card-content
                 {:style {:paddingBottom "16px"}
-                 :key   "dgccf"}
+                 :key   "rgccf"}
                 (form/item-id _id)))))]])))
 
 (rum/defc form < rum/reactive
                  mixin-init-form
                  mixin/subscribe-form [_]
   (let [state (state/react state/form-state-cursor)
-        user (state/react state/form-value-cursor)]
+        registry (state/react state/form-value-cursor)]
     (progress/form
       (:loading? state)
-      (form-info user))))
+      (form-info registry))))

@@ -1,5 +1,5 @@
 (ns swarmpit.view-actions
-  (:require [swarmpit.component.distribution.list :as distribution-list]
+  (:require [swarmpit.component.registry.list :as registry-list]
             [swarmpit.component.stack.list :as stack-list]
             [swarmpit.component.service.log :as service-log]
             [swarmpit.component.service.list :as service-list]
@@ -26,14 +26,14 @@
 
 ;;; Distribution view
 
-(defmethod render :distribution-list
+(defmethod render :registry-list
   [_]
-  {:title     "Distributions"
-   :search-fn distribution-list/form-search-fn})
+  {:title     "Registries"
+   :search-fn registry-list/form-search-fn})
 
-(defmethod render :distribution-create
+(defmethod render :registry-create
   [_]
-  {:title "Distributions"})
+  {:title "Registries"})
 
 ;;; Stack view
 
@@ -196,22 +196,14 @@
   [_]
   {:title "Users"})
 
-;;; Registry view
+;;; Registry v2 view
 
-(defmethod render :registry-info
+(defmethod render :reg-v2-info
   [_]
   {:title "Registries"})
 
-(defmethod render :registry-create
+;;; Dockerhub view
+
+(defmethod render :reg-dockerhub-info
   [_]
   {:title "Registries"})
-
-;;; Dockerhub user view
-
-(defmethod render :dockerhub-user-info
-  [_]
-  {:title "Dockerhub"})
-
-(defmethod render :dockerhub-user-create
-  [_]
-  {:title "Dockerhub"})

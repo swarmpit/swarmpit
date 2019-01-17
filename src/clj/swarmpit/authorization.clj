@@ -32,7 +32,7 @@
       (error {:code    403
               :message "Unauthorized owner access"}))))
 
-(defn- distribution-access
+(defn- registry-access
   [{:keys [path-params identity]}]
   (let [user (get-in identity [:usr :username])
         entity (cc/get-doc (:id path-params))]
@@ -40,7 +40,7 @@
             (:public entity))
       true
       (error {:code    403
-              :message "Unauthorized distribution access"}))))
+              :message "Unauthorized registry access"}))))
 
 (def rules [{:pattern #"^/admin/.*"
              :handler {:and [authenticated-access admin-access]}}
@@ -52,16 +52,16 @@
              :handler any-access}
             {:pattern #"^/$"
              :handler any-access}
-            {:pattern        #"^/api/distribution/(dockerhub|registry)/[a-zA-Z0-9]*/repositories$"
+            {:pattern        #"^/api/registries/(dockerhub|v2)/[a-zA-Z0-9]*/repositories$"
              :request-method :get
-             :handler        {:and [authenticated-access distribution-access]}}
-            {:pattern        #"^/api/distribution/(dockerhub|registry)/[a-zA-Z0-9]*/tags$"
+             :handler        {:and [authenticated-access registry-access]}}
+            {:pattern        #"^/api/registries/(dockerhub|v2)/[a-zA-Z0-9]*/tags$"
              :request-method :get
-             :handler        {:and [authenticated-access distribution-access]}}
-            {:pattern        #"^/api/distribution/(dockerhub|registry)/[a-zA-Z0-9]*/ports$"
+             :handler        {:and [authenticated-access registry-access]}}
+            {:pattern        #"^/api/registries/(dockerhub|v2)/[a-zA-Z0-9]*/ports$"
              :request-method :get
-             :handler        {:and [authenticated-access distribution-access]}}
-            {:pattern        #"^/api/distribution/(dockerhub|registry)/[a-zA-Z0-9]*$"
+             :handler        {:and [authenticated-access registry-access]}}
+            {:pattern        #"^/api/registries/(dockerhub|v2)/[a-zA-Z0-9]*$"
              :request-method #{:get :delete :post}
              :handler        {:and [authenticated-access owner-access]}}
             {:pattern #"^/api/.*"

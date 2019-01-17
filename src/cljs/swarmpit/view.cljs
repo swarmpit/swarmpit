@@ -4,8 +4,8 @@
             [swarmpit.component.page-404 :as page-404]
             [swarmpit.component.page-error :as page-error]
             [swarmpit.component.account-settings :as account-settings]
-            [swarmpit.component.distribution.list :as distribution-list]
-            [swarmpit.component.distribution.create :as distribution-create]
+            [swarmpit.component.registry.list :as registry-list]
+            [swarmpit.component.registry.create :as registry-create]
             [swarmpit.component.stack.edit :as stack-edit]
             [swarmpit.component.stack.compose :as stack-compose]
             [swarmpit.component.stack.create :as stack-create]
@@ -38,10 +38,8 @@
             [swarmpit.component.user.info :as user-info]
             [swarmpit.component.user.create :as user-create]
             [swarmpit.component.user.edit :as user-edit]
-            [swarmpit.component.registry.info :as registry-info]
-            [swarmpit.component.registry.create :as registry-create]
-            [swarmpit.component.dockerhub.info :as dockerhub-info]
-            [swarmpit.component.dockerhub.create :as dockerhub-create]))
+            [swarmpit.component.registry-v2.info :as reg-v2-info]
+            [swarmpit.component.registry-dockerhub.info :as reg-dockerhub-info]))
 
 (defmulti dispatch (fn [route] (:handler route)))
 
@@ -69,15 +67,15 @@
   [_]
   (account-settings/form))
 
-;;; Distribution view
+;;; Registry view
 
-(defmethod dispatch :distribution-list
+(defmethod dispatch :registry-list
   [route]
-  (distribution-list/form route))
+  (registry-list/form route))
 
-(defmethod dispatch :distribution-create
+(defmethod dispatch :registry-create
   [route]
-  (distribution-create/form route))
+  (registry-create/form route))
 
 ;;; Stack view
 
@@ -229,22 +227,14 @@
   [route]
   (user-edit/form route))
 
-;;; Registry view
+;;; Registry v2 view
 
-(defmethod dispatch :registry-info
+(defmethod dispatch :reg-v2-info
   [route]
-  (registry-info/form route))
+  (reg-v2-info/form route))
 
-(defmethod dispatch :registry-create
+;;; Dockerhub view
+
+(defmethod dispatch :reg-dockerhub-info
   [route]
-  (registry-create/form route))
-
-;;; Dockerhub user view
-
-(defmethod dispatch :dockerhub-user-info
-  [route]
-  (dockerhub-info/form route))
-
-(defmethod dispatch :dockerhub-user-create
-  [route]
-  (dockerhub-create/form route))
+  (reg-dockerhub-info/form route))

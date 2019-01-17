@@ -1,8 +1,9 @@
-(ns swarmpit.component.distribution.list
+(ns swarmpit.component.registry.list
   (:require [material.icon :as icon]
             [material.components :as comp]
             [material.component.list.basic :as list]
             [material.component.list.util :as list-util]
+            [swarmpit.component.common :as common]
             [swarmpit.component.mixin :as mixin]
             [swarmpit.component.state :as state]
             [swarmpit.component.progress :as progress]
@@ -12,8 +13,7 @@
             [swarmpit.url :refer [dispatch!]]
             [sablono.core :refer-macros [html]]
             [cljs.core :as core]
-            [rum.core :as rum]
-            [swarmpit.component.common :as common]))
+            [rum.core :as rum]))
 
 (enable-console-print!)
 
@@ -43,8 +43,8 @@
   (dispatch!
     (routes/path-for-frontend
       (case (:type item)
-        "dockeruser" :dockerhub-user-info
-        "registry" :registry-info) {:id (:_id item)})))
+        "dockeruser" :reg-dockerhub-info
+        "registry" :reg-v2-info) {:id (:_id item)})))
 
 (defn- dockerhub-handler
   []
@@ -90,8 +90,8 @@
       (registries-handler))))
 
 (def toolbar-render-metadata
-  {:actions [{:name     "Add distribution"
-              :onClick  #(dispatch! (routes/path-for-frontend :distribution-create))
+  {:actions [{:name     "Add registry"
+              :onClick  #(dispatch! (routes/path-for-frontend :registry-create))
               :icon     icon/add-circle-out
               :icon-alt icon/add}]})
 
@@ -108,7 +108,7 @@
     (progress/form
       (and (:dockerhub loading?)
            (:registries loading?))
-      (common/list "Distributions"
+      (common/list "Registries"
                    distributions
                    filtered-distributions
                    render-metadata
