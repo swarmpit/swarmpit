@@ -71,7 +71,8 @@
       {:item true
        :key  "aag"
        :xs   12
-       :sm   8
+       :sm   6
+       :md   7
        :lg   6}
       (comp/card
         {:className "Swarmpit-form-card"
@@ -93,17 +94,17 @@
               (case state
                 :old [(comp/typography
                         {:key "ost"}
-                        ["Token for this user was already created, if you lost it, you can regenerate it and "
+                        ["Token for this user was already created. If you lost your token, please generate new one and "
                          "the former token will be revoked."])
                       (form-token (str "Bearer ..." (:mask api-token)))]
                 :new [(comp/typography
                         {:key "nst"}
-                        ["Copy your generated token and store it safely, value will be displayed only once."])
+                        ["Copy your token and store it safely, value will be displayed only once."])
                       (form-token (:token token))]
                 :none [(comp/typography
                          {:key "nost1"} "Your user doesn't have any API token.")
                        (comp/typography
-                         {:key "nost2"} "You can create authorization token here. Generated token doesn't expire, but it can be revoked.")])))
+                         {:key "nost2"} "New token doesn't expire, but it can be revoked.")])))
           (html
             [:div {:class "Swarmpit-form-buttons"
                    :key   "aagccbtn"}

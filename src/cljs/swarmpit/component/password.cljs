@@ -106,7 +106,8 @@
       {:item true
        :key  "pg"
        :xs   12
-       :sm   4
+       :sm   6
+       :md   5
        :lg   3}
       (comp/card
         {:className "Swarmpit-form-card"
