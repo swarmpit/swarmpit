@@ -30,36 +30,18 @@
     (routes/path-for-backend :dockerhub-user-delete {:id user-id})
     {:on-success (fn [_]
                    (dispatch!
-                     (routes/path-for-frontend :distribution-list))
+                     (routes/path-for-frontend :registry-list))
                    (message/info
                      (str "Dockerhub account " user-id " has been removed.")))
      :on-error   (fn [{:keys [response]}]
                    (message/error
                      (str "Dockerhub account removal failed. " (:error response))))}))
 
-(defn- update-user-handler
-  [user-id delta]
-  (let [params (state/get-value state/form-value-cursor)]
-    (ajax/post
-      (routes/path-for-backend :dockerhub-user-update {:id user-id})
-      {:params     delta
-       :on-success (fn [_]
-                     (state/set-value (merge params delta) state/form-value-cursor)
-                     (message/info
-                       (str "User " user-id " has been updated.")))
-       :on-error   (fn [{:keys [response]}]
-                     (message/error
-                       (str "User update failed. " (:error response))))})))
-
 (defn form-actions
-  [id public]
-  [(if (true? public)
-     {:onClick #(update-user-handler id {:public false})
-      :icon    (icon/lock {})
-      :name    "Hide account"}
-     {:onClick #(update-user-handler id {:public true})
-      :icon    (icon/share {})
-      :name    "Share account"})
+  [id]
+  [{:onClick #(dispatch! (routes/path-for-frontend :reg-dockerhub-edit {:id id}))
+    :icon    (comp/svg icon/edit-path)
+    :name    "Edit account"}
    {:onClick #(delete-user-handler id)
     :icon    (comp/svg icon/trash-path)
     :name    "Delete account"}])
@@ -79,42 +61,35 @@
     (html
       [:div.Swarmpit-form
        [:div.Swarmpit-form-context
-        (comp/grid
-          {:container true
-           :spacing   16}
-          (comp/grid
-            {:item true
-             :key  "dgg"
-             :xs   12
-             :sm   6}
-            (comp/card
-              {:className "Swarmpit-form-card"
-               :key       "dgc"}
-              (comp/card-header
-                {:title     username
-                 :className "Swarmpit-form-card-header"
-                 :key       "dgch"
-                 :action    (common/actions-menu
-                              (form-actions _id public)
-                              :dockerhubMenuAnchor
-                              :dockerhubMenuOpened)})
-              (comp/card-content
-                {:key "dgcc"}
-                (html
-                  [:div {:key "dgccd"}
-                   [:span "Authenticated with user " [:b username] "."]
-                   [:br]
-                   [:span "Account is " [:b (if public "public." "private.")]]]))
-              (comp/card-content
-                {:key "dgccl"}
-                (form/item-labels
-                  [(label/grey "dockerhub")]))
-              (comp/divider
-                {:key "dgd"})
-              (comp/card-content
-                {:style {:paddingBottom "16px"}
-                 :key   "dgccf"}
-                (form/item-id _id)))))]])))
+        (comp/card
+          {:className "Swarmpit-form-card"
+           :style     {:maxWidth "500px"}
+           :key       "dgc"}
+          (comp/card-header
+            {:title     username
+             :className "Swarmpit-form-card-header"
+             :key       "dgch"
+             :action    (common/actions-menu
+                          (form-actions _id)
+                          :dockerhubMenuAnchor
+                          :dockerhubMenuOpened)})
+          (comp/card-content
+            {:key "dgcc"}
+            (html
+              [:div {:key "dgccd"}
+               [:span "Authenticated with user " [:b username] "."]
+               [:br]
+               [:span "Account is " [:b (if public "public." "private.")]]]))
+          (comp/card-content
+            {:key "dgccl"}
+            (form/item-labels
+              [(label/grey "dockerhub")]))
+          (comp/divider
+            {:key "dgd"})
+          (comp/card-content
+            {:style {:paddingBottom "16px"}
+             :key   "dgccf"}
+            (form/item-id _id)))]])))
 
 (rum/defc form < rum/reactive
                  mixin-init-form

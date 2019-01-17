@@ -134,7 +134,7 @@
 
 (defn update-dockeruser
   [docker-user delta]
-  (let [allowed-delta (select-keys delta [:public])]
+  (let [allowed-delta (dissoc delta :_id :_rev :username)]
     (update-doc docker-user allowed-delta)))
 
 (defn delete-dockeruser
@@ -172,9 +172,9 @@
       (create-doc)))
 
 (defn update-registry
-  [user delta]
-  (let [allowed-delta (select-keys delta [:public])]
-    (update-doc user allowed-delta)))
+  [registry delta]
+  (let [allowed-delta (dissoc delta :_id :_rev :name)]
+    (update-doc registry allowed-delta)))
 
 (defn delete-registry
   [registry]

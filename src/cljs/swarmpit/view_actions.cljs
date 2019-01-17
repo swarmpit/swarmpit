@@ -202,8 +202,16 @@
   [_]
   {:title "Registries"})
 
+(defmethod render :reg-v2-edit
+  [_]
+  {:title "Registries"})
+
 ;;; Dockerhub view
 
 (defmethod render :reg-dockerhub-info
+  [_]
+  {:title "Registries"})
+
+(defmethod render :reg-dockerhub-edit
   [_]
   {:title "Registries"})

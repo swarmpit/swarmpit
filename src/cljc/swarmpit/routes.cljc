@@ -132,8 +132,10 @@
                                             ["/" :id] :task-info}
                    "/registries"           {""        :registry-list
                                             "/create" :registry-create}
-                   "/registries/v2"        {["/" :id] :reg-v2-info}
-                   "/registries/dockerhub" {["/" :id] :reg-dockerhub-info}
+                   "/registries/v2"        {["/" :id]         :reg-v2-info
+                                            ["/" :id "/edit"] :reg-v2-edit}
+                   "/registries/dockerhub" {["/" :id]         :reg-dockerhub-info
+                                            ["/" :id "/edit"] :reg-dockerhub-edit}
                    "/users"                {""                :user-list
                                             "/create"         :user-create
                                             ["/" :id]         :user-info

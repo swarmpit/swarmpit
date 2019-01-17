@@ -6,7 +6,6 @@
             [swarmpit.url :refer [dispatch!]]
             [swarmpit.ajax :as ajax]
             [swarmpit.routes :as routes]
-            [swarmpit.ip :as ip]
             [sablono.core :refer-macros [html]]
             [clojure.string :as str]
             [rum.core :as rum]))
@@ -60,7 +59,7 @@
 
 (defn- form-username [value]
   (comp/text-field
-    {:label           "Name"
+    {:label           "Username"
      :fullWidth       true
      :name            "username"
      :key             "username"
@@ -95,7 +94,7 @@
      :on-success (fn [{:keys [response origin?]}]
                    (when origin?
                      (dispatch!
-                       (routes/path-for-frontend :registry-info (select-keys response [:id]))))
+                       (routes/path-for-frontend :reg-v2-info (select-keys response [:id]))))
                    (message/info
                      (str "Registry " (:id response) " has been created.")))
      :on-error   (fn [{:keys [response]}]

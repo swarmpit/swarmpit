@@ -30,36 +30,18 @@
     (routes/path-for-backend :registry-delete {:id registry-id})
     {:on-success (fn [_]
                    (dispatch!
-                     (routes/path-for-frontend :distribution-list))
+                     (routes/path-for-frontend :registry-list))
                    (message/info
                      (str "Registry " registry-id " has been removed.")))
      :on-error   (fn [{:keys [response]}]
                    (message/error
                      (str "Registry removing failed. " (:error response))))}))
 
-(defn- update-registry-handler
-  [registry-id delta]
-  (let [params (state/get-value state/form-value-cursor)]
-    (ajax/post
-      (routes/path-for-backend :registry-update {:id registry-id})
-      {:params     delta
-       :on-success (fn [_]
-                     (state/set-value (merge params delta) state/form-value-cursor)
-                     (message/info
-                       (str "Registry " registry-id " has been updated.")))
-       :on-error   (fn [{:keys [response]}]
-                     (message/error
-                       (str "Registry update failed. " (:error response))))})))
-
 (defn form-actions
-  [id public]
-  [(if (true? public)
-     {:onClick #(update-registry-handler id {:public false})
-      :icon    (icon/lock {})
-      :name    "Hide account"}
-     {:onClick #(update-registry-handler id {:public true})
-      :icon    (icon/share {})
-      :name    "Share account"})
+  [id]
+  [{:onClick #(dispatch! (routes/path-for-frontend :reg-v2-edit {:id id}))
+    :icon    (comp/svg icon/edit-path)
+    :name    "Edit registry"}
    {:onClick #(delete-registry-handler id)
     :icon    (comp/svg icon/trash-path)
     :name    "Delete registry"}])
@@ -79,44 +61,37 @@
     (html
       [:div.Swarmpit-form
        [:div.Swarmpit-form-context
-        (comp/grid
-          {:container true
-           :spacing   16}
-          (comp/grid
-            {:item true
-             :key  "rgg"
-             :xs   12
-             :sm   6}
-            (comp/card
-              {:className "Swarmpit-form-card"
-               :key       "rgc"}
-              (comp/card-header
-                {:title     name
-                 :className "Swarmpit-form-card-header"
-                 :key       "rgch"
-                 :subheader url
-                 :action    (common/actions-menu
-                              (form-actions _id public)
-                              :registryGeneralMenuAnchor
-                              :registryGeneralMenuOpened)})
-              (comp/card-content
-                {:key "rgcc"}
-                (html
-                  [:div {:key "rgccd"}
-                   (when withAuth
-                     [:span "Authenticated with user " [:b username] "."])
-                   [:br]
-                   [:span "Account is " [:b (if public "public." "private.")]]]))
-              (comp/card-content
-                {:key "rgccl"}
-                (form/item-labels
-                  [(label/grey "Custom v2")]))
-              (comp/divider
-                {:key "rgd"})
-              (comp/card-content
-                {:style {:paddingBottom "16px"}
-                 :key   "rgccf"}
-                (form/item-id _id)))))]])))
+        (comp/card
+          {:className ["Swarmpit-form-card" "Swarmpit-form-card-single"]
+           :style     {:maxWidth "500px"}
+           :key       "rgc"}
+          (comp/card-header
+            {:title     name
+             :className "Swarmpit-form-card-header"
+             :key       "rgch"
+             :subheader url
+             :action    (common/actions-menu
+                          (form-actions _id)
+                          :registryGeneralMenuAnchor
+                          :registryGeneralMenuOpened)})
+          (comp/card-content
+            {:key "rgcc"}
+            (html
+              [:div {:key "rgccd"}
+               (when withAuth
+                 [:span "Authenticated with user " [:b username] "."])
+               [:br]
+               [:span "Account is " [:b (if public "public." "private.")]]]))
+          (comp/card-content
+            {:key "rgccl"}
+            (form/item-labels
+              [(label/grey "Registry v2")]))
+          (comp/divider
+            {:key "rgd"})
+          (comp/card-content
+            {:style {:paddingBottom "16px"}
+             :key   "rgccf"}
+            (form/item-id _id)))]])))
 
 (rum/defc form < rum/reactive
                  mixin-init-form

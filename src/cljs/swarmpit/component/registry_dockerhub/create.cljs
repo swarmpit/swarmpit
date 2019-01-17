@@ -60,12 +60,12 @@
      :on-success (fn [{:keys [response origin?]}]
                    (when origin?
                      (dispatch!
-                       (routes/path-for-frontend :dockerhub-user-info (select-keys response [:id]))))
+                       (routes/path-for-frontend :reg-dockerhub-info (select-keys response [:id]))))
                    (message/info
-                     (str "User " (:id response) " has been added.")))
+                     (str "Dockerhub user " (:id response) " has been added.")))
      :on-error   (fn [{:keys [response]}]
                    (message/error
-                     (str "User cannot be added. " (:error response))))}))
+                     (str "Dockerhub user cannot be added. " (:error response))))}))
 
 (defn- init-form-state
   []

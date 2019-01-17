@@ -458,6 +458,10 @@ a {
     border: 1px solid rgba(0, 0, 0, 0.12);
 }
 
+.Swarmpit-form-card-single {
+    max-width: 500px;
+}
+
 .Swarmpit-form-card-icon {
     top: 1px;
     position: relative;

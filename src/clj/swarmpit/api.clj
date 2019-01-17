@@ -245,7 +245,7 @@
   [stackfile-spec]
   (stackfile-distibutions stackfile-spec du/registry?))
 
-;;; Dockerhub distribution API
+;;; Dockerhub registry API
 
 (defn dockerusers
   [owner]
@@ -324,14 +324,14 @@
          (flatten)
          (dhmi/->user-repositories))))
 
-;; Public distribution API
+;; Public repository API
 
 (defn public-repositories
   [repository-query repository-page]
   (-> (dhc/repositories repository-query repository-page)
       (dhmi/->repositories repository-query repository-page)))
 
-;;; Registry distribution API
+;;; Registry v2 API
 
 (defn registries
   [owner]
@@ -367,8 +367,11 @@
   (cc/registry-exist? registry))
 
 (defn registry-info
-  [registry]
-  (rc/info registry))
+  [{:keys [_id password] :as registry}]
+  (let [old-passwd (:password (cc/registry _id))]
+    (if password
+      (rc/info registry)
+      (rc/info (assoc registry :password old-passwd)))))
 
 (defn delete-registry
   [registry-id]

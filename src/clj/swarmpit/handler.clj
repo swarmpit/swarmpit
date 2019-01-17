@@ -425,8 +425,12 @@
 (defmethod dispatch :registry-update [_]
   (fn [{:keys [route-params params]}]
     (let [payload (keywordize-keys params)]
-      (api/update-registry (:id route-params) payload)
-      (resp-ok))))
+      (try
+        (api/registry-info payload)
+        (api/update-registry (:id route-params) payload)
+        (resp-ok)
+        (catch Exception e
+          (resp-error 400 (get-in (ex-data e) [:body :error])))))))
 
 (defmethod dispatch :registry-repositories [_]
   (fn [{:keys [route-params]}]
@@ -463,6 +467,8 @@
 (defmethod dispatch :dockerhub-user-update [_]
   (fn [{:keys [route-params params]}]
     (let [payload (keywordize-keys params)]
+      (when (:password payload)
+        (api/dockeruser-login payload))
       (api/update-dockeruser (:id route-params) payload)
       (resp-ok))))
 
