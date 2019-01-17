@@ -63,6 +63,25 @@
                        :style    {:fontFamily "monospace"}}
      :InputLabelProps {:shrink true}}))
 
+(defn old-token-form [api-token]
+  [(comp/typography
+     {:key "ost"}
+     ["Token for this user was already created. If you lost your token, please generate new one and "
+      "the former token will be revoked."])
+   (form-token (str "Bearer ..." (:mask api-token)))])
+
+(defn new-token-form [token]
+  [(comp/typography
+     {:key "nst"}
+     ["Copy your token and store it safely, value will be displayed only once."])
+   (form-token (:token token))])
+
+(defn no-token-form []
+  [(comp/typography
+     {:key "nost1"} "Your user doesn't have any API token.")
+   (comp/typography
+     {:key "nost2"} "New token doesn't expire, but it can be revoked.")])
+
 (rum/defc form-api-token < rum/static [{:keys [api-token token]}]
   (let [state (if (and api-token (not token))
                 :old
@@ -80,7 +99,10 @@
         (comp/card-header
           {:className "Swarmpit-form-card-header"
            :key       "aagch"
-           :title     (case state :none "Create API token" :old "API Token" :new "New API token")})
+           :title     (case state
+                        :none "Create API token"
+                        :old "API Token"
+                        :new "New API token")})
         (comp/card-content
           {:key "aagcc"}
           (comp/grid
@@ -92,19 +114,9 @@
                :key  "aagcccig"
                :xs   12}
               (case state
-                :old [(comp/typography
-                        {:key "ost"}
-                        ["Token for this user was already created. If you lost your token, please generate new one and "
-                         "the former token will be revoked."])
-                      (form-token (str "Bearer ..." (:mask api-token)))]
-                :new [(comp/typography
-                        {:key "nst"}
-                        ["Copy your token and store it safely, value will be displayed only once."])
-                      (form-token (:token token))]
-                :none [(comp/typography
-                         {:key "nost1"} "Your user doesn't have any API token.")
-                       (comp/typography
-                         {:key "nost2"} "New token doesn't expire, but it can be revoked.")])))
+                :old (old-token-form api-token)
+                :new (new-token-form token)
+                :none (no-token-form))))
           (html
             [:div {:class "Swarmpit-form-buttons"
                    :key   "aagccbtn"}
