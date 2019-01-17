@@ -37,8 +37,11 @@
                  (fn [coll-index coll]
                    (let [render-fn (:render-fn coll)]
                      (cmp/table-cell
-                       {:key       (str "table-row-cell-" index "-" coll-index)
-                        :className "Swarmpit-table-row-cell"}
+                       (merge
+                         {:key       (str "table-row-cell-" index "-" coll-index)
+                          :className "Swarmpit-table-row-cell"}
+                         (when onclick-handler-fn
+                           {:style {:cursor "pointer"}}))
                        (render-fn item index)))))))) items)))
 
 (rum/defc table < rum/static
