@@ -159,6 +159,12 @@
       {:formatter (fn [value name props]
                     (.-state (.-payload props)))})))
 
+(defn- resource-chip
+  [name count]
+  (when (< 0 count)
+    [:p (comp/chip {:avatar (comp/avatar {} count)
+                    :label  (inflect/pluralize-noun count name)})]))
+
 (rum/defc form-general < rum/static [stack-name stackfile {:keys [services networks volumes configs secrets]}]
   (comp/card
     {:className "Swarmpit-form-card"
@@ -171,20 +177,27 @@
                     (form-actions stack-name stackfile)
                     :stackGeneralMenuAnchor
                     :stackGeneralMenuOpened)})
-    (comp/card-content
-      {:key "fgccc"}
-      (rum/with-key (form-services-graph services) "fgcccg"))
-    (comp/card-content
-      {:key "fgccci"}
-      (html
-        [:div {:key "ngcccid"}
-         [:span "Networks: " [:b (count networks)]]
-         [:br]
-         [:span "Volumes: " [:b (count volumes)]]
-         [:br]
-         [:span "Configs: " [:b (count configs)]]
-         [:br]
-         [:span "Secrets: " [:b (count secrets)]]]))
+    (comp/grid
+      {:container true
+       :spacing   16}
+      (comp/grid
+        {:item true
+         :key  "sgg"
+         :xs   6}
+        (comp/card-content
+          {:key "fgccc"}
+          (rum/with-key (form-services-graph services) "fgcccg")))
+      (comp/grid
+        {:item true
+         :key  "sgg"
+         :xs   6}
+        (comp/card-content
+          {:key "fgccci"}
+          (html [:div {:key "ngcccid"}
+                 (resource-chip "network" (count networks))
+                 (resource-chip "volume" (count volumes))
+                 (resource-chip "config" (count configs))
+                 (resource-chip "secret" (count secrets))]))))
     (comp/divider
       {:key "fgd"})
     (comp/card-content
