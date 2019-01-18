@@ -80,10 +80,10 @@
       {:key "tgcc"}
       (html
         [:div {:key "tgccid"}
-         [:span "Container is running on node " [:a {:href (routes/path-for-frontend :node-info {:id nodeName})} nodeName]]
+         [:span "Task is allocated to node " [:a {:href (routes/path-for-frontend :node-info {:id nodeName})} nodeName]]
          [:br]
          (when (:error status)
-           [:span "Container crashed with following error: " (:error status) "."])]))
+           [:p "Failure reason: " [:span (:error status)]])]))
     (comp/card-content
       {:key "tgccl"}
       (form/item-labels
