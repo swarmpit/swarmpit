@@ -121,6 +121,11 @@ a {
     flex-wrap: wrap;
 }
 
+.Swarmpit-column {
+    display: flex;
+    flex-direction: column;
+}
+
 .Swarmpit-row-space {
     display: flex;
     justify-content: space-between;

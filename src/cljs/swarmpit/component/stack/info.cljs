@@ -162,8 +162,9 @@
 (defn- resource-chip
   [name count]
   (when (< 0 count)
-    [:p (comp/chip {:avatar (comp/avatar {} count)
-                    :label  (inflect/pluralize-noun count name)})]))
+    (comp/chip {:style  {:marginBottom "10px"}
+                :avatar (comp/avatar {} count)
+                :label  (inflect/pluralize-noun count name)})))
 
 (rum/defc form-general < rum/static [stack-name stackfile {:keys [services networks volumes configs secrets]}]
   (comp/card
@@ -179,25 +180,28 @@
                     :stackGeneralMenuOpened)})
     (comp/grid
       {:container true
+       :key       "fgccg"
        :spacing   16}
       (comp/grid
         {:item true
-         :key  "sgg"
+         :key  "fgccgil"
          :xs   6}
         (comp/card-content
           {:key "fgccc"}
           (rum/with-key (form-services-graph services) "fgcccg")))
       (comp/grid
         {:item true
-         :key  "sgg"
+         :key  "fgccgir"
          :xs   6}
         (comp/card-content
           {:key "fgccci"}
-          (html [:div {:key "ngcccid"}
-                 (resource-chip "network" (count networks))
-                 (resource-chip "volume" (count volumes))
-                 (resource-chip "config" (count configs))
-                 (resource-chip "secret" (count secrets))]))))
+          (html
+            [:div {:key   "fgcccich"
+                   :style {:marginTop "15px"}}
+             (resource-chip "network" (count networks))
+             (resource-chip "volume" (count volumes))
+             (resource-chip "config" (count configs))
+             (resource-chip "secret" (count secrets))]))))
     (comp/divider
       {:key "fgd"})
     (comp/card-content
@@ -236,8 +240,8 @@
                      :key     "networks-title"} "Networks")})
     (if (empty? networks)
       (comp/card-content
-        {:key "fvcce"}
-        (html [:div "No networks in stack."]))
+        {:key "fncce"}
+        (html [:div {:key "fncced"} "No networks in stack."]))
       (comp/card-content
         {:className "Swarmpit-table-card-content"
          :key       "fncc"}
@@ -260,7 +264,7 @@
     (if (empty? volumes)
       (comp/card-content
         {:key "fvcce"}
-        (html [:div "No volumes in stack."]))
+        (html [:div {:key "fvcced"} "No volumes in stack."]))
       (comp/card-content
         {:className "Swarmpit-table-card-content"
          :key       "fvcc"}
@@ -283,7 +287,7 @@
     (if (empty? configs)
       (comp/card-content
         {:key "fccce"}
-        (html [:div "No configs in stack."]))
+        (html [:div {:key "fccced"} "No configs in stack."]))
       (comp/card-content
         {:className "Swarmpit-table-card-content"
          :key       "fccc"}
@@ -306,7 +310,7 @@
     (if (empty? secrets)
       (comp/card-content
         {:key "fsecce"}
-        (html [:div "No secrets in stack."]))
+        (html [:div {:key "fsecced"} "No secrets in stack."]))
       (comp/card-content
         {:className "Swarmpit-table-card-content"
          :key       "fsecc"}
