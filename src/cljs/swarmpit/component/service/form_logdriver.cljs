@@ -38,7 +38,7 @@
 (defn- form-name [value index]
   (comp/text-field
     {:fullWidth       true
-     :label           "Name"
+     :placeholder     "Name"
      :key             (str "form-logdriver-opt-name-" index)
      :defaultValue    value
      :required        true
@@ -50,7 +50,7 @@
 (defn- form-value [value index]
   (comp/text-field
     {:fullWidth       true
-     :label           "Value"
+     :placeholder     "Value"
      :key             (str "form-logdriver-opt-value-" index)
      :defaultValue    value
      :required        true

@@ -172,7 +172,7 @@
 
 (defn- form-driver-opt-name [value index]
   (comp/text-field
-    {:label        "Name"
+    {:placeholder  "Name"
      :variant      "outlined"
      :margin       "dense"
      :fullWidth    true
@@ -183,7 +183,7 @@
 
 (defn- form-driver-opt-value [value index]
   (comp/text-field
-    {:label        "Value"
+    {:placeholder  "Value"
      :variant      "outlined"
      :margin       "dense"
      :fullWidth    true

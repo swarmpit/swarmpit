@@ -103,7 +103,7 @@
 (defn- form-label-name [value index]
   (comp/text-field
     {:fullWidth       true
-     :label           "Name"
+     :placeholder     "Name"
      :key             (str "form-label-name-" index)
      :defaultValue    value
      :required        true
@@ -115,7 +115,7 @@
 (defn- form-label-value [value index]
   (comp/text-field
     {:fullWidth       true
-     :label           "Value"
+     :placeholder     "Value"
      :key             (str "form-label-value-" index)
      :defaultValue    value
      :required        true
