@@ -163,6 +163,7 @@
   [name count]
   (when (< 0 count)
     (comp/chip {:style  {:marginBottom "10px"}
+                :key    name
                 :avatar (comp/avatar {} count)
                 :label  (inflect/pluralize-noun count name)})))
 
