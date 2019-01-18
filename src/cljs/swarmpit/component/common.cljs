@@ -186,6 +186,7 @@
       {:open          (or menuOpen? false)
        :anchorEl      moreAnchorEl
        :placement     "bottom-end"
+       :className     "Swarmpit-popper"
        :disablePortal true
        :transition    true}
       (fn [props]

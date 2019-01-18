@@ -98,6 +98,10 @@ a {
     left: calc(50% - 26px);
 }
 
+.Swarmpit-popper {
+    z-index: 1;
+}
+
 .Swarmpit-message {
     display: flex;
     align-items: center;
@@ -119,11 +123,6 @@ a {
 .Swarmpit-row {
     display: flex;
     flex-wrap: wrap;
-}
-
-.Swarmpit-column {
-    display: flex;
-    flex-direction: column;
 }
 
 .Swarmpit-row-space {
