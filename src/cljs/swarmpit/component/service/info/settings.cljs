@@ -128,6 +128,10 @@
           [:span (str (:memory limit) "MB")]]]]]
       :else (form-replicas tasks))))
 
+(defn- autoredeploy-label
+  [autoredeploy]
+  (when autoredeploy (label/green "autoredeploy")))
+
 (rum/defc form < rum/static [service tasks actions]
   (let [image-digest (get-in service [:repository :imageDigest])
         image (get-in service [:repository :image])
@@ -162,6 +166,7 @@
         {:key "ssccl"}
         (form/item-labels
           [(form-state (:state service))
+           (autoredeploy-label (-> service :deployment :autoredeploy))
            (label/grey mode)]))
       (comp/card-actions
         {:key "ssca"}
