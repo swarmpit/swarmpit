@@ -130,7 +130,7 @@
 
 (defn- autoredeploy-label
   [autoredeploy]
-  (when autoredeploy (label/green "autoredeploy")))
+  (when autoredeploy (label/primary "autoredeploy")))
 
 (rum/defc form < rum/static [service tasks actions]
   (let [image-digest (get-in service [:repository :imageDigest])
