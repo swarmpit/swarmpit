@@ -58,60 +58,56 @@
      :variant         "outlined"
      :margin          "normal"
      :multiline       true
-     :defaultValue    value
+     :value           value
      :InputProps      {:readOnly true
                        :style    {:fontFamily "monospace"}}
      :InputLabelProps {:shrink true}}))
 
 (defn old-token-form [api-token]
-  [(comp/typography
-     {:key "ost"}
-     ["Token for this user was already created. If you lost your token, please generate new one and "
-      "the former token will be revoked."])
+  [(comp/typography {:key "info"}
+                    ["Token for this user was already created. If you lost your token, please generate new one and "
+                     "the former token will be revoked."])
    (form-token (str "Bearer ..." (:mask api-token)))])
 
 (defn new-token-form [token]
-  [(comp/typography
-     {:key "nst"}
-     ["Copy your token and store it safely, value will be displayed only once."])
+  [(comp/typography {:key "notice"} "Copy your token and store it safely, value will be displayed only once.")
    (form-token (:token token))])
 
 (defn no-token-form []
-  [(comp/typography
-     {:key "nost1"} "Your user doesn't have any API token.")
-   (comp/typography
-     {:key "nost2"} "New token doesn't expire, but it can be revoked.")])
+  [(comp/typography {:key "notoken"} "Your user doesn't have any API token.")
+   (comp/typography {:key "info"} "New token doesn't expire, but it can be revoked or regenenerated.")])
 
-(rum/defc form-api-token < rum/static [{:keys [api-token token]}]
-  (let [state (if (and api-token (not token))
+(rum/defc form-api-token < rum/reactive []
+  (let [{:keys [api-token token]} (state/react state/form-value-cursor)
+        state (if (and api-token (not token))
                 :old
                 (if token :new :none))]
     (comp/grid
       {:item true
-       :key  "aag"
+       :key  "root"
        :xs   12
        :sm   6
        :md   7
        :lg   6}
       (comp/card
         {:className "Swarmpit-form-card"
-         :key       "aagc"}
+         :key       "card"}
         (comp/card-header
           {:className "Swarmpit-form-card-header"
-           :key       "aagch"
+           :key       "header"
            :title     (case state
                         :none "Create API token"
                         :old "API Token"
                         :new "New API token")})
         (comp/card-content
-          {:key "aagcc"}
+          {:key "content"}
           (comp/grid
             {:container true
-             :key       "aagccc"
+             :key       "outer"
              :spacing   40}
             (comp/grid
               {:item true
-               :key  "aagcccig"
+               :key  "inner"
                :xs   12}
               (case state
                 :old (old-token-form api-token)
@@ -119,17 +115,17 @@
                 :none (no-token-form))))
           (html
             [:div {:class "Swarmpit-form-buttons"
-                   :key   "aagccbtn"}
+                   :key   "actions"}
              (comp/button
                {:variant  "contained"
-                :key      "aagccbtnc"
+                :key      "submit"
                 :disabled false
                 :onClick  generate-handler
                 :color    "primary"}
                (case state :none "Generate" "Regenerate"))
              (comp/button
                {:variant  "outlined"
-                :key      "aagccbtnr"
+                :key      "remove"
                 :disabled (= :none state)
                 :onClick  remove-handler}
                "Remove")]))))))
