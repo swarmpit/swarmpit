@@ -84,23 +84,19 @@
 (rum/defc form < rum/reactive []
   (let [{:keys [name opts]} (state/react form-value-cursor)]
     (comp/grid
-      {:container true
-       :key       "seflogcg"}
+      {:container true}
       (comp/grid
         {:item true
-         :key  "seflogcgid"
          :xs   12
          :sm   6} (form-driver name))
       (comp/grid
         {:item true
-         :key  "seflogcgio"
          :xs   12}
         (form/subsection
           "Driver options"
           (comp/button
             {:color   "primary"
              :onClick add-item}
-            (comp/svg
-              {:key "seflogcgiobico"} icon/add-small-path) "Add option"))
+            (comp/svg icon/add-small-path) "Add option"))
         (when (not (empty? opts))
           (form-table opts))))))

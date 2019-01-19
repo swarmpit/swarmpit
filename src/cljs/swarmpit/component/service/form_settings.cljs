@@ -158,17 +158,14 @@
         {:keys [tags]} (state/react form-state-cursor)]
     (comp/grid
       {:container true
-       :key       "sfscg"
        :spacing   24}
       (comp/grid
         {:item true
-         :key  "sfscgii"
          :xs   12
          :sm   6}
         (form-image (:name repository)))
       (comp/grid
         {:item true
-         :key  "sfscgit"
          :xs   12
          :sm   6}
         (if update-form?
@@ -176,12 +173,10 @@
           (form-image-tag-preloaded repository tags)))
       (comp/grid
         {:item true
-         :key  "sfscgin"
          :xs   12}
         (form-name serviceName update-form?))
       (comp/grid
         {:item true
-         :key  "sfscgimar"
          :xs   12
          :sm   6}
         (form-mode mode update-form?)
@@ -189,6 +184,5 @@
           (form-replicas replicas)))
       (comp/grid
         {:item true
-         :key  "sfscgicomm"
          :xs   12}
         (form-command (str/join " " command))))))

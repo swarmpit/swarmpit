@@ -15,14 +15,10 @@
 
 (rum/defc form < rum/static [{:keys [name opts]} service-id]
   (comp/card
-    {:className "Swarmpit-card"
-     :key       "sldc"}
+    {:className "Swarmpit-card"}
     (comp/card-header
       {:className "Swarmpit-table-card-header"
-       :key       "sldch"
-       :title     (comp/typography
-                    {:variant "h6"
-                     :key     "logging-title"} "Logging")
+       :title     (comp/typography {:variant "h6"} "Logging")
        :action    (comp/icon-button
                     {:aria-label "Edit"
                      :href       (routes/path-for-frontend
@@ -31,14 +27,12 @@
                                    {:section "Logging"})}
                     (comp/svg icon/edit-path))})
     (comp/card-content
-      {:key "sldcci"}
+      {}
       (html
         [:div {:style {:maxWidth "200px"}} (form/item "Driver" name)]))
     (comp/card-content
-      {:className "Swarmpit-table-card-content"
-       :key       "sldcc"}
-      (rum/with-key
-        (list/list
-          render-metadata
-          opts
-          nil) "sldccl"))))
+      {:className "Swarmpit-table-card-content"}
+      (list/list
+        render-metadata
+        opts
+        nil))))

@@ -14,14 +14,10 @@
 
 (rum/defc form < rum/static [labels service-id]
   (comp/card
-    {:className "Swarmpit-card"
-     :key       "slc"}
+    {:className "Swarmpit-card"}
     (comp/card-header
       {:className "Swarmpit-table-card-header"
-       :key       "slch"
-       :title     (comp/typography
-                    {:variant "h6"
-                     :key     "labels-title"} "Labels")
+       :title     (comp/typography {:variant "h6"} "Labels")
        :action    (comp/icon-button
                     {:aria-label "Edit"
                      :href       (routes/path-for-frontend
@@ -32,13 +28,11 @@
 
     (if (empty? labels)
       (comp/card-content
-        {:key "slccle"}
+        {}
         (html [:div "No labels defined for the service."]))
       (comp/card-content
-        {:className "Swarmpit-table-card-content"
-         :key       "slcc"}
-        (rum/with-key
-          (list/list
-            render-metadata
-            labels
-            nil) "slccl")))))
+        {:className "Swarmpit-table-card-content"}
+        (list/list
+          render-metadata
+          labels
+          nil)))))

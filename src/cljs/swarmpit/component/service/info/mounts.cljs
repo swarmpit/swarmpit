@@ -54,14 +54,10 @@
   (let [bind (filter #(= "bind" (:type %)) mounts)
         volume (filter #(= "volume" (:type %)) mounts)]
     (comp/card
-      {:className "Swarmpit-card"
-       :key       "smc"}
+      {:className "Swarmpit-card"}
       (comp/card-header
         {:className "Swarmpit-table-card-header"
-         :title     (comp/typography
-                      {:variant "h6"
-                       :key     "mounts-title"} "Mounts")
-         :key       "smch"
+         :title     (comp/typography {:variant "h6"} "Mounts")
          :action    (comp/icon-button
                       {:aria-label "Edit"
                        :href       (routes/path-for-frontend
@@ -72,10 +68,9 @@
 
       (if (empty? mounts)
         (comp/card-content
-          {:key "smcce"}
+          {}
           (html [:div "No mounts defined for the service."]))
         (comp/card-content
-          {:className "Swarmpit-table-card-content"
-           :key       "smcc"}
-          (rum/with-key (form-bind bind) "smccrlb")
-          (rum/with-key (form-volume volume) "smccrlv"))))))
+          {:className "Swarmpit-table-card-content"}
+          (form-bind bind)
+          (form-volume volume))))))

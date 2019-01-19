@@ -128,17 +128,13 @@
 (rum/defc form-settings < rum/static []
   (comp/grid
     {:item true
-     :key  "sccgifccgigs"
      :xs   12}
-    (form/section
-      "General")
-    (rum/with-key
-      (settings/form false) "scfgss")))
+    (form/section "General")
+    (settings/form false)))
 
 (rum/defc form-ports < rum/static []
   (comp/grid
     {:item true
-     :key  "sccgifccgip"
      :xs   12}
     (form/section
       "Ports"
@@ -146,120 +142,90 @@
         {:color   "primary"
          :key     "scfpsbtn"
          :onClick ports/add-item}
-        (comp/svg
-          {:key "scfpsico"} icon/add-small-path) "Add port"))
-    (rum/with-key
-      (ports/form) "scfps")))
+        (comp/svg icon/add-small-path) "Add port"))
+    (ports/form)))
 
 (rum/defc form-mounts < rum/static []
   (comp/grid
     {:item true
-     :key  "sccgifccgicm"
      :xs   12}
     (form/section
       "Mounts"
       (comp/button
         {:color   "primary"
-         :key     "scfmsbtn"
          :onClick mounts/add-item}
-        (comp/svg
-          {:key "scfmsico"} icon/add-small-path) "Add mount"))
-    (rum/with-key
-      (mounts/form) "scfms")))
+        (comp/svg icon/add-small-path) "Add mount"))
+    (mounts/form)))
 
 (rum/defc form-secrets < rum/reactive []
   (comp/grid
     {:item true
-     :key  "sccgifccgisec"
      :xs   12}
     (form/section
       "Secrets"
       (comp/button
         {:color   "primary"
-         :key     "scfssbtn"
          :onClick secrets/add-item}
-        (comp/svg
-          {:key "scfssico"} icon/add-small-path) "Add secret"))
-    (rum/with-key
-      (secrets/form) "scfss")))
+        (comp/svg icon/add-small-path) "Add secret"))
+    (secrets/form)))
 
 (rum/defc form-configs < rum/reactive []
   (comp/grid
     {:item true
-     :key  "sccgifccgic"
      :xs   12}
     (form/section
       "Configs"
       (comp/button
         {:color   "primary"
-         :key     "scfcsbtn"
          :onClick configs/add-item}
-        (comp/svg
-          {:key "scfcsico"} icon/add-small-path) "Add config"))
-    (rum/with-key
-      (configs/form) "scfcs")))
+        (comp/svg icon/add-small-path) "Add config"))
+    (configs/form)))
 
 (rum/defc form-variables < rum/static []
   (comp/grid
     {:item true
-     :key  "sccgifccgiev"
      :xs   12}
     (form/section
       "Environment variables"
       (comp/button
         {:color   "primary"
-         :key     "scfevsbtn"
          :onClick variables/add-item}
-        (comp/svg
-          {:key "scfevsico"} icon/add-small-path) "Add variable"))
-    (rum/with-key
-      (variables/form) "scfevs")))
+        (comp/svg icon/add-small-path) "Add variable"))
+    (variables/form)))
 
 (rum/defc form-labels < rum/static []
   (comp/grid
     {:item true
-     :key  "sccgifccgil"
      :xs   12}
     (form/section
       "Labels"
       (comp/button
         {:color   "primary"
-         :key     "scflasbtn"
          :onClick labels/add-item}
-        (comp/svg
-          {:key "scflasico"} icon/add-small-path) "Add label"))
-    (rum/with-key
-      (labels/form) "scflas")))
+        (comp/svg icon/add-small-path) "Add label"))
+    (labels/form)))
 
 (rum/defc form-logdriver < rum/static []
   (comp/grid
     {:item true
-     :key  "sccgifccgild"
      :xs   12}
-    (form/section
-      "Logging")
-    (rum/with-key
-      (logdriver/form) "scfls")))
+    (form/section "Logging")
+    (logdriver/form)))
 
 (rum/defc form-resources < rum/static []
   (comp/grid
     {:item true
-     :key  "sccgifccgir"
      :xs   12}
-    (form/section
-      "Resources")
-    (rum/with-key
-      (resources/form) "scfrs")))
+    (form/section "Resources")
+    (resources/form)))
 
 (rum/defc form-deployment < rum/static []
   (comp/grid
     {:item true
-     :key  "sccgifccgid"
      :xs   12}
     (form/section
       "Deployment")
-    (rum/with-key
-      (deployment/form) "scfds")))
+    (deployment/form)))
 
 (rum/defc form < rum/reactive
                  mixin-init-form [_]
@@ -272,61 +238,44 @@
          [:div.Swarmpit-form-context
           (comp/grid
             {:container true
-             :key       "sccg"
              :spacing   40}
             (comp/grid
               {:item true
-               :key  "sccgif"
                :xs   12
                :sm   12
                :md   12
                :lg   8
                :xl   8}
               (comp/card
-                {:className "Swarmpit-form-card"
-                 :key       "sccgifc"}
+                {:className "Swarmpit-form-card"}
                 (comp/card-header
                   {:className "Swarmpit-form-card-header"
-                   :key       "sccgifch"
                    :title     "New Service"
                    :subheader (str "from " (get-in (state/get-value settings/form-value-cursor) [:repository :name]))})
                 (comp/card-content
-                  {:key "sccgifcc"}
+                  {}
                   (comp/grid
                     {:container true
-                     :key       "sccgifcccg"
                      :spacing   40}
-                    (rum/with-key
-                      (form-settings) "sccgifcccgfs")
-                    (rum/with-key
-                      (form-ports) "sccgifcccgfp")
-                    (rum/with-key
-                      (form-mounts) "sccgifcccgfm")
-                    (rum/with-key
-                      (form-secrets) "sccgifcccgfse")
+                    (form-settings)
+                    (form-ports)
+                    (form-mounts)
+                    (form-secrets)
                     (when (<= 1.30 (state/get-value [:docker :api]))
-                      (rum/with-key
-                        (form-configs) "sccgifcccgfc"))
-                    (rum/with-key
-                      (form-variables) "sccgifcccgfv")
-                    (rum/with-key
-                      (form-labels) "sccgifcccgfl")
-                    (rum/with-key
-                      (form-logdriver) "sccgifcccgfld")
-                    (rum/with-key
-                      (form-resources) "sccgifcccgfr")
-                    (rum/with-key
-                      (form-deployment) "sccgifcccgfd"))
+                      (form-configs))
+                    (form-variables)
+                    (form-labels)
+                    (form-logdriver)
+                    (form-resources)
+                    (form-deployment))
                   (html
-                    [:div {:class "Swarmpit-form-buttons"
-                           :key   "sccgifccbtn"}
+                    [:div.Swarmpit-form-buttons
                      (composite/progress-button
                        "Create"
                        create-service-handler
                        processing?)]))))
             (comp/grid
               {:item true
-               :key  "sccgid"
                :xs   12
                :sm   12
                :md   12

@@ -89,30 +89,24 @@
                      (str "Service rollback failed. " (:error response))))}))
 
 (defn form-tasks [service tasks]
-  (let [custom-render-fn (fn [item] (let [taskName (utils/trim-stack (:stack service) (:taskName item))]
-                                      (subs taskName (+ 1 (count (:serviceName service))))))
+  (let [custom-render-fn (fn [item] (utils/trim-stack (:stack service) (:taskName item)))
         table-summary (-> (get-in tasks/render-metadata [:table :summary])
                           (assoc-in [0 :render-fn] custom-render-fn))
         custom-metadata (-> tasks/render-metadata
                             (assoc-in [:table :summary] table-summary)
                             (assoc-in [:list :primary] custom-render-fn))]
     (comp/card
-      {:className "Swarmpit-card"
-       :key       "ftc"}
+      {:className "Swarmpit-card"}
       (comp/card-header
         {:className "Swarmpit-table-card-header"
-         :key       "ftch"
-         :title     (comp/typography
-                      {:variant "h6"
-                       :key     "task-title"} "Tasks")})
+         :title     (comp/typography {:variant "h6"} "Tasks")})
       (comp/card-content
         {:className "Swarmpit-table-card-content"
          :key       "ftcc"}
-        (rum/with-key
-          (list/responsive
-            custom-metadata
-            (filter #(not (= "shutdown" (:state %))) tasks)
-            tasks/onclick-handler) "ftccrl")))))
+        (list/responsive
+          custom-metadata
+          (filter #(not (= "shutdown" (:state %))) tasks)
+          tasks/onclick-handler)))))
 
 (defn form-actions
   [service service-id]
@@ -159,41 +153,32 @@
 (defn form-settings-grid [service service-id tasks]
   (comp/grid
     {:item true
-     :key  "slgg"
      :xs   12}
-    (rum/with-key
-      (settings/form service tasks (form-actions service service-id)) "slggf")))
+    (settings/form service tasks (form-actions service service-id))))
 
 (defn form-tasks-grid [service tasks]
   (comp/grid
     {:item true
-     :key  "srgt"
      :xs   12}
     (form-tasks service tasks)))
 
 (defn form-networks-grid [networks service-id]
   (comp/grid
     {:item true
-     :key  "srgn"
      :xs   12}
-    (rum/with-key
-      (networks/form networks service-id) "srgnf")))
+    (networks/form networks service-id)))
 
 (defn form-ports-grid [ports service-id]
   (comp/grid
     {:item true
-     :key  "srgp"
      :xs   12}
-    (rum/with-key
-      (ports/form ports service-id) "srgpf")))
+    (ports/form ports service-id)))
 
 (defn form-mounts-grid [mounts service-id]
   (comp/grid
     {:item true
-     :key  "srgm"
      :xs   12}
-    (rum/with-key
-      (mounts/form mounts service-id) "srgmf")))
+    (mounts/form mounts service-id)))
 
 (defn form-secrets-grid [secrets service-id]
   (comp/grid
@@ -206,42 +191,32 @@
 (defn form-configs-grid [configs service-id]
   (comp/grid
     {:item true
-     :key  "slgc"
      :xs   12}
-    (rum/with-key
-      (configs/form configs service-id) "slgcf")))
+    (configs/form configs service-id)))
 
 (defn form-variables-grid [variables service-id]
   (comp/grid
     {:item true
-     :key  "slgev"
      :xs   12}
-    (rum/with-key
-      (variables/form variables service-id) "slgevf")))
+    (variables/form variables service-id)))
 
 (defn form-labels-grid [labels service-id]
   (comp/grid
     {:item true
-     :key  "slgl"
      :xs   12}
-    (rum/with-key
-      (labels/form labels service-id) "slglf")))
+    (labels/form labels service-id)))
 
 (defn form-logdriver-grid [logdriver service-id]
   (comp/grid
     {:item true
-     :key  "slgld"
      :xs   12}
-    (rum/with-key
-      (logdriver/form logdriver service-id) "slgldf")))
+    (logdriver/form logdriver service-id)))
 
 (defn form-deployment-grid [deployment service-id]
   (comp/grid
     {:item true
-     :key  "slgd"
      :xs   12}
-    (rum/with-key
-      (deployment/form deployment service-id) "slgdf")))
+    (deployment/form deployment service-id)))
 
 (rum/defc form-info < rum/static [{:keys [service networks tasks]}]
   (let [ports (:ports service)
@@ -270,7 +245,6 @@
                :spacing   16}
               (comp/grid
                 {:item true
-                 :key  "slg"
                  :sm   6
                  :md   6
                  :lg   4}
@@ -286,7 +260,6 @@
                   (form-deployment-grid deployment id)))
               (comp/grid
                 {:item true
-                 :key  "srg"
                  :sm   6
                  :md   6
                  :lg   8}

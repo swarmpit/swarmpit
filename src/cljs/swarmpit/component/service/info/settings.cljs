@@ -141,53 +141,47 @@
         stack (:stack service)
         mode (:mode service)]
     (comp/card
-      {:className "Swarmpit-form-card"
-       :key       "ssc"}
+      {:className "Swarmpit-form-card"}
       (comp/card-header
         {:title     (:serviceName service)
          :className "Swarmpit-form-card-header"
-         :key       "ssch"
          :subheader (form-subheader image image-digest)
          :action    (menu/menu
                       actions
                       :serviceGeneralMenuAnchor
                       :serviceGeneralMenuOpened)})
       (comp/card-content
-        {:key "ssccd"}
+        {}
         (if (not (empty? desired-tasks))
           (rum/with-key (form-replicas desired-tasks) "ssccddr")
           (html
-            [:span {:class "Swarmpit-message"
-                    :key   "ssccddm"}
+            [:span.Swarmpit-message
              (icon/info {:style {:marginRight "8px"}})
              [:span "Service has been shut down."]]))
         (form-command command))
       (comp/card-content
-        {:key "ssccl"}
+        {}
         (form/item-labels
           [(form-state (:state service))
            (autoredeploy-label (-> service :deployment :autoredeploy))
            (label/grey mode)]))
       (comp/card-actions
-        {:key "ssca"}
+        {}
         (when stack
           (comp/button
             {:size  "small"
-             :key   "sscasbs"
              :color "primary"
              :href  (routes/path-for-frontend :stack-info {:name stack})}
             "See stack"))
         (comp/button
           {:size  "small"
-           :key   "sscasbl"
            :color "primary"
            :href  (routes/path-for-frontend :service-log {:id (:id service)})}
           "View log"))
       (comp/divider
-        {:key "ssd"})
+        {})
       (comp/card-content
-        {:key   "ssccf"
-         :style {:paddingBottom "16px"}}
+        {:style {:paddingBottom "16px"}}
         (form/item-date (:createdAt service)
                         (:updatedAt service))
         (form/item-id (:id service))))))

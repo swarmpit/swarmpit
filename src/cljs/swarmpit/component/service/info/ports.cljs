@@ -22,14 +22,10 @@
 
 (rum/defc form < rum/static [ports service-id]
   (comp/card
-    {:className "Swarmpit-card"
-     :key       "spc"}
+    {:className "Swarmpit-card"}
     (comp/card-header
       {:className "Swarmpit-table-card-header"
-       :key       "spch"
-       :title     (comp/typography
-                    {:variant "h6"
-                     :key     "ports-title"} "Ports")
+       :title     (comp/typography {:variant "h6"} "Ports")
        :action    (comp/icon-button
                     {:aria-label "Edit"
                      :href       (routes/path-for-frontend
@@ -39,13 +35,11 @@
                     (comp/svg icon/edit-path))})
     (if (empty? ports)
       (comp/card-content
-        {:key "spcce"}
+        {}
         (html [:div "No ports exposed for the service."]))
       (comp/card-content
-        {:className "Swarmpit-table-card-content"
-         :key       "spcc"}
-        (rum/with-key
-          (list/responsive
-            render-metadata
-            ports
-            nil) "spccrl")))))
+        {:className "Swarmpit-table-card-content"}
+        (list/responsive
+          render-metadata
+          ports
+          nil)))))

@@ -117,13 +117,11 @@
     :render-fn (fn [value _ index]
                  (comp/form-control
                    {:component "fieldset"
-                    :key       "sefmrof"
                     :fullWidth true}
                    (comp/form-group
-                     {:key "sefmrofg"}
+                     {}
                      (comp/form-control-label
                        {:control (form-readonly value index)
-                        :key     "sefmrofgl"
                         :label   "Read Only"}))))}])
 
 (defn- form-table

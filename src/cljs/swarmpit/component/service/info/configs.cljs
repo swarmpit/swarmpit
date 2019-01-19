@@ -19,14 +19,10 @@
 
 (rum/defc form < rum/static [configs service-id]
   (comp/card
-    {:className "Swarmpit-card"
-     :key       "scc"}
+    {:className "Swarmpit-card"}
     (comp/card-header
       {:className "Swarmpit-table-card-header"
-       :key       "scch"
-       :title     (comp/typography
-                    {:variant "h6"
-                     :key     "configs-title"} "Configs")
+       :title     (comp/typography {:variant "h6"} "Configs")
        :action    (comp/icon-button
                     {:aria-label "Edit"
                      :href       (routes/path-for-frontend
@@ -36,15 +32,12 @@
                     (comp/svg icon/edit-path))})
     (if (empty? configs)
       (comp/card-content
-        {:key "sccce"}
+        {}
         (html [:div "No configs defined for the service."]))
       (comp/card-content
-        {:className "Swarmpit-table-card-content"
-         :key       "sccc"}
-        (rum/with-key
-          (list/list
-            render-metadata
-            configs
-            onclick-handler)
-          "scccrl")))))
+        {:className "Swarmpit-table-card-content"}
+        (list/list
+          render-metadata
+          configs
+          onclick-handler)))))
 

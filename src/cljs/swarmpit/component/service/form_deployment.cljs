@@ -228,98 +228,76 @@
                 restartPolicy]} (state/react form-value-cursor)]
     (comp/grid
       {:container true
-       :key       "sfdcg"
        :spacing   24}
       (comp/grid
         {:item true
-         :key  "sfdcgig"
          :xs   12}
         (comp/form-control
-          {:component "fieldset"
-           :key       "sfdcgigc"}
+          {:component "fieldset"}
           (comp/form-group
-            {:key "sfdcgigcg"}
+            {}
             (comp/form-control-label
               {:control (form-autoredeploy autoredeploy)
-               :key     "sfdcgigcga"
                :label   "Autoredeploy"})))
         (placement/form))
       (comp/grid
         {:item true
-         :key  "sfdcgip"
          :xs   12
          :sm   4}
         (form/subsection "Restart Policy")
         (comp/grid
           {:container true
-           :key       "sfdcgipcg"
            :direction "column"}
           (comp/grid
-            {:item true
-             :key  "sfdcgipcgic"}
+            {:item true}
             (form-restart-policy-condition (:condition restartPolicy)))
           (comp/grid
-            {:item true
-             :key  "sfdcgipcgid"}
+            {:item true}
             (form-restart-policy-delay (:delay restartPolicy)))
           (comp/grid
-            {:item true
-             :key  "sfdcgipcgiw"}
+            {:item true}
             (form-restart-policy-window (:window restartPolicy)))
           (comp/grid
-            {:item true
-             :key  "sfdcgipcgia"}
+            {:item true}
             (form-restart-policy-attempts (:attempts restartPolicy)))))
       (comp/grid
         {:item true
-         :key  "sfdcgiu"
          :xs   12
          :sm   4}
         (form/subsection "Update Config")
         (comp/grid
           {:container true
-           :key       "sfdcgiucg"
            :direction "column"}
           (comp/grid
-            {:item true
-             :key  "sfdcgiucgip"}
+            {:item true}
             (form-update-parallelism (:parallelism update)))
           (comp/grid
-            {:item true
-             :key  "sfdcgiucgid"}
+            {:item true}
             (form-update-delay (:delay update)))
           (comp/grid
-            {:item true
-             :key  "sfdcgiucgio"}
+            {:item true}
             (form-update-order (:order update)))
           (comp/grid
-            {:item true
-             :key  "sfdcgiucgfa"}
+            {:item true}
             (form-update-failure-action (:failureAction update)))))
       (when (= "rollback" (:failureAction update))
         (comp/grid
           {:item true
-           :key  "sfdcgir"
            :xs   12
            :sm   4}
           (form/subsection "Rollback Config")
           (comp/grid
             {:container true
-             :key       "sfdcgircg"
              :direction "column"}
             (comp/grid
-              {:item true
-               :key  "sfdcgircgip"}
+              {:item true}
               (form-rollback-parallelism (:parallelism rollback)))
             (comp/grid
-              {:item true
-               :key  "sfdcgircgid"}
+              {:item true}
               (form-rollback-delay (:delay rollback)))
             (comp/grid
-              {:item true
-               :key  "sfdcgircgio"}
+              {:item true}
               (form-rollback-order (:order rollback)))
             (comp/grid
-              {:item true
-               :key  "sfdcgircgifa"}
+              {:item true}
               (form-rollback-failure-action (:failureAction rollback)))))))))

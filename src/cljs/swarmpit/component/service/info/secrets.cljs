@@ -19,14 +19,10 @@
 
 (rum/defc form < rum/static [secrets service-id]
   (comp/card
-    {:className "Swarmpit-card"
-     :key       "ssec"}
+    {:className "Swarmpit-card"}
     (comp/card-header
       {:className "Swarmpit-table-card-header"
-       :key       "ssech"
-       :title     (comp/typography
-                    {:variant "h6"
-                     :key     "secrets-title"} "Secrets")
+       :title     (comp/typography {:variant "h6"} "Secrets")
        :action    (comp/icon-button
                     {:aria-label "Edit"
                      :href       (routes/path-for-frontend
@@ -36,14 +32,12 @@
                     (comp/svg icon/edit-path))})
     (if (empty? secrets)
       (comp/card-content
-        {:key "sseccrle"}
+        {}
         (html [:div "No secrets defined for the service."]))
       (comp/card-content
-        {:className "Swarmpit-table-card-content"
-         :key       "ssecc"}
-        (rum/with-key
-          (list/list
-            render-metadata
-            secrets
-            onclick-handler) "sseccrl")))))
+        {:className "Swarmpit-table-card-content"}
+        (list/list
+          render-metadata
+          secrets
+          onclick-handler)))))
 

@@ -21,12 +21,10 @@
 
 (defn- form-cpu-reservation [value]
   (html
-    [:div {:class "Swarmpit-margin-normal"
-           :key   "cpu-reservation-wrap"}
-     [:div {:class "Swarmpit-service-slider-title"
-            :key   "cpu-reservation-label"}
+    [:div.Swarmpit-margin-normal
+     [:div.Swarmpit-service-slider-title
       (str "CPU  " "(" (cpu-value value) ")")]
-     [:div {:key "cpu-reservation-slider"}
+     [:div
       (comp/rc-slider
         {:key          "cpu-reservation"
          :min          0
@@ -55,12 +53,10 @@
 
 (defn- form-cpu-limit [value]
   (html
-    [:div {:class "Swarmpit-margin-normal"
-           :key   "cpu-limit-wrap"}
-     [:div {:class "Swarmpit-service-slider-title"
-            :key   "cpu-limit-label"}
+    [:div.Swarmpit-margin-normal
+     [:div.Swarmpit-service-slider-title
       (str "CPU  " "(" (cpu-value value) ")")]
-     [:div {:key "cpu-limit-slider"}
+     [:div
       (comp/rc-slider
         {:key          "cpu-limit"
          :min          0
@@ -91,23 +87,18 @@
   (let [{:keys [reservation limit]} (state/react form-value-cursor)]
     (comp/grid
       {:container true
-       :key       "sfrcg"
        :spacing   40}
       (comp/grid
         {:item true
-         :key  "sfrcgir"
          :xs   12
          :sm   6}
         (form/subsection "Reservation")
-        ;(html [:div "Minimal resource availability to run a task. Empty for unlimited."])
         (form-memory-reservation (:memory reservation))
         (form-cpu-reservation (:cpu reservation)))
       (comp/grid
         {:item true
-         :key  "sfrcgil"
          :xs   12
          :sm   6}
         (form/subsection "Limit")
-        ;(html [:div "Maximal resource usage per task. Empty for unlimited."])
         (form-memory-limit (:memory limit))
         (form-cpu-limit (:cpu limit))))))

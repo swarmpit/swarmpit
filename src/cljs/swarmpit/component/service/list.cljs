@@ -106,26 +106,20 @@
 (defn linked
   [services]
   (comp/card
-    {:className "Swarmpit-card"
-     :key       "lsc"}
+    {:className "Swarmpit-card"}
     (comp/card-header
       {:className "Swarmpit-table-card-header"
-       :key       "lsch"
-       :title     (comp/typography
-                    {:variant "h6"
-                     :key     "services-title"} "Services")})
+       :title     (comp/typography {:variant "h6"} "Services")})
     (if (empty? services)
       (comp/card-content
-        {:key "fccce"}
+        {}
         (html [:div "No linked services found."]))
       (comp/card-content
-        {:className "Swarmpit-table-card-content"
-         :key       "lscc"}
-        (rum/with-key
-          (list/responsive
-            render-metadata
-            services
-            onclick-handler) "lsccrl")))))
+        {:className "Swarmpit-table-card-content"}
+        (list/responsive
+          render-metadata
+          services
+          onclick-handler)))))
 
 (defn toolbar-render-metadata
   [filter]

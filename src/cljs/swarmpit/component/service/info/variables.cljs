@@ -14,14 +14,10 @@
 
 (rum/defc form < rum/static [variables service-id]
   (comp/card
-    {:className "Swarmpit-card"
-     :key       "svc"}
+    {:className "Swarmpit-card"}
     (comp/card-header
       {:className "Swarmpit-table-card-header"
-       :key       "svch"
-       :title     (comp/typography
-                    {:variant "h6"
-                     :key     "variables-title"} "Environment variables")
+       :title     (comp/typography {:variant "h6"} "Environment variables")
        :action    (comp/icon-button
                     {:aria-label "Edit"
                      :href       (routes/path-for-frontend
@@ -31,13 +27,11 @@
                     (comp/svg icon/edit-path))})
     (if (empty? variables)
       (comp/card-content
-        {:key "svcce"}
+        {}
         (html [:div "No variables defined for the service."]))
       (comp/card-content
-        {:className "Swarmpit-table-card-content"
-         :key       "svcc"}
-        (rum/with-key
-          (list/list
-            render-metadata
-            variables
-            nil) "svccl")))))
+        {:className "Swarmpit-table-card-content"}
+        (list/list
+          render-metadata
+          variables
+          nil)))))
