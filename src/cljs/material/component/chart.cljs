@@ -6,13 +6,13 @@
   (let [hashd (hash data)]
     (html
       [:div {:className className
-             :key       (str "p-" id "-" hashd)}
+             :key       (str "pie-wrapper-" id "-" hashd)}
        (comp/responsive-container
-         {:key     (str "rc-" id)}
+         {}
          (comp/pie-chart
-           {:key (str "pc-" id)}
+           {}
            (comp/pie
-             {:key               (str "pp-" id)
+             {:key               (str "pie-" id)
               :data              data
               :dataKey           "value"
               :isAnimationActive false
@@ -25,14 +25,11 @@
              (map-indexed
                (fn [index item]
                  (comp/cell {:fill (:color item)
-                             :key  (str "pce-" id "-" index)})) data)
+                             :key  (str "pie-cell-" id "-" index)})) data)
              (comp/re-label
-               {:key      (str "pl-" id)
-                :width    30
+               {:width    30
                 :position "center"} label))
            (when tooltip
-             (comp/tooltip-chart
-               (merge tooltip
-                      {:key (str "pt-" id)})))))])))
+             (comp/tooltip-chart tooltip))))])))
 
 
