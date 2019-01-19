@@ -100,13 +100,17 @@
       (comp/card-header
         {:className "Swarmpit-table-card-header"
          :title     (comp/typography {:variant "h6"} "Tasks")})
-      (comp/card-content
-        {:className "Swarmpit-table-card-content"
-         :key       "ftcc"}
-        (list/responsive
-          custom-metadata
-          (filter #(not (= "shutdown" (:state %))) tasks)
-          tasks/onclick-handler)))))
+
+      (if (= "not running" (:state service))
+        (comp/card-content
+          {}
+          (html [:div "No running tasks."]))
+        (comp/card-content
+          {:className "Swarmpit-table-card-content"}
+          (list/responsive
+            custom-metadata
+            (filter #(not (= "shutdown" (:state %))) tasks)
+            tasks/onclick-handler))))))
 
 (defn form-actions
   [service service-id]
@@ -183,10 +187,8 @@
 (defn form-secrets-grid [secrets service-id]
   (comp/grid
     {:item true
-     :key  "slgs"
      :xs   12}
-    (rum/with-key
-      (secrets/form secrets service-id) "slgsf")))
+    (secrets/form secrets service-id)))
 
 (defn form-configs-grid [configs service-id]
   (comp/grid
