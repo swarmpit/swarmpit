@@ -110,14 +110,14 @@
       (map #(comp/chip
               {:label %
                :key   (str "plugin-" %)
-               :style {:marginRight "5px"}}) networks))
+               :style {:margin "5px 5px 5px 0px"}}) networks))
     (comp/card-content
       {:className "Swarmpit-form-card-content"}
       (form/subsection "Volume")
       (map #(comp/chip
               {:label %
                :key   (str "volume-" %)
-               :style {:marginRight "5px"}}) volumes))))
+               :style {:margin "5px 5px 5px 0px"}}) volumes))))
 
 (rum/defc form-tasks < rum/static [tasks]
   (let [table-summary (->> (get-in tasks/render-metadata [:table :summary])
