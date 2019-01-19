@@ -51,16 +51,18 @@
   (ajax/get
     (routes/path-for-backend :dockerhub-users)
     {:state      [:loading? :dockerhub]
-     :on-success (fn [{:keys [response]}]
-                   (state/update-value [:items :dockerhub] response state/form-value-cursor))}))
+     :on-success (fn [{:keys [response origin?]}]
+                   (when origin?
+                     (state/update-value [:items :dockerhub] response state/form-value-cursor)))}))
 
 (defn- registries-handler
   []
   (ajax/get
     (routes/path-for-backend :registries)
     {:state      [:loading? :registries]
-     :on-success (fn [{:keys [response]}]
-                   (state/update-value [:items :registries] response state/form-value-cursor))}))
+     :on-success (fn [{:keys [response origin?]}]
+                   (when origin?
+                     (state/update-value [:items :registries] response state/form-value-cursor)))}))
 
 (defn form-search-fn
   [event]

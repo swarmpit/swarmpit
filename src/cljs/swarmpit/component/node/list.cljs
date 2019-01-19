@@ -120,8 +120,9 @@
   []
   (ajax/get
     (routes/path-for-backend :nodes)
-    {:on-success (fn [{:keys [response]}]
-                   (state/update-value [:items] response state/form-value-cursor))}))
+    {:on-success (fn [{:keys [response origin?]}]
+                   (when origin?
+                     (state/update-value [:items] response state/form-value-cursor)))}))
 
 (defn form-search-fn
   [event]
