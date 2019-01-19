@@ -8,6 +8,7 @@
             [swarmpit.component.mixin :as mixin]
             [swarmpit.component.state :as state]
             [swarmpit.component.common :as common]
+            [swarmpit.component.progress :as progress]
             [swarmpit.ajax :as ajax]
             [swarmpit.routes :as routes]
             [swarmpit.url :refer [dispatch!]]
@@ -120,7 +121,8 @@
   []
   (ajax/get
     (routes/path-for-backend :nodes)
-    {:on-success (fn [{:keys [response origin?]}]
+    {:state      [:loading?]
+     :on-success (fn [{:keys [response origin?]}]
                    (when origin?
                      (state/update-value [:items] response state/form-value-cursor)))}))
 
@@ -130,7 +132,8 @@
 
 (defn- init-form-state
   []
-  (state/set-value {:filter {:query ""}} state/form-state-cursor))
+  (state/set-value {:loading? false
+                    :filter   {:query ""}} state/form-state-cursor))
 
 (def mixin-init-form
   (mixin/init-form
@@ -154,13 +157,14 @@
                  mixin/subscribe-form
                  mixin/focus-filter [_]
   (let [{:keys [items]} (state/react state/form-value-cursor)
-        {:keys [filter]} (state/react state/form-state-cursor)
+        {:keys [loading? filter]} (state/react state/form-state-cursor)
         filtered-items (->> (list-util/filter items (:query filter))
                             (clojure.core/filter #(if (:manager filter)
                                                     (= "manager" (:role %)) true))
                             (clojure.core/filter #(if (:worker filter)
                                                     (= "worker" (:role %)) true)))]
-    (comp/mui
+    (progress/form
+      loading?
       (common/list-grid
         "Nodes"
         items
