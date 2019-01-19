@@ -106,7 +106,6 @@
 
 (rum/defc form-config < rum/static
                         mixin-init-editor [config]
-  (print config)
   (comp/card
     {:className "Swarmpit-form-card"
      :key       "cdc"}
