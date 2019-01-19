@@ -114,19 +114,17 @@
           {:className "Swarmpit-login-paper"}
           (html
             [:img {:src    "img/swarmpit.png"
-                   :key    "Swarmpit-login-img"
                    :width  "100%"
                    :height "100%"}])
           (when (not-empty message)
             (html
-              [:span {:key   "Swarmpit-login-mssg"
-                      :style {:display    "flex"
+              [:span {:style {:display    "flex"
                               :alignItems "center"
                               :color      "#d32f2f"
                               :padding    20}}
                (icon/error {}) message]))
           (html
-            [:div.Swarmpit-login-form {:key "Swarmpit-login-form"}
+            [:div.Swarmpit-login-form
              (form-username username local-state)
              (form-password password local-state)
              (form-button local-state)])))]]))

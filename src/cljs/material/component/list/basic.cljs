@@ -47,8 +47,7 @@
 (rum/defc table < rum/static
   [render-metadata items onclick-handler-fn]
   (cmp/table
-    {:key       "rtable"
-     :className "Swarmpit-table"}
+    {:className "Swarmpit-table"}
     (table-head render-metadata)
     (table-body render-metadata items onclick-handler-fn)))
 
@@ -79,8 +78,7 @@
 
 (rum/defc list < rum/static [render-metadata items onclick-handler-fn]
   (cmp/list
-    {:key   "rlist"
-     :dense true}
+    {:dense true}
     (map-indexed
       (fn [index item]
         (list-item
@@ -98,12 +96,8 @@
        (cmp/hidden
          {:only           ["xs" "sm" "md"]
           :implementation "js"}
-         (rum/with-key
-           (table (:table render-metadata) items onclick-handler-fn)
-           "rtable-wrapper"))
+         (table (:table render-metadata) items onclick-handler-fn))
        (cmp/hidden
          {:only           ["lg" "xl"]
           :implementation "js"}
-         (rum/with-key
-           (list (:list render-metadata) items onclick-handler-fn)
-           "rlist-wrapper"))])))
+         (list (:list render-metadata) items onclick-handler-fn))])))

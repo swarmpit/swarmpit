@@ -53,7 +53,7 @@
 
 (defn drawer
   [props & childs]
-  (f/drawer (clj->js props) childs))
+  (apply f/drawer (clj->js props) childs))
 
 (defn menu
   [props & childs]

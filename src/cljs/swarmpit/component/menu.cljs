@@ -170,24 +170,18 @@
          (comp/hidden
            {:mdUp true}
            (comp/drawer
-             {:key        "drawer"
-              :className  "Swarmpit-drawer"
+             {:className  "Swarmpit-drawer"
               :anchor     "left"
               :open       mobileOpened
               :variant    "temporary"
               :onClose    #(state/update-value [:mobileOpened] false state/layout-cursor)
               :ModalProps {:keepMounted true}}
-             (rum/with-key
-               (drawer-content version page-domain docker-api)
-               "drawer-content")))
+             (drawer-content version page-domain docker-api)))
          (comp/hidden
            {:smDown         true
             :implementation "css"}
            (comp/drawer
-             {:key       "drawer"
-              :className "Swarmpit-drawer"
+             {:className "Swarmpit-drawer"
               :open      true
               :variant   "permanent"}
-             (rum/with-key
-               (drawer-content version page-domain docker-api)
-               "drawer-content")))]))))
+             (drawer-content version page-domain docker-api)))]))))

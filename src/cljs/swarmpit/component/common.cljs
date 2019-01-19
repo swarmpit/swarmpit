@@ -19,35 +19,27 @@
 (rum/defc list-toolbar-filter-menu < rum/reactive [title filters]
   (let [anchorEl (state/react (conj state/form-state-cursor :listFilterAnchorEl))]
     (html
-      [:div {:key "ltfm"}
-       [:div {:className "Swarmpit-section-desktop"
-              :key       "lffmsd"}
+      [:div
+       [:div.Swarmpit-section-desktop
         (comp/button
           {:aria-owns     (when anchorEl "list-filter-menu")
            :aria-haspopup "true"
            :color         "primary"
-           :key           "lfmbtn"
            :onClick       (fn [e]
                             (state/update-value [:listFilterAnchorEl] (.-currentTarget e) state/form-state-cursor))}
-          (icon/filter-list {:className "Swarmpit-button-icon"
-                             :key       "lfmbtnico"})
-          "Filter")]
-       [:div {:className "Swarmpit-section-mobile"
-              :key       "lffmsm"}
+          (icon/filter-list {:className "Swarmpit-button-icon"}) "Filter")]
+       [:div.Swarmpit-section-mobile
         (comp/tooltip
-          {:title "Filter"
-           :key   "lfmitt"}
+          {:title "Filter"}
           (comp/icon-button
             {:aria-owns     (when anchorEl "list-filter-menu")
              :aria-haspopup "true"
-             :key           "lfmibtn"
              :onClick       (fn [e]
                               (state/update-value [:listFilterAnchorEl] (.-currentTarget e) state/form-state-cursor))
              :color         "primary"}
             (icon/filter-list {})))]
        (comp/menu
          {:id              "list-filter-menu"
-          :key             "lfm"
           :anchorEl        anchorEl
           :anchorOrigin    {:vertical   "top"
                             :horizontal "right"}
@@ -56,33 +48,29 @@
           :open            (some? anchorEl)
           :onClose         #(state/update-value [:listFilterAnchorEl] nil state/form-state-cursor)}
          (comp/menu-item
-           {:key       "lfmi"
-            :className "Swarmpit-menu-info"
+           {:className "Swarmpit-menu-info"
             :disabled  true}
-           (html [:span {:key "lfmicnt"}
-                  (str "Filter " (str/lower-case title) " by")]))
+           (html [:span (str "Filter " (str/lower-case title) " by")]))
          (map #(comp/menu-item
-                 {:key      (str "mi-" (:name %))
+                 {:key      (str "filter-" (:name %))
                   :disabled (:disabled %)
                   :onClick  (:onClick %)}
                  (comp/form-control-label
                    {:control (comp/checkbox
-                               {:key     (str "mifclcb-" (:name %))
+                               {:key     (str "filter-checkbox-" (:name %))
                                 :checked (:checked %)
                                 :value   (str (:checked %))})
-                    :key     (str "mifcl-" (:name %))
+                    :key     (str "filter-label-" (:name %))
                     :label   (:name %)})) filters))])))
 
 (rum/defc list-toobar < rum/reactive
   [title items filtered-items {:keys [actions filters] :as metadata}]
   (comp/mui
     (comp/toolbar
-      {:key            "ltt"
-       :disableGutters true
+      {:disableGutters true
        :className      "Swarmpit-form-toolbar-context"}
       (comp/typography
-        {:key     "lttt"
-         :variant "subtitle1"
+        {:variant "subtitle1"
          :color   "inherit"
          :noWrap  false}
         (if (= (count items)
@@ -91,19 +79,18 @@
           (str "Total (" (count filtered-items) "/" (count items) ")")))
       (when actions
         (html
-          [:div {:key   "ltavl"
-                 :style {:borderRight "0.1em solid black"
+          [:div {:style {:borderRight "0.1em solid black"
                          :padding     "0.5em"
                          :height      0}}]))
       (when actions
         (map-indexed
           (fn [index action]
             (html
-              [:div {:key (str "laml-" index)}
+              [:div {:key (str "toolbar-item-" index)}
                [:div.Swarmpit-section-desktop
                 (comp/button
                   {:color   "primary"
-                   :key     (str "lambtn-" index)
+                   :key     (str "toolbar-button-" index)
                    :onClick (:onClick action)}
                   ((:icon action) {:className "Swarmpit-button-icon"})
                   (:name action))]
@@ -118,14 +105,13 @@
                     ((:icon-alt action) {})))
                 (comp/tooltip
                   {:title (:name action)
-                   :key   (str "lamitt-" index)}
+                   :key   (str "toolbar-tooltip-" index)}
                   (comp/icon-button
-                    {:key     (str "lamibtn-" index)
+                    {:key     (str "toolbar-icon-btn-" index)
                      :onClick (:onClick action)
                      :color   "primary"}
                     ((:icon action) {})))]])) actions))
-      (html [:div {:className "grow"
-                   :key       "ltge"}])
+      (html [:div.grow])
       (when filters
         (list-toolbar-filter-menu title filters)))))
 
@@ -142,17 +128,13 @@
           (empty? filtered-items) (list-no-items-found)
           :else
           (comp/card
-            {:className "Swarmpit-card"
-             :key       "scclc"}
+            {:className "Swarmpit-card"}
             (comp/card-content
-              {:className "Swarmpit-table-card-content"
-               :key       "scclcc"}
-              (rum/with-key
-                (list/responsive
-                  render-metadata
-                  filtered-items
-                  onclick-handler)
-                "scclccrl"))))]])))
+              {:className "Swarmpit-table-card-content"}
+              (list/responsive
+                render-metadata
+                filtered-items
+                onclick-handler))))]])))
 
 (rum/defc list-grid < rum/reactive
   [title items filtered-items grid toolbar-render-metadata]
