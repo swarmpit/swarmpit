@@ -29,7 +29,7 @@
 
 (defn form-control
   [props & childs]
-  (f/form-control (clj->js props) childs))
+  (apply f/form-control (clj->js props) childs))
 
 (defn form-label
   [props label]
@@ -41,15 +41,15 @@
 
 (defn form-group
   [props & childs]
-  (f/form-group (clj->js props) childs))
+  (apply f/form-group (clj->js props) childs))
 
 (defn form-helper-text
   [props & childs]
-  (f/form-helper-text (clj->js props) childs))
+  (apply f/form-helper-text (clj->js props) childs))
 
 (defn toolbar
   [props & childs]
-  (f/toolbar (clj->js props) childs))
+  (apply f/toolbar (clj->js props) childs))
 
 (defn drawer
   [props & childs]
@@ -57,23 +57,23 @@
 
 (defn menu
   [props & childs]
-  (f/menu (clj->js props) childs))
+  (apply f/menu (clj->js props) childs))
 
 (defn menu-item
   [props & childs]
-  (f/menu-item (clj->js props) childs))
+  (apply f/menu-item (clj->js props) childs))
 
 (defn menu-list
   [props & childs]
-  (f/menu-list (clj->js props) childs))
+  (apply f/menu-list (clj->js props) childs))
 
 (defn paper
   [props & childs]
-  (f/paper (clj->js props) childs))
+  (apply f/paper (clj->js props) childs))
 
 (defn dialog
   [props & childs]
-  (f/dialog (clj->js props) childs))
+  (apply f/dialog (clj->js props) childs))
 
 (defn dialog-title
   [props title]
@@ -81,11 +81,11 @@
 
 (defn dialog-content
   [props & childs]
-  (f/dialog-content (clj->js props) childs))
+  (apply f/dialog-content (clj->js props) childs))
 
 (defn dialog-actions
   [props & childs]
-  (f/dialog-actions (clj->js props) childs))
+  (apply f/dialog-actions (clj->js props) childs))
 
 (defn input
   [props]
@@ -101,7 +101,7 @@
 
 (defn avatar
   [props & childs]
-  (f/avatar (clj->js props) childs))
+  (apply f/avatar (clj->js props) childs))
 
 (defn chip
   [props]
@@ -109,15 +109,15 @@
 
 (defn list
   [props & childs]
-  (f/list (clj->js props) childs))
+  (apply f/list (clj->js props) childs))
 
 (defn list-subheader
   [props & childs]
-  (f/list-subheader (clj->js props) childs))
+  (apply f/list-subheader (clj->js props) childs))
 
 (defn list-item
   [props & childs]
-  (f/list-item (clj->js props) childs))
+  (apply f/list-item (clj->js props) childs))
 
 (defn list-item-icon
   [props icon]
@@ -129,7 +129,7 @@
 
 (defn list-item-secondary-action
   [props & childs]
-  (f/list-item-secondary-action (clj->js props) childs))
+  (apply f/list-item-secondary-action (clj->js props) childs))
 
 (defn icon-button
   [props icon]
@@ -137,7 +137,7 @@
 
 (defn button
   [props & childs]
-  (f/button (clj->js props) childs))
+  (apply f/button (clj->js props) childs))
 
 (defn hidden
   [props comp]
@@ -149,7 +149,7 @@
 
 (defn typography
   [props & childs]
-  (f/typography (clj->js props) childs))
+  (apply f/typography (clj->js props) childs))
 
 (defn svg
   ([props d] (f/svg-icon (clj->js props) (html [:path {:d d}])))
@@ -157,11 +157,11 @@
 
 (defn table
   [props & childs]
-  (f/table (clj->js props) childs))
+  (apply f/table (clj->js props) childs))
 
 (defn table-head
   [props & childs]
-  (f/table-head (clj->js props) childs))
+  (apply f/table-head (clj->js props) childs))
 
 (defn table-cell
   [props comp]
@@ -169,19 +169,19 @@
 
 (defn table-body
   [props & childs]
-  (f/table-body (clj->js props) childs))
+  (apply f/table-body (clj->js props) childs))
 
 (defn table-row
   [props & childs]
-  (f/table-row (clj->js props) childs))
+  (apply f/table-row (clj->js props) childs))
 
 (defn table-footer
   [props & childs]
-  (f/table-footer (clj->js props) childs))
+  (apply f/table-footer (clj->js props) childs))
 
 (defn expansion-panel
   [props & childs]
-  (f/expansion-panel (clj->js props) childs))
+  (apply f/expansion-panel (clj->js props) childs))
 
 (defn expansion-panel-details
   [props comp]
@@ -189,19 +189,19 @@
 
 (defn expansion-panel-summary
   [props & childs]
-  (f/expansion-panel-summary (clj->js props) childs))
+  (apply f/expansion-panel-summary (clj->js props) childs))
 
 (defn expansion-panel-actions
   [props & childs]
-  (f/expansion-panel-actions (clj->js props) childs))
+  (apply f/expansion-panel-actions (clj->js props) childs))
 
 (defn grid
   [props & childs]
-  (f/grid (clj->js props) childs))
+  (apply f/grid (clj->js props) childs))
 
 (defn card
   [props & childs]
-  (f/card (clj->js props) childs))
+  (apply f/card (clj->js props) childs))
 
 (defn card-header
   [props]
@@ -209,11 +209,11 @@
 
 (defn card-content
   [props & childs]
-  (f/card-content (clj->js props) childs))
+  (apply f/card-content (clj->js props) childs))
 
 (defn card-actions
   [props & childs]
-  (f/card-actions (clj->js props) childs))
+  (apply f/card-actions (clj->js props) childs))
 
 (defn card-media
   [props]
@@ -225,11 +225,11 @@
 
 (defn stepper
   [props & childs]
-  (f/stepper (clj->js props) childs))
+  (apply f/stepper (clj->js props) childs))
 
 (defn step
   [props & childs]
-  (f/step (clj->js props) childs))
+  (apply f/step (clj->js props) childs))
 
 (defn step-label
   [props label]
@@ -237,11 +237,11 @@
 
 (defn step-content
   [props & childs]
-  (f/step-content (clj->js props) childs))
+  (apply f/step-content (clj->js props) childs))
 
 (defn select
   [props & childs]
-  (f/select (clj->js props) childs))
+  (apply f/select (clj->js props) childs))
 
 (defn tooltip
   [props comp]
@@ -256,7 +256,7 @@
   ([] (f/snackbar-content nil)))
 
 (defn text-field
-  ([props & childs] (f/text-field (clj->js props) childs))
+  ([props & childs] (apply f/text-field (clj->js props) childs))
   ([] (f/text-field nil)))
 
 (defn tab
@@ -265,7 +265,7 @@
 
 (defn tabs
   [props & childs]
-  (f/tabs (clj->js props) childs))
+  (apply f/tabs (clj->js props) childs))
 
 (defn popper
   [props grow-fn]
@@ -281,7 +281,7 @@
 
 (defn no-ssr
   [props & childs]
-  (f/no-ssr (clj->js props) childs))
+  (apply f/no-ssr (clj->js props) childs))
 
 (defn radio
   ([props] (f/radio (clj->js props)))
@@ -289,11 +289,11 @@
 
 (defn radio-group
   [props & childs]
-  (f/radio-group (clj->js props) childs))
+  (apply f/radio-group (clj->js props) childs))
 
 (defn switch
   [props & childs]
-  (f/switch (clj->js props) childs))
+  (apply f/switch (clj->js props) childs))
 
 (defn linear-progress
   ([props] (f/linear-progress (clj->js props)))
@@ -311,7 +311,7 @@
 
 (defn pie-chart
   [props & childs]
-  (f/pie-chart (clj->js props) childs))
+  (apply f/pie-chart (clj->js props) childs))
 
 (defn tooltip-chart
   [props]
@@ -319,7 +319,7 @@
 
 (defn pie
   [props & childs]
-  (f/pie (clj->js props) childs))
+  (apply f/pie (clj->js props) childs))
 
 (defn cell
   [props]
