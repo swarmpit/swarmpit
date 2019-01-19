@@ -14,8 +14,7 @@
 
 (defn item-date [created updated]
   (html
-    [:div {:class "Swarmpit-form-card-icon-item"
-           :key   "item-date"}
+    [:div {:class "Swarmpit-form-card-icon-item"}
      (icon/access-time
        {:className "Swarmpit-form-card-icon"})
      (when created
@@ -23,29 +22,25 @@
                :title     (time/simplify created)}
         (cmp/typography
           {:color     "textSecondary"
-           :className "Swarmpit-form-card-icon-text"
-           :key       "idct"}
+           :className "Swarmpit-form-card-icon-text"}
           (str "created " (time/humanize created)))])
      (when updated
        [:time {:date-time updated
                :title     (time/simplify updated)}
         (cmp/typography
           {:color     "textSecondary"
-           :className "Swarmpit-form-card-icon-text"
-           :key       "idut"}
+           :className "Swarmpit-form-card-icon-text"}
           (str (when created ", ") "last update " (time/humanize updated)))])]))
 
 (defn item-id [id]
   (html
-    [:div {:class "Swarmpit-form-card-icon-item"
-           :key   "item-id"}
+    [:div {:class "Swarmpit-form-card-icon-item"}
      (icon/fingerprint
        {:className "Swarmpit-form-card-icon"})
      [:span.Swarmpit-form-card-icon-item-id
       (cmp/typography
         {:color     "textSecondary"
-         :className "Swarmpit-form-card-icon-text"
-         :key       "iit"} id)]]))
+         :className "Swarmpit-form-card-icon-text"} id)]]))
 
 (defn item-labels [labels]
   (html
@@ -59,12 +54,10 @@
   ([name button]
    (html
      [:div {:class "Swarmpit-form-section"
-            :id    name
-            :key   (str "sec-" name)}
+            :id    name}
       [:div
        (cmp/typography
-         {:variant "h6"
-          :key     (str "sect-" name)} name)]
+         {:variant "h6"} name)]
       [:div button]])))
 
 (defn subsection
@@ -72,20 +65,17 @@
    (subsection name nil))
   ([name button]
    (html
-     [:div {:class "Swarmpit-form-section"
-            :key   (str "subsec-" name)}
+     [:div.Swarmpit-form-section
       [:div
        (cmp/typography
-         {:variant "subtitle1"
-          :key     (str "subsect-" name)} name)]
+         {:variant "subtitle1"} name)]
       [:div button]])))
 
 (defn open-in-new [text href]
   (html
     [:a {:href      href
-         :key       (str "oin-" (hash text))
          :className "Swarmpit-new-tab"
          :target    "_blank"}
-     [:div {:key "oint"} text]
-     [:div {:key "oini"} (icon/open-in-new
-                           {:className "Swarmpit-new-tab-ico"})]]))
+     [:div text]
+     [:div (icon/open-in-new
+             {:className "Swarmpit-new-tab-ico"})]]))
