@@ -65,7 +65,7 @@
     (html [:span image])))
 
 (defn- section-general
-  [{:keys [id taskName nodeName state status createdAt updatedAt repository]}]
+  [{:keys [id taskName nodeName state status createdAt updatedAt repository serviceName]}]
   (comp/card
     {:className "Swarmpit-form-card"
      :key       "tgc"}
@@ -88,6 +88,21 @@
       {:key "tgccl"}
       (form/item-labels
         [(form-state state)]))
+    (comp/card-actions
+      {:key "actions"}
+      (comp/button
+        {:size  "small"
+         :key   "service"
+         :color "primary"
+         :href  (routes/path-for-frontend :service-info {:id serviceName})}
+        "See service")
+      (when nodeName
+        (comp/button
+          {:size  "small"
+           :key   "node"
+           :color "primary"
+           :href  (routes/path-for-frontend :node-info {:id nodeName})}
+          "See node")))
     (comp/divider
       {:key "tgd"})
     (comp/card-content
