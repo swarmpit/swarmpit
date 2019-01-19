@@ -112,41 +112,34 @@
        [:div.Swarmpit-form-context
         (comp/card
           {:className "Swarmpit-form-card"
-           :style     {:maxWidth "400px"}
-           :key       "rec"}
+           :style     {:maxWidth "400px"}}
           (comp/card-header
             {:className "Swarmpit-form-card-header"
-             :key       "rech"
              :title     (html [:span "Editing " [:span.Swarmpit-secondary-title name]])})
           (comp/card-content
-            {:key "recc"}
+            {}
             (form-url url)
             (comp/form-control
-              {:component "fieldset"
-               :key       "recccigc"}
+              {:component "fieldset"}
               (comp/form-group
-                {:key "recccigcg"}
+                {}
                 (comp/form-control-label
                   {:control (form-public public)
-                   :key     "recccigcgp"
                    :label   "Share"})))
             (comp/form-control
-              {:component "fieldset"
-               :key       "rcccigc"}
+              {:component "fieldset"}
               (comp/form-group
-                {:key "rcccigcg"}
+                {}
                 (comp/form-control-label
                   {:control (form-auth withAuth)
-                   :key     "rcccigcga"
                    :label   "Secured"})))
             (when withAuth
               (html
-                [:div {:key "rcccigaut"}
+                [:div
                  (form-username username)
                  (form-password password showPassword)]))
             (html
-              [:div {:class "Swarmpit-form-buttons"
-                     :key   "reccbtn"}
+              [:div.Swarmpit-form-buttons
                (composite/progress-button
                  "Save"
                  #(update-registry-handler _id)

@@ -191,63 +191,52 @@
        [:div.Swarmpit-form-context
         (comp/grid
           {:container true
-           :key       "snoccg"
            :spacing   40}
           (comp/grid
             {:item true
-             :key  "snooccgif"
              :xs   12
              :sm   12
              :md   12
              :lg   8
              :xl   8}
             (comp/card
-              {:className "Swarmpit-form-card"
-               :key       "nec"}
+              {:className "Swarmpit-form-card"}
               (comp/card-header
                 {:className "Swarmpit-form-card-header"
-                 :key       "nech"
                  :title     (html [:span "Editing " [:span.Swarmpit-secondary-title nodeName]])})
               (comp/card-content
-                {:key "necc"}
+                {}
                 (comp/grid
                   {:container true
-                   :key       "neccc"
                    :spacing   40}
                   (comp/grid
                     {:item true
-                     :key  "necccigar"
                      :xs   12
                      :sm   6}
                     (form-role role))
                   (comp/grid
                     {:item true
-                     :key  "necccigaa"
                      :xs   12
                      :sm   6}
                     (form-availability availability))
                   (comp/grid
                     {:item true
-                     :key  "necccil"
                      :xs   12}
                     (form/section
                       "Labels"
                       (comp/button
                         {:color   "primary"
                          :onClick add-label}
-                        (comp/svg
-                          {:key "necccilbtn"} icon/add-small-path) "Add label"))
+                        (comp/svg icon/add-small-path) "Add label"))
                     (form-label-table labels)))
                 (html
-                  [:div {:class "Swarmpit-form-buttons"
-                         :key   "neccbtn"}
+                  [:div.Swarmpit-form-buttons
                    (composite/progress-button
                      "Save"
                      #(update-node-handler id version)
                      processing?)]))))
           (comp/grid
             {:item true
-             :key  "snoccgid"
              :xs   12
              :sm   12
              :md   12

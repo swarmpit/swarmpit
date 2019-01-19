@@ -133,29 +133,24 @@
              :sm   6
              :md   4}
             (comp/card
-              {:className "Swarmpit-form-card"
-               :key       "ucc"}
+              {:className "Swarmpit-form-card"}
               (comp/card-header
                 {:className "Swarmpit-form-card-header"
-                 :key       "ucch"
                  :title     "New User"})
               (comp/card-content
-                {:key "uccc"}
+                {}
                 (comp/grid
                   {:container true
-                   :key       "ucccc"
                    :spacing   40}
                   (comp/grid
                     {:item true
-                     :key  "uccccig"
                      :xs   12}
                     (form-username username)
                     (form-password password showPassword)
                     (form-role role)
                     (form-email email)))
                 (html
-                  [:div {:class "Swarmpit-form-buttons"
-                         :key   "ucccbtn"}
+                  [:div.Swarmpit-form-buttons
                    (composite/progress-button
                      "Create"
                      create-user-handler

@@ -55,32 +55,29 @@
 (rum/defc form-general < rum/static [{:keys [id stack volumeName driver mountpoint scope]}
                                      services]
   (comp/card
-    {:className "Swarmpit-form-card"
-     :key       "vgc"}
+    {:className "Swarmpit-form-card"}
     (comp/card-header
       {:title     volumeName
        :classes   {:title "Swarmpit-card-header-responsive-title"}
-       :key       "vgch"
        :className "Swarmpit-form-card-header"
        :action    (comp/tooltip
-                    {:title "Delete volume"
-                     :key   "vgchadt"}
+                    {:title "Delete volume"}
                     (comp/icon-button
                       {:aria-label "Delete"
                        :onClick    #(state/update-value [:open] true dialog/dialog-cursor)}
                       (comp/svg icon/trash-path)))})
     (comp/card-content
-      {:key "vgcc"}
+      {}
       (html
-        [:div {:key "vgccd"}
+        [:div
          [:span "Volume is mount at " [:b.volume-mountpoint mountpoint] "."]]))
     (comp/card-content
-      {:key "vgccl"}
+      {}
       (form/item-labels
         [(when driver
            (label/grey driver))]))
     (comp/card-actions
-      {:key "vgca"}
+      {}
       (when (and stack (not-empty services))
         (comp/button
           {:size  "small"
@@ -88,31 +85,25 @@
            :href  (routes/path-for-frontend :stack-info {:name stack})}
           "See stack")))
     (comp/divider
-      {:key "vgd"})
+      {})
     (comp/card-content
-      {:style {:paddingBottom "16px"}
-       :key   "vgccf"}
+      {:style {:paddingBottom "16px"}}
       (form/item-id id))))
 
 (rum/defc form-driver < rum/static [{:keys [driver options]}]
   (comp/card
-    {:className "Swarmpit-card"
-     :key       "vdc"}
+    {:className "Swarmpit-card"}
     (comp/card-header
       {:className "Swarmpit-table-card-header"
-       :key       "vdch"
-       :title     (comp/typography
-                    {:variant "h6"
-                     :key     "driver-title"} "Driver")})
+       :title     (comp/typography {:variant "h6"} "Driver")})
     (comp/card-content
       {:className "Swarmpit-table-card-content"
        ::key      "vdcc"}
       (when (not-empty options)
-        (rum/with-key
-          (list/list
-            form-driver-opts-render-metadata
-            options
-            nil) "vdccrl")))))
+        (list/list
+          form-driver-opts-render-metadata
+          options
+          nil)))))
 
 (defn- init-form-state
   []
@@ -128,23 +119,18 @@
 (defn form-general-grid [volume services]
   (comp/grid
     {:item true
-     :key  "vgg"
      :xs   12}
-    (rum/with-key
-      (form-general volume services) "nggfg")))
+    (form-general volume services)))
 
 (defn form-driver-grid [volume]
   (comp/grid
     {:item true
-     :key  "vdg"
      :xs   12}
-    (rum/with-key
-      (form-driver volume) "ndgfg")))
+    (form-driver volume)))
 
 (defn form-services-grid [services]
   (comp/grid
     {:item true
-     :key  "vsg"
      :xs   12}
     (services/linked services)))
 
@@ -165,7 +151,6 @@
              :spacing   16}
             (comp/grid
               {:item true
-               :key  "slg"
                :sm   6
                :md   6
                :lg   4}
@@ -176,7 +161,6 @@
                 (form-driver-grid (:options volume))))
             (comp/grid
               {:item true
-               :key  "srg"
                :sm   6
                :md   6
                :lg   8}

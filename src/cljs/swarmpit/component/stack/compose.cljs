@@ -146,50 +146,41 @@
        [:div.Swarmpit-form-context
         (comp/grid
           {:container true
-           :key       "sccg"
            :spacing   40}
           (comp/grid
             {:item true
-             :key  "stcoccgif"
              :xs   12
              :sm   12
              :md   12
              :lg   8
              :xl   8}
             (comp/card
-              {:className "Swarmpit-form-card"
-               :key       "scfec"}
+              {:className "Swarmpit-form-card"}
               (comp/card-header
                 {:className "Swarmpit-form-card-header"
-                 :key       "scfech"
                  :title     (html [:span "Editing " [:span.Swarmpit-secondary-title name]])})
               (comp/card-content
-                {:key "scfecc"}
+                {}
                 (comp/grid
                   {:container true
-                   :key       "scfeccgc"
                    :spacing   40}
                   (comp/grid
                     {:item true
-                     :key  "scfeccgig"
                      :xs   12}
                     (form-name name)
                     (form-select name :stack-compose last? previous?))
                   (comp/grid
                     {:item true
-                     :key  "scfeccgie"
                      :xs   12}
                     (form-editor (:compose spec))))
                 (html
-                  [:div {:class "Swarmpit-form-buttons"
-                         :key   "scfeccbtn"}
+                  [:div.Swarmpit-form-buttons
                    (composite/progress-button
                      "Deploy"
                      #(update-stack-handler name)
                      processing?)]))))
           (comp/grid
             {:item true
-             :key  "stcoccgid"
              :xs   12
              :sm   12
              :md   12

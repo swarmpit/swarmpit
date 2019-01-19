@@ -67,47 +67,42 @@
 (defn- section-general
   [{:keys [id taskName nodeName state status createdAt updatedAt repository serviceName]}]
   (comp/card
-    {:className "Swarmpit-form-card"
-     :key       "tgc"}
+    {:className "Swarmpit-form-card"}
     (comp/card-header
       {:title     taskName
-       :key       "tgch"
        :className "Swarmpit-form-card-header"
        :subheader (form-subheader
                     (:image repository)
                     (:imageDigest repository))})
     (comp/card-content
-      {:key "tgcc"}
+      {}
       (html
-        [:div {:key "tgccid"}
+        [:div
          [:span "Task is allocated to node " [:a {:href (routes/path-for-frontend :node-info {:id nodeName})} nodeName]]
          [:br]
          (when (:error status)
            [:p "Failure reason: " [:span (:error status)]])]))
     (comp/card-content
-      {:key "tgccl"}
+      {}
       (form/item-labels
         [(form-state state)]))
     (comp/card-actions
-      {:key "actions"}
+      {}
       (comp/button
         {:size  "small"
-         :key   "service"
          :color "primary"
          :href  (routes/path-for-frontend :service-info {:id serviceName})}
         "See service")
       (when nodeName
         (comp/button
           {:size  "small"
-           :key   "node"
            :color "primary"
            :href  (routes/path-for-frontend :node-info {:id nodeName})}
           "See node")))
     (comp/divider
-      {:key "tgd"})
+      {})
     (comp/card-content
-      {:style {:paddingBottom "16px"}
-       :key   "tgccf"}
+      {:style {:paddingBottom "16px"}}
       (form/item-date createdAt updatedAt)
       (form/item-id id))))
 
@@ -121,7 +116,6 @@
            :spacing   16}
           (comp/grid
             {:item true
-             :key  "tgg"
              :xs   12
              :sm   6}
             (section-general item)))]])))

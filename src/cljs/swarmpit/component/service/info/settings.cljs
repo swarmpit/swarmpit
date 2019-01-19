@@ -153,7 +153,7 @@
       (comp/card-content
         {}
         (if (not (empty? desired-tasks))
-          (rum/with-key (form-replicas desired-tasks) "ssccddr")
+          (form-replicas desired-tasks)
           (html
             [:span.Swarmpit-message
              (icon/info {:style {:marginRight "8px"}})

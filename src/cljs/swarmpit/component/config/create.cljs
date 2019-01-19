@@ -92,49 +92,40 @@
          [:div.Swarmpit-form-context
           (comp/grid
             {:container true
-             :key       "sccg"
              :spacing   40}
             (comp/grid
               {:item true
-               :key  "scfgoccgif"
                :xs   12
                :sm   12
                :md   12
                :lg   8
                :xl   8}
               (comp/card
-                {:className "Swarmpit-form-card"
-                 :key       "ccc"}
+                {:className "Swarmpit-form-card"}
                 (comp/card-header
                   {:className "Swarmpit-form-card-header"
-                   :key       "ccch"
                    :title     "Create Config"})
                 (comp/card-content
-                  {:key "cccc"}
+                  {}
                   (comp/grid
                     {:container true
-                     :key       "ccccc"
                      :spacing   40}
                     (comp/grid
                       {:item true
-                       :key  "ccccig"
                        :xs   12}
                       (form-name configName))
                     (comp/grid
                       {:item true
-                       :key  "ccccid"
                        :xs   12}
                       (form-data data)))
                   (html
-                    [:div {:class "Swarmpit-form-buttons"
-                           :key   "ccccbtn"}
+                    [:div.Swarmpit-form-buttons
                      (composite/progress-button
                        "Create"
                        create-config-handler
                        processing?)]))))
             (comp/grid
               {:item true
-               :key  "scfgoccgid"
                :xs   12
                :sm   12
                :md   12

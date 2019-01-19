@@ -47,30 +47,26 @@
 
 (rum/defc form-general < rum/static [secret services]
   (comp/card
-    {:className "Swarmpit-form-card"
-     :key       "sgc"}
+    {:className "Swarmpit-form-card"}
     (comp/card-header
       {:title     (:secretName secret)
        :className "Swarmpit-form-card-header"
-       :key       "sgch"
        :action    (comp/tooltip
-                    {:title "Delete secret"
-                     :key   "sgchadt"}
+                    {:title "Delete secret"}
                     (comp/icon-button
                       {:aria-label "Delete"
                        :onClick    #(state/update-value [:open] true dialog/dialog-cursor)}
                       (comp/svg icon/trash-path)))})
     (comp/card-content
-      {:key "sgcci"}
+      {}
       (html
         (if (empty? services)
           [:span "Secret is not used by any service"]
           [:span "Secret is used within " [:b (count services)] " " (inflect/pluralize-noun (count services) "service")])))
     (comp/divider
-      {:key "sgd"})
+      {})
     (comp/card-content
-      {:style {:paddingBottom "16px"}
-       :key   "sgccf"}
+      {:style {:paddingBottom "16px"}}
       (form/item-date (:createdAt secret) (:updatedAt secret))
       (form/item-id (:id secret)))))
 
@@ -94,15 +90,12 @@
 (defn form-general-grid [secret services]
   (comp/grid
     {:item true
-     :key  "sgg"
      :xs   12}
-    (rum/with-key
-      (form-general secret services) "sggfg")))
+    (form-general secret services)))
 
 (defn form-services-grid [services]
   (comp/grid
     {:item true
-     :key  "ssg"
      :xs   12}
     (services/linked services)))
 
@@ -123,7 +116,6 @@
              :spacing   16}
             (comp/grid
               {:item true
-               :key  "slg"
                :sm   6
                :md   6
                :lg   4}
@@ -133,7 +125,6 @@
                 (form-general-grid secret services)))
             (comp/grid
               {:item true
-               :key  "srg"
                :sm   6
                :md   6
                :lg   8}

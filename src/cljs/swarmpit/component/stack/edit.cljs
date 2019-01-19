@@ -108,50 +108,41 @@
        [:div.Swarmpit-form-context
         (comp/grid
           {:container true
-           :key       "sccg"
            :spacing   40}
           (comp/grid
             {:item true
-             :key  "steoccgif"
              :xs   12
              :sm   12
              :md   12
              :lg   8
              :xl   8}
             (comp/card
-              {:className "Swarmpit-form-card"
-               :key       "sefec"}
+              {:className "Swarmpit-form-card"}
               (comp/card-header
                 {:className "Swarmpit-form-card-header"
-                 :key       "sefech"
                  :title     (html [:span "Editing " [:span.Swarmpit-secondary-title name]])})
               (comp/card-content
-                {:key "sefecc"}
+                {}
                 (comp/grid
                   {:container true
-                   :key       "sefeccg"
                    :spacing   40}
                   (comp/grid
                     {:item true
-                     :key  "sefecigg"
                      :xs   12}
                     (form-name name)
                     (compose/form-select name select true previous?))
                   (comp/grid
                     {:item true
-                     :key  "sefecige"
                      :xs   12}
                     (form-editor (:compose spec))))
                 (html
-                  [:div {:class "Swarmpit-form-buttons"
-                         :key   "sefeccbtn"}
+                  [:div.Swarmpit-form-buttons
                    (composite/progress-button
                      "Deploy"
                      #(update-stack-handler name)
                      processing?)]))))
           (comp/grid
             {:item true
-             :key  "steoccgid"
              :xs   12
              :sm   12
              :md   12

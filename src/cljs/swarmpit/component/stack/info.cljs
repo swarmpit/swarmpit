@@ -158,157 +158,120 @@
 
 (rum/defc form-general < rum/static [stack-name stackfile {:keys [services networks volumes configs secrets]}]
   (comp/card
-    {:className "Swarmpit-form-card"
-     :key       "fgc"}
+    {:className "Swarmpit-form-card"}
     (comp/card-header
       {:title     stack-name
        :className "Swarmpit-form-card-header"
-       :key       "fgch"
        :action    (menu/menu
                     (form-actions stack-name stackfile)
                     :stackGeneralMenuAnchor
                     :stackGeneralMenuOpened)})
     (comp/grid
       {:container true
-       :key       "fgccg"
        :spacing   16}
       (comp/grid
         {:item true
-         :key  "fgccgil"
          :xs   6}
         (comp/card-content
-          {:key "fgccc"}
-          (rum/with-key (form-services-graph services) "fgcccg")))
+          {}
+          (form-services-graph services)))
       (comp/grid
         {:item true
-         :key  "fgccgir"
          :xs   6}
         (comp/card-content
-          {:key "fgccci"}
+          {}
           (html
-            [:div {:key   "fgcccich"
-                   :style {:marginTop "15px"}}
+            [:div {:style {:marginTop "15px"}}
              (resource-chip "network" (count networks))
              (resource-chip "volume" (count volumes))
              (resource-chip "config" (count configs))
              (resource-chip "secret" (count secrets))]))))
     (comp/divider
-      {:key "fgd"})
+      {})
     (comp/card-content
-      {:key   "fgcccf"
-       :style {:paddingBottom "16px"}}
+      {:style {:paddingBottom "16px"}}
       (form/item-id stack-name))))
 
 (rum/defc form-services < rum/static [stack-name services]
   (comp/card
-    {:className "Swarmpit-card"
-     :key       "fsc"}
+    {:className "Swarmpit-card"}
     (comp/card-header
       {:className "Swarmpit-table-card-header"
-       :key       "fsch"
-       :title     (comp/typography
-                    {:variant "h6"
-                     :key     "services-title"} "Services")})
+       :title     (comp/typography {:variant "h6"} "Services")})
     (comp/card-content
-      {:className "Swarmpit-table-card-content"
-       :key       "fscc"}
-      (rum/with-key
-        (list/responsive
-          services/render-metadata
-          (sort-by :serviceName services)
-          services/onclick-handler) "fsccrl"))))
+      {:className "Swarmpit-table-card-content"}
+      (list/responsive
+        services/render-metadata
+        (sort-by :serviceName services)
+        services/onclick-handler))))
 
 (rum/defc form-networks < rum/static [stack-name networks]
   (comp/card
-    {:className "Swarmpit-card"
-     :key       "fnc"}
+    {:className "Swarmpit-card"}
     (comp/card-header
       {:className "Swarmpit-table-card-header"
-       :key       "fnch"
-       :title     (comp/typography
-                    {:variant "h6"
-                     :key     "networks-title"} "Networks")})
+       :title     (comp/typography {:variant "h6"} "Networks")})
     (if (empty? networks)
       (comp/card-content
-        {:key "fncce"}
-        (html [:div {:key "fncced"} "No networks in stack."]))
+        {}
+        (html [:div "No networks in stack."]))
       (comp/card-content
-        {:className "Swarmpit-table-card-content"
-         :key       "fncc"}
-        (rum/with-key
-          (list/responsive
-            networks/render-metadata
-            (sort-by :networkName networks)
-            networks/onclick-handler) "fnccrl")))))
+        {:className "Swarmpit-table-card-content"}
+        (list/responsive
+          networks/render-metadata
+          (sort-by :networkName networks)
+          networks/onclick-handler)))))
 
 (rum/defc form-volumes < rum/static [stack-name volumes]
   (comp/card
-    {:className "Swarmpit-card"
-     :key       "fvc"}
+    {:className "Swarmpit-card"}
     (comp/card-header
       {:className "Swarmpit-table-card-header"
-       :key       "fvch"
-       :title     (comp/typography
-                    {:variant "h6"
-                     :key     "volumes-title"} "Volumes")})
+       :title     (comp/typography {:variant "h6"} "Volumes")})
     (if (empty? volumes)
       (comp/card-content
-        {:key "fvcce"}
-        (html [:div {:key "fvcced"} "No volumes in stack."]))
+        {}
+        (html [:div "No volumes in stack."]))
       (comp/card-content
-        {:className "Swarmpit-table-card-content"
-         :key       "fvcc"}
-        (rum/with-key
-          (list/responsive
-            volumes/render-metadata
-            (sort-by :volumeName volumes)
-            volumes/onclick-handler) "fvccrl")))))
+        {:className "Swarmpit-table-card-content"}
+        (list/responsive
+          volumes/render-metadata
+          (sort-by :volumeName volumes)
+          volumes/onclick-handler)))))
 
 (rum/defc form-configs < rum/static [stack-name configs]
   (comp/card
-    {:className "Swarmpit-card"
-     :key       "fcc"}
+    {:className "Swarmpit-card"}
     (comp/card-header
       {:className "Swarmpit-table-card-header"
-       :key       "fcch"
-       :title     (comp/typography
-                    {:variant "h6"
-                     :key     "configs-title"} "Configs")})
+       :title     (comp/typography {:variant "h6"} "Configs")})
     (if (empty? configs)
       (comp/card-content
-        {:key "fccce"}
-        (html [:div {:key "fccced"} "No configs in stack."]))
+        {}
+        (html [:div "No configs in stack."]))
       (comp/card-content
-        {:className "Swarmpit-table-card-content"
-         :key       "fccc"}
-        (rum/with-key
-          (list/list
-            (:list configs/render-metadata)
-            (sort-by :configName configs)
-            configs/onclick-handler) "fcccrl")))))
+        {:className "Swarmpit-table-card-content"}
+        (list/list
+          (:list configs/render-metadata)
+          (sort-by :configName configs)
+          configs/onclick-handler)))))
 
 (rum/defc form-secrets < rum/static [stack-name secrets]
   (comp/card
-    {:className "Swarmpit-card"
-     :key       "fsec"}
+    {:className "Swarmpit-card"}
     (comp/card-header
       {:className "Swarmpit-table-card-header"
-       :key       "fsech"
-       :title     (comp/typography
-                    {:variant "h6"
-                     :key     "secrets-title"} "Secrets")})
+       :title     (comp/typography {:variant "h6"} "Secrets")})
     (if (empty? secrets)
       (comp/card-content
-        {:key "fsecce"}
-        (html [:div {:key "fsecced"} "No secrets in stack."]))
+        {}
+        (html [:div "No secrets in stack."]))
       (comp/card-content
-        {:className "Swarmpit-table-card-content"
-         :key       "fsecc"}
-        (rum/with-key
-          (list/list
-            (:list secrets/render-metadata)
-            (sort-by :secretName secrets)
-            secrets/onclick-handler) "fseccrl")))))
+        {:className "Swarmpit-table-card-content"}
+        (list/list
+          (:list secrets/render-metadata)
+          (sort-by :secretName secrets)
+          secrets/onclick-handler)))))
 
 (defn- init-form-state
   []
@@ -329,50 +292,38 @@
 (defn form-general-grid [stack-name stackfile item]
   (comp/grid
     {:item true
-     :key  "sgg"
      :xs   12}
-    (rum/with-key
-      (form-general stack-name stackfile item) "sggfg")))
+    (form-general stack-name stackfile item)))
 
 (defn form-services-grid [stack-name services]
   (comp/grid
     {:item true
-     :key  "ssg"
      :xs   12}
-    (rum/with-key
-      (form-services stack-name services) "ssgfs")))
+    (form-services stack-name services)))
 
 (defn form-networks-grid [stack-name networks]
   (comp/grid
     {:item true
-     :key  "sng"
      :xs   12}
-    (rum/with-key
-      (form-networks stack-name networks) "sngfn")))
+    (form-networks stack-name networks)))
 
 (defn form-secrets-grid [stack-name secrets]
   (comp/grid
     {:item true
-     :key  "sseg"
      :xs   12}
-    (rum/with-key
-      (form-secrets stack-name secrets) "ssegfs")))
+    (form-secrets stack-name secrets)))
 
 (defn form-configs-grid [stack-name configs]
   (comp/grid
     {:item true
-     :key  "scg"
      :xs   12}
-    (rum/with-key
-      (form-configs stack-name configs) "scgfc")))
+    (form-configs stack-name configs)))
 
 (defn form-volumes-grid [stack-name volumes]
   (comp/grid
     {:item true
-     :key  "svg"
      :xs   12}
-    (rum/with-key
-      (form-volumes stack-name volumes) "svgfv")))
+    (form-volumes stack-name volumes)))
 
 
 (rum/defc form-info < rum/static [stack-name
@@ -393,7 +344,6 @@
              :spacing   16}
             (comp/grid
               {:item true
-               :key  "slg"
                :sm   6
                :md   6
                :lg   4}
@@ -405,7 +355,6 @@
                 (form-configs-grid stack-name configs)))
             (comp/grid
               {:item true
-               :key  "srg"
                :sm   6
                :md   6
                :lg   8}

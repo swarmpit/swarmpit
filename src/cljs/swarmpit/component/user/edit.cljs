@@ -104,17 +104,14 @@
            :sm   6
            :md   4}
           (comp/card
-            {:className "Swarmpit-form-card"
-             :key       "uec"}
+            {:className "Swarmpit-form-card"}
             (comp/card-header
               {:className "Swarmpit-form-card-header"
-               :key       "uech"
                :title     "Edit User"})
             (comp/card-content
-              {:key "uecc"}
+              {}
               (comp/grid
                 {:container true
-                 :key       "ueccc"
                  :spacing   40}
                 (comp/grid
                   {:item true
@@ -124,8 +121,7 @@
                   (form-role role)
                   (form-email email)))
               (html
-                [:div {:class "Swarmpit-form-buttons"
-                       :key   "ueccbtn"}
+                [:div.Swarmpit-form-buttons
                  (composite/progress-button
                    "Save"
                    #(update-user-handler _id)

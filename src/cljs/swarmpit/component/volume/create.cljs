@@ -113,16 +113,13 @@
   [{:keys [driver options]} plugins]
   (comp/grid
     {:container true
-     :key       "vccccdc"
      :spacing   24}
     (comp/grid
       {:item true
-       :key  "vccccdcid"
        :xs   12}
       (form-driver driver plugins))
     (comp/grid
       {:item true
-       :key  "vccccdcio"
        :xs   12
        :sm   6}
       (form/subsection
@@ -130,18 +127,15 @@
         (comp/button
           {:color   "primary"
            :onClick add-driver-opt}
-          (comp/svg
-            {:key "vccccdcioico"} icon/add-small-path) "Add option")))
+          (comp/svg icon/add-small-path) "Add option")))
     (when (not (empty? options))
       (comp/grid
         {:item true
-         :key  "vccccdcil"
          :xs   12}
-        (rum/with-key
-          (list/list
-            form-driver-opts-render-metadata
-            options
-            (fn [index] (state/remove-item index form-driver-opts-cursor))) "vccccdcilrl")))))
+        (list/list
+          form-driver-opts-render-metadata
+          options
+          (fn [index] (state/remove-item index form-driver-opts-cursor)))))))
 
 (defn- init-form-state
   []
@@ -172,53 +166,43 @@
          [:div.Swarmpit-form-context
           (comp/grid
             {:container true
-             :key       "sccg"
              :spacing   40}
             (comp/grid
               {:item true
-               :key  "svoloccgif"
                :xs   12
                :sm   12
                :md   12
                :lg   8
                :xl   8}
               (comp/card
-                {:className "Swarmpit-form-card"
-                 :key       "vcc"}
+                {:className "Swarmpit-form-card"}
                 (comp/card-header
                   {:className "Swarmpit-form-card-header"
-                   :key       "vcch"
                    :title     "New Volume"})
                 (comp/card-content
-                  {:key "vccc"}
+                  {}
                   (comp/grid
                     {:container true
-                     :key       "vcccc"
                      :spacing   40}
                     (comp/grid
                       {:item true
-                       :key  "vccccg"
                        :xs   12}
                       (form-name volumeName))
                     (comp/grid
                       {:item true
-                       :key  "vccccd"
                        :xs   12}
                       (comp/typography
                         {:variant      "h6"
-                         :key          "vccccdt"
                          :gutterBottom true} "Driver")
                       (section-driver item plugins)))
                   (html
-                    [:div {:class "Swarmpit-form-buttons"
-                           :key   "vcccbtn"}
+                    [:div.Swarmpit-form-buttons
                      (composite/progress-button
                        "Create"
                        #(create-volume-handler)
                        processing?)]))))
             (comp/grid
               {:item true
-               :key  "svoloccgid"
                :xs   12
                :sm   12
                :md   12

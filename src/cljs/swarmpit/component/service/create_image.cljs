@@ -58,19 +58,15 @@
      [:div.Swarmpit-form-context
       (comp/mui
         (comp/card
-          {:className "Swarmpit-form-card"
-           :key       "scic"}
+          {:className "Swarmpit-form-card"}
           (comp/card-header
             {:className "Swarmpit-form-card-header"
-             :key       "scich"
              :title     "Image Registry"
              :subheader "Search for images accross public and private registries"})
           (comp/card-content
-            {:className "Swarmpit-table-card-content"
-             :key       "scicc"}
+            {:className "Swarmpit-table-card-content"}
             (comp/tabs
-              {:key            "scicc-tabs"
-               :className      "Swarmpit-service-tabs"
+              {:className      "Swarmpit-service-tabs"
                :value          tab
                :onChange       (fn [e v]
                                  (state/update-value [:tab] v state/form-state-cursor))
@@ -79,30 +75,26 @@
                :textColor      "primary"
                :centered       true}
               (comp/tab
-                {:key   "scicc-tab1"
-                 :label "SEARCH PUBLIC"
+                {:label "SEARCH PUBLIC"
                  :icon  icon/search})
               (comp/tab
-                {:key   "scicc-tab2"
-                 :label "SEARCH PRIVATE"
+                {:label "SEARCH PRIVATE"
                  :icon  (comp/svg icon/docker-path)})
               (comp/tab
-                {:key   "scicc-tab3"
-                 :label "OTHER REGISTRIES"
+                {:label "OTHER REGISTRIES"
                  :icon  (comp/svg icon/registries-path)})))
           (comp/card-content
-            {:key "scicct"}
+            {}
             (case tab
-              0 (rum/with-key (cip/form) "scicct-pub")
-              1 (rum/with-key (ciu/form users) "scicct-pri")
-              2 (rum/with-key (cio/form registries) "scicct-oth")))
+              0 (cip/form)
+              1 (ciu/form users)
+              2 (cio/form registries)))
           (comp/card-content
-            {:className "Swarmpit-table-card-content"
-             :key       "sciccl"}
+            {:className "Swarmpit-table-card-content"}
             (case tab
-              0 (rum/with-key (cip/form-list) "sciccl-pub")
-              1 (rum/with-key (ciu/form-list) "sciccl-pri")
-              2 (rum/with-key (cio/form-list) "sciccl-oth")))))]]))
+              0 (cip/form-list)
+              1 (ciu/form-list)
+              2 (cio/form-list)))))]]))
 
 (rum/defc form < rum/reactive
                  mixin-init-form [_]

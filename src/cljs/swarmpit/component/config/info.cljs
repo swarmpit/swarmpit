@@ -70,31 +70,27 @@
 
 (rum/defc form-general < rum/static [config services]
   (comp/card
-    {:className "Swarmpit-form-card"
-     :key       "cgc"}
+    {:className "Swarmpit-form-card"}
     (comp/card-header
       {:title     (:configName config)
        :classes   {:title "Swarmpit-card-header-responsive-title"}
        :className "Swarmpit-form-card-header"
-       :key       "cgch"
        :action    (comp/tooltip
-                    {:title "Delete config"
-                     :key   "cgchadt"}
+                    {:title "Delete config"}
                     (comp/icon-button
                       {:aria-label "Delete"
                        :onClick    #(state/update-value [:open] true dialog/dialog-cursor)}
                       (comp/svg icon/trash-path)))})
     (comp/card-content
-      {:key "sgcci"}
+      {}
       (html
         (if (empty? services)
           [:span "Config is not used by any service"]
           [:span "Config is used within " [:b (count services)] " " (inflect/pluralize-noun (count services) "service")])))
     (comp/divider
-      {:key "cgd"})
+      {})
     (comp/card-content
-      {:style {:paddingBottom "16px"}
-       :key   "cgccf"}
+      {:style {:paddingBottom "16px"}}
       (form/item-date (:createdAt config) (:updatedAt config))
       (form/item-id (:id config)))))
 
@@ -107,14 +103,12 @@
 (rum/defc form-config < rum/static
                         mixin-init-editor [config]
   (comp/card
-    {:className "Swarmpit-form-card"
-     :key       "cdc"}
+    {:className "Swarmpit-form-card"}
     (comp/card-header
       {:title     "Data"
-       :className "Swarmpit-form-card-header"
-       :key       "cdch"})
+       :className "Swarmpit-form-card-header"})
     (comp/card-content
-      {:key "cdcc"}
+      {}
       (form-data (parse-data (:data config))))))
 
 (defn- init-form-state
@@ -131,23 +125,18 @@
 (defn form-general-grid [config services]
   (comp/grid
     {:item true
-     :key  "cgg"
      :xs   12}
-    (rum/with-key
-      (form-general config services) "cggfg")))
+    (form-general config services)))
 
 (defn form-config-grid [config]
   (comp/grid
     {:item true
-     :key  "ccg"
      :xs   12}
-    (rum/with-key
-      (form-config config) "ccgfg")))
+    (form-config config)))
 
 (defn form-services-grid [services]
   (comp/grid
     {:item true
-     :key  "csg"
      :xs   12}
     (services/linked services)))
 
@@ -168,7 +157,6 @@
              :spacing   16}
             (comp/grid
               {:item true
-               :key  "slg"
                :sm   6
                :md   6
                :lg   4}
@@ -178,7 +166,6 @@
                 (form-general-grid config services)))
             (comp/grid
               {:item true
-               :key  "srg"
                :sm   6
                :md   6
                :lg   8}
@@ -195,7 +182,6 @@
             ;    {:container true
             ;     :spacing   16}
             ;    (form-config-grid config)))
-
 
             ))
         (comp/hidden

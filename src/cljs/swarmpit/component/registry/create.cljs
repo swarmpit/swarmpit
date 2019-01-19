@@ -69,39 +69,33 @@
 
 (defn- registry-publish-form [value]
   (comp/form-control
-    {:component "fieldset"
-     :key       "fcp"}
+    {:component "fieldset"}
     (comp/form-group
-      {:key "fcpg"}
+      {}
       (comp/form-control-label
         {:control (comp/checkbox
                     {:checked  value
                      :value    (str value)
                      :onChange #(state/update-value [:public] (-> % .-target .-checked) state/form-value-cursor)})
-         :key     "fcpbl"
          :label   "Share"}))))
 
 (defn step-item
   ([index valid? text form]
    (step-item index valid? text form false))
   ([index valid? text form processing?]
-   (print index valid? text)
    (comp/step
-     {:key (str "step-" index)}
+     {}
      (comp/step-label
-       {:key   (str "step-label-" index)
-        :style {:marginBottom "10px"}}
+       {:style {:marginBottom "10px"}}
        (nth steps index))
      (comp/step-content
-       {:key (str "step-content-" index)}
+       {}
        (comp/typography
-         {:key   (str "step-typo-" index)
-          :style {:marginBottom "10px"}} text)
+         {:style {:marginBottom "10px"}} text)
        (html
-         [:div {:key (str "step-form-" index)} form])
+         [:div form])
        (html
-         [:div {:key       (str "step-actions-" index)
-                :className "Swarmpit-form-buttons"}
+         [:div.Swarmpit-form-buttons
           (comp/button
             {:disabled (= 0 index)
              :onClick  #(reset! step-index (dec index))} "Back")
@@ -136,18 +130,14 @@
          [:div.Swarmpit-form-context
           (comp/card
             {:className "Swarmpit-form-card"
-             :style     {:maxWidth "400px"}
-             :key       "dfc"}
+             :style     {:maxWidth "400px"}}
             (comp/card-header
               {:className "Swarmpit-form-card-header"
-               :key       "dfch"
                :title     "Add registry"})
             (comp/card-content
-              {:key       "dfcc"
-               :className "Swarmpit-table-card-content"}
+              {:className "Swarmpit-table-card-content"}
               (comp/stepper
                 {:activeStep  index
-                 :key         "dfccs"
                  :orientation "vertical"}
                 (step-item
                   0

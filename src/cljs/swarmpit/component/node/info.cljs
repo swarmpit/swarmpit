@@ -35,31 +35,28 @@
 
 (rum/defc form-general < rum/static [node]
   (comp/card
-    {:className "Swarmpit-form-card"
-     :key       "ngc"}
+    {:className "Swarmpit-form-card"}
     (comp/card-header
       {:title     (:nodeName node)
        :className "Swarmpit-form-card-header"
-       :key       "ngch"
        :subheader (:address node)
        :action    (comp/tooltip
-                    {:title "Edit node"
-                     :key   "ngchaet"}
+                    {:title "Edit node"}
                     (comp/icon-button
                       {:aria-label "Edit"
                        :href       (routes/path-for-frontend :node-edit {:id (:id node)})}
                       (comp/svg icon/edit-path)))})
     (comp/card-content
-      {:key "ngcc"}
+      {}
       (html
-        [:div {:key "ngccd"}
+        [:div
          [:span [:b "ENGINE: "] (str "docker " (:engine node))]
          [:br]
          [:span [:b "OS: "] [(:os node) " " (:arch node)]]
          [:br]
          [:span [:b "RESOURCES: "] (resources node)]]))
     (comp/card-content
-      {:key "ngccl"}
+      {}
       (form/item-labels
         [(node-item-state (:state node))
          (when (:leader node)
@@ -69,10 +66,9 @@
            (label/green "active")
            (label/grey (:availability node)))]))
     (comp/divider
-      {:key "ncd"})
+      {})
     (comp/card-content
-      {:style {:paddingBottom "16px"}
-       :key   "ngccf"}
+      {:style {:paddingBottom "16px"}}
       (form/item-id (:id node)))))
 
 (def render-labels-metadata
@@ -81,14 +77,10 @@
 
 (rum/defc form-labels < rum/static [labels id]
   (comp/card
-    {:className "Swarmpit-card"
-     :key       "nlc"}
+    {:className "Swarmpit-card"}
     (comp/card-header
       {:className "Swarmpit-table-card-header"
-       :key       "nlch"
-       :title     (comp/typography
-                    {:variant "h6"
-                     :key     "labels-title"} "Labels")
+       :title     (comp/typography {:variant "h6"} "Labels")
        :action    (comp/icon-button
                     {:aria-label "Edit"
                      :href       (routes/path-for-frontend
@@ -97,42 +89,34 @@
                     (comp/svg icon/edit-path))})
     (if (empty? labels)
       (comp/card-content
-        {:key "nlcce"}
+        {}
         (html [:div "No labels defined for the node."]))
       (comp/card-content
-        {:className "Swarmpit-table-card-content"
-         :key       "nlcc"}
-        (rum/with-key
-          (list/list
-            render-labels-metadata
-            labels
-            nil) "nlcclc")))))
+        {:className "Swarmpit-table-card-content"}
+        (list/list
+          render-labels-metadata
+          labels
+          nil)))))
 
 (rum/defc form-plugins < rum/static [networks volumes]
   (comp/card
-    {:className "Swarmpit-card"
-     :key       "npc"}
+    {:className "Swarmpit-card"}
     (comp/card-header
       {:className "Swarmpit-form-card-header"
-       :key       "npch"
-       :title     (comp/typography
-                    {:variant "h6"
-                     :key     "plugins-title"} "Plugins")})
+       :title     (comp/typography {:variant "h6"} "Plugins")})
     (comp/card-content
-      {:className "Swarmpit-form-card-content"
-       :key       "npccn"}
+      {:className "Swarmpit-form-card-content"}
       (form/subsection "Network")
       (map #(comp/chip
               {:label %
-               :key   (str "np-" %)
+               :key   (str "plugin-" %)
                :style {:marginRight "5px"}}) networks))
     (comp/card-content
-      {:className "Swarmpit-form-card-content"
-       :key       "npccv"}
+      {:className "Swarmpit-form-card-content"}
       (form/subsection "Volume")
       (map #(comp/chip
               {:label %
-               :key   (str "vp-" %)
+               :key   (str "volume-" %)
                :style {:marginRight "5px"}}) volumes))))
 
 (rum/defc form-tasks < rum/static [tasks]
@@ -141,26 +125,20 @@
                            (into []))
         custom-metadata (assoc-in tasks/render-metadata [:table :summary] table-summary)]
     (comp/card
-      {:className "Swarmpit-card"
-       :key       "ftc"}
+      {:className "Swarmpit-card"}
       (comp/card-header
         {:className "Swarmpit-table-card-header"
-         :key       "ftch"
-         :title     (comp/typography
-                      {:variant "h6"
-                       :key     "tasks-title"} "Tasks")})
+         :title     (comp/typography {:variant "h6"} "Tasks")})
       (if (empty? tasks)
         (comp/card-content
-          {:key "ftcce"}
+          {}
           (html [:div "No tasks running on the node."]))
         (comp/card-content
-          {:className "Swarmpit-table-card-content"
-           :key       "ftcc"}
-          (rum/with-key
-            (list/responsive
-              custom-metadata
-              (filter #(not (= "shutdown" (:state %))) tasks)
-              tasks/onclick-handler) "ftccrl"))))))
+          {:className "Swarmpit-table-card-content"}
+          (list/responsive
+            custom-metadata
+            (filter #(not (= "shutdown" (:state %))) tasks)
+            tasks/onclick-handler))))))
 
 (defn- node-tasks-handler
   [node-id]
@@ -191,34 +169,26 @@
 (defn form-general-grid [network]
   (comp/grid
     {:item true
-     :key  "ngg"
      :xs   12}
-    (rum/with-key
-      (form-general network) "nggfg")))
+    (form-general network)))
 
 (defn form-plugins-grid [networks volumes]
   (comp/grid
     {:item true
-     :key  "npg"
      :xs   12}
-    (rum/with-key
-      (form-plugins networks volumes) "npgfg")))
+    (form-plugins networks volumes)))
 
 (defn form-labels-grid [labels id]
   (comp/grid
     {:item true
-     :key  "nlg"
      :xs   12}
-    (rum/with-key
-      (form-labels labels id) "nlgfg")))
+    (form-labels labels id)))
 
 (defn form-task-grid [tasks]
   (comp/grid
     {:item true
-     :key  "nlg"
      :xs   12}
-    (rum/with-key
-      (form-tasks tasks) "ntgfg")))
+    (form-tasks tasks)))
 
 (rum/defc form-info < rum/static [id {:keys [node tasks]}]
   (comp/mui
@@ -233,7 +203,6 @@
              :spacing   16}
             (comp/grid
               {:item true
-               :key  "slg"
                :sm   6
                :md   6
                :lg   4}
@@ -247,7 +216,6 @@
                 (form-labels-grid (:labels node) id)))
             (comp/grid
               {:item true
-               :key  "srg"
                :sm   6
                :md   6
                :lg   8}

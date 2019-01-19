@@ -78,27 +78,22 @@
        [:div.Swarmpit-form-context
         (comp/card
           {:className "Swarmpit-form-card"
-           :style     {:maxWidth "400px"}
-           :key       "dec"}
+           :style     {:maxWidth "400px"}}
           (comp/card-header
             {:className "Swarmpit-form-card-header"
-             :key       "dech"
              :title     (html [:span "Editing " [:span.Swarmpit-secondary-title username]])})
           (comp/card-content
-            {:key "decc"}
+            {}
             (form-password password showPassword)
             (comp/form-control
-              {:component "fieldset"
-               :key       "decccigc"}
+              {:component "fieldset"}
               (comp/form-group
-                {:key "decccigcg"}
+                {}
                 (comp/form-control-label
                   {:control (form-public public)
-                   :key     "decccigcgp"
                    :label   "Share"})))
             (html
-              [:div {:class "Swarmpit-form-buttons"
-                     :key   "deccbtn"}
+              [:div.Swarmpit-form-buttons
                (composite/progress-button
                  "Save"
                  #(update-user-handler _id)

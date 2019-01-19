@@ -74,30 +74,26 @@
            :spacing   16}
           (comp/grid
             {:item true
-             :key  "ugg"
              :xs   12
              :sm   6}
             (comp/card
-              {:className "Swarmpit-form-card"
-               :key       "ugc"}
+              {:className "Swarmpit-form-card"}
               (comp/card-header
                 {:title     username
                  :className "Swarmpit-form-card-header"
-                 :key       "ugch"
                  :subheader email
                  :action    (menu/menu
                               (form-actions username _id)
                               :userGeneralMenuAnchor
                               :userGeneralMenuOpened)})
               (comp/card-content
-                {:key "ugccl"}
+                {}
                 (form/item-labels
                   [(label/grey role)]))
               (comp/divider
-                {:key "ugd"})
+                {})
               (comp/card-content
-                {:style {:paddingBottom "16px"}
-                 :key   "ugccf"}
+                {:style {:paddingBottom "16px"}}
                 (form/item-id _id)))))]])))
 
 (rum/defc form < rum/reactive

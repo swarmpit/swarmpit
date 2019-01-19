@@ -69,34 +69,31 @@
        [:div.Swarmpit-form-context
         (comp/card
           {:className ["Swarmpit-form-card" "Swarmpit-form-card-single"]
-           :style     {:maxWidth "500px"}
-           :key       "rgc"}
+           :style     {:maxWidth "500px"}}
           (comp/card-header
             {:title     name
              :className "Swarmpit-form-card-header"
-             :key       "rgch"
              :subheader url
              :action    (menu/menu
                           (form-actions _id)
                           :registryGeneralMenuAnchor
                           :registryGeneralMenuOpened)})
           (comp/card-content
-            {:key "rgcc"}
+            {}
             (html
-              [:div {:key "rgccd"}
+              [:div
                (when withAuth
                  [:span "Authenticated with user " [:b username] "."])
                [:br]
                [:span "Account is " [:b (if public "public." "private.")]]]))
           (comp/card-content
-            {:key "rgccl"}
+            {}
             (form/item-labels
               [(label/grey "Registry v2")]))
           (comp/divider
-            {:key "rgd"})
+            {})
           (comp/card-content
-            {:style {:paddingBottom "16px"}
-             :key   "rgccf"}
+            {:style {:paddingBottom "16px"}}
             (form/item-id _id)))]])))
 
 (rum/defc form < rum/reactive

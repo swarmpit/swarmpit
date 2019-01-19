@@ -77,32 +77,32 @@
        :md   6
        :lg   4
        :xl   3
-       :key  (str "nlig-" index)}
+       :key  (str "node-" index)}
       (html
         [:a {:class "Swarmpit-node-href"
-             :key   (str "nligah-" index)
+             :key   (str "node-href--" index)
              :href  (routes/path-for-frontend :node-info {:id (:id item)})}
          (comp/card
            {:className "Swarmpit-form-card"
-            :key       (str "nlic-" index)}
+            :key       (str "node-card-" index)}
            (comp/card-header
              {:title     (:nodeName item)
               :className "Swarmpit-form-card-header"
-              :key       (str "nlich-" index)
+              :key       (str "node-card-header-" index)
               :subheader (:address item)
               :avatar    (comp/svg (icon/os-path (:os item)))})
            (comp/card-content
-             {:key (str "nlicc-" index)}
+             {:key (str "node-card-engine-" index)}
              (str "docker " (:engine item)))
            (comp/card-content
-             {:key (str "nliccl-" index)}
+             {:key (str "node-card-labels-" index)}
              (node-item-labels item))
            (comp/card-content
              {:className "Swarmpit-table-card-content"
-              :key       (str "nliccs-" index)}
+              :key       (str "node-card-stats-" index)}
              (html
                [:div {:class "Swarmpit-node-stat"
-                      :key   (str "nliccsc-" index)}
+                      :key   (str "node-card-stat-" index)}
                 (node-graph
                   (get-in item [:stats :cpu :usedPercentage])
                   (str cpu " " (inflect/pluralize-noun cpu "core"))

@@ -112,55 +112,44 @@
          [:div.Swarmpit-form-context
           (comp/grid
             {:container true
-             :key       "sccg"
              :spacing   40}
             (comp/grid
               {:item true
-               :key  "stccgif"
                :xs   12
                :sm   12
                :md   12
                :lg   8
                :xl   8}
               (comp/card
-                {:className "Swarmpit-form-card"
-                 :key       "scfcc"}
+                {:className "Swarmpit-form-card"}
                 (comp/card-header
                   {:className "Swarmpit-form-card-header"
-                   :key       "scfcch"
                    :title     "New Stack"})
                 (comp/card-content
-                  {:key "scfccc"}
+                  {}
                   (comp/grid
                     {:container true
-                     :key       "scfcccc"
                      :spacing   40}
                     (comp/grid
                       {:item true
-                       :key  "scfccccig"
                        :xs   12
                        :lx   4}
                       (form-name name))
                     (comp/grid
                       {:item true
-                       :key  "scfccccie"
                        :xs   12
                        :lx   4}
                       (when-not from
-                        (html [:span {:class "Swarmpit-message"
-                                      :key   "scfcccciem"}
-                               "Drag & drop or paste a compose file."]))
+                        (html [:span.Swarmpit-message "Drag & drop or paste a compose file."]))
                       (form-editor (:compose spec))))
                   (html
-                    [:div {:class "Swarmpit-form-buttons"
-                           :key   "scfcccbtn"}
+                    [:div.Swarmpit-form-buttons
                      (composite/progress-button
                        "Deploy"
                        create-stack-handler
                        processing?)]))))
             (comp/grid
               {:item true
-               :key  "stccgid"
                :xs   12
                :sm   12
                :md   12

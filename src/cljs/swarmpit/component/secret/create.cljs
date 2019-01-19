@@ -93,49 +93,40 @@
          [:div.Swarmpit-form-context
           (comp/grid
             {:container true
-             :key       "sccg"
              :spacing   40}
             (comp/grid
               {:item true
-               :key  "ssecoccgif"
                :xs   12
                :sm   12
                :md   12
                :lg   8
                :xl   8}
               (comp/card
-                {:className "Swarmpit-form-card"
-                 :key       "scc"}
+                {:className "Swarmpit-form-card"}
                 (comp/card-header
                   {:className "Swarmpit-form-card-header"
-                   :key       "scch"
                    :title     "Create Secret"})
                 (comp/card-content
-                  {:key "sccc"}
+                  {}
                   (comp/grid
                     {:container true
-                     :key       "scccc"
                      :spacing   40}
                     (comp/grid
                       {:item true
-                       :key  "scccig"
                        :xs   12}
                       (form-name secretName))
                     (comp/grid
                       {:item true
-                       :key  "scccid"
                        :xs   12}
                       (form-data data)))
                   (html
-                    [:div {:class "Swarmpit-form-buttons"
-                           :key   "scccbtn"}
+                    [:div.Swarmpit-form-buttons
                      (composite/progress-button
                        "Create"
                        create-secret-handler
                        processing?)]))))
             (comp/grid
               {:item true
-               :key  "ssecoccgid"
                :xs   12
                :sm   12
                :md   12

@@ -54,15 +54,12 @@
 (rum/defc form-general < rum/static [{:keys [id stack networkName driver created internal attachable ingress enableIPv6 ipam]}
                                      services]
   (comp/card
-    {:className "Swarmpit-form-card"
-     :key       "ngc"}
+    {:className "Swarmpit-form-card"}
     (comp/card-header
       {:title     networkName
        :className "Swarmpit-form-card-header"
-       :key       "ngch"
        :action    (comp/tooltip
-                    {:title "Delete network"
-                     :key   "ngchadt"}
+                    {:title "Delete network"}
                     (comp/icon-button
                       {:aria-label "Delete"
                        :onClick    #(state/update-value [:open] true dialog/dialog-cursor)}
@@ -70,14 +67,14 @@
     (when (and (:subnet ipam)
                (:gateway ipam))
       (comp/card-content
-        {:key "ngcci"}
+        {}
         (html
-          [:div {:key "ngccid"}
+          [:div
            [:span "The subnet is listed as " [:b (:subnet ipam)]]
            [:br]
            [:span "The gateway IP in the above instance is " [:b (:gateway ipam)]]])))
     (comp/card-content
-      {:key "ngccl"}
+      {}
       (form/item-labels
         [(when driver
            (label/grey driver))
@@ -90,42 +87,34 @@
          (when enableIPv6
            (label/grey "IPv6"))]))
     (comp/card-actions
-      {:key "ngca"}
+      {}
       (when (and stack (not-empty services))
         (comp/button
           {:size  "small"
-           :key   "ngcasb"
            :color "primary"
            :href  (routes/path-for-frontend :stack-info {:name stack})}
           "See stack")))
     (comp/divider
-      {:key "ngd"})
+      {})
     (comp/card-content
-      {:key   "ngccf"
-       :style {:paddingBottom "16px"}}
+      {:style {:paddingBottom "16px"}}
       (when (time/valid? created)
         (form/item-date created nil))
       (form/item-id id))))
 
 (rum/defc form-driver < rum/static [{:keys [driver options]}]
   (comp/card
-    {:className "Swarmpit-card"
-     :key       "ndc"}
+    {:className "Swarmpit-card"}
     (comp/card-header
       {:className "Swarmpit-table-card-header"
-       :title     (comp/typography
-                    {:variant "h6"
-                     :key     "driver-title"} "Driver")
-       :key       "ndch"})
+       :title     (comp/typography {:variant "h6"} "Driver")})
     (comp/card-content
-      {:className "Swarmpit-table-card-content"
-       :key       "ndcc"}
+      {:className "Swarmpit-table-card-content"}
       (when (not-empty options)
-        (rum/with-key
-          (list/list
-            form-driver-opts-render-metadata
-            options
-            nil) "ndccl")))))
+        (list/list
+          form-driver-opts-render-metadata
+          options
+          nil)))))
 
 (defn- init-form-state
   []
@@ -141,23 +130,18 @@
 (defn form-general-grid [network services]
   (comp/grid
     {:item true
-     :key  "ngg"
      :xs   12}
-    (rum/with-key
-      (form-general network services) "nggfg")))
+    (form-general network services)))
 
 (defn form-driver-grid [network]
   (comp/grid
     {:item true
-     :key  "ncg"
      :xs   12}
-    (rum/with-key
-      (form-driver network) "ndgfg")))
+    (form-driver network)))
 
 (defn form-services-grid [services]
   (comp/grid
     {:item true
-     :key  "nsg"
      :xs   12}
     (services/linked services)))
 
@@ -178,7 +162,6 @@
              :spacing   16}
             (comp/grid
               {:item true
-               :key  "slg"
                :sm   6
                :md   6
                :lg   4}
@@ -189,7 +172,6 @@
                 (form-driver-grid network)))
             (comp/grid
               {:item true
-               :key  "srg"
                :sm   6
                :md   6
                :lg   8}

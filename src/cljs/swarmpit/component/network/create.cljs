@@ -76,34 +76,27 @@
   [{:keys [networkName internal attachable ingress]}]
   (comp/grid
     {:container true
-     :key       "sgg"
      :spacing   24}
     (comp/grid
       {:item true
-       :key  "sggn"
        :xs   12}
       (form-name networkName))
     (comp/grid
       {:item true
-       :key  "sgfcg"
        :xs   12
        :sm   6}
       (comp/form-control
-        {:component "fieldset"
-         :key       "sgfc"}
+        {:component "fieldset"}
         (comp/form-group
-          {:key "sgfcg"}
+          {}
           (comp/form-control-label
             {:control (form-internal internal)
-             :key     "sgfclint"
              :label   "Is Internal"})
           (comp/form-control-label
             {:control (form-attachable attachable ingress)
-             :key     "sgfclat"
              :label   "Is Attachable"})
           (comp/form-control-label
             {:control (form-ingress ingress attachable)
-             :key     "sgfcling"
              :label   "Is Ingress"}))))))
 
 (defn- form-ipv6 [value]
@@ -146,26 +139,21 @@
   [{:keys [ipam enableIPv6]}]
   (comp/grid
     {:container true
-     :key       "nsicg"
      :spacing   24}
     (comp/grid
       {:item true
-       :key  "nsiigs"
        :xs   12}
       (form-subnet (:subnet ipam)))
     (comp/grid
       {:item true
-       :key  "nsiigg"
        :xs   12}
       (form-gateway (:gateway ipam)))
     (comp/grid
       {:item true
-       :key  "nsiigipv6"
        :xs   12
        :sm   6}
       (comp/form-control-label
         {:control (form-ipv6 enableIPv6)
-         :key     "nsiigipv6cl"
          :label   "Enable IPV6"}))))
 
 (def form-driver-opts-cursor (conj state/form-value-cursor :options))
@@ -210,36 +198,29 @@
   [{:keys [driver options]} plugins]
   (comp/grid
     {:container true
-     :key       "nsdcg"
      :spacing   24}
     (comp/grid
       {:item true
-       :key  "nsdigd"
        :xs   12}
       (form-driver driver plugins))
     (comp/grid
       {:item true
-       :key  "nsdigo"
        :xs   12
        :sm   6}
       (form/subsection
         "Driver options"
         (comp/button
           {:color   "primary"
-           :key     "nsdigob"
            :onClick add-driver-opt}
-          (comp/svg
-            {:key "nsdigobi"} icon/add-small-path) "Add option")))
+          (comp/svg icon/add-small-path) "Add option")))
     (when (not (empty? options))
       (comp/grid
         {:item true
-         :key  "nsdigol"
          :xs   12}
-        (rum/with-key
-          (list/list
-            form-driver-opts-render-metadata
-            options
-            (fn [index] (state/remove-item index form-driver-opts-cursor))) "nsdigoll")))))
+        (list/list
+          form-driver-opts-render-metadata
+          options
+          (fn [index] (state/remove-item index form-driver-opts-cursor)))))))
 
 (defn- network-plugin-handler
   []
@@ -300,68 +281,55 @@
          [:div.Swarmpit-form-context
           (comp/grid
             {:container true
-             :key       "sccg"
              :spacing   40}
             (comp/grid
               {:item true
-               :key  "snoccgif"
                :xs   12
                :sm   12
                :md   12
                :lg   8
                :xl   8}
               (comp/card
-                {:className "Swarmpit-form-card"
-                 :key       "ncc"}
+                {:className "Swarmpit-form-card"}
                 (comp/card-header
                   {:className "Swarmpit-form-card-header"
-                   :title     "New Network"
-                   :key       "ncch"})
+                   :title     "New Network"})
                 (comp/card-content
-                  {:key "nccc"}
+                  {}
                   (comp/grid
                     {:container true
-                     :key       "nccccg"
                      :spacing   40}
                     (comp/grid
                       {:item true
-                       :key  "ncccigg"
                        :xs   12
                        :sm   6}
                       (comp/typography
                         {:variant      "h6"
-                         :key          "nccciggt"
                          :gutterBottom true} "General")
                       (section-general item))
                     (comp/grid
                       {:item true
-                       :key  "nccciig"
                        :xs   12
                        :sm   6}
                       (comp/typography
                         {:variant      "h6"
-                         :key          "nccciigt"
                          :gutterBottom true} "IPAM")
                       (section-ipam item))
                     (comp/grid
                       {:item true
-                       :key  "ncccidg"
                        :xs   12}
                       (comp/typography
                         {:variant      "h6"
-                         :key          "ncccidgt"
                          :gutterBottom true} "Driver")
                       (section-driver item plugins)))
                   (html
-                    [:div {:class "Swarmpit-form-buttons"
-                           :key   "ncccbtn"}
+                    [:div.Swarmpit-form-buttons
                      (composite/progress-button
                        "Create"
                        #(create-network-handler)
                        processing?)]))))
             (comp/grid
               {:item true
-               :key  "snoccgid"
                :xs   12
                :sm   12
                :md   12

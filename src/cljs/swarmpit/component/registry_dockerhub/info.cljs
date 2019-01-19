@@ -69,32 +69,29 @@
        [:div.Swarmpit-form-context
         (comp/card
           {:className "Swarmpit-form-card"
-           :style     {:maxWidth "500px"}
-           :key       "dgc"}
+           :style     {:maxWidth "500px"}}
           (comp/card-header
             {:title     username
              :className "Swarmpit-form-card-header"
-             :key       "dgch"
              :action    (menu/menu
                           (form-actions _id)
                           :dockerhubMenuAnchor
                           :dockerhubMenuOpened)})
           (comp/card-content
-            {:key "dgcc"}
+            {}
             (html
-              [:div {:key "dgccd"}
+              [:div
                [:span "Authenticated with user " [:b username] "."]
                [:br]
                [:span "Account is " [:b (if public "public." "private.")]]]))
           (comp/card-content
-            {:key "dgccl"}
+            {}
             (form/item-labels
               [(label/grey "dockerhub")]))
           (comp/divider
-            {:key "dgd"})
+            {})
           (comp/card-content
-            {:style {:paddingBottom "16px"}
-             :key   "dgccf"}
+            {:style {:paddingBottom "16px"}}
             (form/item-id _id)))]])))
 
 (rum/defc form < rum/reactive
