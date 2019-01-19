@@ -13,7 +13,7 @@
     (comp/dialog
       {:disableBackdropClick true
        :disableEscapeKeyDown true
-       :maxWidth             "400px"
+       :maxWidth             "xs"
        :open                 open
        :onEntering           #()
        :aria-labelledby      "confirmation-dialog-title"}
