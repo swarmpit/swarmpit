@@ -5,6 +5,7 @@
             [swarmpit.component.state :as state]
             [swarmpit.component.mixin :as mixin]
             [swarmpit.component.progress :as progress]
+            [swarmpit.component.dialog :as dialog]
             [swarmpit.component.service.info.settings :as settings]
             [swarmpit.component.service.info.ports :as ports]
             [swarmpit.component.service.info.networks :as networks]
@@ -131,7 +132,7 @@
     :icon     (comp/svg icon/rollback-path)
     :more     true
     :name     "Rollback service"}
-   {:onClick #(delete-service-handler service-id)
+   {:onClick #(state/update-value [:open] true dialog/dialog-cursor)
     :icon    (comp/svg icon/trash-path)
     :name    "Delete service"}])
 
@@ -256,6 +257,10 @@
     (comp/mui
       (html
         [:div.Swarmpit-form
+         (dialog/confirm-dialog
+           #(delete-service-handler id)
+           "Are you sure you want to delete this item?"
+           "Delete Service")
          [:div.Swarmpit-form-context
           (comp/hidden
             {:xsDown         true

@@ -7,8 +7,9 @@
             [swarmpit.component.message :as message]
             [swarmpit.component.state :as state]
             [swarmpit.component.mixin :as mixin]
+            [swarmpit.component.dialog :as dialog]
             [swarmpit.component.progress :as progress]
-            [swarmpit.component.common :as common]
+            [swarmpit.component.action-menu :as menu]
             [swarmpit.component.service.list :as services]
             [swarmpit.component.network.list :as networks]
             [swarmpit.component.volume.list :as volumes]
@@ -122,7 +123,7 @@
     :more     true
     :icon     (comp/svg icon/rollback-path)
     :name     "Rollback stack"}
-   {:onClick #(delete-stack-handler stack-name)
+   {:onClick #(state/update-value [:open] true dialog/dialog-cursor)
     :icon    (comp/svg icon/trash-path)
     :name    "Delete stack"}])
 
@@ -163,7 +164,7 @@
       {:title     stack-name
        :className "Swarmpit-form-card-header"
        :key       "fgch"
-       :action    (common/actions-menu
+       :action    (menu/menu
                     (form-actions stack-name stackfile)
                     :stackGeneralMenuAnchor
                     :stackGeneralMenuOpened)})
@@ -379,6 +380,10 @@
   (comp/mui
     (html
       [:div.Swarmpit-form
+       (dialog/confirm-dialog
+         #(delete-stack-handler stack-name)
+         "Are you sure you want to delete this item?"
+         "Delete Stack")
        [:div.Swarmpit-form-context
         (comp/hidden
           {:xsDown         true

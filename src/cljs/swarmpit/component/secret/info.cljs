@@ -4,6 +4,7 @@
             [material.component.form :as form]
             [swarmpit.component.state :as state]
             [swarmpit.component.mixin :as mixin]
+            [swarmpit.component.dialog :as dialog]
             [swarmpit.component.message :as message]
             [swarmpit.component.progress :as progress]
             [swarmpit.component.service.list :as services]
@@ -57,7 +58,7 @@
                      :key   "sgchadt"}
                     (comp/icon-button
                       {:aria-label "Delete"
-                       :onClick    #(delete-secret-handler (:id secret))}
+                       :onClick    #(state/update-value [:open] true dialog/dialog-cursor)}
                       (comp/svg icon/trash-path)))})
     (comp/card-content
       {:key "sgcci"}
@@ -109,6 +110,10 @@
   (comp/mui
     (html
       [:div.Swarmpit-form
+       (dialog/confirm-dialog
+         #(delete-secret-handler (:id secret))
+         "Are you sure you want to delete this item?"
+         "Delete Secret")
        [:div.Swarmpit-form-context
         (comp/hidden
           {:xsDown         true

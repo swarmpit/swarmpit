@@ -5,6 +5,7 @@
             [material.component.chart :as chart]
             [material.component.label :as label]
             [swarmpit.component.common :as common]
+            [swarmpit.component.action-menu :as menu]
             [swarmpit.component.state :as state]
             [swarmpit.docker.utils :as utils]
             [swarmpit.routes :as routes]
@@ -135,7 +136,6 @@
 (rum/defc form < rum/static [service tasks actions]
   (let [image-digest (get-in service [:repository :imageDigest])
         image (get-in service [:repository :image])
-        resources (:resources service)
         desired-tasks (filter #(not= "shutdown" (:desiredState %)) tasks)
         command (:command service)
         stack (:stack service)
@@ -148,7 +148,7 @@
          :className "Swarmpit-form-card-header"
          :key       "ssch"
          :subheader (form-subheader image image-digest)
-         :action    (common/actions-menu
+         :action    (menu/menu
                       actions
                       :serviceGeneralMenuAnchor
                       :serviceGeneralMenuOpened)})

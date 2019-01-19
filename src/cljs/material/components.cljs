@@ -75,6 +75,18 @@
   [props & childs]
   (f/dialog (clj->js props) childs))
 
+(defn dialog-title
+  [props title]
+  (f/dialog-title (clj->js props) title))
+
+(defn dialog-content
+  [props & childs]
+  (f/dialog-content (clj->js props) childs))
+
+(defn dialog-actions
+  [props & childs]
+  (f/dialog-actions (clj->js props) childs))
+
 (defn input
   [props]
   (f/input (clj->js props)))

@@ -8,6 +8,8 @@
             [swarmpit.component.mixin :as mixin]
             [swarmpit.component.progress :as progress]
             [swarmpit.component.common :as common]
+            [swarmpit.component.dialog :as dialog]
+            [swarmpit.component.action-menu :as menu]
             [swarmpit.url :refer [dispatch!]]
             [swarmpit.ajax :as ajax]
             [swarmpit.routes :as routes]
@@ -42,7 +44,7 @@
   [{:onClick #(dispatch! (routes/path-for-frontend :reg-v2-edit {:id id}))
     :icon    (comp/svg icon/edit-path)
     :name    "Edit registry"}
-   {:onClick #(delete-registry-handler id)
+   {:onClick #(state/update-value [:open] true dialog/dialog-cursor)
     :icon    (comp/svg icon/trash-path)
     :name    "Delete registry"}])
 
@@ -60,6 +62,10 @@
   (comp/mui
     (html
       [:div.Swarmpit-form
+       (dialog/confirm-dialog
+         #(delete-registry-handler _id)
+         "Are you sure you want to delete this item?"
+         "Delete Account")
        [:div.Swarmpit-form-context
         (comp/card
           {:className ["Swarmpit-form-card" "Swarmpit-form-card-single"]
@@ -70,7 +76,7 @@
              :className "Swarmpit-form-card-header"
              :key       "rgch"
              :subheader url
-             :action    (common/actions-menu
+             :action    (menu/menu
                           (form-actions _id)
                           :registryGeneralMenuAnchor
                           :registryGeneralMenuOpened)})

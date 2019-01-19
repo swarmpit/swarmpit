@@ -3,6 +3,7 @@
             [material.components :as comp]
             [material.component.list.basic :as list]
             [material.component.list.util :as list-util]
+            [swarmpit.component.common :as common]
             [swarmpit.component.state :as state]
             [swarmpit.component.mixin :as mixin]
             [swarmpit.component.progress :as progress]
@@ -10,8 +11,7 @@
             [swarmpit.routes :as routes]
             [swarmpit.url :refer [dispatch!]]
             [sablono.core :refer-macros [html]]
-            [rum.core :as rum]
-            [swarmpit.component.common :as common]))
+            [rum.core :as rum]))
 
 (enable-console-print!)
 

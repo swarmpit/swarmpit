@@ -6,6 +6,7 @@
             [material.component.list.basic :as list]
             [swarmpit.component.mixin :as mixin]
             [swarmpit.component.state :as state]
+            [swarmpit.component.dialog :as dialog]
             [swarmpit.component.message :as message]
             [swarmpit.component.progress :as progress]
             [swarmpit.component.service.list :as services]
@@ -64,7 +65,7 @@
                      :key   "ngchadt"}
                     (comp/icon-button
                       {:aria-label "Delete"
-                       :onClick    #(delete-network-handler id)}
+                       :onClick    #(state/update-value [:open] true dialog/dialog-cursor)}
                       (comp/svg icon/trash-path)))})
     (when (and (:subnet ipam)
                (:gateway ipam))
@@ -164,6 +165,10 @@
   (comp/mui
     (html
       [:div.Swarmpit-form
+       (dialog/confirm-dialog
+         #(delete-network-handler (:id network))
+         "Are you sure you want to delete this item?"
+         "Delete Network")
        [:div.Swarmpit-form-context
         (comp/hidden
           {:xsDown         true

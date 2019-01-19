@@ -4,6 +4,8 @@
             [material.component.form :as form]
             [material.component.label :as label]
             [material.component.list.basic :as list]
+            [swarmpit.component.common :as common]
+            [swarmpit.component.dialog :as dialog]
             [swarmpit.component.message :as message]
             [swarmpit.component.mixin :as mixin]
             [swarmpit.component.state :as state]
@@ -65,7 +67,7 @@
                      :key   "vgchadt"}
                     (comp/icon-button
                       {:aria-label "Delete"
-                       :onClick    #(delete-volume-handler volumeName)}
+                       :onClick    #(state/update-value [:open] true dialog/dialog-cursor)}
                       (comp/svg icon/trash-path)))})
     (comp/card-content
       {:key "vgcc"}
@@ -150,6 +152,10 @@
   (comp/mui
     (html
       [:div.Swarmpit-form
+       (dialog/confirm-dialog
+         #(delete-volume-handler (:volumeName volume))
+         "Are you sure you want to delete this item?"
+         "Delete Volume")
        [:div.Swarmpit-form-context
         (comp/hidden
           {:xsDown         true

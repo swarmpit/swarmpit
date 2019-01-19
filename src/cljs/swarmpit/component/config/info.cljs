@@ -4,6 +4,7 @@
             [material.component.form :as form]
             [swarmpit.component.state :as state]
             [swarmpit.component.mixin :as mixin]
+            [swarmpit.component.dialog :as dialog]
             [swarmpit.component.editor :as editor]
             [swarmpit.component.message :as message]
             [swarmpit.component.progress :as progress]
@@ -81,7 +82,7 @@
                      :key   "cgchadt"}
                     (comp/icon-button
                       {:aria-label "Delete"
-                       :onClick    #(delete-config-handler (:id config))}
+                       :onClick    #(state/update-value [:open] true dialog/dialog-cursor)}
                       (comp/svg icon/trash-path)))})
     (comp/card-content
       {:key "sgcci"}
@@ -116,12 +117,6 @@
     (comp/card-content
       {:key "cdcc"}
       (form-data (parse-data (:data config))))))
-
-(defn form-actions
-  [{:keys [params]}]
-  [{:onClick #(delete-config-handler (:id params))
-    :icon    (comp/svg icon/trash-path)
-    :name    "Delete config"}])
 
 (defn- init-form-state
   []
@@ -161,6 +156,10 @@
   (comp/mui
     (html
       [:div.Swarmpit-form
+       (dialog/confirm-dialog
+         #(delete-config-handler (:id config))
+         "Are you sure you want to delete this item?"
+         "Delete Config")
        [:div.Swarmpit-form-context
         (comp/hidden
           {:xsDown         true

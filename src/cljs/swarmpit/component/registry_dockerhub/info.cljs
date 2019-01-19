@@ -8,6 +8,8 @@
             [swarmpit.component.mixin :as mixin]
             [swarmpit.component.progress :as progress]
             [swarmpit.component.common :as common]
+            [swarmpit.component.dialog :as dialog]
+            [swarmpit.component.action-menu :as menu]
             [swarmpit.url :refer [dispatch!]]
             [swarmpit.ajax :as ajax]
             [swarmpit.routes :as routes]
@@ -42,7 +44,7 @@
   [{:onClick #(dispatch! (routes/path-for-frontend :reg-dockerhub-edit {:id id}))
     :icon    (comp/svg icon/edit-path)
     :name    "Edit account"}
-   {:onClick #(delete-user-handler id)
+   {:onClick #(state/update-value [:open] true dialog/dialog-cursor)
     :icon    (comp/svg icon/trash-path)
     :name    "Delete account"}])
 
@@ -60,6 +62,10 @@
   (comp/mui
     (html
       [:div.Swarmpit-form
+       (dialog/confirm-dialog
+         #(delete-user-handler _id)
+         "Are you sure you want to delete this item?"
+         "Delete Account")
        [:div.Swarmpit-form-context
         (comp/card
           {:className "Swarmpit-form-card"
@@ -69,7 +75,7 @@
             {:title     username
              :className "Swarmpit-form-card-header"
              :key       "dgch"
-             :action    (common/actions-menu
+             :action    (menu/menu
                           (form-actions _id)
                           :dockerhubMenuAnchor
                           :dockerhubMenuOpened)})

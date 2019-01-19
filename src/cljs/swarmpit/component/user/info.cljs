@@ -7,6 +7,8 @@
             [swarmpit.component.mixin :as mixin]
             [swarmpit.component.state :as state]
             [swarmpit.component.common :as common]
+            [swarmpit.component.dialog :as dialog]
+            [swarmpit.component.action-menu :as menu]
             [swarmpit.component.progress :as progress]
             [swarmpit.url :refer [dispatch!]]
             [swarmpit.storage :as storage]
@@ -43,7 +45,7 @@
   [{:onClick #(dispatch! (routes/path-for-frontend :user-edit {:id id}))
     :icon    (comp/svg icon/edit-path)
     :name    "Edit user"}
-   {:onClick  #(delete-user-handler id)
+   {:onClick  #(state/update-value [:open] true dialog/dialog-cursor)
     :disabled (= (storage/user) username)
     :icon     (comp/svg icon/trash-path)
     :name     "Delete user"}])
@@ -62,6 +64,10 @@
   (comp/mui
     (html
       [:div.Swarmpit-form
+       (dialog/confirm-dialog
+         #(delete-user-handler _id)
+         "Are you sure you want to delete this item?"
+         "Delete User")
        [:div.Swarmpit-form-context
         (comp/grid
           {:container true
@@ -79,7 +85,7 @@
                  :className "Swarmpit-form-card-header"
                  :key       "ugch"
                  :subheader email
-                 :action    (common/actions-menu
+                 :action    (menu/menu
                               (form-actions username _id)
                               :userGeneralMenuAnchor
                               :userGeneralMenuOpened)})

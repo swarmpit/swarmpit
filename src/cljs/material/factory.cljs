@@ -46,7 +46,11 @@
 (def avatar (create-factory js/MaterialUI.Avatar))
 (def paper (create-factory js/MaterialUI.Paper))
 (def hidden (create-factory js/MaterialUI.Hidden))
+
 (def dialog (create-factory js/MaterialUI.Dialog))
+(def dialog-title (create-factory js/MaterialUI.DialogTitle))
+(def dialog-content (create-factory js/MaterialUI.DialogContent))
+(def dialog-actions (create-factory js/MaterialUI.DialogActions))
 
 (def chip (create-factory js/MaterialUI.Chip))
 (def button (create-factory js/MaterialUI.Button))

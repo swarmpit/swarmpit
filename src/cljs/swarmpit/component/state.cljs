@@ -8,6 +8,7 @@
                           :mobileSearchOpened false
                           :menuAnchorEl       nil
                           :mobileMoreAnchorEl nil}
+                :dialog  {:open false}
                 :message {:text ""
                           :time nil
                           :type :info
