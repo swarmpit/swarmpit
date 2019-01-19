@@ -126,18 +126,6 @@
     :icon    (comp/svg icon/trash-path)
     :name    "Delete stack"}])
 
-;(defn- stack-render-item
-;  [stack-name name-key default-render-item]
-;  (fn [item row]
-;    (case (key item)
-;      :stack (if (not= stack-name (val item))
-;               (label/info "external"))
-;      (if (= name-key (key item))
-;        (if (= stack-name (:stack row))
-;          (utils/trim-stack stack-name (val item))
-;          (val item))
-;        (default-render-item item row)))))
-
 (rum/defc form-services-graph < rum/static [services]
   (let [data (->> services
                   (map (fn [service]
