@@ -87,10 +87,14 @@
                    (message/error
                      (str "Service rollback failed. " (:error response))))}))
 
-(defn form-tasks [stack tasks]
-  (let [table-summary (-> (get-in tasks/render-metadata [:table :summary])
-                          (assoc-in [0 :render-fn] (fn [item] (utils/trim-stack stack (:taskName item)))))
-        custom-metadata (assoc-in tasks/render-metadata [:table :summary] table-summary)]
+(defn form-tasks [service tasks]
+  (let [custom-render-fn (fn [item] (let [taskName (utils/trim-stack (:stack service) (:taskName item))]
+                                      (subs taskName (+ 1 (count (:serviceName service))))))
+        table-summary (-> (get-in tasks/render-metadata [:table :summary])
+                          (assoc-in [0 :render-fn] custom-render-fn))
+        custom-metadata (-> tasks/render-metadata
+                            (assoc-in [:table :summary] table-summary)
+                            (assoc-in [:list :primary] custom-render-fn))]
     (comp/card
       {:className "Swarmpit-card"
        :key       "ftc"}
@@ -159,12 +163,12 @@
     (rum/with-key
       (settings/form service tasks (form-actions service service-id)) "slggf")))
 
-(defn form-tasks-grid [stack tasks]
+(defn form-tasks-grid [service tasks]
   (comp/grid
     {:item true
      :key  "srgt"
      :xs   12}
-    (form-tasks stack tasks)))
+    (form-tasks service tasks)))
 
 (defn form-networks-grid [networks service-id]
   (comp/grid
@@ -284,7 +288,7 @@
                 (comp/grid
                   {:container true
                    :spacing   16}
-                  (form-tasks-grid (:stack service) tasks)
+                  (form-tasks-grid service tasks)
                   (form-networks-grid networks id)
                   (form-ports-grid ports id)
                   (form-mounts-grid mounts id)))))
@@ -295,7 +299,7 @@
               {:container true
                :spacing   16}
               (form-settings-grid service id tasks)
-              (form-tasks-grid (:stack service) tasks)
+              (form-tasks-grid service tasks)
               (form-networks-grid networks id)
               (form-ports-grid ports id)
               (form-mounts-grid mounts id)
