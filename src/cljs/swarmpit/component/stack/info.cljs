@@ -21,7 +21,8 @@
             [clojure.string :refer [includes?]]
             [clojure.contrib.inflect :as inflect]
             [sablono.core :refer-macros [html]]
-            [rum.core :as rum]))
+            [rum.core :as rum]
+            [swarmpit.docker.utils :as utils]))
 
 (enable-console-print!)
 
@@ -201,7 +202,9 @@
     (comp/card-content
       {:className "Swarmpit-table-card-content"}
       (list/responsive
-        services/render-metadata
+        (list/override-title
+          services/render-metadata
+          #(utils/trim-stack stack-name (:serviceName %)))
         (sort-by :serviceName services)
         services/onclick-handler))))
 
@@ -218,7 +221,9 @@
       (comp/card-content
         {:className "Swarmpit-table-card-content"}
         (list/responsive
-          networks/render-metadata
+          (list/override-title
+            networks/render-metadata
+            #(utils/trim-stack stack-name (:networkName %)))
           (sort-by :networkName networks)
           networks/onclick-handler)))))
 
@@ -235,7 +240,9 @@
       (comp/card-content
         {:className "Swarmpit-table-card-content"}
         (list/responsive
-          volumes/render-metadata
+          (list/override-title
+            volumes/render-metadata
+            #(utils/trim-stack stack-name (:volumeName %)))
           (sort-by :volumeName volumes)
           volumes/onclick-handler)))))
 
@@ -252,7 +259,10 @@
       (comp/card-content
         {:className "Swarmpit-table-card-content"}
         (list/list
-          (:list configs/render-metadata)
+          (:list
+            (list/override-title
+              configs/render-metadata
+              #(utils/trim-stack stack-name (:configName %))))
           (sort-by :configName configs)
           configs/onclick-handler)))))
 
@@ -269,7 +279,10 @@
       (comp/card-content
         {:className "Swarmpit-table-card-content"}
         (list/list
-          (:list secrets/render-metadata)
+          (:list
+            (list/override-title
+              secrets/render-metadata
+              #(utils/trim-stack stack-name (:secretName %))))
           (sort-by :secretName secrets)
           secrets/onclick-handler)))))
 

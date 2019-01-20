@@ -89,28 +89,24 @@
                      (str "Service rollback failed. " (:error response))))}))
 
 (defn form-tasks [service tasks]
-  (let [custom-render-fn (fn [item] (utils/trim-stack (:stack service) (:taskName item)))
-        table-summary (-> (get-in tasks/render-metadata [:table :summary])
-                          (assoc-in [0 :render-fn] custom-render-fn))
-        custom-metadata (-> tasks/render-metadata
-                            (assoc-in [:table :summary] table-summary)
-                            (assoc-in [:list :primary] custom-render-fn))]
-    (comp/card
-      {:className "Swarmpit-card"}
-      (comp/card-header
-        {:className "Swarmpit-table-card-header"
-         :title     (comp/typography {:variant "h6"} "Tasks")})
+  (comp/card
+    {:className "Swarmpit-card"}
+    (comp/card-header
+      {:className "Swarmpit-table-card-header"
+       :title     (comp/typography {:variant "h6"} "Tasks")})
 
-      (if (= "not running" (:state service))
-        (comp/card-content
-          {}
-          (html [:div "No running tasks."]))
-        (comp/card-content
-          {:className "Swarmpit-table-card-content"}
-          (list/responsive
-            custom-metadata
-            (filter #(not (= "shutdown" (:state %))) tasks)
-            tasks/onclick-handler))))))
+    (if (= "not running" (:state service))
+      (comp/card-content
+        {}
+        (html [:div "No running tasks."]))
+      (comp/card-content
+        {:className "Swarmpit-table-card-content"}
+        (list/responsive
+          (list/override-title
+            tasks/render-metadata
+            #(utils/trim-stack (:stack service) (:taskName %)))
+          (filter #(not (= "shutdown" (:state %))) tasks)
+          tasks/onclick-handler)))))
 
 (defn form-actions
   [service service-id]

@@ -76,6 +76,14 @@
            :style {:marginRight "10px"}}
           (status-fn item))))))
 
+(defn override-title
+  [render-metadata custom-render-fn]
+  (let [table-summary (-> (get-in render-metadata [:table :summary])
+                          (assoc-in [0 :render-fn] custom-render-fn))]
+    (-> render-metadata
+        (assoc-in [:table :summary] table-summary)
+        (assoc-in [:list :primary] custom-render-fn))))
+
 (rum/defc list < rum/static [render-metadata items onclick-handler-fn]
   (cmp/list
     {:dense true}
