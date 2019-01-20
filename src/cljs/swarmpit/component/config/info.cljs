@@ -104,7 +104,7 @@
   (comp/card
     {:className "Swarmpit-form-card"}
     (comp/card-header
-      {:title     "Data"
+      {:title     (comp/typography {:variant "h6"} "Data")
        :className "Swarmpit-form-card-header"})
     (form-data (parse-data (:data config)))))
 
