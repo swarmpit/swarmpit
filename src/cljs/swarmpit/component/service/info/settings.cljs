@@ -176,7 +176,7 @@
         (comp/button
           {:size  "small"
            :color "primary"
-           :href  (routes/path-for-frontend :service-log {:id (:id service)})}
+           :href  (routes/path-for-frontend :service-log {:id (:serviceName service)})}
           "View log"))
       (comp/divider
         {})
