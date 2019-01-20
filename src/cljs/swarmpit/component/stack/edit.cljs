@@ -130,11 +130,13 @@
                     {:item true
                      :xs   12}
                     (form-name name)
-                    (compose/form-select name select true previous?))
-                  (comp/grid
-                    {:item true
-                     :xs   12}
-                    (form-editor (:compose spec))))
+                    (compose/form-select name select true previous?))))
+              (comp/grid
+                {:item true
+                 :xs   12}
+                (form-editor (:compose spec)))
+              (comp/card-content
+                {}
                 (html
                   [:div.Swarmpit-form-buttons
                    (composite/progress-button

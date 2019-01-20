@@ -114,11 +114,14 @@
                     (comp/grid
                       {:item true
                        :xs   12}
-                      (form-name secretName))
-                    (comp/grid
-                      {:item true
-                       :xs   12}
-                      (form-data data)))
+                      (form-name secretName))))
+
+                (comp/grid
+                  {:item true
+                   :xs   12}
+                  (form-data data))
+                (comp/card-content
+                  {}
                   (html
                     [:div.Swarmpit-form-buttons
                      (composite/progress-button

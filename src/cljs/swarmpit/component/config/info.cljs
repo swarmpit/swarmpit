@@ -29,8 +29,7 @@
 (defn- form-data [value]
   (comp/text-field
     {:id              editor-id
-     :className       "Swarmpit-codemirror-ro"
-     :style           {:maxWidth "100vh"}
+     :className       "Swarmpit-codemirror-no-bot-border"
      :fullWidth       true
      :name            "config-view"
      :key             "config-view"
@@ -107,9 +106,7 @@
     (comp/card-header
       {:title     "Data"
        :className "Swarmpit-form-card-header"})
-    (comp/card-content
-      {}
-      (form-data (parse-data (:data config))))))
+    (form-data (parse-data (:data config)))))
 
 (defn- init-form-state
   []
@@ -173,17 +170,7 @@
                 {:container true
                  :spacing   16}
                 (form-services-grid services)
-                (form-config-grid config)))
-            ;(comp/grid
-            ;  {:item true
-            ;   :key  "sdg"
-            ;   :sm   12}
-            ;  (comp/grid
-            ;    {:container true
-            ;     :spacing   16}
-            ;    (form-config-grid config)))
-
-            ))
+                (form-config-grid config)))))
         (comp/hidden
           {:smUp           true
            :implementation "js"}
@@ -192,9 +179,7 @@
              :spacing   16}
             (form-general-grid config services)
             (form-services-grid services)
-            (form-config-grid config)
-
-            ))]])))
+            (form-config-grid config)))]])))
 
 (rum/defc form < rum/reactive
                  mixin-init-form

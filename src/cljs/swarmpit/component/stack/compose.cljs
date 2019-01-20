@@ -109,9 +109,6 @@
       (stackfile-handler name)
       (compose-handler name))))
 
-(rum/defc editor < mixin-init-editor [spec]
-  (form-editor spec))
-
 (defn form-select [name value last? previous?]
   (comp/text-field
     {:fullWidth       true
@@ -168,11 +165,13 @@
                     {:item true
                      :xs   12}
                     (form-name name)
-                    (form-select name :stack-compose last? previous?))
-                  (comp/grid
-                    {:item true
-                     :xs   12}
-                    (form-editor (:compose spec))))
+                    (form-select name :stack-compose last? previous?))))
+              (comp/grid
+                {:item true
+                 :xs   12}
+                (form-editor (:compose spec)))
+              (comp/card-content
+                {}
                 (html
                   [:div.Swarmpit-form-buttons
                    (composite/progress-button

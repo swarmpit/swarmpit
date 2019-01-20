@@ -609,15 +609,20 @@ a {
 /* Codemirror custom */
 
 .Swarmpit-codemirror {
-    border-radius: 4px !important;
-    border: 1px solid rgba(0, 0, 0, 0.23) !important;
+    border-top: 1px solid rgba(0, 0, 0, 0.12) !important;
+    border-bottom: 1px solid rgba(0, 0, 0, 0.12) !important;
 }
 
+.Swarmpit-codemirror-no-bot-border {
+    border-top: 1px solid rgba(0, 0, 0, 0.12) !important;
+}
+
+.Swarmpit-codemirror-no-bot-border > div,
 .Swarmpit-codemirror > div {
     padding: 0 !important;
 }
 
-.Swarmpit-codemirror-ro > div:before,
+.Swarmpit-codemirror-no-bot-border > div:before,
 .Swarmpit-codemirror > div:before {
     border-bottom: none !important;
 }

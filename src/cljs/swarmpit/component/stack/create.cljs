@@ -140,8 +140,14 @@
                        :xs   12
                        :lx   4}
                       (when-not from
-                        (html [:span.Swarmpit-message "Drag & drop or paste a compose file."]))
-                      (form-editor (:compose spec))))
+                        (html [:span.Swarmpit-message "Drag & drop or paste a compose file."])))))
+                (comp/grid
+                  {:item true
+                   :xs   12
+                   :lx   4}
+                  (form-editor (:compose spec)))
+                (comp/card-content
+                  {}
                   (html
                     [:div.Swarmpit-form-buttons
                      (composite/progress-button
