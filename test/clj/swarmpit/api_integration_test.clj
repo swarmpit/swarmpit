@@ -115,10 +115,7 @@
 
     (testing "tasks"
       (let [tasks (tasks)]
-        (is (some? tasks))
-        (is (= (service-tasks service-id)
-               (->> tasks
-                    (filter #(.startsWith (:taskName %) "test")))))))
+        (is (some? tasks))))
 
     (testing "find public repository"
       (let [results (public-repositories "nginx" 1)]
