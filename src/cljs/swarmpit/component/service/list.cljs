@@ -146,7 +146,9 @@
                             (clojure.core/filter #(if (:running filter)
                                                     (= "running" (:state %)) true))
                             (clojure.core/filter #(if (:shutdown filter)
-                                                    (= 0 (get-in % [:status :tasks :total])) true)))]
+                                                    (= 0 (get-in % [:status :tasks :total])) true))
+                            (sort-by :createdAt)
+                            (reverse))]
     (progress/form
       loading?
       (common/list "Services"

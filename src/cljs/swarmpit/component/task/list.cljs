@@ -139,7 +139,9 @@
                             (clojure.core/filter #(if (:shutdown filter)
                                                     (= "shutdown" (:state %)) true))
                             (clojure.core/filter #(if (:failed filter)
-                                                    (= "failed" (:state %)) true)))]
+                                                    (= "failed" (:state %)) true))
+                            (sort-by :createdAt)
+                            (reverse))]
     (progress/form
       loading?
       (common/list "Tasks"

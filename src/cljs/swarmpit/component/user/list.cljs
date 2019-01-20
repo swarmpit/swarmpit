@@ -65,7 +65,8 @@
                  mixin/focus-filter [_]
   (let [{:keys [items]} (state/react state/form-value-cursor)
         {:keys [loading? filter]} (state/react state/form-state-cursor)
-        filtered-items (list-util/filter items (:query filter))]
+        filtered-items (->> (list-util/filter items (:query filter))
+                            (sort-by :username))]
     (progress/form
       loading?
       (common/list "Users"

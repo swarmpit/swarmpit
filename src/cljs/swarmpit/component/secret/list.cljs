@@ -68,7 +68,8 @@
       (common/list "Secrets"
                    items
                    (->> (list-util/filter items (:query filter))
-                        (sort-by :secretName))
+                        (sort-by :createdAt)
+                        (reverse))
                    render-metadata
                    onclick-handler
                    toolbar-render-metadata))))

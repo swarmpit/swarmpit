@@ -77,7 +77,8 @@
       (common/list "Configs"
                    items
                    (->> (list-util/filter items (:query filter))
-                        (sort-by :configName))
+                        (sort-by :createdAt)
+                        (reverse))
                    render-metadata
                    onclick-handler
                    toolbar-render-metadata))))
