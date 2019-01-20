@@ -10,10 +10,9 @@ jdk:
 env:
   - DOCKER=test
   - DOCKER=stable
-  - DOCKER=17.11
-  - DOCKER=17.10
+  - DOCKER=18.01
+  - DOCKER=17.12
   - DOCKER=17.09
-  - DOCKER=17.07
   - DOCKER=17.06
   - DOCKER=17.03
   - DOCKER=1.13
