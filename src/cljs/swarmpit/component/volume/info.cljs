@@ -70,7 +70,7 @@
       {}
       (html
         [:div
-         [:span "Volume is mount at " [:b.volume-mountpoint mountpoint] "."]]))
+         [:span "Volume is mounted at:" [:br] [:b.volume-mountpoint mountpoint]]]))
     (comp/card-content
       {}
       (form/item-labels
@@ -97,13 +97,15 @@
       {:className "Swarmpit-table-card-header"
        :title     (comp/typography {:variant "h6"} "Driver")})
     (comp/card-content
-      {:className "Swarmpit-table-card-content"
-       ::key      "vdcc"}
+      {}
+      (html [:div [:span driver]]))
+    (comp/card-content
+      {:className "Swarmpit-table-card-content"}
       (when (not-empty options)
-        (list/list
-          form-driver-opts-render-metadata
-          options
-          nil)))))
+         (list/list
+           form-driver-opts-render-metadata
+           options
+           nil)))))
 
 (defn- init-form-state
   []
@@ -158,7 +160,7 @@
                 {:container true
                  :spacing   16}
                 (form-general-grid volume services)
-                (form-driver-grid (:options volume))))
+                (form-driver-grid volume)))
             (comp/grid
               {:item true
                :sm   6
@@ -176,7 +178,7 @@
              :spacing   16}
             (form-general-grid volume services)
             (form-services-grid services)
-            (form-driver-grid (:options volume))))]])))
+            (form-driver-grid volume)))]])))
 
 (rum/defc form < rum/reactive
                  mixin-init-form
