@@ -94,19 +94,18 @@
     (comp/card-header
       {:className "Swarmpit-table-card-header"
        :title     (comp/typography {:variant "h6"} "Tasks")})
-
-    (if (= "not running" (:state service))
-      (comp/card-content
-        {}
-        (html [:div "No running tasks."]))
-      (comp/card-content
-        {:className "Swarmpit-table-card-content"}
-        (list/responsive
-          (list/override-title
-            tasks/render-metadata
-            #(-> % :id (subs 0 7)))
-          (filter #(not (= "shutdown" (:state %))) tasks)
-          tasks/onclick-handler)))))
+    (comp/card-content
+      {:className "Swarmpit-table-card-content"}
+      (list/responsive
+        (list/override-title
+          tasks/render-metadata
+          #(-> % :id (subs 0 7))
+          #(-> % :repository :image (utils/tag)))
+        (->> tasks
+             (sort-by :createdAt)
+             (reverse)
+             (filter #(not (= "shutdown" (:state %)))))
+        tasks/onclick-handler))))
 
 (defn form-actions
   [service service-id]

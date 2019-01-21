@@ -22,6 +22,11 @@
       (trim-stack stack-name name)
       name)))
 
+(defn tag
+  [image]
+  "Parses tag from docker image string"
+  (second (str/split image #":" 2)))
+
 (defn library?
   [repository-name]
   "Check whether repository is library"

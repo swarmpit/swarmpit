@@ -75,13 +75,28 @@
            :style {:marginRight "10px"}}
           (status-fn item))))))
 
+(defn table-item-name [primary secondary]
+  (html
+    [:div
+     [:div
+      [:span.Swarmpit-table-cell-primary primary]]
+     [:div
+      [:span.Swarmpit-table-cell-secondary secondary]]]))
+
 (defn override-title
-  [render-metadata custom-render-fn]
-  (let [table-summary (-> (get-in render-metadata [:table :summary])
-                          (assoc-in [0 :render-fn] custom-render-fn))]
-    (-> render-metadata
-        (assoc-in [:table :summary] table-summary)
-        (assoc-in [:list :primary] custom-render-fn))))
+  ([render-metadata primary-render-fn]
+   (let [table-summary (-> (get-in render-metadata [:table :summary])
+                           (assoc-in [0 :render-fn] #(primary-render-fn %)))]
+     (-> render-metadata
+         (assoc-in [:table :summary] table-summary)
+         (assoc-in [:list :primary] primary-render-fn))))
+  ([render-metadata primary-render-fn secondary-render-fn]
+   (let [table-summary (-> (get-in render-metadata [:table :summary])
+                           (assoc-in [0 :render-fn] #(table-item-name (primary-render-fn %) (secondary-render-fn %))))]
+     (-> render-metadata
+         (assoc-in [:table :summary] table-summary)
+         (assoc-in [:list :primary] primary-render-fn)
+         (assoc-in [:list :secondary] secondary-render-fn)))))
 
 (defn add-status
   [render-metadata custom-render-fn]

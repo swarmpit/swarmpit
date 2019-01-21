@@ -164,7 +164,7 @@
   (list/add-status
     render-metadata
     #(when (not (utils/in-stack? stack-name %))
-       (label/info "external"))))
+       (html [:span.Swarmpit-table-status (label/info "external")]))))
 
 (rum/defc form-general < rum/static [stack-name stackfile {:keys [services networks volumes configs secrets]}]
   (comp/card
@@ -186,8 +186,8 @@
           {}
           (form-services-graph services)))
       (comp/grid
-        {:item true
-         :xs   6
+        {:item  true
+         :xs    6
          :style {:display "flex"}}
         (comp/card-content
           {:style {:display "flex"}}
@@ -218,7 +218,8 @@
       (list/responsive
         (list/override-title
           services/render-metadata
-          #(utils/trim-stack stack-name (:serviceName %)))
+          #(utils/trim-stack stack-name (:serviceName %))
+          #(get-in % [:repository :image]))
         (sort-by :serviceName services)
         services/onclick-handler))))
 

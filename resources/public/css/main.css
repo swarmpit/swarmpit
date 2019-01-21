@@ -425,7 +425,9 @@ a {
 }
 
 .Swarmpit-list-item-text-primary,
-.Swarmpit-list-item-text-secondary {
+.Swarmpit-list-item-text-secondary,
+.Swarmpit-table-cell-primary,
+.Swarmpit-table-cell-secondary {
     overflow: hidden;
     word-wrap: break-word;
     white-space: pre-wrap;

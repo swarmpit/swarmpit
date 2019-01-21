@@ -29,16 +29,6 @@
   (let [tasks (get-in item [:status :tasks])]
     (str (:running tasks) " / " (:total tasks))))
 
-(defn- render-item-name [item]
-  (html
-    [:div
-     [:div
-      [:span
-       (:serviceName item)]]
-     [:div
-      [:span.Swarmpit-table-cell-secondary
-       (get-in item [:repository :image])]]]))
-
 (defn- render-item-update-state [value]
   (case value
     "rollback_started" (label/pulsing "rollback")
@@ -61,7 +51,7 @@
 
 (def render-metadata
   {:table {:summary [{:name      "Service"
-                      :render-fn (fn [item] (render-item-name item))}
+                      :render-fn (fn [item] (list/table-item-name (:serviceName item) (get-in item [:repository :image])))}
                      {:name      "Replicas"
                       :render-fn (fn [item] (render-item-replicas item))}
                      {:name      "Ports"
