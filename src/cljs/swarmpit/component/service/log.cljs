@@ -30,25 +30,31 @@
     {:on-success (fn [{:keys [response]}]
                    (state/update-value [:service] response state/form-state-cursor))}))
 
+(defn- filter-by-task
+  [taskId log]
+  (if taskId
+    (filter #(= taskId (:task %)) log)
+    log))
+
 (defn- log-handler
-  [service-id]
+  [service-id task-id]
   (ajax/get
     (routes/path-for-backend :service-logs {:id service-id})
     {:state      [:fetching]
      :on-success (fn [{:keys [response]}]
                    (state/update-value [:initialized] true state/form-state-cursor)
-                   (state/set-value response state/form-value-cursor))
+                   (state/set-value (filter-by-task task-id response) state/form-value-cursor))
      :on-error   #(state/update-value [:error] true state/form-state-cursor)}))
 
 (defn- log-append-handler
-  [service-id from-timestamp]
+  [service-id task-id from-timestamp]
   (ajax/get
     (routes/path-for-backend :service-logs {:id service-id})
     {:state      [:fetching]
      :params     {:from from-timestamp}
      :on-success (fn [{:keys [response]}]
                    (state/set-value (-> (state/get-value state/form-value-cursor)
-                                        (concat response)) state/form-value-cursor))}))
+                                        (concat (filter-by-task task-id response))) state/form-value-cursor))}))
 
 (defn- init-form-state
   []
@@ -61,24 +67,23 @@
 
 (def mixin-refresh-form
   (mixin/refresh-form
-    (fn [{{:keys [id]} :params}]
+    (fn [{{:keys [id taskId]} :params}]
       (when (not (:fetching (state/get-value state/form-state-cursor)))
-        (log-append-handler id (-> (state/get-value state/form-value-cursor)
-                                   (last)
-                                   :timestamp))))))
+        (log-append-handler id taskId (-> (state/get-value state/form-value-cursor)
+                                          (last)
+                                          :timestamp))))))
 
 (def mixin-init-form
   (mixin/init-form
-    (fn [{{:keys [id]} :params}]
+    (fn [{{:keys [id taskId]} :params}]
       (init-form-state)
       (service-handler id)
-      (log-handler id))))
+      (log-handler id taskId))))
 
-(rum/defc line < rum/static [item timestamp]
+(rum/defc line < rum/static [service item timestamp]
   [:div
-   ;;   (when timestamp
-   ;;   [:span.log-timestamp (:timestamp item)])
-   [:span.log-info (str (subs (:task item) 0 12))]
+   [:a.log-info {:href (routes/path-for-frontend :service-task-log {:id (:serviceName service) :taskId (:task item)})}
+    (str (subs (:task item) 0 7))]
    [:span.log-body (str " " (:line item))]])
 
 (rum/defc form < rum/reactive
@@ -114,4 +119,7 @@
                    (not initialized) [:span "Loading..."]
                    :else (map
                            (fn [item]
-                             (line item timestamp)) filtered-logs))])))]]))))
+                             (line service item timestamp)) filtered-logs))])))]]))))
+
+(rum/defc form-task < form [params]
+  (form params))

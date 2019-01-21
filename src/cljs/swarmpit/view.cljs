@@ -119,6 +119,10 @@
   [route]
   (service-log/form route))
 
+(defmethod dispatch :service-task-log
+  [route]
+  (service-log/form-task route))
+
 (defmethod dispatch :service-create-image
   [route]
   (service-image/form route))

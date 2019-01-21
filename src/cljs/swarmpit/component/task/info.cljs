@@ -98,7 +98,12 @@
           {:size  "small"
            :color "primary"
            :href  (routes/path-for-frontend :node-info {:id nodeName})}
-          "See node")))
+          "See node"))
+      (comp/button
+        {:size  "small"
+         :color "primary"
+         :href  (routes/path-for-frontend :service-task-log {:id serviceName :taskId id})}
+        "View log"))
     (comp/divider
       {})
     (comp/card-content

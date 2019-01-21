@@ -571,6 +571,7 @@ a {
 
 .log-info {
     color: #FFF;
+    text-decoration: none;
 }
 
 /* Labels & Status ico  */

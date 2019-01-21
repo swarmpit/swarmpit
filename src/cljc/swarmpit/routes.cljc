@@ -106,7 +106,8 @@
                                                               "/config" :service-create-config}
                                             ["/" :id]        {""      :service-info
                                                               "/edit" :service-edit
-                                                              "/log"  :service-log}}
+                                                              "/log"  {""            :service-log
+                                                                       ["/" :taskId] :service-task-log}}}
                    "/stacks"               {""                      :stack-list
                                             "/create"               :stack-create
                                             ["/" :name]             :stack-info
