@@ -104,7 +104,7 @@
         (list/responsive
           (list/override-title
             tasks/render-metadata
-            #(utils/alias :taskName (:stack service) %))
+            #(-> % :id (subs 0 7)))
           (filter #(not (= "shutdown" (:state %))) tasks)
           tasks/onclick-handler)))))
 
