@@ -26,13 +26,13 @@
       (comp/dialog-actions
         {}
         (comp/button
+          {:onClick #(state/update-value [:open] false dialog-cursor)
+           :color   "primary"} "Cancel")
+        (comp/button
           {:onClick (fn []
                       (action-fn)
                       (state/update-value [:open] false dialog-cursor))
-           :color   "primary"} "Ok")
-        (comp/button
-          {:onClick #(state/update-value [:open] false dialog-cursor)
-           :color   "primary"} "Cancel")))))
+           :color   "primary"} "Ok")))))
 
 (rum/defc form-dialog < rum/reactive [action-fn form dialog-title]
   (let [{:keys [open]} (state/react dialog-cursor)]
