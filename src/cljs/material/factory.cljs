@@ -148,6 +148,10 @@
 (def open-in-new-icon (create-factory js/MaterialUIIcons.OpenInNew))
 
 (def create-mui-theme js/MaterialUI.createMuiTheme)
+(def with-mobile-dialog js/MaterialUI.withMobileDialog)
+
+(defn responsive-dialog [component]
+  (create-factory ((js/MaterialUI.withMobileDialog #js {:breakpoint "xs"}) component)))
 
 ;; Recharts
 

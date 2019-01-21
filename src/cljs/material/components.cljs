@@ -21,6 +21,11 @@
 (defn mui [component]
   (f/mui-theme-provider (clj->js {:theme theme}) (f/css-baseline) component))
 
+
+(defn md [props dialog]
+  (let [md (f/with-mobile-dialog js/MaterialUI.Dialog)]
+    (md props dialog)))
+
 ;;; Single material-ui components
 
 (defn divider
@@ -74,6 +79,11 @@
 (defn dialog
   [props & childs]
   (apply f/dialog (clj->js props) childs))
+
+(defn responsive-dialog
+  [props & childs]
+  (let [dialog (f/responsive-dialog js/MaterialUI.Dialog)]
+    (apply dialog (clj->js props) childs)))
 
 (defn dialog-title
   [props title]
