@@ -153,10 +153,11 @@
 (defn- resource-chip
   [name count]
   (when (< 0 count)
-    (comp/chip {:style  {:marginBottom "10px"}
-                :key    name
-                :avatar (comp/avatar {} count)
-                :label  (inflect/pluralize-noun count name)})))
+    (comp/grid
+      {:item true}
+      (comp/chip {:key    name
+                  :avatar (comp/avatar {} count)
+                  :label  (inflect/pluralize-noun count name)}))))
 
 (defn- add-external-status
   [render-metadata stack-name]
@@ -186,15 +187,20 @@
           (form-services-graph services)))
       (comp/grid
         {:item true
-         :xs   6}
+         :xs   6
+         :style {:display "flex"}}
         (comp/card-content
-          {}
-          (html
-            [:div {:style {:marginTop "15px"}}
-             (resource-chip "network" (count networks))
-             (resource-chip "volume" (count volumes))
-             (resource-chip "config" (count configs))
-             (resource-chip "secret" (count secrets))]))))
+          {:style {:display "flex"}}
+          (comp/grid
+            {:container  true
+             :spacing    8
+             :direction  "column"
+             :justify    "center"
+             :alignItems "flex-start"}
+            (resource-chip "network" (count networks))
+            (resource-chip "volume" (count volumes))
+            (resource-chip "config" (count configs))
+            (resource-chip "secret" (count secrets))))))
     (comp/divider
       {})
     (comp/card-content
