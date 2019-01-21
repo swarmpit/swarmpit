@@ -12,12 +12,16 @@
 
 (rum/defc panel < rum/static [expanded type title comp]
   (comp/expansion-panel
-    {:expanded (= expanded type)
-     :onChange #(if (= expanded type)
-                  (reset! active-panel false)
-                  (reset! active-panel type))}
+    {:className (if (= expanded type)
+                  "Swarmpit-expansion-panel Swarmpit-expansion-panel-expanded"
+                  "Swarmpit-expansion-panel")
+     :expanded  (= expanded type)
+     :onChange  #(if (= expanded type)
+                   (reset! active-panel false)
+                   (reset! active-panel type))}
     (comp/expansion-panel-summary
-      {:expandIcon icon/expand-more}
+      {:className  "Swarmpit-expansion-panel-summary"
+       :expandIcon icon/expand-more}
       (comp/typography
         {:noWrap  true
          :variant "subtitle1"} title))

@@ -352,6 +352,31 @@ a {
     margin-left: -12px;
 }
 
+/** Expansion panel **/
+
+.Swarmpit-expansion-panel {
+    border: 1px solid rgba(0, 0, 0, .125);
+    box-shadow: none !important;
+}
+
+.Swarmpit-expansion-panel:not(:last-child) {
+    border-bottom: 0;
+}
+
+.Swarmpit-expansion-panel:before {
+    display: none;
+}
+
+.Swarmpit-expansion-panel-expanded {
+    margin: 0 !important;
+}
+
+.Swarmpit-expansion-panel-summary {
+    background-color: rgba(0, 0, 0, .03);
+    border-bottom: 1px solid rgba(0, 0, 0, .125);
+    margin-bottom: -1px !important;
+}
+
 /** List **/
 
 .Swarmpit-table {
