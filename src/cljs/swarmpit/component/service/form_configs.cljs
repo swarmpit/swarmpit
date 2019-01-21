@@ -30,6 +30,7 @@
      :variant         "outlined"
      :margin          "dense"
      :InputLabelProps {:shrink true}
+     :InputProps      {:className "Swarmpit-form-input"}
      :onChange        #(state/update-item index :configName (-> % .-target .-value) form-value-cursor)}
     (->> configs-list
          (map #(comp/menu-item

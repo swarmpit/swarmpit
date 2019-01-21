@@ -58,6 +58,7 @@
      :variant         "outlined"
      :margin          "dense"
      :InputLabelProps {:shrink true}
+     :InputProps      {:className "Swarmpit-form-input"}
      :onChange        #(state/update-item index :protocol (-> % .-target .-value) form-value-cursor)}
     (comp/menu-item
       {:key   "tcp"
@@ -77,6 +78,7 @@
      :variant         "outlined"
      :margin          "dense"
      :InputLabelProps {:shrink true}
+     :InputProps      {:className "Swarmpit-form-input"}
      :onChange        #(state/update-item index :mode (-> % .-target .-value) form-value-cursor)}
     (comp/menu-item
       {:key   "ingress"

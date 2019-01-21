@@ -17,16 +17,6 @@ a {
     color: #65519f;
 }
 
-/*a {*/
-/*text-decoration: none;*/
-/*font-weight: 600;*/
-/*color: rgb(117, 117, 117)*/
-/*}*/
-
-/*a:hover {*/
-/*color: #65519f;*/
-/*}*/
-
 .hide {
     display: none !important;
 }
@@ -105,6 +95,10 @@ a {
 .Swarmpit-message {
     display: flex;
     align-items: center;
+}
+
+.Swarmnpit-input {
+    background-color: #fff;
 }
 
 .Swarmpit-message-icon {
@@ -404,10 +398,6 @@ a {
     padding: 0 24px;
 }
 
-/*.Swarmpit-list-item-text {*/
-/*width: calc(100% - 280px);*/
-/*}*/
-
 .Swarmpit-list-item-text-primary,
 .Swarmpit-list-item-text-secondary {
     overflow: hidden;
@@ -427,10 +417,47 @@ a {
     padding: 20px 0 20px 0;
 }
 
+/** Stepper **/
+
+.Swarmpit-stepper {
+    background-color: #fafafa !important;
+    padding: 24px 0 24px !important;
+    max-width: 400px;
+}
+
 /** Form content **/
 
 .Swarmpit-form-context {
     padding: 24px 24px;
+}
+
+.Swarmpit-form-wrapper {
+    padding: 16px;
+}
+
+.Swarmpit-form-context input[type="number"],
+.Swarmpit-form-context input[type="checkbox"],
+.Swarmpit-form-context input[type="radio"],
+.Swarmpit-form-context input[type="password"],
+.Swarmpit-form-context input[type="select"],
+.Swarmpit-form-context input[type="text"] {
+    background-color: #fff !important;
+}
+
+.Swarmpit-form-subtitle {
+    color: rgba(0, 0, 0, 0.54) !important;
+}
+
+.Swarmpit.form-title {
+    color: rgba(0, 0, 0, 0.87) !important;
+}
+
+.Swarmpit-form-main-grid {
+    padding-top: 24px;
+}
+
+.Swarmpit-form-input {
+    background-color: #fff;
 }
 
 .Swarmpit-form-toolbar {
@@ -442,7 +469,6 @@ a {
 }
 
 .Swarmpit-form-buttons {
-    margin-top: 10px;
     display: flex;
     justify-content: flex-end;
 }
@@ -455,6 +481,11 @@ a {
     flex-direction: row;
     display: flex;
     align-items: center;
+}
+
+.Swarmpit-transparent-card {
+    box-shadow: none !important;
+    background-color: #fafafa !important;
 }
 
 .Swarmpit-form-card {
@@ -609,20 +640,15 @@ a {
 /* Codemirror custom */
 
 .Swarmpit-codemirror {
-    border-top: 1px solid rgba(0, 0, 0, 0.12) !important;
-    border-bottom: 1px solid rgba(0, 0, 0, 0.12) !important;
+    border-radius: 4px !important;
+    border: 1px solid rgba(0, 0, 0, 0.23) !important;
 }
 
-.Swarmpit-codemirror-no-bot-border {
-    border-top: 1px solid rgba(0, 0, 0, 0.12) !important;
-}
-
-.Swarmpit-codemirror-no-bot-border > div,
 .Swarmpit-codemirror > div {
     padding: 0 !important;
 }
 
-.Swarmpit-codemirror-no-bot-border > div:before,
+.Swarmpit-codemirror-ro > div:before,
 .Swarmpit-codemirror > div:before {
     border-bottom: none !important;
 }
@@ -678,6 +704,12 @@ a {
 .Swarmpit-node-href {
     color: inherit;
     text-decoration: inherit;
+}
+
+/* USER */
+
+.Swarmpit-user-form {
+    max-width: 400px;
 }
 
 .Swarmpit-card-header-responsive-title {
@@ -756,6 +788,11 @@ a {
     .Swarmpit-section-mobile {
         display: none;
     }
+
+    .Swarmpit-form-wrapper {
+        padding-left: 24px;
+        padding-right: 24px;
+    }
 }
 
 /* EXTRA SMALL DEVICES [XS] */
@@ -774,10 +811,6 @@ a {
         padding: 0 10px 10px;
     }
 
-    .Swarmpit-form-context {
-        padding: 20px 10px;
-    }
-
     .Swarmpit-form-toolbar-context {
         margin-top: 10px;
         padding: 0 10px;
@@ -791,8 +824,4 @@ a {
     .Swarmpit-node-stat {
         padding: 0;
     }
-
-    /*.Swarmpit-list-item-text {*/
-    /*width: calc(100% - 80px);*/
-    /*}*/
 }

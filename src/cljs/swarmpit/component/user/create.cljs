@@ -40,7 +40,8 @@
      :defaultValue    value
      :onChange        #(state/update-value [:password] (-> % .-target .-value) state/form-value-cursor)
      :InputLabelProps {:shrink true}
-     :InputProps      {:endAdornment (common/show-password-adornment show-password?)}}))
+     :InputProps      {:className    "Swarmpit-form-input"
+                       :endAdornment (common/show-password-adornment show-password?)}}))
 
 (defn- form-role [value]
   (comp/form-control
@@ -127,31 +128,28 @@
       (html
         [:div.Swarmpit-form
          [:div.Swarmpit-form-context
-          (comp/grid
-            {:item true
-             :xs   12
-             :sm   6
-             :md   4}
-            (comp/card
-              {:className "Swarmpit-form-card"}
-              (comp/card-header
-                {:className "Swarmpit-form-card-header"
-                 :title     "New User"})
-              (comp/card-content
-                {}
-                (comp/grid
-                  {:container true
-                   :spacing   40}
-                  (comp/grid
-                    {:item true
-                     :xs   12}
-                    (form-username username)
-                    (form-password password showPassword)
-                    (form-role role)
-                    (form-email email)))
-                (html
-                  [:div.Swarmpit-form-buttons
-                   (composite/progress-button
-                     "Create"
-                     create-user-handler
-                     processing?)]))))]]))))
+          [:div.Swarmpit-user-form
+           (comp/typography
+             {:variant   "h5"
+              :className "Swarmpit-form-title"}
+             "New User")
+           (comp/grid
+             {:container true
+              :className "Swarmpit-form-main-grid"
+              :spacing   40}
+             (comp/grid
+               {:item true
+                :xs   12}
+               (form-username username)
+               (form-password password showPassword)
+               (form-email email)
+               (form-role role))
+             (comp/grid
+               {:item true
+                :xs   12}
+               (html
+                 [:div.Swarmpit-form-buttons
+                  (composite/progress-button
+                    "Create"
+                    create-user-handler
+                    processing?)])))]]]))))

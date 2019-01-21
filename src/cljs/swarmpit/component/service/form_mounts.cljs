@@ -68,6 +68,7 @@
      :variant         "outlined"
      :margin          "dense"
      :InputLabelProps {:shrink true}
+     :InputProps      {:className "Swarmpit-form-input"}
      :onChange        #(state/update-item index :host (-> % .-target .-value) form-value-cursor)}
     (->> volumes-list
          (map #(comp/menu-item
@@ -84,6 +85,7 @@
      :variant         "outlined"
      :margin          "dense"
      :InputLabelProps {:shrink true}
+     :InputProps      {:className "Swarmpit-form-input"}
      :onChange        #(state/update-item index :type (-> % .-target .-value) form-value-cursor)}
     (comp/menu-item
       {:key   "bind"

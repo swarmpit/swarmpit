@@ -31,6 +31,7 @@
      :variant         "outlined"
      :margin          "dense"
      :InputLabelProps {:shrink true}
+     :InputProps      {:className "Swarmpit-form-input"}
      :onChange        #(state/update-item index :secretName (-> % .-target .-value) form-value-cursor)}
     (->> secrets-list
          (map #(comp/menu-item

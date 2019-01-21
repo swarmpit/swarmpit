@@ -90,8 +90,13 @@
       (html
         [:div.Swarmpit-form
          [:div.Swarmpit-form-context
+          (comp/typography
+            {:variant   "h5"
+             :className "Swarmpit-form-title"}
+            "New Config")
           (comp/grid
             {:container true
+             :className "Swarmpit-form-main-grid"
              :spacing   40}
             (comp/grid
               {:item true
@@ -100,26 +105,20 @@
                :md   12
                :lg   8
                :xl   8}
-              (comp/card
-                {:className "Swarmpit-form-card"}
-                (comp/card-header
-                  {:className "Swarmpit-form-card-header"
-                   :title     "Create Config"})
-                (comp/card-content
-                  {}
-                  (comp/grid
-                    {:container true
-                     :spacing   40}
-                    (comp/grid
-                      {:item true
-                       :xs   12}
-                      (form-name configName))))
+              (comp/grid
+                {:container true
+                 :spacing   40}
+                (comp/grid
+                  {:item true
+                   :xs   12}
+                  (form-name configName))
                 (comp/grid
                   {:item true
                    :xs   12}
                   (form-data data))
-                (comp/card-content
-                  {}
+                (comp/grid
+                  {:item true
+                   :xs   12}
                   (html
                     [:div.Swarmpit-form-buttons
                      (composite/progress-button

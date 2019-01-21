@@ -30,7 +30,6 @@
      :key             "name"
      :variant         "outlined"
      :helperText      "Specify stack name"
-     :margin          "normal"
      :defaultValue    value
      :required        true
      :InputLabelProps {:shrink true}
@@ -110,8 +109,13 @@
       (html
         [:div.Swarmpit-form
          [:div.Swarmpit-form-context
+          (comp/typography
+            {:variant   "h5"
+             :className "Swarmpit-form-title"}
+            "New stack")
           (comp/grid
             {:container true
+             :className "Swarmpit-form-main-grid"
              :spacing   40}
             (comp/grid
               {:item true
@@ -120,34 +124,22 @@
                :md   12
                :lg   8
                :xl   8}
-              (comp/card
-                {:className "Swarmpit-form-card"}
-                (comp/card-header
-                  {:className "Swarmpit-form-card-header"
-                   :title     "New Stack"})
-                (comp/card-content
-                  {}
-                  (comp/grid
-                    {:container true
-                     :spacing   40}
-                    (comp/grid
-                      {:item true
-                       :xs   12
-                       :lx   4}
-                      (form-name name))
-                    (comp/grid
-                      {:item true
-                       :xs   12
-                       :lx   4}
-                      (when-not from
-                        (html [:span.Swarmpit-message "Drag & drop or paste a compose file."])))))
+              (comp/grid
+                {:container true
+                 :spacing   40}
                 (comp/grid
                   {:item true
-                   :xs   12
-                   :lx   4}
+                   :xs   12}
+                  (form-name name))
+                (comp/grid
+                  {:item true
+                   :xs   12}
+                  (when-not from
+                    (html [:span.Swarmpit-message "Drag & drop or paste a compose file."]))
                   (form-editor (:compose spec)))
-                (comp/card-content
-                  {}
+                (comp/grid
+                  {:item true
+                   :xs   12}
                   (html
                     [:div.Swarmpit-form-buttons
                      (composite/progress-button

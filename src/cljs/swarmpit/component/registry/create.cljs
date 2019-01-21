@@ -36,6 +36,7 @@
      :variant         "outlined"
      :margin          "normal"
      :InputLabelProps {:shrink true}
+     :InputProps      {:className "Swarmpit-form-input"}
      :onChange        (fn [e]
                         (let [type (-> e .-target .-value)]
                           (reset! registry type)
@@ -128,30 +129,25 @@
       (html
         [:div.Swarmpit-form
          [:div.Swarmpit-form-context
-          (comp/card
-            {:className "Swarmpit-form-card"
-             :style     {:maxWidth "400px"}}
-            (comp/card-header
-              {:className "Swarmpit-form-card-header"
-               :title     "Add registry"})
-            (comp/card-content
-              {:className "Swarmpit-table-card-content"}
-              (comp/stepper
-                {:activeStep  index
-                 :orientation "vertical"}
-                (step-item
-                  0
-                  true
-                  registry-type-text
-                  (registry-type-form registry))
-                (step-item
-                  1
-                  valid?
-                  (registry-text registry)
-                  (registry-form registry route))
-                (step-item
-                  2
-                  true
-                  registry-publish-text
-                  (registry-publish-form public)
-                  processing?))))]]))))
+          (comp/typography
+            {:variant "h5"} "Add registry")
+          (comp/stepper
+            {:className   "Swarmpit-stepper"
+             :activeStep  index
+             :orientation "vertical"}
+            (step-item
+              0
+              true
+              registry-type-text
+              (registry-type-form registry))
+            (step-item
+              1
+              valid?
+              (registry-text registry)
+              (registry-form registry route))
+            (step-item
+              2
+              true
+              registry-publish-text
+              (registry-publish-form public)
+              processing?))]]))))

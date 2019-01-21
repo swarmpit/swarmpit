@@ -64,7 +64,9 @@
      :value           value
      :variant         "outlined"
      :margin          "normal"
+     :style           {:maxWidth "350px"}
      :InputLabelProps {:shrink true}
+     :InputProps      {:className "Swarmpit-form-input"}
      :onChange        #(state/update-value [:driver] (-> % .-target .-value) state/form-value-cursor)}
     (->> plugins
          (map #(comp/menu-item
@@ -164,8 +166,13 @@
       (html
         [:div.Swarmpit-form
          [:div.Swarmpit-form-context
+          (comp/typography
+            {:variant   "h5"
+             :className "Swarmpit-form-title"}
+            "New Volume")
           (comp/grid
             {:container true
+             :className "Swarmpit-form-main-grid"
              :spacing   40}
             (comp/grid
               {:item true
@@ -174,27 +181,23 @@
                :md   12
                :lg   8
                :xl   8}
-              (comp/card
-                {:className "Swarmpit-form-card"}
-                (comp/card-header
-                  {:className "Swarmpit-form-card-header"
-                   :title     "New Volume"})
-                (comp/card-content
-                  {}
-                  (comp/grid
-                    {:container true
-                     :spacing   40}
-                    (comp/grid
-                      {:item true
-                       :xs   12}
-                      (form-name volumeName))
-                    (comp/grid
-                      {:item true
-                       :xs   12}
-                      (comp/typography
-                        {:variant      "h6"
-                         :gutterBottom true} "Driver")
-                      (section-driver item plugins)))
+              (comp/grid
+                {:container true
+                 :spacing   40}
+                (comp/grid
+                  {:item true
+                   :xs   12}
+                  (form-name volumeName))
+                (comp/grid
+                  {:item true
+                   :xs   12}
+                  (comp/typography
+                    {:variant      "h6"
+                     :gutterBottom true} "Driver")
+                  (section-driver item plugins))
+                (comp/grid
+                  {:item true
+                   :xs   12}
                   (html
                     [:div.Swarmpit-form-buttons
                      (composite/progress-button

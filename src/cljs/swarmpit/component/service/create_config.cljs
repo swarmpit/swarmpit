@@ -236,8 +236,17 @@
       (html
         [:div.Swarmpit-form
          [:div.Swarmpit-form-context
+          (comp/typography
+            {:variant   "h5"
+             :className "Swarmpit-form-title"}
+            "New Service")
+          (comp/typography
+            {:variant   "body1"
+             :className "Swarmpit-form-subtitle"}
+            (str "from " (get-in (state/get-value settings/form-value-cursor) [:repository :name])))
           (comp/grid
             {:container true
+             :className "Swarmpit-form-main-grid"
              :spacing   40}
             (comp/grid
               {:item true
@@ -246,28 +255,23 @@
                :md   12
                :lg   8
                :xl   8}
-              (comp/card
-                {:className "Swarmpit-form-card"}
-                (comp/card-header
-                  {:className "Swarmpit-form-card-header"
-                   :title     "New Service"
-                   :subheader (str "from " (get-in (state/get-value settings/form-value-cursor) [:repository :name]))})
-                (comp/card-content
-                  {}
-                  (comp/grid
-                    {:container true
-                     :spacing   40}
-                    (form-settings)
-                    (form-ports)
-                    (form-mounts)
-                    (form-secrets)
-                    (when (<= 1.30 (state/get-value [:docker :api]))
-                      (form-configs))
-                    (form-variables)
-                    (form-labels)
-                    (form-logdriver)
-                    (form-resources)
-                    (form-deployment))
+              (comp/grid
+                {:container true
+                 :spacing   40}
+                (form-settings)
+                (form-ports)
+                (form-mounts)
+                (form-secrets)
+                (when (<= 1.30 (state/get-value [:docker :api]))
+                  (form-configs))
+                (form-variables)
+                (form-labels)
+                (form-logdriver)
+                (form-resources)
+                (form-deployment)
+                (comp/grid
+                  {:item true
+                   :xs   12}
                   (html
                     [:div.Swarmpit-form-buttons
                      (composite/progress-button

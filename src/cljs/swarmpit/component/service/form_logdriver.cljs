@@ -24,6 +24,7 @@
      :style           {:maxWidth "300px"}
      :margin          "normal"
      :InputLabelProps {:shrink true}
+     :InputProps      {:className "Swarmpit-form-input"}
      :onChange        #(state/update-value [:name] (-> % .-target .-value) form-value-cursor)}
     (comp/menu-item
       {:key   "dr-none"

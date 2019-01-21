@@ -138,7 +138,8 @@
      :fullWidth       true
      :multiline       true
      :defaultValue    value
-     :InputProps      {:style {:fontFamily "monospace"}}
+     :InputProps      {:style     {:fontFamily "monospace"}
+                       :className "Swarmpit-form-input"}
      :InputLabelProps {:shrink true}
      :onChange        (fn [event]
                         (let [value (-> event .-target .-value)]

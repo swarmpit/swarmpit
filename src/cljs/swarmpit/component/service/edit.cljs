@@ -251,8 +251,13 @@
       (html
         [:div.Swarmpit-form
          [:div.Swarmpit-form-context
+          (comp/typography
+            {:variant   "h5"
+             :className "Swarmpit-form-title"}
+            (html [:span "Editing " [:span.Swarmpit-secondary-title (:serviceName settings)]]))
           (comp/grid
             {:container true
+             :className "Swarmpit-form-main-grid"
              :spacing   40}
             (comp/grid
               {:item true
@@ -261,28 +266,23 @@
                :md   12
                :lg   8
                :xl   8}
-              (comp/card
-                {:className "Swarmpit-form-card"}
-                (comp/card-header
-                  {:className "Swarmpit-form-card-header"
-                   :title     (html [:span "Editing " [:span.Swarmpit-secondary-title (:serviceName settings)]])})
-                (comp/card-content
-                  {}
-                  (comp/grid
-                    {:container true
-                     :spacing   40}
-                    (form-settings)
-                    (form-networks)
-                    (form-ports)
-                    (form-mounts)
-                    (form-secrets)
-                    (when (<= 1.30 (state/get-value [:docker :api]))
-                      (form-configs))
-                    (form-variables)
-                    (form-labels)
-                    (form-logdriver)
-                    (form-resources)
-                    (form-deployment))
+              (comp/grid
+                {:container true
+                 :spacing   40}
+                (form-settings)
+                (form-ports)
+                (form-mounts)
+                (form-secrets)
+                (when (<= 1.30 (state/get-value [:docker :api]))
+                  (form-configs))
+                (form-variables)
+                (form-labels)
+                (form-logdriver)
+                (form-resources)
+                (form-deployment)
+                (comp/grid
+                  {:item true
+                   :xs   12}
                   (html
                     [:div.Swarmpit-form-buttons
                      (composite/progress-button

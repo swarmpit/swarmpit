@@ -92,7 +92,8 @@
               :InputProps {:inputComponent autocomplete-input
                            :inputProps     (merge innerProps
                                                   {:style    (merge
-                                                               {:display "flex"}
+                                                               {:display         "flex"
+                                                                :backgroundColor "#fff"}
                                                                (when (= "normal" margin)
                                                                  {:padding "10px 15px"})
                                                                (when (= "dense" margin)

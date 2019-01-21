@@ -65,6 +65,7 @@
      :margin          "normal"
      :style           {:maxWidth "150px"}
      :InputLabelProps {:shrink true}
+     :InputProps      {:className "Swarmpit-form-input"}
      :onChange        #(state/update-value [:restartPolicy :condition] (-> % .-target .-value) form-value-cursor)}
     (comp/menu-item
       {:key   "p-any"
@@ -115,6 +116,7 @@
      :margin          "normal"
      :style           {:maxWidth "150px"}
      :InputLabelProps {:shrink true}
+     :InputProps      {:className "Swarmpit-form-input"}
      :onChange        #(state/update-value [:update :order] (-> % .-target .-value) form-value-cursor)}
     (comp/menu-item
       {:key   "u-start-first"
@@ -134,6 +136,7 @@
      :margin          "normal"
      :style           {:maxWidth "150px"}
      :InputLabelProps {:shrink true}
+     :InputProps      {:className "Swarmpit-form-input"}
      :onChange        #(state/update-value [:update :failureAction] (-> % .-target .-value) form-value-cursor)}
     (comp/menu-item
       {:key   "upause"
@@ -184,6 +187,7 @@
      :margin          "normal"
      :style           {:maxWidth "150px"}
      :InputLabelProps {:shrink true}
+     :InputProps      {:className "Swarmpit-form-input"}
      :onChange        #(state/update-value [:rollback :order] (-> % .-target .-value) form-value-cursor)}
     (comp/menu-item
       {:key   "r-stop-first"
@@ -203,6 +207,7 @@
      :margin          "normal"
      :style           {:maxWidth "150px"}
      :InputLabelProps {:shrink true}
+     :InputProps      {:className "Swarmpit-form-input"}
      :onChange        #(state/update-value [:rollback :failureAction] (-> % .-target .-value) form-value-cursor)}
     (comp/menu-item
       {:key   "rpause"

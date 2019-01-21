@@ -33,7 +33,6 @@
   (comp/text-field
     {:label           "Url"
      :fullWidth       true
-     :type            "url"
      :key             "url"
      :variant         "outlined"
      :defaultValue    url
@@ -83,7 +82,8 @@
      :defaultValue    value
      :onChange        #(state/update-value [:password] (-> % .-target .-value) state/form-value-cursor)
      :InputLabelProps {:shrink true}
-     :InputProps      {:endAdornment (common/show-password-adornment show-password?)}}))
+     :InputProps      {:className    "Swarmpit-form-input"
+                       :endAdornment (common/show-password-adornment show-password?)}}))
 
 (defn- create-registry-handler
   []
@@ -129,16 +129,14 @@
        (form-name name url)
        (form-url name url)
        (comp/form-control
-         {:component "fieldset"
-          :key       "rcccigc"}
+         {:component "fieldset"}
          (comp/form-group
-           {:key "rcccigcg"}
+           {}
            (comp/form-control-label
              {:control (form-auth withAuth)
-              :key     "rcccigcga"
               :label   "Secured"})))
        (when withAuth
          (html
-           [:div {:key "rcccigaut"}
+           [:div
             (form-username username)
             (form-password password showPassword)]))])))

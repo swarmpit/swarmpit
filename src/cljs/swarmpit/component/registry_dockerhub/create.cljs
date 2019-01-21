@@ -49,7 +49,8 @@
                                                           (str/blank? username)
                                                           (str/blank? (-> e .-target .-value)))) state/form-state-cursor))
      :InputLabelProps {:shrink true}
-     :InputProps      {:endAdornment (common/show-password-adornment show-password?)}}))
+     :InputProps      {:className    "Swarmpit-form-input"
+                       :endAdornment (common/show-password-adornment show-password?)}}))
 
 (defn add-user-handler
   []
