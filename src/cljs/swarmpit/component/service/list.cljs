@@ -65,7 +65,8 @@
                      {:name      "Ports"
                       :render-fn (fn [item index] (render-item-ports item index))}
                      {:name      ""
-                      :render-fn (fn [item] (list/status (render-status item)))}]}
+                      :status    true
+                      :render-fn (fn [item] (render-status item))}]}
    :list  {:primary   (fn [item] (:serviceName item))
            :secondary (fn [item] (get-in item [:repository :image]))
            :status-fn (fn [item] (render-status item))}})

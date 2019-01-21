@@ -3,7 +3,8 @@
   (:require [material.components :as cmp]
             [swarmpit.url :refer [dispatch!]]
             [sablono.core :refer-macros [html]]
-            [rum.core :as rum]))
+            [rum.core :as rum]
+            [clojure.string :as str]))
 
 (defn status
   [label]
@@ -41,7 +42,9 @@
                          {:key       (str "table-row-cell-" index "-" coll-index)
                           :className "Swarmpit-table-row-cell"}
                          (when onclick-handler-fn
-                           {:style {:cursor "pointer"}}))
+                           {:style {:cursor "pointer"}})
+                         (when (:status coll)
+                           {:style {:textAlign "right"}}))
                        (render-fn item index)))))))) items)))
 
 (rum/defc table < rum/static

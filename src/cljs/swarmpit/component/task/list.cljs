@@ -79,7 +79,8 @@
                      {:name      "Memory Usage"
                       :render-fn (fn [item] (render-item-memory-usage item))}
                      {:name      ""
-                      :render-fn (fn [item] (list/status (render-item-state (:state item))))}]}
+                      :status    true
+                      :render-fn (fn [item] (render-item-state (:state item)))}]}
    :list  {:primary   (fn [item] (:taskName item))
            :secondary (fn [item] (get-in item [:repository :image]))
            :status-fn (fn [item] (render-item-state (:state item)))}})
