@@ -9,6 +9,19 @@
     (subs name (+ 1 (count stack)))
     name))
 
+(defn in-stack?
+  [stack-name map]
+  "Check whenever object has same :stack property"
+  (when stack-name (= stack-name (:stack map))))
+
+(defn alias
+  [key stack-name map]
+  "Removes stack from name of the object belonging to that stack"
+  (let [name (get map key)]
+    (if (and name (in-stack? stack-name map))
+      (trim-stack stack-name name)
+      name)))
+
 (defn library?
   [repository-name]
   "Check whether repository is library"

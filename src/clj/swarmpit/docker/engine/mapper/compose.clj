@@ -3,23 +3,12 @@
             [clojure.set :refer [rename-keys]]
             [swarmpit.utils :refer [clean select-keys* name-value->map]]
             [flatland.ordered.map :refer [ordered-map]]
-            [swarmpit.docker.utils :refer [trim-stack]]
+            [swarmpit.docker.utils :refer [trim-stack in-stack? alias]]
             [swarmpit.docker.engine.mapper.inbound :refer [autoredeploy-label]]
             [swarmpit.yaml :refer [->yaml]])
   (:refer-clojure :exclude [alias]))
 
 (def compose-version "3.3")
-
-(defn in-stack?
-  [stack-name map]
-  (when stack-name (= stack-name (:stack map))))
-
-(defn alias
-  [key stack-name map]
-  (let [name (get map key)]
-    (if (and name (in-stack? stack-name map))
-      (trim-stack stack-name name)
-      name)))
 
 (defn group
   [stack-name fn coll]

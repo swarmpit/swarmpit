@@ -22,7 +22,8 @@
             [clojure.contrib.inflect :as inflect]
             [sablono.core :refer-macros [html]]
             [rum.core :as rum]
-            [swarmpit.docker.utils :as utils]))
+            [swarmpit.docker.utils :as utils]
+            [material.component.label :as label]))
 
 (enable-console-print!)
 
@@ -157,6 +158,13 @@
                 :avatar (comp/avatar {} count)
                 :label  (inflect/pluralize-noun count name)})))
 
+(defn- add-external-status
+  [render-metadata stack-name]
+  (list/add-status
+    render-metadata
+    #(when (not (utils/in-stack? stack-name %))
+       (label/info "external"))))
+
 (rum/defc form-general < rum/static [stack-name stackfile {:keys [services networks volumes configs secrets]}]
   (comp/card
     {:className "Swarmpit-form-card"}
@@ -221,10 +229,10 @@
       (comp/card-content
         {:className "Swarmpit-table-card-content"}
         (list/responsive
-          (list/override-title
-            networks/render-metadata
-            #(utils/trim-stack stack-name (:networkName %)))
-          (sort-by :networkName networks)
+          (-> networks/render-metadata
+              (list/override-title #(utils/alias :networkName stack-name %))
+              (add-external-status stack-name))
+          networks
           networks/onclick-handler)))))
 
 (rum/defc form-volumes < rum/static [stack-name volumes]
@@ -240,10 +248,10 @@
       (comp/card-content
         {:className "Swarmpit-table-card-content"}
         (list/responsive
-          (list/override-title
-            volumes/render-metadata
-            #(utils/trim-stack stack-name (:volumeName %)))
-          (sort-by :volumeName volumes)
+          (-> volumes/render-metadata
+              (list/override-title #(utils/alias :volumeName stack-name %))
+              (add-external-status stack-name))
+          volumes
           volumes/onclick-handler)))))
 
 (rum/defc form-configs < rum/static [stack-name configs]
@@ -259,10 +267,7 @@
       (comp/card-content
         {:className "Swarmpit-table-card-content"}
         (list/list
-          (:list
-            (list/override-title
-              configs/render-metadata
-              #(utils/trim-stack stack-name (:configName %))))
+          (:list configs/render-metadata)
           (sort-by :configName configs)
           configs/onclick-handler)))))
 
@@ -279,10 +284,7 @@
       (comp/card-content
         {:className "Swarmpit-table-card-content"}
         (list/list
-          (:list
-            (list/override-title
-              secrets/render-metadata
-              #(utils/trim-stack stack-name (:secretName %))))
+          (:list secrets/render-metadata)
           (sort-by :secretName secrets)
           secrets/onclick-handler)))))
 

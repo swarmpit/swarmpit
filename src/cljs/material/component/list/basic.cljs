@@ -84,6 +84,15 @@
         (assoc-in [:table :summary] table-summary)
         (assoc-in [:list :primary] custom-render-fn))))
 
+(defn add-status
+  [render-metadata custom-render-fn]
+  (let [table-summary (-> (get-in render-metadata [:table :summary])
+                          (conj {:name      ""
+                                 :render-fn #(status (custom-render-fn %))}))]
+    (-> render-metadata
+        (assoc-in [:table :summary] table-summary)
+        (assoc-in [:list :status-fn] custom-render-fn))))
+
 (rum/defc list < rum/static [render-metadata items onclick-handler-fn]
   (cmp/list
     {:dense true}

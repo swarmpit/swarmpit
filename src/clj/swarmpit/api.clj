@@ -553,9 +553,7 @@
          (map :mounts)
          (flatten)
          (filter #(= "volume" (:type %)))
-         (map #(merge % {:volumeName (:host %)
-                         :driver     (-> % :volumeOptions :driver :name)
-                         :options    (-> % :volumeOptions :options)}))
+         (map #(merge % {:volumeName (:host %)}))
          (map #(merge (first (get volumes (:id %))) %)))))
 
 (def services-memo (memo/ttl services :ttl/threshold 1000))
