@@ -52,10 +52,12 @@
 
 (defn- render-status [item]
   (let [update-status (get-in item [:status :update])]
-    (if (or (= "updating" update-status)
-            (= "rollback_started" update-status))
-      (render-item-update-state update-status)
-      (render-item-state (:state item)))))
+    (html
+      [:span.Swarmpit-table-status
+       (if (or (= "updating" update-status)
+               (= "rollback_started" update-status))
+         (render-item-update-state update-status)
+         (render-item-state (:state item)))])))
 
 (def render-metadata
   {:table {:summary [{:name      "Service"

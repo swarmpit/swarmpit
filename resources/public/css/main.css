@@ -415,7 +415,8 @@ a {
 }
 
 .Swarmpit-table-status {
-    width: 150px;
+    width: 90px;
+    display: inline-block;
     text-align: center;
 }
 

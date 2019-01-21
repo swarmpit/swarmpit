@@ -6,10 +6,6 @@
             [rum.core :as rum]
             [clojure.string :as str]))
 
-(defn status
-  [label]
-  (html [:div.Swarmpit-table-status label]))
-
 (defn table-head
   [render-metadata]
   (cmp/table-head
@@ -91,7 +87,8 @@
   [render-metadata custom-render-fn]
   (let [table-summary (-> (get-in render-metadata [:table :summary])
                           (conj {:name      ""
-                                 :render-fn #(status (custom-render-fn %))}))]
+                                 :status    true
+                                 :render-fn #(custom-render-fn %)}))]
     (-> render-metadata
         (assoc-in [:table :summary] table-summary)
         (assoc-in [:list :status-fn] custom-render-fn))))
