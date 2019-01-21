@@ -27,34 +27,24 @@
      :InputLabelProps {:shrink true}}))
 
 (defn- form-role [value]
-  (comp/form-control
-    {:component "fieldset"
-     :key       "role-f"
-     :margin    "normal"
-     :style     {:width "200px"}}
-    (comp/form-label
-      {:key "rolel"} "Role")
-    (comp/radio-group
-      {:name     "role"
-       :key      "role-rg"
-       :value    value
-       :onChange #(state/update-value [:role] (-> % .-target .-value) state/form-value-cursor)}
-      (comp/form-control-label
-        {:control (comp/radio
-                    {:name  "admin-role"
-                     :color "primary"
-                     :key   "admin-role"})
-         :key     "ad-role"
-         :value   "admin"
-         :label   "Admin"})
-      (comp/form-control-label
-        {:control (comp/radio
-                    {:name  "user-role"
-                     :color "primary"
-                     :key   "user-role"})
-         :key     "usr-role"
-         :value   "user"
-         :label   "User"}))))
+  (comp/text-field
+    {:fullWidth       true
+     :label           "Role"
+     :key             "role"
+     :select          true
+     :value           value
+     :variant         "outlined"
+     :margin          "normal"
+     :InputLabelProps {:shrink true}
+     :InputProps      {:className "Swarmpit-form-input"}
+     :onChange        #(state/update-value [:role] (-> % .-target .-value) state/form-value-cursor)}
+    (comp/menu-item
+      {:key   "admin"
+       :value "admin"} "admin")
+    (comp/menu-item
+      {:key   "user"
+       :value "user"} "user")))
+
 
 (defn- form-email [value]
   (comp/text-field
@@ -122,8 +112,8 @@
            (comp/grid
              {:item true
               :xs   12}
-             (form-email email)
-             (form-role role))
+             (form-role role)
+             (form-email email))
            (comp/grid
              {:item true
               :xs   12}

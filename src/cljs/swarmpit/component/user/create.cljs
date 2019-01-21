@@ -142,8 +142,8 @@
                 :xs   12}
                (form-username username)
                (form-password password showPassword)
-               (form-email email)
-               (form-role role))
+               (form-role role)
+               (form-email email))
              (comp/grid
                {:item true
                 :xs   12}

@@ -712,6 +712,10 @@ a {
     max-width: 400px;
 }
 
+.Swarmpit-access-form {
+    max-width: 600px;
+}
+
 .Swarmpit-card-header-responsive-title {
     word-break: break-word;
 }

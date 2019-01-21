@@ -102,32 +102,24 @@
                  mixin-init-form []
   (let [{:keys [password new-password confirm-password]} (state/react state/form-state-cursor)
         {:keys [error? processing? showPassword]} (state/react state/form-state-cursor)]
-    (comp/grid
-      {:item true
-       :xs   12
-       :sm   6
-       :md   5
-       :lg   3}
-      (comp/card
-        {:className "Swarmpit-form-card"}
-        (comp/card-header
-          {:className "Swarmpit-form-card-header"
-           :title     "Change password"})
-        (comp/card-content
-          {}
-          (comp/grid
-            {:container true
-             :spacing   40}
-            (comp/grid
-              {:item true
-               :xs   12}
-              (form-password password showPassword)
-              (form-new-password new-password showPassword)
-              (form-confirm-password confirm-password error? showPassword)))
-          (html
-            [:div.Swarmpit-form-buttons
-             (composite/progress-button
-               "Change"
-               change-password-handler
-               processing?
-               (or error? (some? password) (some? new-password)))]))))))
+    (html
+      [:div.Swarmpit-user-form
+       (comp/grid
+         {:container true
+          :spacing   40}
+         (comp/grid
+           {:item true
+            :xs   12}
+           (form-password password showPassword)
+           (form-new-password new-password showPassword)
+           (form-confirm-password confirm-password error? showPassword))
+         (comp/grid
+           {:item true
+            :xs   12}
+           (html
+             [:div.Swarmpit-form-buttons
+              (composite/progress-button
+                "Change"
+                change-password-handler
+                processing?
+                (or error? (some? password) (some? new-password)))])))])))

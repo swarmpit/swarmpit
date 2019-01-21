@@ -82,53 +82,43 @@
         state (if (and api-token (not token))
                 :old
                 (if token :new :none))]
-    (comp/grid
-      {:item true
-       :key  "root"
-       :xs   12
-       :sm   6
-       :md   7
-       :lg   6}
-      (comp/card
-        {:className "Swarmpit-form-card"
-         :key       "card"}
-        (comp/card-header
-          {:className "Swarmpit-form-card-header"
-           :key       "header"
-           :title     (case state
-                        :none "Create API token"
-                        :old "API Token"
-                        :new "New API token")})
-        (comp/card-content
-          {:key "content"}
-          (comp/grid
-            {:container true
-             :key       "outer"
-             :spacing   40}
-            (comp/grid
-              {:item true
-               :key  "inner"
-               :xs   12}
-              (case state
-                :old (old-token-form api-token)
-                :new (new-token-form token)
-                :none (no-token-form))))
-          (html
-            [:div {:class "Swarmpit-form-buttons"
-                   :key   "actions"}
-             (comp/button
-               {:variant  "contained"
-                :key      "submit"
-                :disabled false
-                :onClick  generate-handler
-                :color    "primary"}
-               (case state :none "Generate" "Regenerate"))
-             (comp/button
-               {:variant  "outlined"
-                :key      "remove"
-                :disabled (= :none state)
-                :onClick  remove-handler}
-               "Remove")]))))))
+    (html
+      [:div.Swarmpit-access-form
+       (comp/grid
+         {:container true
+          :spacing   40}
+         (comp/grid
+           {:item true
+            :xs   12}
+           (comp/typography
+             {:variant   "h5"
+              :className "Swarmpit-form-title"}
+             (case state
+               :none "Create API token"
+               :old "API Token"
+               :new "New API token"))
+           (case state
+             :old (old-token-form api-token)
+             :new (new-token-form token)
+             :none (no-token-form)))
+         (comp/grid
+           {:item true
+            :xs   12}
+           (html
+             [:div.Swarmpit-form-buttons
+              (comp/button
+                {:variant  "contained"
+                 :key      "submit"
+                 :disabled false
+                 :onClick  generate-handler
+                 :color    "primary"}
+                (case state :none "Generate" "Regenerate"))
+              (comp/button
+                {:variant  "outlined"
+                 :key      "remove"
+                 :disabled (= :none state)
+                 :onClick  remove-handler}
+                "Remove")])))])))
 
 (rum/defc form < rum/reactive
                  mixin-init-form []
