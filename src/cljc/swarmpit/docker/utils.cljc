@@ -1,5 +1,6 @@
 (ns swarmpit.docker.utils
   "Utility ns for docker domain"
+  (:refer-clojure :exclude [alias])
   (:require [clojure.string :as str]))
 
 (defn trim-stack
