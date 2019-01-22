@@ -480,6 +480,10 @@ a {
     color: rgba(0, 0, 0, 0.87) !important;
 }
 
+.Swarmpit-form-paper {
+    padding: 16px;
+}
+
 .Swarmpit-form-main-grid {
     padding-top: 24px;
 }
@@ -796,6 +800,11 @@ a {
         width: 72px;
     }
 
+    .Swarmpit-form-paper {
+        padding-left: 24px;
+        padding-right: 24px;
+    }
+
     .Swarmpit-appbar-title,
     .Swarmpit-appbar-subtitle {
         display: block !important;
@@ -852,6 +861,10 @@ a {
     .Swarmpit-form-panel-search {
         width: 100%;
         margin-bottom: 10px;
+    }
+
+    .Swarmpit-form-context {
+        padding: 20px 10px;
     }
 
     .Swarmpit-node-stat {
