@@ -677,6 +677,12 @@ a {
     border: 1px solid rgba(0, 0, 0, 0.23) !important;
 }
 
+.Swarmpit-codemirror-info {
+    border-radius: 0 !important;
+    width: 100%;
+    border-top: 1px solid rgba(0, 0, 0, 0.12) !important;
+}
+
 .Swarmpit-codemirror > div {
     padding: 0 !important;
 }

@@ -30,5 +30,5 @@
 (defn view
   [editor-id]
   (default editor-id {:readOnly     "no-cursor"
-                      :lineWrapping true
-                      :lineNumbers  false}))
+                      :lineWrapping false
+                      :lineNumbers  true}))
