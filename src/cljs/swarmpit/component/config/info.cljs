@@ -29,7 +29,8 @@
 (defn- form-data [value]
   (comp/text-field
     {:id              editor-id
-     :className       "Swarmpit-codemirror-no-bot-border"
+     :className       "Swarmpit-codemirror-ro"
+     ;:style           {:maxWidth "100vh"}
      :fullWidth       true
      :name            "config-view"
      :key             "config-view"
@@ -105,8 +106,12 @@
     {:className "Swarmpit-form-card"}
     (comp/card-header
       {:title     (comp/typography {:variant "h6"} "Data")
-       :className "Swarmpit-form-card-header"})
-    (form-data (parse-data (:data config)))))
+       :className "Swarmpit-form-table-header"})
+    (comp/card-content
+      {:style {:overflow-wrap "break-word"
+               :word-wrap     "break-word"
+               :hyphens       "auto"}}
+      (form-data (parse-data (:data config))))))
 
 (defn- init-form-state
   []
