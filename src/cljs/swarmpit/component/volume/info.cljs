@@ -102,10 +102,11 @@
     (comp/card-content
       {:className "Swarmpit-table-card-content"}
       (when (not-empty options)
+        [(comp/divider {})
          (list/list
            form-driver-opts-render-metadata
            options
-           nil)))))
+           nil)]))))
 
 (defn- init-form-state
   []

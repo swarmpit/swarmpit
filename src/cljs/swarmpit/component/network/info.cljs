@@ -109,12 +109,16 @@
       {:className "Swarmpit-table-card-header"
        :title     (comp/typography {:variant "h6"} "Driver")})
     (comp/card-content
+      {}
+      (html [:div [:span driver]]))
+    (comp/card-content
       {:className "Swarmpit-table-card-content"}
       (when (not-empty options)
-        (list/list
+        [(comp/divider {})
+         (list/list
           form-driver-opts-render-metadata
           options
-          nil)))))
+          nil)]))))
 
 (defn- init-form-state
   []
