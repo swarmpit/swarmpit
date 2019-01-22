@@ -100,29 +100,30 @@
     (html
       [:div.Swarmpit-form
        [:div.Swarmpit-form-context
-        [:div.Swarmpit-user-form
-         (comp/typography
-           {:variant   "h5"
-            :className "Swarmpit-form-title"}
-           (html [:span "Editing " [:span.Swarmpit-secondary-title username]]))
-         (comp/grid
-           {:container true
-            :className "Swarmpit-form-main-grid"
-            :spacing   40}
-           (comp/grid
-             {:item true
-              :xs   12}
-             (form-role role)
-             (form-email email))
-           (comp/grid
-             {:item true
-              :xs   12}
-             (html
-               [:div.Swarmpit-form-buttons
-                (composite/progress-button
-                  "Save"
-                  #(update-user-handler _id)
-                  processing?)])))]]])))
+        [:div.Swarmpit-form-paper
+         [:div.Swarmpit-user-form
+          (comp/typography
+            {:variant   "h5"
+             :className "Swarmpit-form-title"}
+            (html [:span "Editing " [:span.Swarmpit-secondary-title username]]))
+          (comp/grid
+            {:container true
+             :className "Swarmpit-form-main-grid"
+             :spacing   40}
+            (comp/grid
+              {:item true
+               :xs   12}
+              (form-role role)
+              (form-email email))
+            (comp/grid
+              {:item true
+               :xs   12}
+              (html
+                [:div.Swarmpit-form-buttons
+                 (composite/progress-button
+                   "Save"
+                   #(update-user-handler _id)
+                   processing?)])))]]]])))
 
 (rum/defc form < rum/reactive
                  mixin-init-form [_]

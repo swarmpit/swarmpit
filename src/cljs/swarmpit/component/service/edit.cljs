@@ -251,52 +251,53 @@
       (html
         [:div.Swarmpit-form
          [:div.Swarmpit-form-context
-          (comp/typography
-            {:variant   "h5"
-             :className "Swarmpit-form-title"}
-            (html [:span "Editing " [:span.Swarmpit-secondary-title (:serviceName settings)]]))
-          (comp/grid
-            {:container true
-             :className "Swarmpit-form-main-grid"
-             :spacing   40}
-            (comp/grid
-              {:item true
-               :xs   12
-               :sm   12
-               :md   12
-               :lg   8
-               :xl   8}
-              (comp/grid
-                {:container true
-                 :spacing   40}
-                (form-settings)
-                (form-ports)
-                (form-mounts)
-                (form-secrets)
-                (when (<= 1.30 (state/get-value [:docker :api]))
-                  (form-configs))
-                (form-variables)
-                (form-labels)
-                (form-logdriver)
-                (form-resources)
-                (form-deployment)
-                (comp/grid
-                  {:item true
-                   :xs   12}
-                  (html
-                    [:div.Swarmpit-form-buttons
-                     (composite/progress-button
-                       "Save"
-                       #(update-service-handler id)
-                       processing?)]))))
-            (comp/grid
-              {:item true
-               :xs   12
-               :sm   12
-               :md   12
-               :lg   4
-               :xl   4}
-              (form/open-in-new "Learn more about compose" doc-services-link)))]]))))
+          [:div.Swarmpit-form-paper
+           (comp/typography
+             {:variant   "h5"
+              :className "Swarmpit-form-title"}
+             (html [:span "Editing " [:span.Swarmpit-secondary-title (:serviceName settings)]]))
+           (comp/grid
+             {:container true
+              :className "Swarmpit-form-main-grid"
+              :spacing   40}
+             (comp/grid
+               {:item true
+                :xs   12
+                :sm   12
+                :md   12
+                :lg   8
+                :xl   8}
+               (comp/grid
+                 {:container true
+                  :spacing   40}
+                 (form-settings)
+                 (form-ports)
+                 (form-mounts)
+                 (form-secrets)
+                 (when (<= 1.30 (state/get-value [:docker :api]))
+                   (form-configs))
+                 (form-variables)
+                 (form-labels)
+                 (form-logdriver)
+                 (form-resources)
+                 (form-deployment)
+                 (comp/grid
+                   {:item true
+                    :xs   12}
+                   (html
+                     [:div.Swarmpit-form-buttons
+                      (composite/progress-button
+                        "Save"
+                        #(update-service-handler id)
+                        processing?)]))))
+             (comp/grid
+               {:item true
+                :xs   12
+                :sm   12
+                :md   12
+                :lg   4
+                :xl   4}
+               (form/open-in-new "Learn more about compose" doc-services-link)))]]]))))
 
 (rum/defc form < rum/reactive
                  mixin-init-form

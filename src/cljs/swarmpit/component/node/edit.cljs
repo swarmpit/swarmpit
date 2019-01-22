@@ -189,61 +189,62 @@
     (html
       [:div.Swarmpit-form
        [:div.Swarmpit-form-context
-        (comp/typography
-          {:variant   "h5"
-           :className "Swarmpit-form-title"}
-          (html [:span "Editing " [:span.Swarmpit-secondary-title nodeName]]))
-        (comp/grid
-          {:container true
-           :className "Swarmpit-form-main-grid"
-           :spacing   40}
-          (comp/grid
-            {:item true
-             :xs   12
-             :sm   12
-             :md   12
-             :lg   8
-             :xl   8}
-            (comp/grid
-              {:container true
-               :spacing   40}
-              (comp/grid
-                {:item true
-                 :xs   12
-                 :sm   6}
-                (form-role role))
-              (comp/grid
-                {:item true
-                 :xs   12
-                 :sm   6}
-                (form-availability availability))
-              (comp/grid
-                {:item true
-                 :xs   12}
-                (form/section
-                  "Labels"
-                  (comp/button
-                    {:color   "primary"
-                     :onClick add-label}
-                    (comp/svg icon/add-small-path) "Add label"))
-                (form-label-table labels))
-              (comp/grid
-                {:item true
-                 :xs   12}
-                (html
-                  [:div.Swarmpit-form-buttons
-                   (composite/progress-button
-                     "Save"
-                     #(update-node-handler id version)
-                     processing?)]))))
-          (comp/grid
-            {:item true
-             :xs   12
-             :sm   12
-             :md   12
-             :lg   4
-             :xl   4}
-            (form/open-in-new "Learn more about nodes" doc-node-link)))]])))
+        [:div.Swarmpit-form-paper
+         (comp/typography
+           {:variant   "h5"
+            :className "Swarmpit-form-title"}
+           (html [:span "Editing " [:span.Swarmpit-secondary-title nodeName]]))
+         (comp/grid
+           {:container true
+            :className "Swarmpit-form-main-grid"
+            :spacing   40}
+           (comp/grid
+             {:item true
+              :xs   12
+              :sm   12
+              :md   12
+              :lg   8
+              :xl   8}
+             (comp/grid
+               {:container true
+                :spacing   40}
+               (comp/grid
+                 {:item true
+                  :xs   12
+                  :sm   6}
+                 (form-role role))
+               (comp/grid
+                 {:item true
+                  :xs   12
+                  :sm   6}
+                 (form-availability availability))
+               (comp/grid
+                 {:item true
+                  :xs   12}
+                 (form/section
+                   "Labels"
+                   (comp/button
+                     {:color   "primary"
+                      :onClick add-label}
+                     (comp/svg icon/add-small-path) "Add label"))
+                 (form-label-table labels))
+               (comp/grid
+                 {:item true
+                  :xs   12}
+                 (html
+                   [:div.Swarmpit-form-buttons
+                    (composite/progress-button
+                      "Save"
+                      #(update-node-handler id version)
+                      processing?)]))))
+           (comp/grid
+             {:item true
+              :xs   12
+              :sm   12
+              :md   12
+              :lg   4
+              :xl   4}
+             (form/open-in-new "Learn more about nodes" doc-node-link)))]]])))
 
 (rum/defc form < rum/reactive
                  mixin-init-form

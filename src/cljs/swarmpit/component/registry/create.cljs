@@ -129,25 +129,26 @@
       (html
         [:div.Swarmpit-form
          [:div.Swarmpit-form-context
-          (comp/typography
-            {:variant "h5"} "Add registry")
-          (comp/stepper
-            {:className   "Swarmpit-stepper"
-             :activeStep  index
-             :orientation "vertical"}
-            (step-item
-              0
-              true
-              registry-type-text
-              (registry-type-form registry))
-            (step-item
-              1
-              valid?
-              (registry-text registry)
-              (registry-form registry route))
-            (step-item
-              2
-              true
-              registry-publish-text
-              (registry-publish-form public)
-              processing?))]]))))
+          [:div.Swarmpit-form-paper
+           (comp/typography
+             {:variant "h5"} "Add registry")
+           (comp/stepper
+             {:className   "Swarmpit-stepper"
+              :activeStep  index
+              :orientation "vertical"}
+             (step-item
+               0
+               true
+               registry-type-text
+               (registry-type-form registry))
+             (step-item
+               1
+               valid?
+               (registry-text registry)
+               (registry-form registry route))
+             (step-item
+               2
+               true
+               registry-publish-text
+               (registry-publish-form public)
+               processing?))]]]))))

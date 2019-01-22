@@ -166,49 +166,50 @@
       (html
         [:div.Swarmpit-form
          [:div.Swarmpit-form-context
-          (comp/typography
-            {:variant   "h5"
-             :className "Swarmpit-form-title"}
-            "New Volume")
-          (comp/grid
-            {:container true
-             :className "Swarmpit-form-main-grid"
-             :spacing   40}
-            (comp/grid
-              {:item true
-               :xs   12
-               :sm   12
-               :md   12
-               :lg   8
-               :xl   8}
-              (comp/grid
-                {:container true
-                 :spacing   40}
-                (comp/grid
-                  {:item true
-                   :xs   12}
-                  (form-name volumeName))
-                (comp/grid
-                  {:item true
-                   :xs   12}
-                  (comp/typography
-                    {:variant      "h6"
-                     :gutterBottom true} "Driver")
-                  (section-driver item plugins))
-                (comp/grid
-                  {:item true
-                   :xs   12}
-                  (html
-                    [:div.Swarmpit-form-buttons
-                     (composite/progress-button
-                       "Create"
-                       #(create-volume-handler)
-                       processing?)]))))
-            (comp/grid
-              {:item true
-               :xs   12
-               :sm   12
-               :md   12
-               :lg   4
-               :xl   4}
-              (form/open-in-new "Learn more about volumes" doc-volume-link)))]]))))
+          [:div.Swarmpit-form-paper
+           (comp/typography
+             {:variant   "h5"
+              :className "Swarmpit-form-title"}
+             "New Volume")
+           (comp/grid
+             {:container true
+              :className "Swarmpit-form-main-grid"
+              :spacing   40}
+             (comp/grid
+               {:item true
+                :xs   12
+                :sm   12
+                :md   12
+                :lg   8
+                :xl   8}
+               (comp/grid
+                 {:container true
+                  :spacing   40}
+                 (comp/grid
+                   {:item true
+                    :xs   12}
+                   (form-name volumeName))
+                 (comp/grid
+                   {:item true
+                    :xs   12}
+                   (comp/typography
+                     {:variant      "h6"
+                      :gutterBottom true} "Driver")
+                   (section-driver item plugins))
+                 (comp/grid
+                   {:item true
+                    :xs   12}
+                   (html
+                     [:div.Swarmpit-form-buttons
+                      (composite/progress-button
+                        "Create"
+                        #(create-volume-handler)
+                        processing?)]))))
+             (comp/grid
+               {:item true
+                :xs   12
+                :sm   12
+                :md   12
+                :lg   4
+                :xl   4}
+               (form/open-in-new "Learn more about volumes" doc-volume-link)))]]]))))

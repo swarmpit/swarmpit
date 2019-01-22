@@ -90,46 +90,47 @@
       (html
         [:div.Swarmpit-form
          [:div.Swarmpit-form-context
-          (comp/typography
-            {:variant   "h5"
-             :className "Swarmpit-form-title"}
-            "New Config")
-          (comp/grid
-            {:container true
-             :className "Swarmpit-form-main-grid"
-             :spacing   40}
-            (comp/grid
-              {:item true
-               :xs   12
-               :sm   12
-               :md   12
-               :lg   8
-               :xl   8}
-              (comp/grid
-                {:container true
-                 :spacing   40}
-                (comp/grid
-                  {:item true
-                   :xs   12}
-                  (form-name configName))
-                (comp/grid
-                  {:item true
-                   :xs   12}
-                  (form-data data))
-                (comp/grid
-                  {:item true
-                   :xs   12}
-                  (html
-                    [:div.Swarmpit-form-buttons
-                     (composite/progress-button
-                       "Create"
-                       create-config-handler
-                       processing?)]))))
-            (comp/grid
-              {:item true
-               :xs   12
-               :sm   12
-               :md   12
-               :lg   4
-               :xl   4}
-              (form/open-in-new "Learn more about configs" doc-configs-link)))]]))))
+          [:div.Swarmpit-form-paper
+           (comp/typography
+             {:variant   "h5"
+              :className "Swarmpit-form-title"}
+             "New Config")
+           (comp/grid
+             {:container true
+              :className "Swarmpit-form-main-grid"
+              :spacing   40}
+             (comp/grid
+               {:item true
+                :xs   12
+                :sm   12
+                :md   12
+                :lg   8
+                :xl   8}
+               (comp/grid
+                 {:container true
+                  :spacing   40}
+                 (comp/grid
+                   {:item true
+                    :xs   12}
+                   (form-name configName))
+                 (comp/grid
+                   {:item true
+                    :xs   12}
+                   (form-data data))
+                 (comp/grid
+                   {:item true
+                    :xs   12}
+                   (html
+                     [:div.Swarmpit-form-buttons
+                      (composite/progress-button
+                        "Create"
+                        create-config-handler
+                        processing?)]))))
+             (comp/grid
+               {:item true
+                :xs   12
+                :sm   12
+                :md   12
+                :lg   4
+                :xl   4}
+               (form/open-in-new "Learn more about configs" doc-configs-link)))]]]))))

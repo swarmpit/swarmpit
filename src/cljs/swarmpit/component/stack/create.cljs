@@ -109,52 +109,53 @@
       (html
         [:div.Swarmpit-form
          [:div.Swarmpit-form-context
-          (comp/typography
-            {:variant   "h5"
-             :className "Swarmpit-form-title"}
-            "New stack")
-          (comp/grid
-            {:container true
-             :className "Swarmpit-form-main-grid"
-             :spacing   40}
-            (comp/grid
-              {:item true
-               :xs   12
-               :sm   12
-               :md   12
-               :lg   8
-               :xl   8}
-              (comp/grid
-                {:container true
-                 :spacing   40}
-                (comp/grid
-                  {:item true
-                   :xs   12}
-                  (form-name name))
-                (comp/grid
-                  {:item true
-                   :xs   12}
-                  (when-not from
-                    (html [:span.Swarmpit-message "Drag & drop or paste a compose file."]))
-                  (form-editor (:compose spec)))
-                (comp/grid
-                  {:item true
-                   :xs   12}
-                  (html
-                    [:div.Swarmpit-form-buttons
-                     (composite/progress-button
-                       "Deploy"
-                       create-stack-handler
-                       processing?)]))))
-            (comp/grid
-              {:item true
-               :xs   12
-               :sm   12
-               :md   12
-               :lg   4
-               :xl   4}
-              (form/open-in-new "Learn more about compose" doc-compose-link)
-              (form/open-in-new "Format reference" doc-compose-ref-link)))]]))))
+          [:div.Swarmpit-form-paper
+           (comp/typography
+             {:variant   "h5"
+              :className "Swarmpit-form-title"}
+             "New stack")
+           (comp/grid
+             {:container true
+              :className "Swarmpit-form-main-grid"
+              :spacing   40}
+             (comp/grid
+               {:item true
+                :xs   12
+                :sm   12
+                :md   12
+                :lg   8
+                :xl   8}
+               (comp/grid
+                 {:container true
+                  :spacing   40}
+                 (comp/grid
+                   {:item true
+                    :xs   12}
+                   (form-name name))
+                 (comp/grid
+                   {:item true
+                    :xs   12}
+                   (when-not from
+                     (html [:span.Swarmpit-message "Drag & drop or paste a compose file."]))
+                   (form-editor (:compose spec)))
+                 (comp/grid
+                   {:item true
+                    :xs   12}
+                   (html
+                     [:div.Swarmpit-form-buttons
+                      (composite/progress-button
+                        "Deploy"
+                        create-stack-handler
+                        processing?)]))))
+             (comp/grid
+               {:item true
+                :xs   12
+                :sm   12
+                :md   12
+                :lg   4
+                :xl   4}
+               (form/open-in-new "Learn more about compose" doc-compose-link)
+               (form/open-in-new "Format reference" doc-compose-ref-link)))]]]))))
 
 (rum/defc form < rum/reactive
                  mixin-init-form [params]

@@ -128,28 +128,29 @@
       (html
         [:div.Swarmpit-form
          [:div.Swarmpit-form-context
-          [:div.Swarmpit-user-form
-           (comp/typography
-             {:variant   "h5"
-              :className "Swarmpit-form-title"}
-             "New User")
-           (comp/grid
-             {:container true
-              :className "Swarmpit-form-main-grid"
-              :spacing   40}
-             (comp/grid
-               {:item true
-                :xs   12}
-               (form-username username)
-               (form-password password showPassword)
-               (form-role role)
-               (form-email email))
-             (comp/grid
-               {:item true
-                :xs   12}
-               (html
-                 [:div.Swarmpit-form-buttons
-                  (composite/progress-button
-                    "Create"
-                    create-user-handler
-                    processing?)])))]]]))))
+          [:div.Swarmpit-form-paper
+           [:div.Swarmpit-user-form
+            (comp/typography
+              {:variant   "h5"
+               :className "Swarmpit-form-title"}
+              "New User")
+            (comp/grid
+              {:container true
+               :className "Swarmpit-form-main-grid"
+               :spacing   40}
+              (comp/grid
+                {:item true
+                 :xs   12}
+                (form-username username)
+                (form-password password showPassword)
+                (form-role role)
+                (form-email email))
+              (comp/grid
+                {:item true
+                 :xs   12}
+                (html
+                  [:div.Swarmpit-form-buttons
+                   (composite/progress-button
+                     "Create"
+                     create-user-handler
+                     processing?)])))]]]]))))
