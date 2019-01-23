@@ -12,7 +12,7 @@
 
 (defn- trim-ms
   [datetime]
-  (str/replace datetime #"\.(.+)Z$" "Z"))
+  (str/replace datetime #"\.(.+)(Z|\+.*|-.*)$" "$2"))
 
 (defn parse
   [datetime]
@@ -43,5 +43,5 @@
     false
     (try (do (parse datetime)
              true)
-         (catch :default e
+         (catch :default _
            false))))
