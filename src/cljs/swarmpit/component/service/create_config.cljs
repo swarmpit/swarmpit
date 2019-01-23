@@ -209,7 +209,7 @@
   (comp/grid
     {:item true
      :xs   12}
-    (form/section "Logging")
+    (form/section "Log driver")
     (logdriver/form)))
 
 (rum/defc form-resources < rum/static []

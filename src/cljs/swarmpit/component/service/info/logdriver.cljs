@@ -18,21 +18,22 @@
     {:className "Swarmpit-card"}
     (comp/card-header
       {:className "Swarmpit-table-card-header"
-       :title     (comp/typography {:variant "h6"} "Logging")
+       :title     (comp/typography {:variant "h6"} "Log driver")
        :action    (comp/icon-button
                     {:aria-label "Edit"
                      :href       (routes/path-for-frontend
                                    :service-edit
                                    {:id service-id}
-                                   {:section "Logging"})}
+                                   {:section "Log driver"})}
                     (comp/svg icon/edit-path))})
     (comp/card-content
       {}
-      (html
-        [:div {:style {:maxWidth "200px"}} (form/item "Driver" name)]))
+      name)
     (comp/card-content
       {:className "Swarmpit-table-card-content"}
-      (list/list
-        render-metadata
-        opts
-        nil))))
+      (when (not-empty opts)
+        [(comp/divider {})
+         (list/list
+           render-metadata
+           opts
+           nil)]))))

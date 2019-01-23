@@ -224,7 +224,7 @@
     {:item true
      :xs   12}
     (form/section
-      "Logging")
+      "Log driver")
     (logdriver/form)))
 
 (rum/defc form-resources < rum/static []
