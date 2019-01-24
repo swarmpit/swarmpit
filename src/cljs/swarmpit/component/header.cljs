@@ -104,7 +104,7 @@
 (defn- search-input [on-change-fn title]
   (html
     [:div.Swarmpit-appbar-search
-     [:div.Swarmpit-appbar-search-icon icon/search]
+     [:div.Swarmpit-appbar-search-icon (icon/search {})]
      (comp/input
        {:placeholder      (str "Search " (string/lower-case title) " ...")
         :onChange         on-change-fn

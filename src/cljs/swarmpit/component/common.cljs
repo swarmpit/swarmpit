@@ -20,11 +20,11 @@
 
 (defn list-empty [title]
   (comp/typography
-    {:key "scclcct"} (str "There are no " title " configured.")))
+    {:key "empty-text"} (str "There are no " title " configured.")))
 
 (defn list-no-items-found []
   (comp/typography
-    {:key "scclccit"} "Nothing matches this filter."))
+    {:key "nothing-match-text"} "Nothing matches this filter."))
 
 (rum/defc list-toolbar-filter-menu < rum/reactive [title filters]
   (let [anchorEl (state/react (conj state/form-state-cursor :listFilterAnchorEl))]

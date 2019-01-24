@@ -29,7 +29,6 @@
 (defn- registry-type-form [value]
   (comp/text-field
     {:fullWidth       true
-     :key             "distrt"
      :label           "Registry account type"
      :select          true
      :value           value

@@ -30,8 +30,7 @@
                      {:name      "Url"
                       :render-fn (fn [item] (:url item))}
                      {:name      "Public"
-                      :render-fn (fn [item] (if (:public item) "yes" "no"))}
-                     ]}
+                      :render-fn (fn [item] (if (:public item) "yes" "no"))}]}
    :list  {:primary   (fn [item] (:name item))
            :secondary (fn [item] (:url item))
            :status-fn (fn [item] (case (:type item)

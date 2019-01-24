@@ -68,7 +68,7 @@
          "Remove")
        [:div.Swarmpit-form-context
         (comp/card
-          {:className ["Swarmpit-form-card" "Swarmpit-form-card-single"]
+          {:className "Swarmpit-form-card Swarmpit-form-card-single"
            :style     {:maxWidth "500px"}}
           (comp/card-header
             {:title     name

@@ -492,6 +492,11 @@ a {
     background-color: #fff;
 }
 
+.Swarmpit-form-select-icon > div > div {
+    display: flex !important;
+    flex-direction: row !important;
+}
+
 .Swarmpit-form-toolbar {
     padding: 0 24px 24px;
 }
@@ -714,10 +719,8 @@ a {
     border-bottom: 1px solid rgba(0, 0, 0, 0.12);
 }
 
-.Swarmpit-image-search {
-    margin-top: 10px;
-    flex-direction: column;
-    display: flex;
+.Swarmpit-repo-registry-item {
+    padding: 0 !important;
 }
 
 /* NODE */
