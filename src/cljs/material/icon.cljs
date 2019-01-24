@@ -43,7 +43,6 @@
 (def chevron-left (f/chevron-left-icon))
 (def chevron-right (f/chevron-right-icon))
 (def account-circle (f/account-circle-icon))
-(def search (f/search-icon))
 (def expand-more (f/expand-more-icon))
 (def key (f/key-icon))
 (def receipt (f/receipt-icon))
@@ -138,3 +137,11 @@
 (defn open-in-new
   [props]
   (f/open-in-new-icon (clj->js props)))
+
+(defn group
+  [props]
+  (f/group-icon (clj->js props)))
+
+(defn search
+  [props]
+  (f/search-icon (clj->js props)))
