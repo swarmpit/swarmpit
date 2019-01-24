@@ -239,7 +239,7 @@
                         (last filtered-repositories)
                         #(onclick-handler
                            (if (= "registry" (:type registry))
-                             (du/repository (:url registry) repository)
+                             (du/repository (:url registry) (:name item))
                              (:name item))))) filtered-repositories)))))]]))))
 
 (rum/defc form < rum/reactive
