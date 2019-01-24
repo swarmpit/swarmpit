@@ -159,7 +159,7 @@
          {:key           "menu-search"
           :aria-haspopup "true"
           :onClick       #(state/update-value [:mobileSearchOpened] true state/layout-cursor)
-          :color         "inherit"} icon/search))
+          :color         "inherit"} (icon/search {})))
      (when (some? actions)
        (comp/icon-button
          {:key           "menu-more"
