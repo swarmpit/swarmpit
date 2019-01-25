@@ -11,10 +11,12 @@
 (defn edit-title [title & subtitle]
   [(comp/typography
      {:variant   "h5"
+      :key       "title"
       :className "Swarmpit-form-title"}
      title)
    (comp/typography
      {:variant   "body1"
+      :key       "subtitle"
       :className "Swarmpit-form-subtitle"}
      subtitle)])
 
