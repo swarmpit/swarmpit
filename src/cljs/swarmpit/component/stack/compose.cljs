@@ -20,18 +20,6 @@
 
 (def doc-compose-link "https://docs.docker.com/get-started/part3/#your-first-docker-composeyml-file")
 
-(defn- form-name [value]
-  (comp/text-field
-    {:label           "Name"
-     :fullWidth       true
-     :name            "name"
-     :key             "name"
-     :variant         "outlined"
-     :defaultValue    value
-     :required        true
-     :disabled        true
-     :InputLabelProps {:shrink true}}))
-
 (defn- form-editor [value]
   (comp/text-field
     {:id              editor-id
@@ -163,7 +151,6 @@
                (comp/grid
                  {:item true
                   :xs   12}
-                 (form-name name)
                  (form-select name :stack-compose last? previous?))
                (comp/grid
                  {:item true

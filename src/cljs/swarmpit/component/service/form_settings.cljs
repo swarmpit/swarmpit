@@ -172,10 +172,11 @@
         (if update-form?
           (form-image-tag repository tags)
           (form-image-tag-preloaded repository tags)))
-      (comp/grid
-        {:item true
-         :xs   12}
-        (form-name serviceName update-form?))
+      (when (not update-form?)
+        (comp/grid
+          {:item true
+           :xs   12}
+          (form-name serviceName update-form?)))
       (comp/grid
         {:item true
          :xs   12
