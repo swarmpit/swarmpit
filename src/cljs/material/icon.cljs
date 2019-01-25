@@ -145,3 +145,7 @@
 (defn search
   [props]
   (f/search-icon (clj->js props)))
+
+(defn arrow-forward
+  [props]
+  (f/arrow-forward-icon (clj->js props)))

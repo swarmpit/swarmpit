@@ -147,6 +147,7 @@
 (def lock-icon (create-factory js/MaterialUIIcons.Lock))
 (def open-in-new-icon (create-factory js/MaterialUIIcons.OpenInNew))
 (def group-icon (create-factory js/MaterialUIIcons.Group))
+(def arrow-forward-icon (create-factory js/MaterialUIIcons.ArrowForward))
 
 (def create-mui-theme js/MaterialUI.createMuiTheme)
 (def with-mobile-dialog js/MaterialUI.withMobileDialog)

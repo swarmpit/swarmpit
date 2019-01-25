@@ -516,11 +516,11 @@ a {
 
 .Swarmpit-form-buttons {
     display: flex;
-    justify-content: flex-end;
+    justify-content: flex-start;
 }
 
 .Swarmpit-form-buttons > * {
-    margin: 5px !important;
+    margin-right: 5px !important;
 }
 
 .Swarmpit-form-section {
@@ -728,8 +728,20 @@ a {
     border-bottom: 1px solid rgba(0, 0, 0, 0.12);
 }
 
+/* REPOSITORY */
+
 .Swarmpit-repo-registry-item {
     padding: 0 !important;
+}
+
+.Swarmpit-repo-manual {
+    margin-top: 20px;
+}
+
+.Swarmpit-repo-card,
+.Swarmpit-repo-state,
+.Swarmpit-repo-progress {
+    margin-top: 20px !important;
 }
 
 .Swarmpit-repo-registry-text {
@@ -772,7 +784,7 @@ a {
 /* USER */
 
 .Swarmpit-user-form {
-    max-width: 400px;
+    max-width: 350px;
 }
 
 .Swarmpit-access-form {

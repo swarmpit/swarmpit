@@ -1,9 +1,10 @@
 (ns swarmpit.component.service.create-image
   (:require [material.icon :as icon]
+            [material.component.list.basic :as list]
             [material.components :as comp]
             [swarmpit.component.mixin :as mixin]
             [swarmpit.component.state :as state]
-            [material.component.list.basic :as list]
+            [swarmpit.component.common :as common]
             [swarmpit.component.progress :as progress]
             [swarmpit.component.message :as message]
             [swarmpit.ajax :as ajax]
@@ -19,15 +20,6 @@
 (defn- filter-items
   [items predicate]
   (filter #(str/includes? (:name %) predicate) items))
-
-(defn- form-manual [value]
-  (comp/switch
-    {:name     "manual"
-     :key      "manual"
-     :color    "primary"
-     :value    (str value)
-     :checked  value
-     :onChange #(state/update-value [:manual] (-> % .-target .-checked) state/form-value-cursor)}))
 
 (defn- registries-handler
   []
@@ -82,6 +74,7 @@
   []
   (state/set-value {:loading?   {:registry  true
                                  :dockerhub true}
+                    :manual     false
                     :searching? false
                     :registries []
                     :registry   nil
@@ -99,6 +92,43 @@
       (init-form-value)
       (registries-handler)
       (dockerhub-handler))))
+
+(defn- form-manual [value]
+  (comp/switch
+    {:name     "manual"
+     :key      "manual"
+     :color    "primary"
+     :value    (str value)
+     :checked  value
+     :onChange #(state/update-value [:manual] (-> % .-target .-checked) state/form-state-cursor)}))
+
+(defn- repository-adornmennt [repository]
+  (comp/input-adornment
+    {:position "end"}
+    (comp/icon-button
+      {:onClick     #(dispatch!
+                       (routes/path-for-frontend
+                         :service-create-config
+                         {}
+                         {:repository repository}))
+       :onMouseDown (fn [event]
+                      (.preventDefault event))}
+      (icon/arrow-forward {}))))
+
+(rum/defc form-repository-manual < rum/static [repository]
+  (comp/text-field
+    {:fullWidth       true
+     :id              "repository"
+     :value           repository
+     :margin          "dense"
+     :variant         "outlined"
+     :placeholder     "Enter valid repository"
+     :style           {:maxWidth "400px"}
+     :InputLabelProps {:shrink true}
+     :InputProps      {:className    "Swarmpit-form-input"
+                       :endAdornment (repository-adornmennt repository)}
+     :onChange        (fn [event]
+                        (state/update-value [:repository] (-> event .-target .-value) state/form-state-cursor))}))
 
 (defn public-reg []
   (comp/menu-item
@@ -202,7 +232,7 @@
    :secondary (fn [item] (:description item))})
 
 (rum/defc form-repo < rum/reactive []
-  (let [{:keys [repository searching? registries registry active]} (state/react state/form-state-cursor)
+  (let [{:keys [repository manual searching? registries registry active]} (state/react state/form-state-cursor)
         repositories (state/react state/form-value-cursor)
         filtered-repositories (filter-items repositories repository)]
     (comp/mui
@@ -210,47 +240,49 @@
         [:div.Swarmpit-form
          [:div.Swarmpit-form-context
           [:div.Swarmpit-form-paper
-           (comp/typography
-             {:variant   "h5"
-              :className "Swarmpit-form-title"}
-             "Select repository")
-           (comp/divider {:className "Swarmpit-form-title-divider"})
-           [:div
+           (common/edit-title "Select a repository" "define image for new service")
+           [:div.Swarmpit-repo-manual
             (comp/form-control
               {:component "fieldset"}
               (comp/form-group
                 {}
                 (comp/form-control-label
-                  {:control (form-manual false)
+                  {:control (form-manual manual)
                    :label   (comp/typography
                               {:className "Swarmpit-repo-manual-label"}
                               "Specify repository manually")})))]
-           [:div (form-registry registries active searching?)]
-           [:div (form-search repository active)]
-           (when searching?
-             (comp/linear-progress {:style {:marginTop "10px"}}))
-           (cond
-             (empty? repositories) (html [:span])
-             (empty? filtered-repositories) (comp/typography {} "Nothing matches this filter.")
-             :else
-             (comp/card
-               {:className "Swarmpit-form-card"
-                :style     {:marginTop "10px"}}
-               (comp/card-content
-                 {:className "Swarmpit-table-card-content"}
-                 (comp/list
-                   {:dense true}
-                   (map-indexed
-                     (fn [index item]
-                       (list/list-item
-                         render-list-metadata
-                         index
-                         item
-                         (last filtered-repositories)
-                         #(onclick-handler
-                            (if (= "registry" (:type registry))
-                              (du/repository (:url registry) (:name item))
-                              (:name item))))) filtered-repositories)))))]]]))))
+           (if manual
+             (form-repository-manual repository)
+             [:div
+              [:div (form-registry registries active searching?)]
+              [:div (form-search repository active)]
+              (when searching?
+                (comp/linear-progress {:className "Swarmpit-repo-progress"}))
+              (cond
+                searching? [:span]
+                (and
+                  (not (str/blank? repository))
+                  (empty? filtered-repositories)) (comp/typography
+                                                    {:className "Swarmpit-repo-state"} "Nothing matches this filter.")
+                (empty? repositories) [:span]
+                :else
+                (comp/card
+                  {:className "Swarmpit-form-card Swarmpit-repo-card"}
+                  (comp/card-content
+                    {:className "Swarmpit-table-card-content"}
+                    (comp/list
+                      {:dense true}
+                      (map-indexed
+                        (fn [index item]
+                          (list/list-item
+                            render-list-metadata
+                            index
+                            item
+                            (last filtered-repositories)
+                            #(onclick-handler
+                               (if (= "registry" (:type registry))
+                                 (du/repository (:url registry) (:name item))
+                                 (:name item))))) filtered-repositories)))))])]]]))))
 
 (rum/defc form < rum/reactive
                  mixin-init-form [_]
