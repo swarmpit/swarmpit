@@ -10,7 +10,8 @@
             [swarmpit.ajax :as ajax]
             [swarmpit.routes :as routes]
             [sablono.core :refer-macros [html]]
-            [rum.core :as rum]))
+            [rum.core :as rum]
+            [swarmpit.component.common :as common]))
 
 (enable-console-print!)
 
@@ -91,10 +92,7 @@
         [:div.Swarmpit-form
          [:div.Swarmpit-form-context
           [:div.Swarmpit-form-paper
-           (comp/typography
-             {:variant   "h5"
-              :className "Swarmpit-form-title"}
-             "New Config")
+           (common/edit-title "Create a new config" "store non-sensitive information, such as configuration files, outside a service’s image or running containers")
            (comp/grid
              {:container true
               :className "Swarmpit-form-main-grid"

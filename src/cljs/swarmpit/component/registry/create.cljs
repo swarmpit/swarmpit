@@ -131,7 +131,7 @@
          [:div.Swarmpit-form-context
           [:div.Swarmpit-form-paper
            (comp/typography
-             {:variant "h5"} "Add registry")
+             {:variant "h5"} "Add image registry")
            (comp/stepper
              {:className   "Swarmpit-stepper"
               :activeStep  index

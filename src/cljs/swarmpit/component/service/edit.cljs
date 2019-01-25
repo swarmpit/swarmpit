@@ -23,7 +23,8 @@
             [swarmpit.url :refer [dispatch!]]
             [swarmpit.routes :as routes]
             [sablono.core :refer-macros [html]]
-            [rum.core :as rum]))
+            [rum.core :as rum]
+            [swarmpit.component.common :as common]))
 
 (enable-console-print!)
 
@@ -252,10 +253,7 @@
         [:div.Swarmpit-form
          [:div.Swarmpit-form-context
           [:div.Swarmpit-form-paper
-           (comp/typography
-             {:variant   "h5"
-              :className "Swarmpit-form-title"}
-             (html [:span "Editing " [:span.Swarmpit-secondary-title (:serviceName settings)]]))
+           (common/edit-title (str "Editing " (:serviceName settings)))
            (comp/grid
              {:container true
               :className "Swarmpit-form-main-grid"

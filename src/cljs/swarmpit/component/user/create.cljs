@@ -130,10 +130,7 @@
          [:div.Swarmpit-form-context
           [:div.Swarmpit-form-paper
            [:div.Swarmpit-user-form
-            (comp/typography
-              {:variant   "h5"
-               :className "Swarmpit-form-title"}
-              "New User")
+            (common/edit-title "Create a new user" "account allows access to the Swarmpit and management of the cluster")
             (comp/grid
               {:container true
                :className "Swarmpit-form-main-grid"

@@ -11,7 +11,8 @@
             [swarmpit.routes :as routes]
             [sablono.core :refer-macros [html]]
             [swarmpit.url :refer [dispatch!]]
-            [rum.core :as rum]))
+            [rum.core :as rum]
+            [swarmpit.component.common :as common]))
 
 (enable-console-print!)
 
@@ -92,10 +93,7 @@
         [:div.Swarmpit-form
          [:div.Swarmpit-form-context
           [:div.Swarmpit-form-paper
-           (comp/typography
-             {:variant   "h5"
-              :className "Swarmpit-form-title"}
-             "New Secret")
+           (common/edit-title "Create a new secret" "blob of data, such as a password, SSH private key, or another piece of data that should not be transmitted over a network or stored unencrypted")
            (comp/grid
              {:container true
               :className "Swarmpit-form-main-grid"

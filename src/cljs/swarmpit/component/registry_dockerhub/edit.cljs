@@ -79,9 +79,7 @@
         (comp/card
           {:className "Swarmpit-form-card"
            :style     {:maxWidth "400px"}}
-          (comp/card-header
-            {:className "Swarmpit-form-card-header"
-             :title     (html [:span "Editing " [:span.Swarmpit-secondary-title username]])})
+          (common/edit-title (str "Editing " username))
           (comp/card-content
             {}
             (form-password password showPassword)

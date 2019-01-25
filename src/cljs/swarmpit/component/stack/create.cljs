@@ -12,7 +12,8 @@
             [swarmpit.routes :as routes]
             [swarmpit.url :refer [dispatch!]]
             [sablono.core :refer-macros [html]]
-            [rum.core :as rum]))
+            [rum.core :as rum]
+            [swarmpit.component.common :as common]))
 
 (enable-console-print!)
 
@@ -110,10 +111,7 @@
         [:div.Swarmpit-form
          [:div.Swarmpit-form-context
           [:div.Swarmpit-form-paper
-           (comp/typography
-             {:variant   "h5"
-              :className "Swarmpit-form-title"}
-             "New stack")
+           (common/edit-title "Create a new stack" "group of interrelated services that share dependencies, and can be orchestrated and scaled together")
            (comp/grid
              {:container true
               :className "Swarmpit-form-main-grid"

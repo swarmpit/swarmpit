@@ -22,7 +22,8 @@
             [swarmpit.url :refer [dispatch!]]
             [swarmpit.routes :as routes]
             [sablono.core :refer-macros [html]]
-            [rum.core :as rum]))
+            [rum.core :as rum]
+            [swarmpit.component.common :as common]))
 
 (enable-console-print!)
 
@@ -237,14 +238,7 @@
         [:div.Swarmpit-form
          [:div.Swarmpit-form-context
           [:div.Swarmpit-form-paper
-           (comp/typography
-             {:variant   "h5"
-              :className "Swarmpit-form-title"}
-             "New Service")
-           (comp/typography
-             {:variant   "body1"
-              :className "Swarmpit-form-subtitle"}
-             (str "from " (get-in (state/get-value settings/form-value-cursor) [:repository :name])))
+           (common/edit-title "Create a new service"  (str "from " (get-in (state/get-value settings/form-value-cursor) [:repository :name])) " image")
            (comp/grid
              {:container true
               :className "Swarmpit-form-main-grid"

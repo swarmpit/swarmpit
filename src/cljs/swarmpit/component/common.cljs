@@ -8,6 +8,16 @@
             [clojure.string :as str]
             [rum.core :as rum]))
 
+(defn edit-title [title & subtitle]
+  [(comp/typography
+     {:variant   "h5"
+      :className "Swarmpit-form-title"}
+     title)
+   (comp/typography
+     {:variant   "body1"
+      :className "Swarmpit-form-subtitle"}
+     subtitle)])
+
 (defn list-empty [title]
   (comp/typography
     {:key "scclcct"} (str "There are no " title " configured.")))

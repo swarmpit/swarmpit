@@ -14,7 +14,8 @@
             [swarmpit.url :refer [dispatch!]]
             [sablono.core :refer-macros [html]]
             [rum.core :as rum]
-            [clojure.set :as set]))
+            [clojure.set :as set]
+            [swarmpit.component.common :as common]))
 
 (enable-console-print!)
 
@@ -94,10 +95,7 @@
       [:div.Swarmpit-form
        [:div.Swarmpit-form-context
         [:div.Swarmpit-form-paper
-         (comp/typography
-           {:variant   "h5"
-            :className "Swarmpit-form-title"}
-           (html [:span "Editing " [:span.Swarmpit-secondary-title name]]))
+         (common/edit-title (str "Editing " name))
          (comp/grid
            {:container true
             :className "Swarmpit-form-main-grid"
