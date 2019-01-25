@@ -476,8 +476,17 @@ a {
     color: rgba(0, 0, 0, 0.54) !important;
 }
 
-.Swarmpit.form-title {
+.Swarmpit-form-title {
     color: rgba(0, 0, 0, 0.87) !important;
+}
+
+.Swarmpit-form-title-divider {
+    margin-top: 15px !important;
+    margin-bottom: 10px !important;
+}
+
+.Swarmpit-grid-title-divider {
+    margin-top: 15px !important;
 }
 
 .Swarmpit-form-paper {
@@ -721,6 +730,18 @@ a {
 
 .Swarmpit-repo-registry-item {
     padding: 0 !important;
+}
+
+.Swarmpit-repo-registry-text {
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+}
+
+.Swarmpit-repo-registry-url {
+    font-size: 12px;
+    color: rgb(158, 158, 158);
+    padding-left: 10px;
 }
 
 /* NODE */

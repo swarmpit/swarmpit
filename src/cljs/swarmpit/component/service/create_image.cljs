@@ -130,7 +130,11 @@
       {}
       (comp/svg icon/registries-path))
     (comp/list-item-text
-      {:primary   (:name account)
+      {:primary   (html
+                    [:span.Swarmpit-repo-registry-text
+                     [:span (:name account)]
+                     [:span.grow]
+                     [:span.Swarmpit-repo-registry-url (:url account)]])
        :className "Swarmpit-repo-registry-item"})))
 
 (defn- on-change-registry [event registries]
@@ -205,42 +209,48 @@
       (html
         [:div.Swarmpit-form
          [:div.Swarmpit-form-context
-          [:div
-           (comp/form-control
-             {:component "fieldset"}
-             (comp/form-group
-               {}
-               (comp/form-control-label
-                 {:control (form-manual false)
-                  :label   (comp/typography
-                             {:className "Swarmpit-repo-manual-label"}
-                             "Specify repository manually")})))]
-          [:div (form-registry registries active searching?)]
-          [:div (form-search repository active)]
-          (when searching?
-            (comp/linear-progress {:style {:marginTop "10px"}}))
-          (cond
-            (empty? repositories) (html [:span])
-            (empty? filtered-repositories) (comp/typography {} "Nothing matches this filter.")
-            :else
-            (comp/card
-              {:className "Swarmpit-form-card"
-               :style     {:marginTop "10px"}}
-              (comp/card-content
-                {:className "Swarmpit-table-card-content"}
-                (comp/list
-                  {:dense true}
-                  (map-indexed
-                    (fn [index item]
-                      (list/list-item
-                        render-list-metadata
-                        index
-                        item
-                        (last filtered-repositories)
-                        #(onclick-handler
-                           (if (= "registry" (:type registry))
-                             (du/repository (:url registry) (:name item))
-                             (:name item))))) filtered-repositories)))))]]))))
+          [:div.Swarmpit-form-paper
+           (comp/typography
+             {:variant   "h5"
+              :className "Swarmpit-form-title"}
+             "Select repository")
+           (comp/divider {:className "Swarmpit-form-title-divider"})
+           [:div
+            (comp/form-control
+              {:component "fieldset"}
+              (comp/form-group
+                {}
+                (comp/form-control-label
+                  {:control (form-manual false)
+                   :label   (comp/typography
+                              {:className "Swarmpit-repo-manual-label"}
+                              "Specify repository manually")})))]
+           [:div (form-registry registries active searching?)]
+           [:div (form-search repository active)]
+           (when searching?
+             (comp/linear-progress {:style {:marginTop "10px"}}))
+           (cond
+             (empty? repositories) (html [:span])
+             (empty? filtered-repositories) (comp/typography {} "Nothing matches this filter.")
+             :else
+             (comp/card
+               {:className "Swarmpit-form-card"
+                :style     {:marginTop "10px"}}
+               (comp/card-content
+                 {:className "Swarmpit-table-card-content"}
+                 (comp/list
+                   {:dense true}
+                   (map-indexed
+                     (fn [index item]
+                       (list/list-item
+                         render-list-metadata
+                         index
+                         item
+                         (last filtered-repositories)
+                         #(onclick-handler
+                            (if (= "registry" (:type registry))
+                              (du/repository (:url registry) (:name item))
+                              (:name item))))) filtered-repositories)))))]]]))))
 
 (rum/defc form < rum/reactive
                  mixin-init-form [_]
