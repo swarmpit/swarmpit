@@ -355,8 +355,8 @@
       [:div.Swarmpit-form
        (dialog/confirm-dialog
          #(delete-stack-handler stack-name)
-         "Are you sure you want to delete this item?"
-         "Delete Stack")
+         "Delete stack?"
+         "Delete")
        [:div.Swarmpit-form-context
         (comp/hidden
           {:xsDown         true

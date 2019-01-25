@@ -66,8 +66,8 @@
       [:div.Swarmpit-form
        (dialog/confirm-dialog
          #(delete-user-handler _id)
-         "Are you sure you want to delete this item?"
-         "Delete User")
+         "Delete user?"
+         "Delete")
        [:div.Swarmpit-form-context
         (comp/grid
           {:container true

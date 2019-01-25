@@ -9,20 +9,22 @@
 
 (def dialog-cursor [:dialog])
 
-(rum/defc confirm-dialog < rum/reactive [action-fn action-text dialog-title]
+(rum/defc confirm-dialog < rum/reactive [action-fn action-text ok-text & dialog-title]
   (let [{:keys [open]} (state/react dialog-cursor)]
     (comp/dialog
       {:disableBackdropClick true
        :disableEscapeKeyDown true
        :maxWidth             "xs"
+       :fullWidth            true
        :open                 open
        :onEntering           #()
        :aria-labelledby      "confirmation-dialog-title"}
-      (comp/dialog-title
-        {:id "confirmation-dialog-title"} dialog-title)
+      (when dialog-title
+        (comp/dialog-title
+          {:id "confirmation-dialog-title"} dialog-title))
       (comp/dialog-content
         {}
-        (html [:span action-text]))
+        action-text)
       (comp/dialog-actions
         {}
         (comp/button
@@ -32,7 +34,7 @@
           {:onClick (fn []
                       (action-fn)
                       (state/update-value [:open] false dialog-cursor))
-           :color   "primary"} "Ok")))))
+           :color   "primary"} (or ok-text "OK"))))))
 
 (rum/defc form-dialog < rum/reactive [action-fn form dialog-title]
   (let [{:keys [open]} (state/react dialog-cursor)]

@@ -64,8 +64,8 @@
       [:div.Swarmpit-form
        (dialog/confirm-dialog
          #(delete-user-handler _id)
-         "Are you sure you want to delete this item?"
-         "Delete Account")
+         "Remove account?"
+         "Remove")
        [:div.Swarmpit-form-context
         (comp/card
           {:className "Swarmpit-form-card"

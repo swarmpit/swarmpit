@@ -231,8 +231,8 @@
         [:div.Swarmpit-form
          (dialog/confirm-dialog
            #(delete-service-handler id)
-           "Are you sure you want to delete this item?"
-           "Delete Service")
+           "Delete service?"
+           "Delete")
          [:div.Swarmpit-form-context
           (comp/hidden
             {:xsDown         true

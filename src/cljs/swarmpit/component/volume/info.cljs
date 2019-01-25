@@ -141,8 +141,8 @@
       [:div.Swarmpit-form
        (dialog/confirm-dialog
          #(delete-volume-handler (:volumeName volume))
-         "Are you sure you want to delete this item?"
-         "Delete Volume")
+         "Delete volume?"
+         "Delete")
        [:div.Swarmpit-form-context
         (comp/hidden
           {:xsDown         true

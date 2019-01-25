@@ -153,8 +153,8 @@
       [:div.Swarmpit-form
        (dialog/confirm-dialog
          #(delete-network-handler (:id network))
-         "Are you sure you want to delete this item?"
-         "Delete Network")
+         "Delete network?"
+         "Delete")
        [:div.Swarmpit-form-context
         (comp/hidden
           {:xsDown         true

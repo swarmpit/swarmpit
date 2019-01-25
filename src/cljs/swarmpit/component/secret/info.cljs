@@ -105,8 +105,8 @@
       [:div.Swarmpit-form
        (dialog/confirm-dialog
          #(delete-secret-handler (:id secret))
-         "Are you sure you want to delete this item?"
-         "Delete Secret")
+         "Delete secret?"
+         "Delete")
        [:div.Swarmpit-form-context
         (comp/hidden
           {:xsDown         true
