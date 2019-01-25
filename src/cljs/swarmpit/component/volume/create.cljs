@@ -114,31 +114,20 @@
 
 (defn- section-driver
   [{:keys [driver options]} plugins]
-  (comp/grid
-    {:container true
-     :spacing   24}
-    (comp/grid
-      {:item true
-       :xs   12}
-      (form-driver driver plugins))
-    (comp/grid
-      {:item true
-       :xs   12
-       :sm   6}
-      (form/subsection
-        "Driver options"
-        (comp/button
-          {:color   "primary"
-           :onClick add-driver-opt}
-          (comp/svg icon/add-small-path) "Add option")))
-    (when (not (empty? options))
-      (comp/grid
-        {:item true
-         :xs   12}
-        (list/list
-          form-driver-opts-render-metadata
-          options
-          (fn [index] (state/remove-item index form-driver-opts-cursor)))))))
+  (html
+    [:div
+     (form-driver driver plugins)
+     (form/subsection
+       "Driver options"
+       (comp/button
+         {:color   "primary"
+          :onClick add-driver-opt}
+         (comp/svg icon/add-small-path) "Add option"))
+     (when (not (empty? options))
+       (list/list
+         form-driver-opts-render-metadata
+         options
+         (fn [index] (state/remove-item index form-driver-opts-cursor))))]))
 
 (defn- init-form-state
   []
