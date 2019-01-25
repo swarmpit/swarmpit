@@ -781,8 +781,9 @@ a {
     text-decoration: inherit;
 }
 
-/* USER */
+/* Custom Forms */
 
+.Swarmpit-registry-form,
 .Swarmpit-user-form {
     max-width: 350px;
 }

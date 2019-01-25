@@ -23,7 +23,6 @@
      :variant         "outlined"
      :defaultValue    value
      :required        true
-     :margin          "normal"
      :InputLabelProps {:shrink true}}))
 
 (defn- form-auth [value]
@@ -42,8 +41,8 @@
      :name            "username"
      :key             "username"
      :variant         "outlined"
-     :margin          "normal"
      :defaultValue    value
+     :margin          "normal"
      :required        true
      :InputLabelProps {:shrink true}
      :onChange        #(state/update-value [:username] (-> % .-target .-value) state/form-value-cursor)}))
@@ -53,14 +52,15 @@
     {:label           "New Password"
      :variant         "outlined"
      :fullWidth       true
-     :margin          "normal"
      :type            (if show-password?
                         "text"
                         "password")
      :defaultValue    value
+     :margin          "normal"
      :onChange        #(state/update-value [:password] (-> % .-target .-value) state/form-value-cursor)
      :InputLabelProps {:shrink true}
-     :InputProps      {:endAdornment (common/show-password-adornment show-password?)}}))
+     :InputProps      {:className    "Swarmpit-form-input"
+                       :endAdornment (common/show-password-adornment show-password?)}}))
 
 (defn- form-public [value]
   (comp/checkbox
@@ -110,38 +110,80 @@
     (html
       [:div.Swarmpit-form
        [:div.Swarmpit-form-context
-        (comp/card
-          {:className "Swarmpit-form-card"
-           :style     {:maxWidth "400px"}}
-          (common/edit-title (str "Editing " name))
-          (comp/card-content
-            {}
-            (form-url url)
-            (comp/form-control
-              {:component "fieldset"}
-              (comp/form-group
-                {}
-                (comp/form-control-label
-                  {:control (form-public public)
-                   :label   "Share"})))
-            (comp/form-control
-              {:component "fieldset"}
-              (comp/form-group
-                {}
-                (comp/form-control-label
-                  {:control (form-auth withAuth)
-                   :label   "Secured"})))
+
+        [:div.Swarmpit-form-paper
+         (common/edit-title (str "Editing " name))
+         [:div.Swarmpit-registry-form
+          ;(form-url url)
+          ;(comp/form-control
+          ;  {:component "fieldset"}
+          ;  (comp/form-group
+          ;    {}
+          ;    (comp/form-control-label
+          ;      {:control (form-public public)
+          ;       :label   "Share"})))
+          ;(comp/form-control
+          ;  {:component "fieldset"}
+          ;  (comp/form-group
+          ;    {}
+          ;    (comp/form-control-label
+          ;      {:control (form-auth withAuth)
+          ;       :label   "Secured"})))
+          ;(when withAuth
+          ;  (html
+          ;    [:div
+          ;     (form-username username)
+          ;     (form-password password showPassword)]))
+          ;[:div.Swarmpit-form-buttons
+          ; (composite/progress-button
+          ;   "Save"
+          ;   #(update-registry-handler _id)
+          ;   processing?)]
+
+
+          (comp/grid
+            {:container true
+             :className "Swarmpit-form-main-grid"
+             :spacing   24}
+            (comp/grid
+              {:item true
+               :xs   12}
+              (form-url url))
+            (comp/grid
+              {:item true
+               :xs   12}
+              (comp/form-control
+                {:component "fieldset"}
+                (comp/form-group
+                  {}
+                  (comp/form-control-label
+                    {:control (form-public public)
+                     :label   "Share"})))
+              (comp/form-control
+                {:component "fieldset"}
+                (comp/form-group
+                  {}
+                  (comp/form-control-label
+                    {:control (form-auth withAuth)
+                     :label   "Secured"}))))
             (when withAuth
+              (comp/grid
+                {:item true
+                 :xs   12}
+                (html
+                  [:div
+                   (form-username username)
+                   (form-password password showPassword)])))
+            (comp/grid
+              {:item true
+               :xs   12}
               (html
-                [:div
-                 (form-username username)
-                 (form-password password showPassword)]))
-            (html
-              [:div.Swarmpit-form-buttons
-               (composite/progress-button
-                 "Save"
-                 #(update-registry-handler _id)
-                 processing?)])))]])))
+                [:div.Swarmpit-form-buttons
+                 (composite/progress-button
+                   "Save"
+                   #(update-registry-handler _id)
+                   processing?)])))
+          ]]]])))
 
 (rum/defc form < rum/reactive
                  mixin-init-form [_]
