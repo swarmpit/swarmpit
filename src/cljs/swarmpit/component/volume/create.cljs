@@ -185,7 +185,9 @@
                   :spacing   40}
                  (comp/grid
                    {:item true
-                    :xs   12}
+                    :xs   12
+                    :sm   6
+                    :lg   4}
                    (form-name volumeName))
                  (comp/grid
                    {:item true

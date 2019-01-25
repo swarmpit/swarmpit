@@ -207,14 +207,10 @@
                {:container true
                 :spacing   40}
                (comp/grid
-                 {:item true
-                  :xs   12
-                  :sm   6}
+                 {:item true}
                  (form-role role))
                (comp/grid
-                 {:item true
-                  :xs   12
-                  :sm   6}
+                 {:item true}
                  (form-availability availability))
                (comp/grid
                  {:item true
