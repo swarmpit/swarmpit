@@ -10,6 +10,7 @@
             [swarmpit.ajax :as ajax]
             [swarmpit.routes :as routes]
             [swarmpit.docker.utils :as du]
+            [swarmpit.utils :refer [shortint]]
             [swarmpit.url :refer [dispatch!]]
             [sablono.core :refer-macros [html]]
             [clojure.string :as str]
@@ -228,8 +229,18 @@
                         (on-change-search event active))}))
 
 (def render-list-metadata
-  {:primary   (fn [item] (:name item))
-   :secondary (fn [item] (:description item))})
+  {:primary   (fn [{:keys [name]}] name)
+   :status-fn (fn [{:keys [official private]}]
+                [(when official
+                   (comp/tooltip {:title "Official Image"} (icon/verified {})))
+                 (when private
+                   (comp/tooltip {:title "Private"} (icon/lock {})))])
+   :secondary (fn [{:keys [stars pulls description]}]
+                (html [(when (< 0 stars) [(shortint stars) " stars , "])
+                       (when (< 0 pulls) [(shortint pulls) " downloads"])
+                       (when (not (empty? description)) [(comp/hidden {:mdUp true} (html [:br]))
+                                                         (comp/hidden {:smDown true} " - ")
+                                                         description])]))})
 
 (rum/defc form-repo < rum/reactive []
   (let [{:keys [repository manual searching? registries registry active]} (state/react state/form-state-cursor)

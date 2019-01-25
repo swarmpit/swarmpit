@@ -4,7 +4,10 @@
   [repository]
   (into {:name        (:repo_name repository)
          :description (:short_description repository)
-         :private     false}))
+         :private     false
+         :stars       (:star_count repository)
+         :pulls       (:pull_count repository)
+         :official    (:is_official repository)}))
 
 (defn ->repositories
   [repositories query page]
@@ -23,7 +26,10 @@
   (into {:name        (str (:namespace repository) "/"
                            (:name repository))
          :description (:description repository)
-         :private     (:is_private repository)}))
+         :private     (:is_private repository)
+         :stars       (:star_count repository)
+         :pulls       (:pull_count repository)
+         :official    (:is_official repository)}))
 
 (defn ->user-repositories
   [repositories]

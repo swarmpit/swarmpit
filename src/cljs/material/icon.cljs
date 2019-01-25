@@ -149,3 +149,11 @@
 (defn arrow-forward
   [props]
   (f/arrow-forward-icon (clj->js props)))
+
+(defn star
+  [props]
+  (f/star-icon (clj->js props)))
+
+(defn verified
+  [props]
+  (f/verified-icon (clj->js props)))

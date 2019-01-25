@@ -148,6 +148,8 @@
 (def open-in-new-icon (create-factory js/MaterialUIIcons.OpenInNew))
 (def group-icon (create-factory js/MaterialUIIcons.Group))
 (def arrow-forward-icon (create-factory js/MaterialUIIcons.ArrowForward))
+(def star-icon (create-factory js/MaterialUIIcons.Star))
+(def verified-icon (create-factory js/MaterialUIIcons.VerifiedUser))
 
 (def create-mui-theme js/MaterialUI.createMuiTheme)
 (def with-mobile-dialog js/MaterialUI.withMobileDialog)
