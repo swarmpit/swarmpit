@@ -110,37 +110,9 @@
     (html
       [:div.Swarmpit-form
        [:div.Swarmpit-form-context
-
         [:div.Swarmpit-form-paper
          (common/edit-title (str "Editing " name))
          [:div.Swarmpit-registry-form
-          ;(form-url url)
-          ;(comp/form-control
-          ;  {:component "fieldset"}
-          ;  (comp/form-group
-          ;    {}
-          ;    (comp/form-control-label
-          ;      {:control (form-public public)
-          ;       :label   "Share"})))
-          ;(comp/form-control
-          ;  {:component "fieldset"}
-          ;  (comp/form-group
-          ;    {}
-          ;    (comp/form-control-label
-          ;      {:control (form-auth withAuth)
-          ;       :label   "Secured"})))
-          ;(when withAuth
-          ;  (html
-          ;    [:div
-          ;     (form-username username)
-          ;     (form-password password showPassword)]))
-          ;[:div.Swarmpit-form-buttons
-          ; (composite/progress-button
-          ;   "Save"
-          ;   #(update-registry-handler _id)
-          ;   processing?)]
-
-
           (comp/grid
             {:container true
              :className "Swarmpit-form-main-grid"
@@ -152,20 +124,12 @@
             (comp/grid
               {:item true
                :xs   12}
-              (comp/form-control
-                {:component "fieldset"}
-                (comp/form-group
-                  {}
-                  (comp/form-control-label
-                    {:control (form-public public)
-                     :label   "Share"})))
-              (comp/form-control
-                {:component "fieldset"}
-                (comp/form-group
-                  {}
-                  (comp/form-control-label
-                    {:control (form-auth withAuth)
-                     :label   "Secured"}))))
+              (comp/form-control-label
+                {:control (form-public public)
+                 :label   "Share"})
+              (comp/form-control-label
+                {:control (form-auth withAuth)
+                 :label   "Secured"}))
             (when withAuth
               (comp/grid
                 {:item true
@@ -182,8 +146,7 @@
                  (composite/progress-button
                    "Save"
                    #(update-registry-handler _id)
-                   processing?)])))
-          ]]]])))
+                   processing?)])))]]]])))
 
 (rum/defc form < rum/reactive
                  mixin-init-form [_]

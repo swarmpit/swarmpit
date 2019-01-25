@@ -90,13 +90,9 @@
             (comp/grid
               {:item true
                :xs   12}
-              (comp/form-control
-                {:component "fieldset"}
-                (comp/form-group
-                  {}
-                  (comp/form-control-label
-                    {:control (form-public public)
-                     :label   "Share"}))))
+              (comp/form-control-label
+                {:control (form-public public)
+                 :label   "Share"}))
             (comp/grid
               {:item true
                :xs   12}
