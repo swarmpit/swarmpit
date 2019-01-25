@@ -91,7 +91,7 @@
       (registries-handler))))
 
 (def toolbar-render-metadata
-  {:actions [{:name     "Add registry"
+  {:actions [{:name     "Link registry"
               :onClick  #(dispatch! (routes/path-for-frontend :registry-create))
               :icon     icon/add-circle-out
               :icon-alt icon/add}]})

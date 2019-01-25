@@ -48,8 +48,8 @@
      :name            "name"
      :key             "name"
      :variant         "outlined"
+     :style           {:maxWidth "350px"}
      :defaultValue    value
-     :required        true
      :helperText      "Specify volume name or leave empty for random"
      :InputLabelProps {:shrink true}
      :onChange        #(state/update-value [:volumeName] (-> % .-target .-value) state/form-value-cursor)}))
@@ -185,9 +185,7 @@
                   :spacing   40}
                  (comp/grid
                    {:item true
-                    :xs   12
-                    :sm   6
-                    :lg   4}
+                    :xs   12}
                    (form-name volumeName))
                  (comp/grid
                    {:item true

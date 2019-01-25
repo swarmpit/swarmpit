@@ -3,6 +3,7 @@
             [sablono.core :refer-macros [html]]
             [material.components :as comp]
             [material.component.composite :as composite]
+            [swarmpit.component.common :as common]
             [swarmpit.component.mixin :as mixin]
             [swarmpit.component.state :as state]
             [swarmpit.component.registry-v2.create :as v2]
@@ -129,8 +130,7 @@
         [:div.Swarmpit-form
          [:div.Swarmpit-form-context
           [:div.Swarmpit-form-paper
-           (comp/typography
-             {:variant "h5"} "Add image registry")
+           (common/edit-title "Link image registry" "define repository access acount")
            (comp/stepper
              {:className   "Swarmpit-stepper"
               :activeStep  index

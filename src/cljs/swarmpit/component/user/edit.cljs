@@ -21,7 +21,6 @@
      :name            "username"
      :key             "username"
      :variant         "outlined"
-     :margin          "normal"
      :defaultValue    value
      :required        true
      :disabled        true
@@ -35,7 +34,6 @@
      :select          true
      :value           value
      :variant         "outlined"
-     :margin          "normal"
      :InputLabelProps {:shrink true}
      :InputProps      {:className "Swarmpit-form-input"}
      :onChange        #(state/update-value [:role] (-> % .-target .-value) state/form-value-cursor)}
@@ -55,7 +53,6 @@
      :key             "email"
      :defaultValue    value
      :required        true
-     :margin          "normal"
      :InputLabelProps {:shrink true}
      :onChange        #(state/update-value [:email] (-> % .-target .-value) state/form-value-cursor)}))
 
@@ -102,16 +99,19 @@
       [:div.Swarmpit-form
        [:div.Swarmpit-form-context
         [:div.Swarmpit-form-paper
+         (common/edit-title (str "Editing " username))
          [:div.Swarmpit-user-form
-          (common/edit-title (str "Editing " username))
           (comp/grid
             {:container true
              :className "Swarmpit-form-main-grid"
-             :spacing   40}
+             :spacing   24}
             (comp/grid
               {:item true
                :xs   12}
-              (form-role role)
+              (form-role role))
+            (comp/grid
+              {:item true
+               :xs   12}
               (form-email email))
             (comp/grid
               {:item true

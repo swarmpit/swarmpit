@@ -20,7 +20,6 @@
      :name            "username"
      :key             "username"
      :variant         "outlined"
-     :margin          "normal"
      :defaultValue    value
      :required        true
      :InputLabelProps {:shrink true}
@@ -33,7 +32,6 @@
      :key             "password"
      :fullWidth       true
      :required        true
-     :margin          "normal"
      :type            (if show-password?
                         "text"
                         "password")
@@ -81,7 +79,6 @@
      :variant         "outlined"
      :defaultValue    value
      :required        true
-     :margin          "normal"
      :InputLabelProps {:shrink true}
      :onChange        #(state/update-value [:email] (-> % .-target .-value) state/form-value-cursor)}))
 
@@ -129,18 +126,27 @@
         [:div.Swarmpit-form
          [:div.Swarmpit-form-context
           [:div.Swarmpit-form-paper
+           (common/edit-title "Create a new user" "allow application access and management of the cluster")
            [:div.Swarmpit-user-form
-            (common/edit-title "Create a new user" "account allows access to the Swarmpit and management of the cluster")
             (comp/grid
               {:container true
                :className "Swarmpit-form-main-grid"
-               :spacing   40}
+               :spacing   24}
               (comp/grid
                 {:item true
                  :xs   12}
-                (form-username username)
-                (form-password password showPassword)
-                (form-role role)
+                (form-username username))
+              (comp/grid
+                {:item true
+                 :xs   12}
+                (form-password password showPassword))
+              (comp/grid
+                {:item true
+                 :xs   12}
+                (form-role role))
+              (comp/grid
+                {:item true
+                 :xs   12}
                 (form-email email))
               (comp/grid
                 {:item true
