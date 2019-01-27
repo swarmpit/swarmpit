@@ -232,17 +232,26 @@
   {:primary   (fn [{:keys [name]}] name)
    :status-fn (fn [{:keys [official private]}]
                 [(when official
-                   (comp/tooltip {:key "official" :title "Official Image"} (icon/verified {})))
+                   (comp/tooltip
+                     {:key   "official"
+                      :title "Official Image"} (icon/verified {})))
                  (when private
-                   (comp/tooltip {:key "private" :title "Private"} (icon/lock {})))])
+                   (comp/tooltip
+                     {:key   "private"
+                      :title "Private"} (icon/lock {})))])
    :secondary (fn [{:keys [stars pulls description]}]
                 (html [(when (< 0 stars)
-                         [(shortint stars) " stars , "])
+                         [:span (shortint stars) " stars" [:span.Service-repo-separator " • "]])
                        (when (< 0 pulls)
-                         [(shortint pulls) " downloads"])
+                         [:span (shortint pulls) " pulls"])
                        (when (not (empty? description))
-                         [(comp/hidden {:key "break" :mdUp true} (html [:br]))
-                          (comp/hidden {:key "separator" :smDown true} " - ")
+                         [:span
+                          (comp/hidden
+                            {:key  "break"
+                             :mdUp true} (html [:br]))
+                          (comp/hidden
+                            {:key    "separator"
+                             :smDown true} (html [:span.Service-repo-separator " • "]))
                           description])]))})
 
 (rum/defc form-repo < rum/reactive []

@@ -738,6 +738,10 @@ a {
     margin-top: 20px;
 }
 
+.Service-repo-separator {
+    font-weight: 800;
+}
+
 .Swarmpit-repo-card,
 .Swarmpit-repo-state,
 .Swarmpit-repo-progress {
