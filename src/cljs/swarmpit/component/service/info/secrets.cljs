@@ -11,7 +11,7 @@
 
 (defn onclick-handler
   [item]
-  (dispatch! (routes/path-for-frontend :secret-info {:id (:secretName item)})))
+  (routes/path-for-frontend :secret-info {:id (:secretName item)}))
 
 (def render-metadata
   {:primary   (fn [item] (:secretName item))

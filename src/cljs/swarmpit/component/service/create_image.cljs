@@ -64,12 +64,9 @@
                    (message/error
                      (str "Repositories fetching failed. " (:error response))))}))
 
-(defn- onclick-handler
+(defn onclick-handler
   [repository]
-  (dispatch!
-    (routes/path-for-frontend :service-create-config
-                              {}
-                              {:repository repository})))
+  (routes/path-for-frontend :service-create-config {} {:repository repository}))
 
 (defn- init-form-state
   []

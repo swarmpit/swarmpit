@@ -25,7 +25,7 @@
 
 (defn onclick-handler
   [item]
-  (dispatch! (routes/path-for-frontend :volume-info {:name (:volumeName item)})))
+  (routes/path-for-frontend :volume-info {:name (:volumeName item)}))
 
 (defn- volumes-handler
   []

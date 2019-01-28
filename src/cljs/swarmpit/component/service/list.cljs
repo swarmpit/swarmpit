@@ -65,7 +65,7 @@
 
 (defn onclick-handler
   [item]
-  (dispatch! (routes/path-for-frontend :service-info {:id (:serviceName item)})))
+  (routes/path-for-frontend :service-info {:id (:serviceName item)}))
 
 (defn- services-handler
   []

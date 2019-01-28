@@ -34,7 +34,7 @@
 
 (defn onclick-handler
   [item]
-  (dispatch! (routes/path-for-frontend :config-info {:id (:configName item)})))
+  (routes/path-for-frontend :config-info {:id (:configName item)}))
 
 (defn- configs-handler
   []

@@ -110,6 +110,8 @@
 (rum/defc drawer-item < rum/static [name icon handler domain selected?]
   (comp/list-item
     (merge {:button    true
+            :component "a"
+            :href      (routes/path-for-frontend handler)
             :dense     true
             :className "Swarmpit-drawer-item"
             :key       (str "drawer-item-" name)

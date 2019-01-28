@@ -34,7 +34,7 @@
 
 (defn onclick-volume-handler
   [item]
-  (dispatch! (routes/path-for-frontend :volume-info {:name (:host item)})))
+  (routes/path-for-frontend :volume-info {:name (:host item)}))
 
 (rum/defc form-bind < rum/static [bind]
   (when (not-empty bind)

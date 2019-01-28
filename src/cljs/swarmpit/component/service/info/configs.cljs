@@ -11,7 +11,7 @@
 
 (defn onclick-handler
   [item]
-  (dispatch! (routes/path-for-frontend :config-info {:id (:configName item)})))
+  (routes/path-for-frontend :config-info {:id (:configName item)}))
 
 (def render-metadata
   {:primary   (fn [item] (:configName item))

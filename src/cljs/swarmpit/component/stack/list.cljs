@@ -30,9 +30,9 @@
                       :render-fn (fn [item] (get-in item [:stackStats :secrets]))}]}
    :list  {:primary (fn [item] (:stackName item))}})
 
-(defn- onclick-handler
+(defn onclick-handler
   [item]
-  (dispatch! (routes/path-for-frontend :stack-info {:name (:stackName item)})))
+  (routes/path-for-frontend :stack-info {:name (:stackName item)}))
 
 (defn- format-response
   [response]

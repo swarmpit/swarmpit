@@ -30,7 +30,7 @@
 
 (defn onclick-handler
   [item]
-  (dispatch! (routes/path-for-frontend :network-info {:id (:networkName item)})))
+  (routes/path-for-frontend :network-info {:id (:networkName item)}))
 
 (defn- networks-handler
   []

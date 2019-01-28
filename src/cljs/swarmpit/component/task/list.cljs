@@ -89,7 +89,7 @@
 
 (defn onclick-handler
   [item]
-  (dispatch! (routes/path-for-frontend :task-info (select-keys item [:id]))))
+  (routes/path-for-frontend :task-info (select-keys item [:id])))
 
 (defn- tasks-handler
   []

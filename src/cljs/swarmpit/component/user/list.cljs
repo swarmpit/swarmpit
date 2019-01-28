@@ -25,9 +25,9 @@
    :list  {:primary   (fn [item] (:username item))
            :secondary (fn [item] (:email item))}})
 
-(defn- onclick-handler
+(defn onclick-handler
   [item]
-  (dispatch! (routes/path-for-frontend :user-info {:id (:_id item)})))
+  (routes/path-for-frontend :user-info {:id (:_id item)}))
 
 (defn- users-handler
   []

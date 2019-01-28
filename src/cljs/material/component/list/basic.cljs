@@ -3,8 +3,7 @@
   (:require [material.components :as cmp]
             [swarmpit.url :refer [dispatch!]]
             [sablono.core :refer-macros [html]]
-            [rum.core :as rum]
-            [clojure.string :as str]))
+            [rum.core :as rum]))
 
 (defn table-head
   [render-metadata]
@@ -25,23 +24,29 @@
     {:key "table-body"}
     (map-indexed
       (fn [index item]
-        (cmp/table-row
-          {:key     (str "table-row-" index)
-           :onClick #(onclick-handler-fn item)
-           :hover   true}
-          (->> (:summary render-metadata)
-               (map-indexed
-                 (fn [coll-index coll]
-                   (let [render-fn (:render-fn coll)]
-                     (cmp/table-cell
-                       (merge
-                         {:key       (str "table-row-cell-" index "-" coll-index)
-                          :className "Swarmpit-table-row-cell"}
-                         (when onclick-handler-fn
-                           {:style {:cursor "pointer"}})
-                         (when (:status coll)
-                           {:style {:textAlign "right"}}))
-                       (render-fn item index)))))))) items)))
+        (let [route (when onclick-handler-fn (onclick-handler-fn item))]
+          (cmp/table-row
+            {:key     (str "table-row-" index)
+             :onClick #(dispatch! route)
+             :hover   true}
+            (->> (:summary render-metadata)
+                 (map-indexed
+                   (fn [coll-index coll]
+                     (let [render-fn (:render-fn coll)]
+                       (cmp/table-cell
+                         (merge
+                           {:key       (str "table-row-cell-" index "-" coll-index)
+                            :className "Swarmpit-table-row-cell"}
+                           (when route
+                             {:style {:cursor "pointer"}})
+                           (when (:status coll)
+                             {:style {:textAlign "right"}}))
+                         (if (zero? coll-index)
+                           (html
+                             [:a {:href  route
+                                  :style {:display "block"}}
+                              (render-fn item index)])
+                           (render-fn item index)))))))))) items)))
 
 (rum/defc table < rum/static
   [render-metadata items onclick-handler-fn]
@@ -54,12 +59,17 @@
   [render-metadata index item last onclick-handler-fn]
   (let [status-fn (:status-fn render-metadata)
         primary-key (:primary render-metadata)
-        secodary-key (:secondary render-metadata)]
+        secodary-key (:secondary render-metadata)
+        route (when onclick-handler-fn (onclick-handler-fn item))]
     (cmp/list-item
-      {:key     (str "list-item-" index)
-       :button  (some? onclick-handler-fn)
-       :divider (false? (= item last))
-       :onClick #(onclick-handler-fn item)}
+      (merge
+        {:key     (str "list-item-" index)
+         :divider (false? (= item last))}
+        (when route
+          {:component "a"
+           :button    true
+           :href      route
+           :onClick   #(dispatch! route)}))
       (cmp/list-item-text
         (merge
           {:key       (str "list-item-text-" index)
@@ -92,7 +102,9 @@
          (assoc-in [:list :primary] primary-render-fn))))
   ([render-metadata primary-render-fn secondary-render-fn]
    (let [table-summary (-> (get-in render-metadata [:table :summary])
-                           (assoc-in [0 :render-fn] #(table-item-name (primary-render-fn %) (secondary-render-fn %))))]
+                           (assoc-in [0 :render-fn] #(table-item-name
+                                                       (primary-render-fn %)
+                                                       (secondary-render-fn %))))]
      (-> render-metadata
          (assoc-in [:table :summary] table-summary)
          (assoc-in [:list :primary] primary-render-fn)

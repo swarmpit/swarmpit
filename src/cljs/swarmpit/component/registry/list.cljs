@@ -37,13 +37,12 @@
                                    "dockeruser" hub-icon
                                    "registry" reg-icon))}})
 
-(defn- onclick-handler
+(defn onclick-handler
   [item]
-  (dispatch!
-    (routes/path-for-frontend
-      (case (:type item)
-        "dockeruser" :reg-dockerhub-info
-        "registry" :reg-v2-info) {:id (:_id item)})))
+  (routes/path-for-frontend
+    (case (:type item)
+      "dockeruser" :reg-dockerhub-info
+      "registry" :reg-v2-info) {:id (:_id item)}))
 
 (defn- dockerhub-handler
   []
