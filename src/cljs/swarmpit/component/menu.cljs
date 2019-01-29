@@ -170,7 +170,7 @@
       (html
         [:div
          (comp/hidden
-           {:mdUp true}
+           {:lgUp true}
            (comp/drawer
              {:className  "Swarmpit-drawer"
               :anchor     "left"
@@ -180,7 +180,7 @@
               :ModalProps {:keepMounted true}}
              (drawer-content version page-domain docker-api)))
          (comp/hidden
-           {:smDown         true
+           {:mdDown         true
             :implementation "css"}
            (comp/drawer
              {:className "Swarmpit-drawer"

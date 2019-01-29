@@ -63,7 +63,7 @@
         items-hash (hash items)]
     (html
       [:div
-       [:div.Swarmpit-appbar-section-desktop
+       [:div.Swarmpit-action-menu-desktop
         (->> items
              (filter #(some? %))
              (filter #(and (nil? (:more %))
@@ -79,6 +79,6 @@
         (when (not-empty more-items-desktop)
           (menu-more "desktop" items-hash anchor-desktop-key menu-open-desktop-key))
         (menu-popper items-hash more-items-desktop anchor-desktop-key menu-open-desktop-key)]
-       [:div.Swarmpit-appbar-section-mobile
+       [:div.Swarmpit-action-menu-mobile
         (menu-more "mobile" items-hash anchor-mobile-key menu-open-mobile-key)
         (menu-popper items-hash items anchor-mobile-key menu-open-mobile-key)]])))

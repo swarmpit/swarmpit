@@ -226,12 +226,14 @@ a {
 }
 
 .Swarmpit-section-desktop,
+.Swarmpit-action-menu-desktop,
 .Swarmpit-appbar-section-desktop {
     display: none;
     align-items: center;
 }
 
 .Swarmpit-section-mobile,
+.Swarmpit-action-menu-mobile,
 .Swarmpit-appbar-section-mobile {
     display: flex;
     align-items: center;
@@ -773,11 +775,6 @@ a {
     padding-left: 10px;
 }
 
-.Swarmpit-image-owner {
-    font-size: 12px;
-    color: rgb(158, 158, 158);
-}
-
 .Swarmpit-node-stat-graph {
     min-width: 96px;
     min-height: 96px;
@@ -817,8 +814,9 @@ a {
 
 /**** MEDIA ****/
 
-/* MEDIUM DEVICES [MD] */
-@media (min-width: 960px) {
+/* LARGE DEVICES [LG] */
+
+@media (min-width: 1280px) {
     .Swarmpit-context {
         margin-left: 200px;
     }
@@ -831,6 +829,17 @@ a {
         display: none !important;
     }
 
+    .Swarmpit-action-menu-desktop {
+        display: flex;
+    }
+
+    .Swarmpit-action-menu-mobile {
+        display: none;
+    }
+}
+
+/* MEDIUM DEVICES [MD] */
+@media (min-width: 960px) {
     .Swarmpit-appbar-section-desktop {
         display: flex;
     }

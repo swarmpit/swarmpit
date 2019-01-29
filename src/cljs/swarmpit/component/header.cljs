@@ -217,13 +217,9 @@
                 :color     "inherit"
                 :noWrap    false}
                subtitle)
-             (rum/with-key
-               (html [:div.grow]) "appbar-grow")
-             (rum/with-key
-               (appbar-desktop-section search-fn actions title) "appbar-section-desktop")
-             (rum/with-key
-               (appbar-mobile-section search-fn actions) "appbar-section-mobile")
-             (rum/with-key
-               (user-menu menuAnchorEl) "appbar-section-user")))
+             (html [:div.grow])
+             (appbar-desktop-section search-fn actions title)
+             (appbar-mobile-section search-fn actions)
+             (user-menu menuAnchorEl)))
          (mobile-actions-menu actions mobileMoreAnchorEl)
          (mobile-search search-fn title mobileSearchOpened)]))))
