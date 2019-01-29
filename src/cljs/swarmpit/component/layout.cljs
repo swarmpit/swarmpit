@@ -1,6 +1,5 @@
 (ns swarmpit.component.layout
   (:require [rum.core :as rum]
-            [material.components :as comp]
             [clojure.string :as str]
             [swarmpit.view :as view]
             [swarmpit.view-actions :as view-actions]
@@ -9,17 +8,6 @@
             [swarmpit.component.header :as header]))
 
 (enable-console-print!)
-
-(def styles
-  (let [theme (js->clj comp/theme)]
-    {:root    {:flexGrow 1
-               :zIndex   1
-               :overflow "hidden"
-               :position "relative"
-               :display  "flex"}
-     :context {:flexGrow        1
-               :backgroundColor (-> theme (get-in ["palette" "background" "default"]))
-               :padding         (* (-> theme (get-in ["spacing" "unit"])) 3)}}))
 
 (defn- page-domain
   [handler]
