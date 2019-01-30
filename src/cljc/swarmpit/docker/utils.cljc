@@ -1,7 +1,8 @@
 (ns swarmpit.docker.utils
   "Utility ns for docker domain"
   (:refer-clojure :exclude [alias])
-  (:require [clojure.string :as str]))
+  (:require [clojure.string :as str]
+            [swarmpit.ip :as ip]))
 
 (defn trim-stack
   [stack name]
@@ -71,6 +72,12 @@
   (-> (str/split registry-url #"//")
       (second)
       (str "/" repository-name)))
+
+(defn linked-registry [image]
+  "Select corresponding registry of image if linked or nil"
+  (let [hypothetical-registry (first (str/split image #"/"))]
+    (when (ip/is-valid-url hypothetical-registry)
+      hypothetical-registry)))
 
 (defn hypothetical-stack
   [service-name]
