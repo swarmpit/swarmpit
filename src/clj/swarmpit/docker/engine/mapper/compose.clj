@@ -48,6 +48,7 @@
    (ordered-map
      :image (-> service :repository :image)
      :command (some->> service :command (str/join " "))
+     :tty (-> service :tty)
      :environment (-> service :variables (name-value->map))
      :ports (->> service :ports
                  (map #(str (:hostPort %) ":" (:containerPort %) (when (= "udp" (:protocol %)) "/udp"))))
