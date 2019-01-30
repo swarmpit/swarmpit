@@ -16,31 +16,6 @@
 
 (enable-console-print!)
 
-(defonce digest-shown (atom false))
-
-(defn resource-provided?
-  [resource]
-  (let [cpu (:cpu resource)
-        memory (:memory resource)]
-    (or (> cpu 0)
-        (> memory 0))))
-
-(rum/defc form-subheader < rum/reactive [image image-digest]
-  (if image-digest
-    (comp/click-away-listener
-      {:onClickAway #(reset! digest-shown false)}
-      (comp/tooltip
-        {:PopperProps          {:disablePortal true}
-         :onClose              #(reset! digest-shown false)
-         :open                 (rum/react digest-shown)
-         :disableFocusListener true
-         :disableHoverListener true
-         :disableTouchListener true
-         :title                image-digest}
-        (html [:span {:onClick #(reset! digest-shown true)
-                      :style   {:cursor "pointer"}} image])))
-    (html [:span image])))
-
 (rum/defc form-replicas < rum/static [tasks]
   (let [data (->> tasks
                   (map (fn [task]
@@ -78,57 +53,6 @@
     "not running" (label/info state)
     "partly running" (label/yellow state)))
 
-(rum/defc form-dashboard < rum/static [{:keys [limit reservation]} tasks]
-  (html
-    (cond
-      (and (resource-provided? reservation)
-           (resource-provided? limit))
-      [:table
-       [:tr
-        [:td {:rowSpan 2} (form-replicas tasks)]
-        [:td
-         [:div "Reservation"]
-         [:div
-          [:span [:b "CPU: "]]
-          [:span (:cpu reservation)]]
-         [:div
-          [:span [:b "MEMORY: "]]
-          [:span (str (:memory reservation) "MB")]]]]
-       [:tr
-        [:td
-         [:div "Limit"]
-         [:div
-          [:span [:b "CPU: "]]
-          [:span (:cpu limit)]]
-         [:div
-          [:span [:b "MEMORY: "]]
-          [:span (str (:memory limit) "MB")]]]]]
-      (resource-provided? reservation)
-      [:table
-       [:tr
-        [:td (form-replicas tasks)]
-        [:td
-         [:div "Reservation"]
-         [:div
-          [:span [:b "CPU: "]]
-          [:span (:cpu reservation)]]
-         [:div
-          [:span [:b "MEMORY: "]]
-          [:span (str (:memory reservation) "MB")]]]]]
-      (resource-provided? limit)
-      [:table
-       [:tr
-        [:td (form-replicas tasks)]
-        [:td
-         [:div "Limit"]
-         [:div
-          [:span [:b "CPU: "]]
-          [:span (:cpu limit)]]
-         [:div
-          [:span [:b "MEMORY: "]]
-          [:span (str (:memory limit) "MB")]]]]]
-      :else (form-replicas tasks))))
-
 (defn- autoredeploy-label
   [autoredeploy]
   (when autoredeploy (label/primary "autoredeploy")))
@@ -145,7 +69,7 @@
       (comp/card-header
         {:title     (:serviceName service)
          :className "Swarmpit-form-card-header"
-         :subheader (form-subheader image image-digest)
+         :subheader image
          :action    (menu/menu
                       actions
                       :serviceGeneralMenuAnchor
