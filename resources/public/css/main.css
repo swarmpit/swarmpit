@@ -833,7 +833,7 @@ a {
 }
 
 /* MEDIUM DEVICES [MD] */
-@media (min-width: 1024px) {
+@media (min-width: 1080px) {
     .Swarmpit-appbar-section-desktop {
         display: flex;
     }
