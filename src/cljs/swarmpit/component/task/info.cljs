@@ -122,7 +122,8 @@
           (comp/grid
             {:item true
              :xs   12
-             :sm   6}
+             :sm   6
+             :md   4}
             (section-general item)))]])))
 
 (rum/defc form < rum/reactive

@@ -17,20 +17,15 @@
     [:div {:class "Swarmpit-form-card-icon-item"}
      (icon/access-time
        {:className "Swarmpit-form-card-icon"})
-     (when created
-       [:time {:date-time created
-               :title     (time/simplify created)}
-        (cmp/typography
-          {:color     "textSecondary"
-           :className "Swarmpit-form-card-icon-text"}
-          (str "created " (time/humanize created)))])
-     (when updated
-       [:time {:date-time updated
-               :title     (time/simplify updated)}
-        (cmp/typography
-          {:color     "textSecondary"
-           :className "Swarmpit-form-card-icon-text"}
-          (str (when created ", ") "last update " (time/humanize updated)))])]))
+     [:div {:class "Swarmpit-form-card-icon-text"}
+      (when created
+        [:time {:date-time created
+                :title     (time/simplify created)}
+         (str "created " (time/humanize created))])
+      (when updated
+        [:time {:date-time updated
+                :title     (time/simplify updated)}
+         (str (when created ", ") "updated " (time/humanize updated))])]]))
 
 (defn item-id [id]
   (html

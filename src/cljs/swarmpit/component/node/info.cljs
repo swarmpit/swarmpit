@@ -204,8 +204,7 @@
             (comp/grid
               {:item true
                :sm   6
-               :md   6
-               :lg   4}
+               :md   4}
               (comp/grid
                 {:container true
                  :spacing   16}
@@ -217,8 +216,7 @@
             (comp/grid
               {:item true
                :sm   6
-               :md   6
-               :lg   8}
+               :md   8}
               (comp/grid
                 {:container true
                  :spacing   16}

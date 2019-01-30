@@ -76,7 +76,7 @@
             {:item true
              :xs   12
              :sm   6
-             :lg   4}
+             :md   4}
             (comp/card
               {:className "Swarmpit-form-card"}
               (comp/card-header

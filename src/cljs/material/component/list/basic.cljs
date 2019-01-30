@@ -138,10 +138,10 @@
     (html
       [:div
        (cmp/hidden
-         {:only           ["xs" "sm" "md"]
+         {:only           ["xs" "sm"]
           :implementation "js"}
          (table (:table render-metadata) items onclick-handler-fn))
        (cmp/hidden
-         {:only           ["lg" "xl"]
+         {:only           ["md" "lg" "xl"]
           :implementation "js"}
          (list (:list render-metadata) items onclick-handler-fn))])))
