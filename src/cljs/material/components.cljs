@@ -14,7 +14,12 @@
                             :light        "#957ed1"
                             :dark         "#362870"
                             :contrastText "#fff"}}
-   :typography {:useNextVariants true}})
+   :typography {:useNextVariants true}
+   :breakpoints {:values {:xs 0
+                          :sm 600
+                          :md 1024
+                          :lg 1280
+                          :xl 1920}}})
 
 (def theme (f/create-mui-theme (clj->js theme-props)))
 
