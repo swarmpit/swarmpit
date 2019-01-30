@@ -23,7 +23,8 @@
      :variant         "outlined"
      :defaultValue    value
      :required        true
-     :InputLabelProps {:shrink true}}))
+     :InputLabelProps {:shrink true}
+     :onChange        #(state/update-value [:url] (-> % .-target .-value) state/form-value-cursor)}))
 
 (defn- form-auth [value]
   (comp/switch
