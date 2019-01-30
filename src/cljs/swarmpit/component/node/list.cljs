@@ -42,31 +42,6 @@
        (label/green "active")
        (label/grey (:availability item)))]))
 
-(defn node-used [stat]
-  (cond
-    (< stat 75) {:name  "used"
-                 :value stat
-                 :color "#43a047"}
-    (> stat 90) {:name  "used"
-                 :value stat
-                 :color "#d32f2f"}
-    :else {:name  "used"
-           :value stat
-           :color "#ffa000"}))
-
-(rum/defc node-graph < rum/static [stat label id]
-  (let [data [(node-used stat)
-              {:name  "free"
-               :value (- 100 stat)
-               :color "#ccc"}]]
-    (chart/pie
-      data
-      label
-      "Swarmpit-node-stat-graph"
-      id
-      {:formatter (fn [value name props]
-                    (render-percentage value))})))
-
 (rum/defc node-item < rum/static [item index]
   (let [cpu (-> item :resources :cpu (int))
         memory-bytes (-> item :resources :memory (* 1024 1024))
@@ -104,15 +79,15 @@
              (html
                [:div {:class "Swarmpit-node-stat"
                       :key   (str "node-card-stat-" index)}
-                (node-graph
+                (common/resource-pie
                   (get-in item [:stats :cpu :usedPercentage])
                   (str cpu " " (inflect/pluralize-noun cpu "core"))
                   (str "graph-cpu-" index))
-                (node-graph
+                (common/resource-pie
                   (get-in item [:stats :disk :usedPercentage])
                   (str (humanize/filesize disk-bytes :binary false) " disk")
                   (str "graph-disk-" index))
-                (node-graph
+                (common/resource-pie
                   (get-in item [:stats :memory :usedPercentage])
                   (str (humanize/filesize memory-bytes :binary false) " ram")
                   (str "graph-memory-" index))])))]))))

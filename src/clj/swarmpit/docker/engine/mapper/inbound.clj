@@ -17,6 +17,11 @@
      :memory (-> (or memory-bytes 0)
                  (as-megabytes))}))
 
+(defn ->service-resources
+  [service-task-template]
+  {:reservation (->resources (get-in service-task-template [:Resources :Reservations]))
+   :limit       (->resources (get-in service-task-template [:Resources :Limits]))})
+
 (def stack-label :com.docker.stack.namespace)
 (def autoredeploy-label :swarmpit.service.deployment.autoredeploy)
 
@@ -141,6 +146,7 @@
       :status {:error (get-in task [:Status :Err])}
       :desiredState (:DesiredState task)
       :serviceName (or service-name service-id)
+      :resources (->service-resources (get-in service [:Spec :TaskTemplate]))
       :nodeId node-id
       :nodeName (or node-name node-id))))
 
@@ -355,8 +361,7 @@
        :tty (get-in service-task-template [:ContainerSpec :TTY])
        :logdriver {:name (or (get-in service-task-template [:LogDriver :Name]) "json-file")
                    :opts (->service-log-options service-task-template)}
-       :resources {:reservation (->resources (get-in service-task-template [:Resources :Reservations]))
-                   :limit       (->resources (get-in service-task-template [:Resources :Limits]))}
+       :resources (->service-resources service-task-template)
        :deployment {:update          (->service-deployment-update service-spec)
                     :forceUpdate     (:ForceUpdate service-task-template)
                     :restartPolicy   (->service-deployment-restart-policy service-task-template)

@@ -6,7 +6,10 @@
             [swarmpit.component.state :as state]
             [sablono.core :refer-macros [html]]
             [clojure.string :as str]
-            [rum.core :as rum]))
+            [goog.string.format]
+            [goog.string :as gstring]
+            [rum.core :as rum]
+            [material.component.chart :as chart]))
 
 (defn edit-title [title & subtitle]
   [(comp/typography
@@ -172,3 +175,34 @@
       (if show-password
         icon/visibility
         icon/visibility-off))))
+
+(defn resource-used [stat]
+  (cond
+    (< stat 75) {:name  "used"
+                 :value stat
+                 :color "#43a047"}
+    (> stat 90) {:name  "used"
+                 :value stat
+                 :color "#d32f2f"}
+    :else {:name  "used"
+           :value stat
+           :color "#ffa000"}))
+
+(defn- render-percentage
+  [val]
+  (if (some? val)
+    (str (gstring/format "%.2f" val) "%")
+    "-"))
+
+(rum/defc resource-pie < rum/static [stat label id]
+  (let [data [(resource-used stat)
+              {:name  "free"
+               :value (- 100 stat)
+               :color "#ccc"}]]
+    (chart/pie
+      data
+      label
+      "Swarmpit-node-stat-graph"
+      id
+      {:formatter (fn [value name props]
+                    (render-percentage value))})))

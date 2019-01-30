@@ -13,20 +13,11 @@
             [swarmpit.routes :as routes]
             [clojure.contrib.humanize :as humanize]
             [sablono.core :refer-macros [html]]
-            [rum.core :as rum]))
+            [rum.core :as rum]
+            [swarmpit.component.common :as common]
+            [clojure.contrib.inflect :as inflect]))
 
 (enable-console-print!)
-
-(defn resources
-  [node]
-  (let [cpu (-> node :resources :cpu (int))
-        memory-bytes (-> node :resources :memory (* 1024 1024))
-        disk-bytes (-> node :stats :disk :total)]
-    (let [core-stats (str cpu " " (clojure.contrib.inflect/pluralize-noun cpu "core") ", "
-                          (humanize/filesize memory-bytes :binary true) " memory")]
-      (if (some? disk-bytes)
-        (str core-stats ", " (humanize/filesize disk-bytes :binary true) " disk")
-        core-stats))))
 
 (defn- node-item-state [value]
   (case value
@@ -34,42 +25,55 @@
     "down" (label/red value)))
 
 (rum/defc form-general < rum/static [node]
-  (comp/card
-    {:className "Swarmpit-form-card"}
-    (comp/card-header
-      {:title     (:nodeName node)
-       :className "Swarmpit-form-card-header Swarmpit-card-header-responsive-title"
-       :subheader (:address node)
-       :action    (comp/tooltip
-                    {:title "Edit node"}
-                    (comp/icon-button
-                      {:aria-label "Edit"
-                       :href       (routes/path-for-frontend :node-edit {:id (:id node)})}
-                      (comp/svg icon/edit-path)))})
-    (comp/card-content
-      {}
-      (html
-        [:div
-         [:span [:b "ENGINE: "] (str "docker " (:engine node))]
-         [:br]
-         [:span [:b "OS: "] [(:os node) " " (:arch node)]]
-         [:br]
-         [:span [:b "RESOURCES: "] (resources node)]]))
-    (comp/card-content
-      {}
-      (form/item-labels
-        [(node-item-state (:state node))
-         (when (:leader node)
-           (label/primary "Leader"))
-         (label/grey (:role node))
-         (if (= "active" (:availability node))
-           (label/green "active")
-           (label/grey (:availability node)))]))
-    (comp/divider
-      {})
-    (comp/card-content
-      {:style {:paddingBottom "16px"}}
-      (form/item-id (:id node)))))
+  (let [cpu (-> node :resources :cpu (int))
+        memory-bytes (-> node :resources :memory (* 1024 1024))
+        disk-bytes (-> node :stats :disk :total)]
+    (comp/card
+      {:className "Swarmpit-form-card"}
+      (comp/card-header
+        {:title     (:nodeName node)
+         :className "Swarmpit-form-card-header Swarmpit-card-header-responsive-title"
+         :subheader (:address node)
+         :action    (comp/tooltip
+                      {:title "Edit node"}
+                      (comp/icon-button
+                        {:aria-label "Edit"
+                         :href       (routes/path-for-frontend :node-edit {:id (:id node)})}
+                        (comp/svg icon/edit-path)))})
+      (comp/card-content
+        {}
+        (html
+          [:div
+           [:div {:class "Swarmpit-node-stat"
+                  :key   "node-card-stat-"}
+            (common/resource-pie
+              (get-in node [:stats :cpu :usedPercentage])
+              (str cpu " " (inflect/pluralize-noun cpu "core"))
+              "graph-cpu")
+            (common/resource-pie
+              (get-in node [:stats :disk :usedPercentage])
+              (str (humanize/filesize disk-bytes :binary false) " disk")
+              "graph-disk")
+            (common/resource-pie
+              (get-in node [:stats :memory :usedPercentage])
+              (str (humanize/filesize memory-bytes :binary false) " ram")
+              "graph-memory")]
+           [:p (str "docker engine " (:engine node)) " on " [(:os node) " " (:arch node)]]]))
+      (comp/card-content
+        {}
+        (form/item-labels
+          [(node-item-state (:state node))
+           (when (:leader node)
+             (label/primary "Leader"))
+           (label/grey (:role node))
+           (if (= "active" (:availability node))
+             (label/green "active")
+             (label/grey (:availability node)))]))
+      (comp/divider
+        {})
+      (comp/card-content
+        {:style {:paddingBottom "16px"}}
+        (form/item-id (:id node))))))
 
 (def render-labels-metadata
   {:primary   (fn [item] (:name item))

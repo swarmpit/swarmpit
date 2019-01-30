@@ -8,7 +8,11 @@
             [swarmpit.ajax :as ajax]
             [swarmpit.routes :as routes]
             [sablono.core :refer-macros [html]]
-            [rum.core :as rum]))
+            [rum.core :as rum]
+            [material.component.chart :as chart]
+            [clojure.contrib.inflect :as inflect]
+            [clojure.contrib.humanize :as humanize]
+            [swarmpit.component.common :as common]))
 
 (enable-console-print!)
 
@@ -65,7 +69,7 @@
     (html [:span image])))
 
 (defn- section-general
-  [{:keys [id taskName nodeName state status createdAt updatedAt repository serviceName]}]
+  [{:keys [id taskName nodeName state status createdAt updatedAt repository serviceName resources stats]}]
   (comp/card
     {:className "Swarmpit-form-card"}
     (comp/card-header
@@ -78,10 +82,20 @@
       {}
       (html
         [:div
-         [:span "Task is allocated to node " [:a {:href (routes/path-for-frontend :node-info {:id nodeName})} nodeName]]
-         [:br]
+         (when stats
+           [:div {:class "Swarmpit-node-stat"
+                  :key   (str "node-card-stat-cpu")}
+            (common/resource-pie
+              (get-in stats [:cpuPercentage])
+              (str (-> stats :cpuPercentage (Math/ceil)) "% cpu")
+              (str "graph-cpu"))
+            (common/resource-pie
+              (get-in stats [:memoryPercentage])
+              (str (humanize/filesize (-> stats :memory) :binary false) " ram")
+              (str "graph-memory"))])
+         [:p "allocated to node " [:a {:href (routes/path-for-frontend :node-info {:id nodeName})} nodeName]]
          (when (:error status)
-           [:p "Failure reason: " [:span (:error status)]])]))
+           [:p {:style {:color "#d32f2f"}} "Failure reason: " [:span (:error status)]])]))
     (comp/card-content
       {}
       (form/item-labels
@@ -127,6 +141,7 @@
             (section-general item)))]])))
 
 (rum/defc form < rum/reactive
+                 mixin/subscribe-form
                  mixin-init-form [_]
   (let [state (state/react state/form-state-cursor)
         item (state/react state/form-value-cursor)]

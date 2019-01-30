@@ -15,8 +15,8 @@ else
     docker run -d \
       --name swarmpitagent \
       --env DOCKER_API_VERSION=1.30 \
-      --env EVENT_ENDPOINT=http://192.168.65.2:3449/events \
-      --env HEALTH_CHECK_ENDPOINT=http://192.168.65.2:3449/version \
+      --env EVENT_ENDPOINT=http://172.18.0.1:3449/events \
+      --env HEALTH_CHECK_ENDPOINT=http://172.18.0.1:3449/version \
       --volume /var/run/docker.sock:/var/run/docker.sock \
       swarmpit/agent:latest
 fi
