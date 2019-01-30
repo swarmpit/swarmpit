@@ -718,8 +718,10 @@
 
 (defn node-stats
   [node]
-  (let [stats (apply dissoc (stats/node (:id node)) [:id :tasks])]
-    (assoc node :stats stats)))
+  (if (= "down" (:state node))
+    (assoc node :stats nil)
+    (let [stats (apply dissoc (stats/node (:id node)) [:id :tasks])]
+      (assoc node :stats stats))))
 
 (defn nodes
   []
