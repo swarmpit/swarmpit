@@ -68,11 +68,10 @@
          "Remove")
        [:div.Swarmpit-form-context
         (comp/card
-          {:className "Swarmpit-form-card"
-           :style     {:maxWidth "500px"}}
+          {:className "Swarmpit-form-card Swarmpit-form-card-single"}
           (comp/card-header
             {:title     username
-             :className "Swarmpit-form-card-header"
+             :className "Swarmpit-form-card-header Swarmpit-card-header-responsive-title"
              :action    (menu/menu
                           (form-actions _id)
                           :dockerhubMenuAnchor

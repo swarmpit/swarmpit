@@ -38,7 +38,7 @@
     {:className "Swarmpit-form-card"}
     (comp/card-header
       {:title     (:nodeName node)
-       :className "Swarmpit-form-card-header"
+       :className "Swarmpit-form-card-header Swarmpit-card-header-responsive-title"
        :subheader (:address node)
        :action    (comp/tooltip
                     {:title "Edit node"}

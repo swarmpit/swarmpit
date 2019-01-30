@@ -150,6 +150,7 @@
 (def arrow-forward-icon (create-factory js/MaterialUIIcons.ArrowForward))
 (def star-icon (create-factory js/MaterialUIIcons.Star))
 (def verified-icon (create-factory js/MaterialUIIcons.VerifiedUser))
+(def image-icon (create-factory js/MaterialUIIcons.Image))
 
 (def create-mui-theme js/MaterialUI.createMuiTheme)
 (def with-mobile-dialog js/MaterialUI.withMobileDialog)

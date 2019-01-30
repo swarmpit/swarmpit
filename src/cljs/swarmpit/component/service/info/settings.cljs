@@ -61,6 +61,7 @@
   (let [image-digest (get-in service [:repository :imageDigest])
         image (get-in service [:repository :image])
         desired-tasks (filter #(not= "shutdown" (:desiredState %)) tasks)
+        registry (utils/linked-registry image)
         command (:command service)
         stack (:stack service)
         mode (:mode service)]
@@ -68,20 +69,23 @@
       {:className "Swarmpit-form-card"}
       (comp/card-header
         {:title     (:serviceName service)
-         :className "Swarmpit-form-card-header"
-         :subheader image
+         :className "Swarmpit-form-card-header Swarmpit-card-header-responsive-title"
+         :subheader (if registry
+                      (html [:span {:title image-digest} (utils/registry-repository image registry)])
+                      (html [:span {:title image-digest} image]))
          :action    (menu/menu
                       actions
                       :serviceGeneralMenuAnchor
                       :serviceGeneralMenuOpened)})
+      (when registry
+        (comp/card-content
+          {}
+          (form/item-icon icon/cloud registry)))
       (comp/card-content
         {}
         (if (not (empty? desired-tasks))
           (form-replicas desired-tasks)
-          (html
-            [:span.Swarmpit-message
-             (icon/info {:style {:marginRight "8px"}})
-             [:span "Service has been shut down."]]))
+          (form/message "Service has been shut down."))
         (form-command command))
       (comp/card-content
         {}

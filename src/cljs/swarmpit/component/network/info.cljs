@@ -57,7 +57,7 @@
     {:className "Swarmpit-form-card"}
     (comp/card-header
       {:title     networkName
-       :className "Swarmpit-form-card-header"
+       :className "Swarmpit-form-card-header Swarmpit-card-header-responsive-title"
        :action    (comp/tooltip
                     {:title "Delete network"}
                     (comp/icon-button

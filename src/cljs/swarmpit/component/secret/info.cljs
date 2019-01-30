@@ -50,7 +50,7 @@
     {:className "Swarmpit-form-card"}
     (comp/card-header
       {:title     (:secretName secret)
-       :className "Swarmpit-form-card-header"
+       :className "Swarmpit-form-card-header Swarmpit-card-header-responsive-title"
        :action    (comp/tooltip
                     {:title "Delete secret"}
                     (comp/icon-button

@@ -70,7 +70,7 @@
     {:className "Swarmpit-form-card"}
     (comp/card-header
       {:title     taskName
-       :className "Swarmpit-form-card-header"
+       :className "Swarmpit-form-card-header Swarmpit-card-header-responsive-title"
        :subheader (form-subheader
                     (:image repository)
                     (:imageDigest repository))})

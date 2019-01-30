@@ -70,7 +70,7 @@
       {}
       (html
         [:div
-         [:span "Volume is mounted at:" [:br] [:b.volume-mountpoint mountpoint]]]))
+         [:span "Volume is mounted at:" [:br] [:b.Swarmpit-volume-mountpoint mountpoint]]]))
     (comp/card-content
       {}
       (form/item-labels
@@ -94,7 +94,7 @@
   (comp/card
     {:className "Swarmpit-card"}
     (comp/card-header
-      {:className "Swarmpit-table-card-header"
+      {:className "Swarmpit-table-card-header Swarmpit-card-header-responsive-title"
        :title     (comp/typography {:variant "h6"} "Driver")})
     (comp/card-content {} driver )
     (comp/card-content

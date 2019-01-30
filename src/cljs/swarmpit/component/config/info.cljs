@@ -73,8 +73,7 @@
     {:className "Swarmpit-form-card"}
     (comp/card-header
       {:title     (:configName config)
-       :classes   {:title "Swarmpit-card-header-responsive-title"}
-       :className "Swarmpit-form-card-header"
+       :className "Swarmpit-form-card-header Swarmpit-card-header-responsive-title"
        :action    (comp/tooltip
                     {:title "Delete config"}
                     (comp/icon-button

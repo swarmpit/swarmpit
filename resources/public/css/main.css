@@ -431,14 +431,12 @@ a {
     padding: 0 24px;
 }
 
+.Swarmpit-volume-mountpoint,
 .Swarmpit-list-item-text-primary,
 .Swarmpit-list-item-text-secondary,
 .Swarmpit-table-cell-primary,
 .Swarmpit-table-cell-secondary {
-    overflow: hidden;
-    word-wrap: break-word;
-    white-space: pre-wrap;
-    word-break: normal;
+    word-break: break-all;
 }
 
 .Swarmpit-list-item-edit > div {
@@ -800,10 +798,6 @@ a {
 
 .Swarmpit-card-header-responsive-title {
     word-break: break-word;
-}
-
-.volume-mountpoint {
-    word-break: break-all;
 }
 
 /* Recharts customizations */

@@ -171,7 +171,7 @@
     {:className "Swarmpit-form-card"}
     (comp/card-header
       {:title     stack-name
-       :className "Swarmpit-form-card-header"
+       :className "Swarmpit-form-card-header Swarmpit-card-header-responsive-title"
        :action    (menu/menu
                     (form-actions stack-name stackfile)
                     :stackGeneralMenuAnchor

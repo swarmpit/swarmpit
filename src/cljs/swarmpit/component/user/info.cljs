@@ -69,33 +69,25 @@
          "Delete user?"
          "Delete")
        [:div.Swarmpit-form-context
-        (comp/grid
-          {:container true
-           :spacing   16}
-          (comp/grid
-            {:item true
-             :xs   12
-             :sm   6
-             :md   4}
-            (comp/card
-              {:className "Swarmpit-form-card"}
-              (comp/card-header
-                {:title     username
-                 :className "Swarmpit-form-card-header"
-                 :subheader email
-                 :action    (menu/menu
-                              (form-actions username _id)
-                              :userGeneralMenuAnchor
-                              :userGeneralMenuOpened)})
-              (comp/card-content
-                {}
-                (form/item-labels
-                  [(label/grey role)]))
-              (comp/divider
-                {})
-              (comp/card-content
-                {:style {:paddingBottom "16px"}}
-                (form/item-id _id)))))]])))
+        (comp/card
+          {:className "Swarmpit-form-card Swarmpit-form-card-single"}
+          (comp/card-header
+            {:title     username
+             :className "Swarmpit-form-card-header Swarmpit-card-header-responsive-title"
+             :subheader email
+             :action    (menu/menu
+                          (form-actions username _id)
+                          :userGeneralMenuAnchor
+                          :userGeneralMenuOpened)})
+          (comp/card-content
+            {}
+            (form/item-labels
+              [(label/grey role)]))
+          (comp/divider
+            {})
+          (comp/card-content
+            {:style {:paddingBottom "16px"}}
+            (form/item-id _id)))]])))
 
 (rum/defc form < rum/reactive
                  mixin-init-form

@@ -14,7 +14,7 @@
 
 (defn item-date [created updated]
   (html
-    [:div {:class "Swarmpit-form-card-icon-item"}
+    [:div.Swarmpit-form-card-icon-item
      (icon/access-time
        {:className "Swarmpit-form-card-icon"})
      [:div {:class "Swarmpit-form-card-icon-text"}
@@ -27,9 +27,22 @@
                 :title     (time/simplify updated)}
          (str (when created ", ") "updated " (time/humanize updated))])]]))
 
+(defn message [comp]
+  (html
+    [:span.Swarmpit-message
+     (icon/info {:style {:marginRight "8px"}})
+     [:span comp]]))
+
+(defn item-icon [icon comp]
+  (html
+    [:span.Swarmpit-message
+     (icon {:style {:marginRight "8px"
+                    :fontSize    "16px"}})
+     [:span comp]]))
+
 (defn item-id [id]
   (html
-    [:div {:class "Swarmpit-form-card-icon-item"}
+    [:div.Swarmpit-form-card-icon-item
      (icon/fingerprint
        {:className "Swarmpit-form-card-icon"})
      [:span.Swarmpit-form-card-icon-item-id
