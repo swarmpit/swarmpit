@@ -100,6 +100,17 @@
     (subscribed-data [_ message]
       (api/tasks-memo))))
 
+(def refresh-task-info
+  (reify Rule
+    (match? [_ type message]
+      (and (event? type)
+           (service-task-event? message)))
+    (subscription [_ message]
+      {:handler :task-info
+       :params  nil})
+    (subscribed-data [_ message]
+      (api/tasks-memo))))
+
 (def refresh-node-info
   (reify Rule
     (match? [_ type message]
@@ -107,7 +118,7 @@
            (node-event? message)))
     (subscription [_ message]
       {:handler :node-info
-       :params  {:id (node-id message)}})
+       :params  nil})
     (subscribed-data [_ message]
       (node-info-data message))))
 
@@ -151,6 +162,7 @@
            refresh-service-info-by-name
            refresh-service-info-by-id
            refresh-task-list
+           refresh-task-info
            refresh-node-list
            refresh-node-info
            refresh-stack-list

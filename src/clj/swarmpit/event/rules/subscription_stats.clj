@@ -2,7 +2,7 @@
   (:refer-clojure :exclude [list])
   (:require [swarmpit.api :as api]))
 
-(def subscribers #{:service-info :task-list :node-list :node-info})
+(def subscribers #{:service-info :task-list :task-info :node-list :node-info})
 
 (defn- service-info-data
   [service-id]
@@ -25,5 +25,6 @@
   (case handler
     :service-info (service-info-data (:id params))
     :task-list (api/tasks)
+    :task-info (api/task (:id params))
     :node-list (api/nodes)
     :node-info (node-info-data (:id params))))
