@@ -25,9 +25,10 @@
 
 (defn parse-log
   [service-log]
-  (->> (split-lines service-log)
-       (map (fn [x] {:line      (parse-log-line x)
-                     :timestamp (parse-log-timestamp x)
-                     :task      (parse-log-task x)}))
-       (filter #(some? (:task %)))
-       (sort-by :timestamp)))
+  (if (some? service-log)
+    (->> (split-lines service-log)
+         (map (fn [x] {:line      (parse-log-line x)
+                       :timestamp (parse-log-timestamp x)
+                       :task      (parse-log-task x)}))
+         (filter #(some? (:task %)))
+         (sort-by :timestamp))))
