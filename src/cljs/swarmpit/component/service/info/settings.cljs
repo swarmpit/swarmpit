@@ -37,6 +37,11 @@
       {:formatter (fn [value name props]
                     (.-state (.-payload props)))})))
 
+(rum/defc form-registry < rum/static [registry]
+  (html
+    [:span
+     [:span {:style {:fontWeight 700}} "FROM "] registry]))
+
 (rum/defc form-command < rum/reactive [command]
   (let [{:keys [cmdAnchor cmdShow]} (state/react state/form-state-cursor)]
     (html
@@ -106,7 +111,7 @@
       (when registry
         (comp/card-content
           {}
-          (form/item-icon icon/cloud registry)))
+          (form-registry registry)))
       (comp/card-content
         {}
         (if (not (empty? desired-tasks))

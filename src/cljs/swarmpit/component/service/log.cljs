@@ -104,22 +104,14 @@
              :mini    true
              :onClick #(state/update-value [:autoscroll] (not autoscroll) state/form-state-cursor)}
             icon/scroll-down)]
-         [:div.Swarmpit-log
-          (comp/grid
-            {:container true
-             :spacing   0}
-            (comp/grid
-              {:item true
-               :xs   12}
-              (html
-                [:div#service-log
-                 (cond
-                   error [:span "Logs for this service couldn't be fetched."]
-                   (and (empty? logs) initialized) [:span "Log is empty in this service."]
-                   (not initialized) [:span "Loading..."]
-                   :else (map
-                           (fn [item]
-                             (line service item timestamp)) filtered-logs))])))]]))))
+         [:div.Swarmpit-form-context.Swarmpit-log
+          (cond
+            error [:span "Logs for this service couldn't be fetched."]
+            (and (empty? logs) initialized) [:span "Log is empty in this service."]
+            (not initialized) [:span "Loading..."]
+            :else (map
+                    (fn [item]
+                      (line service item timestamp)) filtered-logs))]]))))
 
 (rum/defc form-task < form [params]
   (form params))
