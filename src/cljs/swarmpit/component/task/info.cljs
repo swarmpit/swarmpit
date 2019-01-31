@@ -22,13 +22,10 @@
 (defn- event-handler
   [task-id]
   (fn [event]
-    (state/set-value
-      (if (coll? event)
-        (->> event
-             (filter #(= task-id :id))
-             first)
-        event)
-      state/form-value-cursor)))
+    (let [task (->> event
+                    (filter #(= task-id (:id %)))
+                    (first))]
+      (state/set-value task state/form-value-cursor))))
 
 (defn- task-handler
   [route]

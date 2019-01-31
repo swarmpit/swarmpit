@@ -20,11 +20,10 @@
 
 (defn- on-message!
   [event route handler]
-  (print handler)
   (let [event-data (parse-event event)]
-    (if handler
+    (if (not (nil? handler))
       (handler event-data)
-      (event/handle (:handler route) event-data route))))
+      (event/handle (:handler route) event-data))))
 
 (defn- on-open!
   [event route]
@@ -43,12 +42,14 @@
     (.close @es)))
 
 (defn open!
-  [route & handler]
-  (ajax/get
-    (routes/path-for-backend :slt)
-    {:on-success (fn [{:keys [response]}]
-                   (let [event-source (js/EventSource. (event-source-url (:slt response) route))]
-                     (.addEventListener event-source "message" (fn [e] (on-message! e route handler)))
-                     (.addEventListener event-source "open" (fn [e] (on-open! e route)))
-                     (.addEventListener event-source "error" (fn [e] (on-error! e route #(open! route))))
-                     (reset! es event-source)))}))
+  ([route]
+   (open! route nil))
+  ([route handler]
+   (ajax/get
+     (routes/path-for-backend :slt)
+     {:on-success (fn [{:keys [response]}]
+                    (let [event-source (js/EventSource. (event-source-url (:slt response) route))]
+                      (.addEventListener event-source "message" (fn [e] (on-message! e route handler)))
+                      (.addEventListener event-source "open" (fn [e] (on-open! e route)))
+                      (.addEventListener event-source "error" (fn [e] (on-error! e route #(open! route))))
+                      (reset! es event-source)))})))
