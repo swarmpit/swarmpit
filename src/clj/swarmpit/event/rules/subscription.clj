@@ -118,7 +118,7 @@
            (node-event? message)))
     (subscription [_ message]
       {:handler :node-info
-       :params  nil})
+       :params  {:id (node-id message)}})
     (subscribed-data [_ message]
       (node-info-data message))))
 
