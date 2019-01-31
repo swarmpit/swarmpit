@@ -754,6 +754,10 @@ a {
     margin: 5px 5px 5px 0;
 }
 
+.Swarmpit-popover {
+    padding: 1em 2em;
+}
+
 /* REPOSITORY */
 
 .Swarmpit-repo-registry-item {

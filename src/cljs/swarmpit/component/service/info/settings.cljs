@@ -66,13 +66,14 @@
              (comp/popover
                {:open            (and cmdAnchor cmdShow)
                 :anchorEl        cmdAnchor
+                :onClick         #(state/update-value [:cmdShow] false state/form-state-cursor)
                 :onClose         #(state/update-value [:cmdShow] false state/form-state-cursor)
                 :anchorOrigin    {:vertical   "top"
                                   :horizontal "left"}
                 :transformOrigin {:vertical   "top"
                                   :horizontal "left"}}
                (html
-                 [:div.Swarmpit-command-text.Swarmpit-form-context
+                 [:div.Swarmpit-command-text.Swarmpit-popover
                   (map-indexed
                     (fn [index item]
                       (html [:pre {:key index} item])) command)]))])])])))
