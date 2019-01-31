@@ -71,7 +71,7 @@
 (defn- section-general
   [{:keys [id taskName nodeName state status createdAt updatedAt repository serviceName resources stats]}]
   (comp/card
-    {:className "Swarmpit-form-card"}
+    {:className "Swarmpit-form-card Swarmpit-form-card-single"}
     (comp/card-header
       {:title     taskName
        :className "Swarmpit-form-card-header Swarmpit-card-header-responsive-title"
@@ -79,7 +79,7 @@
                     (:image repository)
                     (:imageDigest repository))})
     (comp/card-content
-      {}
+      {:className "Swarmpit-table-card-content"}
       (html
         [:div
          (when stats
@@ -92,10 +92,11 @@
             (common/resource-pie
               (get-in stats [:memoryPercentage])
               (str (humanize/filesize (-> stats :memory) :binary false) " ram")
-              (str "graph-memory"))])
-         [:p "allocated to node " [:a {:href (routes/path-for-frontend :node-info {:id nodeName})} nodeName]]
-         (when (:error status)
-           [:p {:style {:color "#d32f2f"}} "Failure reason: " [:span (:error status)]])]))
+              (str "graph-memory"))])]))
+    (when (:error status)
+      (comp/card-content
+        {}
+        (html [:span {:style {:color "#d32f2f"}} "Failure reason: " [:span (:error status)]])))
     (comp/card-content
       {}
       (form/item-labels
@@ -130,15 +131,7 @@
     (html
       [:div.Swarmpit-form
        [:div.Swarmpit-form-context
-        (comp/grid
-          {:container true
-           :spacing   16}
-          (comp/grid
-            {:item true
-             :xs   12
-             :sm   6
-             :md   4}
-            (section-general item)))]])))
+        (section-general item)]])))
 
 (rum/defc form < rum/reactive
                  mixin/subscribe-form

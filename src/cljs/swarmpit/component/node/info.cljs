@@ -41,7 +41,7 @@
                          :href       (routes/path-for-frontend :node-edit {:id (:id node)})}
                         (comp/svg icon/edit-path)))})
       (comp/card-content
-        {}
+        {:className "Swarmpit-table-card-content"}
         (html
           [:div
            [:div {:class "Swarmpit-node-stat"
@@ -57,8 +57,10 @@
             (common/resource-pie
               (get-in node [:stats :memory :usedPercentage])
               (str (humanize/filesize memory-bytes :binary false) " ram")
-              "graph-memory")]
-           [:p (str "docker engine " (:engine node)) " on " [(:os node) " " (:arch node)]]]))
+              "graph-memory")]]))
+      (comp/card-content
+        {}
+        (html [:span (str "docker engine " (:engine node)) " on " [(:os node) " " (:arch node)]]))
       (comp/card-content
         {}
         (form/item-labels
