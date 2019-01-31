@@ -82,7 +82,7 @@
       {:className "Swarmpit-table-card-content"}
       (html
         [:div
-         (when stats
+         (when (and stats (= "running" state))
            [:div {:class "Swarmpit-node-stat"
                   :key   (str "node-card-stat-cpu")}
             (common/resource-pie
