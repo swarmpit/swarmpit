@@ -131,8 +131,10 @@
 
 (defn- init-form-state
   []
-  (state/set-value {:menu?    false
-                    :loading? true} state/form-state-cursor))
+  (state/set-value {:cmdAnchor nil
+                    :cmdShow   false
+                    :menu?     false
+                    :loading?  true} state/form-state-cursor))
 
 (defn- init-form-value
   []

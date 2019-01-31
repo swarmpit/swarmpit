@@ -6,15 +6,15 @@
 ;;; Theme components
 
 (def theme-props
-  {:palette    {:primary   {:main         "#65519f"
-                            :light        "#957ed1"
-                            :dark         "#362870"
-                            :contrastText "#fff"}
-                :secondary {:main         "#65519f"
-                            :light        "#957ed1"
-                            :dark         "#362870"
-                            :contrastText "#fff"}}
-   :typography {:useNextVariants true}
+  {:palette     {:primary   {:main         "#65519f"
+                             :light        "#957ed1"
+                             :dark         "#362870"
+                             :contrastText "#fff"}
+                 :secondary {:main         "#65519f"
+                             :light        "#957ed1"
+                             :dark         "#362870"
+                             :contrastText "#fff"}}
+   :typography  {:useNextVariants true}
    :breakpoints {:values {:xs 0
                           :sm 600
                           :md 1080
@@ -297,6 +297,14 @@
 (defn no-ssr
   [props & childs]
   (apply f/no-ssr (clj->js props) childs))
+
+(defn portal
+  [props & childs]
+  (apply f/portal (clj->js props) childs))
+
+(defn popover
+  [props & childs]
+  (apply f/popover (clj->js props) childs))
 
 (defn radio
   ([props] (f/radio (clj->js props)))

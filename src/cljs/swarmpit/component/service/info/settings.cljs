@@ -37,15 +37,40 @@
       {:formatter (fn [value name props]
                     (.-state (.-payload props)))})))
 
-(defn- form-command [command]
-  (when command
-    (html [:pre {:key   "command"
-                 :style {:fontSize "0.9em"
-                         :margin   0}}
-           (let [merged (str/join " " command)]
-             (if (< 100 (count merged))
-               (str/join "\n" command)
-               merged))])))
+(rum/defc form-command < rum/reactive [command]
+  (let [{:keys [cmdAnchor cmdShow]} (state/react state/form-state-cursor)]
+    (html
+      [:div.Swarmpit-commmand
+       {:ref (fn [node]
+               (when (and node (nil? cmdAnchor))
+                 (state/update-value [:cmdAnchor] node state/form-state-cursor)))}
+       (when command
+         (comp/svg {:style {:marginRight "8px"}} icon/terminal-path))
+       (when command
+         [:div
+          [:div.Swarmpit-command-text
+           (map-indexed
+             (fn [index item]
+               (if (< index 5)
+                 (html [:pre {:key index} item]))) command)]
+          (when (> (count command) 4)
+            [:div
+             [:a
+              {:onClick   #(state/update-value [:cmdShow] true state/form-state-cursor)
+               :className "link"} "See more..."]
+             (comp/popover
+               {:open            (and cmdAnchor cmdShow)
+                :anchorEl        cmdAnchor
+                :onClose         #(state/update-value [:cmdShow] false state/form-state-cursor)
+                :anchorOrigin    {:vertical   "top"
+                                  :horizontal "left"}
+                :transformOrigin {:vertical   "top"
+                                  :horizontal "left"}}
+               (html
+                 [:div.Swarmpit-command-text.Swarmpit-form-context
+                  (map-indexed
+                    (fn [index item]
+                      (html [:pre {:key index} item])) command)]))])])])))
 
 (defn- form-state [state]
   (case state
@@ -57,8 +82,9 @@
   [autoredeploy]
   (when autoredeploy (label/primary "autoredeploy")))
 
-(rum/defc form < rum/static [service tasks actions]
-  (let [image-digest (get-in service [:repository :imageDigest])
+(rum/defc form < rum/reactive [service tasks actions]
+  (let [{:keys [cmdAnchor cmdShow]} (state/react state/form-state-cursor)
+        image-digest (get-in service [:repository :imageDigest])
         image (get-in service [:repository :image])
         desired-tasks (filter #(not= "shutdown" (:desiredState %)) tasks)
         registry (utils/linked-registry image)

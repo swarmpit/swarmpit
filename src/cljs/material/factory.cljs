@@ -99,6 +99,8 @@
 (def grow (create-factory js/MaterialUI.Grow))
 (def fade (create-factory js/MaterialUI.Fade))
 (def no-ssr (create-factory js/MaterialUI.NoSsr))
+(def portal (create-factory js/MaterialUI.Portal))
+(def popover (create-factory js/MaterialUI.Popover))
 
 (def linear-progress (create-factory js/MaterialUI.LinearProgress))
 (def circular-progress (create-factory js/MaterialUI.CircularProgress))
