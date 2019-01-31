@@ -1,6 +1,8 @@
 (ns swarmpit.event.handler
   (:require [swarmpit.component.state :as state]))
 
+(enable-console-print!)
+
 (defmulti handle (fn [handler event] handler))
 
 (defmethod handle :stack-list

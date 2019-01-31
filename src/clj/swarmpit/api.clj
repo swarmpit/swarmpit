@@ -606,6 +606,11 @@
                     (dc/services))
        (map #(task-stats %))))
 
+(defn service-tasks-id
+  [service-id]
+  (->> (dc/service-tasks service-id)
+       (map :ID)))
+
 (defn service-logs
   [service-id from-timestamp]
   (letfn [(log-task [log tasks] (->> tasks

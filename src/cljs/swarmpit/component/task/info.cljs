@@ -12,19 +12,33 @@
             [material.component.chart :as chart]
             [clojure.contrib.inflect :as inflect]
             [clojure.contrib.humanize :as humanize]
-            [swarmpit.component.common :as common]))
+            [swarmpit.component.common :as common]
+            [swarmpit.event.source :as event]))
 
 (enable-console-print!)
 
 (defonce digest-shown (atom false))
 
-(defn- task-handler
+(defn- event-handler
   [task-id]
+  (fn [event]
+    (state/set-value
+      (if (coll? event)
+        (->> event
+             (filter #(= task-id :id))
+             first)
+        event)
+      state/form-value-cursor)))
+
+(defn- task-handler
+  [route]
   (ajax/get
-    (routes/path-for-backend :task {:id task-id})
+    (routes/path-for-backend :task (:params route))
     {:state      [:loading?]
      :on-success (fn [{:keys [response]}]
-                   (state/set-value response state/form-value-cursor))}))
+                   (state/set-value response state/form-value-cursor)
+                   (event/open! (merge route {:params {:serviceName (:serviceName response)}})
+                                (event-handler (:id response))))}))
 
 (defn- init-form-state
   []
@@ -32,9 +46,9 @@
 
 (def mixin-init-form
   (mixin/init-form
-    (fn [{{:keys [id]} :params}]
+    (fn [route]
       (init-form-state)
-      (task-handler id))))
+      (task-handler route))))
 
 (defn form-state [value]
   (case value
@@ -133,8 +147,13 @@
        [:div.Swarmpit-form-context
         (section-general item)]])))
 
+(def unsubscribe-form
+  {:will-unmount (fn [state]
+                   (event/close!)
+                   state)})
+
 (rum/defc form < rum/reactive
-                 mixin/subscribe-form
+                 unsubscribe-form
                  mixin-init-form [_]
   (let [state (state/react state/form-state-cursor)
         item (state/react state/form-value-cursor)]

@@ -25,6 +25,6 @@
   (case handler
     :service-info (service-info-data (:id params))
     :task-list (api/tasks)
-    :task-info (api/task (:id params))
+    :task-info (api/service-tasks (:serviceName params))
     :node-list (api/nodes)
     :node-info (node-info-data (:id params))))
