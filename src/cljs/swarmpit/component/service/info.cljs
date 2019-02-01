@@ -211,6 +211,12 @@
      :xs   12}
     (logdriver/form logdriver service-id)))
 
+(defn form-resources-grid [resources service-id]
+  (comp/grid
+    {:item true
+     :xs   12}
+    (resources/form resources service-id)))
+
 (defn form-deployment-grid [deployment service-id]
   (comp/grid
     {:item true
@@ -255,6 +261,7 @@
                   (form-variables-grid variables id)
                   (form-labels-grid labels id)
                   (form-logdriver-grid logdriver id)
+                  (form-resources-grid resources id)
                   (form-deployment-grid deployment id)))
               (comp/grid
                 {:item true
@@ -283,6 +290,7 @@
               (form-variables-grid variables id)
               (form-labels-grid labels id)
               (form-logdriver-grid logdriver id)
+              (form-resources-grid resources id)
               (form-deployment-grid deployment id)))]]))))
 
 (rum/defc form < rum/reactive
