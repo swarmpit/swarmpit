@@ -12,7 +12,7 @@
 (defn- auto-scroll!
   []
   (when (true? (:autoscroll (state/get-value state/form-state-cursor)))
-    (let [el (.getElementById js/document "service-log")]
+    (let [el (.getElementById js/document "autoscroll")]
       (.scrollTo js/window 0 (.-scrollHeight el)))))
 
 (defn form-search-fn
@@ -36,6 +36,15 @@
     (filter #(= taskId (:task %)) log)
     log))
 
+
+(def line-num (atom 0))
+
+(defn- filter-logs
+  [taskId log]
+  (->> log
+       (filter-by-task taskId)
+       (map #(assoc-in % [:key] (swap! line-num inc)))))
+
 (defn- log-handler
   [service-id task-id]
   (ajax/get
@@ -43,7 +52,7 @@
     {:state      [:fetching]
      :on-success (fn [{:keys [response]}]
                    (state/update-value [:initialized] true state/form-state-cursor)
-                   (state/set-value (filter-by-task task-id response) state/form-value-cursor))
+                   (state/set-value (filter-logs task-id response) state/form-value-cursor))
      :on-error   #(state/update-value [:error] true state/form-state-cursor)}))
 
 (defn- log-append-handler
@@ -54,7 +63,7 @@
      :params     {:from from-timestamp}
      :on-success (fn [{:keys [response]}]
                    (state/set-value (-> (state/get-value state/form-value-cursor)
-                                        (concat (filter-by-task task-id response))) state/form-value-cursor))}))
+                                        (concat (filter-logs task-id response))) state/form-value-cursor))}))
 
 (defn- init-form-state
   []
@@ -80,7 +89,7 @@
       (service-handler id)
       (log-handler id taskId))))
 
-(rum/defc line < rum/static [service item timestamp]
+(rum/defc line < rum/static [service item]
   [:div
    [:a.log-info {:href (routes/path-for-frontend :service-task-log {:id (:serviceName service) :taskId (:task item)})}
     (str (subs (:task item) 0 7))]
@@ -91,7 +100,7 @@
                  mixin-refresh-form
                  {:did-mount  (fn [state] (auto-scroll!) state)
                   :did-update (fn [state] (auto-scroll!) state)} [{{:keys [id]} :params}]
-  (let [{:keys [filter autoscroll timestamp initialized error service]} (state/react state/form-state-cursor)
+  (let [{:keys [filter autoscroll initialized error service]} (state/react state/form-state-cursor)
         logs (state/react state/form-value-cursor)
         filtered-logs (filter-items logs (:predicate filter))]
     (comp/mui
@@ -104,14 +113,15 @@
              :mini    true
              :onClick #(state/update-value [:autoscroll] (not autoscroll) state/form-state-cursor)}
             icon/scroll-down)]
-         [:div.Swarmpit-form-context.Swarmpit-log
+         [:div#autoscroll.Swarmpit-form-context.Swarmpit-log
           (cond
             error [:span "Logs for this service couldn't be fetched."]
             (and (empty? logs) initialized) [:span "Log is empty in this service."]
             (not initialized) [:span "Loading..."]
             :else (map
                     (fn [item]
-                      (line service item timestamp)) filtered-logs))]]))))
+                      (rum/with-key (line service item) (:key item)))
+                    filtered-logs))]]))))
 
 (rum/defc form-task < form [params]
   (form params))
