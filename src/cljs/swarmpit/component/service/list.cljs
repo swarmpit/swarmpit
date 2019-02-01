@@ -38,7 +38,7 @@
   (case value
     "running" (label/green value)
     "not running" (label/info value)
-    "partly running" (label/yellow value)))
+    "partly running" (label/yellow "running")))
 
 (defn- render-status [item]
   (let [update-status (get-in item [:status :update])]
