@@ -76,7 +76,7 @@
                               resp (xhrio/response (:response response))
                               resp-status (:status response)
                               resp-fx (or (:on-error request)
-                                          #(command-error resp resp-status form-id request))]
+                                          #(command-error resp resp-status))]
                           (resp-fx {:response (:body resp)
                                     :origin?  (state/form-origin? form-id)})))}))
 
