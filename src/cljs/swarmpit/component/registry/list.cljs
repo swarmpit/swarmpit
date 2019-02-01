@@ -64,7 +64,7 @@
 
 (defn form-search-fn
   [event]
-  (state/update-value [:filter :query] (-> event .-target .-value) state/form-state-cursor))
+  (state/update-value [:query] (-> event .-target .-value) state/search-cursor))
 
 (defn hub-to-distribution
   [hub-accounts]
@@ -79,8 +79,7 @@
 (defn- init-form-state
   []
   (state/set-value {:loading? {:dockerhub  false
-                               :registries false}
-                    :filter   {:query ""}} state/form-state-cursor))
+                               :registries false}} state/form-state-cursor))
 
 (def mixin-init-form
   (mixin/init-form
@@ -100,11 +99,12 @@
                  mixin/subscribe-form
                  mixin/focus-filter [_]
   (let [{:keys [items]} (state/react state/form-value-cursor)
+        {:keys [loading?]} (state/react state/form-state-cursor)
+        {:keys [query]} (state/react state/search-cursor)
         distributions (concat (hub-to-distribution (:dockerhub items))
                               (reg-to-distribution (:registries items)))
-        {:keys [loading? filter]} (state/react state/form-state-cursor)
         filtered-distributions (-> (core/filter #(= (:owner %) (storage/user)) distributions)
-                                   (list-util/filter (:query filter)))]
+                                   (list-util/filter query))]
     (progress/form
       (and (:dockerhub loading?)
            (:registries loading?))

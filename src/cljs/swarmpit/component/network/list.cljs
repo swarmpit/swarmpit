@@ -43,12 +43,11 @@
 
 (defn form-search-fn
   [event]
-  (state/update-value [:filter :query] (-> event .-target .-value) state/form-state-cursor))
+  (state/update-value [:query] (-> event .-target .-value) state/search-cursor))
 
 (defn- init-form-state
   []
-  (state/set-value {:loading? false
-                    :filter   {:query ""}} state/form-state-cursor))
+  (state/set-value {:loading? false} state/form-state-cursor))
 
 (def mixin-init-form
   (mixin/init-form
@@ -67,8 +66,9 @@
                  mixin/subscribe-form
                  mixin/focus-filter [_]
   (let [{:keys [items]} (state/react state/form-value-cursor)
-        {:keys [loading? filter]} (state/react state/form-state-cursor)
-        filtered-items (->> (list-util/filter items (:query filter))
+        {:keys [query]} (state/react state/search-cursor)
+        {:keys [loading?]} (state/react state/form-state-cursor)
+        filtered-items (->> (list-util/filter items query)
                             (sort-by :created)
                             (reverse))]
     (progress/form

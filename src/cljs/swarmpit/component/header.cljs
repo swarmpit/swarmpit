@@ -101,30 +101,34 @@
                    {:variant "inherit"
                     :key     (str "mobile-menu-item-text-" (:name %))} (:name %)))))))
 
-(defn- search-input [on-change-fn title]
-  (html
-    [:div.Swarmpit-appbar-search
-     [:div.Swarmpit-appbar-search-icon (icon/search {})]
-     (comp/input
-       {:placeholder      (str "Search " (string/lower-case title) " ...")
-        :onChange         on-change-fn
-        :fullWidth        true
-        :classes          {:root  "Swarmpit-appbar-search-root"
-                           :input "Swarmpit-appbar-search-input"}
-        :id               "Swarmpit-appbar-search-filter"
-        :key              "appbar-search"
-        :disableUnderline true})]))
+(rum/defc search-input < rum/reactive [on-change-fn title]
+  (let [{:keys [query]} (state/react state/search-cursor)]
+    (html
+      [:div.Swarmpit-appbar-search
+       [:div.Swarmpit-appbar-search-icon (icon/search {})]
+       (comp/input
+         {:placeholder      (str "Search " (string/lower-case title) " ...")
+          :onChange         on-change-fn
+          :defaultValue     query
+          :fullWidth        true
+          :classes          {:root  "Swarmpit-appbar-search-root"
+                             :input "Swarmpit-appbar-search-input"}
+          :id               "Swarmpit-appbar-search-filter"
+          :key              "appbar-search"
+          :disableUnderline true})])))
 
-(defn- mobile-search-message [on-change-fn title]
-  (html
-    [:span#snackbar-mobile-search.Swarmpit-appbar-search-mobile-message
-     (comp/input
-       {:placeholder      (str "Search " (string/lower-case title) " ...")
-        :onChange         on-change-fn
-        :fullWidth        true
-        :classes          {:root  "Swarmpit-appbar-search-mobile-root"
-                           :input "Swarmpit-appbar-search-mobile-input"}
-        :disableUnderline true})]))
+(rum/defc mobile-search-message < rum/reactive [on-change-fn title]
+  (let [{:keys [query]} (state/react state/search-cursor)]
+    (html
+      [:span#snackbar-mobile-search.Swarmpit-appbar-search-mobile-message
+       (comp/input
+         {:placeholder      (str "Search " (string/lower-case title) " ...")
+          :onChange         on-change-fn
+          :defaultValue     query
+          :fullWidth        true
+          :classes          {:root  "Swarmpit-appbar-search-mobile-root"
+                             :input "Swarmpit-appbar-search-mobile-input"}
+          :disableUnderline true})])))
 
 (defn- mobile-search-action []
   (html

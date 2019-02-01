@@ -9,6 +9,7 @@
                           :menuAnchorEl       nil
                           :mobileMoreAnchorEl nil}
                 :dialog  {:open false}
+                :search  {:query ""}
                 :message {:text ""
                           :time nil
                           :type :info
@@ -87,5 +88,7 @@
 (def docker-api-cursor [:docker :api])
 
 (def layout-cursor [:layout])
+
+(def search-cursor [:search])
 
 (def route-cursor [:route])
