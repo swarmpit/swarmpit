@@ -39,11 +39,11 @@
                    (if (some? params)
                      (comp/button
                        {:onClick #(.back js/window.history)
-                        :color   "primary"
+                        :color   "outlined"
                         :variant "contained"}
                        "Go back")
                      (comp/button
                        {:href    (routes/path-for-frontend :index)
-                        :color   "primary"
+                        :color   "outlined"
                         :variant "contained"}
                        "go home"))])))]]]]))))
