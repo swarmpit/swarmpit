@@ -114,8 +114,10 @@
 
 (defmethod dispatch :user [_]
   (fn [{:keys [route-params]}]
-    (->> (api/user (:id route-params))
-         (resp-ok))))
+    (let [user (api/user (:id route-params))]
+      (if (some? user)
+        (resp-ok user)
+        (resp-error 404 "user doesn't exist")))))
 
 (defmethod dispatch :user-delete [_]
   (fn [{:keys [route-params identity]}]
