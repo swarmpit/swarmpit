@@ -118,10 +118,9 @@
             error [:span "Logs for this service couldn't be fetched."]
             (and (empty? logs) initialized) [:span "Log is empty in this service."]
             (not initialized) [:span "Loading..."]
-            :else (map
-                    (fn [item]
-                      (rum/with-key (line service item) (:key item)))
-                    filtered-logs))]]))))
+            :else (->> filtered-logs
+                       (take-last 500)
+                       (map #(rum/with-key (line service %) (:key %)))))]]))))
 
 (rum/defc form-task < form [params]
   (form params))
