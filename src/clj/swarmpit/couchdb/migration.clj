@@ -23,33 +23,16 @@
   (when (empty? (db/users))
     (create-admin)))
 
-(defn- upgrade-registry
-  [reg]
-  (if (= "registry" (:type reg))
-    (-> reg
-        (merge {:withAuth (:isPrivate reg)
-                :url      (str (:scheme reg) "://" (:url reg))})
-        (dissoc :version :scheme :isPrivate))
-    reg))
-
-(defn- add-registry-owners
+(defn single-node-setup
   []
-  (let [admin (->> (db/user-by-username "admin")
-                   (list)
-                   (concat (db/users))
-                   (filter #(= "admin" (:role %)))
-                   (first)
-                   :username)]
-    (->> ["registry" "dockeruser"]
-         (mapcat #(db/find-docs {:owner {:$exists false}} %))
-         (map #(merge % {:owner  admin
-                         :public true}))
-         (map upgrade-registry)
-         (map db/update-doc))))
+  (db/create-sns-users)
+  (db/create-sns-replicator)
+  (db/create-sns-global-changes)
+  (println "Single node setup finished"))
 
 (def migrations
-  {:initial         verify-initial-data
-   :registry-owners add-registry-owners})
+  {:single-node-setup single-node-setup
+   :initial           verify-initial-data})
 
 (defn migrate
   []

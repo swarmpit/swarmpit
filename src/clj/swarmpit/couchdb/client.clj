@@ -80,6 +80,24 @@
                 :api    "/swarmpit"})
       :body))
 
+(defn create-sns-users
+  []
+  (-> (execute {:method :PUT
+                :api    "/_users"})
+      :body))
+
+(defn create-sns-replicator
+  []
+  (-> (execute {:method :PUT
+                :api    "/_replicator"})
+      :body))
+
+(defn create-sns-global-changes
+  []
+  (-> (execute {:method :PUT
+                :api    "/_global_changes"})
+      :body))
+
 ;; Migration
 
 (defn migrations

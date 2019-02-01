@@ -24,7 +24,7 @@ services:
           - node.role == manager
 
   db:
-    image: klaemo/couchdb:2.0.0
+    image: couchdb:2.3.0
     volumes:
       - db-data:/opt/couchdb/data
     networks:
