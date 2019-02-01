@@ -55,8 +55,10 @@
             {:item true
              :xs   12}
             (form/subsection "Placements")
-            (map #(comp/chip {:label (:rule %)
-                              :key   (str "lp-" (:rule %))}) placement))
+            (if (empty? placement)
+              (html [:span "No placement constraints defined."])
+              (map #(comp/chip {:label (:rule %)
+                                :key   (str "lp-" (:rule %))}) placement)))
           (comp/grid
             {:item true
              :xs   12
