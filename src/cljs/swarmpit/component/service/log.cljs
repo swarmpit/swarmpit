@@ -65,7 +65,7 @@
   (ajax/get
     (routes/path-for-backend :service-logs {:id service-id})
     {:state      [:fetching]
-     :params     {:from from-timestamp}
+     :params     (if from-timestamp {:from from-timestamp})
      :on-success (fn [{:keys [response]}]
                    (state/set-value (-> (state/get-value state/form-value-cursor)
                                         (concat (filter-logs task-id response))) state/form-value-cursor))}))
@@ -123,7 +123,9 @@
             {:variant "fab"
              :color   (if autoscroll "primary")
              :mini    true
-             :onClick #(state/update-value [:autoscroll] (not autoscroll) state/form-state-cursor)}
+             :onClick (fn []
+                        (reset! last-scroll 0)
+                        (state/update-value [:autoscroll] (not autoscroll) state/form-state-cursor))}
             icon/scroll-down)]
          [:div#autoscroll.Swarmpit-log
           (cond
