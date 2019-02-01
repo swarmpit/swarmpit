@@ -8,5 +8,5 @@
     [:div.page-form
      [:span
       [:h1 "500"]
-      [:p "Ups something goes wrong..."]
+      [:p "Ups something went wrong..."]
       [:p stacktrace]]]]])

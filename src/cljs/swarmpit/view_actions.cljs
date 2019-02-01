@@ -16,6 +16,14 @@
 (defmethod render :default
   [_])
 
+(defmethod render nil
+  [_]
+  {:title ""})
+
+(defmethod render :not-found
+  [_]
+  {:title ""})
+
 (defmethod render :index
   [_]
   {:title "Home"})

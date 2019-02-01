@@ -32,7 +32,7 @@
          (= "swarmpit" (:x-backend-server headers))) (login-redirect)
     (and (= 403 status)
          (= "swarmpit" (:x-backend-server headers))) (router/set-route {:handler :unauthorized})
-    (= 404 status) (router/set-page! {:handler :not-found})
+    (= 404 status) (router/not-found! body)
     (= 500 status) (message/error (str (or (:cause body) "Server request failed")))
     (= 502 status) (message/error "Server request failed. Bad Gateway")
     (= 503 status) (message/error "Server request failed. Service Unavailable")
@@ -76,7 +76,7 @@
                               resp (xhrio/response (:response response))
                               resp-status (:status response)
                               resp-fx (or (:on-error request)
-                                          #(command-error resp resp-status))]
+                                          #(command-error resp resp-status form-id request))]
                           (resp-fx {:response (:body resp)
                                     :origin?  (state/form-origin? form-id)})))}))
 

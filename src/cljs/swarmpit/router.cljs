@@ -26,6 +26,11 @@
     (reset! !route {:handler :stack-list})
     (reset! !route match)))
 
+(defn not-found!
+  [body]
+  (if (not (= :not-found (:handler @!route)))
+    (set-page! {:handler :not-found :route-params {:origin (state/get-value state/route-cursor) :error body}})))
+
 (def history
   (pushy/pushy set-page! (partial bidi/match-route routes/frontend)))
 

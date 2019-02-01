@@ -14,7 +14,7 @@
   (keyword (first (str/split (name handler) #"-"))))
 
 (def single-pages
-  #{:login :error :unauthorized :not-found nil})
+  #{:login :error :unauthorized})
 
 (defn- page-layout?
   [handler]
@@ -30,8 +30,9 @@
 
 (rum/defc page-layout < rum/reactive [route]
   (let [{:keys [handler]} route
-        page-domain (page-domain handler)
-        page-actions (view-actions/render route)]
+        page-domain (if handler (page-domain handler))
+        actions (or (get-in route [:params :origin]) route)
+        page-actions (view-actions/render actions)]
     (document-title (:title page-actions))
     [:div.Swarmpit-root
      (header/appbar page-actions)
