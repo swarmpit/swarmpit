@@ -11,6 +11,24 @@
             [rum.core :as rum]
             [material.component.chart :as chart]))
 
+(def tooltip-shown (atom false))
+
+(rum/defc form-subheader < rum/reactive [subheader tooltip]
+  (if subheader
+    (comp/click-away-listener
+      {:onClickAway #(reset! tooltip-shown false)}
+      (comp/tooltip
+        {:PopperProps          {:disablePortal true}
+         :onClose              #(reset! tooltip-shown false)
+         :open                 (rum/react tooltip-shown)
+         :disableFocusListener true
+         :disableHoverListener true
+         :disableTouchListener true
+         :title                tooltip}
+        (html [:span {:onClick #(reset! tooltip-shown true)
+                      :style   {:cursor "pointer"}} subheader])))
+    (html [:span subheader])))
+
 (defn edit-title [title & subtitle]
   [(comp/typography
      {:variant   "h5"

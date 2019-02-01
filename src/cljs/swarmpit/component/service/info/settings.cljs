@@ -102,9 +102,11 @@
       (comp/card-header
         {:title     (:serviceName service)
          :className "Swarmpit-form-card-header Swarmpit-card-header-responsive-title"
-         :subheader (if registry
-                      (html [:span {:title image-digest} (utils/registry-repository image registry)])
-                      (html [:span {:title image-digest} image]))
+         :subheader (common/form-subheader
+                      (if registry
+                        (utils/registry-repository image registry)
+                        image)
+                      image-digest)
          :action    (menu/menu
                       actions
                       :serviceGeneralMenuAnchor

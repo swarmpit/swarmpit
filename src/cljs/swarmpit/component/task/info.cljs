@@ -18,8 +18,6 @@
 
 (enable-console-print!)
 
-(defonce digest-shown (atom false))
-
 (defn- event-handler
   [task-id]
   (fn [event]
@@ -67,22 +65,6 @@
     "rejected" (label/red value)
     "failed" (label/red value)))
 
-(rum/defc form-subheader < rum/reactive [image image-digest]
-  (if image-digest
-    (comp/click-away-listener
-      {:onClickAway #(reset! digest-shown false)}
-      (comp/tooltip
-        {:PopperProps          {:disablePortal true}
-         :onClose              #(reset! digest-shown false)
-         :open                 (rum/react digest-shown)
-         :disableFocusListener true
-         :disableHoverListener true
-         :disableTouchListener true
-         :title                image-digest}
-        (html [:span {:onClick #(reset! digest-shown true)
-                      :style   {:cursor "pointer"}} image])))
-    (html [:span image])))
-
 (defn- section-general
   [{:keys [id taskName nodeName state status createdAt updatedAt repository serviceName resources stats]}]
   (comp/card
@@ -90,7 +72,7 @@
     (comp/card-header
       {:title     taskName
        :className "Swarmpit-form-card-header Swarmpit-card-header-responsive-title"
-       :subheader (form-subheader
+       :subheader (common/form-subheader
                     (:image repository)
                     (:imageDigest repository))})
     (comp/card-content
