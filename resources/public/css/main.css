@@ -590,6 +590,7 @@ a {
     font-size: 13px;
     background: black;
     color: #CCC;
+    padding: 1em;
     min-height: calc(100vh - 64px);
 }
 

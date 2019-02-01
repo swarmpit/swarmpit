@@ -113,7 +113,7 @@
              :mini    true
              :onClick #(state/update-value [:autoscroll] (not autoscroll) state/form-state-cursor)}
             icon/scroll-down)]
-         [:div#autoscroll.Swarmpit-form-context.Swarmpit-log
+         [:div#autoscroll.Swarmpit-log
           (cond
             error [:span "Logs for this service couldn't be fetched."]
             (and (empty? logs) initialized) [:span "Log is empty in this service."]
