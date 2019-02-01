@@ -11,7 +11,8 @@
 
 (rum/defc form < rum/static []
   (let [params (state/get-value [:route :params])
-        id (get-in params [:origin :params :id])
+        id (or (get-in params [:origin :params :id])
+               (get-in params [:origin :params :name]))
         message (or (get-in params [:error :error])
                     "What you are looking for, I do not have.")]
     (print params)

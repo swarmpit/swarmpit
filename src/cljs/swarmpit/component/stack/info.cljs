@@ -23,7 +23,8 @@
             [sablono.core :refer-macros [html]]
             [rum.core :as rum]
             [swarmpit.docker.utils :as utils]
-            [material.component.label :as label]))
+            [material.component.label :as label]
+            [swarmpit.router :as router]))
 
 (enable-console-print!)
 
@@ -33,7 +34,9 @@
     (routes/path-for-backend :stack-services {:name stack-name})
     {:state      [:loading?]
      :on-success (fn [{:keys [response]}]
-                   (state/update-value [:services] response state/form-value-cursor))}))
+                   (state/update-value [:services] response state/form-value-cursor)
+                   (when (empty? response)
+                     (router/not-found! {:error "stack is empty"})))}))
 
 (defn- stack-networks-handler
   [stack-name]
