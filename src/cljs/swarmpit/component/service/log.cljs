@@ -9,11 +9,17 @@
             [sablono.core :refer-macros [html]]
             [rum.core :as rum]))
 
+(def line-num (atom 0))
+(def last-scroll (atom 0))
+(def last-glow (atom 0))
+
 (defn- auto-scroll!
   []
-  (when (true? (:autoscroll (state/get-value state/form-state-cursor)))
+  (when (and (:autoscroll (state/get-value state/form-state-cursor))
+             (not (= @line-num @last-scroll)))
     (let [el (.getElementById js/document "autoscroll")]
-      (.scrollTo js/window 0 (.-scrollHeight el)))))
+      (.scrollTo js/window 0 (.-scrollHeight el))
+      (reset! last-scroll @line-num))))
 
 (defn form-search-fn
   [e]
@@ -36,9 +42,6 @@
     (filter #(= taskId (:task %)) log)
     log))
 
-
-(def line-num (atom 0))
-
 (defn- filter-logs
   [taskId log]
   (->> log
@@ -51,8 +54,10 @@
     (routes/path-for-backend :service-logs {:id service-id})
     {:state      [:fetching]
      :on-success (fn [{:keys [response]}]
-                   (state/update-value [:initialized] true state/form-state-cursor)
-                   (state/set-value (filter-logs task-id response) state/form-value-cursor))
+                   (let [logs (filter-logs task-id response)]
+                     (reset! last-glow (count logs))
+                     (state/update-value [:initialized] true state/form-state-cursor)
+                     (state/set-value logs state/form-value-cursor)))
      :on-error   #(state/update-value [:error] true state/form-state-cursor)}))
 
 (defn- log-append-handler
@@ -67,6 +72,9 @@
 
 (defn- init-form-state
   []
+  (reset! last-glow 0)
+  (reset! last-scroll 0)
+  (reset! line-num 0)
   (state/set-value {:filter      {:predicate ""}
                     :initialized false
                     :fetching    false
@@ -89,11 +97,15 @@
       (service-handler id)
       (log-handler id taskId))))
 
-(rum/defc line < rum/static [service item]
+(rum/defc line < rum/static [service item index]
   [:div
    [:a.log-info {:href (routes/path-for-frontend :service-task-log {:id (:serviceName service) :taskId (:task item)})}
     (str (subs (:task item) 0 7))]
-   [:span.log-body (str " " (:line item))]])
+   [:span {:class (if (< @last-glow index)
+                    (do (swap! last-glow inc)
+                        "log-body Swarmpit-log-fresh")
+                    "log-body")}
+    (str " " (:line item))]])
 
 (rum/defc form < rum/reactive
                  mixin-init-form
@@ -120,7 +132,7 @@
             (not initialized) [:span "Loading..."]
             :else (->> filtered-logs
                        (take-last 500)
-                       (map #(rum/with-key (line service %) (:key %)))))]]))))
+                       (map #(rum/with-key (line service % (:key %)) (:key %)))))]]))))
 
 (rum/defc form-task < form [params]
   (form params))

@@ -106,8 +106,8 @@ a {
 }
 
 .Swarmpit-drawer > ::-webkit-scrollbar {
-    width: 0px;  /* remove scrollbar space */
-    background: transparent;  /* optional: just make scrollbar invisible */
+    width: 0px; /* remove scrollbar space */
+    background: transparent; /* optional: just make scrollbar invisible */
 }
 
 .Swarmpit-message-icon {
@@ -595,9 +595,33 @@ a {
     min-height: calc(100vh - 64px);
 }
 
+.Swarmpit-log-fresh {
+    animation: cooldown 5s;
+}
+
 @media (min-width: 1280px) {
     .Swarmpit-log {
         padding-left: 2em;
+    }
+}
+
+@-webkit-keyframes cooldown {
+    from {
+        color: white;
+        text-shadow: 0 0 1px white;
+    }
+    to {
+        color: #CCC;
+    }
+}
+
+@keyframes cooldown {
+    from {
+        color: white;
+        text-shadow: 0 0 1px white;
+    }
+    to {
+        color: #CCC;
     }
 }
 
@@ -763,7 +787,6 @@ a {
 .Swarmpit-task-error-icon {
     margin-right: 0.3em;
 }
-
 
 .Swarmpit-command-text {
     font-size: 0.9em;
