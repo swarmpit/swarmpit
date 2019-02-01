@@ -26,7 +26,9 @@
     (let [task (->> event
                     (filter #(= task-id (:id %)))
                     (first))]
-      (state/set-value task state/form-value-cursor))))
+      (if task
+        (state/set-value task state/form-value-cursor)
+        (state/update-value [:state] "removed" state/form-value-cursor)))))
 
 (defn- task-handler
   [route]
@@ -61,6 +63,7 @@
     "running" (label/green value)
     "shutdown" (label/grey value)
     "orphaned" (label/grey value)
+    "removed" (label/grey value)
     "rejected" (label/red value)
     "failed" (label/red value)))
 
