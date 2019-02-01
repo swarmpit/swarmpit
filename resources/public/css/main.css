@@ -745,6 +745,18 @@ a {
     align-items: flex-start;
 }
 
+.Swarmpit-task-error {
+    display: flex;
+    color: #d32f2f;
+    font-size: 0.9em;
+    align-items: center;
+}
+
+.Swarmpit-task-error-icon {
+    margin-right: 0.3em;
+}
+
+
 .Swarmpit-command-text {
     font-size: 0.9em;
     word-break: break-word;

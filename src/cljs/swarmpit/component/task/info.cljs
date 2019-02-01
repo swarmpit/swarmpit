@@ -13,7 +13,8 @@
             [clojure.contrib.inflect :as inflect]
             [clojure.contrib.humanize :as humanize]
             [swarmpit.component.common :as common]
-            [swarmpit.event.source :as event]))
+            [swarmpit.event.source :as event]
+            [material.icon :as icon]))
 
 (enable-console-print!)
 
@@ -107,7 +108,7 @@
     (when (:error status)
       (comp/card-content
         {}
-        (html [:span {:style {:color "#d32f2f"}} "Failure reason: " [:span (:error status)]])))
+        (html  [:div.Swarmpit-task-error (icon/error {:className "Swarmpit-task-error-icon"}) [:div (:error status)]])))
     (comp/card-content
       {}
       (form/item-labels
