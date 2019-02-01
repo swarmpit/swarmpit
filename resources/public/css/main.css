@@ -105,8 +105,9 @@ a {
     align-items: center;
 }
 
-.Swarmnpit-input {
-    background-color: #fff;
+.Swarmpit-drawer > ::-webkit-scrollbar {
+    width: 0px;  /* remove scrollbar space */
+    background: transparent;  /* optional: just make scrollbar invisible */
 }
 
 .Swarmpit-message-icon {
@@ -592,6 +593,12 @@ a {
     color: #CCC;
     padding: 1em;
     min-height: calc(100vh - 64px);
+}
+
+@media (min-width: 1280px) {
+    .Swarmpit-log {
+        padding-left: 2em;
+    }
 }
 
 .Swarmpit-log-fab {
