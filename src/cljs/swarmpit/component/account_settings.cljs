@@ -15,11 +15,11 @@
        [:div.Swarmpit-form-context
         [:div.Swarmpit-form-paper
          (common/edit-title "Password change")
-         (comp/divider {:style {:marginBottom "20px"}})
+         (comp/divider {:className "Swarmpit-form-title-divider"})
          (password/form)]
         [:div.Swarmpit-form-paper
          (common/edit-title "API access")
-         (comp/divider {:style {:marginBottom "20px"}})
+         (comp/divider {:className "Swarmpit-form-title-divider"})
          (api-access/form)]]])))
 
 
