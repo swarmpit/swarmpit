@@ -7,6 +7,7 @@
             [swarmpit.ajax :as ajax]
             [swarmpit.token :as token]
             [swarmpit.routes :as routes]
+            [clojure.string :as str]
             [rum.core :as rum]
             [sablono.core :refer-macros [html]]))
 
@@ -67,13 +68,17 @@
           icon/visibility
           icon/visibility-off)))))
 
-(defn- form-password [value local-state]
+(defn- form-password [value error local-state]
   (let [show-password? (:showPassword @local-state)]
+    (print error)
     (comp/text-field
       {:id              "password"
        :key             "Swarmpit-login-password-input"
        :label           "Password"
        :variant         "outlined"
+       :error           (not (str/blank? error))
+       :helperText      (when (not (str/blank? error))
+                          "The username or password you entered is incorrect.")
        :fullWidth       true
        :required        true
        :type            (if show-password?
@@ -116,15 +121,8 @@
             [:img {:src    "img/swarmpit.png"
                    :width  "100%"
                    :height "100%"}])
-          (when (not-empty message)
-            (html
-              [:span {:style {:display    "flex"
-                              :alignItems "center"
-                              :color      "#d32f2f"
-                              :padding    20}}
-               (icon/error {}) message]))
           (html
             [:div.Swarmpit-login-form
              (form-username username local-state)
-             (form-password password local-state)
+             (form-password password message local-state)
              (form-button local-state)])))]]))

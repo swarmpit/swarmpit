@@ -93,7 +93,10 @@
     (when (:error status)
       (comp/card-content
         {}
-        (html  [:div.Swarmpit-task-error (icon/error {:className "Swarmpit-task-error-icon"}) [:div (:error status)]])))
+        (html
+          [:div.Swarmpit-task-error
+           (icon/error {:className "Swarmpit-task-error-icon"})
+           [:div (:error status)]])))
     (comp/card-content
       {}
       (form/item-labels
