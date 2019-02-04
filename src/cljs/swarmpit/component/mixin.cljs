@@ -18,16 +18,13 @@
 
 (defn init-form
   [handler]
-  {:init (fn [state _]
-           (state/reset-form)
-           (handler (first (:rum/args state)))
-           state)})
-
-(defn init-tab
-  [handler]
-  {:init (fn [state _]
-           (handler (first (:rum/args state)))
-           state)})
+  {:init      (fn [state _]
+                (state/reset-form)
+                (handler (first (:rum/args state)))
+                state)
+   :did-mount (fn [state]
+                (.scrollTo js/window 0 0)
+                state)})
 
 (def subscribe-form
   {:did-mount    (fn [state]
@@ -47,8 +44,7 @@
            (when (and el section)
              (do
                (.scrollIntoView el true)
-               (.scrollBy js/window 0 -74)
-               (state/update-value [:scrolled] true state/form-state-cursor))))))
+               (.scrollBy js/window 0 -74))))))
      state)})
 
 (def focus-filter
