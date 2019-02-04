@@ -469,6 +469,10 @@ a {
 
 /** Form content **/
 
+.Swarmpit-form {
+    min-height: calc(100vh - 64px);
+}
+
 .Swarmpit-form-context {
     padding: 24px 24px;
 }
