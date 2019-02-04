@@ -86,17 +86,10 @@
       [:div.Swarmpit-access-form
        (comp/grid
          {:container true
-          :spacing   40}
+          :spacing   24}
          (comp/grid
            {:item true
             :xs   12}
-           (comp/typography
-             {:variant   "h5"
-              :className "Swarmpit-form-title"}
-             (case state
-               :none "Create API token"
-               :old "API Token"
-               :new "New API token"))
            (case state
              :old (old-token-form api-token)
              :new (new-token-form token)
@@ -122,9 +115,8 @@
 
 (rum/defc form < rum/reactive
                  mixin-init-form []
-  (let [state (state/react state/form-state-cursor)
-        item (state/react state/form-value-cursor)]
+  (let [state (state/react state/form-state-cursor)]
     (progress/form
       (:loading? state)
-      (form-api-token item))))
+      (form-api-token))))
 
