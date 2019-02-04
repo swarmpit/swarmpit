@@ -82,15 +82,14 @@
   (case state
     "running" (label/green state)
     "not running" (label/info state)
-    "partly running" (label/yellow state)))
+    "partly running" (label/yellow "running")))
 
 (defn- autoredeploy-label
   [autoredeploy]
   (when autoredeploy (label/primary "autoredeploy")))
 
 (rum/defc form < rum/reactive [service tasks actions]
-  (let [{:keys [cmdAnchor cmdShow]} (state/react state/form-state-cursor)
-        image-digest (get-in service [:repository :imageDigest])
+  (let [image-digest (get-in service [:repository :imageDigest])
         image (get-in service [:repository :image])
         desired-tasks (filter #(not= "shutdown" (:desiredState %)) tasks)
         registry (utils/linked-registry image)
