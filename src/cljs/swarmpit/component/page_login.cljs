@@ -39,9 +39,11 @@
   [local-state]
   (ajax/post
     (routes/path-for-backend :initialize)
-    {:params (select-keys @local-state [:username :password])
-     :on-success (fn [{:keys [response]}]
-                   (login-handler local-state))
+    {:headers nil
+     :params (select-keys @local-state [:username :password])
+     :on-success (fn [_]
+                   (login-handler local-state)
+                   (state/set-value true [:initialized]))
      :on-error   (fn [{:keys [response]}]
                    (swap! local-state assoc :message (:error response)))}))
 
