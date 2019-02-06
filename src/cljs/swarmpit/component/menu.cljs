@@ -78,7 +78,7 @@
     menu
     (filter #(not= :config (:domain %)) menu)))
 
-(defn- version-handler
+(defn version-handler
   []
   (ajax/get
     (routes/path-for-backend :version)
@@ -138,7 +138,7 @@
 (def retrieve-version
   {:init
    (fn [state]
-     (version-handler)
+     (when (nil? (state/get-value [:version])) (version-handler))
      state)})
 
 (rum/defc drawer-content < rum/static [version page-domain docker-api]

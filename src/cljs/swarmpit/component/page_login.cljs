@@ -9,7 +9,8 @@
             [swarmpit.routes :as routes]
             [clojure.string :as str]
             [rum.core :as rum]
-            [sablono.core :refer-macros [html]]))
+            [sablono.core :refer-macros [html]]
+            [swarmpit.component.menu :as menu]))
 
 (enable-console-print!)
 
@@ -31,6 +32,16 @@
                      (state/set-value nil [:redirect-location])
                      (dispatch!
                        (or redirect-location (routes/path-for-frontend :service-list)))))
+     :on-error   (fn [{:keys [response]}]
+                   (swap! local-state assoc :message (:error response)))}))
+
+(defn- create-admin-handler
+  [local-state]
+  (ajax/post
+    (routes/path-for-backend :initialize)
+    {:params (select-keys @local-state [:username :password])
+     :on-success (fn [{:keys [response]}]
+                   (login-handler local-state))
      :on-error   (fn [{:keys [response]}]
                    (swap! local-state assoc :message (:error response)))}))
 
@@ -92,7 +103,7 @@
        :InputLabelProps {:shrink true}
        :InputProps      {:endAdornment (form-password-adornment local-state)}})))
 
-(defn- form-button [local-state]
+(defn- form-login [local-state]
   (let [canSubmit? (:canSubmit @local-state)]
     (comp/button
       {:className "Swarmpit-login-form-submit"
@@ -103,15 +114,30 @@
        :color     "primary"
        :onClick   #(login-handler local-state)} "Sign in")))
 
+(defn- form-create-admin [local-state]
+  (let [canSubmit? (:canSubmit @local-state)]
+    (comp/button
+      {:className "Swarmpit-login-form-submit"
+       :disabled  (not canSubmit?)
+       :type      "submit"
+       :variant   "contained"
+       :fullWidth true
+       :color     "primary"
+       :onClick   #(create-admin-handler local-state)} "Create admin")))
+
 (rum/defcs form < (rum/local {:username     ""
                               :password     ""
                               :message      ""
                               :canSubmit    true
-                              :showPassword false} ::login) [state]
+                              :showPassword false} ::login)
+                  rum/reactive
+                  menu/retrieve-version [state]
   (let [local-state (::login state)
+        initialized (state/react [:initialized])
         username (:username @local-state)
         password (:password @local-state)
         message (:message @local-state)]
+    (print initialized)
     [:div.Swarmpit-page
      [:div.Swarmpit-login-layout
       (comp/mui
@@ -122,7 +148,14 @@
                    :width  "100%"
                    :height "100%"}])
           (html
-            [:div.Swarmpit-login-form
-             (form-username username local-state)
-             (form-password password message local-state)
-             (form-button local-state)])))]]))
+            (when (some? initialized)
+              (if initialized
+                [:div.Swarmpit-login-form
+                 (form-username username local-state)
+                 (form-password password message local-state)
+                 (form-login local-state)]
+                [:div.Swarmpit-login-form
+                 [:p "Create first admin account and sign in."]
+                 (form-username username local-state)
+                 (form-password password message local-state)
+                 (form-create-admin local-state)])))))]]))
