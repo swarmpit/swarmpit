@@ -1,7 +1,7 @@
 (ns swarmpit.routes
   (:require [bidi.bidi :as b]
-    #?(:clj
-            [environ.core :refer [env]])
+            #?(:clj
+               [environ.core :refer [env]])
             [cemerick.url :refer [map->query]]
             [clojure.string :as str]))
 
@@ -17,6 +17,7 @@
         ["api-token" {:get    :index
                       :post   :api-token-generate
                       :delete :api-token-remove}]
+        ["initialize" {:post :initialize}]
         ["api"
          {"/secrets/"    {:get    {[:id] {""          :secret
                                           "/services" :secret-services}}

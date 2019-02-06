@@ -100,6 +100,16 @@
 
 ;; User handler
 
+(defmethod dispatch :initialize [_]
+  (fn [{:keys [params]}]
+    (if (api/admin-exists?)
+      (resp-error 403 "Admin already exists")
+      (let [user (merge (keywordize-keys params) {:type "user" :role "admin"})
+            response (api/create-user user)]
+        (if (some? response)
+          (resp-created (select-keys response [:id]))
+          (resp-error 400 "User already exist"))))))
+
 (defmethod dispatch :me [_]
   (fn [{:keys [identity]}]
     (-> identity :usr :username

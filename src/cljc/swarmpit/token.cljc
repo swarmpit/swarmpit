@@ -14,6 +14,10 @@
 #?(:cljs
    (def r (t/reader :json)))
 
+(defn admin?
+  [user]
+  (= "admin" (:role user)))
+
 (defn token-value
   [token]
   (second (str/split token #" ")))

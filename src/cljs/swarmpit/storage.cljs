@@ -48,5 +48,4 @@
 
 (defn admin?
   []
-  (= "admin"
-     (get-in (claims) [:usr :role])))
+  (token/admin? (get-in (claims) [:usr])))

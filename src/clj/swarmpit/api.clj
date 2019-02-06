@@ -35,6 +35,10 @@
   (-> (cc/users)
       (cmi/->users)))
 
+(defn admin-exists?
+  []
+  (not (empty? (filter token/admin? (users)))))
+
 (defn user
   [user-id]
   (-> (cc/user user-id)

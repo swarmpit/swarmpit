@@ -8,20 +8,10 @@
   (db/create-secret {:secret (uuid)})
   (println "Default token secret created"))
 
-(defn- create-admin
-  []
-  (api/create-user {:username "admin"
-                    :password "admin"
-                    :email    "admin@admin.com"
-                    :role     "admin"})
-  (println "Default admin user created"))
-
 (defn- verify-initial-data
   []
   (when (nil? (db/get-secret))
-    (create-secret))
-  (when (empty? (db/users))
-    (create-admin)))
+    (create-secret)))
 
 (defn single-node-setup
   []

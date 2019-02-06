@@ -1,7 +1,9 @@
 (ns swarmpit.version
   (:require [swarmpit.config :as cfg]
             [clojure.java.io :as io]
-            [clojure.walk :refer [keywordize-keys]])
+            [clojure.walk :refer [keywordize-keys]]
+            [clojure.core.memoize :as memo]
+            [swarmpit.api :as api])
   (:import (java.util Properties)))
 
 (def pom-properties
@@ -10,10 +12,14 @@
                (io/resource)
                (io/reader)))))
 
+(def initialized?
+  (memo/ttl api/admin-exists? :ttl/threshold 1000))
+
 (defn info
   []
-  {:name     "swarmpit"
-   :version  (get pom-properties "version")
-   :revision (get pom-properties "revision")
-   :docker   {:api    (read-string (cfg/config :docker-api))
-              :engine (cfg/config :docker-engine)}})
+  {:name        "swarmpit"
+   :version     (get pom-properties "version")
+   :revision    (get pom-properties "revision")
+   :initialized (initialized?)
+   :docker      {:api    (read-string (cfg/config :docker-api))
+                 :engine (cfg/config :docker-engine)}})

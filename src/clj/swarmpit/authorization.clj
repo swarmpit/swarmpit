@@ -2,6 +2,7 @@
   (:require [buddy.auth :refer [authenticated?]]
             [buddy.auth.accessrules :refer [success error wrap-access-rules]]
             [swarmpit.handler :refer [resp-error]]
+            [swarmpit.token :refer [admin?]]
             [swarmpit.couchdb.client :as cc]))
 
 (defn- authenticated-access
@@ -17,8 +18,8 @@
 
 (defn- admin-access
   [{:keys [identity]}]
-  (let [role (get-in identity [:usr :role])]
-    (if (= "admin" role)
+  (let [user (get-in identity [:usr])]
+    (if (admin? user)
       true
       (error {:code    403
               :message "Unauthorized admin access"}))))
@@ -49,6 +50,8 @@
             {:pattern #"^/events"
              :handler any-access}
             {:pattern #"^/version$"
+             :handler any-access}
+            {:pattern #"^/initialize$"
              :handler any-access}
             {:pattern #"^/$"
              :handler any-access}
