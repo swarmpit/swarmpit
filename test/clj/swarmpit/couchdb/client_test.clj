@@ -11,7 +11,6 @@
     (is (some? (db-version))))
 
   (testing "some? db"
-    (is (not (empty? (users))))
     (is (some? (get-secret))))
 
   (testing "dns error"
