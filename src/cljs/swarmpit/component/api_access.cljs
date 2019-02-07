@@ -60,7 +60,8 @@
      :multiline       true
      :value           value
      :InputProps      {:readOnly true
-                       :style    {:fontFamily "monospace"}}
+                       :style    {:fontFamily "monospace"}
+                       :className    "Swarmpit-form-input"}
      :InputLabelProps {:shrink true}}))
 
 (defn old-token-form [api-token]
