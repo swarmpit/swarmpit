@@ -110,9 +110,38 @@ User is offered with possibility to generate custom token for direct communicati
 - [[#98](https://github.com/swarmpit/swarmpit/issues/98)] Add swarm cluster resource monitoring
 - [[#215](https://github.com/swarmpit/swarmpit/issues/215)] Generating token without expiration date
 
+### 1.6 Release
+
+We are pleased to announce first mobile-friendly docker swarm management UI that we worked on past couple
+of months. Brand new Material UI 3.x components were introduce instead of old 0.x version with focus on
+fully responsive tool you can work with on any device platform. Recharts are now being used to display 
+real-time node & task statistics. New official couch image was introduced instead of deprecated claemo version.
+Finally we prepared fancy installer for new swarmpit users. "Sea Wolfs" can still use good old docker stack
+deployment to install swarmpit as we stay easy and true.
+
+- [[#256](https://github.com/swarmpit/swarmpit/issues/256)] Mobile friendly UI
+- [[#159](https://github.com/swarmpit/swarmpit/issues/159)] Upgrade material-ui components to NEXT once released
+- [[#192](https://github.com/swarmpit/swarmpit/issues/192)] Setup single/cluster couch db
+- [[#283](https://github.com/swarmpit/swarmpit/issues/283)] Add confirmation dialog box before deleting a resource
+
 ## What we will bring into the game
 
 You can find here our goals and related features for future releases.
+
+### 1.7 Release
+
+Compatibility with custom registries from Cloud Providers and improved logs view experience.
+
+- [[#260](https://github.com/swarmpit/swarmpit/issues/260)] Logs performance improvement
+- [[#236](https://github.com/swarmpit/swarmpit/issues/236)] AWS Elastic Container Repository support
+- [[#257](https://github.com/swarmpit/swarmpit/issues/257)] Google Container Repository support
+- [[#303](https://github.com/swarmpit/swarmpit/issues/303)] Dark mode
+
+### 1.8 Release
+
+Compatibility with cloud logging drivers, UX improvements
+
+- [[#289](https://github.com/swarmpit/swarmpit/issues/289)] Support cloud logging drivers
 
 ### 2.0 Release
 
