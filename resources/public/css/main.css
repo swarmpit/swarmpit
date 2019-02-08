@@ -1003,4 +1003,13 @@ a {
     .Swarmpit-node-stat {
         padding: 0;
     }
+
+    .Swarmpit-repo-registry-text {
+        flex-direction: column;
+        align-items: flex-start;
+    }
+
+    .Swarmpit-repo-registry-url {
+        padding-left: 0;
+    }
 }
