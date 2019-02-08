@@ -93,7 +93,7 @@
         [:div.Swarmpit-form
          [:div.Swarmpit-form-context
           [:div.Swarmpit-form-paper
-           (common/edit-title "Create a new secret" "blob of data, such as a password, SSH private key, or another piece of data that should not be transmitted over a network or stored unencrypted")
+           (common/edit-title "Create a new secret" "blob of data, such as a password or SSH private key")
            (comp/grid
              {:container true
               :className "Swarmpit-form-main-grid"

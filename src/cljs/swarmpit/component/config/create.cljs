@@ -92,7 +92,7 @@
         [:div.Swarmpit-form
          [:div.Swarmpit-form-context
           [:div.Swarmpit-form-paper
-           (common/edit-title "Create a new config" "store non-sensitive information, such as configuration files, outside a service’s image or running containers")
+           (common/edit-title "Create a new config" "store non-sensitive information such as config files")
            (comp/grid
              {:container true
               :className "Swarmpit-form-main-grid"
