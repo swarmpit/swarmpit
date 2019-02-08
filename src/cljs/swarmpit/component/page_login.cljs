@@ -10,7 +10,8 @@
             [clojure.string :as str]
             [rum.core :as rum]
             [sablono.core :refer-macros [html]]
-            [swarmpit.component.menu :as menu]))
+            [swarmpit.component.menu :as menu]
+            [swarmpit.component.progress :as progress]))
 
 (enable-console-print!)
 
@@ -150,7 +151,8 @@
                    :width  "100%"
                    :height "100%"}])
           (html
-            (when (some? initialized)
+            (progress/form (nil? initialized)
+                           {:height "200px"}
               (if initialized
                 [:div.Swarmpit-login-form
                  (form-username username local-state)

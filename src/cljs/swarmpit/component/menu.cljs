@@ -82,7 +82,8 @@
   []
   (ajax/get
     (routes/path-for-backend :version)
-    {:on-success (fn [{:keys [response]}]
+    {:headers {"Authorization" nil}
+     :on-success (fn [{:keys [response]}]
                    (state/update-value [:version] response state/layout-cursor)
                    (state/set-value response))}))
 

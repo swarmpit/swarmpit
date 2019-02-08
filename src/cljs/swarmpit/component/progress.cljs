@@ -5,15 +5,18 @@
 
 (enable-console-print!)
 
-(rum/defc form < rum/static [loading? comp]
-  (if loading?
-    (html
-      [:div
-       {:style {:width          "100%"
-                :height         "100vh"
-                :display        "flex"
-                :alignItems     "center"
-                :justifyContent "center"}}
+(rum/defc form < rum/static
+  ([loading? comp] (form loading? nil comp))
+  ([loading? style comp]
+   (if loading?
+     (html
        [:div
-        {:style {:maxWidth "50%"}}
-        (comp/mui (comp/circular-progress {:size 100}))]]) comp))
+        {:style (merge {:width          "100%"
+                        :height         "100vh"
+                        :display        "flex"
+                        :alignItems     "center"
+                        :justifyContent "center"}
+                       style)}
+        [:div
+         {:style {:maxWidth "50%"}}
+         (comp/mui (comp/circular-progress {:size 100}))]]) comp)))
