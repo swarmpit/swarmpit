@@ -84,7 +84,6 @@
 
 (defn- form-password [value error local-state]
   (let [show-password? (:showPassword @local-state)]
-    (print error)
     (comp/text-field
       {:id              "password"
        :key             "Swarmpit-login-password-input"
@@ -140,7 +139,6 @@
         username (:username @local-state)
         password (:password @local-state)
         message (:message @local-state)]
-    (print initialized)
     [:div.Swarmpit-page
      [:div.Swarmpit-login-layout
       (comp/mui
