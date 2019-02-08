@@ -53,6 +53,8 @@
              :handler any-access}
             {:pattern #"^/initialize$"
              :handler any-access}
+            {:pattern #"^/slt"
+             :handler authenticated-access}
             {:pattern #"^/$"
              :handler any-access}
             {:pattern        #"^/api/registries/(dockerhub|v2)/[a-zA-Z0-9]*/repositories$"
@@ -68,7 +70,7 @@
              :request-method #{:get :delete :post}
              :handler        {:and [authenticated-access owner-access]}}
             {:pattern #"^/api/.*"
-             :handler {:and [authenticated-access]}}])
+             :handler authenticated-access}])
 
 (defn- rules-error
   [_ val]
