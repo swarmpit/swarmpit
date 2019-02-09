@@ -395,6 +395,10 @@ a {
     font-weight: 300;
 }
 
+.Swarmpit-table thead tr th:first-child {
+    min-width: 150px;
+}
+
 .Swarmpit-table-card > thead > tr > th,
 .Swarmpit-table-card > tbody > tr > td {
     padding: 0 20px 0 0 !important;
@@ -790,6 +794,11 @@ a {
 
 .Swarmpit-task-error-icon {
     margin-right: 0.3em;
+}
+
+.Swarmpit-task-memory-usage {
+    display: flex;
+    flex-direction: column;
 }
 
 .Swarmpit-command-text {

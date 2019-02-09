@@ -63,10 +63,8 @@
   (if (:stats item)
     (html
       [:div
-       [:div
-        [:span
-         (render-percentage (get-in item [:stats :memoryPercentage]))]
-        [:span " "]
+       [:div.Swarmpit-task-memory-usage
+        [:span (render-percentage (get-in item [:stats :memoryPercentage]))]
         [:span.Swarmpit-table-cell-secondary
          (render-capacity (get-in item [:stats :memory]))]]])
     (html [:span "-"])))
