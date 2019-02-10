@@ -9,7 +9,7 @@
 
 (defn list-item-normal [render-metadata index item delete-handler-fn]
   (cmp/list-item
-    {:key            (str "list-in-" index)
+    {:key            (str "list-in-" (:key item))
      :className      "Swarmpit-list-item-edit"
      :disableGutters true}
     (->> (select-keys* item (render-keys render-metadata))
@@ -19,9 +19,9 @@
                    value (val coll)]
                (render-fn value item index)))))
     (cmp/list-item-secondary-action
-      {:key (str "list-ins-" index)}
+      {:key (str "list-ins-" (:key item))}
       (cmp/tooltip
-        {:key       (str "list-inst-" index)
+        {:key       (str "list-inst-" (:key item))
          :title     "Delete"
          :placement "top-start"}
         (cmp/icon-button
@@ -31,11 +31,11 @@
 
 (defn list-item-small [render-metadata index item delete-handler-fn]
   (cmp/list-item
-    {:key            (str "list-is-" index)
+    {:key            (str "list-is-" (:key item))
      :className      "Swarmpit-list-item-edit-small"
      :disableGutters true}
     (html
-      [:div {:key (str "list-isb-" index)}
+      [:div {:key (str "list-isb-" (:key item))}
        (->> (select-keys* item (render-keys render-metadata))
             (map-indexed
               (fn [coll-index coll]
@@ -49,7 +49,7 @@
 (defn list-item
   [render-metadata index item delete-handler-fn]
   (html
-    [:div {:key (str "list-i-" index)}
+    [:div {:key (str "list-i-" (:key item))}
      (cmp/hidden
        {:only           ["xs" "sm"]
         :implementation "js"}
@@ -59,8 +59,7 @@
         :implementation "js"}
        (list-item-small render-metadata index item delete-handler-fn))]))
 
-(rum/defc list < rum/static
-  [render-metadata items delete-handler-fn]
+(rum/defc list < rum/reactive [render-metadata items delete-handler-fn]
   (cmp/list
     {:dense true}
     (map-indexed
@@ -70,4 +69,3 @@
           index
           item
           delete-handler-fn)) items)))
-

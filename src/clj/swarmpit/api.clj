@@ -683,7 +683,8 @@
 (defn- merge-service
   [service-origin service-delta]
   (-> (merge-data service-origin service-delta)
-      (assoc-in [:Labels] (:Labels service-delta))))
+      (assoc-in [:Labels] (:Labels service-delta))
+      (assoc-in [:TaskTemplate :LogDriver :Options] (get-in service-delta [:TaskTemplate :LogDriver :Options]))))
 
 (defn update-service
   [owner service]

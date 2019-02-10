@@ -62,11 +62,10 @@
 
 (defn- form-table
   [secrets secrets-list]
-  (rum/with-key
-    (list/list
-      (form-secrets-metadata secrets-list)
-      secrets
-      (fn [index] (state/remove-item index form-value-cursor))) "form-secrets-table"))
+  (list/list
+    (form-secrets-metadata secrets-list)
+    secrets
+    (fn [index] (state/remove-item index form-value-cursor))))
 
 (defn add-item
   []

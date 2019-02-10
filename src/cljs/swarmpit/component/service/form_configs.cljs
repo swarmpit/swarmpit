@@ -61,11 +61,10 @@
 
 (defn- form-table
   [configs configs-list]
-  (rum/with-key
-    (list/list
-      (form-configs-metadata configs-list)
-      configs
-      (fn [index] (state/remove-item index form-value-cursor))) "form-configs-table"))
+  (list/list
+    (form-configs-metadata configs-list)
+    configs
+    (fn [index] (state/remove-item index form-value-cursor))))
 
 (defn add-item
   []

@@ -71,11 +71,10 @@
 
 (defn- form-table
   [opts]
-  (rum/with-key
-    (list/list
-      form-metadata
-      opts
-      (fn [index] (state/remove-item index form-value-opts-cursor))) "form-ldriver-table"))
+  (list/list
+    form-metadata
+    opts
+    (fn [index] (state/remove-item index form-value-opts-cursor))))
 
 (defn- add-item
   []

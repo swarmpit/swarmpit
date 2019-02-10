@@ -42,10 +42,11 @@
          (fn [map] (assoc-in map p v))))
 
 (defn add-item
-  "Add `item` to vector on given `cursor`"
+  "Add `item` to vector on given `cursor` and assoc key"
   [item cursor]
-  (swap! state update-in cursor
-         (fn [vec] (conj vec item))))
+  (let [item-wk (assoc item :key (str (random-uuid)))]
+    (swap! state update-in cursor
+           (fn [vec] (conj vec item-wk)))))
 
 (defn remove-item
   "Remove vector item corresponding to `index` on given `cursor`"
@@ -78,6 +79,11 @@
               :classes nil
               :state   nil
               :value   nil} [:form]))
+
+;; Key generator
+
+(defn assoc-keys [coll]
+  (into [] (map #(assoc % :key (str (random-uuid))) coll)))
 
 ;; Common cursors
 
