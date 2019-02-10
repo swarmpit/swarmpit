@@ -136,11 +136,10 @@
 
 (defn- form-label-table
   [labels]
-  (rum/with-key
-    (list/list
-      form-label-metadata
-      labels
-      (fn [index] (state/remove-item index form-node-labels-cursor))) "necccill"))
+  (list/list
+    form-label-metadata
+    labels
+    (fn [index] (state/remove-item index form-node-labels-cursor))))
 
 (defn- add-label
   []
@@ -153,7 +152,9 @@
     (routes/path-for-backend :node {:id node-id})
     {:state      [:loading?]
      :on-success (fn [{:keys [response]}]
-                   (state/set-value response state/form-value-cursor))}))
+                   (state/set-value response state/form-value-cursor)
+                   (state/set-value (-> (:labels response)
+                                        (state/assoc-keys)) form-node-labels-cursor))}))
 
 (defn- update-node-handler
   [node-id version]

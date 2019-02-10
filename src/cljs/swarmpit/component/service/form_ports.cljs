@@ -36,7 +36,6 @@
   (comp/text-field
     {:fullWidth       true
      :key             (str "form-port-container" index)
-     :id              "container"
      :label           "Container port"
      :type            "number"
      :min             1
@@ -51,7 +50,6 @@
   (comp/text-field
     {:fullWidth       true
      :key             (str "form-protocol-port-" index)
-     :id              "protocol"
      :label           "Protocol"
      :select          true
      :value           value
@@ -71,7 +69,6 @@
   (comp/text-field
     {:fullWidth       true
      :key             (str "form-port-mode-" index)
-     :id              "mode"
      :label           "Mode"
      :select          true
      :value           value
@@ -91,7 +88,6 @@
   (comp/text-field
     {:fullWidth       true
      :key             (str "form-port-host-" index)
-     :id              "host"
      :label           "Host port"
      :type            "number"
      :min             1
@@ -117,13 +113,12 @@
     :key       [:hostPort]
     :render-fn (fn [value _ index] (form-host value index))}])
 
-(defn- form-table
+(defn form-table
   [ports]
-  (rum/with-key
-    (list/list
-      form-ports-metadata
-      ports
-      (fn [index] (state/remove-item index form-value-cursor))) "form-port-table"))
+  (list/list
+    form-ports-metadata
+    ports
+    (fn [index] (state/remove-item index form-value-cursor))))
 
 (defn add-item
   []
