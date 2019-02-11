@@ -557,6 +557,8 @@
          (map :mounts)
          (flatten)
          (filter #(= "volume" (:type %)))
+         (map #(dissoc % :containerPath))
+         (set)
          (map #(merge % {:volumeName (:host %)}))
          (map #(merge (first (get volumes (:id %))) %)))))
 
