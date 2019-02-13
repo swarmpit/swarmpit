@@ -40,7 +40,7 @@
   [local-state]
   (ajax/post
     (routes/path-for-backend :initialize)
-    {:headers nil
+    {:headers {"Authorization" nil}
      :params (select-keys @local-state [:username :password])
      :on-success (fn [_]
                    (login-handler local-state)
