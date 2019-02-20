@@ -26,7 +26,7 @@
     {:className "Swarmpit-appbar-avatar"
      :src       (str "https://www.gravatar.com/avatar/"
                      (user-gravatar-hash (storage/email))
-                     "?d=https://raw.githubusercontent.com/swarmpit/swarmpit/issues/159/resources/public/img/user.png")}))
+                     "?d=https://raw.githubusercontent.com/swarmpit/swarmpit/master/resources/public/img/user.png")}))
 
 (rum/defc user-info < rum/static []
   (html
