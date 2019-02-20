@@ -58,8 +58,7 @@
          {:key       "appbar-user-menu-logged-info"
           :className "Swarmpit-appbar-user-menu-logged-info"
           :disabled  true}
-         (rum/with-key
-           (user-info) "appbar-user-menu-sign-info"))
+         (user-info))
        (comp/divider
          {:key "appbar-user-menu-divider"})
        (comp/menu-item
