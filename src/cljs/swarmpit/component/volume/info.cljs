@@ -4,14 +4,12 @@
             [material.component.form :as form]
             [material.component.label :as label]
             [material.component.list.basic :as list]
-            [swarmpit.component.common :as common]
             [swarmpit.component.dialog :as dialog]
             [swarmpit.component.message :as message]
             [swarmpit.component.mixin :as mixin]
             [swarmpit.component.state :as state]
             [swarmpit.component.progress :as progress]
             [swarmpit.component.service.list :as services]
-            [swarmpit.docker.utils :as utils]
             [swarmpit.url :refer [dispatch!]]
             [swarmpit.ajax :as ajax]
             [swarmpit.routes :as routes]
@@ -69,8 +67,9 @@
     (comp/card-content
       {}
       (html
-        [:div
-         [:span "Volume is mounted at:" [:br] [:b.Swarmpit-volume-mountpoint mountpoint]]]))
+        [:div.Swarmpit-volume-mount
+         [:span "Volume is mounted at:"]
+         [:span.Swarmpit-volume-mountpoint [:b mountpoint]]]))
     (comp/card-content
       {}
       (form/item-labels
@@ -96,7 +95,7 @@
     (comp/card-header
       {:className "Swarmpit-table-card-header Swarmpit-card-header-responsive-title"
        :title     (comp/typography {:variant "h6"} "Driver")})
-    (comp/card-content {} driver )
+    (comp/card-content {} driver)
     (comp/card-content
       {:className "Swarmpit-table-card-content"}
       (when (not-empty options)

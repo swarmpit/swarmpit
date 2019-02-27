@@ -796,6 +796,7 @@ a {
     margin-right: 0.3em;
 }
 
+.Swarmpit-volume-mount,
 .Swarmpit-task-memory-usage {
     display: flex;
     flex-direction: column;
@@ -803,7 +804,7 @@ a {
 
 .Swarmpit-command-text {
     font-size: 0.9em;
-    word-break: break-word;
+    word-break: break-all;
 }
 
 .Swarmpit-command-text > pre {
@@ -878,7 +879,7 @@ a {
 }
 
 .Swarmpit-card-header-responsive-title {
-    word-break: break-word;
+    word-break: break-all;
 }
 
 /* Recharts customizations */
