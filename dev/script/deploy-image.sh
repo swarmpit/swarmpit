@@ -13,7 +13,7 @@ fi
 lein uberjar || exit 1
 docker build -t $REPO . || exit 1
 
-if [ $CONTRIBUTOR == "true" ] 
+if [ $TRAVIS_SECURE_ENV_VARS == "true" ] 
 then
 	docker login -u="$DOCKER_USERNAME" -p="$DOCKER_PASSWORD"
 	
