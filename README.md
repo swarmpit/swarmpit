@@ -17,7 +17,7 @@ More details about future and past releases can be found in [ROADMAP.md](ROADMAP
 The only dependency for Swarmpit deployment is Docker with Swarm initialized, we are supporting Docker 1.13 and newer.
 
 ### Package installer
-Installer is your guide to setup swarmpit platform. For more details see installer [repo](https://github.com/swarmpit/installer)
+Installer is your guide to setup of Swarmpit service. For more details see installer [repo](https://github.com/swarmpit/installer)
 
 #### Stable version
 Deploy our current milestone version
