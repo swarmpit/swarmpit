@@ -1,7 +1,7 @@
 (ns swarmpit.routes
   (:require [bidi.bidi :as b]
-            #?(:clj
-               [environ.core :refer [env]])
+    #?(:clj
+            [environ.core :refer [env]])
             [cemerick.url :refer [map->query]]
             [clojure.string :as str]))
 
@@ -41,6 +41,15 @@
                           "users/" {:get    {[:id] :user}
                                     :delete {[:id] :user-delete}
                                     :post   {[:id] :user-update}}}
+          "/iam/"        {"aws"     {:get  :aws-accounts
+                                     :post :aws-account-create}
+                          "aws/"    {:delete {[:id] :aws-account-delete}}
+                          "azure"   {:get  :azure-accounts
+                                     :post :azure-account-create}
+                          "azure/"  {:delete {[:id] :azure-account-delete}}
+                          "google"  {:get  :google-accounts
+                                     :post :google-account-create}
+                          "google/" {:delete {[:id] :google-account-delete}}}
           "/secrets"     {:get  :secrets
                           :post :secret-create}
           "/configs"     {:get  :configs

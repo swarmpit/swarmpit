@@ -1,6 +1,7 @@
 (ns swarmpit.component.account-settings
   (:require [rum.core :as rum]
             [material.components :as comp]
+            [swarmpit.component.iam.aws :as aws]
             [swarmpit.component.password :as password]
             [swarmpit.component.api-access :as api-access]
             [swarmpit.component.common :as common]
@@ -16,6 +17,10 @@
         [:div.Swarmpit-form-paper
          (common/edit-title "Password change")
          (password/form)]
+        [:div.Swarmpit-form-paper (comp/divider)]
+        [:div.Swarmpit-form-paper
+         (common/edit-title "Cloud access")
+         (aws/form)]
         [:div.Swarmpit-form-paper (comp/divider)]
         [:div.Swarmpit-form-paper
          (common/edit-title "API access")
