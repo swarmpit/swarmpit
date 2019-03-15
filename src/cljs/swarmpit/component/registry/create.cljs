@@ -1,12 +1,14 @@
 (ns swarmpit.component.registry.create
   (:require [rum.core :as rum]
             [sablono.core :refer-macros [html]]
+            [material.icon :as icon]
             [material.components :as comp]
             [material.component.composite :as composite]
             [swarmpit.component.common :as common]
             [swarmpit.component.mixin :as mixin]
             [swarmpit.component.state :as state]
             [swarmpit.component.registry-v2.create :as v2]
+            [swarmpit.component.registry-ecr.create :as ecr]
             [swarmpit.component.registry-dockerhub.create :as dockerhub]))
 
 (enable-console-print!)
@@ -27,6 +29,16 @@
   "Specify registry account type you would like to use to authenticate
    your private repositories.")
 
+(defn- registry-type-form-item [value icon title]
+  (comp/menu-item
+    {:value value}
+    (comp/list-item-icon
+      {}
+      (comp/svg icon))
+    (comp/list-item-text
+      {:primary   title
+       :className "Swarmpit-repo-registry-item"})))
+
 (defn- registry-type-form [value]
   (comp/text-field
     {:fullWidth       true
@@ -36,32 +48,29 @@
      :variant         "outlined"
      :margin          "normal"
      :InputLabelProps {:shrink true}
-     :InputProps      {:className "Swarmpit-form-input"}
+     :InputProps      {:className "Swarmpit-form-input Swarmpit-form-select-icon"}
      :onChange        (fn [e]
                         (let [type (-> e .-target .-value)]
                           (reset! registry type)
                           (case type
                             "dockerhub" (dockerhub/reset-form)
-                            "v2" (v2/reset-form))))}
-    (comp/menu-item
-      {:key   "dockerhub"
-       :value "dockerhub"} "Dockerhub")
-    (comp/menu-item
-      {:key   "v2"
-       :value "v2"} "Registry v2")))
+                            "v2" (v2/reset-form)
+                            "ecr" (ecr/reset-form))))}
+    (registry-type-form-item "dockerhub" icon/docker-path "Dockerhub")
+    (registry-type-form-item "v2" icon/registries-path "Registry v2")
+    (registry-type-form-item "ecr" icon/amazon-path "Amazon ECR")))
 
 (defn- registry-text [registry]
   (case registry
-    "dockerhub" "Please enter your docker login credentials. All your
-                 linked namespaces access will be granted."
-    "v2" "Please enter your custom v2 registry name & address.
-          If you are using secured registry provide account
-          credentials as well."))
+    "dockerhub" dockerhub/text
+    "v2" v2/text
+    "ecr" ecr/text))
 
 (defn- registry-form [registry route]
   (case registry
     "dockerhub" (dockerhub/form route)
-    "v2" (v2/form route)))
+    "v2" (v2/form route)
+    "ecr" (ecr/form route)))
 
 (def registry-publish-text
   "By default only user that has created registry account can
@@ -105,7 +114,8 @@
               "Finish"
               (case @registry
                 "dockerhub" #(dockerhub/add-user-handler)
-                "v2" #(v2/create-registry-handler))
+                "v2" #(v2/create-registry-handler)
+                "ecr" #(ecr/create-registry-handler))
               processing?)
             (comp/button
               {:variant  "contained"

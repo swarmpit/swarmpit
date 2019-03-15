@@ -12,6 +12,8 @@
 
 (enable-console-print!)
 
+(def text "Please enter your docker login credentials. All your linked namespaces access will be granted.")
+
 (defn- form-username [username password]
   (comp/text-field
     {:label           "Name"
