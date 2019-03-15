@@ -6,11 +6,12 @@
             [swarmpit.version :as version]
             [swarmpit.api :as api]
             [swarmpit.slt :as slt]
+            [swarmpit.config :as cfg]
             [swarmpit.token :as token]))
 
 (deftemplate index "public/index.html"
-  [{:keys [base-url]}]
-  [:base] (html/set-attr :href base-url))
+             [{:keys [base-url]}]
+             [:base] (html/set-attr :href base-url))
 
 (defn resp-error
   [status response]
@@ -47,7 +48,7 @@
   (fn [_]
     {:status  200
      :headers {"Content-Type" "text/html"}
-     :body    (apply str (index {:base-url (env :swarmpit-base-url "/")}))}))
+     :body    (apply str (index {:base-url (cfg/config :base-url)}))}))
 
 ;; Version handler
 

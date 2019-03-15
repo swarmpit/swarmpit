@@ -5,6 +5,7 @@
   (atom {:docker-sock      "/var/run/docker.sock"
          :docker-api       "1.30"
          :db-url           "http://localhost:5984"
+         :base-url         "/"
          :work-dir         "/tmp"
          :password-hashing {:alg        :pbkdf2+sha512
                             :iterations 200000}}))
@@ -13,6 +14,7 @@
   (->> {:docker-sock (env :swarmpit-docker-sock)
         :docker-api  (env :swarmpit-docker-api)
         :db-url      (env :swarmpit-db)
+        :base-url    (env :swarmpit-base-url)
         :work-dir    (env :swarmpit-workdir)}
        (into {} (remove #(nil? (val %))))))
 
