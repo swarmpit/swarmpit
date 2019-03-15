@@ -31,6 +31,15 @@
                    (doseq [item response]
                      (state/add-item item (conj state/form-state-cursor :registries))))}))
 
+(defn- ecrs-handler
+  []
+  (ajax/get
+    (routes/path-for-backend :ecrs)
+    {:state      [:loading? :ecr]
+     :on-success (fn [{:keys [response]}]
+                   (doseq [item response]
+                     (state/add-item item (conj state/form-state-cursor :registries))))}))
+
 (defn- dockerhub-handler
   []
   (ajax/get
@@ -71,6 +80,7 @@
 (defn- init-form-state
   []
   (state/set-value {:loading?   {:registry  true
+                                 :ecr       true
                                  :dockerhub true}
                     :manual     false
                     :searching? false
@@ -89,6 +99,7 @@
       (init-form-state)
       (init-form-value)
       (registries-handler)
+      (ecrs-handler)
       (dockerhub-handler))))
 
 (defn- form-manual [value]
@@ -150,7 +161,7 @@
       {:primary   (:username account)
        :className "Swarmpit-repo-registry-item"})))
 
-(defn other-reg [account index]
+(defn v2-reg [account index]
   (comp/menu-item
     {:key   (:name account)
      :value index}
@@ -165,6 +176,17 @@
                      [:span.Swarmpit-repo-registry-url (:url account)]])
        :className "Swarmpit-repo-registry-item"})))
 
+(defn ecr-reg [account index]
+  (comp/menu-item
+    {:key   (:user account)
+     :value index}
+    (comp/list-item-icon
+      {}
+      (comp/svg icon/amazon-path))
+    (comp/list-item-text
+      {:primary   (:user account)
+       :className "Swarmpit-repo-registry-item"})))
+
 (defn- on-change-registry [event registries]
   (let [value (-> event .-target .-value)]
     (state/set-value [] state/form-value-cursor)
@@ -177,7 +199,8 @@
           (:_id registry)
           (case (:type registry)
             "dockeruser" :dockerhub-repositories
-            "registry" :registry-repositories))))))
+            "registry" :registry-repositories
+            "ecr" :ecr-repositories))))))
 
 (rum/defc form-registry < rum/static [registries active searching?]
   (comp/text-field
@@ -198,9 +221,10 @@
     (->> registries
          (map-indexed
            (fn [index i]
-             (if (= "dockeruser" (:type i))
-               (dockerhub-reg i index)
-               (other-reg i index)))))))
+             (case (:type i)
+               "dockeruser" (dockerhub-reg i index)
+               "registry" (v2-reg i index)
+               "ecr" (ecr-reg i index)))))))
 
 (defn- on-change-search [event active]
   (let [value (-> event .-target .-value)]
@@ -300,14 +324,16 @@
                             item
                             (last filtered-repositories)
                             #(onclick-handler
-                               (if (= "registry" (:type registry))
-                                 (du/repository (:url registry) (:name item))
-                                 (:name item))))) filtered-repositories)))))])]]]))))
+                               (if (or (= "dockeruser" (:type registry))
+                                       (nil? registry))
+                                 (:name item)
+                                 (du/repository (:url registry) (:name item)))))) filtered-repositories)))))])]]]))))
 
 (rum/defc form < rum/reactive
                  mixin-init-form [_]
   (let [{:keys [loading?]} (state/react state/form-state-cursor)]
     (progress/form
       (or (:registry loading?)
-          (:dcokerhub loading?))
+          (:ecr loading?)
+          (:dockerhub loading?))
       (form-repo))))
