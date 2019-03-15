@@ -450,6 +450,61 @@
       (->> (api/registry-repositories registry-id)
            (resp-ok)))))
 
+;; AWS ECR handler
+
+(defmethod dispatch :ecrs [_]
+  (fn [{:keys [identity]}]
+    (let [owner (get-in identity [:usr :username])]
+      (->> (api/ecrs owner)
+           (resp-ok)))))
+
+(defmethod dispatch :ecr [_]
+  (fn [{:keys [route-params]}]
+    (->> (api/ecr (:id route-params))
+         (resp-ok))))
+
+(defmethod dispatch :ecr-delete [_]
+  (fn [{:keys [route-params]}]
+    (api/delete-ecr (:id route-params))
+    (resp-ok)))
+
+(defmethod dispatch :ecr-create [_]
+  (fn [{:keys [params identity]}]
+    (let [owner (get-in identity [:usr :username])
+          payload (assoc (keywordize-keys params) :owner owner
+                                                  :type "ecr")]
+      (try
+        (let [url (:proxyEndpoint (api/ecr-token payload))
+              user (:UserName (api/ecr-user payload))
+              response (api/create-ecr (-> payload
+                                           (assoc :user user)
+                                           (assoc :url url)))]
+          (if (some? response)
+            (resp-created (select-keys response [:id]))
+            (resp-error 400 "AWS Registry already exist")))
+        (catch Exception e
+          (resp-error 400 (get-in (ex-data e) [:body :error])))))))
+
+(defmethod dispatch :ecr-update [_]
+  (fn [{:keys [route-params params]}]
+    (let [payload (keywordize-keys params)]
+      (try
+        (let [url (:proxyEndpoint (api/ecr-token payload))
+              user (:UserName (api/ecr-user payload))
+              delta-payload (-> payload
+                                (assoc :user user)
+                                (assoc :url url))]
+          (api/update-ecr (:id route-params) delta-payload)
+          (resp-ok))
+        (catch Exception e
+          (resp-error 400 (get-in (ex-data e) [:body :error])))))))
+
+(defmethod dispatch :ecr-repositories [_]
+  (fn [{:keys [route-params]}]
+    (let [ecr-id (:id route-params)]
+      (->> (api/ecr-repositories ecr-id)
+           (resp-ok)))))
+
 ;; Dockerhub handler
 
 (defmethod dispatch :dockerhub-users [_]
