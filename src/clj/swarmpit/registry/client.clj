@@ -99,7 +99,7 @@
 (defn digest
   [registry repository-name repository-tag]
   (-> (execute-with-fallback
-        {:method  :GET
+        {:method  :HEAD
          :url     (build-url registry (str "/" repository-name "/manifests/" repository-tag))
          :options {:headers (merge (basic-auth registry)
                                    {:Accept "application/vnd.docker.distribution.manifest.v2+json"})}})

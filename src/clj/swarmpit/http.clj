@@ -8,7 +8,8 @@
 (def default-timeout 15000)
 
 (def ^:private req-func
-  {:GET    http/get
+  {:HEAD   http/head
+   :GET    http/get
    :POST   http/post
    :PUT    http/put
    :DELETE http/delete})
