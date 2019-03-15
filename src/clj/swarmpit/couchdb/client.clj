@@ -169,10 +169,6 @@
                        {:public {"$eq" true}}]} "registry")))
 
 (defn registry
-  [id]
-  (get-doc id))
-
-(defn registry
   ([id]
    (get-doc id))
   ([name owner]
@@ -197,6 +193,41 @@
 (defn delete-registry
   [registry]
   (delete-doc registry))
+
+;; AWS ECR
+
+(defn ecrs
+  [owner]
+  (if (nil? owner)
+    (find-docs "ecr")
+    (find-docs {"$or" [{:owner {"$eq" owner}}
+                       {:public {"$eq" true}}]} "ecr")))
+
+(defn ecr
+  ([id]
+   (get-doc id))
+  ([user owner]
+   (find-doc {:user  user
+              :owner owner} "ecr")))
+
+(defn ecr-exist?
+  [ecr]
+  (some? (find-doc {:user  {"$eq" (:user ecr)}
+                    :owner {"$eq" (:owner ecr)}} "ecr")))
+
+(defn create-ecr
+  [ecr]
+  (-> (assoc ecr :type "ecr")
+      (create-doc)))
+
+(defn update-ecr
+  [ecr delta]
+  (let [allowed-delta (dissoc delta :_id :_rev)]
+    (update-doc ecr allowed-delta)))
+
+(defn delete-ecr
+  [ecr]
+  (delete-doc ecr))
 
 ;; User
 

@@ -238,7 +238,7 @@
         [:div.Swarmpit-form
          [:div.Swarmpit-form-context
           [:div.Swarmpit-form-paper
-           (common/edit-title "Create a new service"  (str "from " (get-in (state/get-value settings/form-value-cursor) [:repository :name])) " image")
+           (common/edit-title "Create a new service"  (str "from " (get-in (state/get-value settings/form-value-cursor) [:repository :name])))
            (comp/grid
              {:container true
               :className "Swarmpit-form-main-grid"

@@ -182,17 +182,20 @@
           (empty? filtered-items) (list-no-items-found)
           :else grid)]])))
 
-(defn show-password-adornment [show-password]
-  (comp/input-adornment
-    {:position "end"}
-    (comp/icon-button
-      {:aria-label  "Toggle password visibility"
-       :onClick     #(state/update-value [:showPassword] (not show-password) state/form-state-cursor)
-       :onMouseDown (fn [event]
-                      (.preventDefault event))}
-      (if show-password
-        icon/visibility
-        icon/visibility-off))))
+(defn show-password-adornment
+  ([show-password]
+   (show-password-adornment show-password :showPassword))
+  ([show-password password-key]
+   (comp/input-adornment
+     {:position "end"}
+     (comp/icon-button
+       {:aria-label  "Toggle password visibility"
+        :onClick     #(state/update-value [password-key] (not show-password) state/form-state-cursor)
+        :onMouseDown (fn [event]
+                       (.preventDefault event))}
+       (if show-password
+         icon/visibility
+         icon/visibility-off)))))
 
 (defn resource-used [stat]
   (cond

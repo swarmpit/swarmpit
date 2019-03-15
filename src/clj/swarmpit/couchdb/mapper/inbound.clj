@@ -10,6 +10,16 @@
        (map ->registry)
        (into [])))
 
+(defn ->ecr
+  [ecr]
+  (dissoc ecr :accessKey))
+
+(defn ->ecrs
+  [ecrs]
+  (->> ecrs
+       (map ->ecr)
+       (into [])))
+
 (defn ->user
   [user]
   (dissoc user :password))

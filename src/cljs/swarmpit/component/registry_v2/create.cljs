@@ -12,6 +12,8 @@
 
 (enable-console-print!)
 
+(def text "Please enter your custom v2 registry name & address. If you are using secured registry provide account credentials as well.")
+
 (defn- form-name [name url]
   (comp/text-field
     {:label           "Name"

@@ -1,7 +1,7 @@
 (ns swarmpit.routes
   (:require [bidi.bidi :as b]
-            #?(:clj
-               [environ.core :refer [env]])
+    #?(:clj
+            [environ.core :refer [env]])
             [cemerick.url :refer [map->query]]
             [clojure.string :as str]))
 
@@ -57,7 +57,13 @@
                                        "/" {:get    {[:id "/repositories"] :registry-repositories
                                                      [:id]                 :registry}
                                             :delete {[:id] :registry-delete}
-                                            :post   {[:id] :registry-update}}}}
+                                            :post   {[:id] :registry-update}}}
+                          "ecr"       {""  {:get  :ecrs
+                                            :post :ecr-create}
+                                       "/" {:get    {[:id "/repositories"] :ecr-repositories
+                                                     [:id]                 :ecr}
+                                            :delete {[:id] :ecr-delete}
+                                            :post   {[:id] :ecr-update}}}}
           "/networks"    {:get  :networks
                           :post :network-create}
           "/networks/"   {:get    {[:id] {""          :network
@@ -136,6 +142,8 @@
                                             "/create" :registry-create}
                    "/registries/v2"        {["/" :id]         :reg-v2-info
                                             ["/" :id "/edit"] :reg-v2-edit}
+                   "/registries/ecr"       {["/" :id]         :reg-ecr-info
+                                            ["/" :id "/edit"] :reg-ecr-edit}
                    "/registries/dockerhub" {["/" :id]         :reg-dockerhub-info
                                             ["/" :id "/edit"] :reg-dockerhub-edit}
                    "/users"                {""                :user-list

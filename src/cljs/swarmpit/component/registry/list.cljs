@@ -19,30 +19,42 @@
 
 (def hub-icon (comp/svg {:className "Swarmpit-list-item-icon"} icon/docker-path))
 (def reg-icon (comp/svg {:className "Swarmpit-list-item-icon"} icon/registries-path))
+(def amazon-icon (comp/svg {:className "Swarmpit-list-item-icon"} icon/amazon-path))
+(def azure-icon (comp/svg {:className "Swarmpit-list-item-icon"} icon/azure-path))
+(def google-icon (comp/svg {:className "Swarmpit-list-item-icon"} icon/google-path))
+
+(defn icon-type [item]
+  (comp/tooltip
+    {:title     (case (:type item)
+                  "dockeruser" "dockerhub"
+                  "registry" "registry v2"
+                  "ecr" "amazon ecr")
+     :placement "left"}
+    (case (:type item)
+      "dockeruser" hub-icon
+      "registry" reg-icon
+      "ecr" amazon-icon)))
 
 (def render-metadata
   {:table {:summary [{:name      "Name"
                       :render-fn (fn [item] (:name item))}
                      {:name      "Type"
-                      :render-fn (fn [item] (case (:type item)
-                                              "dockeruser" hub-icon
-                                              "registry" reg-icon))}
+                      :render-fn (fn [item] (icon-type item))}
                      {:name      "Url"
                       :render-fn (fn [item] (:url item))}
                      {:name      "Public"
                       :render-fn (fn [item] (if (:public item) "yes" "no"))}]}
    :list  {:primary   (fn [item] (:name item))
            :secondary (fn [item] (:url item))
-           :status-fn (fn [item] (case (:type item)
-                                   "dockeruser" hub-icon
-                                   "registry" reg-icon))}})
+           :status-fn (fn [item] (icon-type item))}})
 
 (defn onclick-handler
   [item]
   (routes/path-for-frontend
     (case (:type item)
       "dockeruser" :reg-dockerhub-info
-      "registry" :reg-v2-info) {:id (:_id item)}))
+      "registry" :reg-v2-info
+      "ecr" :reg-ecr-info) {:id (:_id item)}))
 
 (defn- dockerhub-handler
   []
@@ -62,6 +74,15 @@
                    (when origin?
                      (state/update-value [:items :registries] response state/form-value-cursor)))}))
 
+(defn- ecrs-handler
+  []
+  (ajax/get
+    (routes/path-for-backend :ecrs)
+    {:state      [:loading? :ecrs]
+     :on-success (fn [{:keys [response origin?]}]
+                   (when origin?
+                     (state/update-value [:items :ecrs] response state/form-value-cursor)))}))
+
 (defn form-search-fn
   [event]
   (state/update-value [:query] (-> event .-target .-value) state/search-cursor))
@@ -76,17 +97,24 @@
   [reg-accounts]
   (map #(select-keys % [:_id :name :url :type :public :owner]) reg-accounts))
 
+(defn ecr-to-distribution
+  [ecr-accounts]
+  (map #(merge (select-keys % [:_id :url :type :public :owner])
+               {:name (:user %)}) ecr-accounts))
+
 (defn- init-form-state
   []
   (state/set-value {:loading? {:dockerhub  false
-                               :registries false}} state/form-state-cursor))
+                               :registries false
+                               :ecrs       false}} state/form-state-cursor))
 
 (def mixin-init-form
   (mixin/init-form
     (fn [_]
       (init-form-state)
       (dockerhub-handler)
-      (registries-handler))))
+      (registries-handler)
+      (ecrs-handler))))
 
 (def toolbar-render-metadata
   {:actions [{:name     "Link registry"
@@ -102,12 +130,14 @@
         {:keys [loading?]} (state/react state/form-state-cursor)
         {:keys [query]} (state/react state/search-cursor)
         distributions (concat (hub-to-distribution (:dockerhub items))
-                              (reg-to-distribution (:registries items)))
+                              (reg-to-distribution (:registries items))
+                              (ecr-to-distribution (:ecrs items)))
         filtered-distributions (-> (core/filter #(= (:owner %) (storage/user)) distributions)
                                    (list-util/filter query))]
     (progress/form
       (and (:dockerhub loading?)
-           (:registries loading?))
+           (:registries loading?)
+           (:ecrs loading?))
       (common/list "Registries"
                    distributions
                    filtered-distributions
