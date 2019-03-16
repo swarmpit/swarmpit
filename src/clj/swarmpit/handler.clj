@@ -482,10 +482,7 @@
                                                   :type "ecr")]
       (try
         (let [url (:proxyEndpoint (api/ecr-token payload))
-              user (:UserName (api/ecr-user payload))
-              response (api/create-ecr (-> payload
-                                           (assoc :user user)
-                                           (assoc :url url)))]
+              response (api/create-ecr (assoc payload :url url))]
           (if (some? response)
             (resp-created (select-keys response [:id]))
             (resp-error 400 "AWS Registry already exist")))
@@ -497,10 +494,7 @@
     (let [payload (keywordize-keys params)]
       (try
         (let [url (:proxyEndpoint (api/ecr-token payload))
-              user (:UserName (api/ecr-user payload))
-              delta-payload (-> payload
-                                (assoc :user user)
-                                (assoc :url url))]
+              delta-payload (assoc payload :url url)]
           (api/update-ecr (:id route-params) delta-payload)
           (resp-ok))
         (catch Exception e
