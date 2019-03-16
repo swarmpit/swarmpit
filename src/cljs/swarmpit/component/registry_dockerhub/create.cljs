@@ -14,7 +14,7 @@
 
 (def text "Please enter your docker login credentials. All your linked namespaces access will be granted.")
 
-(defn- form-username [username password]
+(defn- form-username [username]
   (comp/text-field
     {:label           "Name"
      :fullWidth       true
@@ -25,14 +25,9 @@
      :defaultValue    username
      :required        true
      :InputLabelProps {:shrink true}
-     :onChange        (fn [e]
-                        (state/update-value [:username] (-> e .-target .-value) state/form-value-cursor)
-                        (state/update-value [:valid?] (not
-                                                        (or
-                                                          (str/blank? (-> e .-target .-value))
-                                                          (str/blank? password))) state/form-state-cursor))}))
+     :onChange        #(state/update-value [:username] (-> % .-target .-value) state/form-value-cursor)}))
 
-(defn- form-password [username password show-password?]
+(defn- form-password [password show-password?]
   (comp/text-field
     {:label           "Password"
      :variant         "outlined"
@@ -44,12 +39,7 @@
                         "text"
                         "password")
      :defaultValue    password
-     :onChange        (fn [e]
-                        (state/update-value [:password] (-> e .-target .-value) state/form-value-cursor)
-                        (state/update-value [:valid?] (not
-                                                        (or
-                                                          (str/blank? username)
-                                                          (str/blank? (-> e .-target .-value)))) state/form-state-cursor))
+     :onChange        #(state/update-value [:password] (-> % .-target .-value) state/form-value-cursor)
      :InputLabelProps {:shrink true}
      :InputProps      {:className    "Swarmpit-form-input"
                        :endAdornment (common/show-password-adornment show-password?)}}))
@@ -90,7 +80,11 @@
 (rum/defc form < rum/reactive [_]
   (let [{:keys [username password]} (state/react state/form-value-cursor)
         {:keys [showPassword]} (state/react state/form-state-cursor)]
+    (state/update-value [:valid?] (not
+                                    (or
+                                      (str/blank? username)
+                                      (str/blank? password))) state/form-state-cursor)
     (html
       [:div
-       (form-username username password)
-       (form-password username password showPassword)])))
+       (form-username username)
+       (form-password password showPassword)])))

@@ -14,9 +14,13 @@
 
 (def text (html
             [:div
-             [:span "In order to access registry amazon IAM account must be created first. See "]
-             [:a {:href   "https://aws.amazon.com/iam"
-                  :target "_blank"} "https://aws.amazon.com/iam"]]))
+             [:span "In order to access ECR, amazon IAM user with given policy must be created first. See "]
+             [:a {:href   "https://docs.aws.amazon.com/AmazonECR/latest/userguide/ECR_IAM_user_policies.html"
+                  :target "_blank"} "IAM ECR User Guide"]
+             [:br]
+             [:span "We strongly recommned you to set "]
+             [:a {:href   "https://docs.aws.amazon.com/AmazonECR/latest/userguide/ecr_managed_policies.html#AmazonEC2ContainerRegistryReadOnly"
+                  :target "_blank"} "READ-ONLY Access"]]))
 
 (def supported-roles
   ["us-east-2"
@@ -41,7 +45,7 @@
    "us-gov-east-1"
    "us-gov-west-1"])
 
-(defn- form-region [value]
+(defn- form-region [region]
   (comp/text-field
     {:fullWidth       true
      :label           "Region"
@@ -49,7 +53,7 @@
      :select          true
      :margin          "normal"
      :required        true
-     :value           value
+     :value           region
      :variant         "outlined"
      :InputLabelProps {:shrink true}
      :InputProps      {:className "Swarmpit-form-input"}
@@ -58,7 +62,19 @@
             {:key   %
              :value %} %) supported-roles)))
 
-(defn- form-access-key-id [access-key-id access-key]
+(defn- form-user [user]
+  (comp/text-field
+    {:label           "User"
+     :fullWidth       true
+     :key             "user"
+     :variant         "outlined"
+     :defaultValue    user
+     :required        true
+     :margin          "normal"
+     :InputLabelProps {:shrink true}
+     :onChange        #(state/update-value [:user] (-> % .-target .-value) state/form-value-cursor)}))
+
+(defn- form-access-key-id [access-key-id]
   (comp/text-field
     {:label           "Access Key Id"
      :fullWidth       true
@@ -69,14 +85,9 @@
      :defaultValue    access-key-id
      :required        true
      :InputLabelProps {:shrink true}
-     :onChange        (fn [e]
-                        (state/update-value [:accessKeyId] (-> e .-target .-value) state/form-value-cursor)
-                        (state/update-value [:valid?] (not
-                                                        (or
-                                                          (str/blank? (-> e .-target .-value))
-                                                          (str/blank? access-key))) state/form-state-cursor))}))
+     :onChange        #(state/update-value [:accessKeyId] (-> % .-target .-value) state/form-value-cursor)}))
 
-(defn- form-access-key [access-key access-key-id show-key?]
+(defn- form-access-key [access-key show-key?]
   (comp/text-field
     {:label           "Secret Access Key"
      :variant         "outlined"
@@ -88,12 +99,7 @@
                         "text"
                         "password")
      :defaultValue    access-key
-     :onChange        (fn [e]
-                        (state/update-value [:accessKey] (-> e .-target .-value) state/form-value-cursor)
-                        (state/update-value [:valid?] (not
-                                                        (or
-                                                          (str/blank? access-key-id)
-                                                          (str/blank? (-> e .-target .-value)))) state/form-state-cursor))
+     :onChange        #(state/update-value [:accessKey] (-> % .-target .-value) state/form-value-cursor)
      :InputLabelProps {:shrink true}
      :InputProps      {:className    "Swarmpit-form-input"
                        :endAdornment (common/show-password-adornment show-key? :showKey)}}))
@@ -123,6 +129,7 @@
 (defn- init-form-value
   []
   (state/set-value {:region      "eu-west-1"
+                    :user        "swarmpit-ecr"
                     :accessKeyId ""
                     :accessKey   ""
                     :public      false} state/form-value-cursor))
@@ -133,10 +140,16 @@
   (init-form-value))
 
 (rum/defc form < rum/reactive [_]
-  (let [{:keys [region accessKeyId accessKey]} (state/react state/form-value-cursor)
+  (let [{:keys [region user accessKeyId accessKey]} (state/react state/form-value-cursor)
         {:keys [showKey]} (state/react state/form-state-cursor)]
+    (state/update-value [:valid?] (not
+                                    (or
+                                      (str/blank? user)
+                                      (str/blank? accessKeyId)
+                                      (str/blank? accessKey))) state/form-state-cursor)
     (html
       [:div
        (form-region region)
-       (form-access-key-id accessKeyId accessKey)
-       (form-access-key accessKey accessKeyId showKey)])))
+       (form-user user)
+       (form-access-key-id accessKeyId)
+       (form-access-key accessKey showKey)])))

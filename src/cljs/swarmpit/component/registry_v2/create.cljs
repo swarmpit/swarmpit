@@ -14,7 +14,7 @@
 
 (def text "Please enter your custom v2 registry name & address. If you are using secured registry provide account credentials as well.")
 
-(defn- form-name [name url]
+(defn- form-name [name]
   (comp/text-field
     {:label           "Name"
      :fullWidth       true
@@ -24,14 +24,9 @@
      :required        true
      :margin          "normal"
      :InputLabelProps {:shrink true}
-     :onChange        (fn [e]
-                        (state/update-value [:name] (-> e .-target .-value) state/form-value-cursor)
-                        (state/update-value [:valid?] (not
-                                                        (or
-                                                          (str/blank? (-> e .-target .-value))
-                                                          (str/blank? url))) state/form-state-cursor))}))
+     :onChange        #(state/update-value [:name] (-> % .-target .-value) state/form-value-cursor)}))
 
-(defn- form-url [name url]
+(defn- form-url [url]
   (comp/text-field
     {:label           "Url"
      :fullWidth       true
@@ -42,12 +37,7 @@
      :margin          "normal"
      :placeholder     "e.g. https://my.registry.io"
      :InputLabelProps {:shrink true}
-     :onChange        (fn [e]
-                        (state/update-value [:url] (-> e .-target .-value) state/form-value-cursor)
-                        (state/update-value [:valid?] (not
-                                                        (or
-                                                          (str/blank? (-> e .-target .-value))
-                                                          (str/blank? name))) state/form-state-cursor))}))
+     :onChange        #(state/update-value [:url] (-> % .-target .-value) state/form-value-cursor)}))
 
 (defn- form-auth [value]
   (comp/switch
@@ -126,10 +116,15 @@
 (rum/defc form < rum/reactive [_]
   (let [{:keys [name url withAuth username password]} (state/react state/form-value-cursor)
         {:keys [showPassword]} (state/react state/form-state-cursor)]
+    (state/update-value [:valid?] (not
+                                    (or
+                                      (str/blank? name)
+                                      (str/blank? url))) state/form-state-cursor)
+
     (html
       [:div
-       (form-name name url)
-       (form-url name url)
+       (form-name name)
+       (form-url name)
        (comp/form-control
          {:component "fieldset"}
          (comp/form-group
