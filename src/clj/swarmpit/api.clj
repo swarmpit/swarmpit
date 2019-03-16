@@ -326,13 +326,6 @@
   (-> (cc/ecr ecr-id)
       (cmi/->ecr)))
 
-(defn ecr-user
-  [{:keys [_id accessKey] :as ecr}]
-  (let [old-access-key (:accessKey (cc/ecr _id))]
-    (if accessKey
-      (awsc/iam-user ecr)
-      (awsc/iam-user (assoc ecr :accessKey old-access-key)))))
-
 (defn ecr-token
   [{:keys [_id accessKey] :as ecr}]
   (let [old-access-key (:accessKey (cc/ecr _id))]

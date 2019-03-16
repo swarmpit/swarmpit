@@ -26,10 +26,3 @@
   (-> (execute :GetAuthorizationToken :ecr ecr)
       :authorizationData
       (first)))
-
-(defn iam-user [ecr]
-  (-> (execute :GetUser :iam ecr)
-      :User))
-
-(defn sts-account [ecr]
-  (-> (execute :GetCallerIdentity :sts ecr)))
