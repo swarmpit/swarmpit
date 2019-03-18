@@ -37,7 +37,8 @@
 (defn- user-handler
   [user-id]
   (ajax/get
-    (routes/path-for-backend :dockerhub-user {:id user-id})
+    (routes/path-for-backend :registry {:id           user-id
+                                        :registryType :dockerhub})
     {:state      [:loading?]
      :on-success (fn [{:keys [response]}]
                    (state/set-value response state/form-value-cursor))}))
@@ -45,7 +46,8 @@
 (defn- update-user-handler
   [user-id]
   (ajax/post
-    (routes/path-for-backend :dockerhub-user-update {:id user-id})
+    (routes/path-for-backend :registry-update {:id           user-id
+                                               :registryType :dockerhub})
     {:params     (state/get-value state/form-value-cursor)
      :state      [:processing?]
      :on-success (fn [{:keys [origin?]}]

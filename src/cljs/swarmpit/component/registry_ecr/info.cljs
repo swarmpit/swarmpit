@@ -20,7 +20,8 @@
 (defn- ecr-handler
   [ecr-id]
   (ajax/get
-    (routes/path-for-backend :ecr {:id ecr-id})
+    (routes/path-for-backend :registry {:id           ecr-id
+                                        :registryType :ecr})
     {:state      [:loading?]
      :on-success (fn [{:keys [response]}]
                    (state/set-value response state/form-value-cursor))}))
@@ -28,7 +29,8 @@
 (defn- delete-ecr-handler
   [ecr-id]
   (ajax/delete
-    (routes/path-for-backend :ecr-delete {:id ecr-id})
+    (routes/path-for-backend :registry-delete {:id           ecr-id
+                                               :registryType :ecr})
     {:on-success (fn [_]
                    (dispatch!
                      (routes/path-for-frontend :registry-list))

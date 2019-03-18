@@ -21,7 +21,8 @@
 (defn- registry-handler
   [registry-id]
   (ajax/get
-    (routes/path-for-backend :registry {:id registry-id})
+    (routes/path-for-backend :registry {:id           registry-id
+                                        :registryType :v2})
     {:state      [:loading?]
      :on-success (fn [{:keys [response]}]
                    (state/set-value response state/form-value-cursor))}))
@@ -29,7 +30,8 @@
 (defn- delete-registry-handler
   [registry-id]
   (ajax/delete
-    (routes/path-for-backend :registry-delete {:id registry-id})
+    (routes/path-for-backend :registry-delete {:id           registry-id
+                                               :registryType :v2})
     {:on-success (fn [_]
                    (dispatch!
                      (routes/path-for-frontend :registry-list))

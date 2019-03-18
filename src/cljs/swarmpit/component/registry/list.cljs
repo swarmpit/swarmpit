@@ -26,13 +26,13 @@
 (defn icon-type [item]
   (comp/tooltip
     {:title     (case (:type item)
-                  "dockeruser" "dockerhub"
-                  "registry" "registry v2"
+                  "dockerhub" "dockerhub"
+                  "v2" "registry v2"
                   "ecr" "amazon ecr")
      :placement "left"}
     (case (:type item)
-      "dockeruser" hub-icon
-      "registry" reg-icon
+      "dockerhub" hub-icon
+      "v2" reg-icon
       "ecr" amazon-icon)))
 
 (def render-metadata
@@ -52,69 +52,69 @@
   [item]
   (routes/path-for-frontend
     (case (:type item)
-      "dockeruser" :reg-dockerhub-info
-      "registry" :reg-v2-info
+      "dockerhub" :reg-dockerhub-info
+      "v2" :reg-v2-info
       "ecr" :reg-ecr-info) {:id (:_id item)}))
 
-(defn- dockerhub-handler
+(defn- registries-dockerhub-handler
   []
   (ajax/get
-    (routes/path-for-backend :dockerhub-users)
+    (routes/path-for-backend :registries {:registryType :dockerhub})
     {:state      [:loading? :dockerhub]
      :on-success (fn [{:keys [response origin?]}]
                    (when origin?
                      (state/update-value [:items :dockerhub] response state/form-value-cursor)))}))
 
-(defn- registries-handler
+(defn- registries-v2-handler
   []
   (ajax/get
-    (routes/path-for-backend :registries)
-    {:state      [:loading? :registries]
+    (routes/path-for-backend :registries {:registryType :v2})
+    {:state      [:loading? :v2]
      :on-success (fn [{:keys [response origin?]}]
                    (when origin?
-                     (state/update-value [:items :registries] response state/form-value-cursor)))}))
+                     (state/update-value [:items :v2] response state/form-value-cursor)))}))
 
-(defn- ecrs-handler
+(defn- registries-ecr-handler
   []
   (ajax/get
-    (routes/path-for-backend :ecrs)
-    {:state      [:loading? :ecrs]
+    (routes/path-for-backend :registries {:registryType :ecr})
+    {:state      [:loading? :ecr]
      :on-success (fn [{:keys [response origin?]}]
                    (when origin?
-                     (state/update-value [:items :ecrs] response state/form-value-cursor)))}))
+                     (state/update-value [:items :ecr] response state/form-value-cursor)))}))
 
 (defn form-search-fn
   [event]
   (state/update-value [:query] (-> event .-target .-value) state/search-cursor))
 
 (defn hub-to-distribution
-  [hub-accounts]
+  [reg-hub-accounts]
   (map #(merge (select-keys % [:_id :type :public :owner])
                {:name (:username %)
-                :url  "https://hub.docker.com"}) hub-accounts))
+                :url  "https://hub.docker.com"}) reg-hub-accounts))
 
-(defn reg-to-distribution
-  [reg-accounts]
-  (map #(select-keys % [:_id :name :url :type :public :owner]) reg-accounts))
+(defn v2-to-distribution
+  [reg-v2-accounts]
+  (map #(select-keys % [:_id :name :url :type :public :owner]) reg-v2-accounts))
 
 (defn ecr-to-distribution
-  [ecr-accounts]
+  [reg-ecr-accounts]
   (map #(merge (select-keys % [:_id :url :type :public :owner])
-               {:name (:user %)}) ecr-accounts))
+               {:name (:user %)}) reg-ecr-accounts))
 
 (defn- init-form-state
   []
-  (state/set-value {:loading? {:dockerhub  false
-                               :registries false
-                               :ecrs       false}} state/form-state-cursor))
+  (state/set-value {:loading? {:dockerhub false
+                               :v2        false
+                               :ecr       false}} state/form-state-cursor))
 
 (def mixin-init-form
   (mixin/init-form
     (fn [_]
       (init-form-state)
-      (dockerhub-handler)
-      (registries-handler)
-      (ecrs-handler))))
+      (registries-dockerhub-handler)
+      (registries-v2-handler)
+      (registries-ecr-handler))))
 
 (def toolbar-render-metadata
   {:actions [{:name     "Link registry"
@@ -130,14 +130,14 @@
         {:keys [loading?]} (state/react state/form-state-cursor)
         {:keys [query]} (state/react state/search-cursor)
         distributions (concat (hub-to-distribution (:dockerhub items))
-                              (reg-to-distribution (:registries items))
-                              (ecr-to-distribution (:ecrs items)))
+                              (v2-to-distribution (:v2 items))
+                              (ecr-to-distribution (:ecr items)))
         filtered-distributions (-> (core/filter #(= (:owner %) (storage/user)) distributions)
                                    (list-util/filter query))]
     (progress/form
       (and (:dockerhub loading?)
-           (:registries loading?)
-           (:ecrs loading?))
+           (:v2 loading?)
+           (:ecr loading?))
       (common/list "Registries"
                    distributions
                    filtered-distributions
