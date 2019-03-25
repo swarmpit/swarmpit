@@ -1,9 +1,9 @@
 (ns swarmpit.routes
   (:require [bidi.bidi :as b]
-    #?(:clj
-            [environ.core :refer [env]])
             [cemerick.url :refer [map->query]]
-            [clojure.string :as str]))
+            [clojure.string :as str]
+    #?@(:clj [[environ.core :refer [env]]
+              [swarmpit.config :refer [config]]])))
 
 (def backend
   ["/" [["" {:get :index}]
@@ -153,18 +153,23 @@
 
 (defn- path
   [routes prefix handler params query]
-  (if (some? query)
-    (str prefix (b/unmatch-pair routes {:handler handler
-                                        :params  params}) "?" (map->query query))
-    (str prefix (b/unmatch-pair routes {:handler handler
-                                        :params  params}))))
+  (let [^String path (b/unmatch-pair routes {:handler handler
+                                             :params  params})
+        path (.substring path 1)]
+    (if (some? query)
+      (str prefix path "?" (map->query query))
+      (str prefix path))))
+
+(defn- prefix []
+  #?(:clj (config :base-url)
+     :cljs (.getAttribute (js/document.querySelector "base") "href")))
 
 (defn path-for-frontend
   ([handler] (path-for-frontend handler {} nil))
   ([handler params] (path-for-frontend handler params nil))
-  ([handler params query] (path frontend "" handler params query)))
+  ([handler params query] (path frontend (prefix) handler params query)))
 
 (defn path-for-backend
   ([handler] (path-for-backend handler {} nil))
   ([handler params] (path-for-backend handler params nil))
-  ([handler params query] (path backend "" handler params query)))
+  ([handler params query] (path backend (prefix) handler params query)))
