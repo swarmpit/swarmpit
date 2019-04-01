@@ -45,25 +45,13 @@
                           :post :secret-create}
           "/configs"     {:get  :configs
                           :post :config-create}
-          "/registries/" {"public"    {:get {"/repositories" :public-repositories}}
-                          "dockerhub" {""  {:get  :dockerhub-users
-                                            :post :dockerhub-user-create}
-                                       "/" {:get    {[:id "/repositories"] :dockerhub-repositories
-                                                     [:id]                 :dockerhub-user}
-                                            :delete {[:id] :dockerhub-user-delete}
-                                            :post   {[:id] :dockerhub-user-update}}}
-                          "v2"        {""  {:get  :registries
-                                            :post :registry-create}
-                                       "/" {:get    {[:id "/repositories"] :registry-repositories
-                                                     [:id]                 :registry}
-                                            :delete {[:id] :registry-delete}
-                                            :post   {[:id] :registry-update}}}
-                          "ecr"       {""  {:get  :ecrs
-                                            :post :ecr-create}
-                                       "/" {:get    {[:id "/repositories"] :ecr-repositories
-                                                     [:id]                 :ecr}
-                                            :delete {[:id] :ecr-delete}
-                                            :post   {[:id] :ecr-update}}}}
+          "/registry/"   {"public"        {:get {"/repositories" :public-repositories}}
+                          [:registryType] {""  {:get  :registries
+                                                :post :registry-create}
+                                           "/" {:get    {[:id "/repositories"] :registry-repositories
+                                                         [:id]                 :registry}
+                                                :delete {[:id] :registry-delete}
+                                                :post   {[:id] :registry-update}}}}
           "/networks"    {:get  :networks
                           :post :network-create}
           "/networks/"   {:get    {[:id] {""          :network

@@ -11,7 +11,7 @@
   [user]
   (assoc user :password (->password (:password user))))
 
-(defn ->docker-user
+(defn ->dockerhub
   [docker-user docker-user-info dockeruser-namespace]
   (let [full-name (:full_name docker-user-info)
         org-name (:orgname docker-user-info)]

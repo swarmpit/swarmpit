@@ -72,7 +72,8 @@
 (defn- registry-handler
   [registry-id]
   (ajax/get
-    (routes/path-for-backend :registry {:id registry-id})
+    (routes/path-for-backend :registry {:id           registry-id
+                                        :registryType :v2})
     {:state      [:loading?]
      :on-success (fn [{:keys [response]}]
                    (state/set-value response state/form-value-cursor))}))
@@ -80,7 +81,8 @@
 (defn- update-registry-handler
   [registry-id]
   (ajax/post
-    (routes/path-for-backend :registry-update {:id registry-id})
+    (routes/path-for-backend :registry-update {:id           registry-id
+                                               :registryType :v2})
     {:params     (state/get-value state/form-value-cursor)
      :state      [:processing?]
      :on-success (fn [{:keys [origin?]}]

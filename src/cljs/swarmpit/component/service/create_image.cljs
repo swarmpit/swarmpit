@@ -25,8 +25,8 @@
 (defn- registries-handler
   []
   (ajax/get
-    (routes/path-for-backend :registries)
-    {:state      [:loading? :registry]
+    (routes/path-for-backend :registries {:registryType :v2})
+    {:state      [:loading? :v2]
      :on-success (fn [{:keys [response]}]
                    (doseq [item response]
                      (state/add-item item (conj state/form-state-cursor :registries))))}))
@@ -34,7 +34,7 @@
 (defn- ecrs-handler
   []
   (ajax/get
-    (routes/path-for-backend :ecrs)
+    (routes/path-for-backend :registries {:registryType :ecr})
     {:state      [:loading? :ecr]
      :on-success (fn [{:keys [response]}]
                    (doseq [item response]
@@ -43,7 +43,7 @@
 (defn- dockerhub-handler
   []
   (ajax/get
-    (routes/path-for-backend :dockerhub-users)
+    (routes/path-for-backend :registries {:registryType :dockerhub})
     {:state      [:loading? :dockerhub]
      :on-success (fn [{:keys [response]}]
                    (doseq [item response]
@@ -63,9 +63,10 @@
                      (str "Repositories fetching failed. " (:error response))))}))
 
 (defn- repository-handler
-  [registry-id registry-route]
+  [registry-id registry-type]
   (ajax/get
-    (routes/path-for-backend registry-route {:id registry-id})
+    (routes/path-for-backend :registry-repositories {:id           registry-id
+                                                     :registryType (keyword registry-type)})
     {:state      [:searching?]
      :on-success (fn [{:keys [response]}]
                    (state/set-value response state/form-value-cursor))
@@ -195,12 +196,7 @@
     (when (not= "public" value)
       (let [registry (nth registries value)]
         (state/update-value [:registry] registry state/form-state-cursor)
-        (repository-handler
-          (:_id registry)
-          (case (:type registry)
-            "dockeruser" :dockerhub-repositories
-            "registry" :registry-repositories
-            "ecr" :ecr-repositories))))))
+        (repository-handler (:_id registry) (:type registry))))))
 
 (rum/defc form-registry < rum/static [registries active searching?]
   (comp/text-field
@@ -222,8 +218,8 @@
          (map-indexed
            (fn [index i]
              (case (:type i)
-               "dockeruser" (dockerhub-reg i index)
-               "registry" (v2-reg i index)
+               "dockerhub" (dockerhub-reg i index)
+               "v2" (v2-reg i index)
                "ecr" (ecr-reg i index)))))))
 
 (defn- on-change-search [event active]
@@ -324,7 +320,7 @@
                             item
                             (last filtered-repositories)
                             #(onclick-handler
-                               (if (or (= "dockeruser" (:type registry))
+                               (if (or (= "dockerhub" (:type registry))
                                        (nil? registry))
                                  (:name item)
                                  (du/repository (:url registry) (:name item)))))) filtered-repositories)))))])]]]))))
@@ -333,7 +329,7 @@
                  mixin-init-form [_]
   (let [{:keys [loading?]} (state/react state/form-state-cursor)]
     (progress/form
-      (or (:registry loading?)
+      (or (:v2 loading?)
           (:ecr loading?)
           (:dockerhub loading?))
       (form-repo))))

@@ -30,12 +30,12 @@
        (map ->user)
        (into [])))
 
-(defn ->dockeruser
+(defn ->dockerhub
   [dockeruser]
   (dissoc dockeruser :password))
 
-(defn ->dockerusers
+(defn ->dockerhubs
   [dockerusers]
   (->> dockerusers
-       (map ->dockeruser)
+       (map ->dockerhub)
        (into [])))

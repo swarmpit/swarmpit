@@ -124,108 +124,108 @@
   []
   (find-doc {} "secret"))
 
-;; Docker user
+;; Registry Dockerhub
 
-(defn dockerusers
+(defn dockerhubs
   [owner]
   (if (nil? owner)
-    (find-docs "dockeruser")
+    (find-docs "dockerhub")
     (find-docs {"$or" [{:owner {"$eq" owner}}
-                       {:public {"$eq" true}}]} "dockeruser")))
+                       {:public {"$eq" true}}]} "dockerhub")))
 
-(defn dockeruser
+(defn dockerhub
   ([id]
    (get-doc id))
   ([username owner]
    (find-doc {:username username
-              :owner    owner} "dockeruser")))
+              :owner    owner} "dockerhub")))
 
-(defn dockeruser-exist?
+(defn dockerhub-exist?
   [docker-user]
   (some? (find-doc {:username {"$eq" (:username docker-user)}
-                    :owner    {"$eq" (:owner docker-user)}} "dockeruser")))
+                    :owner    {"$eq" (:owner docker-user)}} "dockerhub")))
 
-(defn create-dockeruser
+(defn create-dockerhub
   [docker-user]
-  (-> (assoc docker-user :type "dockeruser")
+  (-> (assoc docker-user :type "dockerhub")
       (create-doc)))
 
-(defn update-dockeruser
+(defn update-dockerhub
   [docker-user delta]
   (let [allowed-delta (dissoc delta :_id :_rev :username)]
     (update-doc docker-user allowed-delta)))
 
-(defn delete-dockeruser
+(defn delete-dockerhub
   [docker-user]
   (delete-doc docker-user))
 
-;; Registry
+;; Registry v2
 
-(defn registries
+(defn registries-v2
   [owner]
   (if (nil? owner)
-    (find-docs "registry")
+    (find-docs "v2")
     (find-docs {"$or" [{:owner {"$eq" owner}}
-                       {:public {"$eq" true}}]} "registry")))
+                       {:public {"$eq" true}}]} "v2")))
 
-(defn registry
+(defn registry-v2
   ([id]
    (get-doc id))
   ([name owner]
    (find-doc {:name  name
-              :owner owner} "registry")))
+              :owner owner} "v2")))
 
-(defn registry-exist?
+(defn registry-v2-exist?
   [registry]
   (some? (find-doc {:name  {"$eq" (:name registry)}
-                    :owner {"$eq" (:owner registry)}} "registry")))
+                    :owner {"$eq" (:owner registry)}} "v2")))
 
-(defn create-registry
+(defn create-v2-registry
   [registry]
-  (-> (assoc registry :type "registry")
+  (-> (assoc registry :type "v2")
       (create-doc)))
 
-(defn update-registry
+(defn update-v2-registry
   [registry delta]
   (let [allowed-delta (dissoc delta :_id :_rev :name)]
     (update-doc registry allowed-delta)))
 
-(defn delete-registry
+(defn delete-v2-registry
   [registry]
   (delete-doc registry))
 
-;; AWS ECR
+;; Registry AWS ECR
 
-(defn ecrs
+(defn registries-ecr
   [owner]
   (if (nil? owner)
     (find-docs "ecr")
     (find-docs {"$or" [{:owner {"$eq" owner}}
                        {:public {"$eq" true}}]} "ecr")))
 
-(defn ecr
+(defn registry-ecr
   ([id]
    (get-doc id))
   ([user owner]
    (find-doc {:user  user
               :owner owner} "ecr")))
 
-(defn ecr-exist?
+(defn registry-ecr-exist?
   [ecr]
   (some? (find-doc {:user  {"$eq" (:user ecr)}
                     :owner {"$eq" (:owner ecr)}} "ecr")))
 
-(defn create-ecr
+(defn create-ecr-registry
   [ecr]
   (-> (assoc ecr :type "ecr")
       (create-doc)))
 
-(defn update-ecr
+(defn update-ecr-registry
   [ecr delta]
   (let [allowed-delta (dissoc delta :_id :_rev)]
     (update-doc ecr allowed-delta)))
 
-(defn delete-ecr
+(defn delete-ecr-registry
   [ecr]
   (delete-doc ecr))
 

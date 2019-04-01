@@ -210,52 +210,52 @@
 
 ;;; Dockerhub registry API
 
-(defn dockerusers
+(defn dockerhubs
   [owner]
-  (-> (cc/dockerusers owner)
-      (cmi/->dockerusers)))
+  (-> (cc/dockerhubs owner)
+      (cmi/->dockerhubs)))
 
-(defn dockeruser-info
+(defn dockerhub-info
   [dockeruser]
   (dhc/info dockeruser))
 
-(defn dockeruser-namespace
+(defn dockerhub-namespace
   [dockeruser-token]
   (-> (dhc/namespaces dockeruser-token)
       :namespaces))
 
-(defn dockeruser-login
+(defn dockerhub-login
   [dockeruser]
   (dhc/login dockeruser))
 
-(defn dockeruser-exist?
+(defn dockerhub-exist?
   [dockeruser]
-  (cc/dockeruser-exist? dockeruser))
+  (cc/dockerhub-exist? dockeruser))
 
-(defn dockeruser
+(defn dockerhub
   [dockeruser-id]
-  (-> (cc/dockeruser dockeruser-id)
-      (cmi/->dockeruser)))
+  (-> (cc/dockerhub dockeruser-id)
+      (cmi/->dockerhub)))
 
-(defn create-dockeruser
+(defn create-dockerhub
   [dockeruser dockeruser-info dockeruser-namespace]
-  (if (not (dockeruser-exist? dockeruser))
-    (->> (cmo/->docker-user dockeruser dockeruser-info dockeruser-namespace)
-         (cc/create-dockeruser))))
+  (if (not (dockerhub-exist? dockeruser))
+    (->> (cmo/->dockerhub dockeruser dockeruser-info dockeruser-namespace)
+         (cc/create-dockerhub))))
 
-(defn update-dockeruser
+(defn update-dockerhub
   [dockeruser-id dockeruser-delta]
-  (->> (cc/update-dockeruser (cc/dockeruser dockeruser-id) dockeruser-delta)
-       (cmi/->dockeruser)))
+  (->> (cc/update-dockerhub (cc/dockerhub dockeruser-id) dockeruser-delta)
+       (cmi/->dockerhub)))
 
-(defn delete-dockeruser
+(defn delete-dockerhub
   [dockeruser-id]
-  (-> (dockeruser dockeruser-id)
-      (cc/delete-dockeruser)))
+  (-> (dockerhub dockeruser-id)
+      (cc/delete-dockerhub)))
 
-(defn dockeruser-repositories
+(defn dockerhub-repositories
   [dockeruser-id]
-  (let [dockeruser (cc/dockeruser dockeruser-id)
+  (let [dockeruser (cc/dockerhub dockeruser-id)
         dockeruser-token (:token (dhc/login dockeruser))]
     (->> (dhc/namespaces dockeruser-token)
          :namespaces
@@ -272,105 +272,105 @@
 
 ;;; Registry v2 API
 
-(defn registries
+(defn registries-v2
   [owner]
-  (-> (cc/registries owner)
+  (-> (cc/registries-v2 owner)
       (cmi/->registries)))
 
-(defn registry
+(defn registry-v2
   [registry-id]
-  (-> (cc/registry registry-id)
+  (-> (cc/registry-v2 registry-id)
       (cmi/->registry)))
 
-(defn registry-exist?
+(defn registry-v2-exist?
   [registry]
-  (cc/registry-exist? registry))
+  (cc/registry-v2-exist? registry))
 
-(defn registry-info
+(defn registry-v2-info
   [{:keys [_id password] :as registry}]
-  (let [old-passwd (:password (cc/registry _id))]
+  (let [old-passwd (:password (cc/registry-v2 _id))]
     (if password
       (rc/info registry)
       (rc/info (assoc registry :password old-passwd)))))
 
-(defn delete-registry
+(defn delete-v2-registry
   [registry-id]
-  (->> (registry registry-id)
-       (cc/delete-registry)))
+  (->> (registry-v2 registry-id)
+       (cc/delete-v2-registry)))
 
-(defn create-registry
+(defn create-v2-registry
   [registry]
-  (when (not (registry-exist? registry))
-    (cc/create-registry registry)))
+  (when (not (registry-v2-exist? registry))
+    (cc/create-v2-registry registry)))
 
-(defn update-registry
+(defn update-v2-registry
   [registry-id registry-delta]
-  (->> (cc/update-registry (cc/registry registry-id) registry-delta)
+  (->> (cc/update-v2-registry (cc/registry-v2 registry-id) registry-delta)
        (cmi/->registry)))
 
-(defn registry-repositories
+(defn registry-v2-repositories
   [registry-id]
-  (->> (cc/registry registry-id)
+  (->> (cc/registry-v2 registry-id)
        (rc/repositories)
        (rmi/->repositories)))
 
-;;; Amazon ECR API
+;;; Registry AWS ECR API
 
-(defn ecrs
+(defn registries-ecr
   [owner]
-  (-> (cc/ecrs owner)
+  (-> (cc/registries-ecr owner)
       (cmi/->ecrs)))
 
-(defn ecr
+(defn registry-ecr
   [ecr-id]
-  (-> (cc/ecr ecr-id)
+  (-> (cc/registry-ecr ecr-id)
       (cmi/->ecr)))
 
-(defn ecr-token
+(defn registry-ecr-token
   [{:keys [_id accessKey] :as ecr}]
-  (let [old-access-key (:accessKey (cc/ecr _id))]
+  (let [old-access-key (:accessKey (cc/registry-ecr _id))]
     (if accessKey
       (awsc/ecr-token ecr)
       (awsc/ecr-token (assoc ecr :accessKey old-access-key)))))
 
-(defn ecr-password
+(defn registry-ecr-password
   [ecr]
-  (-> (ecr-token ecr)
+  (-> (registry-ecr-token ecr)
       :authorizationToken
       (base64/decode)
       (str/split #":")
       (second)))
 
-(defn ecr-exist?
+(defn registry-ecr-exist?
   [ecr]
-  (cc/ecr-exist? ecr))
+  (cc/registry-ecr-exist? ecr))
 
-(defn create-ecr
+(defn create-ecr-registry
   [ecr]
-  (when (not (ecr-exist? ecr))
-    (cc/create-ecr ecr)))
+  (when (not (registry-ecr-exist? ecr))
+    (cc/create-ecr-registry ecr)))
 
-(defn update-ecr
+(defn update-ecr-registry
   [ecr-id ecr-delta]
-  (->> (cc/update-ecr (cc/ecr ecr-id) ecr-delta)
+  (->> (cc/update-ecr-registry (cc/registry-ecr ecr-id) ecr-delta)
        (cmi/->ecr)))
 
-(defn delete-ecr
+(defn delete-ecr-registry
   [ecr-id]
-  (->> (ecr ecr-id)
-       (cc/delete-ecr)))
+  (->> (registry-ecr ecr-id)
+       (cc/delete-ecr-registry)))
 
-(defn ecr->v2
+(defn registry-ecr->v2
   [ecr]
   (-> ecr
       (assoc :username "AWS")
-      (assoc :password (ecr-password ecr))
+      (assoc :password (registry-ecr-password ecr))
       (assoc :withAuth true)))
 
-(defn ecr-repositories
+(defn registry-ecr-repositories
   [ecr-id]
-  (->> (cc/ecr ecr-id)
-       (ecr->v2)
+  (->> (cc/registry-ecr ecr-id)
+       (registry-ecr->v2)
        (rc/repositories)
        (rmi/->repositories)))
 
@@ -419,18 +419,18 @@
 
 ;;; Registry lookup API
 
-(defn- dockeruser-by-namespace
-  "Return dockeruser matching given namespace"
+(defn- dockerhub-by-namespace
+  "Return dockerhub account matching given namespace"
   [owner dockeruser-namespace]
-  (->> (cc/dockerusers owner)
+  (->> (cc/dockerhubs owner)
        (filter #(contains? (set (:namespaces %)) dockeruser-namespace))
        (first)))
 
-(defn- dockeruser-by-stackfile
+(defn- dockerhub-by-stackfile
   "Return best matching dockerhub account for given stackfile spec"
   [owner stackfile-spec]
   (let [namespaces (stackfile-dockerhub-distributions stackfile-spec)]
-    (->> (cc/dockerusers owner)
+    (->> (cc/dockerhubs owner)
          (map #(hash-map
                  :user-id (:_id %)
                  :matches (get
@@ -442,13 +442,18 @@
          (sort-by :matches)
          (last)
          :user-id
-         (cc/dockeruser))))
+         (cc/dockerhub))))
 
 (defn- supported-registries
   "List all supported v2 type registries"
   [owner]
-  (concat (cc/registries owner)
-          (cc/ecrs owner)))
+  (concat (cc/registries-v2 owner)
+          (cc/registries-ecr owner)))
+
+(def supported-registry-types #{:dockerhub :v2 :ecr})
+
+(defn supported-registry-type? [type]
+  (contains? supported-registry-types type))
 
 (defn- registry-by-url
   "Return registry account matching given url"
@@ -462,7 +467,7 @@
                  {:status 401
                   :body   {:error (str "No matching registry ( " registry-address " ) linked with Swarmpit")}}))
       (case (:type registry)
-        "ecr" (ecr->v2 registry)
+        "ecr" (registry-ecr->v2 registry)
         registry))))
 
 (defn- registries-by-stackfile
@@ -482,10 +487,10 @@
         (rc/tags repository-name)
         :tags)))
 
-(defn- dockeruser-repository-tags
+(defn- dockerhub-repository-tags
   [owner repository-name]
   (let [dockeruser-namespace (du/distribution-id repository-name)]
-    (-> (dockeruser-by-namespace owner dockeruser-namespace)
+    (-> (dockerhub-by-namespace owner dockeruser-namespace)
         (dac/token repository-name)
         :token
         (drc/tags repository-name)
@@ -503,7 +508,7 @@
   [owner repository-name]
   (cond
     (du/library? repository-name) (library-repository-tags repository-name)
-    (du/dockerhub? repository-name) (dockeruser-repository-tags owner repository-name)
+    (du/dockerhub? repository-name) (dockerhub-repository-tags owner repository-name)
     :else (registry-repository-tags owner repository-name)))
 
 ;;; Repository Ports API
@@ -518,10 +523,10 @@
         :config
         (dmi/->image-ports))))
 
-(defn- dockeruser-repository-ports
+(defn- dockerhub-repository-ports
   [owner repository-name repository-tag]
   (let [dockeruser-namespace (du/distribution-id repository-name)]
-    (-> (dockeruser-by-namespace owner dockeruser-namespace)
+    (-> (dockerhub-by-namespace owner dockeruser-namespace)
         (dac/token repository-name)
         :token
         (drc/manifest repository-name repository-tag)
@@ -543,7 +548,7 @@
   [owner repository-name repository-tag]
   (cond
     (du/library? repository-name) (library-repository-ports repository-name repository-tag)
-    (du/dockerhub? repository-name) (dockeruser-repository-ports owner repository-name repository-tag)
+    (du/dockerhub? repository-name) (dockerhub-repository-ports owner repository-name repository-tag)
     :else (registry-repository-ports owner repository-name repository-tag)))
 
 ;;; Repository Digest API
@@ -555,10 +560,10 @@
     (-> (registry-by-url owner registry-address)
         (rc/digest repository-name repository-tag))))
 
-(defn- dockeruser-repository-digest
+(defn- dockerhub-repository-digest
   [owner repository-name repository-tag]
   (let [dockeruser-namespace (du/distribution-id repository-name)]
-    (-> (dockeruser-by-namespace owner dockeruser-namespace)
+    (-> (dockerhub-by-namespace owner dockeruser-namespace)
         (dac/token repository-name)
         :token
         (drc/digest repository-name repository-tag))))
@@ -574,7 +579,7 @@
   [owner repository-name repository-tag]
   (cond
     (du/library? repository-name) (library-repository-digest repository-name repository-tag)
-    (du/dockerhub? repository-name) (dockeruser-repository-digest owner repository-name repository-tag)
+    (du/dockerhub? repository-name) (dockerhub-repository-digest owner repository-name repository-tag)
     :else (registry-repository-digest owner repository-name repository-tag)))
 
 ;;; Task API
@@ -746,7 +751,7 @@
     (dmo/->auth-config
       (cond
         (du/library? repository-name) nil
-        (du/dockerhub? repository-name) (dockeruser-by-namespace owner distribution-id)
+        (du/dockerhub? repository-name) (dockerhub-by-namespace owner distribution-id)
         :else (registry-by-url owner distribution-id)))))
 
 (defn create-service
@@ -963,10 +968,10 @@
   [owner stackfile-spec]
   (let [distributions (remove nil?
                               (conj (registries-by-stackfile owner stackfile-spec)
-                                    (dockeruser-by-stackfile owner stackfile-spec)))]
+                                    (dockerhub-by-stackfile owner stackfile-spec)))]
     (doseq [{:keys [type username password url] :as distro} distributions]
       (case type
-        "ecr" (dcli/login "AWS" (ecr-password distro) url)
+        "ecr" (dcli/login "AWS" (registry-ecr-password distro) url)
         (dcli/login username password url)))))
 
 (defn create-stack
