@@ -20,6 +20,16 @@
        (map ->ecr)
        (into [])))
 
+(defn ->acr
+  [acr]
+  (dissoc acr :spPassword))
+
+(defn ->acrs
+  [acrs]
+  (->> acrs
+       (map ->acr)
+       (into [])))
+
 (defn ->user
   [user]
   (dissoc user :password))

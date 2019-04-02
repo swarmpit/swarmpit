@@ -228,10 +228,6 @@
   [dockeruser]
   (dhc/login dockeruser))
 
-(defn dockerhub-exist?
-  [dockeruser]
-  (cc/dockerhub-exist? dockeruser))
-
 (defn dockerhub
   [dockeruser-id]
   (-> (cc/dockerhub dockeruser-id)
@@ -239,9 +235,8 @@
 
 (defn create-dockerhub
   [dockeruser dockeruser-info dockeruser-namespace]
-  (if (not (dockerhub-exist? dockeruser))
-    (->> (cmo/->dockerhub dockeruser dockeruser-info dockeruser-namespace)
-         (cc/create-dockerhub))))
+  (->> (cmo/->dockerhub dockeruser dockeruser-info dockeruser-namespace)
+       (cc/create-dockerhub)))
 
 (defn update-dockerhub
   [dockeruser-id dockeruser-delta]
@@ -282,10 +277,6 @@
   (-> (cc/registry-v2 registry-id)
       (cmi/->registry)))
 
-(defn registry-v2-exist?
-  [registry]
-  (cc/registry-v2-exist? registry))
-
 (defn registry-v2-info
   [{:keys [_id password] :as registry}]
   (let [old-passwd (:password (cc/registry-v2 _id))]
@@ -300,8 +291,7 @@
 
 (defn create-v2-registry
   [registry]
-  (when (not (registry-v2-exist? registry))
-    (cc/create-v2-registry registry)))
+  (cc/create-v2-registry registry))
 
 (defn update-v2-registry
   [registry-id registry-delta]
@@ -341,14 +331,9 @@
       (str/split #":")
       (second)))
 
-(defn registry-ecr-exist?
-  [ecr]
-  (cc/registry-ecr-exist? ecr))
-
 (defn create-ecr-registry
   [ecr]
-  (when (not (registry-ecr-exist? ecr))
-    (cc/create-ecr-registry ecr)))
+  (cc/create-ecr-registry ecr))
 
 (defn update-ecr-registry
   [ecr-id ecr-delta]
@@ -371,6 +356,58 @@
   [ecr-id]
   (->> (cc/registry-ecr ecr-id)
        (registry-ecr->v2)
+       (rc/repositories)
+       (rmi/->repositories)))
+
+;;; Registry Azure ACR API
+
+(defn registries-acr
+  [owner]
+  (-> (cc/registries-acr owner)
+      (cmi/->acrs)))
+
+(defn registry-acr
+  [acr-id]
+  (-> (cc/registry-acr acr-id)
+      (cmi/->acr)))
+
+(defn acr-url
+  [acr]
+  (str "https://" (:name acr) ".azurecr.io"))
+
+(defn registry-acr->v2
+  [acr]
+  (-> acr
+      (assoc :username (:spId acr))
+      (assoc :password (:spPassword acr))
+      (assoc :withAuth true)))
+
+(defn registry-acr-info
+  [{:keys [_id spPassword] :as acr}]
+  (let [old-passwd (:spPassword (cc/registry-acr _id))
+        acr-v2 (registry-acr->v2 acr)]
+    (if spPassword
+      (rc/info acr-v2)
+      (rc/info (assoc acr-v2 :password old-passwd)))))
+
+(defn create-acr-registry
+  [acr]
+  (cc/create-acr-registry acr))
+
+(defn update-acr-registry
+  [acr-id acr-delta]
+  (->> (cc/update-acr-registry (cc/registry-acr acr-id) acr-delta)
+       (cmi/->acr)))
+
+(defn delete-acr-registry
+  [ecr-id]
+  (->> (registry-acr ecr-id)
+       (cc/delete-acr-registry)))
+
+(defn registry-acr-repositories
+  [ecr-id]
+  (->> (cc/registry-acr ecr-id)
+       (registry-acr->v2)
        (rc/repositories)
        (rmi/->repositories)))
 
@@ -448,9 +485,10 @@
   "List all supported v2 type registries"
   [owner]
   (concat (cc/registries-v2 owner)
-          (cc/registries-ecr owner)))
+          (cc/registries-ecr owner)
+          (cc/registries-acr owner)))
 
-(def supported-registry-types #{:dockerhub :v2 :ecr})
+(def supported-registry-types #{:dockerhub :v2 :ecr :acr})
 
 (defn supported-registry-type? [type]
   (contains? supported-registry-types type))
@@ -468,6 +506,7 @@
                   :body   {:error (str "No matching registry ( " registry-address " ) linked with Swarmpit")}}))
       (case (:type registry)
         "ecr" (registry-ecr->v2 registry)
+        "acr" (registry-acr->v2 registry)
         registry))))
 
 (defn- registries-by-stackfile
@@ -972,6 +1011,7 @@
     (doseq [{:keys [type username password url] :as distro} distributions]
       (case type
         "ecr" (dcli/login "AWS" (registry-ecr-password distro) url)
+        "acr" (dcli/login (:spId distro) (:spPassword distro) url)
         (dcli/login username password url)))))
 
 (defn create-stack
