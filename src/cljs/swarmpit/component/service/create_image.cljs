@@ -40,6 +40,15 @@
                    (doseq [item response]
                      (state/add-item item (conj state/form-state-cursor :registries))))}))
 
+(defn- acrs-handler
+  []
+  (ajax/get
+    (routes/path-for-backend :registries {:registryType :acr})
+    {:state      [:loading? :acr]
+     :on-success (fn [{:keys [response]}]
+                   (doseq [item response]
+                     (state/add-item item (conj state/form-state-cursor :registries))))}))
+
 (defn- dockerhub-handler
   []
   (ajax/get
@@ -101,6 +110,7 @@
       (init-form-value)
       (registries-handler)
       (ecrs-handler)
+      (acrs-handler)
       (dockerhub-handler))))
 
 (defn- form-manual [value]
@@ -188,6 +198,17 @@
       {:primary   (:user account)
        :className "Swarmpit-repo-registry-item"})))
 
+(defn acr-reg [account index]
+  (comp/menu-item
+    {:key   (:spName account)
+     :value index}
+    (comp/list-item-icon
+      {}
+      (comp/svg icon/azure-path))
+    (comp/list-item-text
+      {:primary   (:spName account)
+       :className "Swarmpit-repo-registry-item"})))
+
 (defn- on-change-registry [event registries]
   (let [value (-> event .-target .-value)]
     (state/set-value [] state/form-value-cursor)
@@ -220,7 +241,8 @@
              (case (:type i)
                "dockerhub" (dockerhub-reg i index)
                "v2" (v2-reg i index)
-               "ecr" (ecr-reg i index)))))))
+               "ecr" (ecr-reg i index)
+               "acr" (acr-reg i index)))))))
 
 (defn- on-change-search [event active]
   (let [value (-> event .-target .-value)]
@@ -331,5 +353,6 @@
     (progress/form
       (or (:v2 loading?)
           (:ecr loading?)
+          (:acr loading?)
           (:dockerhub loading?))
       (form-repo))))

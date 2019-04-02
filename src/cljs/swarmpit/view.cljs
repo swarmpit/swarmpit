@@ -42,6 +42,8 @@
             [swarmpit.component.registry-v2.edit :as reg-v2-edit]
             [swarmpit.component.registry-ecr.info :as reg-ecr-info]
             [swarmpit.component.registry-ecr.edit :as reg-ecr-edit]
+            [swarmpit.component.registry-acr.info :as reg-acr-info]
+            [swarmpit.component.registry-acr.edit :as reg-acr-edit]
             [swarmpit.component.registry-dockerhub.info :as reg-dockerhub-info]
             [swarmpit.component.registry-dockerhub.edit :as reg-dockerhub-edit]))
 
@@ -254,6 +256,16 @@
 (defmethod dispatch :reg-ecr-edit
   [route]
   (reg-ecr-edit/form route))
+
+;;; Registry acr view
+
+(defmethod dispatch :reg-acr-info
+  [route]
+  (reg-acr-info/form route))
+
+(defmethod dispatch :reg-acr-edit
+  [route]
+  (reg-acr-edit/form route))
 
 ;;; Dockerhub view
 
