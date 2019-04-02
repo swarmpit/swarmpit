@@ -140,11 +140,6 @@
    (find-doc {:username username
               :owner    owner} "dockerhub")))
 
-(defn dockerhub-exist?
-  [docker-user]
-  (some? (find-doc {:username {"$eq" (:username docker-user)}
-                    :owner    {"$eq" (:owner docker-user)}} "dockerhub")))
-
 (defn create-dockerhub
   [docker-user]
   (-> (assoc docker-user :type "dockerhub")
@@ -174,11 +169,6 @@
   ([name owner]
    (find-doc {:name  name
               :owner owner} "v2")))
-
-(defn registry-v2-exist?
-  [registry]
-  (some? (find-doc {:name  {"$eq" (:name registry)}
-                    :owner {"$eq" (:owner registry)}} "v2")))
 
 (defn create-v2-registry
   [registry]
@@ -210,11 +200,6 @@
    (find-doc {:user  user
               :owner owner} "ecr")))
 
-(defn registry-ecr-exist?
-  [ecr]
-  (some? (find-doc {:user  {"$eq" (:user ecr)}
-                    :owner {"$eq" (:owner ecr)}} "ecr")))
-
 (defn create-ecr-registry
   [ecr]
   (-> (assoc ecr :type "ecr")
@@ -228,6 +213,36 @@
 (defn delete-ecr-registry
   [ecr]
   (delete-doc ecr))
+
+;; Registry Azure ACR
+
+(defn registries-acr
+  [owner]
+  (if (nil? owner)
+    (find-docs "acr")
+    (find-docs {"$or" [{:owner {"$eq" owner}}
+                       {:public {"$eq" true}}]} "acr")))
+
+(defn registry-acr
+  ([id]
+   (get-doc id))
+  ([user owner]
+   (find-doc {:user  user
+              :owner owner} "acr")))
+
+(defn create-acr-registry
+  [acr]
+  (-> (assoc acr :type "acr")
+      (create-doc)))
+
+(defn update-acr-registry
+  [acr delta]
+  (let [allowed-delta (dissoc delta :_id :_rev)]
+    (update-doc acr allowed-delta)))
+
+(defn delete-acr-registry
+  [acr]
+  (delete-doc acr))
 
 ;; User
 
