@@ -28,12 +28,14 @@
     {:title     (case (:type item)
                   "dockerhub" "dockerhub"
                   "v2" "registry v2"
-                  "ecr" "amazon ecr")
+                  "ecr" "amazon ecr"
+                  "acr" "azure acr")
      :placement "left"}
     (case (:type item)
       "dockerhub" hub-icon
       "v2" reg-icon
-      "ecr" amazon-icon)))
+      "ecr" amazon-icon
+      "acr" azure-icon)))
 
 (def render-metadata
   {:table {:summary [{:name      "Name"
@@ -54,7 +56,8 @@
     (case (:type item)
       "dockerhub" :reg-dockerhub-info
       "v2" :reg-v2-info
-      "ecr" :reg-ecr-info) {:id (:_id item)}))
+      "ecr" :reg-ecr-info
+      "acr" :reg-acr-info) {:id (:_id item)}))
 
 (defn- registries-dockerhub-handler
   []
@@ -83,6 +86,15 @@
                    (when origin?
                      (state/update-value [:items :ecr] response state/form-value-cursor)))}))
 
+(defn- registries-acr-handler
+  []
+  (ajax/get
+    (routes/path-for-backend :registries {:registryType :acr})
+    {:state      [:loading? :acr]
+     :on-success (fn [{:keys [response origin?]}]
+                   (when origin?
+                     (state/update-value [:items :acr] response state/form-value-cursor)))}))
+
 (defn form-search-fn
   [event]
   (state/update-value [:query] (-> event .-target .-value) state/search-cursor))
@@ -102,11 +114,17 @@
   (map #(merge (select-keys % [:_id :url :type :public :owner])
                {:name (:user %)}) reg-ecr-accounts))
 
+(defn acr-to-distribution
+  [reg-acr-accounts]
+  (map #(merge (select-keys % [:_id :url :type :public :owner])
+               {:name (:spName %)}) reg-acr-accounts))
+
 (defn- init-form-state
   []
   (state/set-value {:loading? {:dockerhub false
                                :v2        false
-                               :ecr       false}} state/form-state-cursor))
+                               :ecr       false
+                               :acr       false}} state/form-state-cursor))
 
 (def mixin-init-form
   (mixin/init-form
@@ -114,7 +132,8 @@
       (init-form-state)
       (registries-dockerhub-handler)
       (registries-v2-handler)
-      (registries-ecr-handler))))
+      (registries-ecr-handler)
+      (registries-acr-handler))))
 
 (def toolbar-render-metadata
   {:actions [{:name     "Link registry"
@@ -131,7 +150,8 @@
         {:keys [query]} (state/react state/search-cursor)
         distributions (concat (hub-to-distribution (:dockerhub items))
                               (v2-to-distribution (:v2 items))
-                              (ecr-to-distribution (:ecr items)))
+                              (ecr-to-distribution (:ecr items))
+                              (acr-to-distribution (:acr items)))
         filtered-distributions (-> (core/filter #(= (:owner %) (storage/user)) distributions)
                                    (list-util/filter query))]
     (progress/form

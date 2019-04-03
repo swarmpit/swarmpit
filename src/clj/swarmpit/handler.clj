@@ -419,7 +419,8 @@
         (->> (case registry
                :v2 (api/registries-v2 owner)
                :dockerhub (api/dockerhubs owner)
-               :ecr (api/registries-ecr owner))
+               :ecr (api/registries-ecr owner)
+               :acr (api/registries-acr owner))
              (resp-ok))
         (resp-error 400 (str "Unknown registry type [" registry "]"))))))
 
@@ -431,7 +432,8 @@
         (->> (case registry
                :v2 (api/registry-v2 id)
                :dockerhub (api/dockerhub id)
-               :ecr (api/registry-ecr id))
+               :ecr (api/registry-ecr id)
+               :acr (api/registry-acr id))
              (resp-ok))
         (resp-error 400 (str "Unknown registry type [" registry "]"))))))
 
@@ -443,7 +445,8 @@
         (do (case registry
               :v2 (api/delete-v2-registry id)
               :dockerhub (api/delete-dockerhub id)
-              :ecr (api/delete-ecr-registry id))
+              :ecr (api/delete-ecr-registry id)
+              :acr (api/delete-acr-registry id))
             (resp-ok))
         (resp-error 400 (str "Unknown registry type [" registry "]"))))))
 
@@ -455,7 +458,8 @@
         (->> (case registry
                :v2 (api/registry-v2-repositories id)
                :dockerhub (api/dockerhub-repositories id)
-               :ecr (api/registry-ecr-repositories id))
+               :ecr (api/registry-ecr-repositories id)
+               :acr (api/registry-acr-repositories id))
              (resp-ok))
         (resp-error 400 (str "Unknown registry type " registry))))))
 
@@ -492,6 +496,19 @@
       (if (some? response)
         (resp-created (select-keys response [:id]))
         (resp-error 400 "AWS ECR account already linked")))
+    (catch Exception e
+      (resp-error 400 (get-in (ex-data e) [:body :error])))))
+
+(defmethod registry-create :acr
+  [_ payload]
+  (try
+    (let [url (api/acr-url payload)
+          payload (assoc payload :url url)
+          info (api/registry-acr-info payload)
+          response (api/create-acr-registry payload)]
+      (if (some? response)
+        (resp-created (select-keys response [:id]))
+        (resp-error 400 "Azure ACR account with given service principals already linked")))
     (catch Exception e
       (resp-error 400 (get-in (ex-data e) [:body :error])))))
 
@@ -532,6 +549,15 @@
           delta-payload (assoc payload :url url)]
       (api/update-ecr-registry id delta-payload)
       (resp-ok))
+    (catch Exception e
+      (resp-error 400 (get-in (ex-data e) [:body :error])))))
+
+(defmethod registry-update :acr
+  [_ payload id]
+  (try
+    (api/registry-acr-info payload)
+    (api/update-acr-registry id payload)
+    (resp-ok)
     (catch Exception e
       (resp-error 400 (get-in (ex-data e) [:body :error])))))
 

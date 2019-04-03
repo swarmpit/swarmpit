@@ -132,6 +132,8 @@
                                             ["/" :id "/edit"] :reg-v2-edit}
                    "/registries/ecr"       {["/" :id]         :reg-ecr-info
                                             ["/" :id "/edit"] :reg-ecr-edit}
+                   "/registries/acr"       {["/" :id]         :reg-acr-info
+                                            ["/" :id "/edit"] :reg-acr-edit}
                    "/registries/dockerhub" {["/" :id]         :reg-dockerhub-info
                                             ["/" :id "/edit"] :reg-dockerhub-edit}
                    "/users"                {""                :user-list

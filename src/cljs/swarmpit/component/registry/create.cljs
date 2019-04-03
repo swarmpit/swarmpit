@@ -9,6 +9,7 @@
             [swarmpit.component.state :as state]
             [swarmpit.component.registry-v2.create :as v2]
             [swarmpit.component.registry-ecr.create :as ecr]
+            [swarmpit.component.registry-acr.create :as acr]
             [swarmpit.component.registry-dockerhub.create :as dockerhub]))
 
 (enable-console-print!)
@@ -55,22 +56,26 @@
                           (case type
                             "dockerhub" (dockerhub/reset-form)
                             "v2" (v2/reset-form)
-                            "ecr" (ecr/reset-form))))}
+                            "ecr" (ecr/reset-form)
+                            "acr" (acr/reset-form))))}
     (registry-type-form-item "dockerhub" icon/docker-path "Dockerhub")
     (registry-type-form-item "v2" icon/registries-path "Registry v2")
-    (registry-type-form-item "ecr" icon/amazon-path "Amazon ECR")))
+    (registry-type-form-item "ecr" icon/amazon-path "Amazon ECR")
+    (registry-type-form-item "acr" icon/azure-path "Azure ACR")))
 
 (defn- registry-text [registry]
   (case registry
     "dockerhub" dockerhub/text
     "v2" v2/text
-    "ecr" ecr/text))
+    "ecr" ecr/text
+    "acr" acr/text))
 
 (defn- registry-form [registry route]
   (case registry
     "dockerhub" (dockerhub/form route)
     "v2" (v2/form route)
-    "ecr" (ecr/form route)))
+    "ecr" (ecr/form route)
+    "acr" (acr/form route)))
 
 (def registry-publish-text
   "By default only user that has created registry account can
@@ -115,7 +120,8 @@
               (case @registry
                 "dockerhub" #(dockerhub/add-user-handler)
                 "v2" #(v2/create-registry-handler)
-                "ecr" #(ecr/create-registry-handler))
+                "ecr" #(ecr/create-registry-handler)
+                "acr" #(acr/create-registry-handler))
               processing?)
             (comp/button
               {:variant  "contained"
