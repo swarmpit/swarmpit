@@ -52,12 +52,8 @@
 
 (defn onclick-handler
   [item]
-  (routes/path-for-frontend
-    (case (:type item)
-      "dockerhub" :reg-dockerhub-info
-      "v2" :reg-v2-info
-      "ecr" :reg-ecr-info
-      "acr" :reg-acr-info) {:id (:_id item)}))
+  (routes/path-for-frontend :registry-info {:id           (:_id item)
+                                            :registryType (:type item)}))
 
 (defn- registries-dockerhub-handler
   []

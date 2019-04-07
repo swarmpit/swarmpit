@@ -42,7 +42,8 @@
 
 (defn form-actions
   [id]
-  [{:onClick #(dispatch! (routes/path-for-frontend :reg-ecr-edit {:id id}))
+  [{:onClick #(dispatch! (routes/path-for-frontend :registry-edit {:registryType :ecr
+                                                                   :id           id}))
     :icon    (comp/svg icon/edit-path)
     :name    "Edit registry"}
    {:onClick #(state/update-value [:open] true dialog/dialog-cursor)

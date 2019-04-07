@@ -84,7 +84,8 @@
      :on-success (fn [{:keys [response origin?]}]
                    (when origin?
                      (dispatch!
-                       (routes/path-for-frontend :reg-acr-info (select-keys response [:id]))))
+                       (routes/path-for-frontend :registry-info {:registryType :acr
+                                                                 :id           (:id response)})))
                    (message/info
                      (str "Azure ACR " (:id response) " has been created.")))
      :on-error   (fn [{:keys [response]}]

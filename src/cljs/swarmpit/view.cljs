@@ -83,6 +83,22 @@
   [route]
   (registry-create/form route))
 
+(defmethod dispatch :registry-info
+  [{:keys [params] :as route}]
+  (case (:registryType params)
+    "v2" (reg-v2-info/form route)
+    "dockerhub" (reg-dockerhub-info/form route)
+    "ecr" (reg-ecr-info/form route)
+    "acr" (reg-acr-info/form route)))
+
+(defmethod dispatch :registry-edit
+  [{:keys [params] :as route}]
+  (case (:registryType params)
+    "v2" (reg-v2-edit/form route)
+    "dockerhub" (reg-dockerhub-edit/form route)
+    "ecr" (reg-ecr-edit/form route)
+    "acr" (reg-acr-edit/form route)))
+
 ;;; Stack view
 
 (defmethod dispatch :stack-list
@@ -236,43 +252,3 @@
 (defmethod dispatch :user-edit
   [route]
   (user-edit/form route))
-
-;;; Registry v2 view
-
-(defmethod dispatch :reg-v2-info
-  [route]
-  (reg-v2-info/form route))
-
-(defmethod dispatch :reg-v2-edit
-  [route]
-  (reg-v2-edit/form route))
-
-;;; Registry ecr view
-
-(defmethod dispatch :reg-ecr-info
-  [route]
-  (reg-ecr-info/form route))
-
-(defmethod dispatch :reg-ecr-edit
-  [route]
-  (reg-ecr-edit/form route))
-
-;;; Registry acr view
-
-(defmethod dispatch :reg-acr-info
-  [route]
-  (reg-acr-info/form route))
-
-(defmethod dispatch :reg-acr-edit
-  [route]
-  (reg-acr-edit/form route))
-
-;;; Dockerhub view
-
-(defmethod dispatch :reg-dockerhub-info
-  [route]
-  (reg-dockerhub-info/form route))
-
-(defmethod dispatch :reg-dockerhub-edit
-  [route]
-  (reg-dockerhub-edit/form route))

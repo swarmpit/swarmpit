@@ -68,7 +68,8 @@
      :on-success (fn [{:keys [origin?]}]
                    (when origin?
                      (dispatch!
-                       (routes/path-for-frontend :reg-acr-info {:id acr-id})))
+                       (routes/path-for-frontend :registry-info {:registryType :acr
+                                                                 :id           acr-id})))
                    (message/info
                      (str "Registry " acr-id " has been updated.")))
      :on-error   (fn [{:keys [response]}]

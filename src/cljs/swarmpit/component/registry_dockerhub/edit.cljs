@@ -53,7 +53,8 @@
      :on-success (fn [{:keys [origin?]}]
                    (when origin?
                      (dispatch!
-                       (routes/path-for-frontend :reg-dockerhub-info {:id user-id})))
+                       (routes/path-for-frontend :registry-info {:registryType :dockerhub
+                                                                 :id           user-id})))
                    (message/info
                      (str "Dockerhub account " user-id " has been updated.")))
      :on-error   (fn [{:keys [response]}]
