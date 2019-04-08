@@ -23,6 +23,7 @@
             [swarmpit.couchdb.client :as cc]
             [swarmpit.couchdb.mapper.inbound :as cmi]
             [swarmpit.couchdb.mapper.outbound :as cmo]
+            [swarmpit.gitlab.client :as gc]
             [swarmpit.aws.client :as awsc]
             [clojure.core.memoize :as memo]
             [clojure.tools.logging :as log]
@@ -411,6 +412,57 @@
        (rc/repositories)
        (rmi/->repositories)))
 
+;;; Registry Gitlab API
+
+(defn registries-gitlab
+  [owner]
+  (-> (cc/registries-gitlab owner)
+      (cmi/->gitlab-registries)))
+
+(defn registry-gitlab
+  [registry-id]
+  (-> (cc/registry-gitlab registry-id)
+      (cmi/->gitlab-registry)))
+
+(defn registry-gitlab->v2
+  [registry]
+  (-> registry
+      (assoc :password (:token registry))
+      (assoc :withAuth true)))
+
+(defn registry-gitlab-info
+  [{:keys [_id token] :as registry}]
+  (let [old-passwd (:token (cc/registry-gitlab _id))
+        gitlab-v2 (registry-gitlab->v2 registry)]
+    (if token
+      (rc/info gitlab-v2)
+      (rc/info (assoc gitlab-v2 :password old-passwd)))))
+
+(defn create-gitlab-registry
+  [registry]
+  (cc/create-gitlab-registry registry))
+
+(defn update-gitlab-registry
+  [registry-id registry-delta]
+  (->> (cc/update-gitlab-registry (cc/registry-gitlab registry-id) registry-delta)
+       (cmi/->gitlab-registry)))
+
+(defn delete-gitlab-registry
+  [registry-id]
+  (->> (registry-gitlab registry-id)
+       (cc/delete-gitlab-registry)))
+
+(defn registry-gitlab-repositories
+  [registry-id]
+  (let [registry (cc/registry-gitlab registry-id)
+        registry-v2 (registry-gitlab->v2 registry)]
+    (->> (gc/projects registry-v2)
+         (map #(gc/project-repositories registry-v2 (:id %)))
+         (flatten)
+         (map (fn [{:keys [path]}]
+                (into {:id   (hash path)
+                       :name path}))))))
+
 ;;; Stackfile API
 
 (defn stackfiles
@@ -486,9 +538,10 @@
   [owner]
   (concat (cc/registries-v2 owner)
           (cc/registries-ecr owner)
-          (cc/registries-acr owner)))
+          (cc/registries-acr owner)
+          (cc/registries-gitlab owner)))
 
-(def supported-registry-types #{:dockerhub :v2 :ecr :acr})
+(def supported-registry-types #{:dockerhub :v2 :ecr :acr :gitlab})
 
 (defn supported-registry-type? [type]
   (contains? supported-registry-types type))
@@ -507,6 +560,7 @@
       (case (:type registry)
         "ecr" (registry-ecr->v2 registry)
         "acr" (registry-acr->v2 registry)
+        "gitlab" (registry-gitlab->v2 registry)
         registry))))
 
 (defn- registries-by-stackfile
@@ -1012,6 +1066,7 @@
       (case type
         "ecr" (dcli/login "AWS" (registry-ecr-password distro) url)
         "acr" (dcli/login (:spId distro) (:spPassword distro) url)
+        "gitlab" (dcli/login (:username distro) (:token distro) url)
         (dcli/login username password url)))))
 
 (defn create-stack
