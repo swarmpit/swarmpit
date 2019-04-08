@@ -10,6 +10,7 @@
             [swarmpit.component.registry-v2.create :as v2]
             [swarmpit.component.registry-ecr.create :as ecr]
             [swarmpit.component.registry-acr.create :as acr]
+            [swarmpit.component.registry-gitlab.create :as gitlab]
             [swarmpit.component.registry-dockerhub.create :as dockerhub]))
 
 (enable-console-print!)
@@ -57,25 +58,29 @@
                             "dockerhub" (dockerhub/reset-form)
                             "v2" (v2/reset-form)
                             "ecr" (ecr/reset-form)
-                            "acr" (acr/reset-form))))}
+                            "acr" (acr/reset-form)
+                            "gitlab" (gitlab/reset-form))))}
     (registry-type-form-item "dockerhub" icon/docker-path "Dockerhub")
     (registry-type-form-item "v2" icon/registries-path "Registry v2")
     (registry-type-form-item "ecr" icon/amazon-path "Amazon ECR")
-    (registry-type-form-item "acr" icon/azure-path "Azure ACR")))
+    (registry-type-form-item "acr" icon/azure-path "Azure ACR")
+    (registry-type-form-item "gitlab" icon/gitlab-path "Gitlab registry")))
 
 (defn- registry-text [registry]
   (case registry
     "dockerhub" dockerhub/text
     "v2" v2/text
     "ecr" ecr/text
-    "acr" acr/text))
+    "acr" acr/text
+    "gitlab" gitlab/text))
 
 (defn- registry-form [registry route]
   (case registry
     "dockerhub" (dockerhub/form route)
     "v2" (v2/form route)
     "ecr" (ecr/form route)
-    "acr" (acr/form route)))
+    "acr" (acr/form route)
+    "gitlab" (gitlab/form route)))
 
 (def registry-publish-text
   "By default only user that has created registry account can
@@ -121,7 +126,8 @@
                 "dockerhub" #(dockerhub/add-user-handler)
                 "v2" #(v2/create-registry-handler)
                 "ecr" #(ecr/create-registry-handler)
-                "acr" #(acr/create-registry-handler))
+                "acr" #(acr/create-registry-handler)
+                "gitlab" #(gitlab/create-registry-handler))
               processing?)
             (comp/button
               {:variant  "contained"

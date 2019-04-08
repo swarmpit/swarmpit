@@ -40,6 +40,8 @@
             [swarmpit.component.user.edit :as user-edit]
             [swarmpit.component.registry-v2.info :as reg-v2-info]
             [swarmpit.component.registry-v2.edit :as reg-v2-edit]
+            [swarmpit.component.registry-gitlab.info :as reg-gitlab-info]
+            [swarmpit.component.registry-gitlab.edit :as reg-gitlab-edit]
             [swarmpit.component.registry-ecr.info :as reg-ecr-info]
             [swarmpit.component.registry-ecr.edit :as reg-ecr-edit]
             [swarmpit.component.registry-acr.info :as reg-acr-info]
@@ -89,7 +91,8 @@
     "v2" (reg-v2-info/form route)
     "dockerhub" (reg-dockerhub-info/form route)
     "ecr" (reg-ecr-info/form route)
-    "acr" (reg-acr-info/form route)))
+    "acr" (reg-acr-info/form route)
+    "gitlab" (reg-gitlab-info/form route)))
 
 (defmethod dispatch :registry-edit
   [{:keys [params] :as route}]
@@ -97,7 +100,8 @@
     "v2" (reg-v2-edit/form route)
     "dockerhub" (reg-dockerhub-edit/form route)
     "ecr" (reg-ecr-edit/form route)
-    "acr" (reg-acr-edit/form route)))
+    "acr" (reg-acr-edit/form route)
+    "gitlab" (reg-gitlab-edit/form route)))
 
 ;;; Stack view
 
