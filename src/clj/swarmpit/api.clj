@@ -452,12 +452,35 @@
   (->> (registry-gitlab registry-id)
        (cc/delete-gitlab-registry)))
 
+(defn gitlab-group-projects
+  [registry]
+  (flatten
+    (map
+      (fn [x]
+        (gc/group-projects registry (:id x)))
+      (gc/groups registry))))
+
+(defn gitlab-membership-projects
+  [registry]
+  (gc/projects registry))
+
+(defn gitlab-projects
+  [registry]
+  (into #{}
+        (concat
+          (gitlab-group-projects registry)
+          (gitlab-membership-projects registry))))
+
+(def gitlab-projects-memo
+  (memo/ttl
+    gitlab-projects :ttl/threshold 3600000))
+
 (defn registry-gitlab-repositories
   [registry-id]
-  (let [registry (cc/registry-gitlab registry-id)
-        registry-v2 (registry-gitlab->v2 registry)]
-    (->> (gc/projects registry-v2)
-         (map #(gc/project-repositories registry-v2 (:id %)))
+  (let [registry (cc/registry-gitlab registry-id)]
+    (->> (gitlab-projects-memo registry)
+         (map (fn [x]
+                (gc/project-repositories registry (:id x))))
          (flatten)
          (map (fn [{:keys [path]}]
                 (into {:id   (hash path)
