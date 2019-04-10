@@ -684,6 +684,10 @@ a {
     text-decoration: none;
 }
 
+.log-body {
+    word-break: break-all;
+}
+
 /* Labels & Status ico  */
 
 .Swarmpit-label {
