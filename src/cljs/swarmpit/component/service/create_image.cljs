@@ -49,6 +49,15 @@
                    (doseq [item response]
                      (state/add-item item (conj state/form-state-cursor :registries))))}))
 
+(defn- gitlab-registries-handler
+  []
+  (ajax/get
+    (routes/path-for-backend :registries {:registryType :gitlab})
+    {:state      [:loading? :gitlab]
+     :on-success (fn [{:keys [response]}]
+                   (doseq [item response]
+                     (state/add-item item (conj state/form-state-cursor :registries))))}))
+
 (defn- dockerhub-handler
   []
   (ajax/get
@@ -91,7 +100,9 @@
   []
   (state/set-value {:loading?   {:registry  true
                                  :ecr       true
-                                 :dockerhub true}
+                                 :dockerhub true
+                                 :acr       true
+                                 :gitlab    true}
                     :manual     false
                     :searching? false
                     :registries []
@@ -111,7 +122,8 @@
       (registries-handler)
       (ecrs-handler)
       (acrs-handler)
-      (dockerhub-handler))))
+      (dockerhub-handler)
+      (gitlab-registries-handler))))
 
 (defn- form-manual [value]
   (comp/switch
@@ -209,6 +221,17 @@
       {:primary   (:spName account)
        :className "Swarmpit-repo-registry-item"})))
 
+(defn gitlab-reg [account index]
+  (comp/menu-item
+    {:key   (:username account)
+     :value index}
+    (comp/list-item-icon
+      {}
+      (comp/svg icon/gitlab-path))
+    (comp/list-item-text
+      {:primary   (:username account)
+       :className "Swarmpit-repo-registry-item"})))
+
 (defn- on-change-registry [event registries]
   (let [value (-> event .-target .-value)]
     (state/set-value [] state/form-value-cursor)
@@ -242,7 +265,8 @@
                "dockerhub" (dockerhub-reg i index)
                "v2" (v2-reg i index)
                "ecr" (ecr-reg i index)
-               "acr" (acr-reg i index)))))))
+               "acr" (acr-reg i index)
+               "gitlab" (gitlab-reg i index)))))))
 
 (defn- on-change-search [event active]
   (let [value (-> event .-target .-value)]
@@ -354,5 +378,6 @@
       (or (:v2 loading?)
           (:ecr loading?)
           (:acr loading?)
+          (:gitlab loading?)
           (:dockerhub loading?))
       (form-repo))))

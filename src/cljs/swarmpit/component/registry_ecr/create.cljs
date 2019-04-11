@@ -113,7 +113,8 @@
      :on-success (fn [{:keys [response origin?]}]
                    (when origin?
                      (dispatch!
-                       (routes/path-for-frontend :reg-ecr-info (select-keys response [:id]))))
+                       (routes/path-for-frontend :registry-info {:registryType :ecr
+                                                                 :id           (:id response)})))
                    (message/info
                      (str "Amazon ECR " (:id response) " has been created.")))
      :on-error   (fn [{:keys [response]}]

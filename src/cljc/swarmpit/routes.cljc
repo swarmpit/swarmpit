@@ -91,55 +91,62 @@
                           :post :service-create}}]
         [true {:get :index}]]])
 
-(def frontend ["" {"/"                     :index
-                   "/login"                :login
-                   "/error"                :error
-                   "/unauthorized"         :unauthorized
-                   "/account-settings"     :account-settings
-                   "/services"             {""               :service-list
-                                            "/create/wizard" {"/image"  :service-create-image
-                                                              "/config" :service-create-config}
-                                            ["/" :id]        {""      :service-info
-                                                              "/edit" :service-edit
-                                                              "/log"  {""            :service-log
-                                                                       ["/" :taskId] :service-task-log}}}
-                   "/stacks"               {""                      :stack-list
-                                            "/create"               :stack-create
-                                            ["/" :name]             :stack-info
-                                            ["/" :name "/previous"] :stack-previous
-                                            ["/" :name "/last"]     :stack-last
-                                            ["/" :name "/compose"]  :stack-compose}
-                   "/networks"             {""        :network-list
-                                            "/create" :network-create
-                                            ["/" :id] :network-info}
-                   "/volumes"              {""          :volume-list
-                                            "/create"   :volume-create
-                                            ["/" :name] :volume-info}
-                   "/secrets"              {""        :secret-list
-                                            "/create" :secret-create
-                                            ["/" :id] :secret-info}
-                   "/configs"              {""        :config-list
-                                            "/create" :config-create
-                                            ["/" :id] :config-info}
-                   "/nodes"                {""                :node-list
-                                            ["/" :id]         :node-info
-                                            ["/" :id "/edit"] :node-edit}
-                   "/tasks"                {""        :task-list
-                                            ["/" :id] :task-info}
-                   "/registries"           {""        :registry-list
-                                            "/create" :registry-create}
-                   "/registries/v2"        {["/" :id]         :reg-v2-info
-                                            ["/" :id "/edit"] :reg-v2-edit}
-                   "/registries/ecr"       {["/" :id]         :reg-ecr-info
-                                            ["/" :id "/edit"] :reg-ecr-edit}
-                   "/registries/acr"       {["/" :id]         :reg-acr-info
-                                            ["/" :id "/edit"] :reg-acr-edit}
-                   "/registries/dockerhub" {["/" :id]         :reg-dockerhub-info
-                                            ["/" :id "/edit"] :reg-dockerhub-edit}
-                   "/users"                {""                :user-list
-                                            "/create"         :user-create
-                                            ["/" :id]         :user-info
-                                            ["/" :id "/edit"] :user-edit}}])
+(def frontend ["" {"/"                 :index
+                   "/login"            :login
+                   "/error"            :error
+                   "/unauthorized"     :unauthorized
+                   "/account-settings" :account-settings
+                   "/services"         {""               :service-list
+                                        "/create/wizard" {"/image"  :service-create-image
+                                                          "/config" :service-create-config}
+                                        ["/" :id]        {""      :service-info
+                                                          "/edit" :service-edit
+                                                          "/log"  {""            :service-log
+                                                                   ["/" :taskId] :service-task-log}}}
+                   "/stacks"           {""                      :stack-list
+                                        "/create"               :stack-create
+                                        ["/" :name]             :stack-info
+                                        ["/" :name "/previous"] :stack-previous
+                                        ["/" :name "/last"]     :stack-last
+                                        ["/" :name "/compose"]  :stack-compose}
+                   "/networks"         {""        :network-list
+                                        "/create" :network-create
+                                        ["/" :id] :network-info}
+                   "/volumes"          {""          :volume-list
+                                        "/create"   :volume-create
+                                        ["/" :name] :volume-info}
+                   "/secrets"          {""        :secret-list
+                                        "/create" :secret-create
+                                        ["/" :id] :secret-info}
+                   "/configs"          {""        :config-list
+                                        "/create" :config-create
+                                        ["/" :id] :config-info}
+                   "/nodes"            {""                :node-list
+                                        ["/" :id]         :node-info
+                                        ["/" :id "/edit"] :node-edit}
+                   "/tasks"            {""        :task-list
+                                        ["/" :id] :task-info}
+                   "/registries"       {""        :registry-list
+                                        "/create" :registry-create}
+
+                   "/registries/"      {[:registryType] {["/" :id]         :registry-info
+                                                         ["/" :id "/edit"] :registry-edit}}
+
+                   ;"/registries/v2"        {["/" :id]         :reg-v2-info
+                   ;                         ["/" :id "/edit"] :reg-v2-edit}
+                   ;"/registries/ecr"       {["/" :id]         :reg-ecr-info
+                   ;                         ["/" :id "/edit"] :reg-ecr-edit}
+                   ;"/registries/acr"       {["/" :id]         :reg-acr-info
+                   ;                         ["/" :id "/edit"] :reg-acr-edit}
+                   ;"/registries/dockerhub" {["/" :id]         :reg-dockerhub-info
+                   ;                         ["/" :id "/edit"] :reg-dockerhub-edit}
+
+
+
+                   "/users"            {""                :user-list
+                                        "/create"         :user-create
+                                        ["/" :id]         :user-info
+                                        ["/" :id "/edit"] :user-edit}}])
 
 (defn- path
   [routes prefix handler params query]

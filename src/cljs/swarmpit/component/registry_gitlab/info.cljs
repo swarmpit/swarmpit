@@ -1,4 +1,4 @@
-(ns swarmpit.component.registry-ecr.info
+(ns swarmpit.component.registry-gitlab.info
   (:require [material.icon :as icon]
             [material.components :as comp]
             [material.component.form :as form]
@@ -17,32 +17,32 @@
 
 (enable-console-print!)
 
-(defn- ecr-handler
-  [ecr-id]
+(defn- registry-handler
+  [registry-id]
   (ajax/get
-    (routes/path-for-backend :registry {:id           ecr-id
-                                        :registryType :ecr})
+    (routes/path-for-backend :registry {:id           registry-id
+                                        :registryType :gitlab})
     {:state      [:loading?]
      :on-success (fn [{:keys [response]}]
                    (state/set-value response state/form-value-cursor))}))
 
-(defn- delete-ecr-handler
-  [ecr-id]
+(defn- delete-registry-handler
+  [registry-id]
   (ajax/delete
-    (routes/path-for-backend :registry-delete {:id           ecr-id
-                                               :registryType :ecr})
+    (routes/path-for-backend :registry-delete {:id           registry-id
+                                               :registryType :gitlab})
     {:on-success (fn [_]
                    (dispatch!
                      (routes/path-for-frontend :registry-list))
                    (message/info
-                     (str "Registry " ecr-id " has been removed.")))
+                     (str "Gitlab registry " registry-id " has been removed.")))
      :on-error   (fn [{:keys [response]}]
                    (message/error
-                     (str "Registry removing failed. " (:error response))))}))
+                     (str "Gitlab registry removing failed. " (:error response))))}))
 
 (defn form-actions
   [id]
-  [{:onClick #(dispatch! (routes/path-for-frontend :registry-edit {:registryType :ecr
+  [{:onClick #(dispatch! (routes/path-for-frontend :registry-edit {:registryType :gitlab
                                                                    :id           id}))
     :icon    (comp/svg icon/edit-path)
     :name    "Edit registry"}
@@ -58,38 +58,38 @@
   (mixin/init-form
     (fn [{{:keys [id]} :params}]
       (init-form-state)
-      (ecr-handler id))))
+      (registry-handler id))))
 
-(rum/defc form-info < rum/static [{:keys [_id url user public]}]
+(rum/defc form-info < rum/static [{:keys [_id username url public]}]
   (comp/mui
     (html
       [:div.Swarmpit-form
        (dialog/confirm-dialog
-         #(delete-ecr-handler _id)
+         #(delete-registry-handler _id)
          "Remove account?"
          "Remove")
        [:div.Swarmpit-form-context
         (comp/card
           {:className "Swarmpit-form-card Swarmpit-form-card-single"}
           (comp/card-header
-            {:title     user
+            {:title     username
              :className "Swarmpit-form-card-header Swarmpit-card-header-responsive-title"
              :subheader url
              :action    (menu/menu
                           (form-actions _id)
-                          :ecrMenuAnchor
-                          :ecrMenuOpened)})
+                          :gitlabGeneralMenuAnchor
+                          :gitlabGeneralMenuOpened)})
           (comp/card-content
             {}
             (html
               [:div
-               [:span "Authenticated with IAM user " [:b user] "."]
+               [:span "Authenticated with user " [:b username] "."]
                [:br]
                [:span "Account is " [:b (if public "public." "private.")]]]))
           (comp/card-content
             {}
             (form/item-labels
-              [(label/grey "Amazon ECR")]))
+              [(label/grey "Gitlab registry")]))
           (comp/divider
             {})
           (comp/card-content

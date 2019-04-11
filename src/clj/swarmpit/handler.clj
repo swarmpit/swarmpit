@@ -420,7 +420,8 @@
                :v2 (api/registries-v2 owner)
                :dockerhub (api/dockerhubs owner)
                :ecr (api/registries-ecr owner)
-               :acr (api/registries-acr owner))
+               :acr (api/registries-acr owner)
+               :gitlab (api/registries-gitlab owner))
              (resp-ok))
         (resp-error 400 (str "Unknown registry type [" registry "]"))))))
 
@@ -433,7 +434,8 @@
                :v2 (api/registry-v2 id)
                :dockerhub (api/dockerhub id)
                :ecr (api/registry-ecr id)
-               :acr (api/registry-acr id))
+               :acr (api/registry-acr id)
+               :gitlab (api/registry-gitlab id))
              (resp-ok))
         (resp-error 400 (str "Unknown registry type [" registry "]"))))))
 
@@ -446,7 +448,8 @@
               :v2 (api/delete-v2-registry id)
               :dockerhub (api/delete-dockerhub id)
               :ecr (api/delete-ecr-registry id)
-              :acr (api/delete-acr-registry id))
+              :acr (api/delete-acr-registry id)
+              :gitlab (api/delete-gitlab-registry id))
             (resp-ok))
         (resp-error 400 (str "Unknown registry type [" registry "]"))))))
 
@@ -459,7 +462,8 @@
                :v2 (api/registry-v2-repositories id)
                :dockerhub (api/dockerhub-repositories id)
                :ecr (api/registry-ecr-repositories id)
-               :acr (api/registry-acr-repositories id))
+               :acr (api/registry-acr-repositories id)
+               :gitlab (api/registry-gitlab-repositories id))
              (resp-ok))
         (resp-error 400 (str "Unknown registry type " registry))))))
 
@@ -512,6 +516,17 @@
     (catch Exception e
       (resp-error 400 (get-in (ex-data e) [:body :error])))))
 
+(defmethod registry-create :gitlab
+  [_ payload]
+  (try
+    (api/registry-gitlab-info payload)
+    (let [response (api/create-gitlab-registry payload)]
+      (if (some? response)
+        (resp-created (select-keys response [:id]))
+        (resp-error 400 "Gitlab registry account already linked")))
+    (catch Exception e
+      (resp-error 400 (get-in (ex-data e) [:body :error])))))
+
 (defmethod dispatch :registry-create [_]
   (fn [{:keys [params identity route-params]}]
     (let [owner (get-in identity [:usr :username])
@@ -557,6 +572,15 @@
   (try
     (api/registry-acr-info payload)
     (api/update-acr-registry id payload)
+    (resp-ok)
+    (catch Exception e
+      (resp-error 400 (get-in (ex-data e) [:body :error])))))
+
+(defmethod registry-update :gitlab
+  [_ payload id]
+  (try
+    (api/registry-gitlab-info payload)
+    (api/update-gitlab-registry id payload)
     (resp-ok)
     (catch Exception e
       (resp-error 400 (get-in (ex-data e) [:body :error])))))

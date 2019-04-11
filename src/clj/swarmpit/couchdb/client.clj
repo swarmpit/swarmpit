@@ -244,6 +244,36 @@
   [acr]
   (delete-doc acr))
 
+;; Registry Gitlab
+
+(defn registries-gitlab
+  [owner]
+  (if (nil? owner)
+    (find-docs "gitlab")
+    (find-docs {"$or" [{:owner {"$eq" owner}}
+                       {:public {"$eq" true}}]} "gitlab")))
+
+(defn registry-gitlab
+  ([id]
+   (get-doc id))
+  ([username owner]
+   (find-doc {:username username
+              :owner    owner} "gitlab")))
+
+(defn create-gitlab-registry
+  [registry]
+  (-> (assoc registry :type "gitlab")
+      (create-doc)))
+
+(defn update-gitlab-registry
+  [registry delta]
+  (let [allowed-delta (dissoc delta :_id :_rev :name)]
+    (update-doc registry allowed-delta)))
+
+(defn delete-gitlab-registry
+  [registry]
+  (delete-doc registry))
+
 ;; User
 
 (defn users

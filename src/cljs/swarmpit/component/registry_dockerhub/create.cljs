@@ -53,7 +53,8 @@
      :on-success (fn [{:keys [response origin?]}]
                    (when origin?
                      (dispatch!
-                       (routes/path-for-frontend :reg-dockerhub-info (select-keys response [:id]))))
+                       (routes/path-for-frontend :registry-info {:registryType :dockerhub
+                                                                 :id           (:id response)})))
                    (message/info
                      (str "Dockerhub user " (:id response) " has been added.")))
      :on-error   (fn [{:keys [response]}]

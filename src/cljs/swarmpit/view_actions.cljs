@@ -43,6 +43,14 @@
   [_]
   {:title "Registries"})
 
+(defmethod render :registry-info
+  [_]
+  {:title "Registries"})
+
+(defmethod render :registry-edit
+  [_]
+  {:title "Registries"})
+
 ;;; Stack view
 
 (defmethod render :stack-list
@@ -209,23 +217,3 @@
 (defmethod render :user-edit
   [_]
   {:title "Users"})
-
-;;; Registry v2 view
-
-(defmethod render :reg-v2-info
-  [_]
-  {:title "Registries"})
-
-(defmethod render :reg-v2-edit
-  [_]
-  {:title "Registries"})
-
-;;; Dockerhub view
-
-(defmethod render :reg-dockerhub-info
-  [_]
-  {:title "Registries"})
-
-(defmethod render :reg-dockerhub-edit
-  [_]
-  {:title "Registries"})
