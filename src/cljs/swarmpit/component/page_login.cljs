@@ -146,8 +146,7 @@
           {:className "Swarmpit-login-paper"}
           (html
             [:img {:src    "img/swarmpit.png"
-                   :width  "100%"
-                   :height "100%"}])
+                   :width  "100%"}])
           (html
             (progress/form (nil? initialized)
                            {:height "200px"}
