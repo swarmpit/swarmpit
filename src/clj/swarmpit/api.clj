@@ -25,6 +25,7 @@
             [swarmpit.couchdb.mapper.outbound :as cmo]
             [swarmpit.gitlab.client :as gc]
             [swarmpit.aws.client :as awsc]
+            [swarmpit.agent.client :as sac]
             [clojure.core.memoize :as memo]
             [clojure.tools.logging :as log]
             [clojure.string :as str]
@@ -812,15 +813,29 @@
   (->> (dc/service-tasks service-id)
        (map :ID)))
 
+(defn service-agent-logs
+  [service-id since]
+  (let [agent-tasks (dc/service-tasks-by-label :swarmpit.agent true)
+        agent-addresses (dmi/->agent-addresses-by-nodes agent-tasks)
+        service-tasks (dc/service-tasks service-id)
+        service-containers (dmi/->service-tasks-by-container service-tasks)]
+    (->> service-containers
+         (pmap (fn [[k v]]
+                 (let [task-log (-> (get agent-addresses (:node v))
+                                    (sac/logs k since))]
+                   (if (str/blank? task-log)
+                     []
+                     (map #(str (:task v) " " %) (str/split-lines task-log))))))
+         (flatten))))
+
 (defn service-logs
-  [service-id from-timestamp]
+  [service-id since]
   (letfn [(log-task [log tasks] (->> tasks
                                      (filter #(= (:task log) (:id %)))
                                      (first)))]
     (let [tasks (tasks)]
-      (->> (dc/service-logs service-id)
+      (->> (service-agent-logs service-id since)
            (dl/parse-log)
-           (filter #(= 1 (compare (:timestamp %) from-timestamp)))
            (map
              (fn [i]
                (let [task (log-task i tasks)]

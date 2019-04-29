@@ -1,5 +1,5 @@
 (ns swarmpit.docker.engine.log
-  (:require [clojure.string :refer [split-lines trim split join]]))
+  (:require [clojure.string :refer [trim split join]]))
 
 (defn- parse-log-line
   [line]
@@ -18,17 +18,16 @@
 
 (defn- parse-log-task
   [line]
-  (-> (str "com.docker.swarm.task.id=([a-z0-9]+)")
-      (re-pattern)
-      (re-find line)
-      (second)))
+  (-> (split line #" ")
+      (first)))
 
 (defn parse-log
   [service-log]
   (if (some? service-log)
-    (->> (split-lines service-log)
-         (map (fn [x] {:line      (parse-log-line x)
-                       :timestamp (parse-log-timestamp x)
-                       :task      (parse-log-task x)}))
+    (->> service-log
+         (map (fn [x]
+                {:line      (parse-log-line x)
+                 :timestamp (parse-log-timestamp x)
+                 :task      (parse-log-task x)}))
          (filter #(some? (:task %)))
          (sort-by :timestamp))))

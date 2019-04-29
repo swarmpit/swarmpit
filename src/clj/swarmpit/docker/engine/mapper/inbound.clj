@@ -425,3 +425,26 @@
   (->> configs
        (map ->config)
        (into [])))
+
+(defn ->agent-addresses-by-nodes
+  [agent-tasks]
+  (into {}
+        (map
+          #(hash-map (:NodeID %)
+                     (-> (:NetworksAttachments %)
+                         (first)
+                         :Addresses
+                         (first)
+                         (str/split #"/")
+                         (first)))
+          agent-tasks)))
+
+(defn ->service-tasks-by-container
+  [service-tasks]
+  (into {}
+        (map
+          #(hash-map
+             (get-in % [:Status :ContainerStatus :ContainerID])
+             {:node (:NodeID %)
+              :task (:ID %)})
+          service-tasks)))
