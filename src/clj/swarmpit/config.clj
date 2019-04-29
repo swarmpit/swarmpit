@@ -5,6 +5,7 @@
   (atom {:docker-sock      "/var/run/docker.sock"
          :docker-api       "1.30"
          :db-url           "http://localhost:5984"
+         :agent-url        nil
          :base-url         "/"
          :work-dir         "/tmp"
          :password-hashing {:alg        :pbkdf2+sha512
