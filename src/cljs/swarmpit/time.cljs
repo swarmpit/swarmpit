@@ -1,8 +1,9 @@
 (ns swarmpit.time
   (:require [clojure.contrib.humanize :as humanize]
-            [clojure.string :as str]
-            [cljs-time.core :refer [after? to-default-time-zone now]]
-            [cljs-time.format :as format]))
+            [cljs-time.coerce :refer [to-epoch]]
+            [cljs-time.core :refer [after? to-default-time-zone now minus minutes]]
+            [cljs-time.format :as format]
+            [clojure.string :as str]))
 
 (def docker-format
   (format/formatters :date-time-no-ms))
@@ -18,6 +19,18 @@
   [datetime]
   (->> (trim-ms datetime)
        (format/parse docker-format)))
+
+(defn to-unix
+  [datetime]
+  (let [dt (parse datetime)]
+    (and dt (quot dt 1000))))
+
+(defn to-unix-past
+  [minutes-to-history]
+  (let [dt (minus
+             (now)
+             (minutes minutes-to-history))]
+    (and dt (quot dt 1000))))
 
 (defn- shift-future-date
   [date]
