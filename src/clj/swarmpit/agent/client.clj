@@ -21,11 +21,20 @@
 
 (defn logs
   [agent-url container-id since]
-  (-> (execute {:method  :GET
-                :api     (str "/logs/" container-id)
-                :url     agent-url
-                :options {:query-params
-                          (merge {}
-                                 (when since
-                                   {:since since}))}})
-      :body))
+  (try
+    (let [result (-> (execute {:method  :GET
+                               :api     (str "/logs/" container-id)
+                               :url     agent-url
+                               :options {:query-params
+                                         (merge {}
+                                                (when since
+                                                  {:since since}))}})
+                     :body)]
+      (println result)
+      result)
+    (catch Exception ex
+      (let [e (ex-data ex)]
+        (print e)
+        (if (.contains [400 404] (:status e))
+          nil
+          (throw ex))))))
