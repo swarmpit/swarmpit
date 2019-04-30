@@ -145,6 +145,7 @@
       :state (get-in task [:Status :State])
       :status {:error (get-in task [:Status :Err])}
       :desiredState (:DesiredState task)
+      :logdriver (get-in task [:Spec :LogDriver :Name])
       :serviceName (or service-name service-id)
       :resources (->service-resources (get-in service [:Spec :TaskTemplate]))
       :nodeId node-id

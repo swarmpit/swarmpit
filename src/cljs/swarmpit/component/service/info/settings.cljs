@@ -91,6 +91,7 @@
 (rum/defc form < rum/reactive [service tasks actions]
   (let [image-digest (get-in service [:repository :imageDigest])
         image (get-in service [:repository :image])
+        logdriver (get-in service [:logdriver :name])
         desired-tasks (filter #(not= "shutdown" (:desiredState %)) tasks)
         registry (utils/linked-registry image)
         command (:command service)
@@ -135,9 +136,10 @@
              :href  (routes/path-for-frontend :stack-info {:name stack})}
             "See stack"))
         (comp/button
-          {:size  "small"
-           :color "primary"
-           :href  (routes/path-for-frontend :service-log {:id (:serviceName service)})}
+          {:size     "small"
+           :color    "primary"
+           :disabled (not (contains? #{"json-file" "journald"} logdriver))
+           :href     (routes/path-for-frontend :service-log {:id (:serviceName service)})}
           "View log"))
       (comp/divider
         {})
