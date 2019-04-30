@@ -133,6 +133,7 @@
       (service-networks-handler id)
       (mounts/volumes-handler)
       (networks/networks-handler)
+      (logdriver/drivers-handler)
       (secrets/secrets-handler)
       (when (<= 1.30 (state/get-value [:docker :api]))
         (configs/configs-handler))

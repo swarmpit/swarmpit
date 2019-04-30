@@ -4,6 +4,8 @@
             [material.component.form :as form]
             [material.component.list.edit :as list]
             [swarmpit.component.state :as state]
+            [swarmpit.ajax :as ajax]
+            [swarmpit.routes :as routes]
             [sablono.core :refer-macros [html]]
             [rum.core :as rum]))
 
@@ -11,9 +13,18 @@
 
 (def form-value-cursor (conj state/form-value-cursor :logdriver))
 
+(def form-state-cursor (conj state/form-state-cursor :logdriver))
+
 (def form-value-opts-cursor (conj form-value-cursor :opts))
 
-(defn- form-driver [value]
+(defn drivers-handler
+  []
+  (ajax/get
+    (routes/path-for-backend :plugin-log)
+    {:on-success (fn [{:keys [response]}]
+                   (state/update-value [:plugins] response form-state-cursor))}))
+
+(defn- form-driver [value plugins]
   (comp/text-field
     {:fullWidth       true
      :key             "form-log-driver"
@@ -27,14 +38,12 @@
      :InputProps      {:className "Swarmpit-form-input"}
      :onChange        #(state/update-value [:name] (-> % .-target .-value) form-value-cursor)}
     (comp/menu-item
-      {:key   "dr-none"
+      {:key   "none"
        :value "none"} "none")
-    (comp/menu-item
-      {:key   "dr-json-file"
-       :value "json-file"} "json-file")
-    (comp/menu-item
-      {:key   "dr-journald"
-       :value "journald"} "journald")))
+    (->> plugins
+         (map #(comp/menu-item
+                 {:key   %
+                  :value %} %)))))
 
 (defn- form-name [value index]
   (comp/text-field
@@ -82,13 +91,14 @@
                    :value ""} form-value-opts-cursor))
 
 (rum/defc form < rum/reactive []
-  (let [{:keys [name opts]} (state/react form-value-cursor)]
+  (let [{:keys [name opts]} (state/react form-value-cursor)
+        {:keys [plugins]} (state/react form-state-cursor)]
     (comp/grid
       {:container true}
       (comp/grid
         {:item true
          :xs   12
-         :sm   6} (form-driver name))
+         :sm   6} (form-driver name plugins))
       (comp/grid
         {:item true
          :xs   12}
