@@ -813,7 +813,7 @@
   (->> (dc/service-tasks service-id)
        (map :ID)))
 
-(defn service-agent-logs
+(defn service-logs
   [service-id since]
   (let [agent-tasks (dc/service-tasks-by-label :swarmpit.agent true)
         agent-addresses (dmi/->agent-addresses-by-nodes agent-tasks)
@@ -821,27 +821,11 @@
         service-containers (dmi/->service-tasks-by-container service-tasks)]
     (->> service-containers
          (pmap (fn [[k v]]
-                 (let [task-log (-> (get agent-addresses (:node v))
-                                    (sac/logs k since))]
-                   (if (str/blank? task-log)
-                     []
-                     (map #(str (:task v) " " %) (str/split-lines task-log))))))
-         (flatten))))
-
-(defn service-logs
-  [service-id since]
-  (letfn [(log-task [log tasks] (->> tasks
-                                     (filter #(= (:task log) (:id %)))
-                                     (first)))]
-    (let [tasks (tasks)]
-      (->> (service-agent-logs service-id since)
-           (dl/parse-log)
-           (map
-             (fn [i]
-               (let [task (log-task i tasks)]
-                 (-> i
-                     (assoc :taskName (:taskName task))
-                     (assoc :taskNode (:nodeName task))))))))))
+                 (-> (get agent-addresses (:node v))
+                     (sac/logs k since)
+                     (dl/format-log (:task v)))))
+         (flatten)
+         (dl/parse-log))))
 
 (defn delete-service
   [service-id]

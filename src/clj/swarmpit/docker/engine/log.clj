@@ -1,5 +1,5 @@
 (ns swarmpit.docker.engine.log
-  (:require [clojure.string :refer [trim split join]]))
+  (:require [clojure.string :refer [blank? trim split split-lines join]]))
 
 (defn- parse-log-line
   [line]
@@ -31,3 +31,9 @@
                  :task      (parse-log-task x)}))
          (filter #(some? (:task %)))
          (sort-by :timestamp))))
+
+(defn format-log
+  [task-log task-id]
+  (if (blank? task-log)
+    []
+    (map #(str task-id " " %) (split-lines task-log))))
