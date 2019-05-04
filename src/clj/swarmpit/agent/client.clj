@@ -4,27 +4,28 @@
             [cheshire.core :refer [generate-string]]))
 
 (defn- execute
-  [{:keys [method url api options]}]
-  (let [agent-url (config :agent-url)]
+  [{:keys [method ip api options]}]
+  (let [agent-url (config :agent-url)
+        agent-dynamic-url (str "http://" ip ":8080")]
     (execute-in-scope {:method        method
-                       :url           (str (if agent-url agent-url url) api)
+                       :url           (str (if agent-url agent-url agent-dynamic-url) api)
                        :options       options
                        :scope         "Agent"
                        :error-handler #(or (:detail %) %)})))
 
 (defn info
-  [agent-url]
+  [agent-ip]
   (-> (execute {:method :GET
                 :api    "/"
-                :url    (str "http://" agent-url)})
+                :ip     agent-ip})
       :body))
 
 (defn logs
-  [agent-url container-id since]
+  [agent-ip container-id since]
   (try
     (let [result (-> (execute {:method  :GET
                                :api     (str "/logs/" container-id)
-                               :url     (str "http://" agent-url)
+                               :ip      agent-ip
                                :options {:query-params
                                          (merge {}
                                                 (when since
