@@ -16,7 +16,7 @@
   [agent-url]
   (-> (execute {:method :GET
                 :api    "/"
-                :url    agent-url})
+                :url    (str "http://" agent-url)})
       :body))
 
 (defn logs
@@ -24,7 +24,7 @@
   (try
     (let [result (-> (execute {:method  :GET
                                :api     (str "/logs/" container-id)
-                               :url     agent-url
+                               :url     (str "http://" agent-url)
                                :options {:query-params
                                          (merge {}
                                                 (when since

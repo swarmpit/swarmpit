@@ -44,7 +44,7 @@
      :on-success
             (fn [{:keys [response]}]
               (settings/tags-handler (-> response :repository :name))
-              (state/set-value (select-keys response [:repository :version :serviceName :mode :replicas :stack :command :tty]) settings/form-value-cursor)
+              (state/set-value (select-keys response [:repository :version :serviceName :mode :replicas :stack :agent :command :tty]) settings/form-value-cursor)
               (state/set-value (-> (:ports response)
                                    (state/assoc-keys)) ports/form-value-cursor)
               (state/set-value (-> (:mounts response)
