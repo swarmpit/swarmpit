@@ -33,7 +33,6 @@
         :body)
     (catch Exception ex
       (let [e (ex-data ex)]
-        (print e)
         (if (.contains [400 404] (:status e))
           nil
           (throw ex))))))

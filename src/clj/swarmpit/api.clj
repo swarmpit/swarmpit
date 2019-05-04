@@ -821,9 +821,10 @@
         service-containers (dmi/->service-tasks-by-container service-tasks)]
     (->> service-containers
          (pmap (fn [[k v]]
-                 (-> (get agent-addresses (:node v))
-                     (sac/logs k since)
-                     (dl/format-log (:task v)))))
+                 (let [agent-ip (get agent-addresses (:node v))]
+                   (when agent-ip
+                     (-> (sac/logs agent-ip k since)
+                         (dl/format-log (:task v)))))))
          (flatten)
          (dl/parse-log))))
 
