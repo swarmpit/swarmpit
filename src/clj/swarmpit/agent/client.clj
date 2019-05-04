@@ -23,16 +23,14 @@
 (defn logs
   [agent-ip container-id since]
   (try
-    (let [result (-> (execute {:method  :GET
-                               :api     (str "/logs/" container-id)
-                               :ip      agent-ip
-                               :options {:query-params
-                                         (merge {}
-                                                (when since
-                                                  {:since since}))}})
-                     :body)]
-      (println result)
-      result)
+    (-> (execute {:method  :GET
+                  :api     (str "/logs/" container-id)
+                  :ip      agent-ip
+                  :options {:query-params
+                            (merge {}
+                                   (when since
+                                     {:since since}))}})
+        :body)
     (catch Exception ex
       (let [e (ex-data ex)]
         (print e)
