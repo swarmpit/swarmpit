@@ -88,6 +88,10 @@
   [autoredeploy]
   (when autoredeploy (label/primary "autoredeploy")))
 
+(defn- agent-label
+  [agent]
+  (when agent (label/primary "agent")))
+
 (rum/defc form < rum/reactive [service tasks actions]
   (let [image-digest (get-in service [:repository :imageDigest])
         image (get-in service [:repository :image])
@@ -125,6 +129,7 @@
         {}
         (form/item-labels
           [(form-state (:state service))
+           (agent-label (:agent service))
            (autoredeploy-label (-> service :deployment :autoredeploy))
            (label/grey mode)]))
       (comp/card-actions
