@@ -433,6 +433,10 @@
        (map ->config)
        (into [])))
 
+(defn ->agent-address
+  [agent-ip]
+  (str "http://" agent-ip ":8080"))
+
 (defn ->agent-addresses-by-nodes
   [agent-tasks]
   (into {}
@@ -443,7 +447,8 @@
                          :Addresses
                          (first)
                          (str/split #"/")
-                         (first)))
+                         (first)
+                         (->agent-address)))
           agent-tasks)))
 
 (defn ->service-tasks-by-container

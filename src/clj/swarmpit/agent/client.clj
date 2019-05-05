@@ -1,31 +1,30 @@
 (ns swarmpit.agent.client
   (:require [swarmpit.http :refer :all]
+            [swarmpit.ip :refer [is-valid-url]]
             [swarmpit.config :refer [config]]
             [cheshire.core :refer [generate-string]]))
 
 (defn- execute
-  [{:keys [method ip api options]}]
-  (let [agent-url (config :agent-url)
-        agent-dynamic-url (str "http://" ip ":8080")]
-    (execute-in-scope {:method        method
-                       :url           (str (if agent-url agent-url agent-dynamic-url) api)
-                       :options       options
-                       :scope         "Agent"
-                       :error-handler #(or (:detail %) %)})))
+  [{:keys [method url api options]}]
+  (execute-in-scope {:method        method
+                     :url           (str url api)
+                     :options       options
+                     :scope         "Agent"
+                     :error-handler #(or (:detail %) %)}))
 
 (defn info
-  [agent-ip]
+  [agent-url]
   (-> (execute {:method :GET
                 :api    "/"
-                :ip     agent-ip})
+                :url    agent-url})
       :body))
 
 (defn logs
-  [agent-ip container-id since]
+  [agent-url container-id since]
   (try
     (-> (execute {:method  :GET
                   :api     (str "/logs/" container-id)
-                  :ip      agent-ip
+                  :url     agent-url
                   :options {:query-params
                             (merge {}
                                    (when since

@@ -815,15 +815,17 @@
 
 (defn service-logs
   [service-id since]
-  (let [agent-tasks (dc/service-tasks-by-label :swarmpit.agent true)
+  (let [config-agent-url (cfg/config :agent-url)
+        agent-tasks (dc/service-tasks-by-label :swarmpit.agent true)
         agent-addresses (dmi/->agent-addresses-by-nodes agent-tasks)
         service-tasks (dc/service-tasks service-id)
         service-containers (dmi/->service-tasks-by-container service-tasks)]
     (->> service-containers
          (pmap (fn [[k v]]
-                 (let [agent-ip (get agent-addresses (:node v))]
-                   (when agent-ip
-                     (-> (sac/logs agent-ip k since)
+                 (let [dynamic-agent-url (get agent-addresses (:node v))
+                       agent-url (or config-agent-url dynamic-agent-url)]
+                   (when agent-url
+                     (-> (sac/logs agent-url k since)
                          (dl/format-log (:task v)))))))
          (flatten)
          (dl/parse-log))))
