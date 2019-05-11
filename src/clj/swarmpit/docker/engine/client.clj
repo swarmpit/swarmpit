@@ -68,7 +68,6 @@
                                          :stdout     true
                                          :stderr     true
                                          :timestamps true
-                                         :tail       2000
                                          :since      since}}})
       :body))
 

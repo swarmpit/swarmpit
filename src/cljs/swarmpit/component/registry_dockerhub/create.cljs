@@ -56,10 +56,10 @@
                        (routes/path-for-frontend :registry-info {:registryType :dockerhub
                                                                  :id           (:id response)})))
                    (message/info
-                     (str "Dockerhub user " (:id response) " has been added.")))
+                     (str "Docker hub account " (:id response) " has been added.")))
      :on-error   (fn [{:keys [response]}]
                    (message/error
-                     (str "Dockerhub user cannot be added. " (:error response))))}))
+                     (str "Docker hub account creation failed. " (:error response))))}))
 
 (defn- init-form-state
   []

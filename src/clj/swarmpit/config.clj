@@ -15,6 +15,7 @@
   (->> {:docker-sock (env :swarmpit-docker-sock)
         :docker-api  (env :swarmpit-docker-api)
         :db-url      (env :swarmpit-db)
+        :agent-url   (env :swarmpit-agent-url)
         :base-url    (env :swarmpit-base-url)
         :work-dir    (env :swarmpit-workdir)}
        (into {} (remove #(nil? (val %))))))

@@ -813,7 +813,7 @@
   (->> (dc/service-tasks service-id)
        (map :ID)))
 
-(defn service-logs
+(defn service-agent-logs
   [service-id since]
   (let [config-agent-url (cfg/config :agent-url)
         agent-tasks (dc/service-tasks-by-label :swarmpit.agent true)
@@ -828,7 +828,17 @@
                      (-> (sac/logs agent-url k since)
                          (dl/format-log (:task v)))))))
          (flatten)
-         (dl/parse-log))))
+         (dl/parse-agent-log))))
+
+(defn service-native-logs
+  [service-id since]
+  "TODO: Format since"
+  (->> (dc/service-logs service-id since)
+       (dl/parse-service-log)))
+
+(defn service-logs
+  [service-id since]
+  (service-agent-logs service-id since))
 
 (defn delete-service
   [service-id]
