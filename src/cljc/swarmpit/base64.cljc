@@ -26,6 +26,7 @@
   (and (= 0 (mod (count data) 4))
        (some? (re-matches base64-regex data))
        (let [str (decode data)]
-         (->> (map #?(:clj int :cljs #(.charCodeAt % 0)) str)
+         (->> (map #?(:clj int
+                      :cljs #(.charCodeAt % 0)) str)
               (reduce +)
               (> (* 128 (count str)))))))

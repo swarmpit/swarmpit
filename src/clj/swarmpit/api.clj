@@ -4,6 +4,7 @@
             [digest :refer [digest]]
             [swarmpit.utils :refer [merge-data]]
             [swarmpit.config :as cfg]
+            [swarmpit.time :as time]
             [swarmpit.stats :as stats]
             [swarmpit.base64 :as base64]
             [swarmpit.yaml :as yaml :refer [->yaml]]
@@ -814,6 +815,9 @@
        (map :ID)))
 
 (defn service-agent-logs
+  "Fetch service log via swarmpit agent.
+   Check whether there is agent associated with service task (unless static configuration)
+   and fetch logs accordingly. Finally format & aggregate log elements."
   [service-id since]
   (let [config-agent-url (cfg/config :agent-url)
         agent-tasks (dc/service-tasks-by-label :swarmpit.agent true)
@@ -831,14 +835,24 @@
          (dl/parse-agent-log))))
 
 (defn service-native-logs
+  "Fetch service log via native service api."
   [service-id since]
-  "TODO: Format since"
-  (->> (dc/service-logs service-id since)
-       (dl/parse-service-log)))
+  (let [valid-since (if (or (time/valid? since)
+                            (nil? since))
+                      since
+                      (time/to-unix-past
+                        (time/since-to-minutes since)))]
+    (-> (dc/service-logs service-id valid-since)
+        (dl/parse-service-log)
+        (or '()))))
 
 (defn service-logs
+  "Fetch logs via agent by default, fallback to native service api"
   [service-id since]
-  (service-agent-logs service-id since))
+  (try
+    (service-agent-logs service-id since)
+    (catch Exception _
+      (service-native-logs service-id since))))
 
 (defn delete-service
   [service-id]
