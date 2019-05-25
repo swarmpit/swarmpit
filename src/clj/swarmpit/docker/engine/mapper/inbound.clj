@@ -309,8 +309,8 @@
 (defn ->service-healthcheck
   [service-healthcheck]
   {:test     (:Test service-healthcheck)
-   :interval (:Interval service-healthcheck)
-   :timeout  (:Timeout service-healthcheck)
+   :interval (nano-> (:Interval service-healthcheck))
+   :timeout  (nano-> (:Timeout service-healthcheck))
    :retries  (:Retries service-healthcheck)})
 
 (defn ->service-image-details
@@ -376,6 +376,7 @@
        :user (get-in service-task-template [:ContainerSpec :User])
        :dir (get-in service-task-template [:ContainerSpec :Dir])
        :tty (get-in service-task-template [:ContainerSpec :TTY])
+       :hosts (get-in service-task-template [:ContainerSpec :Hosts])
        :healthcheck (->service-healthcheck healthcheck)
        :logdriver {:name (or (get-in service-task-template [:LogDriver :Name]) "json-file")
                    :opts (->service-log-options service-task-template)}

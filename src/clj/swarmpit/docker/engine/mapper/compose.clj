@@ -54,7 +54,12 @@
      :command (some->> service :command (str/join " "))
      :user (-> service :user)
      :working_dir (-> service :dir)
-     :healthcheck (-> service :healthcheck)
+     :extra_hosts (->> service :hosts
+                       (map #(let [parts (str/split % #" ")]
+                               (str (second parts) ":" (first parts)))))
+     :healthcheck (merge (-> service :healthcheck)
+                         {:interval (str (get-in service [:healthcheck :interval]) "s")}
+                         {:timeout (str (get-in service [:healthcheck :timeout]) "s")})
      :tty (-> service :tty)
      :environment (-> service :variables (name-value->map))
      :ports (->> service :ports

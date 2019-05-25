@@ -173,6 +173,13 @@
      :Window      (->nano (:window policy))
      :MaxAttempts (:attempts policy)}))
 
+(defn ->service-healthcheck
+  [service-healthcheck]
+  {:Test     (:test service-healthcheck)
+   :Interval (->nano (:interval service-healthcheck))
+   :Timeout  (->nano (:timeout service-healthcheck))
+   :Retries  (:retries service-healthcheck)})
+
 (defn ->service-image
   [service digest?]
   (let [repository (get-in service [:repository :name])
@@ -209,14 +216,15 @@
    :Labels         (merge
                      (->service-labels service)
                      (->service-metadata service (->service-image service false)))
-   :TaskTemplate   {:ContainerSpec {:Image   (->service-image service true)
-                                    :Labels  (->service-container-metadata service)
-                                    :Mounts  (->service-mounts service)
-                                    :Secrets (:secrets service)
-                                    :Configs (:configs service)
-                                    :Args    (:command service)
-                                    :TTY     (:tty service)
-                                    :Env     (->service-variables service)}
+   :TaskTemplate   {:ContainerSpec {:Image       (->service-image service true)
+                                    :Labels      (->service-container-metadata service)
+                                    :Mounts      (->service-mounts service)
+                                    :Secrets     (:secrets service)
+                                    :Configs     (:configs service)
+                                    :Args        (:command service)
+                                    :TTY         (:tty service)
+                                    :Healthcheck (->service-healthcheck (:healthcheck service))
+                                    :Env         (->service-variables service)}
                     :LogDriver     {:Name    (get-in service [:logdriver :name])
                                     :Options (->service-log-options service)}
                     :Resources     {:Limits       (->service-resource (get-in service [:resources :limit]))
