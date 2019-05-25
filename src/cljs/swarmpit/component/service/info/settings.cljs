@@ -88,9 +88,14 @@
   [autoredeploy]
   (when autoredeploy (label/primary "autoredeploy")))
 
+(defn- agent-label
+  [agent]
+  (when agent (label/primary "agent")))
+
 (rum/defc form < rum/reactive [service tasks actions]
   (let [image-digest (get-in service [:repository :imageDigest])
         image (get-in service [:repository :image])
+        logdriver (get-in service [:logdriver :name])
         desired-tasks (filter #(not= "shutdown" (:desiredState %)) tasks)
         registry (utils/linked-registry image)
         command (:command service)
@@ -124,6 +129,7 @@
         {}
         (form/item-labels
           [(form-state (:state service))
+           (agent-label (:agent service))
            (autoredeploy-label (-> service :deployment :autoredeploy))
            (label/grey mode)]))
       (comp/card-actions
@@ -135,9 +141,10 @@
              :href  (routes/path-for-frontend :stack-info {:name stack})}
             "See stack"))
         (comp/button
-          {:size  "small"
-           :color "primary"
-           :href  (routes/path-for-frontend :service-log {:id (:serviceName service)})}
+          {:size     "small"
+           :color    "primary"
+           :disabled (not (contains? #{"json-file" "journald"} logdriver))
+           :href     (routes/path-for-frontend :service-log {:id (:serviceName service)})}
           "View log"))
       (comp/divider
         {})

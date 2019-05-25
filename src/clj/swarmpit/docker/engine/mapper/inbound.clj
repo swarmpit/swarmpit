@@ -24,6 +24,7 @@
 
 (def stack-label :com.docker.stack.namespace)
 (def autoredeploy-label :swarmpit.service.deployment.autoredeploy)
+(def agent-label :swarmpit.agent)
 
 (defn ->image-ports
   [image-config]
@@ -145,6 +146,7 @@
       :state (get-in task [:Status :State])
       :status {:error (get-in task [:Status :Err])}
       :desiredState (:DesiredState task)
+      :logdriver (get-in task [:Spec :LogDriver :Name])
       :serviceName (or service-name service-id)
       :resources (->service-resources (get-in service [:Spec :TaskTemplate]))
       :nodeId node-id
@@ -300,6 +302,10 @@
   (let [value (autoredeploy-label service-labels)]
     (= "true" value)))
 
+(defn ->service-agent
+  [service-labels]
+  (some? (agent-label service-labels)))
+
 (defn ->service-image-details
   [image-name]
   (when (some? image-name)
@@ -340,6 +346,7 @@
        :serviceName service-name
        :mode service-mode
        :stack (-> service-labels stack-label)
+       :agent (->service-agent service-labels)
        :replicas replicas
        :state (if (= service-mode "replicated")
                 (->service-state replicas-running replicas)
@@ -425,3 +432,31 @@
   (->> configs
        (map ->config)
        (into [])))
+
+(defn ->agent-address
+  [agent-ip]
+  (str "http://" agent-ip ":8080"))
+
+(defn ->agent-addresses-by-nodes
+  [agent-tasks]
+  (into {}
+        (map
+          #(hash-map (:NodeID %)
+                     (-> (:NetworksAttachments %)
+                         (first)
+                         :Addresses
+                         (first)
+                         (str/split #"/")
+                         (first)
+                         (->agent-address)))
+          agent-tasks)))
+
+(defn ->service-tasks-by-container
+  [service-tasks]
+  (into {}
+        (map
+          #(hash-map
+             (get-in % [:Status :ContainerStatus :ContainerID])
+             {:node (:NodeID %)
+              :task (:ID %)})
+          service-tasks)))

@@ -66,7 +66,7 @@
     "failed" (label/red value)))
 
 (defn- section-general
-  [{:keys [id taskName nodeName state status createdAt updatedAt repository serviceName resources stats]}]
+  [{:keys [id taskName nodeName state status createdAt updatedAt repository serviceName logdriver stats]}]
   (comp/card
     {:className "Swarmpit-form-card Swarmpit-form-card-single"}
     (comp/card-header
@@ -115,9 +115,10 @@
            :href  (routes/path-for-frontend :node-info {:id nodeName})}
           "See node"))
       (comp/button
-        {:size  "small"
-         :color "primary"
-         :href  (routes/path-for-frontend :service-task-log {:id serviceName :taskId id})}
+        {:size     "small"
+         :color    "primary"
+         :disabled (not (contains? #{"json-file" "journald"} logdriver))
+         :href     (routes/path-for-frontend :service-task-log {:id serviceName :taskId id})}
         "View log"))
     (comp/divider
       {})

@@ -184,7 +184,7 @@
 (defmethod dispatch :service-logs [_]
   (fn [{:keys [route-params query-params]}]
     (->> (keywordize-keys query-params)
-         :from
+         :since
          (api/service-logs (:id route-params))
          (resp-ok))))
 

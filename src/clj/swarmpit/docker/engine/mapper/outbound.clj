@@ -1,7 +1,7 @@
 (ns swarmpit.docker.engine.mapper.outbound
   "Map swarmpit domain to docker domain"
   (:require [clojure.string :as str]
-            [swarmpit.docker.engine.mapper.inbound :refer [autoredeploy-label]]
+            [swarmpit.docker.engine.mapper.inbound :refer [autoredeploy-label agent-label]]
             [swarmpit.utils :refer [name-value->map ->nano]]))
 
 (defn- as-bytes
@@ -185,13 +185,16 @@
 (defn ->service-metadata
   [service image]
   (let [autoredeploy (get-in service [:deployment :autoredeploy])
+        agent (:agent service)
         stack (:stack service)]
     (merge {}
            (when (some? stack)
              {:com.docker.stack.namespace stack
               :com.docker.stack.image     image})
            (when (some? autoredeploy)
-             {autoredeploy-label (str autoredeploy)}))))
+             {autoredeploy-label (str autoredeploy)})
+           (when (some? agent)
+             {agent-label (str agent)}))))
 
 (defn ->service-container-metadata
   [service]

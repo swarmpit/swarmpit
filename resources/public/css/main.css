@@ -679,6 +679,20 @@ a {
     right: 20px;
 }
 
+.Swarmpit-log-history-fab {
+    position: fixed;
+    top: 84px;
+    right: 20px;
+}
+
+.Swarmpit-log-history-fab > button {
+    height: 38px;
+}
+
+.Swarmpit-log-history-fab-ico {
+    margin-right: 5px;
+}
+
 .log-info {
     color: #FFF;
     text-decoration: none;

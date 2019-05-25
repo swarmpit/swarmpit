@@ -4,6 +4,7 @@
             [digest :refer [digest]]
             [swarmpit.utils :refer [merge-data]]
             [swarmpit.config :as cfg]
+            [swarmpit.time :as time]
             [swarmpit.stats :as stats]
             [swarmpit.base64 :as base64]
             [swarmpit.yaml :as yaml :refer [->yaml]]
@@ -25,6 +26,7 @@
             [swarmpit.couchdb.mapper.outbound :as cmo]
             [swarmpit.gitlab.client :as gc]
             [swarmpit.aws.client :as awsc]
+            [swarmpit.agent.client :as sac]
             [clojure.core.memoize :as memo]
             [clojure.tools.logging :as log]
             [clojure.string :as str]
@@ -812,21 +814,45 @@
   (->> (dc/service-tasks service-id)
        (map :ID)))
 
+(defn service-agent-logs
+  "Fetch service log via swarmpit agent.
+   Check whether there is agent associated with service task (unless static configuration)
+   and fetch logs accordingly. Finally format & aggregate log elements."
+  [service-id since]
+  (let [config-agent-url (cfg/config :agent-url)
+        agent-tasks (dc/service-tasks-by-label :swarmpit.agent true)
+        agent-addresses (dmi/->agent-addresses-by-nodes agent-tasks)
+        service-tasks (dc/service-tasks service-id)
+        service-containers (dmi/->service-tasks-by-container service-tasks)]
+    (->> service-containers
+         (pmap (fn [[k v]]
+                 (let [dynamic-agent-url (get agent-addresses (:node v))
+                       agent-url (or config-agent-url dynamic-agent-url)]
+                   (when agent-url
+                     (-> (sac/logs agent-url k since)
+                         (dl/format-log (:task v)))))))
+         (flatten)
+         (dl/parse-agent-log))))
+
+(defn service-native-logs
+  "Fetch service log via native service api."
+  [service-id since]
+  (let [valid-since (if (or (time/valid? since)
+                            (nil? since))
+                      since
+                      (time/to-unix-past
+                        (time/since-to-minutes since)))]
+    (-> (dc/service-logs service-id valid-since)
+        (dl/parse-service-log)
+        (or '()))))
+
 (defn service-logs
-  [service-id from-timestamp]
-  (letfn [(log-task [log tasks] (->> tasks
-                                     (filter #(= (:task log) (:id %)))
-                                     (first)))]
-    (let [tasks (tasks)]
-      (->> (dc/service-logs service-id)
-           (dl/parse-log)
-           (filter #(= 1 (compare (:timestamp %) from-timestamp)))
-           (map
-             (fn [i]
-               (let [task (log-task i tasks)]
-                 (-> i
-                     (assoc :taskName (:taskName task))
-                     (assoc :taskNode (:nodeName task))))))))))
+  "Fetch logs via agent by default, fallback to native service api"
+  [service-id since]
+  (try
+    (service-agent-logs service-id since)
+    (catch Exception _
+      (service-native-logs service-id since))))
 
 (defn delete-service
   [service-id]
