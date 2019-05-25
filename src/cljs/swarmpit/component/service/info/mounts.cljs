@@ -43,16 +43,24 @@
       bind
       nil)))
 
-(rum/defc form-volume < rum/static [volume]
+(rum/defc form-named-volume < rum/static [volume]
   (when (not-empty volume)
     (list/responsive
       render-volume-metadata
       volume
       onclick-volume-handler)))
 
+(rum/defc form-anonymous-volume < rum/static [volume]
+  (when (not-empty volume)
+    (list/responsive
+      render-volume-metadata
+      volume
+      nil)))
+
 (rum/defc form < rum/static [mounts service-id]
   (let [bind (filter #(= "bind" (:type %)) mounts)
-        volume (filter #(= "volume" (:type %)) mounts)]
+        named-volume (filter #(and (= "volume" (:type %)) (some? (:host %))) mounts)
+        anonymous-volume (filter #(and (= "volume" (:type %)) (nil? (:host %))) mounts)]
     (comp/card
       {:className "Swarmpit-card"}
       (comp/card-header
@@ -73,4 +81,5 @@
         (comp/card-content
           {:className "Swarmpit-table-card-content"}
           (form-bind bind)
-          (form-volume volume))))))
+          (form-named-volume named-volume)
+          (form-anonymous-volume anonymous-volume))))))
