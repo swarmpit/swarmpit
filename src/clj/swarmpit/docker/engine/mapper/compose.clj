@@ -54,6 +54,7 @@
      :command (some->> service :command (str/join " "))
      :user (-> service :user)
      :working_dir (-> service :dir)
+     :healthcheck (-> service :healthcheck)
      :tty (-> service :tty)
      :environment (-> service :variables (name-value->map))
      :ports (->> service :ports

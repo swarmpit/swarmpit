@@ -306,6 +306,13 @@
   [service-labels]
   (some? (agent-label service-labels)))
 
+(defn ->service-healthcheck
+  [service-healthcheck]
+  {:test     (:Test service-healthcheck)
+   :interval (:Interval service-healthcheck)
+   :timeout  (:Timeout service-healthcheck)
+   :retries  (:Retries service-healthcheck)})
+
 (defn ->service-image-details
   [image-name]
   (when (some? image-name)
@@ -334,7 +341,8 @@
          image (get-in service-task-template [:ContainerSpec :Image])
          image-info (str/split image #"@")
          image-name (first image-info)
-         image-digest (second image-info)]
+         image-digest (second image-info)
+         healthcheck (get-in service-task-template [:ContainerSpec :Healthcheck])]
      (array-map
        :id service-id
        :version (get-in service [:Version :Index])
@@ -368,6 +376,7 @@
        :user (get-in service-task-template [:ContainerSpec :User])
        :dir (get-in service-task-template [:ContainerSpec :Dir])
        :tty (get-in service-task-template [:ContainerSpec :TTY])
+       :healthcheck (->service-healthcheck healthcheck)
        :logdriver {:name (or (get-in service-task-template [:LogDriver :Name]) "json-file")
                    :opts (->service-log-options service-task-template)}
        :resources (->service-resources service-task-template)
