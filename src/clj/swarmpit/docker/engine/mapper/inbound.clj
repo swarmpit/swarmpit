@@ -365,6 +365,8 @@
        :variables (->service-variables service-spec)
        :labels (->service-labels service-labels)
        :command (get-in service-task-template [:ContainerSpec :Args])
+       :user (get-in service-task-template [:ContainerSpec :User])
+       :dir (get-in service-task-template [:ContainerSpec :Dir])
        :tty (get-in service-task-template [:ContainerSpec :TTY])
        :logdriver {:name (or (get-in service-task-template [:LogDriver :Name]) "json-file")
                    :opts (->service-log-options service-task-template)}
