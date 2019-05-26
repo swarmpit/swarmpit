@@ -733,7 +733,8 @@
   ([label networks]
    (dmi/->services (dc/services label)
                    (dc/tasks)
-                   networks)))
+                   networks
+                   (dc/info))))
 
 (defn resources-by-services
   [services resource source]
@@ -765,7 +766,8 @@
   [service-filter]
   (dmi/->services (filter #(service-filter %) (dc/services))
                   (dc/tasks)
-                  (dc/networks)))
+                  (dc/networks)
+                  (dc/info)))
 
 (defn services-by-network
   [network-name]
@@ -795,7 +797,8 @@
   [service-id]
   (dmi/->service (dc/service service-id)
                  (dc/service-tasks service-id)
-                 (dc/networks)))
+                 (dc/networks)
+                 (dc/info)))
 
 (defn service-networks
   [service-id]

@@ -216,6 +216,10 @@
                          (str/starts-with? (name (key %)) "com.docker"))))
        (map->name-value)))
 
+(defn ->service-log-driver
+  [service-task-template info]
+  (or (get-in service-task-template [:LogDriver :Name]) (:LoggingDriver info)))
+
 (defn ->service-log-options
   [service-task-template]
   (let [log-driver (get-in service-task-template [:LogDriver :Options])]
@@ -285,10 +289,6 @@
   (-> (filter #(not (= (:DesiredState %) "shutdown")) service-tasks)
       (count)))
 
-(defn ->service-info-status
-  [service-replicas-running service-replicas]
-  (str service-replicas-running " / " service-replicas))
-
 (defn ->service-state
   [service-replicas-running service-replicas]
   (if (zero? service-replicas-running)
@@ -326,8 +326,8 @@
 
 (defn ->service
   ([service]
-   (->service service nil nil))
-  ([service tasks networks]
+   (->service service nil nil nil))
+  ([service tasks networks info]
    (let [service-spec (:Spec service)
          service-labels (:Labels service-spec)
          service-task-template (:TaskTemplate service-spec)
@@ -378,7 +378,7 @@
        :tty (get-in service-task-template [:ContainerSpec :TTY])
        :hosts (get-in service-task-template [:ContainerSpec :Hosts])
        :healthcheck (->service-healthcheck healthcheck)
-       :logdriver {:name (or (get-in service-task-template [:LogDriver :Name]) "json-file")
+       :logdriver {:name (->service-log-driver service-task-template info)
                    :opts (->service-log-options service-task-template)}
        :resources (->service-resources service-task-template)
        :deployment {:update          (->service-deployment-update service-spec)
@@ -390,9 +390,9 @@
                     :placement       (->service-placement-constraints service-spec)}))))
 
 (defn ->services
-  [services tasks networks]
+  [services tasks networks info]
   (->> services
-       (map #(->service % tasks networks))
+       (map #(->service % tasks networks info))
        (into [])))
 
 (defn ->volume

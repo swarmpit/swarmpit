@@ -303,6 +303,14 @@
                   :options {:query-params query-params}})
         :body)))
 
+;; System
+
+(defn info
+  []
+  (-> (execute {:method :GET
+                :api    "/info"})
+      :body))
+
 (defn version
   []
   (-> (execute {:method :GET
