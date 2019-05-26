@@ -12,6 +12,7 @@
             [swarmpit.component.service.info.mounts :as mounts]
             [swarmpit.component.service.info.secrets :as secrets]
             [swarmpit.component.service.info.configs :as configs]
+            [swarmpit.component.service.info.hosts :as hosts]
             [swarmpit.component.service.info.variables :as variables]
             [swarmpit.component.service.info.labels :as labels]
             [swarmpit.component.service.info.logdriver :as logdriver]
@@ -193,6 +194,12 @@
      :xs   12}
     (configs/form configs service-id)))
 
+(defn form-hosts-grid [hosts service-id]
+  (comp/grid
+    {:item true
+     :xs   12}
+    (hosts/form hosts service-id)))
+
 (defn form-variables-grid [variables service-id]
   (comp/grid
     {:item true
@@ -228,6 +235,7 @@
         mounts (:mounts service)
         secrets (:secrets service)
         configs (:configs service)
+        hosts (:hosts service)
         variables (:variables service)
         labels (:labels service)
         logdriver (:logdriver service)
@@ -258,6 +266,7 @@
                   (form-settings-grid service id tasks)
                   (form-secrets-grid secrets id)
                   (form-configs-grid configs id)
+                  (form-hosts-grid hosts id)
                   (form-variables-grid variables id)
                   (form-labels-grid labels id)
                   (form-logdriver-grid logdriver id)
@@ -287,6 +296,7 @@
               (form-mounts-grid mounts id)
               (form-secrets-grid secrets id)
               (form-configs-grid configs id)
+              (form-hosts-grid hosts id)
               (form-variables-grid variables id)
               (form-labels-grid labels id)
               (form-logdriver-grid logdriver id)
