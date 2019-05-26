@@ -313,7 +313,8 @@
 
 (defn ->service-agent
   [service-labels]
-  (some? (agent-label service-labels)))
+  (when (contains? service-labels agent-label)
+    true))
 
 (defn ->service-healthcheck
   [service-healthcheck]
