@@ -43,6 +43,14 @@
                        :Aliases (:serviceAliases %)))
        (into [])))
 
+(defn ->service-hosts
+  [service]
+  (->> (:hosts service)
+       (filter #(not (and (str/blank? (:name %))
+                          (str/blank? (:value %)))))
+       (map (fn [p] (str (:value p) " " (:name p))))
+       (into [])))
+
 (defn ->service-variables
   [service]
   (->> (:variables service)
@@ -225,7 +233,8 @@
                                     :Args        (:command service)
                                     :TTY         (:tty service)
                                     :Healthcheck (->service-healthcheck (:healthcheck service))
-                                    :Env         (->service-variables service)}
+                                    :Env         (->service-variables service)
+                                    :Hosts       (->service-hosts service)}
                     :LogDriver     {:Name    (get-in service [:logdriver :name])
                                     :Options (->service-log-options service)}
                     :Resources     {:Limits       (->service-resource (get-in service [:resources :limit]))

@@ -200,6 +200,15 @@
                      :stack         (-> v :VolumeOptions :Labels stack-label)}))
        (into [])))
 
+(defn ->service-hosts
+  [service-spec]
+  (->> (get-in service-spec [:TaskTemplate :ContainerSpec :Hosts])
+       (map (fn [p]
+              (let [host (str/split p #" ")]
+                {:name  (second host)
+                 :value (first host)})))
+       (into [])))
+
 (defn ->service-variables
   [service-spec]
   (->> (get-in service-spec [:TaskTemplate :ContainerSpec :Env])
@@ -371,13 +380,13 @@
        :networks (->service-networks service networks)
        :secrets (->service-secrets service-spec)
        :configs (->service-configs service-spec)
+       :hosts (->service-hosts service-spec)
        :variables (->service-variables service-spec)
        :labels (->service-labels service-labels)
        :command (get-in service-task-template [:ContainerSpec :Args])
        :user (get-in service-task-template [:ContainerSpec :User])
        :dir (get-in service-task-template [:ContainerSpec :Dir])
        :tty (get-in service-task-template [:ContainerSpec :TTY])
-       :hosts (get-in service-task-template [:ContainerSpec :Hosts])
        :healthcheck (->service-healthcheck healthcheck)
        :logdriver {:name (->service-log-driver service-task-template info)
                    :opts (->service-log-options service-task-template)}

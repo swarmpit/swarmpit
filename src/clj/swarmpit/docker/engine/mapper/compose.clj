@@ -55,8 +55,7 @@
      :user (-> service :user)
      :working_dir (-> service :dir)
      :extra_hosts (->> service :hosts
-                       (map #(let [parts (str/split % #" ")]
-                               (str (second parts) ":" (first parts)))))
+                       (map #(str (:name %) ":" (:value %))))
      :healthcheck (let [healthcheck (-> service :healthcheck)]
                     (when healthcheck
                       (merge healthcheck
