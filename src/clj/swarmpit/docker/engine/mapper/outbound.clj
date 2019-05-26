@@ -175,10 +175,11 @@
 
 (defn ->service-healthcheck
   [service-healthcheck]
-  {:Test     (:test service-healthcheck)
-   :Interval (->nano (:interval service-healthcheck))
-   :Timeout  (->nano (:timeout service-healthcheck))
-   :Retries  (:retries service-healthcheck)})
+  (when service-healthcheck
+    {:Test     (:test service-healthcheck)
+     :Interval (->nano (:interval service-healthcheck))
+     :Timeout  (->nano (:timeout service-healthcheck))
+     :Retries  (:retries service-healthcheck)}))
 
 (defn ->service-image
   [service digest?]

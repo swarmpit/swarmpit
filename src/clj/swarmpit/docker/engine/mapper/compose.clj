@@ -57,9 +57,11 @@
      :extra_hosts (->> service :hosts
                        (map #(let [parts (str/split % #" ")]
                                (str (second parts) ":" (first parts)))))
-     :healthcheck (merge (-> service :healthcheck)
-                         {:interval (str (get-in service [:healthcheck :interval]) "s")}
-                         {:timeout (str (get-in service [:healthcheck :timeout]) "s")})
+     :healthcheck (let [healthcheck (-> service :healthcheck)]
+                    (when healthcheck
+                      (merge healthcheck
+                             {:interval (str (:interval healthcheck) "s")}
+                             {:timeout (str (:timeout healthcheck) "s")})))
      :tty (-> service :tty)
      :environment (-> service :variables (name-value->map))
      :ports (->> service :ports

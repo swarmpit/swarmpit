@@ -308,10 +308,11 @@
 
 (defn ->service-healthcheck
   [service-healthcheck]
-  {:test     (:Test service-healthcheck)
-   :interval (nano-> (:Interval service-healthcheck))
-   :timeout  (nano-> (:Timeout service-healthcheck))
-   :retries  (:Retries service-healthcheck)})
+  (when service-healthcheck
+    {:test     (:Test service-healthcheck)
+     :interval (nano-> (:Interval service-healthcheck))
+     :timeout  (nano-> (:Timeout service-healthcheck))
+     :retries  (:Retries service-healthcheck)}))
 
 (defn ->service-image-details
   [image-name]
