@@ -142,8 +142,10 @@
       (if (= (:_id (api/user-by-username user))
              (:id route-params))
         (resp-error 400 "Operation not allowed")
-        (do (api/delete-user (:id route-params))
-            (resp-ok))))))
+        (let [user (api/user (:id route-params))]
+          (api/delete-user (:id route-params))
+          (api/delete-user-registries (:username user))
+          (resp-ok))))))
 
 (defmethod dispatch :user-create [_]
   (fn [{:keys [params]}]

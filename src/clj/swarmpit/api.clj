@@ -62,6 +62,10 @@
   (->> (user user-id)
        (cc/delete-user)))
 
+(defn delete-user-registries
+  [username]
+  (cc/delete-user-registries username))
+
 (defn create-user
   [user]
   (if (not (user-exist? user))

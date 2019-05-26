@@ -30,6 +30,16 @@
                                     :Content-Type "application/json"}}})
       :body))
 
+(defn find-cross-docs
+  [query]
+  (-> (execute {:method  :POST
+                :api     "/swarmpit/_find"
+                :options {:body    {:selector query}
+                          :headers {:Accept       "application/json"
+                                    :Content-Type "application/json"}}})
+      :body
+      :docs))
+
 (defn find-docs
   ([type]
    (find-docs nil type))
@@ -284,6 +294,12 @@
   [id]
   (get-doc id))
 
+(defn user-registries
+  [username]
+  (find-cross-docs
+    {"$and" [{:type {"$in" ["dockerhub" "v2" "ecr" "acr" "gitlab"]}}
+             {:owner {"$eq" username}}]}))
+
 (defn user-by-username
   [username]
   (find-doc {:username {"$eq" username}} "user"))
@@ -296,6 +312,11 @@
 (defn delete-user
   [user]
   (delete-doc user))
+
+(defn delete-user-registries
+  [username]
+  (doseq [reg (user-registries username)]
+    (delete-doc reg)))
 
 (defn update-user
   [user delta]
