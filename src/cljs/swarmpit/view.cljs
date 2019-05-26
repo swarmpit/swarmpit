@@ -40,8 +40,12 @@
             [swarmpit.component.user.edit :as user-edit]
             [swarmpit.component.registry-v2.info :as reg-v2-info]
             [swarmpit.component.registry-v2.edit :as reg-v2-edit]
+            [swarmpit.component.registry-gitlab.info :as reg-gitlab-info]
+            [swarmpit.component.registry-gitlab.edit :as reg-gitlab-edit]
             [swarmpit.component.registry-ecr.info :as reg-ecr-info]
             [swarmpit.component.registry-ecr.edit :as reg-ecr-edit]
+            [swarmpit.component.registry-acr.info :as reg-acr-info]
+            [swarmpit.component.registry-acr.edit :as reg-acr-edit]
             [swarmpit.component.registry-dockerhub.info :as reg-dockerhub-info]
             [swarmpit.component.registry-dockerhub.edit :as reg-dockerhub-edit]))
 
@@ -80,6 +84,24 @@
 (defmethod dispatch :registry-create
   [route]
   (registry-create/form route))
+
+(defmethod dispatch :registry-info
+  [{:keys [params] :as route}]
+  (case (:registryType params)
+    "v2" (reg-v2-info/form route)
+    "dockerhub" (reg-dockerhub-info/form route)
+    "ecr" (reg-ecr-info/form route)
+    "acr" (reg-acr-info/form route)
+    "gitlab" (reg-gitlab-info/form route)))
+
+(defmethod dispatch :registry-edit
+  [{:keys [params] :as route}]
+  (case (:registryType params)
+    "v2" (reg-v2-edit/form route)
+    "dockerhub" (reg-dockerhub-edit/form route)
+    "ecr" (reg-ecr-edit/form route)
+    "acr" (reg-acr-edit/form route)
+    "gitlab" (reg-gitlab-edit/form route)))
 
 ;;; Stack view
 
@@ -234,33 +256,3 @@
 (defmethod dispatch :user-edit
   [route]
   (user-edit/form route))
-
-;;; Registry v2 view
-
-(defmethod dispatch :reg-v2-info
-  [route]
-  (reg-v2-info/form route))
-
-(defmethod dispatch :reg-v2-edit
-  [route]
-  (reg-v2-edit/form route))
-
-;;; Registry ecr view
-
-(defmethod dispatch :reg-ecr-info
-  [route]
-  (reg-ecr-info/form route))
-
-(defmethod dispatch :reg-ecr-edit
-  [route]
-  (reg-ecr-edit/form route))
-
-;;; Dockerhub view
-
-(defmethod dispatch :reg-dockerhub-info
-  [route]
-  (reg-dockerhub-info/form route))
-
-(defmethod dispatch :reg-dockerhub-edit
-  [route]
-  (reg-dockerhub-edit/form route))

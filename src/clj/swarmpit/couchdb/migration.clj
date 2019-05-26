@@ -20,9 +20,18 @@
   (db/create-sns-global-changes)
   (println "Single node setup finished"))
 
+(defn change-reg-types
+  []
+  (doseq [dockeruser (db/find-docs "dockeruser")]
+    (db/update-doc dockeruser :type "dockerhub"))
+  (doseq [registry (db/find-docs "registry")]
+    (db/update-doc registry :type "v2"))
+  (println "Change reg types finished"))
+
 (def migrations
   {:single-node-setup single-node-setup
-   :initial           verify-initial-data})
+   :initial           verify-initial-data
+   :change-reg-types  change-reg-types})
 
 (defn migrate
   []

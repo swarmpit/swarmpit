@@ -80,13 +80,14 @@
 (defn- create-registry-handler
   []
   (ajax/post
-    (routes/path-for-backend :registry-create)
+    (routes/path-for-backend :registry-create {:registryType :v2})
     {:params     (state/get-value state/form-value-cursor)
      :state      [:processing?]
      :on-success (fn [{:keys [response origin?]}]
                    (when origin?
                      (dispatch!
-                       (routes/path-for-frontend :reg-v2-info (select-keys response [:id]))))
+                       (routes/path-for-frontend :registry-info {:registryType :v2
+                                                                 :id           (:id response)})))
                    (message/info
                      (str "Registry " (:id response) " has been created.")))
      :on-error   (fn [{:keys [response]}]

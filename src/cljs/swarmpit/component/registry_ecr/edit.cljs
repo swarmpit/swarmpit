@@ -93,7 +93,8 @@
 (defn- ecr-handler
   [ecr-id]
   (ajax/get
-    (routes/path-for-backend :ecr {:id ecr-id})
+    (routes/path-for-backend :registry {:id           ecr-id
+                                        :registryType :ecr})
     {:state      [:loading?]
      :on-success (fn [{:keys [response]}]
                    (state/set-value response state/form-value-cursor))}))
@@ -101,13 +102,15 @@
 (defn- update-ecr-handler
   [ecr-id]
   (ajax/post
-    (routes/path-for-backend :ecr-update {:id ecr-id})
+    (routes/path-for-backend :registry-update {:id           ecr-id
+                                               :registryType :ecr})
     {:params     (state/get-value state/form-value-cursor)
      :state      [:processing?]
      :on-success (fn [{:keys [origin?]}]
                    (when origin?
                      (dispatch!
-                       (routes/path-for-frontend :reg-ecr-info {:id ecr-id})))
+                       (routes/path-for-frontend :registry-info {:registryType :ecr
+                                                                 :id           ecr-id})))
                    (message/info
                      (str "Registry " ecr-id " has been updated.")))
      :on-error   (fn [{:keys [response]}]

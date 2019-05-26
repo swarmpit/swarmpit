@@ -7,7 +7,6 @@
             [swarmpit.component.state :as state]
             [swarmpit.component.mixin :as mixin]
             [swarmpit.component.progress :as progress]
-            [swarmpit.component.common :as common]
             [swarmpit.component.dialog :as dialog]
             [swarmpit.component.action-menu :as menu]
             [swarmpit.url :refer [dispatch!]]
@@ -21,7 +20,8 @@
 (defn- registry-handler
   [registry-id]
   (ajax/get
-    (routes/path-for-backend :registry {:id registry-id})
+    (routes/path-for-backend :registry {:id           registry-id
+                                        :registryType :v2})
     {:state      [:loading?]
      :on-success (fn [{:keys [response]}]
                    (state/set-value response state/form-value-cursor))}))
@@ -29,7 +29,8 @@
 (defn- delete-registry-handler
   [registry-id]
   (ajax/delete
-    (routes/path-for-backend :registry-delete {:id registry-id})
+    (routes/path-for-backend :registry-delete {:id           registry-id
+                                               :registryType :v2})
     {:on-success (fn [_]
                    (dispatch!
                      (routes/path-for-frontend :registry-list))
@@ -41,7 +42,8 @@
 
 (defn form-actions
   [id]
-  [{:onClick #(dispatch! (routes/path-for-frontend :reg-v2-edit {:id id}))
+  [{:onClick #(dispatch! (routes/path-for-frontend :registry-edit {:registryType :v2
+                                                                   :id           id}))
     :icon    (comp/svg icon/edit-path)
     :name    "Edit registry"}
    {:onClick #(state/update-value [:open] true dialog/dialog-cursor)

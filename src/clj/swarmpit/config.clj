@@ -2,20 +2,24 @@
   (:require [environ.core :refer [env]]))
 
 (def default
-  (atom {:docker-sock      "/var/run/docker.sock"
-         :docker-api       "1.30"
-         :db-url           "http://localhost:5984"
-         :base-url         "/"
-         :work-dir         "/tmp"
-         :password-hashing {:alg        :pbkdf2+sha512
-                            :iterations 200000}}))
+  (atom {:docker-sock         "/var/run/docker.sock"
+         :docker-api          "1.30"
+         :docker-http-timeout 5000
+         :db-url              "http://localhost:5984"
+         :agent-url           nil
+         :base-url            "/"
+         :work-dir            "/tmp"
+         :password-hashing    {:alg        :pbkdf2+sha512
+                               :iterations 200000}}))
 
 (def environment
-  (->> {:docker-sock (env :swarmpit-docker-sock)
-        :docker-api  (env :swarmpit-docker-api)
-        :db-url      (env :swarmpit-db)
-        :base-url    (env :swarmpit-base-url)
-        :work-dir    (env :swarmpit-workdir)}
+  (->> {:docker-sock         (env :swarmpit-docker-sock)
+        :docker-api          (env :swarmpit-docker-api)
+        :docker-http-timeout (env :swarmpit-docker-http-timeout)
+        :db-url              (env :swarmpit-db)
+        :agent-url           (env :swarmpit-agent-url)
+        :base-url            (env :swarmpit-base-url)
+        :work-dir            (env :swarmpit-workdir)}
        (into {} (remove #(nil? (val %))))))
 
 (def ^:private dynamic (atom {}))

@@ -3,7 +3,8 @@
   (:require [clojure.walk :refer [keywordize-keys stringify-keys]]
             [clojure.string :as str]
             [swarmpit.http :refer :all]
-            [swarmpit.token :as token]))
+            [swarmpit.token :as token]
+            [swarmpit.ip :as ip]))
 
 (defn- build-url
   [registry api]
@@ -38,10 +39,8 @@
                      :error-handler #(-> % :errors (first) :message)}))
 
 (defn- fallback-options
-  [www-auth-header options]
-  (let [www-auth-url (:realm www-auth-header)
-        www-auth-params (dissoc www-auth-header :realm)
-        query-params (merge {:client_id "swarmpit"} www-auth-params)
+  [www-auth-url www-auth-params options]
+  (let [query-params (merge {:client_id "swarmpit"} www-auth-params)
         options (assoc-in options [:query-params] query-params)
         token (-> (execute {:method  :GET
                             :url     www-auth-url
@@ -53,14 +52,20 @@
 (defn- execute-with-fallback
   [{:keys [method url options] :as request}]
   (try
+    (print request)
     (execute request)
     (catch ExceptionInfo e
       (let [status (:status (ex-data e))
             headers (:headers (ex-data e))
-            www-auth-header (authenticate-header headers)]
+            www-auth-header (authenticate-header headers)
+            www-auth-url (:realm www-auth-header)
+            www-auth-params (dissoc www-auth-header :realm)]
         (if (and (= status 401)
-                 (some? www-auth-header))
-          (execute (assoc request :options (fallback-options www-auth-header options)))
+                 (some? www-auth-url)
+                 (ip/is-valid-url www-auth-url))
+          (-> request
+              (assoc :options (fallback-options www-auth-url www-auth-params options))
+              (execute))
           (throw e))))))
 
 (defn repositories

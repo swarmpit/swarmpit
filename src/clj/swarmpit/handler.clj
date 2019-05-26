@@ -140,8 +140,10 @@
       (if (= (:_id (api/user-by-username user))
              (:id route-params))
         (resp-error 400 "Operation not allowed")
-        (do (api/delete-user (:id route-params))
-            (resp-ok))))))
+        (let [user (api/user (:id route-params))]
+          (api/delete-user (:id route-params))
+          (api/delete-user-registries (:username user))
+          (resp-ok))))))
 
 (defmethod dispatch :user-create [_]
   (fn [{:keys [params]}]
@@ -182,7 +184,7 @@
 (defmethod dispatch :service-logs [_]
   (fn [{:keys [route-params query-params]}]
     (->> (keywordize-keys query-params)
-         :from
+         :since
          (api/service-logs (:id route-params))
          (resp-ok))))
 
@@ -410,144 +412,187 @@
 ;; Registry handler
 
 (defmethod dispatch :registries [_]
-  (fn [{:keys [identity]}]
-    (let [owner (get-in identity [:usr :username])]
-      (->> (api/registries owner)
-           (resp-ok)))))
+  (fn [{:keys [identity route-params]}]
+    (let [owner (get-in identity [:usr :username])
+          registry (keyword (:registryType route-params))]
+      (if (api/supported-registry-type? registry)
+        (->> (case registry
+               :v2 (api/registries-v2 owner)
+               :dockerhub (api/dockerhubs owner)
+               :ecr (api/registries-ecr owner)
+               :acr (api/registries-acr owner)
+               :gitlab (api/registries-gitlab owner))
+             (resp-ok))
+        (resp-error 400 (str "Unknown registry type [" registry "]"))))))
 
 (defmethod dispatch :registry [_]
   (fn [{:keys [route-params]}]
-    (->> (api/registry (:id route-params))
-         (resp-ok))))
+    (let [id (:id route-params)
+          registry (keyword (:registryType route-params))]
+      (if (api/supported-registry-type? registry)
+        (->> (case registry
+               :v2 (api/registry-v2 id)
+               :dockerhub (api/dockerhub id)
+               :ecr (api/registry-ecr id)
+               :acr (api/registry-acr id)
+               :gitlab (api/registry-gitlab id))
+             (resp-ok))
+        (resp-error 400 (str "Unknown registry type [" registry "]"))))))
 
 (defmethod dispatch :registry-delete [_]
   (fn [{:keys [route-params]}]
-    (api/delete-registry (:id route-params))
-    (resp-ok)))
-
-(defmethod dispatch :registry-create [_]
-  (fn [{:keys [params identity]}]
-    (let [owner (get-in identity [:usr :username])
-          payload (assoc (keywordize-keys params) :owner owner
-                                                  :type "registry")]
-      (try
-        (api/registry-info payload)
-        (let [response (api/create-registry payload)]
-          (if (some? response)
-            (resp-created (select-keys response [:id]))
-            (resp-error 400 "Registry already exist")))
-        (catch Exception e
-          (resp-error 400 (get-in (ex-data e) [:body :error])))))))
-
-(defmethod dispatch :registry-update [_]
-  (fn [{:keys [route-params params]}]
-    (let [payload (keywordize-keys params)]
-      (try
-        (api/registry-info payload)
-        (api/update-registry (:id route-params) payload)
-        (resp-ok)
-        (catch Exception e
-          (resp-error 400 (get-in (ex-data e) [:body :error])))))))
+    (let [id (:id route-params)
+          registry (keyword (:registryType route-params))]
+      (if (api/supported-registry-type? registry)
+        (do (case registry
+              :v2 (api/delete-v2-registry id)
+              :dockerhub (api/delete-dockerhub id)
+              :ecr (api/delete-ecr-registry id)
+              :acr (api/delete-acr-registry id)
+              :gitlab (api/delete-gitlab-registry id))
+            (resp-ok))
+        (resp-error 400 (str "Unknown registry type [" registry "]"))))))
 
 (defmethod dispatch :registry-repositories [_]
   (fn [{:keys [route-params]}]
-    (let [registry-id (:id route-params)]
-      (->> (api/registry-repositories registry-id)
-           (resp-ok)))))
+    (let [id (:id route-params)
+          registry (keyword (:registryType route-params))]
+      (if (api/supported-registry-type? registry)
+        (->> (case registry
+               :v2 (api/registry-v2-repositories id)
+               :dockerhub (api/dockerhub-repositories id)
+               :ecr (api/registry-ecr-repositories id)
+               :acr (api/registry-acr-repositories id)
+               :gitlab (api/registry-gitlab-repositories id))
+             (resp-ok))
+        (resp-error 400 (str "Unknown registry type " registry))))))
 
-;; AWS ECR handler
+;;; Registry CREATE handler
 
-(defmethod dispatch :ecrs [_]
-  (fn [{:keys [identity]}]
-    (let [owner (get-in identity [:usr :username])]
-      (->> (api/ecrs owner)
-           (resp-ok)))))
+(defmulti registry-create (fn [registry payload] registry))
 
-(defmethod dispatch :ecr [_]
-  (fn [{:keys [route-params]}]
-    (->> (api/ecr (:id route-params))
-         (resp-ok))))
-
-(defmethod dispatch :ecr-delete [_]
-  (fn [{:keys [route-params]}]
-    (api/delete-ecr (:id route-params))
-    (resp-ok)))
-
-(defmethod dispatch :ecr-create [_]
-  (fn [{:keys [params identity]}]
-    (let [owner (get-in identity [:usr :username])
-          payload (assoc (keywordize-keys params) :owner owner
-                                                  :type "ecr")]
-      (try
-        (let [url (:proxyEndpoint (api/ecr-token payload))
-              response (api/create-ecr (assoc payload :url url))]
-          (if (some? response)
-            (resp-created (select-keys response [:id]))
-            (resp-error 400 "AWS Registry already exist")))
-        (catch Exception e
-          (resp-error 400 (get-in (ex-data e) [:body :error])))))))
-
-(defmethod dispatch :ecr-update [_]
-  (fn [{:keys [route-params params]}]
-    (let [payload (keywordize-keys params)]
-      (try
-        (let [url (:proxyEndpoint (api/ecr-token payload))
-              delta-payload (assoc payload :url url)]
-          (api/update-ecr (:id route-params) delta-payload)
-          (resp-ok))
-        (catch Exception e
-          (resp-error 400 (get-in (ex-data e) [:body :error])))))))
-
-(defmethod dispatch :ecr-repositories [_]
-  (fn [{:keys [route-params]}]
-    (let [ecr-id (:id route-params)]
-      (->> (api/ecr-repositories ecr-id)
-           (resp-ok)))))
-
-;; Dockerhub handler
-
-(defmethod dispatch :dockerhub-users [_]
-  (fn [{:keys [identity]}]
-    (let [owner (get-in identity [:usr :username])]
-      (->> (api/dockerusers owner)
-           (resp-ok)))))
-
-(defmethod dispatch :dockerhub-user [_]
-  (fn [{:keys [route-params]}]
-    (->> (api/dockeruser (:id route-params))
-         (resp-ok))))
-
-(defmethod dispatch :dockerhub-user-create [_]
-  (fn [{:keys [params identity]}]
-    (let [owner (get-in identity [:usr :username])
-          payload (assoc (keywordize-keys params) :owner owner
-                                                  :type "dockeruser")
-          dockeruser-token (:token (api/dockeruser-login payload))
-          dockeruser-info (api/dockeruser-info payload)
-          dockeruser-namespace (api/dockeruser-namespace dockeruser-token)
-          response (api/create-dockeruser payload dockeruser-info dockeruser-namespace)]
+(defmethod registry-create :v2
+  [_ payload]
+  (try
+    (api/registry-v2-info payload)
+    (let [response (api/create-v2-registry payload)]
       (if (some? response)
         (resp-created (select-keys response [:id]))
-        (resp-error 400 "Docker user already exist")))))
+        (resp-error 400 "Registry account already linked")))
+    (catch Exception e
+      (resp-error 400 (get-in (ex-data e) [:body :error])))))
 
-(defmethod dispatch :dockerhub-user-update [_]
+(defmethod registry-create :dockerhub
+  [_ payload]
+  (let [dockeruser-token (:token (api/dockerhub-login payload))
+        dockeruser-info (api/dockerhub-info payload)
+        dockeruser-namespace (api/dockerhub-namespace dockeruser-token)
+        response (api/create-dockerhub payload dockeruser-info dockeruser-namespace)]
+    (if (some? response)
+      (resp-created (select-keys response [:id]))
+      (resp-error 400 "Dockerhub account already linked"))))
+
+(defmethod registry-create :ecr
+  [_ payload]
+  (try
+    (let [url (:proxyEndpoint (api/registry-ecr-token payload))
+          response (api/create-ecr-registry (assoc payload :url url))]
+      (if (some? response)
+        (resp-created (select-keys response [:id]))
+        (resp-error 400 "AWS ECR account already linked")))
+    (catch Exception e
+      (resp-error 400 (get-in (ex-data e) [:body :error])))))
+
+(defmethod registry-create :acr
+  [_ payload]
+  (try
+    (let [url (api/acr-url payload)
+          payload (assoc payload :url url)
+          info (api/registry-acr-info payload)
+          response (api/create-acr-registry payload)]
+      (if (some? response)
+        (resp-created (select-keys response [:id]))
+        (resp-error 400 "Azure ACR account with given service principals already linked")))
+    (catch Exception e
+      (resp-error 400 (get-in (ex-data e) [:body :error])))))
+
+(defmethod registry-create :gitlab
+  [_ payload]
+  (try
+    (api/registry-gitlab-info payload)
+    (let [response (api/create-gitlab-registry payload)]
+      (if (some? response)
+        (resp-created (select-keys response [:id]))
+        (resp-error 400 "Gitlab registry account already linked")))
+    (catch Exception e
+      (resp-error 400 (get-in (ex-data e) [:body :error])))))
+
+(defmethod dispatch :registry-create [_]
+  (fn [{:keys [params identity route-params]}]
+    (let [owner (get-in identity [:usr :username])
+          registry (keyword (:registryType route-params))
+          payload (assoc (keywordize-keys params) :owner owner
+                                                  :type registry)]
+      (if (api/supported-registry-type? registry)
+        (registry-create registry payload)
+        (resp-error 400 (str "Unknown registry type [" registry "]"))))))
+
+;;; Registry UPDATE handler
+
+(defmulti registry-update (fn [registry payload id] registry))
+
+(defmethod registry-update :v2
+  [_ payload id]
+  (try
+    (api/registry-v2-info payload)
+    (api/update-v2-registry id payload)
+    (resp-ok)
+    (catch Exception e
+      (resp-error 400 (get-in (ex-data e) [:body :error])))))
+
+(defmethod registry-update :dockerhub
+  [_ payload id]
+  (when (:password payload)
+    (api/dockerhub-login payload))
+  (api/update-dockerhub id payload)
+  (resp-ok))
+
+(defmethod registry-update :ecr
+  [_ payload id]
+  (try
+    (let [url (:proxyEndpoint (api/registry-ecr-token payload))
+          delta-payload (assoc payload :url url)]
+      (api/update-ecr-registry id delta-payload)
+      (resp-ok))
+    (catch Exception e
+      (resp-error 400 (get-in (ex-data e) [:body :error])))))
+
+(defmethod registry-update :acr
+  [_ payload id]
+  (try
+    (api/registry-acr-info payload)
+    (api/update-acr-registry id payload)
+    (resp-ok)
+    (catch Exception e
+      (resp-error 400 (get-in (ex-data e) [:body :error])))))
+
+(defmethod registry-update :gitlab
+  [_ payload id]
+  (try
+    (api/registry-gitlab-info payload)
+    (api/update-gitlab-registry id payload)
+    (resp-ok)
+    (catch Exception e
+      (resp-error 400 (get-in (ex-data e) [:body :error])))))
+
+(defmethod dispatch :registry-update [_]
   (fn [{:keys [route-params params]}]
-    (let [payload (keywordize-keys params)]
-      (when (:password payload)
-        (api/dockeruser-login payload))
-      (api/update-dockeruser (:id route-params) payload)
-      (resp-ok))))
-
-(defmethod dispatch :dockerhub-user-delete [_]
-  (fn [{:keys [route-params]}]
-    (api/delete-dockeruser (:id route-params))
-    (resp-ok)))
-
-(defmethod dispatch :dockerhub-repositories [_]
-  (fn [{:keys [route-params]}]
-    (let [dockeruser-id (:id route-params)]
-      (->> (api/dockeruser-repositories dockeruser-id)
-           (resp-ok)))))
+    (let [payload (keywordize-keys params)
+          id (:id route-params)
+          registry (keyword (:registryType route-params))]
+      (if (api/supported-registry-type? registry)
+        (registry-update registry payload id)
+        (resp-error 400 (str "Unknown registry type [" registry "]"))))))
 
 ;; Public dockerhub handler
 

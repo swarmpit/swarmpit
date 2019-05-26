@@ -47,18 +47,19 @@
 (defn add-user-handler
   []
   (ajax/post
-    (routes/path-for-backend :dockerhub-user-create)
+    (routes/path-for-backend :registry-create {:registryType :dockerhub})
     {:params     (state/get-value state/form-value-cursor)
      :state      [:processing?]
      :on-success (fn [{:keys [response origin?]}]
                    (when origin?
                      (dispatch!
-                       (routes/path-for-frontend :reg-dockerhub-info (select-keys response [:id]))))
+                       (routes/path-for-frontend :registry-info {:registryType :dockerhub
+                                                                 :id           (:id response)})))
                    (message/info
-                     (str "Dockerhub user " (:id response) " has been added.")))
+                     (str "Docker hub account " (:id response) " has been added.")))
      :on-error   (fn [{:keys [response]}]
                    (message/error
-                     (str "Dockerhub user cannot be added. " (:error response))))}))
+                     (str "Docker hub account creation failed. " (:error response))))}))
 
 (defn- init-form-state
   []

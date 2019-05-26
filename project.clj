@@ -32,6 +32,7 @@
                  [clojure-humanize "0.2.2"]
                  [http-kit "2.2.0"]
                  [enlive "1.1.6"]
+                 [clj-time "0.15.0"]
                  [clj-http "3.8.0"]
                  [clj-yaml "0.4.0"]
                  [cljs-ajax "0.5.8"]

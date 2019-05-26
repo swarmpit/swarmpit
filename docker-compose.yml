@@ -42,15 +42,14 @@ services:
     image: swarmpit/agent:latest
     environment:
       - DOCKER_API_VERSION=1.35
-      # Uncomment below if using a custom Swarmpit app service name
-      #- HEALTH_CHECK_ENDPOINT=http://app-service-name:8080/version
-      #- EVENT_ENDPOINT=http://app-service-name:8080/events
     volumes:
       - /var/run/docker.sock:/var/run/docker.sock:ro
     networks:
       - net
     deploy:
       mode: global
+      labels:
+        swarmpit.agent: 'true'
       resources:
         limits:
           cpus: '0.10'

@@ -1,4 +1,4 @@
-(ns swarmpit.component.registry-dockerhub.edit
+(ns swarmpit.component.registry-gitlab.edit
   (:require [material.components :as comp]
             [material.component.composite :as composite]
             [swarmpit.component.common :as common]
@@ -14,19 +14,21 @@
 
 (enable-console-print!)
 
-(defn- form-password [value show-password?]
+(defn- form-token [value show-token?]
   (comp/text-field
-    {:label           "New Password"
+    {:label           "New Personal Access Token"
      :variant         "outlined"
      :fullWidth       true
-     :type            (if show-password?
+     :required        true
+     :margin          "normal"
+     :type            (if show-token?
                         "text"
                         "password")
      :defaultValue    value
-     :onChange        #(state/update-value [:password] (-> % .-target .-value) state/form-value-cursor)
+     :onChange        #(state/update-value [:token] (-> % .-target .-value) state/form-value-cursor)
      :InputLabelProps {:shrink true}
      :InputProps      {:className    "Swarmpit-form-input"
-                       :endAdornment (common/show-password-adornment show-password?)}}))
+                       :endAdornment (common/show-password-adornment show-token? :showToken)}}))
 
 (defn- form-public [value]
   (comp/checkbox
@@ -34,47 +36,47 @@
      :value    (str value)
      :onChange #(state/update-value [:public] (-> % .-target .-checked) state/form-value-cursor)}))
 
-(defn- user-handler
-  [user-id]
+(defn- registry-handler
+  [registry-id]
   (ajax/get
-    (routes/path-for-backend :registry {:id           user-id
-                                        :registryType :dockerhub})
+    (routes/path-for-backend :registry {:id           registry-id
+                                        :registryType :gitlab})
     {:state      [:loading?]
      :on-success (fn [{:keys [response]}]
                    (state/set-value response state/form-value-cursor))}))
 
-(defn- update-user-handler
-  [user-id]
+(defn- update-registry-handler
+  [registry-id]
   (ajax/post
-    (routes/path-for-backend :registry-update {:id           user-id
-                                               :registryType :dockerhub})
+    (routes/path-for-backend :registry-update {:id           registry-id
+                                               :registryType :gitlab})
     {:params     (state/get-value state/form-value-cursor)
      :state      [:processing?]
      :on-success (fn [{:keys [origin?]}]
                    (when origin?
                      (dispatch!
-                       (routes/path-for-frontend :registry-info {:registryType :dockerhub
-                                                                 :id           user-id})))
+                       (routes/path-for-frontend :registry-info {:registryType :gitlab
+                                                                 :id           registry-id})))
                    (message/info
-                     (str "Dockerhub account " user-id " has been updated.")))
+                     (str "Gitlab registry " registry-id " has been updated.")))
      :on-error   (fn [{:keys [response]}]
                    (message/error
-                     (str "Dockerhub account update failed. " (:error response))))}))
+                     (str "Gitlab registry update failed. " (:error response))))}))
 
 (defn- init-form-state
   []
-  (state/set-value {:loading?     true
-                    :processing?  false
-                    :showPassword false} state/form-state-cursor))
+  (state/set-value {:loading?    true
+                    :processing? false
+                    :showToken   false} state/form-state-cursor))
 
 (def mixin-init-form
   (mixin/init-form
     (fn [{{:keys [id]} :params}]
       (init-form-state)
-      (user-handler id))))
+      (registry-handler id))))
 
-(rum/defc form-edit < rum/static [{:keys [_id username public password]}
-                                  {:keys [processing? showPassword]}]
+(rum/defc form-edit < rum/static [{:keys [_id username token public]}
+                                  {:keys [processing? showToken]}]
   (comp/mui
     (html
       [:div.Swarmpit-form
@@ -89,7 +91,7 @@
             (comp/grid
               {:item true
                :xs   12}
-              (form-password password showPassword))
+              (form-token token showToken))
             (comp/grid
               {:item true
                :xs   12}
@@ -103,7 +105,7 @@
                 [:div.Swarmpit-form-buttons
                  (composite/progress-button
                    "Save"
-                   #(update-user-handler _id)
+                   #(update-registry-handler _id)
                    processing?)])))]]]])))
 
 (rum/defc form < rum/reactive

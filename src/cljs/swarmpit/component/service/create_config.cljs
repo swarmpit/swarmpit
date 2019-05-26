@@ -12,6 +12,7 @@
             [swarmpit.component.service.form-mounts :as mounts]
             [swarmpit.component.service.form-secrets :as secrets]
             [swarmpit.component.service.form-configs :as configs]
+            [swarmpit.component.service.form-hosts :as hosts]
             [swarmpit.component.service.form-variables :as variables]
             [swarmpit.component.service.form-labels :as labels]
             [swarmpit.component.service.form-logdriver :as logdriver]
@@ -36,6 +37,7 @@
         networks (state/get-value networks/form-value-cursor)
         secrets (state/get-value secrets/form-value-cursor)
         configs (state/get-value configs/form-value-cursor)
+        hosts (state/get-value hosts/form-value-cursor)
         variables (state/get-value variables/form-value-cursor)
         labels (state/get-value labels/form-value-cursor)
         logdriver (state/get-value logdriver/form-value-cursor)
@@ -49,6 +51,7 @@
                        (assoc :mounts (mounts/normalize))
                        (assoc :secrets (when-not (empty? (state/get-value (conj secrets/form-state-cursor :list))) secrets))
                        (assoc :configs (when-not (empty? (state/get-value (conj configs/form-state-cursor :list))) configs))
+                       (assoc :hosts hosts)
                        (assoc :variables variables)
                        (assoc :labels labels)
                        (assoc :logdriver logdriver)
@@ -90,6 +93,7 @@
   (state/set-value [] mounts/form-value-cursor)
   (state/set-value [] secrets/form-value-cursor)
   (state/set-value [] configs/form-value-cursor)
+  (state/set-value [] hosts/form-value-cursor)
   (state/set-value [] variables/form-value-cursor)
   (state/set-value [] labels/form-value-cursor)
   (state/set-value {:name "json-file"
@@ -119,6 +123,7 @@
       (init-form-value repository)
       (mounts/volumes-handler)
       (networks/networks-handler)
+      (logdriver/drivers-handler)
       (secrets/secrets-handler)
       (when (<= 1.30 (state/get-value [:docker :api]))
         (configs/configs-handler))
@@ -141,7 +146,6 @@
       "Ports"
       (comp/button
         {:color   "primary"
-         :key     "scfpsbtn"
          :onClick ports/add-item}
         (comp/svg icon/add-small-path) "Add port"))
     (ports/form)))
@@ -181,6 +185,18 @@
          :onClick configs/add-item}
         (comp/svg icon/add-small-path) "Add config"))
     (configs/form)))
+
+(rum/defc form-hosts < rum/static []
+  (comp/grid
+    {:item true
+     :xs   12}
+    (form/section
+      "Extra hosts"
+      (comp/button
+        {:color   "primary"
+         :onClick hosts/add-item}
+        (comp/svg icon/add-small-path) "Add host mapping"))
+    (hosts/form)))
 
 (rum/defc form-variables < rum/static []
   (comp/grid
@@ -259,6 +275,7 @@
                  (form-secrets)
                  (when (<= 1.30 (state/get-value [:docker :api]))
                    (form-configs))
+                 (form-hosts)
                  (form-variables)
                  (form-labels)
                  (form-logdriver)

@@ -1,7 +1,7 @@
 (ns swarmpit.docker.engine.mapper.outbound
   "Map swarmpit domain to docker domain"
   (:require [clojure.string :as str]
-            [swarmpit.docker.engine.mapper.inbound :refer [autoredeploy-label]]
+            [swarmpit.docker.engine.mapper.inbound :refer [autoredeploy-label agent-label]]
             [swarmpit.utils :refer [name-value->map ->nano]]))
 
 (defn- as-bytes
@@ -41,6 +41,14 @@
   (->> (:networks service)
        (map #(hash-map :Target (:networkName %)
                        :Aliases (:serviceAliases %)))
+       (into [])))
+
+(defn ->service-hosts
+  [service]
+  (->> (:hosts service)
+       (filter #(not (and (str/blank? (:name %))
+                          (str/blank? (:value %)))))
+       (map (fn [p] (str (:value p) " " (:name p))))
        (into [])))
 
 (defn ->service-variables
@@ -173,6 +181,14 @@
      :Window      (->nano (:window policy))
      :MaxAttempts (:attempts policy)}))
 
+(defn ->service-healthcheck
+  [service-healthcheck]
+  (when service-healthcheck
+    {:Test     (:test service-healthcheck)
+     :Interval (->nano (:interval service-healthcheck))
+     :Timeout  (->nano (:timeout service-healthcheck))
+     :Retries  (:retries service-healthcheck)}))
+
 (defn ->service-image
   [service digest?]
   (let [repository (get-in service [:repository :name])
@@ -185,13 +201,16 @@
 (defn ->service-metadata
   [service image]
   (let [autoredeploy (get-in service [:deployment :autoredeploy])
+        agent (:agent service)
         stack (:stack service)]
     (merge {}
            (when (some? stack)
              {:com.docker.stack.namespace stack
               :com.docker.stack.image     image})
            (when (some? autoredeploy)
-             {autoredeploy-label (str autoredeploy)}))))
+             {autoredeploy-label (str autoredeploy)})
+           (when (some? agent)
+             {agent-label (str agent)}))))
 
 (defn ->service-container-metadata
   [service]
@@ -206,14 +225,16 @@
    :Labels         (merge
                      (->service-labels service)
                      (->service-metadata service (->service-image service false)))
-   :TaskTemplate   {:ContainerSpec {:Image   (->service-image service true)
-                                    :Labels  (->service-container-metadata service)
-                                    :Mounts  (->service-mounts service)
-                                    :Secrets (:secrets service)
-                                    :Configs (:configs service)
-                                    :Args    (:command service)
-                                    :TTY     (:tty service)
-                                    :Env     (->service-variables service)}
+   :TaskTemplate   {:ContainerSpec {:Image       (->service-image service true)
+                                    :Labels      (->service-container-metadata service)
+                                    :Mounts      (->service-mounts service)
+                                    :Secrets     (:secrets service)
+                                    :Configs     (:configs service)
+                                    :Args        (:command service)
+                                    :TTY         (:tty service)
+                                    :Healthcheck (->service-healthcheck (:healthcheck service))
+                                    :Env         (->service-variables service)
+                                    :Hosts       (->service-hosts service)}
                     :LogDriver     {:Name    (get-in service [:logdriver :name])
                                     :Options (->service-log-options service)}
                     :Resources     {:Limits       (->service-resource (get-in service [:resources :limit]))

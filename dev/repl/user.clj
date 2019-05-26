@@ -5,6 +5,7 @@
             [swarmpit.setup :as setup]
             [swarmpit.database :as db]
             [swarmpit.agent :as agent]
+            [swarmpit.config :as cfg]
             [swarmpit.server]))
 
 ;; Let Clojure warn you when it needs to reflect on types, or when it does math
@@ -17,6 +18,7 @@
   []
   (print (:out (sh "sh" "dev/script/init-db.sh")))
   (print (:out (sh "sh" "dev/script/init-agent.sh")))
+  (cfg/update! {:agent-url "http://localhost:8888"})
   (db/init)
   (agent/init)
   (setup/docker))

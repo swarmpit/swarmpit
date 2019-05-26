@@ -25,8 +25,8 @@
 (defn- registries-handler
   []
   (ajax/get
-    (routes/path-for-backend :registries)
-    {:state      [:loading? :registry]
+    (routes/path-for-backend :registries {:registryType :v2})
+    {:state      [:loading? :v2]
      :on-success (fn [{:keys [response]}]
                    (doseq [item response]
                      (state/add-item item (conj state/form-state-cursor :registries))))}))
@@ -34,8 +34,26 @@
 (defn- ecrs-handler
   []
   (ajax/get
-    (routes/path-for-backend :ecrs)
+    (routes/path-for-backend :registries {:registryType :ecr})
     {:state      [:loading? :ecr]
+     :on-success (fn [{:keys [response]}]
+                   (doseq [item response]
+                     (state/add-item item (conj state/form-state-cursor :registries))))}))
+
+(defn- acrs-handler
+  []
+  (ajax/get
+    (routes/path-for-backend :registries {:registryType :acr})
+    {:state      [:loading? :acr]
+     :on-success (fn [{:keys [response]}]
+                   (doseq [item response]
+                     (state/add-item item (conj state/form-state-cursor :registries))))}))
+
+(defn- gitlab-registries-handler
+  []
+  (ajax/get
+    (routes/path-for-backend :registries {:registryType :gitlab})
+    {:state      [:loading? :gitlab]
      :on-success (fn [{:keys [response]}]
                    (doseq [item response]
                      (state/add-item item (conj state/form-state-cursor :registries))))}))
@@ -43,7 +61,7 @@
 (defn- dockerhub-handler
   []
   (ajax/get
-    (routes/path-for-backend :dockerhub-users)
+    (routes/path-for-backend :registries {:registryType :dockerhub})
     {:state      [:loading? :dockerhub]
      :on-success (fn [{:keys [response]}]
                    (doseq [item response]
@@ -63,9 +81,10 @@
                      (str "Repositories fetching failed. " (:error response))))}))
 
 (defn- repository-handler
-  [registry-id registry-route]
+  [registry-id registry-type]
   (ajax/get
-    (routes/path-for-backend registry-route {:id registry-id})
+    (routes/path-for-backend :registry-repositories {:id           registry-id
+                                                     :registryType (keyword registry-type)})
     {:state      [:searching?]
      :on-success (fn [{:keys [response]}]
                    (state/set-value response state/form-value-cursor))
@@ -81,7 +100,9 @@
   []
   (state/set-value {:loading?   {:registry  true
                                  :ecr       true
-                                 :dockerhub true}
+                                 :dockerhub true
+                                 :acr       true
+                                 :gitlab    true}
                     :manual     false
                     :searching? false
                     :registries []
@@ -100,7 +121,9 @@
       (init-form-value)
       (registries-handler)
       (ecrs-handler)
-      (dockerhub-handler))))
+      (acrs-handler)
+      (dockerhub-handler)
+      (gitlab-registries-handler))))
 
 (defn- form-manual [value]
   (comp/switch
@@ -187,6 +210,28 @@
       {:primary   (:user account)
        :className "Swarmpit-repo-registry-item"})))
 
+(defn acr-reg [account index]
+  (comp/menu-item
+    {:key   (:spName account)
+     :value index}
+    (comp/list-item-icon
+      {}
+      (comp/svg icon/azure-path))
+    (comp/list-item-text
+      {:primary   (:spName account)
+       :className "Swarmpit-repo-registry-item"})))
+
+(defn gitlab-reg [account index]
+  (comp/menu-item
+    {:key   (:username account)
+     :value index}
+    (comp/list-item-icon
+      {}
+      (comp/svg icon/gitlab-path))
+    (comp/list-item-text
+      {:primary   (:username account)
+       :className "Swarmpit-repo-registry-item"})))
+
 (defn- on-change-registry [event registries]
   (let [value (-> event .-target .-value)]
     (state/set-value [] state/form-value-cursor)
@@ -195,12 +240,7 @@
     (when (not= "public" value)
       (let [registry (nth registries value)]
         (state/update-value [:registry] registry state/form-state-cursor)
-        (repository-handler
-          (:_id registry)
-          (case (:type registry)
-            "dockeruser" :dockerhub-repositories
-            "registry" :registry-repositories
-            "ecr" :ecr-repositories))))))
+        (repository-handler (:_id registry) (:type registry))))))
 
 (rum/defc form-registry < rum/static [registries active searching?]
   (comp/text-field
@@ -222,9 +262,11 @@
          (map-indexed
            (fn [index i]
              (case (:type i)
-               "dockeruser" (dockerhub-reg i index)
-               "registry" (v2-reg i index)
-               "ecr" (ecr-reg i index)))))))
+               "dockerhub" (dockerhub-reg i index)
+               "v2" (v2-reg i index)
+               "ecr" (ecr-reg i index)
+               "acr" (acr-reg i index)
+               "gitlab" (gitlab-reg i index)))))))
 
 (defn- on-change-search [event active]
   (let [value (-> event .-target .-value)]
@@ -324,7 +366,7 @@
                             item
                             (last filtered-repositories)
                             #(onclick-handler
-                               (if (or (= "dockeruser" (:type registry))
+                               (if (or (= "dockerhub" (:type registry))
                                        (nil? registry))
                                  (:name item)
                                  (du/repository (:url registry) (:name item)))))) filtered-repositories)))))])]]]))))
@@ -333,7 +375,9 @@
                  mixin-init-form [_]
   (let [{:keys [loading?]} (state/react state/form-state-cursor)]
     (progress/form
-      (or (:registry loading?)
+      (or (:v2 loading?)
           (:ecr loading?)
+          (:acr loading?)
+          (:gitlab loading?)
           (:dockerhub loading?))
       (form-repo))))

@@ -20,4 +20,4 @@
             (db-version)))))
 
   (testing "404 error swallowing"
-    (is (nil? (dockeruser "not-existing-user")))))
+    (is (nil? (dockerhub "not-existing-user")))))

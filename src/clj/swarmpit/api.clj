@@ -4,6 +4,7 @@
             [digest :refer [digest]]
             [swarmpit.utils :refer [merge-data]]
             [swarmpit.config :as cfg]
+            [swarmpit.time :as time]
             [swarmpit.stats :as stats]
             [swarmpit.base64 :as base64]
             [swarmpit.yaml :as yaml :refer [->yaml]]
@@ -23,7 +24,9 @@
             [swarmpit.couchdb.client :as cc]
             [swarmpit.couchdb.mapper.inbound :as cmi]
             [swarmpit.couchdb.mapper.outbound :as cmo]
+            [swarmpit.gitlab.client :as gc]
             [swarmpit.aws.client :as awsc]
+            [swarmpit.agent.client :as sac]
             [clojure.core.memoize :as memo]
             [clojure.tools.logging :as log]
             [clojure.string :as str]
@@ -58,6 +61,10 @@
   [user-id]
   (->> (user user-id)
        (cc/delete-user)))
+
+(defn delete-user-registries
+  [username]
+  (cc/delete-user-registries username))
 
 (defn create-user
   [user]
@@ -210,52 +217,47 @@
 
 ;;; Dockerhub registry API
 
-(defn dockerusers
+(defn dockerhubs
   [owner]
-  (-> (cc/dockerusers owner)
-      (cmi/->dockerusers)))
+  (-> (cc/dockerhubs owner)
+      (cmi/->dockerhubs)))
 
-(defn dockeruser-info
+(defn dockerhub-info
   [dockeruser]
   (dhc/info dockeruser))
 
-(defn dockeruser-namespace
+(defn dockerhub-namespace
   [dockeruser-token]
   (-> (dhc/namespaces dockeruser-token)
       :namespaces))
 
-(defn dockeruser-login
+(defn dockerhub-login
   [dockeruser]
   (dhc/login dockeruser))
 
-(defn dockeruser-exist?
-  [dockeruser]
-  (cc/dockeruser-exist? dockeruser))
-
-(defn dockeruser
+(defn dockerhub
   [dockeruser-id]
-  (-> (cc/dockeruser dockeruser-id)
-      (cmi/->dockeruser)))
+  (-> (cc/dockerhub dockeruser-id)
+      (cmi/->dockerhub)))
 
-(defn create-dockeruser
+(defn create-dockerhub
   [dockeruser dockeruser-info dockeruser-namespace]
-  (if (not (dockeruser-exist? dockeruser))
-    (->> (cmo/->docker-user dockeruser dockeruser-info dockeruser-namespace)
-         (cc/create-dockeruser))))
+  (->> (cmo/->dockerhub dockeruser dockeruser-info dockeruser-namespace)
+       (cc/create-dockerhub)))
 
-(defn update-dockeruser
+(defn update-dockerhub
   [dockeruser-id dockeruser-delta]
-  (->> (cc/update-dockeruser (cc/dockeruser dockeruser-id) dockeruser-delta)
-       (cmi/->dockeruser)))
+  (->> (cc/update-dockerhub (cc/dockerhub dockeruser-id) dockeruser-delta)
+       (cmi/->dockerhub)))
 
-(defn delete-dockeruser
+(defn delete-dockerhub
   [dockeruser-id]
-  (-> (dockeruser dockeruser-id)
-      (cc/delete-dockeruser)))
+  (-> (dockerhub dockeruser-id)
+      (cc/delete-dockerhub)))
 
-(defn dockeruser-repositories
+(defn dockerhub-repositories
   [dockeruser-id]
-  (let [dockeruser (cc/dockeruser dockeruser-id)
+  (let [dockeruser (cc/dockerhub dockeruser-id)
         dockeruser-token (:token (dhc/login dockeruser))]
     (->> (dhc/namespaces dockeruser-token)
          :namespaces
@@ -272,107 +274,223 @@
 
 ;;; Registry v2 API
 
-(defn registries
+(defn registries-v2
   [owner]
-  (-> (cc/registries owner)
+  (-> (cc/registries-v2 owner)
       (cmi/->registries)))
 
-(defn registry
+(defn registry-v2
   [registry-id]
-  (-> (cc/registry registry-id)
+  (-> (cc/registry-v2 registry-id)
       (cmi/->registry)))
 
-(defn registry-exist?
-  [registry]
-  (cc/registry-exist? registry))
-
-(defn registry-info
+(defn registry-v2-info
   [{:keys [_id password] :as registry}]
-  (let [old-passwd (:password (cc/registry _id))]
+  (let [old-passwd (:password (cc/registry-v2 _id))]
     (if password
       (rc/info registry)
       (rc/info (assoc registry :password old-passwd)))))
 
-(defn delete-registry
+(defn delete-v2-registry
   [registry-id]
-  (->> (registry registry-id)
-       (cc/delete-registry)))
+  (->> (registry-v2 registry-id)
+       (cc/delete-v2-registry)))
 
-(defn create-registry
+(defn create-v2-registry
   [registry]
-  (when (not (registry-exist? registry))
-    (cc/create-registry registry)))
+  (cc/create-v2-registry registry))
 
-(defn update-registry
+(defn update-v2-registry
   [registry-id registry-delta]
-  (->> (cc/update-registry (cc/registry registry-id) registry-delta)
+  (->> (cc/update-v2-registry (cc/registry-v2 registry-id) registry-delta)
        (cmi/->registry)))
 
-(defn registry-repositories
+(defn registry-v2-repositories
   [registry-id]
-  (->> (cc/registry registry-id)
+  (->> (cc/registry-v2 registry-id)
        (rc/repositories)
        (rmi/->repositories)))
 
-;;; Amazon ECR API
+;;; Registry AWS ECR API
 
-(defn ecrs
+(defn registries-ecr
   [owner]
-  (-> (cc/ecrs owner)
+  (-> (cc/registries-ecr owner)
       (cmi/->ecrs)))
 
-(defn ecr
+(defn registry-ecr
   [ecr-id]
-  (-> (cc/ecr ecr-id)
+  (-> (cc/registry-ecr ecr-id)
       (cmi/->ecr)))
 
-(defn ecr-token
+(defn registry-ecr-token
   [{:keys [_id accessKey] :as ecr}]
-  (let [old-access-key (:accessKey (cc/ecr _id))]
+  (let [old-access-key (:accessKey (cc/registry-ecr _id))]
     (if accessKey
       (awsc/ecr-token ecr)
       (awsc/ecr-token (assoc ecr :accessKey old-access-key)))))
 
-(defn ecr-password
+(defn registry-ecr-password
   [ecr]
-  (-> (ecr-token ecr)
+  (-> (registry-ecr-token ecr)
       :authorizationToken
       (base64/decode)
       (str/split #":")
       (second)))
 
-(defn ecr-exist?
+(defn create-ecr-registry
   [ecr]
-  (cc/ecr-exist? ecr))
+  (cc/create-ecr-registry ecr))
 
-(defn create-ecr
-  [ecr]
-  (when (not (ecr-exist? ecr))
-    (cc/create-ecr ecr)))
-
-(defn update-ecr
+(defn update-ecr-registry
   [ecr-id ecr-delta]
-  (->> (cc/update-ecr (cc/ecr ecr-id) ecr-delta)
+  (->> (cc/update-ecr-registry (cc/registry-ecr ecr-id) ecr-delta)
        (cmi/->ecr)))
 
-(defn delete-ecr
+(defn delete-ecr-registry
   [ecr-id]
-  (->> (ecr ecr-id)
-       (cc/delete-ecr)))
+  (->> (registry-ecr ecr-id)
+       (cc/delete-ecr-registry)))
 
-(defn ecr->v2
+(defn registry-ecr->v2
   [ecr]
   (-> ecr
       (assoc :username "AWS")
-      (assoc :password (ecr-password ecr))
+      (assoc :password (registry-ecr-password ecr))
       (assoc :withAuth true)))
 
-(defn ecr-repositories
+(defn registry-ecr-repositories
   [ecr-id]
-  (->> (cc/ecr ecr-id)
-       (ecr->v2)
+  (->> (cc/registry-ecr ecr-id)
+       (registry-ecr->v2)
        (rc/repositories)
        (rmi/->repositories)))
+
+;;; Registry Azure ACR API
+
+(defn registries-acr
+  [owner]
+  (-> (cc/registries-acr owner)
+      (cmi/->acrs)))
+
+(defn registry-acr
+  [acr-id]
+  (-> (cc/registry-acr acr-id)
+      (cmi/->acr)))
+
+(defn acr-url
+  [acr]
+  (str "https://" (:name acr) ".azurecr.io"))
+
+(defn registry-acr->v2
+  [acr]
+  (-> acr
+      (assoc :username (:spId acr))
+      (assoc :password (:spPassword acr))
+      (assoc :withAuth true)))
+
+(defn registry-acr-info
+  [{:keys [_id spPassword] :as acr}]
+  (let [old-passwd (:spPassword (cc/registry-acr _id))
+        acr-v2 (registry-acr->v2 acr)]
+    (if spPassword
+      (rc/info acr-v2)
+      (rc/info (assoc acr-v2 :password old-passwd)))))
+
+(defn create-acr-registry
+  [acr]
+  (cc/create-acr-registry acr))
+
+(defn update-acr-registry
+  [acr-id acr-delta]
+  (->> (cc/update-acr-registry (cc/registry-acr acr-id) acr-delta)
+       (cmi/->acr)))
+
+(defn delete-acr-registry
+  [ecr-id]
+  (->> (registry-acr ecr-id)
+       (cc/delete-acr-registry)))
+
+(defn registry-acr-repositories
+  [ecr-id]
+  (->> (cc/registry-acr ecr-id)
+       (registry-acr->v2)
+       (rc/repositories)
+       (rmi/->repositories)))
+
+;;; Registry Gitlab API
+
+(defn registries-gitlab
+  [owner]
+  (-> (cc/registries-gitlab owner)
+      (cmi/->gitlab-registries)))
+
+(defn registry-gitlab
+  [registry-id]
+  (-> (cc/registry-gitlab registry-id)
+      (cmi/->gitlab-registry)))
+
+(defn registry-gitlab->v2
+  [registry]
+  (-> registry
+      (assoc :password (:token registry))
+      (assoc :withAuth true)))
+
+(defn registry-gitlab-info
+  [{:keys [_id token] :as registry}]
+  (let [old-passwd (:token (cc/registry-gitlab _id))
+        gitlab-v2 (registry-gitlab->v2 registry)]
+    (if token
+      (rc/info gitlab-v2)
+      (rc/info (assoc gitlab-v2 :password old-passwd)))))
+
+(defn create-gitlab-registry
+  [registry]
+  (cc/create-gitlab-registry registry))
+
+(defn update-gitlab-registry
+  [registry-id registry-delta]
+  (->> (cc/update-gitlab-registry (cc/registry-gitlab registry-id) registry-delta)
+       (cmi/->gitlab-registry)))
+
+(defn delete-gitlab-registry
+  [registry-id]
+  (->> (registry-gitlab registry-id)
+       (cc/delete-gitlab-registry)))
+
+(defn gitlab-group-projects
+  [registry]
+  (flatten
+    (map
+      (fn [x]
+        (gc/group-projects registry (:id x)))
+      (gc/groups registry))))
+
+(defn gitlab-membership-projects
+  [registry]
+  (gc/projects registry))
+
+(defn gitlab-projects
+  [registry]
+  (into #{}
+        (concat
+          (gitlab-group-projects registry)
+          (gitlab-membership-projects registry))))
+
+(def gitlab-projects-memo
+  (memo/ttl
+    gitlab-projects :ttl/threshold 3600000))
+
+(defn registry-gitlab-repositories
+  [registry-id]
+  (let [registry (cc/registry-gitlab registry-id)]
+    (->> (gitlab-projects-memo registry)
+         (map (fn [x]
+                (gc/project-repositories registry (:id x))))
+         (flatten)
+         (map (fn [{:keys [path]}]
+                (into {:id   (hash path)
+                       :name path}))))))
 
 ;;; Stackfile API
 
@@ -419,18 +537,18 @@
 
 ;;; Registry lookup API
 
-(defn- dockeruser-by-namespace
-  "Return dockeruser matching given namespace"
+(defn- dockerhub-by-namespace
+  "Return dockerhub account matching given namespace"
   [owner dockeruser-namespace]
-  (->> (cc/dockerusers owner)
+  (->> (cc/dockerhubs owner)
        (filter #(contains? (set (:namespaces %)) dockeruser-namespace))
        (first)))
 
-(defn- dockeruser-by-stackfile
+(defn- dockerhub-by-stackfile
   "Return best matching dockerhub account for given stackfile spec"
   [owner stackfile-spec]
   (let [namespaces (stackfile-dockerhub-distributions stackfile-spec)]
-    (->> (cc/dockerusers owner)
+    (->> (cc/dockerhubs owner)
          (map #(hash-map
                  :user-id (:_id %)
                  :matches (get
@@ -442,13 +560,20 @@
          (sort-by :matches)
          (last)
          :user-id
-         (cc/dockeruser))))
+         (cc/dockerhub))))
 
 (defn- supported-registries
   "List all supported v2 type registries"
   [owner]
-  (concat (cc/registries owner)
-          (cc/ecrs owner)))
+  (concat (cc/registries-v2 owner)
+          (cc/registries-ecr owner)
+          (cc/registries-acr owner)
+          (cc/registries-gitlab owner)))
+
+(def supported-registry-types #{:dockerhub :v2 :ecr :acr :gitlab})
+
+(defn supported-registry-type? [type]
+  (contains? supported-registry-types type))
 
 (defn- registry-by-url
   "Return registry account matching given url"
@@ -462,7 +587,9 @@
                  {:status 401
                   :body   {:error (str "No matching registry ( " registry-address " ) linked with Swarmpit")}}))
       (case (:type registry)
-        "ecr" (ecr->v2 registry)
+        "ecr" (registry-ecr->v2 registry)
+        "acr" (registry-acr->v2 registry)
+        "gitlab" (registry-gitlab->v2 registry)
         registry))))
 
 (defn- registries-by-stackfile
@@ -482,10 +609,10 @@
         (rc/tags repository-name)
         :tags)))
 
-(defn- dockeruser-repository-tags
+(defn- dockerhub-repository-tags
   [owner repository-name]
   (let [dockeruser-namespace (du/distribution-id repository-name)]
-    (-> (dockeruser-by-namespace owner dockeruser-namespace)
+    (-> (dockerhub-by-namespace owner dockeruser-namespace)
         (dac/token repository-name)
         :token
         (drc/tags repository-name)
@@ -503,7 +630,7 @@
   [owner repository-name]
   (cond
     (du/library? repository-name) (library-repository-tags repository-name)
-    (du/dockerhub? repository-name) (dockeruser-repository-tags owner repository-name)
+    (du/dockerhub? repository-name) (dockerhub-repository-tags owner repository-name)
     :else (registry-repository-tags owner repository-name)))
 
 ;;; Repository Ports API
@@ -518,10 +645,10 @@
         :config
         (dmi/->image-ports))))
 
-(defn- dockeruser-repository-ports
+(defn- dockerhub-repository-ports
   [owner repository-name repository-tag]
   (let [dockeruser-namespace (du/distribution-id repository-name)]
-    (-> (dockeruser-by-namespace owner dockeruser-namespace)
+    (-> (dockerhub-by-namespace owner dockeruser-namespace)
         (dac/token repository-name)
         :token
         (drc/manifest repository-name repository-tag)
@@ -543,7 +670,7 @@
   [owner repository-name repository-tag]
   (cond
     (du/library? repository-name) (library-repository-ports repository-name repository-tag)
-    (du/dockerhub? repository-name) (dockeruser-repository-ports owner repository-name repository-tag)
+    (du/dockerhub? repository-name) (dockerhub-repository-ports owner repository-name repository-tag)
     :else (registry-repository-ports owner repository-name repository-tag)))
 
 ;;; Repository Digest API
@@ -555,10 +682,10 @@
     (-> (registry-by-url owner registry-address)
         (rc/digest repository-name repository-tag))))
 
-(defn- dockeruser-repository-digest
+(defn- dockerhub-repository-digest
   [owner repository-name repository-tag]
   (let [dockeruser-namespace (du/distribution-id repository-name)]
-    (-> (dockeruser-by-namespace owner dockeruser-namespace)
+    (-> (dockerhub-by-namespace owner dockeruser-namespace)
         (dac/token repository-name)
         :token
         (drc/digest repository-name repository-tag))))
@@ -574,7 +701,7 @@
   [owner repository-name repository-tag]
   (cond
     (du/library? repository-name) (library-repository-digest repository-name repository-tag)
-    (du/dockerhub? repository-name) (dockeruser-repository-digest owner repository-name repository-tag)
+    (du/dockerhub? repository-name) (dockerhub-repository-digest owner repository-name repository-tag)
     :else (registry-repository-digest owner repository-name repository-tag)))
 
 ;;; Task API
@@ -610,7 +737,8 @@
   ([label networks]
    (dmi/->services (dc/services label)
                    (dc/tasks)
-                   networks)))
+                   networks
+                   (dc/info))))
 
 (defn resources-by-services
   [services resource source]
@@ -642,7 +770,8 @@
   [service-filter]
   (dmi/->services (filter #(service-filter %) (dc/services))
                   (dc/tasks)
-                  (dc/networks)))
+                  (dc/networks)
+                  (dc/info)))
 
 (defn services-by-network
   [network-name]
@@ -672,7 +801,8 @@
   [service-id]
   (dmi/->service (dc/service service-id)
                  (dc/service-tasks service-id)
-                 (dc/networks)))
+                 (dc/networks)
+                 (dc/info)))
 
 (defn service-networks
   [service-id]
@@ -691,21 +821,45 @@
   (->> (dc/service-tasks service-id)
        (map :ID)))
 
+(defn service-agent-logs
+  "Fetch service log via swarmpit agent.
+   Check whether there is agent associated with service task (unless static configuration)
+   and fetch logs accordingly. Finally format & aggregate log elements."
+  [service-id since]
+  (let [config-agent-url (cfg/config :agent-url)
+        agent-tasks (dc/service-tasks-by-label :swarmpit.agent true)
+        agent-addresses (dmi/->agent-addresses-by-nodes agent-tasks)
+        service-tasks (dc/service-tasks service-id)
+        service-containers (dmi/->service-tasks-by-container service-tasks)]
+    (->> service-containers
+         (pmap (fn [[k v]]
+                 (let [dynamic-agent-url (get agent-addresses (:node v))
+                       agent-url (or config-agent-url dynamic-agent-url)]
+                   (when agent-url
+                     (-> (sac/logs agent-url k since)
+                         (dl/format-log (:task v)))))))
+         (flatten)
+         (dl/parse-agent-log))))
+
+(defn service-native-logs
+  "Fetch service log via native service api."
+  [service-id since]
+  (let [valid-since (if (or (time/valid? since)
+                            (nil? since))
+                      since
+                      (time/to-unix-past
+                        (time/since-to-minutes since)))]
+    (-> (dc/service-logs service-id valid-since)
+        (dl/parse-service-log)
+        (or '()))))
+
 (defn service-logs
-  [service-id from-timestamp]
-  (letfn [(log-task [log tasks] (->> tasks
-                                     (filter #(= (:task log) (:id %)))
-                                     (first)))]
-    (let [tasks (tasks)]
-      (->> (dc/service-logs service-id)
-           (dl/parse-log)
-           (filter #(= 1 (compare (:timestamp %) from-timestamp)))
-           (map
-             (fn [i]
-               (let [task (log-task i tasks)]
-                 (-> i
-                     (assoc :taskName (:taskName task))
-                     (assoc :taskNode (:nodeName task))))))))))
+  "Fetch logs via agent by default, fallback to native service api"
+  [service-id since]
+  (try
+    (service-agent-logs service-id since)
+    (catch Exception _
+      (service-native-logs service-id since))))
 
 (defn delete-service
   [service-id]
@@ -746,7 +900,7 @@
     (dmo/->auth-config
       (cond
         (du/library? repository-name) nil
-        (du/dockerhub? repository-name) (dockeruser-by-namespace owner distribution-id)
+        (du/dockerhub? repository-name) (dockerhub-by-namespace owner distribution-id)
         :else (registry-by-url owner distribution-id)))))
 
 (defn create-service
@@ -963,10 +1117,12 @@
   [owner stackfile-spec]
   (let [distributions (remove nil?
                               (conj (registries-by-stackfile owner stackfile-spec)
-                                    (dockeruser-by-stackfile owner stackfile-spec)))]
+                                    (dockerhub-by-stackfile owner stackfile-spec)))]
     (doseq [{:keys [type username password url] :as distro} distributions]
       (case type
-        "ecr" (dcli/login "AWS" (ecr-password distro) url)
+        "ecr" (dcli/login "AWS" (registry-ecr-password distro) url)
+        "acr" (dcli/login (:spId distro) (:spPassword distro) url)
+        "gitlab" (dcli/login (:username distro) (:token distro) url)
         (dcli/login username password url)))))
 
 (defn create-stack

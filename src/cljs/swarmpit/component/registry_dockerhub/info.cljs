@@ -7,7 +7,6 @@
             [swarmpit.component.state :as state]
             [swarmpit.component.mixin :as mixin]
             [swarmpit.component.progress :as progress]
-            [swarmpit.component.common :as common]
             [swarmpit.component.dialog :as dialog]
             [swarmpit.component.action-menu :as menu]
             [swarmpit.url :refer [dispatch!]]
@@ -21,7 +20,8 @@
 (defn- user-handler
   [user-id]
   (ajax/get
-    (routes/path-for-backend :dockerhub-user {:id user-id})
+    (routes/path-for-backend :registry {:id           user-id
+                                        :registryType :dockerhub})
     {:state      [:loading?]
      :on-success (fn [{:keys [response]}]
                    (state/set-value response state/form-value-cursor))}))
@@ -29,7 +29,8 @@
 (defn- delete-user-handler
   [user-id]
   (ajax/delete
-    (routes/path-for-backend :dockerhub-user-delete {:id user-id})
+    (routes/path-for-backend :registry-delete {:id           user-id
+                                               :registryType :dockerhub})
     {:on-success (fn [_]
                    (dispatch!
                      (routes/path-for-frontend :registry-list))
@@ -41,7 +42,8 @@
 
 (defn form-actions
   [id]
-  [{:onClick #(dispatch! (routes/path-for-frontend :reg-dockerhub-edit {:id id}))
+  [{:onClick #(dispatch! (routes/path-for-frontend :registry-edit {:registryType :dockerhub
+                                                                   :id           id}))
     :icon    (comp/svg icon/edit-path)
     :name    "Edit account"}
    {:onClick #(state/update-value [:open] true dialog/dialog-cursor)

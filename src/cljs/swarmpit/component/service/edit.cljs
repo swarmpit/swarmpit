@@ -12,6 +12,7 @@
             [swarmpit.component.service.form-mounts :as mounts]
             [swarmpit.component.service.form-secrets :as secrets]
             [swarmpit.component.service.form-configs :as configs]
+            [swarmpit.component.service.form-hosts :as hosts]
             [swarmpit.component.service.form-variables :as variables]
             [swarmpit.component.service.form-labels :as labels]
             [swarmpit.component.service.form-logdriver :as logdriver]
@@ -44,24 +45,20 @@
      :on-success
             (fn [{:keys [response]}]
               (settings/tags-handler (-> response :repository :name))
-              (state/set-value (select-keys response [:repository :version :serviceName :mode :replicas :stack :command :tty]) settings/form-value-cursor)
-              (state/set-value (-> (:ports response)
-                                   (state/assoc-keys)) ports/form-value-cursor)
-              (state/set-value (-> (:mounts response)
-                                   (state/assoc-keys)) mounts/form-value-cursor)
+              (state/set-value (select-keys response [:repository :version :serviceName :mode :replicas :stack :agent :command :tty :user :dir :healthcheck :hosts]) settings/form-value-cursor)
+              (state/set-value (-> (:ports response) (state/assoc-keys)) ports/form-value-cursor)
+              (state/set-value (-> (:mounts response) (state/assoc-keys)) mounts/form-value-cursor)
               (state/set-value (->> (:secrets response)
                                     (map #(select-keys % [:secretName :secretTarget]))
                                     (state/assoc-keys)) secrets/form-value-cursor)
               (state/set-value (->> (:configs response)
                                     (map #(select-keys % [:configName :configTarget]))
                                     (state/assoc-keys)) configs/form-value-cursor)
-              (state/set-value (-> (:variables response)
-                                   (state/assoc-keys)) variables/form-value-cursor)
-              (state/set-value (-> (:labels response)
-                                   (state/assoc-keys)) labels/form-value-cursor)
+              (state/set-value (-> (:hosts response) (state/assoc-keys)) hosts/form-value-cursor)
+              (state/set-value (-> (:variables response) (state/assoc-keys)) variables/form-value-cursor)
+              (state/set-value (-> (:labels response) (state/assoc-keys)) labels/form-value-cursor)
               (state/set-value (:logdriver response) logdriver/form-value-cursor)
-              (state/set-value (-> (get-in response [:logdriver :opts])
-                                   (state/assoc-keys)) logdriver/form-value-opts-cursor)
+              (state/set-value (-> (get-in response [:logdriver :opts]) (state/assoc-keys)) logdriver/form-value-opts-cursor)
               (state/set-value (:resources response) resources/form-value-cursor)
               (state/set-value (:deployment response) deployment/form-value-cursor))}))
 
@@ -82,6 +79,7 @@
         networks (state/get-value networks/form-value-cursor)
         secrets (state/get-value secrets/form-value-cursor)
         configs (state/get-value configs/form-value-cursor)
+        hosts (state/get-value hosts/form-value-cursor)
         variables (state/get-value variables/form-value-cursor)
         labels (state/get-value labels/form-value-cursor)
         logdriver (state/get-value logdriver/form-value-cursor)
@@ -95,6 +93,7 @@
                        (assoc :mounts (mounts/normalize))
                        (assoc :secrets (when-not (empty? (state/get-value (conj secrets/form-state-cursor :list))) secrets))
                        (assoc :configs (when-not (empty? (state/get-value (conj configs/form-state-cursor :list))) configs))
+                       (assoc :hosts hosts)
                        (assoc :variables variables)
                        (assoc :labels labels)
                        (assoc :logdriver logdriver)
@@ -133,6 +132,7 @@
       (service-networks-handler id)
       (mounts/volumes-handler)
       (networks/networks-handler)
+      (logdriver/drivers-handler)
       (secrets/secrets-handler)
       (when (<= 1.30 (state/get-value [:docker :api]))
         (configs/configs-handler))
@@ -201,6 +201,18 @@
          :onClick configs/add-item}
         (comp/svg icon/add-small-path) "Add config"))
     (configs/form)))
+
+(rum/defc form-hosts < rum/static []
+  (comp/grid
+    {:item true
+     :xs   12}
+    (form/section
+      "Extra hosts"
+      (comp/button
+        {:color   "primary"
+         :onClick hosts/add-item}
+        (comp/svg icon/add-small-path) "Add host mapping"))
+    (hosts/form)))
 
 (rum/defc form-variables < rum/static []
   (comp/grid
@@ -280,6 +292,7 @@
                  (form-secrets)
                  (when (<= 1.30 (state/get-value [:docker :api]))
                    (form-configs))
+                 (form-hosts)
                  (form-variables)
                  (form-labels)
                  (form-logdriver)

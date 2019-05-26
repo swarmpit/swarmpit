@@ -33,21 +33,42 @@
       :body))
 
 (defn service-tasks
-  [id]
-  (-> (execute {:method  :GET
-                :api     "/tasks"
-                :options {:query-params {:filters (generate-string {:service [id]})}}})
-      :body))
+  ([id]
+   (service-tasks id false))
+  ([id running?]
+   (-> (execute {:method  :GET
+                 :api     "/tasks"
+                 :options {:query-params
+                           {:filters
+                            (generate-string
+                              (merge {:service [id]}
+                                     (when running?
+                                       {:desired-state ["running"]})))}}})
+       :body)))
+
+(defn service-tasks-by-label
+  ([label]
+   (service-tasks-by-label label false))
+  ([label running?]
+   (-> (execute {:method  :GET
+                 :api     "/tasks"
+                 :options {:query-params
+                           {:filters
+                            (generate-string
+                              (merge {:label [label]}
+                                     (when running?
+                                       {:desired-state ["running"]})))}}})
+       :body)))
 
 (defn service-logs
-  [id]
+  [id since]
   (-> (execute {:method  :GET
                 :api     (str "/services/" id "/logs")
                 :options {:query-params {:details    true
                                          :stdout     true
                                          :stderr     true
                                          :timestamps true
-                                         :tail       2000}}})
+                                         :since      since}}})
       :body))
 
 (defn delete-service
@@ -281,6 +302,14 @@
                   :api     "/tasks"
                   :options {:query-params query-params}})
         :body)))
+
+;; System
+
+(defn info
+  []
+  (-> (execute {:method :GET
+                :api    "/info"})
+      :body))
 
 (defn version
   []

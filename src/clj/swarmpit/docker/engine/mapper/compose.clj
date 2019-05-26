@@ -4,7 +4,7 @@
             [swarmpit.utils :refer [clean select-keys* name-value->map]]
             [flatland.ordered.map :refer [ordered-map]]
             [swarmpit.docker.utils :refer [trim-stack in-stack? alias]]
-            [swarmpit.docker.engine.mapper.inbound :refer [autoredeploy-label]]
+            [swarmpit.docker.engine.mapper.inbound :refer [autoredeploy-label agent-label]]
             [swarmpit.yaml :refer [->yaml]])
   (:refer-clojure :exclude [alias]))
 
@@ -19,7 +19,11 @@
 
 (defn add-swarmpit-labels
   [service map]
-  (merge map (when (-> service :deployment :autoredeploy) {autoredeploy-label "true"})))
+  (merge map
+         (when (-> service :deployment :autoredeploy)
+           {autoredeploy-label "true"})
+         (when (-> service :agent)
+           {agent-label "true"})))
 
 (defn targetable
   [source-key target-key item]
@@ -48,6 +52,15 @@
    (ordered-map
      :image (-> service :repository :image)
      :command (some->> service :command (str/join " "))
+     :user (-> service :user)
+     :working_dir (-> service :dir)
+     :extra_hosts (->> service :hosts
+                       (map #(str (:name %) ":" (:value %))))
+     :healthcheck (let [healthcheck (-> service :healthcheck)]
+                    (when healthcheck
+                      (merge healthcheck
+                             {:interval (str (:interval healthcheck) "s")}
+                             {:timeout (str (:timeout healthcheck) "s")})))
      :tty (-> service :tty)
      :environment (-> service :variables (name-value->map))
      :ports (->> service :ports

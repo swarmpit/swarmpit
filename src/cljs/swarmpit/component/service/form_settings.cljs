@@ -186,5 +186,8 @@
           (form-replicas replicas)))
       (comp/grid
         {:item true
+         :xs   12} (networks/form))
+      (comp/grid
+        {:item true
          :xs   12}
         (form-command (str/join " " command))))))

@@ -24,6 +24,7 @@
 
 (def stack-label :com.docker.stack.namespace)
 (def autoredeploy-label :swarmpit.service.deployment.autoredeploy)
+(def agent-label :swarmpit.agent)
 
 (defn ->image-ports
   [image-config]
@@ -145,6 +146,7 @@
       :state (get-in task [:Status :State])
       :status {:error (get-in task [:Status :Err])}
       :desiredState (:DesiredState task)
+      :logdriver (get-in task [:Spec :LogDriver :Name])
       :serviceName (or service-name service-id)
       :resources (->service-resources (get-in service [:Spec :TaskTemplate]))
       :nodeId node-id
@@ -198,6 +200,15 @@
                      :stack         (-> v :VolumeOptions :Labels stack-label)}))
        (into [])))
 
+(defn ->service-hosts
+  [service-spec]
+  (->> (get-in service-spec [:TaskTemplate :ContainerSpec :Hosts])
+       (map (fn [p]
+              (let [host (str/split p #" ")]
+                {:name  (second host)
+                 :value (first host)})))
+       (into [])))
+
 (defn ->service-variables
   [service-spec]
   (->> (get-in service-spec [:TaskTemplate :ContainerSpec :Env])
@@ -213,6 +224,10 @@
        (filter #(not (or (str/starts-with? (name (key %)) "swarmpit")
                          (str/starts-with? (name (key %)) "com.docker"))))
        (map->name-value)))
+
+(defn ->service-log-driver
+  [service-task-template info]
+  (or (get-in service-task-template [:LogDriver :Name]) (:LoggingDriver info)))
 
 (defn ->service-log-options
   [service-task-template]
@@ -283,10 +298,6 @@
   (-> (filter #(not (= (:DesiredState %) "shutdown")) service-tasks)
       (count)))
 
-(defn ->service-info-status
-  [service-replicas-running service-replicas]
-  (str service-replicas-running " / " service-replicas))
-
 (defn ->service-state
   [service-replicas-running service-replicas]
   (if (zero? service-replicas-running)
@@ -299,6 +310,19 @@
   [service-labels]
   (let [value (autoredeploy-label service-labels)]
     (= "true" value)))
+
+(defn ->service-agent
+  [service-labels]
+  (when (contains? service-labels agent-label)
+    true))
+
+(defn ->service-healthcheck
+  [service-healthcheck]
+  (when service-healthcheck
+    {:test     (:Test service-healthcheck)
+     :interval (nano-> (:Interval service-healthcheck))
+     :timeout  (nano-> (:Timeout service-healthcheck))
+     :retries  (:Retries service-healthcheck)}))
 
 (defn ->service-image-details
   [image-name]
@@ -313,8 +337,8 @@
 
 (defn ->service
   ([service]
-   (->service service nil nil))
-  ([service tasks networks]
+   (->service service nil nil nil))
+  ([service tasks networks info]
    (let [service-spec (:Spec service)
          service-labels (:Labels service-spec)
          service-task-template (:TaskTemplate service-spec)
@@ -328,7 +352,8 @@
          image (get-in service-task-template [:ContainerSpec :Image])
          image-info (str/split image #"@")
          image-name (first image-info)
-         image-digest (second image-info)]
+         image-digest (second image-info)
+         healthcheck (get-in service-task-template [:ContainerSpec :Healthcheck])]
      (array-map
        :id service-id
        :version (get-in service [:Version :Index])
@@ -340,6 +365,7 @@
        :serviceName service-name
        :mode service-mode
        :stack (-> service-labels stack-label)
+       :agent (->service-agent service-labels)
        :replicas replicas
        :state (if (= service-mode "replicated")
                 (->service-state replicas-running replicas)
@@ -355,11 +381,15 @@
        :networks (->service-networks service networks)
        :secrets (->service-secrets service-spec)
        :configs (->service-configs service-spec)
+       :hosts (->service-hosts service-spec)
        :variables (->service-variables service-spec)
        :labels (->service-labels service-labels)
        :command (get-in service-task-template [:ContainerSpec :Args])
+       :user (get-in service-task-template [:ContainerSpec :User])
+       :dir (get-in service-task-template [:ContainerSpec :Dir])
        :tty (get-in service-task-template [:ContainerSpec :TTY])
-       :logdriver {:name (or (get-in service-task-template [:LogDriver :Name]) "json-file")
+       :healthcheck (->service-healthcheck healthcheck)
+       :logdriver {:name (->service-log-driver service-task-template info)
                    :opts (->service-log-options service-task-template)}
        :resources (->service-resources service-task-template)
        :deployment {:update          (->service-deployment-update service-spec)
@@ -371,9 +401,9 @@
                     :placement       (->service-placement-constraints service-spec)}))))
 
 (defn ->services
-  [services tasks networks]
+  [services tasks networks info]
   (->> services
-       (map #(->service % tasks networks))
+       (map #(->service % tasks networks info))
        (into [])))
 
 (defn ->volume
@@ -425,3 +455,31 @@
   (->> configs
        (map ->config)
        (into [])))
+
+(defn ->agent-address
+  [agent-ip]
+  (str "http://" agent-ip ":8080"))
+
+(defn ->agent-addresses-by-nodes
+  [agent-tasks]
+  (into {}
+        (map
+          #(hash-map (:NodeID %)
+                     (-> (:NetworksAttachments %)
+                         (first)
+                         :Addresses
+                         (first)
+                         (str/split #"/")
+                         (first)
+                         (->agent-address)))
+          agent-tasks)))
+
+(defn ->service-tasks-by-container
+  [service-tasks]
+  (into {}
+        (map
+          #(hash-map
+             (get-in % [:Status :ContainerStatus :ContainerID])
+             {:node (:NodeID %)
+              :task (:ID %)})
+          service-tasks)))

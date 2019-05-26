@@ -20,6 +20,26 @@
        (map ->ecr)
        (into [])))
 
+(defn ->acr
+  [acr]
+  (dissoc acr :spPassword))
+
+(defn ->acrs
+  [acrs]
+  (->> acrs
+       (map ->acr)
+       (into [])))
+
+(defn ->gitlab-registry
+  [registry]
+  (dissoc registry :token))
+
+(defn ->gitlab-registries
+  [registries]
+  (->> registries
+       (map ->gitlab-registry)
+       (into [])))
+
 (defn ->user
   [user]
   (dissoc user :password))
@@ -30,12 +50,12 @@
        (map ->user)
        (into [])))
 
-(defn ->dockeruser
+(defn ->dockerhub
   [dockeruser]
   (dissoc dockeruser :password))
 
-(defn ->dockerusers
+(defn ->dockerhubs
   [dockerusers]
   (->> dockerusers
-       (map ->dockeruser)
+       (map ->dockerhub)
        (into [])))
