@@ -47,7 +47,7 @@
   (testing "timeout"
     (is (thrown?
           ExceptionInfo #"Docker error: Request timeout"
-          (with-redefs [swarmpit.docker.engine.http/timeout 0]
+          (with-redefs [swarmpit.config/config {:docker-http-timeout 0}]
             (-> (execute {:method :GET
                           :api    "/services"})
                 :body)))))

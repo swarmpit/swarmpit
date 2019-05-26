@@ -34,8 +34,6 @@
         api (str "/v" (config :docker-api))]
     (str server api uri)))
 
-(def timeout 5000)
-
 (defn execute
   [{:keys [method api options]}]
   (execute-in-scope {:method        method
@@ -43,5 +41,5 @@
                      :options       (merge {:connection-manager (make-conn-manager)
                                             :retry-handler      (fn [& _] false)} options)
                      :scope         "Docker"
-                     :timeout       timeout
+                     :timeout       (config :docker-http-timeout)
                      :error-handler :message}))
