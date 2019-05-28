@@ -7,7 +7,6 @@
          :docker-http-timeout 5000
          :db-url              "http://localhost:5984"
          :agent-url           nil
-         :base-url            "/"
          :work-dir            "/tmp"
          :password-hashing    {:alg        :pbkdf2+sha512
                                :iterations 200000}}))
@@ -18,7 +17,6 @@
         :docker-http-timeout (env :swarmpit-docker-http-timeout)
         :db-url              (env :swarmpit-db)
         :agent-url           (env :swarmpit-agent-url)
-        :base-url            (env :swarmpit-base-url)
         :work-dir            (env :swarmpit-workdir)}
        (into {} (remove #(nil? (val %))))))
 
