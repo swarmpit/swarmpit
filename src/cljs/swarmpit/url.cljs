@@ -1,10 +1,9 @@
 (ns swarmpit.url
-  (:require [clojure.string :refer [split]]
-            [swarmpit.router :as router]))
+  (:require [clojure.string :refer [split]]))
 
 (defn dispatch!
   [url]
-  (router/set-location url))
+  (set! js/document.location url))
 
 (defn url
   "Get current URL address"
@@ -16,3 +15,11 @@
   []
   (->> (split (url) #"\?")
        (second)))
+
+(defn query-params
+  "Parse URL parameters into a hashmap"
+  []
+  (->> (split (query-string) #"&")
+       (map #(split % #"="))
+       (map (fn [[k v]] [(keyword k) v]))
+       (into {})))

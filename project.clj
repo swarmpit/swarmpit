@@ -36,8 +36,8 @@
                  [clj-http "3.8.0"]
                  [clj-yaml "0.4.0"]
                  [cljs-ajax "0.5.8"]
+                 [metosin/reitit "0.3.7"]
                  [bidi "2.0.16"]
-                 [kibu/pushy "0.3.8"]
                  [cheshire "5.6.3"]
                  [digest "1.4.5"]
                  [environ "1.1.0"]
@@ -78,7 +78,7 @@
                 :figwheel     true
                 :compiler     {:main                 swarmpit.app
                                :preloads             [devtools.preload]
-                               :asset-path           "/js/out"
+                               :asset-path           "js/out"
                                :output-to            "resources/public/js/main.js"
                                :output-dir           "resources/public/js/out"
                                :infer-externs        true

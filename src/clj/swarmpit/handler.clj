@@ -1,15 +1,10 @@
 (ns swarmpit.handler
   (:require [clojure.walk :refer [keywordize-keys]]
-            [net.cgrand.enlive-html :as html :refer [deftemplate]]
+            [clojure.java.io :as io]
             [swarmpit.api :as api]
-            [swarmpit.config :as cfg]
             [swarmpit.slt :as slt]
             [swarmpit.token :as token]
             [swarmpit.version :as version]))
-
-(deftemplate index "index.html"
-  [{:keys [base-url]}]
-  [:base] (html/set-attr :href base-url))
 
 (defn resp-error
   [status response]
@@ -46,7 +41,7 @@
   (fn [_]
     {:status  200
      :headers {"Content-Type" "text/html"}
-     :body    (apply str (index {:base-url (cfg/config :base-url)}))}))
+     :body    (slurp (io/resource "index.html"))}))
 
 ;; Version handler
 

@@ -12,10 +12,10 @@
 (defn- login-redirect
   []
   "Redirect to login if authentication failed and store redirect location."
-  (let [location js/document.location.pathname]
-    (when (not= "/login" location)
+  (let [location js/window.location.hash]
+    (when (not= "#/login" location)
       (state/set-value location [:redirect-location]))
-    (router/set-route {:handler :login})))
+    (router/set-location {:handler :login})))
 
 (defn- command-state
   "Update given form state if form origin."
@@ -31,7 +31,7 @@
     (and (= 401 status)
          (= "swarmpit" (:x-backend-server headers))) (login-redirect)
     (and (= 403 status)
-         (= "swarmpit" (:x-backend-server headers))) (router/set-route {:handler :unauthorized})
+         (= "swarmpit" (:x-backend-server headers))) (router/set-location {:handler :unauthorized})
     (= 404 status) (router/not-found! body)
     (= 500 status) (message/error (str (or (:cause body) "Server request failed")))
     (= 502 status) (message/error "Server request failed. Bad Gateway")

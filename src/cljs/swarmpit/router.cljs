@@ -1,47 +1,47 @@
 (ns swarmpit.router
-  (:require [bidi.bidi :as bidi]
+  (:require [bidi.router :as br]
             [cemerick.url :refer [query->map]]
-            [clojure.string :as string]
             [clojure.walk :refer [keywordize-keys]]
-            [pushy.core :as pushy]
             [swarmpit.component.state :as state]
+            [swarmpit.url :refer [query-string]]
             [swarmpit.routes :as routes]))
 
-(defonce !route (atom {}))
+(def cursor [:route])
 
-(defn- query-string []
-  (when-not (string/blank? js/location.search)
-    (.substring js/location.search 1)))
+(defonce !router (atom nil))
+
+(defonce !route (atom nil))
+
+(defn set-location
+  [location]
+  (br/set-location! @!router location))
+
+(defn set-route
+  [location]
+  (reset! !route location))
 
 (add-watch !route :watcher
- (fn [key atom old-location new-location]
-   (let [query-params (keywordize-keys (query->map (query-string)))
-         route-params (:route-params new-location)
-         handler (:handler new-location)]
-     (state/set-value {:handler handler
-                       :params  (merge route-params query-params)} state/route-cursor))))
+           (fn [key atom old-location new-location]
+             (let [query-params (keywordize-keys (query->map (query-string)))
+                   route-params (:route-params new-location)
+                   handler (:handler new-location)]
+               (state/set-value {:handler handler
+                                 :params  (merge route-params query-params)} cursor))))
 
-(defn set-page! [match]
-  (if (= :index (:handler match))
-    (reset! !route {:handler :stack-list})
-    (reset! !route match)))
+(defn- on-navigate
+  [location]
+  ;; Render to service list by default as we don't have any index page right now
+  (if (= :index (:handler location))
+    (set-route {:handler :service-list})
+    (set-route location)))
 
 (defn not-found!
   [body]
   (if (not (= :not-found (:handler @!route)))
-    (set-page! {:handler :not-found :route-params {:origin (state/get-value state/route-cursor) :error body}})))
-
-(def history
-  (pushy/pushy set-page! (partial bidi/match-route routes/frontend)))
-
-(defn set-location
-  [location]
-  (pushy/set-token! history location))
-
-(defn set-route
-  [{:keys [handler params query]}]
-  (set-location (routes/path-for-frontend handler params query)))
+    (on-navigate {:handler      :not-found
+                  :route-params {:origin (state/get-value state/route-cursor) :error body}})))
 
 (defn start
   []
-  (pushy/start! history))
+  (let [router (br/start-router! routes/frontend {:on-navigate on-navigate})]
+    (reset! !router router)))
