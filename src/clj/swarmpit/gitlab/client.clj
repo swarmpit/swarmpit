@@ -1,6 +1,6 @@
 (ns swarmpit.gitlab.client
-               (:import (clojure.lang ExceptionInfo))
-               (:require [swarmpit.http :refer :all]))
+  (:import (clojure.lang ExceptionInfo))
+  (:require [swarmpit.http :refer :all]))
 
 (defn- execute
   [{:keys [method url api options]}]

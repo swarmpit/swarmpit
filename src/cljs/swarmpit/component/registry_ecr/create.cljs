@@ -22,7 +22,7 @@
              [:a {:href   "https://docs.aws.amazon.com/AmazonECR/latest/userguide/ecr_managed_policies.html#AmazonEC2ContainerRegistryReadOnly"
                   :target "_blank"} "READ-ONLY Access"]]))
 
-(def supported-roles
+(def supported-region
   ["us-east-2"
    "us-east-1"
    "us-west-2"
@@ -60,7 +60,7 @@
      :onChange        #(state/update-value [:region] (-> % .-target .-value) state/form-value-cursor)}
     (map #(comp/menu-item
             {:key   %
-             :value %} %) supported-roles)))
+             :value %} %) supported-region)))
 
 (defn- form-user [user]
   (comp/text-field

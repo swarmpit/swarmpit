@@ -52,7 +52,6 @@
 (defn- execute-with-fallback
   [{:keys [method url options] :as request}]
   (try
-    (print request)
     (execute request)
     (catch ExceptionInfo e
       (let [status (:status (ex-data e))
