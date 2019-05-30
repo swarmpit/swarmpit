@@ -119,8 +119,12 @@
     (= "global" service-mode) (str service-name "." node-id)
     :else task-id))
 
+(defn ->task-log-driver
+  [task info]
+  (or (get-in task [:Spec :LogDriver :Name]) (:LoggingDriver info)))
+
 (defn ->task
-  [task nodes services]
+  [task nodes services info]
   (let [image (get-in task [:Spec :ContainerSpec :Image])
         image-info (str/split image #"@")
         image-name (first image-info)
@@ -146,16 +150,16 @@
       :state (get-in task [:Status :State])
       :status {:error (get-in task [:Status :Err])}
       :desiredState (:DesiredState task)
-      :logdriver (get-in task [:Spec :LogDriver :Name])
+      :logdriver (->task-log-driver task info)
       :serviceName (or service-name service-id)
       :resources (->service-resources (get-in service [:Spec :TaskTemplate]))
       :nodeId node-id
       :nodeName (or node-name node-id))))
 
 (defn ->tasks
-  [tasks nodes services]
+  [tasks nodes services info]
   (->> tasks
-       (map #(->task % nodes services))
+       (map #(->task % nodes services info))
        (into [])))
 
 (defn ->service-tasks

@@ -715,7 +715,8 @@
   []
   (->> (dmi/->tasks (dc/tasks)
                     (dc/nodes)
-                    (dc/services))
+                    (dc/services)
+                    (dc/info))
        (map #(task-stats %))))
 
 (def tasks-memo (memo/ttl tasks :ttl/threshold 1000))
@@ -724,7 +725,8 @@
   [task-id]
   (-> (dmi/->task (dc/task task-id)
                   (dc/nodes)
-                  (dc/services))
+                  (dc/services)
+                  (dc/info))
       (task-stats)))
 
 ;;; Service API
@@ -813,7 +815,8 @@
   [service-id]
   (->> (dmi/->tasks (dc/service-tasks service-id)
                     (dc/nodes)
-                    (dc/services))
+                    (dc/services)
+                    (dc/info))
        (map #(task-stats %))))
 
 (defn service-tasks-id
@@ -991,7 +994,8 @@
   [node-id]
   (->> (dmi/->tasks (dc/node-tasks node-id)
                     (dc/nodes)
-                    (dc/services))
+                    (dc/services)
+                    (dc/info))
        (map #(task-stats %))))
 
 ;; Labels API
