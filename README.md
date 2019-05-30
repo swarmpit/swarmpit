@@ -61,7 +61,7 @@ Swarmpit is published on port `888` by default.
 
 ## Development
 
-Swarmpit is written purely in Clojure and utilizes React on front-end. CouchDB is used to store data, that cannot be stored directly in Docker API.
+Swarmpit is written purely in Clojure and utilizes React on front-end. CouchDB is used as persistent storage.
 
 Everything about building, issue reporting and setting up development environment can be found in [CONTRIBUTING.md](CONTRIBUTING.md)
 
