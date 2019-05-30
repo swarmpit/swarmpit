@@ -15,7 +15,7 @@ Docker client http timeout in ms.
 Default is `5000`.
 
 ## `SWARMPIT_AGENT_URL`
-Set static address of agent. If not address is calculate dynamically. For testing purpose only!!! 
+Set address of agent. If nil value is calculated dynamically. For dev purpose only!!! 
 Default is `nil`.
 
 ## `SWARMPIT_WORK_DIR`
