@@ -49,7 +49,13 @@ git clone https://github.com/swarmpit/swarmpit
 docker stack deploy -c swarmpit/docker-compose.yml swarmpit
 ```
 
-[This stack](docker-compose.yml) is a composition of Swarmpit, its [agent](https://github.com/swarmpit/agent) and CouchDB. Feel free to edit the stackfile to change an application port and we strongly recommend to specify `db-data` volume driver to shared-volume type of your choice. Alternatively, you can link db service to the specific node by using [constraint](https://docs.docker.com/compose/compose-file/#placement).
+[This stack](docker-compose.yml) is a composition of 3 services:
+
+* app - Swarmpit
+* [agent](https://github.com/swarmpit/agent) - Swarmpit agent
+* db - CouchDB
+
+Feel free to edit the stackfile to change an application port and we strongly recommend to specify `db-data` volume driver to shared-volume type of your choice. Alternatively, you can link db service to the specific node by using [constraint](https://docs.docker.com/compose/compose-file/#placement).
 
 Swarmpit is published on port `888` by default.
 
