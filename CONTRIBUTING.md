@@ -25,7 +25,7 @@ Start a REPL session
 lein repl
 ```
 
-and call function `(run)`, which will start db and agent containers following by Swarmpit with Figwheel on http://localhost:3449
+and call function `(run)`, which will start db and agent containers followed by Swarmpit with Figwheel on http://localhost:3449
 
 In order to use REPL on frontend side call additionally `(browser-repl)`. Both `(run)` & `(browser-repl)` are
 part of dev [`User`](dev/user.clj) namespace.
