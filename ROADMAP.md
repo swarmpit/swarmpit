@@ -124,24 +124,30 @@ deployment to install swarmpit as we stay easy and true.
 - [[#192](https://github.com/swarmpit/swarmpit/issues/192)] Setup single/cluster couch db
 - [[#283](https://github.com/swarmpit/swarmpit/issues/283)] Add confirmation dialog box before deleting a resource
 
+### 1.7 Release
+
+Compatibility with custom registries from Cloud Providers and improve logs view experience were the priorities
+in 1.7. New agent version `2.1` was introduced supporting container logs API so since 1.7 Swarmpit is fetching
+logs via agent instead of service logs API which remains as fallback option in case of agent mallfunction. We're
+now supporting 3 major container registries such Amazon ECR, Azure Container Registry & Gitlab.
+
+- [[#236](https://github.com/swarmpit/swarmpit/issues/236)] AWS Elastic Container Registry support
+- [[#331](https://github.com/swarmpit/swarmpit/issues/331)] Azure Container Registry support
+- [[#341](https://github.com/swarmpit/swarmpit/issues/341)] Support for gitlab.com registry
+- [[#260](https://github.com/swarmpit/swarmpit/issues/260)] Logs performance improvement
+
 ## What we will bring into the game
 
 You can find here our goals and related features for future releases.
 
-### 1.7 Release
-
-Compatibility with custom registries from Cloud Providers and improved logs view experience.
-
-- [[#260](https://github.com/swarmpit/swarmpit/issues/260)] Logs performance improvement
-- [[#236](https://github.com/swarmpit/swarmpit/issues/236)] AWS Elastic Container Repository support
-- [[#257](https://github.com/swarmpit/swarmpit/issues/257)] Google Container Repository support
-- [[#303](https://github.com/swarmpit/swarmpit/issues/303)] Dark mode
-
 ### 1.8 Release
 
-Compatibility with cloud logging drivers, UX improvements
+Compatibility with cloud logging drivers, UX improvements, advanced monitoring
 
 - [[#289](https://github.com/swarmpit/swarmpit/issues/289)] Support cloud logging drivers
+- [[#359](https://github.com/swarmpit/swarmpit/issues/359)] Time series monitoring
+- [[#303](https://github.com/swarmpit/swarmpit/issues/303)] Dark mode
+- [[#288](https://github.com/swarmpit/swarmpit/issues/288)] Service autoscaling
 
 ### 2.0 Release
 
