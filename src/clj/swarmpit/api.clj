@@ -826,11 +826,11 @@
 
 (defn service-agent-logs
   "Fetch service log via swarmpit agent.
-   Check whether there is agent associated with service task (unless static configuration)
-   and fetch logs accordingly. Finally format & aggregate log elements."
-  [service-id since]
+
+   Check whether there is agent associated with service task unless
+   static configuration (:agent-url) set and fetch logs accordingly."
+  [service-id since agent-tasks]
   (let [config-agent-url (cfg/config :agent-url)
-        agent-tasks (dc/service-tasks-by-label :swarmpit.agent true)
         agent-addresses (dmi/->agent-addresses-by-nodes agent-tasks)
         service-tasks (dc/service-tasks service-id)
         service-containers (dmi/->service-tasks-by-container service-tasks)]
@@ -857,12 +857,22 @@
         (or '()))))
 
 (defn service-logs
-  "Fetch logs via agent by default, fallback to native service api"
+  "Fetch logs via agent by default.
+
+   In case of:
+   * missing agent configuration (swarmpit.agent) label
+   * no available agents
+   * unexpected agent error
+
+   fallback to native service api"
   [service-id since]
-  (try
-    (service-agent-logs service-id since)
-    (catch Exception _
-      (service-native-logs service-id since))))
+  (let [agent-tasks (dc/service-tasks-by-label :swarmpit.agent true)]
+    (try
+      (if (empty? agent-tasks)
+        (service-native-logs service-id since)
+        (service-agent-logs service-id since agent-tasks))
+      (catch Exception _
+        (service-native-logs service-id since)))))
 
 (defn delete-service
   [service-id]
