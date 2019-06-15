@@ -27,7 +27,8 @@
     (match? [_ type message]
       (stats? type))
     (process [_ message]
-      (stats/create message))))
+      (stats/store-to-cache message)
+      (stats/store-to-db message))))
 
 (def list [cleanup-stackfiles
            update-stats])
