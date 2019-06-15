@@ -1,22 +1,23 @@
 (ns swarmpit.component.task.info
-  (:require [material.components :as comp]
+  (:require [material.icon :as icon]
+            [material.components :as comp]
             [material.component.label :as label]
             [material.component.form :as form]
             [swarmpit.component.mixin :as mixin]
             [swarmpit.component.state :as state]
             [swarmpit.component.progress :as progress]
+            [swarmpit.component.common :as common]
+            [swarmpit.component.plot :as plot]
+            [swarmpit.event.source :as event]
             [swarmpit.ajax :as ajax]
             [swarmpit.routes :as routes]
             [sablono.core :refer-macros [html]]
-            [rum.core :as rum]
-            [material.component.chart :as chart]
-            [clojure.contrib.inflect :as inflect]
             [clojure.contrib.humanize :as humanize]
-            [swarmpit.component.common :as common]
-            [swarmpit.event.source :as event]
-            [material.icon :as icon]))
+            [rum.core :as rum]))
 
 (enable-console-print!)
+
+(def plot-id "taskStats")
 
 (defn- event-handler
   [task-id]
@@ -38,16 +39,6 @@
                    (event/open! (merge route {:params {:serviceName (:serviceName response)}})
                                 (event-handler (:id response))))}))
 
-(defn- init-form-state
-  []
-  (state/set-value {:loading? true} state/form-state-cursor))
-
-(def mixin-init-form
-  (mixin/init-form
-    (fn [route]
-      (init-form-state)
-      (task-handler route))))
-
 (defn form-state [value]
   (case value
     "preparing" (label/pulsing value)
@@ -65,8 +56,7 @@
     "rejected" (label/red value)
     "failed" (label/red value)))
 
-(defn- section-general
-  [{:keys [id taskName nodeName state status createdAt updatedAt repository serviceName logdriver stats]}]
+(rum/defc form-general < rum/static [{:keys [id taskName nodeName state status createdAt updatedAt repository serviceName logdriver stats]}]
   (comp/card
     {:className "Swarmpit-form-card Swarmpit-form-card-single"}
     (comp/card-header
@@ -127,17 +117,119 @@
       (form/item-date createdAt updatedAt)
       (form/item-id id))))
 
-(rum/defc form-info < rum/static [{:keys [repository status] :as item}]
+(defn task-plot [stats-ts]
+  (plot/default
+    plot-id
+    [{:x    (:time stats-ts)
+      :y    (:memory stats-ts)
+      :line {:color "#65519f"}
+      :type "scatter"
+      :mode "lines"}]
+    {:title "RAM Usage"}))
+
+(def mixin-init-scatter
+  {:did-mount
+   (fn [state]
+     (let [stats-ts (:stats-timeseries (first (:rum/args state)))
+           trace-cpu {:x    (:time stats-ts)
+                      :y    (:cpu stats-ts)
+                      :name "CPU"
+                      :type "scatter"
+                      :line {:color "#7F7F7F"}}
+           trace-memory {:x     (:time stats-ts)
+                         :y     (:memory stats-ts)
+                         :name  "Memory"
+                         :type  "scatter"
+                         :line  {:color "#43a047"}
+                         :yaxis "y2"}]
+       (plot/default
+         plot-id
+         [trace-cpu trace-memory]
+         {:yaxis  {:title     "CPU Load [%]"
+                   :titlefont {:color "#7F7F7F"}
+                   :tickfont  {:color "#7F7F7F"}}
+          :yaxis2 {:title      "Memory Used [Mb]"
+                   :titlefont  {:color "#43a047"}
+                   :tickfont   {:color "#43a047"}
+                   :overlaying "y"
+                   :side       "right"}}))
+     state)})
+
+(rum/defc form-stats < rum/reactive
+                       mixin-init-scatter [item]
+  (let [{:keys [tab]} (state/react state/form-state-cursor)]
+    (comp/card
+      {:className "Swarmpit-card"}
+      (comp/card-header
+        {:className "Swarmpit-table-card-header"
+         :title     (comp/typography {:variant "h6"} "Statistics")})
+      (comp/card-content
+        {}
+        (html [:div {:id plot-id}])))))
+
+(defn form-general-grid [task]
+  (comp/grid
+    {:item true
+     :xs   12}
+    (form-general task)))
+
+(defn form-stats-grid [item]
+  (comp/grid
+    {:item true
+     :xs   12}
+    (form-stats item)))
+
+(rum/defc form-info < rum/reactive [{:keys [repository status] :as item}]
   (comp/mui
     (html
       [:div.Swarmpit-form
        [:div.Swarmpit-form-context
-        (section-general item)]])))
+        (comp/hidden
+          {:xsDown         true
+           :implementation "js"}
+          (comp/grid
+            {:container true
+             :spacing   16}
+            (comp/grid
+              {:item true
+               :sm   6
+               :md   4}
+              (comp/grid
+                {:container true
+                 :spacing   16}
+                (form-general-grid item)))
+            (comp/grid
+              {:item true
+               :sm   6
+               :md   8}
+              (comp/grid
+                {:container true
+                 :spacing   16}
+                (form-stats-grid item)))))
+        (comp/hidden
+          {:smUp           true
+           :implementation "js"}
+          (comp/grid
+            {:container true
+             :spacing   16}
+            (form-general-grid item)
+            (form-stats-grid item)))]])))
 
 (def unsubscribe-form
   {:will-unmount (fn [state]
                    (event/close!)
                    state)})
+
+(defn- init-form-state
+  []
+  (state/set-value {:loading? true
+                    :tab      0} state/form-state-cursor))
+
+(def mixin-init-form
+  (mixin/init-form
+    (fn [route]
+      (init-form-state)
+      (task-handler route))))
 
 (rum/defc form < rum/reactive
                  unsubscribe-form
