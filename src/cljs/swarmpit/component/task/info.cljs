@@ -10,6 +10,7 @@
             [swarmpit.component.plot :as plot]
             [swarmpit.event.source :as event]
             [swarmpit.ajax :as ajax]
+            [swarmpit.time :as time]
             [swarmpit.routes :as routes]
             [sablono.core :refer-macros [html]]
             [clojure.contrib.humanize :as humanize]
@@ -117,42 +118,41 @@
       (form/item-date createdAt updatedAt)
       (form/item-id id))))
 
-(defn task-plot [stats-ts]
-  (plot/default
-    plot-id
-    [{:x    (:time stats-ts)
-      :y    (:memory stats-ts)
-      :line {:color "#65519f"}
-      :type "scatter"
-      :mode "lines"}]
-    {:title "RAM Usage"}))
+(defn task-plot [stats-ts y-key title y-title]
+  (let [time (:time stats-ts)
+        now (last time)
+        now-4-hours (time/in-past-string 60)]
+    (plot/default
+      plot-id
+      [{:x           (:time stats-ts)
+        :y           (y-key stats-ts)
+        :connectgaps true
+        :fill        "tozeroy"
+        :line        {:color "#43a047"}
+        :type        "scatter"
+        :mode        "lines"}]
+      {:title title
+       :xaxis {:range [now-4-hours now]}
+       :yaxis {:title     y-title
+               :rangemode "tozero"}})))
+
+(defn task-cpu-plot [stats-ts]
+  (task-plot stats-ts
+             :cpu
+             "Container CPU Usage"
+             "CPU Load [%]"))
+
+(defn task-ram-plot [stats-ts]
+  (task-plot stats-ts
+             :memory
+             "Container Memory Usage"
+             "Memory Used [MB]"))
 
 (def mixin-init-scatter
   {:did-mount
    (fn [state]
-     (let [stats-ts (:stats-timeseries (first (:rum/args state)))
-           trace-cpu {:x    (:time stats-ts)
-                      :y    (:cpu stats-ts)
-                      :name "CPU"
-                      :type "scatter"
-                      :line {:color "#7F7F7F"}}
-           trace-memory {:x     (:time stats-ts)
-                         :y     (:memory stats-ts)
-                         :name  "Memory"
-                         :type  "scatter"
-                         :line  {:color "#43a047"}
-                         :yaxis "y2"}]
-       (plot/default
-         plot-id
-         [trace-cpu trace-memory]
-         {:yaxis  {:title     "CPU Load [%]"
-                   :titlefont {:color "#7F7F7F"}
-                   :tickfont  {:color "#7F7F7F"}}
-          :yaxis2 {:title      "Memory Used [Mb]"
-                   :titlefont  {:color "#43a047"}
-                   :tickfont   {:color "#43a047"}
-                   :overlaying "y"
-                   :side       "right"}}))
+     (let [stats-ts (:stats-timeseries (first (:rum/args state)))]
+       (task-cpu-plot stats-ts))
      state)})
 
 (rum/defc form-stats < rum/reactive
@@ -164,7 +164,23 @@
         {:className "Swarmpit-table-card-header"
          :title     (comp/typography {:variant "h6"} "Statistics")})
       (comp/card-content
-        {}
+        {:className "Swarmpit-table-card-content"}
+        (comp/tabs
+          {:className      "Swarmpit-service-tabs"
+           :value          tab
+           :onChange       (fn [e v]
+                             (case v
+                               0 (task-cpu-plot (:stats-timeseries item))
+                               1 (task-ram-plot (:stats-timeseries item)))
+                             (state/update-value [:tab] v state/form-state-cursor))
+           :fullWidth      true
+           :indicatorColor "primary"
+           :textColor      "primary"
+           :centered       true}
+          (comp/tab
+            {:label "CPU"})
+          (comp/tab
+            {:label "MEMORY"}))
         (html [:div {:id plot-id}])))))
 
 (defn form-general-grid [task]
