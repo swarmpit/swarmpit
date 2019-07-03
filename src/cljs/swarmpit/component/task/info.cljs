@@ -126,7 +126,7 @@
       plot-id
       [{:x           (:time stats-ts)
         :y           (y-key stats-ts)
-        :connectgaps true
+        :connectgaps false
         :fill        "tozeroy"
         :line        {:color "#43a047"}
         :type        "scatter"
@@ -137,10 +137,15 @@
                :rangemode "tozero"}})))
 
 (defn task-cpu-plot [stats-ts]
+  (print (clj->js (:cpu stats-ts)))
+  (print (map #(if (nil? %)
+                 js/NaN
+                 identity)) (:cpu stats-ts))
+
   (task-plot stats-ts
              :cpu
              "Container CPU Usage"
-             "CPU Load [%]"))
+             "CPU Load) [%]"))
 
 (defn task-ram-plot [stats-ts]
   (task-plot stats-ts
@@ -160,9 +165,9 @@
   (let [{:keys [tab]} (state/react state/form-state-cursor)]
     (comp/card
       {:className "Swarmpit-card"}
-      (comp/card-header
-        {:className "Swarmpit-table-card-header"
-         :title     (comp/typography {:variant "h6"} "Statistics")})
+      ;(comp/card-header
+      ;  {:className "Swarmpit-table-card-header"
+      ;   :title     (comp/typography {:variant "h6"} "Statistics")})
       (comp/card-content
         {:className "Swarmpit-table-card-content"}
         (comp/tabs
@@ -181,7 +186,8 @@
             {:label "CPU"})
           (comp/tab
             {:label "MEMORY"}))
-        (html [:div {:id plot-id}])))))
+        (html [:div {:id    plot-id
+                     :style {:height "400px"}}])))))
 
 (defn form-general-grid [task]
   (comp/grid

@@ -45,6 +45,10 @@
   (read-doc
     (str "SELECT cpu, memory FROM swarmpit..task_stats WHERE task = '" task-name "'")))
 
+(defn read-task-stats [task-name]
+  (read-doc
+    (str "SELECT MAX(cpu), MAX(memory) FROM swarmpit..task_stats WHERE task = '" task-name "' GROUP BY time(30s)")))
+
 ;(defn read-service-cpu [service-name]
 ;  (read-doc
 ;    (str "SELECT SUM(value) as value FROM swarmpit..task_cpu WHERE service = '" service-name "' GROUP BY time(1m)")))
