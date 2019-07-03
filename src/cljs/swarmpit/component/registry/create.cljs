@@ -152,7 +152,7 @@
         [:div.Swarmpit-form
          [:div.Swarmpit-form-context
           [:div.Swarmpit-form-paper
-           (common/edit-title "Link image registry" "define repository access acount")
+           (common/edit-title "Link image registry" "define repository access account")
            (comp/stepper
              {:className   "Swarmpit-stepper"
               :activeStep  index
