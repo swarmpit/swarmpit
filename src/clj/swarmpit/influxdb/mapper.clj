@@ -10,11 +10,19 @@
        :service (first segments)
        :host    host-name})))
 
+(defn round [value]
+  (->> value
+       (double)
+       (format "%.2f")
+       (edn/read-string)))
+
 (defn ->host-tags [host-name]
   {:host host-name})
 
 (defn ->memory-mb [bytes]
-  (->> (/ bytes (* 1000 1000))
-       (double)
-       (format "%.2f")
-       (edn/read-string)))
+  (-> (/ bytes (* 1000 1000))
+      (round)))
+
+(defn ->cpu-round [percentage]
+  (-> percentage
+      (round)))
