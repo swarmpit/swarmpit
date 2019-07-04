@@ -5,4 +5,5 @@
   (js/Plotly.newPlot
     (.getElementById js/document plot-id)
     (clj->js data)
-    (clj->js layout)))
+    (clj->js layout)
+    (clj->js {:responsive true})))
