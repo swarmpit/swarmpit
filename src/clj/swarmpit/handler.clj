@@ -1,10 +1,21 @@
 (ns swarmpit.handler
   (:require [clojure.walk :refer [keywordize-keys]]
-            [clojure.java.io :as io]
+            [net.cgrand.enlive-html :as html :refer [deftemplate]]
             [swarmpit.api :as api]
             [swarmpit.slt :as slt]
             [swarmpit.token :as token]
             [swarmpit.version :as version]))
+
+(defn include-css [href revision]
+  (first (html/html [:link {:href (str href "?r=" revision) :rel "stylesheet"}])))
+
+(defn include-js [src revision]
+  (first (html/html [:script {:src (str src "?r=" revision)}])))
+
+(deftemplate index "index.html"
+             [revision]
+             [:head] (html/append (map #(include-css % revision) ["css/main.css"]))
+             [:body] (html/append (map #(include-js % revision) ["js/main.js"])))
 
 (defn resp-error
   [status response]
@@ -41,7 +52,7 @@
   (fn [_]
     {:status  200
      :headers {"Content-Type" "text/html"}
-     :body    (slurp (io/resource "index.html"))}))
+     :body    (apply str (index (:revision (version/info))))}))
 
 ;; Version handler
 
