@@ -10,7 +10,6 @@
             [swarmpit.component.plot :as plot]
             [swarmpit.event.source :as event]
             [swarmpit.ajax :as ajax]
-            [swarmpit.time :as time]
             [swarmpit.routes :as routes]
             [sablono.core :refer-macros [html]]
             [clojure.contrib.humanize :as humanize]
@@ -19,6 +18,22 @@
 (enable-console-print!)
 
 (def plot-id "taskStats")
+
+(defonce stats (atom nil))
+
+(defn task-cpu-plot [stats-ts]
+  (plot/single plot-id
+               stats-ts
+               :cpu
+               "Container CPU Usage"
+               "CPU Load) [%]"))
+
+(defn task-ram-plot [stats-ts]
+  (plot/single plot-id
+               stats-ts
+               :memory
+               "Container Memory Usage"
+               "Memory Used [MB]"))
 
 (defn- event-handler
   [task-id]
@@ -30,12 +45,22 @@
         (state/set-value task state/form-value-cursor)
         (state/update-value [:state] "removed" state/form-value-cursor)))))
 
+(defn- task-stats-handler
+  [task-name]
+  (ajax/get
+    (routes/path-for-backend :task-ts {:name task-name})
+    {:state      [:stats-loading?]
+     :on-success (fn [{:keys [response]}]
+                   (task-cpu-plot response)
+                   (reset! stats response))}))
+
 (defn- task-handler
   [route]
   (ajax/get
     (routes/path-for-backend :task (:params route))
     {:state      [:loading?]
      :on-success (fn [{:keys [response]}]
+                   (task-stats-handler (:taskName response))
                    (state/set-value response state/form-value-cursor)
                    (event/open! (merge route {:params {:serviceName (:serviceName response)}})
                                 (event-handler (:id response))))}))
@@ -118,56 +143,12 @@
       (form/item-date createdAt updatedAt)
       (form/item-id id))))
 
-(defn task-plot [stats-ts y-key title y-title]
-  (let [time (:time stats-ts)
-        now (last time)
-        now-4-hours (time/in-past-string 60)]
-    (plot/default
-      plot-id
-      [{:x           (:time stats-ts)
-        :y           (y-key stats-ts)
-        :connectgaps false
-        :fill        "tozeroy"
-        :line        {:color "#43a047"}
-        :type        "scatter"
-        :mode        "lines"}]
-      {:title title
-       :xaxis {:range [now-4-hours now]}
-       :yaxis {:title     y-title
-               :rangemode "tozero"}})))
-
-(defn task-cpu-plot [stats-ts]
-  (print (clj->js (:cpu stats-ts)))
-  (print (map #(if (nil? %)
-                 js/NaN
-                 identity)) (:cpu stats-ts))
-
-  (task-plot stats-ts
-             :cpu
-             "Container CPU Usage"
-             "CPU Load) [%]"))
-
-(defn task-ram-plot [stats-ts]
-  (task-plot stats-ts
-             :memory
-             "Container Memory Usage"
-             "Memory Used [MB]"))
-
-(def mixin-init-scatter
-  {:did-mount
-   (fn [state]
-     (let [stats-ts (:stats-timeseries (first (:rum/args state)))]
-       (task-cpu-plot stats-ts))
-     state)})
-
-(rum/defc form-stats < rum/reactive
-                       mixin-init-scatter [item]
-  (let [{:keys [tab]} (state/react state/form-state-cursor)]
+(rum/defc form-stats < rum/reactive []
+  (let [{:keys [tab stats-loading?]} (state/react state/form-state-cursor)
+        stats (rum/react stats)
+        stats-empty? (empty? (:time stats))]
     (comp/card
       {:className "Swarmpit-card"}
-      ;(comp/card-header
-      ;  {:className "Swarmpit-table-card-header"
-      ;   :title     (comp/typography {:variant "h6"} "Statistics")})
       (comp/card-content
         {:className "Swarmpit-table-card-content"}
         (comp/tabs
@@ -175,8 +156,8 @@
            :value          tab
            :onChange       (fn [e v]
                              (case v
-                               0 (task-cpu-plot (:stats-timeseries item))
-                               1 (task-ram-plot (:stats-timeseries item)))
+                               0 (task-cpu-plot stats)
+                               1 (task-ram-plot stats))
                              (state/update-value [:tab] v state/form-state-cursor))
            :fullWidth      true
            :indicatorColor "primary"
@@ -185,9 +166,15 @@
           (comp/tab
             {:label "CPU"})
           (comp/tab
-            {:label "MEMORY"}))
+            {:label "MEMORY"})))
+      (when (and (false? stats-loading?) stats-empty?)
+        (comp/card-content
+          {}
+          (form/message "No stats available.")))
+      (comp/card-content
+        {:className "Swarmpit-table-card-content"}
         (html [:div {:id    plot-id
-                     :style {:height "400px"}}])))))
+                     :style (when stats-empty? {:height "0"})}])))))
 
 (defn form-general-grid [task]
   (comp/grid
@@ -195,13 +182,13 @@
      :xs   12}
     (form-general task)))
 
-(defn form-stats-grid [item]
+(defn form-stats-grid []
   (comp/grid
     {:item true
      :xs   12}
-    (form-stats item)))
+    (form-stats)))
 
-(rum/defc form-info < rum/reactive [{:keys [repository status] :as item}]
+(rum/defc form-info < rum/reactive [item]
   (comp/mui
     (html
       [:div.Swarmpit-form
@@ -227,7 +214,7 @@
               (comp/grid
                 {:container true
                  :spacing   16}
-                (form-stats-grid item)))))
+                (form-stats-grid)))))
         (comp/hidden
           {:smUp           true
            :implementation "js"}
@@ -235,7 +222,7 @@
             {:container true
              :spacing   16}
             (form-general-grid item)
-            (form-stats-grid item)))]])))
+            (form-stats-grid)))]])))
 
 (def unsubscribe-form
   {:will-unmount (fn [state]
@@ -244,8 +231,9 @@
 
 (defn- init-form-state
   []
-  (state/set-value {:loading? true
-                    :tab      0} state/form-state-cursor))
+  (state/set-value {:loading?       true
+                    :stats-loading? true
+                    :tab            0} state/form-state-cursor))
 
 (def mixin-init-form
   (mixin/init-form
