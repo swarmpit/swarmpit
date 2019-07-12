@@ -4,6 +4,7 @@
             [swarmpit.api :as api]
             [swarmpit.slt :as slt]
             [swarmpit.token :as token]
+            [swarmpit.stats :as stats]
             [swarmpit.version :as version]))
 
 (defn include-css [href revision]
@@ -413,6 +414,11 @@
 (defmethod dispatch :task [_]
   (fn [{:keys [route-params]}]
     (->> (api/task (:id route-params))
+         (resp-ok))))
+
+(defmethod dispatch :task-ts [_]
+  (fn [{:keys [route-params]}]
+    (->> (stats/task-timeseries (:name route-params))
          (resp-ok))))
 
 ;; Registry handler

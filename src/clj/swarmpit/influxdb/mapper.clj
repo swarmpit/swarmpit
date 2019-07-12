@@ -26,3 +26,8 @@
 (defn ->cpu-round [percentage]
   (-> percentage
       (round)))
+
+(defn ->format [ts-values]
+  {:time   (into [] (map first ts-values))
+   :cpu    (into [] (map second ts-values))
+   :memory (into [] (map #(nth % 2) ts-values))})

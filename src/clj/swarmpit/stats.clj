@@ -41,13 +41,41 @@
                    (:name %)))
        (first)))
 
+(defn- timeseries-values [task-name]
+  (-> (influx/read-task-stats task-name)
+      (first)
+      (get "series")
+      (first)
+      (get "values")))
+
 (defn task-timeseries
+  "Get task timeseries data for last 24 hours"
   [task-name]
-  (let [values (-> (influx/read-task-stats task-name)
-                   (first)
-                   (get "series")
-                   (first)
-                   (get "values"))]
-    {:time   (into [] (map first values))
-     :cpu    (into [] (map second values))
-     :memory (into [] (map #(nth % 2) values))}))
+  (let [values (timeseries-values task-name)]
+    (m/->format values)))
+
+(defn service-timeseries
+  "Get service timeseries data for last 24 hours"
+  [service-tasks nodes-count]
+  (let [valid-stats (fn [grouped-item]
+                      (->> (second grouped-item)
+                           (map #(drop 1 %))
+                           (filter #(not-every? nil? %))))
+        aggregate-stats (fn [grouped-item stats]
+                          (->> (reduce #(mapv + %1 %2) stats)
+                               (vector (first grouped-item))
+                               (flatten)
+                               (into [])))]
+    (->> service-tasks
+         (map #(timeseries-values %))
+         (apply concat)
+         (group-by first)
+         (sort)
+         (map (fn [item]
+                (let [stats (valid-stats item)]
+                  (if (not-empty stats)
+                    (aggregate-stats item stats)
+                    (vector (first item) nil nil)))))
+         (into [])
+         (m/->format))))
+

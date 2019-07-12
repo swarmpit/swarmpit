@@ -41,14 +41,14 @@
               :fields {:cpu    cpu
                        :memory memory}}))
 
-(defn read-task-stats [task-name]
+(defn read-task-stats-l [task-name]
   (read-doc
-    (str "SELECT cpu, memory FROM swarmpit..task_stats WHERE task = '" task-name "'")))
+    (str "SELECT cpu, memory FROM swarmpit..task_stats WHERE task = '" task-name "' AND time > now() - 7d")))
 
 (defn read-task-stats [task-name]
   (read-doc
-    (str "SELECT MAX(cpu), MAX(memory) FROM swarmpit..task_stats WHERE task = '" task-name "' GROUP BY time(30s)")))
+    (str "SELECT MAX(cpu) as cpu, MAX(memory) as memory FROM swarmpit..task_stats WHERE task = '" task-name "' AND time > now() - 1d GROUP BY time(1m)")))
 
-;(defn read-service-cpu [service-name]
-;  (read-doc
-;    (str "SELECT SUM(value) as value FROM swarmpit..task_cpu WHERE service = '" service-name "' GROUP BY time(1m)")))
+(defn read-service-atats [service-name nodes-count]
+  (read-doc
+    (str "SELECT SUM(cpu) / " nodes-count " as cpu, SUM(memory) as memory FROM swarmpit..task_stats WHERE service = '" service-name "' AND time > now() - 1d GROUP BY time(30s)")))

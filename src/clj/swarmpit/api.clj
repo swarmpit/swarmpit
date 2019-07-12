@@ -708,11 +708,9 @@
 
 (defn task-stats
   [task]
-  (let [stats (apply dissoc (stats/task task) [:name :id])
-        stats-timeseries (stats/task-timeseries (:taskName task))]
+  (let [stats (apply dissoc (stats/task task) [:name :id])]
     (-> task
-        (assoc-in [:stats] stats)
-        (assoc-in [:stats-timeseries] stats-timeseries))))
+        (assoc-in [:stats] stats))))
 
 (defn tasks
   []
