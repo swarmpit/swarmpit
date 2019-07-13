@@ -16,16 +16,25 @@
 
 (defn store-to-db
   "Store stats in influxDB as timeseries"
-  [{:keys [id cpu memory tasks] :as stats}]
+  [{:keys [id cpu memory disk tasks] :as stats}]
   (let [host-tags (m/->host-tags id)]
     (influx/write-host-points host-tags
-                              (m/->cpu-round (:usedPercentage cpu))
-                              (m/->memory-mb (:used memory)))
-    (doseq [{:keys [cpuPercentage memory name] :as task} tasks]
+                              {:cpuUsage    (m/->cpu-round (:usedPercentage cpu))
+                               :memoryUsage (m/->cpu-round (:usedPercentage memory))
+                               :diskUsage   (m/->cpu-round (:usedPercentage disk))
+                               :memoryUsed  (m/->memory-mb (:used memory))
+                               :memoryTotal (m/->memory-mb (:total memory))
+                               :memoryFree  (m/->memory-mb (:free memory))
+                               :diskUsed    (m/->disk-gb (:used disk))
+                               :diskTotal   (m/->disk-gb (:total disk))
+                               :diskFree    (m/->disk-gb (:free disk))})
+    (doseq [{:keys [cpuPercentage memory memoryLimit memoryPercentage name] :as task} tasks]
       (when-let [task-tags (m/->task-tags name id)]
         (influx/write-task-points task-tags
-                                  (m/->cpu-round cpuPercentage)
-                                  (m/->memory-mb memory))))))
+                                  {:cpuUsage    (m/->cpu-round cpuPercentage)
+                                   :memoryUsage (m/->cpu-round memoryPercentage)
+                                   :memoryUsed  (m/->memory-mb memory)
+                                   :memoryLimit (m/->memory-mb memoryLimit)})))))
 
 (defn node
   "Get latest node stats from local cache"
@@ -41,41 +50,54 @@
                    (:name %)))
        (first)))
 
-(defn- timeseries-values [task-name]
+(defn task-timeseries
+  "Get task timeseries data for last 24 hours"
+  [task-name]
   (-> (influx/read-task-stats task-name)
       (first)
       (get "series")
       (first)
-      (get "values")))
+      (m/->task-ts)))
 
-(defn task-timeseries
-  "Get task timeseries data for last 24 hours"
-  [task-name]
-  (let [values (timeseries-values task-name)]
-    (m/->format values)))
+(defn hosts-timeseries
+  []
+  (map #(m/->host-ts %)
+       (-> (influx/read-host-stats)
+           (first)
+           (get "series"))))
 
-(defn service-timeseries
-  "Get service timeseries data for last 24 hours"
-  [service-tasks nodes-count]
-  (let [valid-stats (fn [grouped-item]
-                      (->> (second grouped-item)
-                           (map #(drop 1 %))
-                           (filter #(not-every? nil? %))))
-        aggregate-stats (fn [grouped-item stats]
-                          (->> (reduce #(mapv + %1 %2) stats)
-                               (vector (first grouped-item))
-                               (flatten)
-                               (into [])))]
-    (->> service-tasks
-         (map #(timeseries-values %))
-         (apply concat)
-         (group-by first)
-         (sort)
-         (map (fn [item]
-                (let [stats (valid-stats item)]
-                  (if (not-empty stats)
-                    (aggregate-stats item stats)
-                    (vector (first item) nil nil)))))
-         (into [])
-         (m/->format))))
+(defn cluster
+  []
+  (-> (influx/read-cluster-stats)
+      (first)
+      (get "series")
+      (first)
+      (m/->cluster)))
+
+
+
+;(defn service-timeseries
+;  "Get service timeseries data for last 24 hours"
+;  [service-tasks nodes-count]
+;  (let [valid-stats (fn [grouped-item]
+;                      (->> (second grouped-item)
+;                           (map #(drop 1 %))
+;                           (filter #(not-every? nil? %))))
+;        aggregate-stats (fn [grouped-item stats]
+;                          (->> (reduce #(mapv + %1 %2) stats)
+;                               (vector (first grouped-item))
+;                               (flatten)
+;                               (into [])))]
+;    (->> service-tasks
+;         (map #(timeseries-values %))
+;         (apply concat)
+;         (group-by first)
+;         (sort)
+;         (map (fn [item]
+;                (let [stats (valid-stats item)]
+;                  (if (not-empty stats)
+;                    (aggregate-stats item stats)
+;                    (vector (first item) nil nil)))))
+;         (into [])
+;         (m/->format))))
 

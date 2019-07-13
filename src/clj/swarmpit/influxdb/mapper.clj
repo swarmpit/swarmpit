@@ -23,11 +23,35 @@
   (-> (/ bytes (* 1000 1000))
       (round)))
 
+(defn ->disk-gb [bytes]
+  (-> (/ bytes (* 1000 1000 1000))
+      (round)))
+
 (defn ->cpu-round [percentage]
   (-> percentage
       (round)))
 
-(defn ->format [ts-values]
-  {:time   (into [] (map first ts-values))
-   :cpu    (into [] (map second ts-values))
-   :memory (into [] (map #(nth % 2) ts-values))})
+(defn ->task-ts [series]
+  (let [values (get series "values")
+        tags (get series "tags")]
+    {:task    (get tags "task")
+     :service (get tags "service")
+     :time    (into [] (map first values))
+     :cpu     (into [] (map second values))
+     :memory  (into [] (map #(nth % 2) values))}))
+
+(defn ->host-ts [series]
+  (let [values (get series "values")
+        tags (get series "tags")]
+    {:host   (get tags "host")
+     :time   (into [] (map first values))
+     :cpu    (into [] (map second values))
+     :memory (into [] (map #(nth % 2) values))}))
+
+(defn ->cluster [series]
+  (let [values (first (get series "values"))
+        columns (get series "columns")]
+    (into {}
+          (map-indexed
+            (fn [i item]
+              (hash-map item (nth values i))) columns))))
