@@ -24,7 +24,12 @@
         :type        "scatter"
         :mode        "lines"}]
       {:title  title
-       :height 340
+       :height 300
+       :margin {:l   80
+                :r   80
+                :t   70
+                :b   50
+                :pad 0}
        :xaxis  {:range [now-4-hours now]}
        :yaxis  {:title     y-title
                 :rangemode "tozero"}})))
