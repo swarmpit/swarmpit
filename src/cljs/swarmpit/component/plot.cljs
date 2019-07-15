@@ -31,5 +31,6 @@
                 :b   50
                 :pad 0}
        :xaxis  {:range [now-4-hours now]}
-       :yaxis  {:title     y-title
-                :rangemode "tozero"}})))
+       :yaxis  {:title      y-title
+                :tickformat ".2f"
+                :rangemode  "tozero"}})))
