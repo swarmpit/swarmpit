@@ -1,6 +1,6 @@
 (ns swarmpit.influxdb.mapper
   (:require [clojure.string :as str]
-            [clojure.edn :as edn]))
+            [swarmpit.utils :refer [bytes->megabytes]]))
 
 (defn ->task-tags [task-name host-name]
   (let [segments (drop 1 (str/split task-name #"/|\."))]
@@ -10,26 +10,8 @@
        :service (first segments)
        :host    host-name})))
 
-(defn round [value]
-  (->> value
-       (double)
-       (format "%.2f")
-       (edn/read-string)))
-
 (defn ->host-tags [host-name]
   {:host host-name})
-
-(defn ->memory-mb [bytes]
-  (-> (/ bytes (* 1000 1000))
-      (round)))
-
-(defn ->disk-gb [bytes]
-  (-> (/ bytes (* 1000 1000 1000))
-      (round)))
-
-(defn ->cpu-round [percentage]
-  (-> percentage
-      (round)))
 
 (defn ->task-ts [series]
   (let [values (get series "values")
@@ -38,7 +20,8 @@
      :service (get tags "service")
      :time    (into [] (map first values))
      :cpu     (into [] (map second values))
-     :memory  (into [] (map #(nth % 2) values))}))
+     :memory  (into [] (->> (map #(nth % 2) values)
+                            (map #(bytes->megabytes %))))}))
 
 (defn ->host-ts [series]
   (let [values (get series "values")
