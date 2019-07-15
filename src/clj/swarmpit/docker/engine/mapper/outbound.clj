@@ -4,10 +4,6 @@
             [swarmpit.docker.engine.mapper.inbound :refer [autoredeploy-label agent-label]]
             [swarmpit.utils :refer [name-value->map ->nano]]))
 
-(defn- as-bytes
-  [megabytes]
-  (* megabytes (* 1024 1024)))
-
 (defn ->auth-config
   "Pass registry or dockeruser entity"
   [auth-entity]
@@ -154,8 +150,7 @@
                     (-> cpu
                         (->nano)
                         (long)))
-     :MemoryBytes (when (some? memory)
-                    (as-bytes memory))}))
+     :MemoryBytes memory}))
 
 (defn ->service-update-config
   [service]

@@ -21,12 +21,6 @@
 
 (enable-console-print!)
 
-(defn- render-percentage
-  [val]
-  (if (some? val)
-    (str (gstring/format "%.2f" val) "%")
-    "-"))
-
 (defn- node-item-state [value]
   (case value
     "ready" (label/green value)
@@ -44,7 +38,7 @@
 
 (rum/defc node-item < rum/static [item index]
   (let [cpu (-> item :resources :cpu (int))
-        memory-bytes (-> item :resources :memory (* 1024 1024))
+        memory-bytes (-> item :resources :memory)
         disk-bytes (-> item :stats :disk :total)]
     (comp/grid
       {:item true

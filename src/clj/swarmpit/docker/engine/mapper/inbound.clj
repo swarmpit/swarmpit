@@ -3,10 +3,6 @@
   (:require [clojure.string :as str]
             [swarmpit.utils :refer [map->name-value nano->]]))
 
-(defn- as-megabytes
-  [bytes]
-  (quot bytes (* 1024 1024)))
-
 (defn ->resources
   [resources]
   (let [nano-cpu (:NanoCPUs resources)
@@ -14,8 +10,7 @@
     {:cpu    (-> (or nano-cpu 0)
                  (nano->)
                  (double))
-     :memory (-> (or memory-bytes 0)
-                 (as-megabytes))}))
+     :memory (or memory-bytes 0)}))
 
 (defn ->service-resources
   [service-task-template]

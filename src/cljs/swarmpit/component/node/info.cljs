@@ -26,7 +26,7 @@
 
 (rum/defc form-general < rum/static [node]
   (let [cpu (-> node :resources :cpu (int))
-        memory-bytes (-> node :resources :memory (* 1024 1024))
+        memory-bytes (-> node :resources :memory)
         disk-bytes (-> node :stats :disk :total)]
     (comp/card
       {:className "Swarmpit-form-card"}
