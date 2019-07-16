@@ -5,12 +5,9 @@
     font-weight: 300;
     src: url('fonts/roboto-v18-latin_latin-ext-300.eot'); /* IE9 Compat Modes */
     src: local('Roboto Light'), local('Roboto-Light'),
-    url('fonts/roboto-v18-latin_latin-ext-300.eot?#iefix') format('embedded-opentype'), /* IE6-IE8 */
-    url('fonts/roboto-v18-latin_latin-ext-300.woff2') format('woff2'), /* Super Modern Browsers */
-    url('fonts/roboto-v18-latin_latin-ext-300.woff') format('woff'), /* Modern Browsers */
-    url('fonts/roboto-v18-latin_latin-ext-300.ttf') format('truetype'), /* Safari, Android, iOS */
-    url('fonts/roboto-v18-latin_latin-ext-300.svg#Roboto') format('svg'); /* Legacy iOS */
+    url('fonts/roboto-v18-latin_latin-ext-300.eot?#iefix') format('embedded-opentype'), /* IE6-IE8 */ url('fonts/roboto-v18-latin_latin-ext-300.woff2') format('woff2'), /* Super Modern Browsers */ url('fonts/roboto-v18-latin_latin-ext-300.woff') format('woff'), /* Modern Browsers */ url('fonts/roboto-v18-latin_latin-ext-300.ttf') format('truetype'), /* Safari, Android, iOS */ url('fonts/roboto-v18-latin_latin-ext-300.svg#Roboto') format('svg'); /* Legacy iOS */
 }
+
 /* roboto-regular - latin_latin-ext */
 @font-face {
     font-family: 'Roboto';
@@ -18,12 +15,9 @@
     font-weight: 400;
     src: url('fonts/roboto-v18-latin_latin-ext-regular.eot'); /* IE9 Compat Modes */
     src: local('Roboto'), local('Roboto-Regular'),
-    url('fonts/roboto-v18-latin_latin-ext-regular.eot?#iefix') format('embedded-opentype'), /* IE6-IE8 */
-    url('fonts/roboto-v18-latin_latin-ext-regular.woff2') format('woff2'), /* Super Modern Browsers */
-    url('fonts/roboto-v18-latin_latin-ext-regular.woff') format('woff'), /* Modern Browsers */
-    url('fonts/roboto-v18-latin_latin-ext-regular.ttf') format('truetype'), /* Safari, Android, iOS */
-    url('fonts/roboto-v18-latin_latin-ext-regular.svg#Roboto') format('svg'); /* Legacy iOS */
+    url('fonts/roboto-v18-latin_latin-ext-regular.eot?#iefix') format('embedded-opentype'), /* IE6-IE8 */ url('fonts/roboto-v18-latin_latin-ext-regular.woff2') format('woff2'), /* Super Modern Browsers */ url('fonts/roboto-v18-latin_latin-ext-regular.woff') format('woff'), /* Modern Browsers */ url('fonts/roboto-v18-latin_latin-ext-regular.ttf') format('truetype'), /* Safari, Android, iOS */ url('fonts/roboto-v18-latin_latin-ext-regular.svg#Roboto') format('svg'); /* Legacy iOS */
 }
+
 /* roboto-500 - latin_latin-ext */
 @font-face {
     font-family: 'Roboto';
@@ -31,11 +25,7 @@
     font-weight: 500;
     src: url('fonts/roboto-v18-latin_latin-ext-500.eot'); /* IE9 Compat Modes */
     src: local('Roboto Medium'), local('Roboto-Medium'),
-    url('fonts/roboto-v18-latin_latin-ext-500.eot?#iefix') format('embedded-opentype'), /* IE6-IE8 */
-    url('fonts/roboto-v18-latin_latin-ext-500.woff2') format('woff2'), /* Super Modern Browsers */
-    url('fonts/roboto-v18-latin_latin-ext-500.woff') format('woff'), /* Modern Browsers */
-    url('fonts/roboto-v18-latin_latin-ext-500.ttf') format('truetype'), /* Safari, Android, iOS */
-    url('fonts/roboto-v18-latin_latin-ext-500.svg#Roboto') format('svg'); /* Legacy iOS */
+    url('fonts/roboto-v18-latin_latin-ext-500.eot?#iefix') format('embedded-opentype'), /* IE6-IE8 */ url('fonts/roboto-v18-latin_latin-ext-500.woff2') format('woff2'), /* Super Modern Browsers */ url('fonts/roboto-v18-latin_latin-ext-500.woff') format('woff'), /* Modern Browsers */ url('fonts/roboto-v18-latin_latin-ext-500.ttf') format('truetype'), /* Safari, Android, iOS */ url('fonts/roboto-v18-latin_latin-ext-500.svg#Roboto') format('svg'); /* Legacy iOS */
 }
 
 html > body {
@@ -160,7 +150,9 @@ a {
 }
 
 .Swarmpit-paper {
-    border: 1px solid rgba(0, 0, 0, 0.12);
+    border: 1px solid #DFE3E8;
+    border-radius: 4px;
+    padding: 24px;
 }
 
 .Swarmpit-row {
@@ -180,6 +172,52 @@ a {
 
 .Swarmpit-menu-info {
     opacity: 0.7;
+}
+
+/** Dashboard **/
+
+.Swarmpit-dashboard-paper {
+    height: 100%;
+}
+
+.Swarmpit-dashboard-chip {
+    margin: 2px;
+}
+
+.Swarmpit-dashboard-section {
+    display: flex;
+    align-items: center;
+    height: 100%;
+}
+
+.Swarmpit-dashboard-section-divider {
+    border-top: 1px solid #eee;
+    margin-top: 20px;
+}
+
+.Swarmpit-dashboard-section-title {
+    font-family: "Open Sans", verdana, arial, sans-serif;
+    font-size: 14px !important;
+    color: rgb(68, 68, 68) !important;
+}
+
+.Swarmpit-dashboard-section-value {
+    font-weight: 500 !important;
+    font-size: 24px !important;
+}
+
+.Swarmpit-dashbord-section-graph {
+    display: inline-flex;
+    align-items: center;
+    margin-left: auto;
+    justify-content: center;
+}
+
+.Swarmpit-dashbord-section-chips {
+    display: inline-flex;
+    margin-left: auto;
+    justify-content: center;
+    flex-direction: column;
 }
 
 /** Appbar **/

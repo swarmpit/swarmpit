@@ -26,7 +26,7 @@
 (defn ->host-ts [series]
   (let [values (get series "values")
         tags (get series "tags")]
-    {:host   (get tags "host")
+    {:name   (get tags "host")
      :time   (into [] (map first values))
      :cpu    (into [] (map second values))
      :memory (into [] (map #(nth % 2) values))}))

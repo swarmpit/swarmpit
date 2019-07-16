@@ -17,9 +17,10 @@
                       :delete :api-token-remove}
        "/initialize" {:post :initialize}
        "/api"        {"/me"          {:get :me}
+                      "/stats"       {:get :stats}
                       "/tasks"       {:get :tasks}
                       "/tasks/"      {:get {[:id]   :task
-                                            [:name] {"/stats" :task-ts}}}
+                                            [:name] {"/ts" :task-ts}}}
                       "/stacks"      {:get  :stacks
                                       :post :stack-create}
                       "/stacks/"     {:get    {[:name] {"/file"     :stack-file
@@ -64,7 +65,8 @@
                                                       "/services" :network-services}}
                                       :delete {[:id] :network-delete}}
                       "/nodes"       {:get :nodes}
-                      "/nodes/"      {:get  {[:id] {""       :node
+                      "/nodes/"      {:get  {"ts"  :nodes-ts
+                                             [:id] {""       :node
                                                     "/tasks" :node-tasks}}
                                       :post {[:id] :node-update}}
                       "/services"    {:get  :services

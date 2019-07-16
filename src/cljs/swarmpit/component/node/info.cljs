@@ -172,11 +172,11 @@
       (node-handler id)
       (node-tasks-handler id))))
 
-(defn form-general-grid [network]
+(defn form-general-grid [node]
   (comp/grid
     {:item true
      :xs   12}
-    (form-general network)))
+    (form-general node)))
 
 (defn form-plugins-grid [networks volumes]
   (comp/grid

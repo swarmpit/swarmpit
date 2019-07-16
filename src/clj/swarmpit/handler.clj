@@ -363,6 +363,11 @@
     (->> (api/nodes)
          (resp-ok))))
 
+(defmethod dispatch :nodes-ts [_]
+  (fn [_]
+    (->> (stats/hosts-timeseries)
+         (resp-ok))))
+
 (defmethod dispatch :node [_]
   (fn [{:keys [route-params]}]
     (->> (api/node (:id route-params))
@@ -377,6 +382,13 @@
 (defmethod dispatch :node-tasks [_]
   (fn [{:keys [route-params]}]
     (->> (api/node-tasks (:id route-params))
+         (resp-ok))))
+
+;; Statistics
+
+(defmethod dispatch :stats [_]
+  (fn [_]
+    (->> (stats/cluster)
          (resp-ok))))
 
 ;; Placement handler
