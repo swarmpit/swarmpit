@@ -38,7 +38,7 @@
 
 (rum/defc node-item < rum/static [item index]
   (let [cpu (-> item :resources :cpu (int))
-        memory-bytes (-> item :resources :memory)
+        memory-bytes (-> item :resources :memory (* 1024 1024))
         disk-bytes (-> item :stats :disk :total)]
     (comp/grid
       {:item true
