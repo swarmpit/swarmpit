@@ -388,8 +388,10 @@
 
 (defmethod dispatch :stats [_]
   (fn [_]
-    (->> (stats/cluster)
-         (resp-ok))))
+    (if (stats/ready?)
+      (->> (stats/cluster)
+           (resp-ok))
+      (resp-error 400 "Statistics not ready"))))
 
 ;; Placement handler
 

@@ -5,6 +5,9 @@
 
 (def cache (atom (cache/basic-cache-factory {})))
 
+(defn ready? []
+  (some? @cache))
+
 (defn configure
   []
   (influx/create-database))
