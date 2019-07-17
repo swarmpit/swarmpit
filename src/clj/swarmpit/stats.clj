@@ -37,6 +37,20 @@
                    (:name %)))
        (first)))
 
+(defn cluster
+  "Get latest cluster statistics"
+  []
+  (let [hosts (vals @cache)
+        sum-fn (fn [ks] (reduce + (map #(get-in % ks) hosts)))
+        mean-fn (fn [ks] (/ (sum-fn ks) (count hosts)))]
+    {:cpu    {:usage (mean-fn [:cpu :usedPercentage])}
+     :memory {:usage (mean-fn [:memory :usedPercentage])
+              :used  (sum-fn [:memory :used])
+              :total (sum-fn [:memory :total])}
+     :disk   {:usage (mean-fn [:disk :usedPercentage])
+              :used  (sum-fn [:disk :used])
+              :total (sum-fn [:disk :total])}}))
+
 (defn task-timeseries
   "Get task timeseries data for last 24 hours"
   [task-name]
@@ -53,13 +67,4 @@
        (-> (influx/read-host-stats)
            (first)
            (get "series"))))
-
-(defn cluster
-  "Get latest cluster statistics"
-  []
-  (-> (influx/read-cluster-stats)
-      (first)
-      (get "series")
-      (first)
-      (m/->cluster)))
 

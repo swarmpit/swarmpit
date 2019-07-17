@@ -1,8 +1,7 @@
 (ns swarmpit.influxdb.client
   (:require [influxdb.client :as client]
             [influxdb.convert :as convert]
-            [swarmpit.config :refer [config]]
-            [clojure.tools.logging :as log]))
+            [swarmpit.config :refer [config]]))
 
 (defn- execute [fn]
   (let [conn {:url (config :influxdb-url)}]
@@ -78,39 +77,3 @@
        FROM swarmpit..host_stats
         WHERE time > now() - 1d
         GROUP BY time(1m), host"))
-
-(def last-host-query
-  "SELECT
-    LAST(cpuUsage) as cpuUsage,
-    LAST(memoryUsage) as memoryUsage,
-    LAST(diskUsage) as diskUsage,
-    LAST(memoryUsed) as memoryUsed,
-    LAST(memoryTotal) as memoryTotal,
-    LAST(diskUsed) as diskUsed,
-    LAST(diskTotal) as diskTotal
-     FROM swarmpit..host_stats
-      WHERE time > now() - 1m")
-
-(defn read-cluster-stats
-  []
-  (read-doc
-    (str
-      "SELECT
-        MEAN(cpuUsage) as cpuUsage,
-        MEAN(memoryUsage) as memoryUsage,
-        MEAN(diskUsage) as diskUsage,
-        SUM(memoryUsed) as memoryUsed,
-        SUM(memoryTotal) as memoryTotal,
-        SUM(diskUsed) as diskUsed,
-        SUM(diskTotal) as diskTotal
-         FROM (" last-host-query "
-          GROUP BY host)")))
-
-(def task-memory-query
-  "SELECT
-    MEAN(memoryUsed) as avgMemory,
-    MAX(memoryUsed) as maxMemory,
-    MIN(memoryUsed) as minMemory
-     FROM swarmpit..task_stats
-      WHERE time > now() - 1d
-      GROUP BY task, service")

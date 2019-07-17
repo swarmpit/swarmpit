@@ -42,21 +42,21 @@
     (default
       plot-id
       (into []
-            (map #(hash-map
-                    :x (:time %)
-                    :y (y-key %)
-                    :name (:name %)
+            (map-indexed
+              (fn [i item]
+                (merge
+                  (hash-map
+                    :x (:time item)
+                    :y (y-key item)
+                    :name (subs (:name item) 0 15)
                     :connectgaps false
                     :fill "tozeroy"
                     :type "scatter"
-                    :mode "lines") multi-stats-ts))
+                    :mode "lines")
+                  (when (zero? i)
+                    {:line {:color "#43a047"}}))) multi-stats-ts))
       {:title      title
-       ;:showlegend true
-       ;:legend     {:orientation "h"
-       ;             :traceorder  "reversed"
-       ;             :x           0.1
-       ;             :y           1.2
-       ;             :font        {:size 10}}
+       :showlegend true
        :height     300
        :margin     {:l   80
                     :r   80

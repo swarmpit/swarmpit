@@ -93,7 +93,7 @@
               :className "Swarmpit-dashboard-chip"
               :label     (inflect/pluralize-noun count name)}))
 
-(rum/defc dashboard-cluster < rum/static [{:keys [stats nodes] :as item}]
+(rum/defc dashboard-cluster < rum/static [nodes]
   (comp/paper
     {:elevation 0
      :className "Swarmpit-paper Swarmpit-dashboard-paper"}
@@ -112,7 +112,7 @@
         (resource-chip "manager" (count (filter #(= "manager" (:role %)) nodes)))
         (resource-chip "worker" (count (filter #(= "worker" (:role %)) nodes)))]])))
 
-(rum/defc dashboard-memory < rum/static [{:keys [stats nodes] :as item}]
+(rum/defc dashboard-memory < rum/static [{:keys [usage total] :as memory}]
   (comp/paper
     {:elevation 0
      :className "Swarmpit-paper Swarmpit-dashboard-paper"}
@@ -126,14 +126,14 @@
         (comp/typography
           {:variant   "h5"
            :className "Swarmpit-dashboard-section-value"}
-          (str (humanize/filesize (:memoryTotal stats) :binary false) " ram"))]
+          (str (humanize/filesize total :binary false) " ram"))]
        [:div.Swarmpit-dashbord-section-graph
         (common/resource-pie
-          (:memoryUsage stats)
-          (render-percentage (:memoryUsage stats))
+          usage
+          (render-percentage usage)
           "graph-memory")]])))
 
-(rum/defc dashboard-disk < rum/static [{:keys [stats nodes] :as item}]
+(rum/defc dashboard-disk < rum/static [{:keys [usage total] :as disk}]
   (comp/paper
     {:elevation 0
      :className "Swarmpit-paper Swarmpit-dashboard-paper"}
@@ -147,14 +147,14 @@
         (comp/typography
           {:variant   "h5"
            :className "Swarmpit-dashboard-section-value"}
-          (str (humanize/filesize (:diskTotal stats) :binary false) " size"))]
+          (str (humanize/filesize total :binary false) " size"))]
        [:div.Swarmpit-dashbord-section-graph
         (common/resource-pie
-          (:diskUsage stats)
-          (render-percentage (:diskUsage stats))
+          usage
+          (render-percentage usage)
           "graph-disk")]])))
 
-(rum/defc dashboard-cpu < rum/static [{:keys [stats nodes] :as item}]
+(rum/defc dashboard-cpu < rum/static [{:keys [usage] :as cpu} nodes]
   (let [cores (apply + (map #(get-in % [:resources :cpu]) nodes))]
     (comp/paper
       {:elevation 0
@@ -172,8 +172,8 @@
             (str cores " " (inflect/pluralize-noun cores "core")))]
          [:div.Swarmpit-dashbord-section-graph
           (common/resource-pie
-            (:cpuUsage stats)
-            (render-percentage (:cpuUsage stats))
+            usage
+            (render-percentage usage)
             "graph-cpu")]]))))
 
 (rum/defc dashborad-node-ram-stats < {:did-mount
@@ -209,28 +209,33 @@
                :sm   6
                :lg   3
                :xl   3}
-              (dashboard-cluster item))
+              (dashboard-cluster
+                (:nodes item)))
             (comp/grid
               {:item true
                :xs   12
                :sm   6
                :lg   3
                :xl   3}
-              (dashboard-disk item))
+              (dashboard-disk
+                (get-in item [:stats :disk])))
             (comp/grid
               {:item true
                :xs   12
                :sm   6
                :lg   3
                :xl   3}
-              (dashboard-memory item))
+              (dashboard-memory
+                (get-in item [:stats :memory])))
             (comp/grid
               {:item true
                :xs   12
                :sm   6
                :lg   3
                :xl   3}
-              (dashboard-cpu item))
+              (dashboard-cpu
+                (get-in item [:stats :cpu])
+                (:nodes item)))
             (comp/grid
               {:item true
                :xs   12

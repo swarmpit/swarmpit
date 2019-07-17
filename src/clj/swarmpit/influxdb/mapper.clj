@@ -30,11 +30,3 @@
      :time   (into [] (map first values))
      :cpu    (into [] (map second values))
      :memory (into [] (map #(nth % 2) values))}))
-
-(defn ->cluster [series]
-  (let [values (first (get series "values"))
-        columns (get series "columns")]
-    (into {}
-          (map-indexed
-            (fn [i item]
-              (hash-map item (nth values i))) columns))))
