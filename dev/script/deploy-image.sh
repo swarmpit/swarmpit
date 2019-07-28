@@ -4,7 +4,7 @@ REPO=swarmpit
 NAMESPACE=$ORG/$REPO
 BRANCH=${TRAVIS_BRANCH/\//-}
 
-if [ $DOCKER != "stable" ]
+if [ $DOCKER != "18.09" ]
 then
 	echo "images are build and deployed only for stable docker build"
 	exit 0
