@@ -8,6 +8,9 @@ cache:
 jdk:
   - oraclejdk8
 env:
+  - DOCKER=test
+  - DOCKER=stable
+  - DOCKER=19.03
   - DOCKER=18.09
   - DOCKER=18.03
   - DOCKER=17.12
