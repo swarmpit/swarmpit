@@ -59,7 +59,7 @@
             [lein-pprint "1.1.2"]
             [lein-cloverage "1.0.9"]]
   :repositories {"local" "file:repo"}
-  :min-lein-version "2.6.1"
+  :min-lein-version "2.8.2"
   :source-paths ["src/clj" "src/cljs" "src/cljc"]
   :test-paths ["test/clj" "test/cljc"]
   :java-source-paths ["src/java"]
@@ -102,14 +102,14 @@
   :profiles {:dev
              {:dependencies [[figwheel "0.5.17"]
                              [figwheel-sidecar "0.5.17"]
-                             [com.cemerick/piggieback "0.2.2"]
-                             [org.clojure/tools.nrepl "0.2.13"]
+                             [cider/piggieback "0.4.1"]
+                             [nrepl/nrepl "0.6.0"]
                              [binaryage/devtools "0.9.10"]
                              [criterium "0.4.4"]]
               :plugins      [[lein-figwheel "0.5.17"]
                              [lein-doo "0.1.6"]]
               :source-paths ["dev"]
-              :repl-options {:nrepl-middleware [cemerick.piggieback/wrap-cljs-repl]}}
+              :repl-options {:nrepl-middleware [cider.piggieback/wrap-cljs-repl]}}
              :prod
              {:source-paths ^:replace ["src/clj" "src/cljc"]
               :prep-tasks   ["javac" "compile" ["cljsbuild" "once" "min"]]
