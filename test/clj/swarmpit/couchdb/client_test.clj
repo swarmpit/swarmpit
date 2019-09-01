@@ -8,7 +8,7 @@
 
 (deftest ^:integration db-client
   (testing "version"
-    (is (some? (db-version))))
+    (is (some? (version))))
 
   (testing "some? db"
     (is (some? (get-secret))))
@@ -17,7 +17,7 @@
     (with-redefs [swarmpit.config/config {:db-url "http://invalid-url:23333"}]
       (is (thrown-with-msg?
             ExceptionInfo #"DB failure: invalid-url: .*"
-            (db-version)))))
+            (version)))))
 
   (testing "404 error swallowing"
     (is (nil? (dockerhub "not-existing-user")))))
