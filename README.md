@@ -53,15 +53,22 @@ docker stack deploy -c swarmpit/docker-compose.yml swarmpit
 
 * app - Swarmpit
 * [agent](https://github.com/swarmpit/agent) - Swarmpit agent
-* db - CouchDB
+* db - CouchDB (Application data)
+* influxdb - InfluxDB (Application statistics)
 
-Feel free to edit the stackfile to change an application port and we strongly recommend to specify `db-data` volume driver to shared-volume type of your choice. Alternatively, you can link db service to the specific node by using [constraint](https://docs.docker.com/compose/compose-file/#placement).
+Feel free to edit the stackfile to change an application port and we strongly recommend to specify following volumes
+driver:
+
+* db-data 
+* influxdb-data 
+
+to shared-volume type of your choice. Alternatively, you can link db service to the specific node by using [constraint](https://docs.docker.com/compose/compose-file/#placement).
 
 Swarmpit is published on port `888` by default.
 
 ## Development
 
-Swarmpit is written purely in Clojure and utilizes React on front-end. CouchDB is used as persistent storage.
+Swarmpit is written purely in Clojure and utilizes React on front-end. CouchDB is used to persist application data & InfluxDB for cluster statistics.
 
 Everything about building, issue reporting and setting up development environment can be found in [CONTRIBUTING.md](CONTRIBUTING.md)
 
