@@ -6,6 +6,7 @@
          :docker-api          "1.30"
          :docker-http-timeout 5000
          :db-url              "http://localhost:5984"
+         :influxdb-url        "http://localhost:8086"
          :agent-url           nil
          :work-dir            "/tmp"
          :password-hashing    {:alg        :pbkdf2+sha512
@@ -16,6 +17,7 @@
         :docker-api          (env :swarmpit-docker-api)
         :docker-http-timeout (env :swarmpit-docker-http-timeout)
         :db-url              (env :swarmpit-db)
+        :influxdb-url        (env :swarmpit-influxdb)
         :agent-url           (env :swarmpit-agent-url)
         :work-dir            (env :swarmpit-workdir)}
        (into {} (remove #(nil? (val %))))))

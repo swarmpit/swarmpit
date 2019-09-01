@@ -21,12 +21,6 @@
 
 (enable-console-print!)
 
-(defn- render-percentage
-  [val]
-  (if (some? val)
-    (str (gstring/format "%.2f" val) "%")
-    "-"))
-
 (defn- node-item-state [value]
   (case value
     "ready" (label/green value)

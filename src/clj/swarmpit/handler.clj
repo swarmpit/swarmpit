@@ -4,6 +4,7 @@
             [swarmpit.api :as api]
             [swarmpit.slt :as slt]
             [swarmpit.token :as token]
+            [swarmpit.stats :as stats]
             [swarmpit.version :as version]))
 
 (defn include-css [href revision]
@@ -362,6 +363,11 @@
     (->> (api/nodes)
          (resp-ok))))
 
+(defmethod dispatch :nodes-ts [_]
+  (fn [_]
+    (->> (stats/hosts-timeseries)
+         (resp-ok))))
+
 (defmethod dispatch :node [_]
   (fn [{:keys [route-params]}]
     (->> (api/node (:id route-params))
@@ -377,6 +383,15 @@
   (fn [{:keys [route-params]}]
     (->> (api/node-tasks (:id route-params))
          (resp-ok))))
+
+;; Statistics
+
+(defmethod dispatch :stats [_]
+  (fn [_]
+    (if (stats/ready?)
+      (->> (stats/cluster)
+           (resp-ok))
+      (resp-error 400 "Statistics not ready"))))
 
 ;; Placement handler
 
@@ -413,6 +428,11 @@
 (defmethod dispatch :task [_]
   (fn [{:keys [route-params]}]
     (->> (api/task (:id route-params))
+         (resp-ok))))
+
+(defmethod dispatch :task-ts [_]
+  (fn [{:keys [route-params]}]
+    (->> (stats/task-timeseries (:name route-params))
          (resp-ok))))
 
 ;; Registry handler

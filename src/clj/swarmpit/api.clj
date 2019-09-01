@@ -709,7 +709,8 @@
 (defn task-stats
   [task]
   (let [stats (apply dissoc (stats/task task) [:name :id])]
-    (assoc task :stats stats)))
+    (-> task
+        (assoc-in [:stats] stats))))
 
 (defn tasks
   []

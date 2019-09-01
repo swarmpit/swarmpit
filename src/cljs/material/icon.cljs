@@ -168,3 +168,7 @@
 (defn image
   [props]
   (f/image-icon (clj->js props)))
+
+(defn dashboard
+  [props]
+  (f/dashboard-icon (clj->js props)))

@@ -78,7 +78,7 @@
 
 ;; Database
 
-(defn db-version
+(defn version
   []
   (-> (execute {:method :GET
                 :api    "/"})

@@ -26,7 +26,7 @@
 
 (defmethod render :index
   [_]
-  {:title "Home"})
+  {:title "Dashboard"})
 
 (defmethod render :account-settings
   [_]

@@ -1,10 +1,10 @@
 (ns swarmpit.utils
   (:require [clojure.walk]
-            #?(:clj [flatland.ordered.map :refer [ordered-map]])
-            #?(:clj [clojure.math.numeric-tower :refer [floor expt]])))
-
+    #?(:clj [flatland.ordered.map :refer [ordered-map]])
+    #?(:clj [clojure.math.numeric-tower :refer [floor expt round]])))
 
 #?(:cljs (def ^:private floor (.-floor js/Math)))
+#?(:cljs (def ^:private round (.-round js/Math)))
 #?(:cljs (def ^:private expt (.-pow js/Math)))
 #?(:cljs (def ^:private rounding-const 1000000))
 #?(:clj  (def ^:private log10 #(java.lang.Math/log10 %))
@@ -14,6 +14,9 @@
                                                  (/ (.log js/Math %)
                                                     js/Math.LN10)))
                                       rounding-const))))
+
+#?(:clj  (def ^:private log #(java.lang.Math/log %))
+   :cljs (def ^:private log (.-log js/Math)))
 
 (defn remove-el
   "Remove element in `vector` on given `index`"
@@ -91,6 +94,16 @@
 (defn nano->
   [number]
   (when number (/ number 1000000000)))
+
+(defn megabytes->bytes
+  [megabytes]
+  (when (some? megabytes)
+    (* megabytes (* 1000 1000))))
+
+(defn bytes->megabytes
+  [bytes]
+  (when (some? bytes)
+    (double (/ bytes (* 1000 1000)))))
 
 (def ^:private pows [[100 "googol"]
                      [33 "d"]

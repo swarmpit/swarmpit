@@ -21,6 +21,7 @@ env:
 install:
   - sudo sysctl -w net.ipv4.tcp_mtu_probing=1
   - bash dev/script/init-db.sh
+  - bash dev/script/init-influx.sh
   - bash dev/script/init-agent.sh
   - bash dev/script/start-dind.sh
 script:

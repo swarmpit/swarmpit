@@ -3,6 +3,7 @@
             [swarmpit.component.page-403 :as page-403]
             [swarmpit.component.page-404 :as page-404]
             [swarmpit.component.page-error :as page-error]
+            [swarmpit.component.dashboard :as dashboard]
             [swarmpit.component.account-settings :as account-settings]
             [swarmpit.component.registry.list :as registry-list]
             [swarmpit.component.registry.create :as registry-create]
@@ -50,6 +51,10 @@
             [swarmpit.component.registry-dockerhub.edit :as reg-dockerhub-edit]))
 
 (defmulti dispatch (fn [route] (:handler route)))
+
+(defmethod dispatch :index
+  [route]
+  (dashboard/form route))
 
 (defmethod dispatch nil
   [_]

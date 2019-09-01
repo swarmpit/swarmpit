@@ -18,6 +18,7 @@
   []
   (print (:out (sh "sh" "dev/script/init-db.sh")))
   (print (:out (sh "sh" "dev/script/init-agent.sh")))
+  (print (:out (sh "sh" "dev/script/init-influx.sh")))
   (cfg/update! {:agent-url "http://localhost:8888"})
   (db/init)
   (agent/init)

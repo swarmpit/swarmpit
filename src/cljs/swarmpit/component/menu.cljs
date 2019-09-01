@@ -16,7 +16,11 @@
 (def swarmpit-revision-page "https://github.com/swarmpit/swarmpit/commit")
 
 (def menu
-  [{:name    "Registries"
+  [{:name    "Dashboard"
+    :icon    (icon/dashboard {})
+    :handler :index
+    :domain  :index}
+   {:name    "Registries"
     :icon    (icon/cloud {})
     :handler :registry-list
     :domain  :registry}
@@ -82,7 +86,7 @@
   []
   (ajax/get
     (routes/path-for-backend :version)
-    {:headers {"Authorization" nil}
+    {:headers    {"Authorization" nil}
      :on-success (fn [{:keys [response]}]
                    (state/update-value [:version] response state/layout-cursor)
                    (state/set-value response))}))
@@ -121,7 +125,7 @@
                          (url/dispatch! (routes/path-for-frontend handler)))}
            (when selected?
              {:className "Swarmpit-drawer-item-selected"})
-           (when (= :registry domain)
+           (when (= :index domain)
              {:style {:marginTop "10px"}}))
     (comp/list-item-icon
       (merge {:color "primary"

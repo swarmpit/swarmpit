@@ -69,6 +69,15 @@
           (to-default-time-zone)
           (format/unparse simple-format))))
 
+#?(:cljs
+   (defn in-past-string
+     [minutes-to-history]
+     (format/unparse
+       (format/formatters :date-time)
+       (minus
+         (now)
+         (minutes minutes-to-history)))))
+
 (defn valid?
   [datetime]
   (if (= datetime "0001-01-01T00:00:00Z")

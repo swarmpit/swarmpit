@@ -14,6 +14,14 @@ Default is `1.30`.
 Docker client http timeout in ms.
 Default is `5000`.
 
+## `SWARMPIT_DB`
+Swarmpit database (CouchDB) url. 
+Default is `http://localhost:5984`.
+
+## `SWARMPIT_INFLUXDB`
+Swarmpit statistics database (InfluxDB) url. 
+Default is `http://localhost:8086`.
+
 ## `SWARMPIT_AGENT_URL`
 Set address of agent. If nil value is calculated dynamically. For dev purpose only!!! 
 Default is `nil`.
