@@ -1,37 +1,57 @@
 (ns swarmpit.database
   (:require [clojure.tools.logging :as log]
             [swarmpit.couchdb.client :as cc]
+            [swarmpit.influxdb.client :as ic]
             [swarmpit.couchdb.migration :refer [migrate]]))
 
-(defn- db-ready?
+(defn- couch-ready?
   []
-  (try (cc/db-version)
+  (try (cc/version)
+       (catch Exception _ false)))
+
+(defn- influx-ready?
+  []
+  (try (ic/ping)
        (catch Exception _ false)))
 
 (defn- wait-for-db
-  [sec]
-  (log/info "Waiting for DB...")
+  [sec running-fn db-type]
+  (log/info (str "Waiting for " db-type " ..."))
   (loop [n sec]
-    (if (db-ready?)
+    (if (running-fn)
       (log/info "... connected after" (- sec n) "sec")
       (if (zero? n)
         (do
           (log/error "... timeout")
-          (throw (ex-info "DB timeout" nil)))
+          (throw (ex-info (str db-type " timeout") nil)))
         (do
           (Thread/sleep 1000)
           (recur (dec n)))))))
 
-(defn- create-database
+(defn- create-couch-database
   []
   (try
     (cc/create-database)
     (catch Exception ex
       (:body (ex-data ex)))))
 
-(defn init
+(defn- create-influx-database
   []
-  (wait-for-db 100)
-  (when (not (:error (create-database)))
+  (ic/create-database))
+
+(defn init-couch
+  []
+  (wait-for-db 100 couch-ready? "CouchDB")
+  (when (not (:error (create-couch-database)))
     (log/info "DB schema created"))
   (migrate))
+
+(defn init-influx
+  []
+  (wait-for-db 100 influx-ready? "InfluxDB")
+  (create-influx-database))
+
+(defn init
+  []
+  (init-couch)
+  (init-influx))

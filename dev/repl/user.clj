@@ -4,7 +4,6 @@
             [figwheel-sidecar.repl-api :as figwheel]
             [swarmpit.setup :as setup]
             [swarmpit.database :as db]
-            [swarmpit.stats :as stats]
             [swarmpit.agent :as agent]
             [swarmpit.config :as cfg]
             [swarmpit.server]))
@@ -22,7 +21,6 @@
   (print (:out (sh "sh" "dev/script/init-influx.sh")))
   (cfg/update! {:agent-url "http://localhost:8888"})
   (db/init)
-  (stats/configure)
   (agent/init)
   (setup/docker))
 

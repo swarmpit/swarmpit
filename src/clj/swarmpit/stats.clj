@@ -8,10 +8,6 @@
 (defn ready? []
   (some? @cache))
 
-(defn configure
-  []
-  (influx/create-database))
-
 (defn store-to-cache
   "Store stats in local cache"
   [stats]

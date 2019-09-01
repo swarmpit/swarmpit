@@ -1,11 +1,17 @@
 (ns swarmpit.influxdb.client
-  (:require [influxdb.client :as client]
+  (:require [swarmpit.http :refer :all]
+            [influxdb.client :as client]
             [influxdb.convert :as convert]
             [swarmpit.config :refer [config]]))
 
 (defn- execute [fn]
   (let [conn {:url (config :influxdb-url)}]
     (fn conn)))
+
+(defn ping []
+  (execute-in-scope {:method :GET
+                     :url    (str (config :influxdb-url) "/ping")
+                     :scope  "InfluxDB"}))
 
 (defn- read-doc [q]
   (execute
