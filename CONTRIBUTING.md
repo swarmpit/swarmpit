@@ -10,7 +10,7 @@ socket.
 ## Setting up a development environment
 
 Prerequisites
-- Leiningen 2.6.1 or newer
+- Leiningen 2.8.2 or newer
 - Docker socket accessible on `/var/run/docker.sock`
 
 Install local dependencies
