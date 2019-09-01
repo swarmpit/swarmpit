@@ -12,6 +12,7 @@
     (log/debug "Autoredeploy agent checking for updates. Services to be checked:" (count services))
     (doseq [service services]
       (let [id (:id service)
+            name (:serviceName service)
             repository (:repository service)]
         (try
           (let [current-digest (:imageDigest repository)
@@ -21,9 +22,9 @@
             (when (not= current-digest
                         latest-digest)
               (api/redeploy-service nil id)
-              (log/info "Service" id "autoredeploy fired! DIGEST: [" current-digest "] -> [" latest-digest "]")))
+              (log/info "Service" id "(" name ") autoredeploy fired! DIGEST: [" current-digest "] -> [" latest-digest "]")))
           (catch ExceptionInfo e
-            (log/error "Service" id "autoredeploy failed! " (ex-data e))))))))
+            (log/error "Service" id "(" name ") autoredeploy failed! " (ex-data e))))))))
 
 (defn init []
   (schedule-task 60000
