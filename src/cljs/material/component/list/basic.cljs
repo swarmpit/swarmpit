@@ -26,9 +26,11 @@
       (fn [index item]
         (let [route (when onclick-handler-fn (onclick-handler-fn item))]
           (cmp/table-row
-            {:key     (str "table-row-" index)
-             :onClick #(dispatch! route)
-             :hover   true}
+            (merge
+              {:key   (str "table-row-" index)
+               :hover true}
+              (when route
+                {:onClick #(dispatch! route)}))
             (->> (:summary render-metadata)
                  (map-indexed
                    (fn [coll-index coll]
