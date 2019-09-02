@@ -54,15 +54,14 @@ docker stack deploy -c swarmpit/docker-compose.yml swarmpit
 * app - Swarmpit
 * [agent](https://github.com/swarmpit/agent) - Swarmpit agent
 * db - CouchDB (Application data)
-* influxdb - InfluxDB (Application statistics)
+* influxdb - InfluxDB (Cluster statistics)
 
-Feel free to edit the stackfile to change an application port and we strongly recommend to specify following volumes
-driver:
+Feel free to edit the stackfile to change an application port and we strongly recommend to specify following volumes:
 
 * db-data 
 * influxdb-data 
 
-to shared-volume type of your choice. Alternatively, you can link db service to the specific node by using [constraint](https://docs.docker.com/compose/compose-file/#placement).
+to shared-volume driver type of your choice. Alternatively, you can link db service to the specific node by using [constraint](https://docs.docker.com/compose/compose-file/#placement).
 
 Swarmpit is published on port `888` by default.
 
