@@ -1,4 +1,4 @@
-FROM java:8-alpine
+FROM adoptopenjdk/openjdk8:alpine-jre
 MAINTAINER Pavol Noha <pavol.noha@gmail.com>
 
 RUN apk add --update curl && \
