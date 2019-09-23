@@ -1,4 +1,4 @@
-FROM java:8-alpine
+FROM openjdk:8u212-alpine
 MAINTAINER Pavol Noha <pavol.noha@gmail.com>
 
 RUN apk add --update curl && \
