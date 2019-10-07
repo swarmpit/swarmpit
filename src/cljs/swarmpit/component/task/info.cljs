@@ -55,7 +55,8 @@
      :on-success (fn [{:keys [response]}]
                    (task-cpu-plot response)
                    (task-ram-plot response)
-                   (reset! stats response))}))
+                   (reset! stats response))
+     :on-error   (fn [_])}))
 
 (defn- task-handler
   [route]

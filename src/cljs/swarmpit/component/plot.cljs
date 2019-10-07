@@ -1,7 +1,6 @@
 (ns swarmpit.component.plot
   (:require [cljsjs.plotly]
-            [swarmpit.time :as time]
-            ))
+            [swarmpit.time :as time]))
 
 (defn default [plot-id data layout]
   (js/Plotly.newPlot

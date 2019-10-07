@@ -48,7 +48,19 @@
     (routes/path-for-backend :stats)
     {:state      [:loading?]
      :on-success (fn [{:keys [response]}]
-                   (state/update-value [:stats] response state/form-value-cursor))}))
+                   (state/update-value [:stats] response state/form-value-cursor))
+     :on-error   (fn [_])}))
+
+(defn- nodes-ts-handler
+  []
+  (ajax/get
+    (routes/path-for-backend :nodes-ts)
+    {:state      [:node-stats-loading?]
+     :on-success (fn [{:keys [response]}]
+                   (node-cpu-plot response)
+                   (node-ram-plot response)
+                   (state/update-value [:nodes-ts] response state/form-value-cursor))
+     :on-error   (fn [_])}))
 
 (defn- nodes-handler
   []
@@ -56,20 +68,13 @@
     (routes/path-for-backend :nodes)
     {:state      [:loading?]
      :on-success (fn [{:keys [response]}]
+                   (nodes-ts-handler)
                    (state/update-value [:nodes] response state/form-value-cursor))}))
-
-(defn- nodes-ts-handler
-  []
-  (ajax/get
-    (routes/path-for-backend :nodes-ts)
-    {:on-success (fn [{:keys [response]}]
-                   (node-cpu-plot response)
-                   (node-ram-plot response)
-                   (state/update-value [:nodes-ts] response state/form-value-cursor))}))
 
 (defn- init-form-state
   []
-  (state/set-value {:loading? true} state/form-state-cursor))
+  (state/set-value {:loading?            true
+                    :node-stats-loading? true} state/form-state-cursor))
 
 (defn- init-form-value
   []
@@ -83,8 +88,7 @@
       (init-form-state)
       (init-form-value)
       (stats-handler)
-      (nodes-handler)
-      (nodes-ts-handler))))
+      (nodes-handler))))
 
 (defn- resource-chip
   [name count]
@@ -176,18 +180,14 @@
             (render-percentage usage)
             "graph-cpu")]]))))
 
-(rum/defc dashborad-node-ram-stats < {:did-mount
-                                      (fn [state]
-                                        (nodes-ts-handler)
-                                        state)}
-                                     rum/static []
+(rum/defc dashboard-node-ram-stats < rum/static []
   (comp/card
     {:className "Swarmpit-card"}
     (comp/card-content
       {:className "Swarmpit-table-card-content"}
       (html [:div {:id plot-node-ram-id}]))))
 
-(rum/defc dashborad-node-cpu-stats < rum/static []
+(rum/defc dashboard-node-cpu-stats < rum/static []
   (comp/card
     {:className "Swarmpit-card"}
     (comp/card-content
@@ -195,7 +195,8 @@
       (html [:div {:id plot-node-cpu-id}]))))
 
 (rum/defc form-info < rum/reactive [item]
-  (let []
+  (let [{:keys [node-stats-loading?]} (state/react state/form-state-cursor)
+        node-stats-empty? (empty? (:nodes-ts item))]
     (comp/mui
       (html
         [:div.Swarmpit-form
@@ -237,21 +238,25 @@
                 (get-in item [:stats :cpu])
                 (:nodes item)))
             (comp/grid
-              {:item true
-               :xs   12
-               :sm   12
-               :md   12
-               :lg   6
-               :xl   6}
-              (dashborad-node-ram-stats))
+              (merge {:item true
+                      :xs   12
+                      :sm   12
+                      :md   12
+                      :lg   6
+                      :xl   6}
+                     (when (and (false? node-stats-loading?) node-stats-empty?)
+                       {:className "hide"}))
+              (dashboard-node-ram-stats))
             (comp/grid
-              {:item true
-               :xs   12
-               :sm   12
-               :md   12
-               :lg   6
-               :xl   6}
-              (dashborad-node-cpu-stats)))]]))))
+              (merge {:item true
+                      :xs   12
+                      :sm   12
+                      :md   12
+                      :lg   6
+                      :xl   6}
+                     (when (and (false? node-stats-loading?) node-stats-empty?)
+                       {:className "hide"}))
+              (dashboard-node-cpu-stats)))]]))))
 
 (rum/defc form < rum/reactive
                  mixin-init-form

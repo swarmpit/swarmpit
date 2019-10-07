@@ -2,6 +2,7 @@
   (:require [clojure.tools.logging :as log]
             [swarmpit.couchdb.client :as cc]
             [swarmpit.influxdb.client :as ic]
+            [swarmpit.config :refer [config]]
             [swarmpit.couchdb.migration :refer [migrate]]))
 
 (defn- couch-ready?
@@ -13,6 +14,10 @@
   []
   (try (ic/ping)
        (catch Exception _ false)))
+
+(defn- influx-configured?
+  []
+  (some? (config :influxdb-url)))
 
 (defn- wait-for-db
   [sec running-fn db-type]
@@ -48,8 +53,10 @@
 
 (defn init-influx
   []
-  (wait-for-db 100 influx-ready? "InfluxDB")
-  (create-influx-database))
+  (when (influx-configured?)
+    (do
+      (wait-for-db 100 influx-ready? "InfluxDB")
+      (create-influx-database))))
 
 (defn init
   []

@@ -1,12 +1,16 @@
 (ns swarmpit.stats
   (:require [clojure.core.cache :as cache]
             [swarmpit.influxdb.client :as influx]
-            [swarmpit.influxdb.mapper :as m]))
+            [swarmpit.influxdb.mapper :as m]
+            [swarmpit.config :refer [config]]))
 
 (def cache (atom (cache/basic-cache-factory {})))
 
+(defn influx-configured? []
+  (some? (config :influxdb-url)))
+
 (defn ready? []
-  (some? @cache))
+  (not (empty? @cache)))
 
 (defn store-to-cache
   "Store stats in local cache"
@@ -16,11 +20,12 @@
 (defn store-to-db
   "Store stats in influxDB as timeseries"
   [{:keys [id tasks] :as stats}]
-  (let [host-tags (m/->host-tags id)]
-    (influx/write-host-points host-tags stats)
-    (doseq [{:keys [name] :as task-stats} tasks]
-      (when-let [task-tags (m/->task-tags name id)]
-        (influx/write-task-points task-tags task-stats)))))
+  (when (influx-configured?)
+    (let [host-tags (m/->host-tags id)]
+      (influx/write-host-points host-tags stats)
+      (doseq [{:keys [name] :as task-stats} tasks]
+        (when-let [task-tags (m/->task-tags name id)]
+          (influx/write-task-points task-tags task-stats))))))
 
 (defn node
   "Get latest node stats from local cache"

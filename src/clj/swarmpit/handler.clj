@@ -365,8 +365,10 @@
 
 (defmethod dispatch :nodes-ts [_]
   (fn [_]
-    (->> (stats/hosts-timeseries)
-         (resp-ok))))
+    (if (stats/influx-configured?)
+      (->> (stats/hosts-timeseries)
+           (resp-ok))
+      (resp-error 400 "Statistics disabled"))))
 
 (defmethod dispatch :node [_]
   (fn [{:keys [route-params]}]
@@ -432,8 +434,10 @@
 
 (defmethod dispatch :task-ts [_]
   (fn [{:keys [route-params]}]
-    (->> (stats/task-timeseries (:name route-params))
-         (resp-ok))))
+    (if (stats/influx-configured?)
+      (->> (stats/task-timeseries (:name route-params))
+           (resp-ok))
+      (resp-error 400 "Statistics disabled"))))
 
 ;; Registry handler
 
