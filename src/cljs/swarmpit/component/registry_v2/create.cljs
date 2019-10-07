@@ -39,6 +39,15 @@
      :InputLabelProps {:shrink true}
      :onChange        #(state/update-value [:url] (-> % .-target .-value) state/form-value-cursor)}))
 
+(defn- form-custom [value]
+  (comp/checkbox
+    {:name     "custom"
+     :label    "Custom"
+     :color    "primary"
+     :value    (str value)
+     :checked  value
+     :onChange #(state/update-value [:customApi] (-> % .-target .-checked) state/form-value-cursor)}))
+
 (defn- form-auth [value]
   (comp/switch
     {:name     "authentication"
@@ -102,12 +111,13 @@
 
 (defn init-form-value
   []
-  (state/set-value {:name     ""
-                    :url      ""
-                    :public   false
-                    :withAuth false
-                    :username ""
-                    :password ""} state/form-value-cursor))
+  (state/set-value {:name      ""
+                    :url       ""
+                    :public    false
+                    :customApi false
+                    :withAuth  false
+                    :username  ""
+                    :password  ""} state/form-value-cursor))
 
 (defn reset-form
   []
@@ -115,7 +125,7 @@
   (init-form-value))
 
 (rum/defc form < rum/reactive [_]
-  (let [{:keys [name url withAuth username password]} (state/react state/form-value-cursor)
+  (let [{:keys [name url customApi withAuth username password]} (state/react state/form-value-cursor)
         {:keys [showPassword]} (state/react state/form-state-cursor)]
     (state/update-value [:valid?] (not
                                     (or
@@ -130,6 +140,9 @@
          {:component "fieldset"}
          (comp/form-group
            {}
+           (comp/form-control-label
+             {:control (form-custom customApi)
+              :label   "Custom API"})
            (comp/form-control-label
              {:control (form-auth withAuth)
               :label   "Secured"})))

@@ -26,6 +26,15 @@
      :InputLabelProps {:shrink true}
      :onChange        #(state/update-value [:url] (-> % .-target .-value) state/form-value-cursor)}))
 
+(defn- form-custom [value]
+  (comp/checkbox
+    {:name     "custom"
+     :label    "Custom"
+     :color    "primary"
+     :value    (str value)
+     :checked  value
+     :onChange #(state/update-value [:customApi] (-> % .-target .-checked) state/form-value-cursor)}))
+
 (defn- form-auth [value]
   (comp/switch
     {:name     "authentication"
@@ -108,7 +117,7 @@
       (init-form-state)
       (registry-handler id))))
 
-(rum/defc form-edit < rum/static [{:keys [_id name url public username password withAuth]}
+(rum/defc form-edit < rum/static [{:keys [_id name url public username password withAuth customApi]}
                                   {:keys [processing? showPassword]}]
   (comp/mui
     (html
@@ -131,6 +140,9 @@
               (comp/form-control-label
                 {:control (form-public public)
                  :label   "Share"})
+              (comp/form-control-label
+                {:control (form-custom customApi)
+                 :label   "Custom API"})
               (comp/form-control-label
                 {:control (form-auth withAuth)
                  :label   "Secured"}))

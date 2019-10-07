@@ -8,7 +8,9 @@
 
 (defn- build-url
   [registry api]
-  (str (:url registry) "/v2" api))
+  (if (:customApi registry)
+    (str (:url registry) api)
+    (str (:url registry) "/v2" api)))
 
 (defn- basic-auth
   [registry]
