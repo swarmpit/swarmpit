@@ -6,7 +6,7 @@
          :docker-api          "1.30"
          :docker-http-timeout 5000
          :db-url              "http://localhost:5984"
-         :influxdb-url        "http://localhost:8086"
+         :influxdb-url        nil
          :agent-url           nil
          :work-dir            "/tmp"
          :password-hashing    {:alg        :pbkdf2+sha512
