@@ -142,16 +142,18 @@ You can find here our goals and related features for future releases.
 
 ### 1.8 Release
 
-Compatibility with cloud logging drivers, UX improvements, advanced monitoring
+UX improvements, advanced monitoring, dashboard, swagger
 
-- [[#289](https://github.com/swarmpit/swarmpit/issues/289)] Support cloud logging drivers
-- [[#359](https://github.com/swarmpit/swarmpit/issues/359)] Time series monitoring
-- [[#303](https://github.com/swarmpit/swarmpit/issues/303)] Dark mode
-- [[#288](https://github.com/swarmpit/swarmpit/issues/288)] Service autoscaling
+- [[#359](https://github.com/swarmpit/swarmpit/issues/359)] Introduce dashboard, Influx integration
+- [[#359](https://github.com/swarmpit/swarmpit/issues/377)] Swagger API documentation
 
 ### 2.0 Release
 
-The main goal is to introduce FaaS & resource role management.
+The main goal is to introduce resource role management & service autoscalling. 
 
 - [[#94](https://github.com/swarmpit/swarmpit/issues/94)] Add docker resource role management.
 - [[#57](https://github.com/swarmpit/swarmpit/issues/57)] Integrate FaaS
+- [[#288](https://github.com/swarmpit/swarmpit/issues/288)] Service autoscaling
+- [[#289](https://github.com/swarmpit/swarmpit/issues/289)] Support cloud logging drivers
+- [[#303](https://github.com/swarmpit/swarmpit/issues/303)] Dark mode
+
