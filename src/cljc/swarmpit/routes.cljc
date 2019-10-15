@@ -1,7 +1,207 @@
 (ns swarmpit.routes
   (:require [bidi.bidi :as b]
             [cemerick.url :refer [map->query]]
-            [clojure.string :as str]))
+            [clojure.string :as str]
+            #?(:clj [swarmpit.handler :as handler])
+            #?(:clj [swarmpit.event.handler :as event-handler])
+            [swarmpit.handler :as handler]
+            [swarmpit.handler :as handler])
+
+
+  ;(:require [bidi.bidi :as b]
+  ;          [cemerick.url :refer [map->query]]
+  ;          [clojure.string :as str])
+  )
+
+(def table
+  [["/" {:get {:name    :index
+               :handler handler/index}}]
+   ["/events" {:get  {:name    :events
+                      :handler event-handler/events}
+               :post {:name    :event-push
+                      :handler event-handler/event-push}}]
+   ["/version" {:get {:name    :version
+                      :handler handler/version}}]
+   ["/login" {:post {:name    :login
+                     :handler handler/login}}]
+   ["/slt" {:get {:name    :slt
+                  :handler handler/slt}}]
+   ["/password" {:post {:name    :password
+                        :handler handler/password}}]
+   ["/api-token" {:post   {:name    :api-token-generate
+                           :handler handler/api-token-generate}
+                  :delete {:name    :api-token-remove
+                           :handler handler/api-token-remove}}]
+   ["/initialize" {:post {:name    :initialize
+                          :handler handler/initialize}}]
+   ["/api"
+    ["/me" {:get {:name    :me
+                  :handler handler/me}}]
+    ["/stats" {:get {:name    :stats
+                     :handler handler/stats}}]
+    ;; Task
+    ["/tasks" {:get {:name    :tasks
+                     :handler handler/tasks}}]
+    ["/tasks/:id" {:get {:name    :task
+                         :handler handler/task}}]
+    ["/tasks/:name/ts" {:get {:name    :task-ts
+                              :handler handler/task-ts}}]
+    ;; Stack
+    ["/stacks" {:get  {:name    :stacks
+                       :handler handler/stacks}
+                :post {:name    :stack-create
+                       :handler handler/stack-create}}]
+    ["/stacks/:name" {:post   {:name    :stack-update
+                               :handler handler/stack-update}
+                      :delete {:name    :stack-delete
+                               :handler handler/stack-delete}}
+     ["/file" {:get {:name    :stack-file
+                     :handler handler/stack-file}}]
+     ["/compose" {:get {:name    :stack-compose
+                        :handler handler/stack-compose}}]
+     ["/services" {:get {:name    :stack-services
+                         :handler handler/stack-services}}]
+     ["/networks" {:get {:name    :stack-networks
+                         :handler handler/stack-networks}}]
+     ["/volumes" {:get {:name    :stack-volumes
+                        :handler handler/stack-volumes}}]
+     ["/configs" {:get {:name    :stack-configs
+                        :handler handler/stack-configs}}]
+     ["/secrets" {:get {:name    :stack-secrets
+                        :handler handler/stack-secrets}}]
+     ["/redeploy" {:post {:name    :stack-redeploy
+                          :handler handler/stack-redeploy}}]
+     ["/rollback" {:post {:name    :stack-rollback
+                          :handler handler/stack-rollback}}]]
+    ;; Admin
+    ["/admin"
+     ["/users" {:get  {:name    :users
+                       :handler handler/users}
+                :post {:name    :user-create
+                       :handler handler/user-create}}]
+     ["/users/:id" {:get    {:name    :user
+                             :handler handler/user}
+                    :delete {:name    :user-delete
+                             :handler handler/user-delete}
+                    :post   {:name    :user-update
+                             :handler handler/user-update}}]]
+    ;; Secret
+    ["/secrets" {:get  {:name    :secrets
+                        :handler handler/secrets}
+                 :post {:name    :secret-create
+                        :handler handler/secret-create}}]
+    ["/secrets/:id" {:get    {:name    :secret
+                              :handler handler/secret}
+                     :post   {:name    :secret-update
+                              :handler handler/secret-update}
+                     :delete {:name    :secret-delete
+                              :handler handler/secret-delete}}
+     ["/services" {:get {:name    :secret-services
+                         :handler handler/secret-services}}]]
+    ;; Config
+    ["/configs" {:get  {:name    :configs
+                        :handler handler/configs}
+                 :post {:name    :config-create
+                        :handler handler/config-create}}]
+    ["/configs/:id" {:get    {:name    :config
+                              :handler handler/config}
+                     :delete {:name    :config-delete
+                              :handler handler/config-delete}}
+     ["/services" {:get {:name    :config-services
+                         :handler handler/config-services}}]]
+    ;; Registry
+    ["/registry"
+     ["/public/repositories" {:get {:name    :public-repositories
+                                    :handler handler/public-repositories}}]
+     ["/:registryType" {:get  {:name    :registries
+                               :handler handler/registries}
+                        :post {:name    :registry-create
+                               :handler handler/registry-create}}
+      ["/:id" {:get    {:name    :registry
+                        :handler handler/registry}
+               :delete {:name    :registry-delete
+                        :handler handler/registry-delete}
+               :post   {:name    :registry-update
+                        :handler handler/registry-update}}
+       ["/repositories" {:get {:name    :registry-repositories
+                               :handler handler/registry-repositories}}]]]]
+    ;; Repository
+    ["/repository"
+     ["/tags" {:get {:name    :repository-tags
+                     :handler handler/repository-tags}}]
+     ["/ports" {:get {:name    :repository-ports
+                      :handler handler/repository-ports}}]]
+    ;; Network
+    ["/networks" {:get  {:name    :networks
+                         :handler handler/networks}
+                  :post {:name    :network-create
+                         :handler handler/network-create}}]
+    ["/networks/:id" {:get    {:name    :network
+                               :handler handler/network}
+                      :delete {:name    :network-delete
+                               :handler handler/network-delete}}
+     ["/services" {:get {:name    :network-services
+                         :handler handler/network-services}}]]
+    ;; Nodes
+    ["/nodes" {:get {:name    :nodes
+                     :handler handler/nodes}}]
+    ["/nodes/ts" {:get {:name    :nodes-ts
+                        :handler handler/nodes-ts}}]
+    ["/nodes/:id" {:get  {:name    :node
+                          :handler handler/node}
+                   :post {:name    :node-update
+                          :handler handler/node-update}}
+     ["/tasks" {:get {:name    :node-tasks
+                      :handler handler/node-tasks}}]]
+    ;; Service
+    ["/services" {:get  {:name    :services
+                         :handler handler/services}
+                  :post {:name    :service-create
+                         :handler handler/service-create}}]
+    ["/services/:id" {:get    {:name    :service
+                               :handler handler/service}
+                      :post   {:name    :service-update
+                               :handler handler/service-update}
+                      :delete {:name    :service-delete
+                               :handler handler/service-delete}}
+     ["/logs" {:get {:name    :service-logs
+                     :handler handler/service-logs}}]
+     ["/networks" {:get {:name    :service-networks
+                         :handler handler/service-networks}}]
+     ["/tasks" {:get {:name    :service-tasks
+                      :handler handler/service-tasks}}]
+     ["/compose" {:get {:name    :service-compose
+                        :handler handler/service-compose}}]
+     ["/redeploy" {:post {:name    :service-redeploy
+                          :handler handler/service-redeploy}}]
+     ["/rollback" {:post {:name    :service-rollback
+                          :handler handler/service-rollback}}]]
+    ;; Volume
+    ["/volumes" {:get  {:name    :volumes
+                        :handler handler/volumes}
+                 :post {:name    :volume-create
+                        :handler handler/volume-create}}]
+    ["/volumes/:name" {:get    {:name    :volume
+                                :handler handler/volume}
+                       :delete {:name    :volume-delete
+                                :handler handler/volume-delete}}
+     ["/services" {:get {:name    :volume-services
+                         :handler handler/volume-services}}]]
+    ;; Placement
+    ["/placement" {:get {:name    :placement
+                         :handler handler/placement}}]
+    ;; Labels
+    ["/labels"
+     ["/service" {:get {:name    :labels-service
+                        :handler handler/labels-service}}]]
+    ;; Plugin
+    ["/plugin"
+     ["/network" {:get {:name    :plugin-network
+                        :handler handler/plugin-network}}]
+     ["/log" {:get {:name    :plugin-log
+                    :handler handler/plugin-log}}]
+     ["/volume" {:get {:name    :plugin-volume
+                       :handler handler/plugin-volume}}]]]])
 
 (def backend
   ["" {"/"           {:get :index}
