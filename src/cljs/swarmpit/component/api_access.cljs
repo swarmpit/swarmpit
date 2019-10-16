@@ -33,7 +33,7 @@
 (defn- generate-handler
   []
   (ajax/post
-    (routes/path-for-backend :api-token-generate)
+    (routes/path-for-backend :api-token)
     {:on-success (fn [{:keys [response]}]
                    (state/update-value [:token] response state/form-value-cursor))
      :on-error   (fn [_]
@@ -42,7 +42,7 @@
 (defn- remove-handler
   []
   (ajax/delete
-    (routes/path-for-backend :api-token-remove)
+    (routes/path-for-backend :api-token)
     {:on-success (fn [_]
                    (state/update-value [:api-token] nil state/form-value-cursor)
                    (state/update-value [:token] nil state/form-value-cursor))

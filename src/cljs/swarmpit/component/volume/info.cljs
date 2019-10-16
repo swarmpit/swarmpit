@@ -36,7 +36,7 @@
 (defn- delete-volume-handler
   [volume-name]
   (ajax/delete
-    (routes/path-for-backend :volume-delete {:name volume-name})
+    (routes/path-for-backend :volume {:name volume-name})
     {:on-success (fn [_]
                    (dispatch!
                      (routes/path-for-frontend :volume-list))

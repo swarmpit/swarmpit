@@ -46,7 +46,7 @@
 (defn- create-config-handler
   []
   (ajax/post
-    (routes/path-for-backend :config-create)
+    (routes/path-for-backend :configs)
     {:params     (state/get-value state/form-value-cursor)
      :state      [:processing?]
      :on-success (fn [{:keys [response origin?]}]

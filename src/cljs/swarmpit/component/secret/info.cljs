@@ -35,7 +35,7 @@
 (defn- delete-secret-handler
   [secret-id]
   (ajax/delete
-    (routes/path-for-backend :secret-delete {:id secret-id})
+    (routes/path-for-backend :secret {:id secret-id})
     {:on-success (fn [_]
                    (dispatch!
                      (routes/path-for-frontend :secret-list))

@@ -39,7 +39,7 @@
 (defn- update-stack-handler
   [name]
   (ajax/post
-    (routes/path-for-backend :stack-update {:name name})
+    (routes/path-for-backend :stack {:name name})
     {:params     (state/get-value state/form-value-cursor)
      :state      [:processing?]
      :on-success (fn [{:keys [origin?]}]

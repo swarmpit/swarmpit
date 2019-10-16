@@ -28,7 +28,7 @@
 (defn- create-volume-handler
   []
   (ajax/post
-    (routes/path-for-backend :volume-create)
+    (routes/path-for-backend :volumes)
     {:params     (state/get-value state/form-value-cursor)
      :state      [:processing?]
      :on-success (fn [{:keys [response origin?]}]

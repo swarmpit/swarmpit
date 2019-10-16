@@ -159,7 +159,7 @@
 (defn- update-node-handler
   [node-id version]
   (ajax/post
-    (routes/path-for-backend :node-update {:id node-id})
+    (routes/path-for-backend :node {:id node-id})
     {:params     (-> (state/get-value state/form-value-cursor)
                      (assoc :version version))
      :state      [:processing?]

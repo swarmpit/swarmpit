@@ -29,8 +29,8 @@
 (defn- delete-user-handler
   [user-id]
   (ajax/delete
-    (routes/path-for-backend :registry-delete {:id           user-id
-                                               :registryType :dockerhub})
+    (routes/path-for-backend :registry {:id           user-id
+                                        :registryType :dockerhub})
     {:on-success (fn [_]
                    (dispatch!
                      (routes/path-for-frontend :registry-list))

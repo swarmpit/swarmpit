@@ -30,7 +30,7 @@
 (defn- delete-user-handler
   [user-id]
   (ajax/delete
-    (routes/path-for-backend :user-delete {:id user-id})
+    (routes/path-for-backend :user {:id user-id})
     {:on-success (fn [_]
                    (dispatch!
                      (routes/path-for-frontend :user-list))

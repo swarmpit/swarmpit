@@ -67,7 +67,7 @@
 (defn- update-user-handler
   [user-id]
   (ajax/post
-    (routes/path-for-backend :user-update {:id user-id})
+    (routes/path-for-backend :user {:id user-id})
     {:params     (state/get-value state/form-value-cursor)
      :state      [:processing?]
      :on-success (fn [{:keys [origin?]}]

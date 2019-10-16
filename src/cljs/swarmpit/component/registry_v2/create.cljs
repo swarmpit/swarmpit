@@ -89,7 +89,7 @@
 (defn- create-registry-handler
   []
   (ajax/post
-    (routes/path-for-backend :registry-create {:registryType :v2})
+    (routes/path-for-backend :registries {:registryType :v2})
     {:params     (state/get-value state/form-value-cursor)
      :state      [:processing?]
      :on-success (fn [{:keys [response origin?]}]

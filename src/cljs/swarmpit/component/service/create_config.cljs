@@ -44,7 +44,7 @@
         resources (state/get-value resources/form-value-cursor)
         deployment (state/get-value deployment/form-value-cursor)]
     (ajax/post
-      (routes/path-for-backend :service-create)
+      (routes/path-for-backend :services)
       {:params     (-> settings
                        (assoc :ports ports)
                        (assoc :networks networks)

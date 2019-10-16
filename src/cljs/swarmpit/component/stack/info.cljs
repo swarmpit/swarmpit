@@ -77,7 +77,7 @@
 (defn- delete-stack-handler
   [stack-name]
   (ajax/delete
-    (routes/path-for-backend :stack-delete {:name stack-name})
+    (routes/path-for-backend :stack {:name stack-name})
     {:on-success (fn [_]
                    (dispatch!
                      (routes/path-for-frontend :stack-list))

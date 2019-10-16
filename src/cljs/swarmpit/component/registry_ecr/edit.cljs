@@ -102,8 +102,8 @@
 (defn- update-ecr-handler
   [ecr-id]
   (ajax/post
-    (routes/path-for-backend :registry-update {:id           ecr-id
-                                               :registryType :ecr})
+    (routes/path-for-backend :registry {:id           ecr-id
+                                        :registryType :ecr})
     {:params     (state/get-value state/form-value-cursor)
      :state      [:processing?]
      :on-success (fn [{:keys [origin?]}]
