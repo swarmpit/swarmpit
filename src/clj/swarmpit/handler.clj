@@ -1,5 +1,6 @@
 (ns swarmpit.handler
   (:require [clojure.walk :refer [keywordize-keys]]
+            [clojure.tools.logging :as log]
             [net.cgrand.enlive-html :as html :refer [deftemplate]]
             [swarmpit.api :as api]
             [swarmpit.slt :as slt]
@@ -67,14 +68,15 @@
 ;; Login handler
 
 (defn login
-  [{{{:keys [authorization]} :headers} :parameters}]
-  (if (nil? authorization)
-    (resp-error 400 "Missing token")
-    (let [user (->> (token/decode-basic authorization)
-                    (api/user-by-credentials))]
-      (if (nil? user)
-        (resp-unauthorized "Invalid credentials")
-        (resp-ok {:token (token/generate-jwt user)})))))
+  [{:keys [headers]}]
+  (let [token (get headers "authorization")]
+    (if (nil? token)
+      (resp-error 400 "Missing token")
+      (let [user (->> (token/decode-basic token)
+                      (api/user-by-credentials))]
+        (if (nil? user)
+          (resp-unauthorized "Invalid credentials")
+          (resp-ok {:token (token/generate-jwt user)}))))))
 
 ;; Password handler
 
@@ -116,8 +118,8 @@
         (resp-error 400 "User already exist")))))
 
 (defn me
-  [{{:keys [identity]} :parameters}]
-  (-> identity :usr :username
+  [{{:keys [usr]} :identity}]
+  (-> (:username usr)
       (api/user-by-username)
       (select-keys [:username :email :role :api-token])
       (resp-ok)))
@@ -135,8 +137,9 @@
       (resp-error 404 "user doesn't exist"))))
 
 (defn user-delete
-  [{{:keys [path identity]} :parameters}]
-  (let [user (get-in identity [:usr :username])]
+  [{{:keys [path]} :parameters
+    {:keys [usr]}  :identity}]
+  (let [user (:username usr)]
     (if (= (:_id (api/user-by-username user))
            (:id path))
       (resp-error 400 "Operation not allowed")
@@ -187,26 +190,30 @@
        (resp-ok)))
 
 (defn service-create
-  [{{:keys [body identity]} :parameters}]
-  (let [owner (get-in identity [:usr :username])]
+  [{{:keys [body]} :parameters
+    {:keys [usr]}  :identity}]
+  (let [owner (:username usr)]
     (->> (api/create-service owner body)
          (resp-created))))
 
 (defn service-update
-  [{{:keys [body identity]} :parameters}]
-  (let [owner (get-in identity [:usr :username])]
+  [{{:keys [body]} :parameters
+    {:keys [usr]}  :identity}]
+  (let [owner (:username usr)]
     (api/update-service owner body)
     (resp-ok)))
 
 (defn service-redeploy
-  [{{:keys [path identity]} :parameters}]
-  (let [owner (get-in identity [:usr :username])]
+  [{{:keys [path]} :parameters
+    {:keys [usr]}  :identity}]
+  (let [owner (:username usr)]
     (api/redeploy-service owner (:id path))
     (resp-accepted)))
 
 (defn service-rollback
-  [{{:keys [path identity]} :parameters}]
-  (let [owner (get-in identity [:usr :username])]
+  [{{:keys [path]} :parameters
+    {:keys [usr]}  :identity}]
+  (let [owner (:username usr)]
     (api/rollback-service owner (:id path))
     (resp-accepted)))
 
@@ -425,8 +432,9 @@
 ;; Registry handler
 
 (defn registries
-  [{{:keys [path identity]} :parameters}]
-  (let [owner (get-in identity [:usr :username])
+  [{{:keys [path]} :parameters
+    {:keys [usr]}  :identity}]
+  (let [owner (:username usr)
         registry (keyword (:registryType path))]
     (if (api/supported-registry-type? registry)
       (->> (case registry
@@ -541,8 +549,9 @@
       (resp-error 400 (get-in (ex-data e) [:body :error])))))
 
 (defn registry-create
-  [{{:keys [path body identity]} :parameters}]
-  (let [owner (get-in identity [:usr :username])
+  [{{:keys [path body]} :parameters
+    {:keys [usr]}       :identity}]
+  (let [owner (:username usr)
         registry (keyword (:registryType path))
         payload (assoc body :owner owner
                             :type registry)]
@@ -618,8 +627,9 @@
 ;; Repository handler
 
 (defn repository-tags
-  [{{:keys [query identity]} :parameters}]
-  (let [owner (get-in identity [:usr :username])
+  [{{:keys [query]} :parameters
+    {:keys [usr]}   :identity}]
+  (let [owner (:username usr)
         repository-name (:repository query)]
     (if (nil? repository-name)
       (resp-error 400 "Parameter name missing")
@@ -627,8 +637,9 @@
            (resp-ok)))))
 
 (defn repository-ports
-  [{{:keys [query identity]} :parameters}]
-  (let [owner (get-in identity [:usr :username])
+  [{{:keys [query]} :parameters
+    {:keys [usr]}   :identity}]
+  (let [owner (:username usr)
         repository-name (:repository query)
         repository-tag (:repositoryTag query)]
     (if (or (nil? repository-name)
@@ -645,16 +656,18 @@
        (resp-ok)))
 
 (defn stack-create
-  [{{:keys [body identity]} :parameters}]
-  (let [owner (get-in identity [:usr :username])]
+  [{{:keys [body]} :parameters
+    {:keys [usr]}  :identity}]
+  (let [owner (:username usr)]
     (if (some? (api/stack (:name body)))
       (resp-error 400 "Stack already exist.")
       (do (api/create-stack owner body)
           (resp-created)))))
 
 (defn stack-update
-  [{{:keys [body path identity]} :parameters}]
-  (let [owner (get-in identity [:usr :username])]
+  [{{:keys [body path]} :parameters
+    {:keys [usr]}       :identity}]
+  (let [owner (:username usr)]
     (if (not= (:name path)
               (:name body))
       (resp-error 400 "Stack invalid.")
@@ -662,14 +675,16 @@
           (resp-ok)))))
 
 (defn stack-redeploy
-  [{{:keys [path identity]} :parameters}]
-  (let [owner (get-in identity [:usr :username])]
+  [{{:keys [path]} :parameters
+    {:keys [usr]}  :identity}]
+  (let [owner (:username usr)]
     (api/redeploy-stack owner (:name path))
     (resp-ok)))
 
 (defn stack-rollback
-  [{{:keys [path identity]} :parameters}]
-  (let [owner (get-in identity [:usr :username])]
+  [{{:keys [path]} :parameters
+    {:keys [usr]}  :identity}]
+  (let [owner (:username usr)]
     (api/rollback-stack owner (:name path))
     (resp-ok)))
 
