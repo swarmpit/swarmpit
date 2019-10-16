@@ -1,15 +1,17 @@
 (ns swarmpit.event.handler
   (:require [org.httpkit.server :refer [with-channel on-close send!]]
             [clojure.walk :refer [keywordize-keys]]
-            [swarmpit.handler :refer [dispatch resp-accepted resp-error resp-unauthorized]]
+            [swarmpit.handler :refer [resp-accepted resp-error resp-unauthorized]]
             [swarmpit.event.channel :as channel]
             [swarmpit.event.processor :as processor]
             [swarmpit.event.rules.predicate :refer [stats?]]
+            [clojure.tools.logging :as log]
+
             [swarmpit.slt :as slt]))
 
 (defn events
-  [{{:keys [query]} :parameters}]
-  (let [slt (:slt query)]
+  [{:keys [parameters] :as request}]
+  (let [slt (get-in parameters [:query :slt])]
     (if (slt/valid? slt)
       (with-channel request channel
                     (send! channel {:status  200
