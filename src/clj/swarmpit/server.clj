@@ -30,7 +30,6 @@
     (try
       (handler request)
       (catch ExceptionInfo e
-        (log/info (ex-data e))
         (dissoc (ex-data e) :headers)))))
 
 (defn fallback-exception-middleware

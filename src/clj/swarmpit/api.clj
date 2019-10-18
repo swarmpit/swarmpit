@@ -936,7 +936,7 @@
         service-origin (-> (dc/service service-id) :Spec)
         service-delta (dmo/->service standardized-service)]
     (dc/update-service (service-auth owner service)
-                       (:id service)
+                       service-id
                        (:version service)
                        (merge-service service-origin service-delta))))
 

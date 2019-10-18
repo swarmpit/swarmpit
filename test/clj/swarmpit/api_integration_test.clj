@@ -55,7 +55,7 @@
                   :create (fn [spec] (create-service nil spec))
                   :read   service
                   :list   services
-                  :update (fn [_ spec] (update-service nil nil spec))
+                  :update (fn [id spec] (update-service nil id spec))
                   :delete delete-service}))
 
     (testing "secrets"
