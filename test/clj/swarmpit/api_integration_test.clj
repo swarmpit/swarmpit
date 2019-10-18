@@ -43,7 +43,7 @@
             created (service id)]
         (is (= "hello-world" (-> created :repository :name)))
         (is (= 1 (-> created :replicas)))
-        (update-service id (merge created {:replicas 2}))
+        (update-service nil id (merge created {:replicas 2}))
         (is (= 2 (-> id (service) :replicas)))
         (delete-service id)))
 
@@ -55,7 +55,7 @@
                   :create (fn [spec] (create-service nil spec))
                   :read   service
                   :list   services
-                  :update (fn [_ spec] (update-service nil spec))
+                  :update (fn [_ spec] (update-service nil nil spec))
                   :delete delete-service}))
 
     (testing "secrets"

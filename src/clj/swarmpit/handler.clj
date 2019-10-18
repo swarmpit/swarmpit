@@ -197,10 +197,10 @@
          (resp-created))))
 
 (defn service-update
-  [{{:keys [body]} :parameters
-    {:keys [usr]}  :identity}]
+  [{{:keys [body path]} :parameters
+    {:keys [usr]}       :identity}]
   (let [owner (:username usr)]
-    (api/update-service owner body)
+    (api/update-service owner (:id path) body)
     (resp-ok)))
 
 (defn service-redeploy

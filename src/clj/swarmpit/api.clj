@@ -931,9 +931,9 @@
       (assoc-in [:TaskTemplate :LogDriver :Options] (get-in service-delta [:TaskTemplate :LogDriver :Options]))))
 
 (defn update-service
-  [owner service]
+  [owner service-id service]
   (let [standardized-service (standardize-service owner service)
-        service-origin (-> (dc/service (:id service)) :Spec)
+        service-origin (-> (dc/service service-id) :Spec)
         service-delta (dmo/->service standardized-service)]
     (dc/update-service (service-auth owner service)
                        (:id service)
