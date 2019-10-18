@@ -2,6 +2,7 @@
   (:require [reitit.core :as r]
             [reitit.coercion.spec :as rss]
             #?(:cljs [reitit.frontend :as rf])
+            #?(:clj [reitit.swagger :as swagger])
             #?(:clj [swarmpit.handler :as handler])
             #?(:clj [swarmpit.event.handler :as event-handler])))
 
@@ -9,46 +10,61 @@
   [["/"
     {:name :index
      :get  (array-map
+             :no-doc true
              #?@(:clj [:handler handler/index]))}]
    ["/events"
     {:name :events
      :get  (array-map
+             :no-doc true
              :parameters {:query {:slt          string?
                                   :subscription string?}}
              #?@(:clj [:handler event-handler/events]))
      :post (array-map
+             :no-doc true
              :parameters {:body any?}
              #?@(:clj [:handler event-handler/event-push]))}]
    ["/version"
     {:name :version
      :get  (array-map
+             :no-doc true
              #?@(:clj [:handler handler/version]))}]
    ["/login"
     {:name :login
      :post (array-map
+             :no-doc true
              #?@(:clj [:handler handler/login]))}]
    ["/slt"
     {:name :slt
      :get  (array-map
+             :no-doc true
              #?@(:clj [:handler handler/slt]))}]
    ["/password"
     {:name :password
      :post (array-map
+             :no-doc true
              :parameters {:body any?}
              #?@(:clj [:handler handler/password]))}]
    ["/api-token"
     {:name   :api-token
      :post   (array-map
+               :no-doc true
                :parameters {:body any?}
                #?@(:clj [:handler handler/api-token-generate]))
      :delete (array-map
+               :no-doc true
                #?@(:clj [:handler handler/api-token-remove]))}]
    ["/initialize"
     {:name :initialize
      :post (array-map
+             :no-doc true
              :parameters {:body any?}
              #?@(:clj [:handler handler/initialize]))}]
    ["/api"
+    ["/swagger.json"
+     {:get (array-map
+             :no-doc true
+             :swagger {:info {:title "Swarmpit API"}}
+             #?@(:clj [:handler (swagger/create-swagger-handler)]))}]
     ["/me"
      {:name :me
       :get  (array-map
