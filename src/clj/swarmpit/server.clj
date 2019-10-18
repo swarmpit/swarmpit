@@ -5,8 +5,8 @@
             [ring.middleware.defaults :refer [wrap-defaults site-defaults]]
             [ring.middleware.resource :refer [wrap-resource]]
             [ring.middleware.gzip :refer [wrap-gzip]]
-            [swarmpit.authentication :refer [wrap-authentication]]
-            [swarmpit.authorization :refer [wrap-authorization]]
+            [swarmpit.authentication :refer [authentication-middleware]]
+            [swarmpit.authorization :refer [authorization-middleware]]
             [swarmpit.event.handler :refer :all]
             [org.httpkit.server :refer [run-server]]
             [clojure.tools.logging :as log]
@@ -24,15 +24,16 @@
             [reitit.ring.middleware.parameters :as parameters]
             [muuntaja.core :as m]))
 
-(defn wrap-client-exception
+(defn client-exception-middleware
   [handler]
   (fn [request]
     (try
       (handler request)
       (catch ExceptionInfo e
+        (log/info (ex-data e))
         (dissoc (ex-data e) :headers)))))
 
-(defn wrap-fallback-exception
+(defn fallback-exception-middleware
   [handler]
   (fn [request]
     (try
@@ -49,29 +50,39 @@
        :conflicts nil
        :data      {:coercion   reitit.coercion.spec/coercion
                    :muuntaja   m/instance
-                   :middleware [;; authentication
-                                wrap-authentication
-                                ;; authorization
-                                wrap-authorization
-                                ;; negotiation, request decoding and response encoding
+                   :middleware [;; negotiation, request decoding and response encoding
                                 muuntaja/format-middleware
+                                ;; authentication
+                                authentication-middleware
+                                ;; authorization
+                                authorization-middleware
                                 ;; swagger feature
                                 swagger/swagger-feature
                                 ;; query-params & form-params
                                 parameters/parameters-middleware
                                 ;; exception handling
-                                wrap-client-exception
-                                wrap-fallback-exception
+                                fallback-exception-middleware
+                                client-exception-middleware
                                 ;; coercing response bodys
                                 coercion/coerce-response-middleware
                                 ;; coercing request parameters
-                                coercion/coerce-request-middleware]}})
+                                coercion/coerce-request-middleware]
+                   :swagger    {:produces #{"application/json"
+                                            "application/edn"
+                                            "application/transit+json"}
+                                :consumes #{"application/json"
+                                            "application/edn"
+                                            "application/transit+json"}}}})
     (ring/routes
       (swagger-ui/create-swagger-ui-handler
-        {:path   "/"
+        {:path   "/docs"
+         :url    "/api/swagger.json"
          :config {:validatorUrl     nil
                   :operationsSorter "alpha"}})
-      (ring/create-default-handler))))
+      (-> (ring/create-default-handler)
+          (wrap-resource "public")
+          (wrap-defaults (assoc-in site-defaults [:security :anti-forgery] false))
+          wrap-gzip))))
 
 (defn -main [& [port]]
   (log/info "Swarmpit is starting...")

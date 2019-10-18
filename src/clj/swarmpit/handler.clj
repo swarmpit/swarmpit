@@ -474,6 +474,7 @@
           (resp-ok))
       (resp-error 400 (str "Unknown registry type [" registry "]")))))
 
+;; TODO: Return 404 when invalid ID
 (defn registry-repositories
   [{{:keys [path]} :parameters}]
   (let [id (:id path)

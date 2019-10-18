@@ -43,9 +43,7 @@
       (error {:code    403
               :message "Unauthorized registry access"}))))
 
-(def rules [{:pattern #"^/admin/.*"
-             :handler {:and [authenticated-access admin-access]}}
-            {:pattern #"^/login$"
+(def rules [{:pattern #"^/login$"
              :handler any-access}
             {:pattern #"^/events"
              :handler any-access}
@@ -55,18 +53,22 @@
              :handler any-access}
             {:pattern #"^/slt"
              :handler authenticated-access}
+            {:pattern #"^/api/swagger.json"
+             :handler any-access}
+            {:pattern #"^/api/admin/.*"
+             :handler {:and [authenticated-access admin-access]}}
             {:pattern #"^/$"
              :handler any-access}
-            {:pattern        #"^/api/registries/(dockerhub|v2)/[a-zA-Z0-9]*/repositories$"
+            {:pattern        #"^/api/registry/(dockerhub|v2|ecr|acr|gitlab)/[a-zA-Z0-9]*/repositories$"
              :request-method :get
              :handler        {:and [authenticated-access registry-access]}}
-            {:pattern        #"^/api/registries/(dockerhub|v2)/[a-zA-Z0-9]*/tags$"
+            {:pattern        #"^/api/registry/(dockerhub|v2|ecr|acr|gitlab)/[a-zA-Z0-9]*/tags$"
              :request-method :get
              :handler        {:and [authenticated-access registry-access]}}
-            {:pattern        #"^/api/registries/(dockerhub|v2)/[a-zA-Z0-9]*/ports$"
+            {:pattern        #"^/api/registry/(dockerhub|v2|ecr|acr|gitlab)/[a-zA-Z0-9]*/ports$"
              :request-method :get
              :handler        {:and [authenticated-access registry-access]}}
-            {:pattern        #"^/api/registries/(dockerhub|v2)/[a-zA-Z0-9]*$"
+            {:pattern        #"^/api/registry/(dockerhub|v2|ecr|acr|gitlab)/[a-zA-Z0-9]*$"
              :request-method #{:get :delete :post}
              :handler        {:and [authenticated-access owner-access]}}
             {:pattern #"^/api/.*"
@@ -78,7 +80,7 @@
                   (:message val))
       (assoc :headers {"X-Backend-Server" "swarmpit"})))
 
-(defn wrap-authorization
+(defn authorization-middleware
   [handler]
   (wrap-access-rules handler {:rules    rules
                               :on-error rules-error}))
