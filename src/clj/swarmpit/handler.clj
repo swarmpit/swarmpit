@@ -81,8 +81,9 @@
 ;; Password handler
 
 (defn password
-  [{{:keys [body identity]} :parameters}]
-  (let [username (get-in identity [:usr :username])]
+  [{{:keys [body]} :parameters
+    {:keys [usr]}  :identity}]
+  (let [username (:username usr)]
     (if (api/user-by-credentials (merge body {:username username}))
       (do (-> (api/user-by-username username)
               (api/change-password (:new-password body)))
@@ -92,15 +93,15 @@
 ;; User api token handler
 
 (defn api-token-generate
-  [{{:keys [identity]} :parameters}]
-  (->> identity :usr :username
+  [{{:keys [usr]} :identity}]
+  (->> (:username usr)
        (api/user-by-username)
        (api/generate-api-token)
        (resp-ok)))
 
 (defn api-token-remove
-  [{{:keys [identity]} :parameters}]
-  (->> identity :usr :username
+  [{{:keys [usr]} :identity}]
+  (->> (:username usr)
        (api/user-by-username)
        (api/remove-api-token))
   (resp-ok))
