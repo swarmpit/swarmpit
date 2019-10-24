@@ -1,7 +1,7 @@
 (ns swarmpit.utils
   (:require [clojure.walk]
-    #?(:clj [flatland.ordered.map :refer [ordered-map]])
-    #?(:clj [clojure.math.numeric-tower :refer [floor expt round]])))
+            #?(:clj [flatland.ordered.map :refer [ordered-map]])
+            #?(:clj [clojure.math.numeric-tower :refer [floor expt round]])))
 
 #?(:cljs (def ^:private floor (.-floor js/Math)))
 #?(:cljs (def ^:private round (.-round js/Math)))
@@ -60,19 +60,29 @@
     (empty? val)
     (nil? val)))
 
-(defn clean
-  "remove pairs of key-value that are nil or empty from a (possibly nested) map."
-  [map]
+(defn clean-col
+  "remove pairs of key-value based on given cleanup fx from a (possibly nested) map."
+  [map clean-fx]
   (clojure.walk/postwalk
     #(if (map? %)
-       (let [nm #?(:clj  (if (instance? flatland.ordered.map.OrderedMap %)
-                           (ordered-map)
-                           {})
+       (let [nm #?(:clj (if (instance? flatland.ordered.map.OrderedMap %)
+                          (ordered-map)
+                          {})
                    :cljs {})
-             m (into nm (remove (comp empty-or-nil? val) %))]
+             m (into nm (remove (comp clean-fx val) %))]
          (when (seq m) m))
        %)
     map))
+
+(defn clean
+  "remove pairs of key-value that are nil or empty from a (possibly nested) map."
+  [map]
+  (clean-col map empty-or-nil?))
+
+(defn clean-nils
+  "remove pairs of key-value that are nil"
+  [map]
+  (clean-col map nil?))
 
 (defn name-value->map
   [name-value-coll]

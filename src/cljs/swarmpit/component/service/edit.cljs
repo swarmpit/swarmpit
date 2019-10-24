@@ -20,6 +20,7 @@
             [swarmpit.component.service.form-deployment :as deployment]
             [swarmpit.component.service.form-deployment-placement :as placement]
             [swarmpit.component.message :as message]
+            [swarmpit.utils :refer [clean-nils]]
             [swarmpit.ajax :as ajax]
             [swarmpit.url :refer [dispatch!]]
             [swarmpit.routes :as routes]
@@ -98,7 +99,8 @@
                        (assoc :labels labels)
                        (assoc :logdriver logdriver)
                        (assoc :resources resources)
-                       (assoc :deployment deployment))
+                       (assoc :deployment deployment)
+                       (clean-nils))
        :state      [:processing?]
        :on-success (fn [{:keys [origin?]}]
                      (when origin?
