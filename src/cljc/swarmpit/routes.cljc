@@ -1,6 +1,7 @@
 (ns swarmpit.routes
   (:require [reitit.core :as r]
             [reitit.coercion.spec :as rss]
+            [swarmpit.routes-spec :as spec]
             #?(:cljs [reitit.frontend :as rf])
             #?(:clj [reitit.swagger :as swagger])
             #?(:clj [swarmpit.handler :as handler])
@@ -48,7 +49,6 @@
     {:name   :api-token
      :post   (array-map
                :no-doc true
-               :parameters {:body any?}
                #?@(:clj [:handler handler/api-token-generate]))
      :delete (array-map
                :no-doc true
@@ -63,352 +63,635 @@
     ["/swagger.json"
      {:get (array-map
              :no-doc true
-             :swagger {:info {:title "Swarmpit API"}}
+             :swagger {:info {:version     "1.0"
+                              :title       "Swarmpit API"
+                              :description "Swarmpit backend API description"
+                              :contact     {:name  "Swarmpit Team"
+                                            :email "team@swarmpit.io"
+                                            :url   "https://swarmpit.io"}
+                              :license     {:name "Eclipse Public License"
+                                            :url  "http://www.eclipse.org/legal/epl-v10.html"}}}
              #?@(:clj [:handler (swagger/create-swagger-handler)]))}]
     ["/me"
-     {:name :me
-      :get  (array-map
-              #?@(:clj [:handler handler/me]))}]
+     {:name    :me
+      :swagger {:tags ["me"]}
+      :get     (array-map
+                 :summary "Logged user info"
+                 :parameters {:header {:authorization string?}}
+                 :responses {200 {:body        spec/me
+                                  :description "Success"}}
+                 #?@(:clj [:handler handler/me]))}]
     ["/stats"
-     {:name :stats
-      :get  (array-map
-              #?@(:clj [:handler handler/stats]))}]
+     {:name    :stats
+      :swagger {:tags ["statistics"]}
+      :get     (array-map
+                 :summary "Cluster statistics"
+                 :parameters {:header {:authorization string?}}
+                 :responses {200 {:body        spec/stats
+                                  :description "Success"}}
+                 #?@(:clj [:handler handler/stats]))}]
     ;; Task
     ["/tasks"
-     {:name :tasks
-      :get  (array-map
-              #?@(:clj [:handler handler/tasks]))}]
+     {:name    :tasks
+      :swagger {:tags ["task"]}
+      :get     (array-map
+                 :summary "Task list"
+                 :parameters {:header {:authorization string?}}
+                 :responses {200 {:body        [spec/task]
+                                  :description "Success"}}
+                 #?@(:clj [:handler handler/tasks]))}]
     ["/tasks/:id"
-     {:name :task
-      :get  (array-map
-              :parameters {:path {:id string?}}
-              #?@(:clj [:handler handler/task]))}]
+     {:name    :task
+      :swagger {:tags ["task"]}
+      :get     (array-map
+                 :summary "Task info"
+                 :parameters {:header {:authorization string?}
+                              :path   {:id string?}}
+                 :responses {200 {:body        spec/task
+                                  :description "Success"}}
+                 #?@(:clj [:handler handler/task]))}]
     ["/tasks/:name/ts"
-     {:name :task-ts
-      :get  (array-map
-              :parameters {:path {:name string?}}
-              #?@(:clj [:handler handler/task-ts]))}]
+     {:name    :task-ts
+      :swagger {:tags ["task"]}
+      :get     (array-map
+                 :summary "Task timeseries"
+                 :parameters {:header {:authorization string?}
+                              :path   {:name string?}}
+                 :responses {200 {:body        spec/task-stats
+                                  :description "Success"}}
+                 #?@(:clj [:handler handler/task-ts]))}]
     ;; Stack
     ["/stacks"
-     {:name :stacks
-      :get  (array-map
-              #?@(:clj [:handler handler/stacks]))
-      :post (array-map
-              :parameters {:body any?}
-              #?@(:clj [:handler handler/stack-create]))}]
+     {:name    :stacks
+      :swagger {:tags ["stack"]}
+      :get     (array-map
+                 :parameters {:header {:authorization string?}}
+                 :responses {200 {:body        spec/stack
+                                  :description "Success"}}
+                 #?@(:clj [:handler handler/stacks]))
+      :post    (array-map
+                 :parameters {:header {:authorization string?}
+                              :body   spec/stack-compose}
+                 :responses {201 {:body        nil
+                                  :description "Success"}}
+                 #?@(:clj [:handler handler/stack-create]))}]
     ["/stacks/:name"
-     {:name   :stack
-      :post   (array-map
-                :parameters {:body any?
-                             :path {:name string?}}
-                #?@(:clj [:handler handler/stack-update]))
-      :delete (array-map
-                :parameters {:path {:name string?}}
-                #?@(:clj [:handler handler/stack-delete]))}]
+     {:name    :stack
+      :swagger {:tags ["stack"]}
+      :post    (array-map
+                 :parameters {:header {:authorization string?}
+                              :path   {:name string?}
+                              :body   spec/stack-compose}
+                 :responses {200 {:body        nil
+                                  :description "Success"}}
+                 #?@(:clj [:handler handler/stack-update]))
+      :delete  (array-map
+                 :parameters {:header {:authorization string?}
+                              :path   {:name string?}}
+                 :responses {200 {:body        nil
+                                  :description "Success"}}
+                 #?@(:clj [:handler handler/stack-delete]))}]
     ["/stacks/:name/file"
-     {:name :stack-file
-      :get  (array-map
-              :parameters {:path {:name string?}}
-              #?@(:clj [:handler handler/stack-file]))}]
+     {:name    :stack-file
+      :swagger {:tags ["stack"]}
+      :get     (array-map
+                 :parameters {:header {:authorization string?}
+                              :path   {:name string?}}
+                 :responses {200 {:body        spec/stack-file
+                                  :description "Success"}}
+                 #?@(:clj [:handler handler/stack-file]))}]
     ["/stacks/:name/compose"
-     {:name :stack-compose
-      :get  (array-map
-              :parameters {:path {:name string?}}
-              #?@(:clj [:handler handler/stack-compose]))}]
+     {:name    :stack-compose
+      :swagger {:tags ["stack"]}
+      :get     (array-map
+                 :parameters {:header {:authorization string?}
+                              :path   {:name string?}}
+                 :responses {200 {:body        spec/stack-compose
+                                  :description "Success"}}
+                 #?@(:clj [:handler handler/stack-compose]))}]
     ["/stacks/:name/services"
-     {:name :stack-services
-      :get  (array-map
-              :parameters {:path {:name string?}}
-              #?@(:clj [:handler handler/stack-services]))}]
+     {:name    :stack-services
+      :swagger {:tags ["stack"]}
+      :get     (array-map
+                 :parameters {:header {:authorization string?}
+                              :path   {:name string?}}
+                 :responses {200 {:body        [spec/service]
+                                  :description "Success"}}
+                 #?@(:clj [:handler handler/stack-services]))}]
     ["/stacks/:name/networks"
-     {:name :stack-networks
-      :get  (array-map
-              :parameters {:path {:name string?}}
-              #?@(:clj [:handler handler/stack-networks]))}]
+     {:name    :stack-networks
+      :swagger {:tags ["stack"]}
+      :get     (array-map
+                 :parameters {:header {:authorization string?}
+                              :path   {:name string?}}
+                 :responses {200 {:body        [spec/network]
+                                  :description "Success"}}
+                 #?@(:clj [:handler handler/stack-networks]))}]
     ["/stacks/:name/volumes"
-     {:name :stack-volumes
-      :get  (array-map
-              :parameters {:path {:name string?}}
-              #?@(:clj [:handler handler/stack-volumes]))}]
+     {:name    :stack-volumes
+      :swagger {:tags ["stack"]}
+      :get     (array-map
+                 :parameters {:header {:authorization string?}
+                              :path   {:name string?}}
+                 :responses {200 {:body        [(merge spec/volume spec/mount)]
+                                  :description "Success"}}
+                 #?@(:clj [:handler handler/stack-volumes]))}]
     ["/stacks/:name/configs"
-     {:name :stack-configs
-      :get  (array-map
-              :parameters {:path {:name string?}}
-              #?@(:clj [:handler handler/stack-configs]))}]
+     {:name    :stack-configs
+      :swagger {:tags ["stack"]}
+      :get     (array-map
+                 :parameters {:header {:authorization string?}
+                              :path   {:name string?}}
+                 :responses {200 {:body        [(dissoc spec/config :data)]
+                                  :description "Success"}}
+                 #?@(:clj [:handler handler/stack-configs]))}]
     ["/stacks/:name/secrets"
-     {:name :stack-secrets
-      :get  (array-map
-              :parameters {:path {:name string?}}
-              #?@(:clj [:handler handler/stack-secrets]))}]
+     {:name    :stack-secrets
+      :swagger {:tags ["stack"]}
+      :get     (array-map
+                 :parameters {:header {:authorization string?}
+                              :path   {:name string?}}
+                 :responses {200 {:body        [spec/secret]
+                                  :description "Success"}}
+                 #?@(:clj [:handler handler/stack-secrets]))}]
     ["/stacks/:name/redeploy"
-     {:name :stack-redeploy
-      :post (array-map
-              :parameters {:path {:name string?}}
-              #?@(:clj [:handler handler/stack-redeploy]))}]
+     {:name    :stack-redeploy
+      :swagger {:tags ["stack"]}
+      :post    (array-map
+                 :parameters {:header {:authorization string?}
+                              :path   {:name string?}}
+                 :responses {200 {:body        nil
+                                  :description "Success"}}
+                 #?@(:clj [:handler handler/stack-redeploy]))}]
     ["/stacks/:name/rollback"
-     {:name :stack-rollback
-      :post (array-map
-              :parameters {:path {:name string?}}
-              #?@(:clj [:handler handler/stack-rollback]))}]
+     {:name    :stack-rollback
+      :swagger {:tags ["stack"]}
+      :post    (array-map
+                 :parameters {:header {:authorization string?}
+                              :path   {:name string?}}
+                 :responses {200 {:body        nil
+                                  :description "Success"}}
+                 #?@(:clj [:handler handler/stack-rollback]))}]
     ;; Admin
     ["/admin"
+     {:swagger {:tags ["admin"]}}
      ["/users"
-      {:name :users
-       :get  (array-map
-               #?@(:clj [:handler handler/users]))
-       :post (array-map
-               :parameters {:body any?}
-               #?@(:clj [:handler handler/user-create]))}]
+      {:name    :users
+       :swagger {:tags ["user"]}
+       :get     (array-map
+                  :parameters {:header {:authorization string?}}
+                  :responses {200 {:body        [spec/user]
+                                   :description "Success"}}
+                  #?@(:clj [:handler handler/users]))
+       :post    (array-map
+                  :summary "Create user"
+                  :parameters {:header {:authorization string?}
+                               :body   spec/user-create}
+                  :responses {201 {:body        {:id string?}
+                                   :description "Success"}}
+                  #?@(:clj [:handler handler/user-create]))}]
      ["/users/:id"
-      {:name   :user
-       :get    (array-map
-                 :parameters {:path {:id string?}}
-                 #?@(:clj [:handler handler/user]))
-       :delete (array-map
-                 :parameters {:path {:id string?}}
-                 #?@(:clj [:handler handler/user-delete]))
-       :post   (array-map
-                 :parameters {:body any?
-                              :path {:id string?}}
-                 #?@(:clj [:handler handler/user-update]))}]]
+      {:name    :user
+       :swagger {:tags ["user"]}
+       :get     (array-map
+                  :parameters {:header {:authorization string?}
+                               :path   {:id string?}}
+                  :responses {200 {:body        spec/user
+                                   :description "Success"}}
+                  #?@(:clj [:handler handler/user]))
+       :delete  (array-map
+                  :parameters {:header {:authorization string?}
+                               :path   {:id string?}}
+                  :responses {200 {:body        nil
+                                   :description "Success"}}
+                  #?@(:clj [:handler handler/user-delete]))
+       :post    (array-map
+                  :parameters {:header {:authorization string?}
+                               :path   {:id string?}
+                               :body   spec/user-update}
+                  :responses {200 {:body        nil
+                                   :description "Success"}}
+                  #?@(:clj [:handler handler/user-update]))}]]
     ;; Secret
     ["/secrets"
-     {:name :secrets
-      :get  (array-map
-              #?@(:clj [:handler handler/secrets]))
-      :post (array-map
-              :parameters {:body any?}
-              #?@(:clj [:handler handler/secret-create]))}]
+     {:name    :secrets
+      :swagger {:tags ["secret"]}
+      :get     (array-map
+                 :parameters {:header {:authorization string?}}
+                 :responses {200 {:body        [spec/secret]
+                                  :description "Success"}}
+                 #?@(:clj [:handler handler/secrets]))
+      :post    (array-map
+                 :parameters {:header {:authorization string?}
+                              :body   spec/secret-create}
+                 :responses {201 {:body        {:id string?}
+                                  :description "Success"}}
+                 #?@(:clj [:handler handler/secret-create]))}]
     ["/secrets/:id"
-     {:name   :secret
-      :get    (array-map
-                :parameters {:path {:id string?}}
-                #?@(:clj [:handler handler/secret]))
-      :post   (array-map
-                :parameters {:body any?
-                             :path {:id string?}}
-                #?@(:clj [:handler handler/secret-update]))
-      :delete (array-map
-                :parameters {:path {:id string?}}
-                #?@(:clj [:handler handler/secret-delete]))}]
+     {:name    :secret
+      :swagger {:tags ["secret"]}
+      :get     (array-map
+                 :parameters {:header {:authorization string?}
+                              :path   {:id string?}}
+                 :responses {200 {:body        spec/secret
+                                  :description "Success"}}
+                 #?@(:clj [:handler handler/secret]))
+      :post    (array-map
+                 :no-doc true
+                 :parameters {:header {:authorization string?}
+                              :body   any?
+                              :path   {:id string?}}
+                 #?@(:clj [:handler handler/secret-update]))
+      :delete  (array-map
+                 :parameters {:header {:authorization string?}
+                              :path   {:id string?}}
+                 :responses {200 {:body        nil
+                                  :description "Success"}}
+                 #?@(:clj [:handler handler/secret-delete]))}]
     ["/secrets/:id/services"
-     {:name :secret-services
-      :get  (array-map
-              :parameters {:path {:id string?}}
-              #?@(:clj [:handler handler/secret-services]))}]
+     {:name    :secret-services
+      :swagger {:tags ["secret"]}
+      :get     (array-map
+                 :parameters {:header {:authorization string?}
+                              :path   {:id string?}}
+                 :responses {200 {:body        [spec/service]
+                                  :description "Success"}}
+                 #?@(:clj [:handler handler/secret-services]))}]
     ;; Config
     ["/configs"
-     {:name :configs
-      :get  (array-map
-              #?@(:clj [:handler handler/configs]))
-      :post (array-map
-              :parameters {:body any?}
-              #?@(:clj [:handler handler/config-create]))}]
+     {:name    :configs
+      :swagger {:tags ["config"]}
+      :get     (array-map
+                 :parameters {:header {:authorization string?}}
+                 :responses {200 {:body        [spec/config]
+                                  :description "Success"}}
+                 #?@(:clj [:handler handler/configs]))
+      :post    (array-map
+                 :parameters {:header {:authorization string?}
+                              :body   spec/config-create}
+                 :responses {201 {:body        {:id string?}
+                                  :description "Success"}}
+                 #?@(:clj [:handler handler/config-create]))}]
     ["/configs/:id"
-     {:name   :config
-      :get    (array-map
-                :parameters {:path {:id string?}}
-                #?@(:clj [:handler handler/config]))
-      :delete (array-map
-                :parameters {:path {:id string?}}
-                #?@(:clj [:handler handler/config-delete]))}]
+     {:name    :config
+      :swagger {:tags ["config"]}
+      :get     (array-map
+                 :parameters {:header {:authorization string?}
+                              :path   {:id string?}}
+                 :responses {200 {:body        spec/config
+                                  :description "Success"}}
+                 #?@(:clj [:handler handler/config]))
+      :delete  (array-map
+                 :parameters {:header {:authorization string?}
+                              :path   {:id string?}}
+                 :responses {200 {:body        nil
+                                  :description "Success"}}
+                 #?@(:clj [:handler handler/config-delete]))}]
     ["/configs/:id/services"
-     {:name :config-services
-      :get  (array-map
-              :parameters {:path {:id string?}}
-              #?@(:clj [:handler handler/config-services]))}]
+     {:name    :config-services
+      :swagger {:tags ["config"]}
+      :get     (array-map
+                 :parameters {:header {:authorization string?}
+                              :path   {:id string?}}
+                 :responses {200 {:body        [spec/service]
+                                  :description "Success"}}
+                 #?@(:clj [:handler handler/config-services]))}]
     ;; Public
     ["/public/repositories"
-     {:name :public-repositories
-      :get  (array-map
-              :parameters {:query {:query string?
-                                   :page  int?}}
-              #?@(:clj [:handler handler/public-repositories]))}]
+     {:name    :public-repositories
+      :swagger {:tags ["repository"]}
+      :get     (array-map
+                 :parameters {:header {:authorization string?}
+                              :query  {:query string?
+                                       :page  int?}}
+                 :responses {200 {:body        spec/repositories
+                                  :description "Success"}}
+                 #?@(:clj [:handler handler/public-repositories]))}]
     ;; Registry
     ["/registry/:registryType"
-     {:name :registries
-      :get  (array-map
-              :parameters {:path {:registryType string?}}
-              #?@(:clj [:handler handler/registries]))
-      :post (array-map
-              :parameters {:body any?
-                           :path {:registryType string?}}
-              #?@(:clj [:handler handler/registry-create]))}]
+     {:name    :registries
+      :swagger {:tags ["registry"]}
+      :get     (array-map
+                 :no-doc true
+                 :parameters {:header {:authorization string?}
+                              :path   {:registryType string?}}
+                 #?@(:clj [:handler handler/registries]))
+      :post    (array-map
+                 :no-doc true
+                 :parameters {:header {:authorization string?}
+                              :path   {:registryType string?}
+                              :body   any?}
+                 #?@(:clj [:handler handler/registry-create]))}]
     ["/registry/:registryType/:id"
-     {:name   :registry
-      :get    (array-map
-                :parameters {:path {:registryType string?
-                                    :id           string?}}
-                #?@(:clj [:handler handler/registry]))
-      :delete (array-map
-                :parameters {:path {:registryType string?
-                                    :id           string?}}
-                #?@(:clj [:handler handler/registry-delete]))
-      :post   (array-map
-                :parameters {:body any?
-                             :path {:registryType string?
-                                    :id           string?}}
-                #?@(:clj [:handler handler/registry-update]))}]
+     {:name    :registry
+      :swagger {:tags ["registry"]}
+      :get     (array-map
+                 :no-doc true
+                 :parameters {:header {:authorization string?}
+                              :path   {:registryType string?
+                                       :id           string?}}
+                 #?@(:clj [:handler handler/registry]))
+      :delete  (array-map
+                 :no-doc true
+                 :parameters {:header {:authorization string?}
+                              :path   {:registryType string?
+                                       :id           string?}}
+                 #?@(:clj [:handler handler/registry-delete]))
+      :post    (array-map
+                 :no-doc true
+                 :parameters {:header {:authorization string?}
+                              :path   {:registryType string?
+                                       :id           string?}
+                              :body   any?}
+                 #?@(:clj [:handler handler/registry-update]))}]
     ["/registry/:registryType/:id/repositories"
-     {:name :registry-repositories
-      :get  (array-map
-              :parameters {:path {:registryType string?
-                                  :id           string?}}
-              #?@(:clj [:handler handler/registry-repositories]))}]
+     {:name    :registry-repositories
+      :swagger {:tags ["registry"]}
+      :get     (array-map
+                 :no-doc true
+                 :parameters {:header {:authorization string?}
+                              :path   {:registryType string?
+                                       :id           string?}}
+                 #?@(:clj [:handler handler/registry-repositories]))}]
 
     ;; Repository
     ["/repository"
+     {:swagger {:tags ["repository"]}}
      ["/tags"
       {:name :repository-tags
        :get  (array-map
-               :parameters {:query {:repository string?}}
+               :parameters {:header {:authorization string?}
+                            :query  {:repository string?}}
+               :responses {200 {:body        [string?]
+                                :description "Success"}}
                #?@(:clj [:handler handler/repository-tags]))}]
      ["/ports"
       {:name :repository-ports
        :get  (array-map
-               :parameters {:query {:repository    string?
-                                    :repositoryTag string?}}
+               :parameters {:header {:authorization string?}
+                            :query  {:repository    string?
+                                     :repositoryTag string?}}
+               :responses {200 {:body        [{:containerPort number?
+                                               :protocol      string?
+                                               :hostPort      number?}]
+                                :description "Success"}}
                #?@(:clj [:handler handler/repository-ports]))}]]
     ;; Network
     ["/networks"
-     {:name :networks
-      :get  (array-map
-              #?@(:clj [:handler handler/networks]))
-      :post (array-map
-              :parameters {:body any?}
-              #?@(:clj [:handler handler/network-create]))}]
+     {:name    :networks
+      :swagger {:tags ["network"]}
+      :get     (array-map
+                 :parameters {:header {:authorization string?}}
+                 :responses {200 {:body        [spec/network]
+                                  :description "Success"}}
+                 #?@(:clj [:handler handler/networks]))
+      :post    (array-map
+                 :parameters {:header {:authorization string?}
+                              :body   spec/network-create}
+                 :responses {201 {:body        {:id string?}
+                                  :description "Success"}}
+                 #?@(:clj [:handler handler/network-create]))}]
     ["/networks/:id"
-     {:name   :network
-      :get    (array-map
-                :parameters {:path {:id string?}}
-                #?@(:clj [:handler handler/network]))
-      :delete (array-map
-                :parameters {:path {:id string?}}
-                #?@(:clj [:handler handler/network-delete]))}]
+     {:name    :network
+      :swagger {:tags ["network"]}
+      :get     (array-map
+                 :parameters {:header {:authorization string?}
+                              :path   {:id string?}}
+                 :responses {200 {:body        spec/network
+                                  :description "Success"}}
+                 #?@(:clj [:handler handler/network]))
+      :delete  (array-map
+                 :parameters {:header {:authorization string?}
+                              :path   {:id string?}}
+                 :responses {200 {:body        nil
+                                  :description "Success"}}
+                 #?@(:clj [:handler handler/network-delete]))}]
     ["/networks/:id/services"
-     {:name :network-services
-      :get  (array-map
-              :parameters {:path {:id string?}}
-              #?@(:clj [:handler handler/network-services]))}]
+     {:name    :network-services
+      :swagger {:tags ["network"]}
+      :get     (array-map
+                 :parameters {:header {:authorization string?}
+                              :path   {:id string?}}
+                 :responses {200 {:body        [spec/service]
+                                  :description "Success"}}
+                 #?@(:clj [:handler handler/network-services]))}]
     ;; Nodes
     ["/nodes"
-     {:name :nodes
-      :get  (array-map
-              #?@(:clj [:handler handler/nodes]))}]
+     {:name    :nodes
+      :swagger {:tags ["node"]}
+      :get     (array-map
+                 :parameters {:header {:authorization string?}}
+                 :responses {200 {:body        [spec/node]
+                                  :description "Success"}}
+                 #?@(:clj [:handler handler/nodes]))}]
     ["/nodes/ts"
-     {:name :nodes-ts
-      :get  (array-map
-              #?@(:clj [:handler handler/nodes-ts]))}]
+     {:name    :nodes-ts
+      :swagger {:tags ["node"]}
+      :get     (array-map
+                 :parameters {:header {:authorization string?}}
+                 :responses {200 {:body        [spec/node-stats]
+                                  :description "Success"}
+                             400 {:body        {:error string?}
+                                  :description "Statistics disabled"}}
+                 #?@(:clj [:handler handler/nodes-ts]))}]
     ["/nodes/:id"
-     {:name :node
-      :get  (array-map
-              :parameters {:path {:id string?}}
-              #?@(:clj [:handler handler/node]))
-      :post (array-map
-              :parameters {:body any?
-                           :path {:id string?}}
-              #?@(:clj [:handler handler/node-update]))}]
+     {:name    :node
+      :swagger {:tags ["node"]}
+      :get     (array-map
+                 :parameters {:header {:authorization string?}
+                              :path   {:id string?}}
+                 :responses {200 {:body        spec/node
+                                  :description "Success"}}
+                 #?@(:clj [:handler handler/node]))
+      :post    (array-map
+                 :parameters {:header {:authorization string?}
+                              :path   {:id string?}
+                              :body   spec/node}
+                 :responses {200 {:body        nil
+                                  :description "Success"}}
+                 #?@(:clj [:handler handler/node-update]))}]
     ["/nodes/:id/tasks"
-     {:name :node-tasks
-      :get  (array-map
-              :parameters {:path {:id string?}}
-              #?@(:clj [:handler handler/node-tasks]))}]
+     {:name    :node-tasks
+      :swagger {:tags ["node"]}
+      :get     (array-map
+                 :parameters {:header {:authorization string?}
+                              :path   {:id string?}}
+                 :responses {200 {:body        [spec/task]
+                                  :description "Success"}}
+                 #?@(:clj [:handler handler/node-tasks]))}]
     ;; Service
     ["/services"
-     {:name :services
-      :get  (array-map
-              #?@(:clj [:handler handler/services]))
-      :post (array-map
-              :parameters {:body any?}
-              #?@(:clj [:handler handler/service-create]))}]
+     {:name    :services
+      :swagger {:tags ["service"]}
+      :get     (array-map
+                 :parameters {:header {:authorization string?}}
+                 :responses {200 {:body        [spec/service]
+                                  :description "Success"}}
+                 #?@(:clj [:handler handler/services]))
+      :post    (array-map
+                 :parameters {:header {:authorization string?}
+                              :body   spec/service-create}
+                 :responses {201 {:body        {:id string?}
+                                  :description "Success"}}
+                 #?@(:clj [:handler handler/service-create]))}]
     ["/services/:id"
-     {:name   :service
-      :get    (array-map
-                :parameters {:path {:id string?}}
-                #?@(:clj [:handler handler/service]))
-      :post   (array-map
-                :parameters {:body any?
-                             :path {:id string?}}
-                #?@(:clj [:handler handler/service-update]))
-      :delete (array-map
-                :parameters {:path {:id string?}}
-                #?@(:clj [:handler handler/service-delete]))}]
+     {:name    :service
+      :swagger {:tags ["service"]}
+      :get     (array-map
+                 :parameters {:header {:authorization string?}
+                              :path   {:id string?}}
+                 :responses {200 {:body        spec/service
+                                  :description "Success"}}
+                 #?@(:clj [:handler handler/service]))
+      :post    (array-map
+                 :parameters {:header {:authorization string?}
+                              :path   {:id string?}
+                              :body   spec/service-update}
+                 :responses {200 {:body        nil
+                                  :description "Success"}}
+                 #?@(:clj [:handler handler/service-update]))
+      :delete  (array-map
+                 :parameters {:header {:authorization string?}
+                              :path   {:id string?}}
+                 :responses {200 {:body        nil
+                                  :description "Success"}}
+                 #?@(:clj [:handler handler/service-delete]))}]
     ["/services/:id/logs"
-     {:name :service-logs
-      :get  (array-map
-              :parameters {:path  {:id string?}
-                           :query {:since string?}}
-              #?@(:clj [:handler handler/service-logs]))}]
+     {:name    :service-logs
+      :swagger {:tags ["service"]}
+      :get     (array-map
+                 :parameters {:header {:authorization string?}
+                              :path   {:id string?}
+                              :query  {:since string?}}
+                 :responses {200 {:body        spec/service-logs
+                                  :description "Success"}}
+                 #?@(:clj [:handler handler/service-logs]))}]
     ["/services/:id/networks"
-     {:name :service-networks
-      :get  (array-map
-              :parameters {:path {:id string?}}
-              #?@(:clj [:handler handler/service-networks]))}]
+     {:name    :service-networks
+      :swagger {:tags ["service"]}
+      :get     (array-map
+                 :parameters {:header {:authorization string?}
+                              :path   {:id string?}}
+                 :responses {200 {:body        [spec/network]
+                                  :description "Success"}}
+                 #?@(:clj [:handler handler/service-networks]))}]
     ["/services/:id/tasks"
-     {:name :service-tasks
-      :get  (array-map
-              :parameters {:path {:id string?}}
-              #?@(:clj [:handler handler/service-tasks]))}]
+     {:name    :service-tasks
+      :swagger {:tags ["service"]}
+      :get     (array-map
+                 :parameters {:header {:authorization string?}
+                              :path   {:id string?}}
+                 :responses {200 {:body        [spec/task]
+                                  :description "Success"}}
+                 #?@(:clj [:handler handler/service-tasks]))}]
     ["/services/:id/compose"
-     {:name :service-compose
-      :get  (array-map
-              :parameters {:path {:id string?}}
-              #?@(:clj [:handler handler/service-compose]))}]
+     {:name    :service-compose
+      :swagger {:tags ["service"]}
+      :get     (array-map
+                 :parameters {:header {:authorization string?}
+                              :path   {:id string?}}
+                 :responses {200 {:body        spec/stack-compose
+                                  :description "Success"}}
+                 #?@(:clj [:handler handler/service-compose]))}]
     ["/services/:id/redeploy"
-     {:name :service-redeploy
-      :post (array-map
-              :parameters {:path {:id string?}}
-              #?@(:clj [:handler handler/service-redeploy]))}]
+     {:name    :service-redeploy
+      :swagger {:tags ["service"]}
+      :post    (array-map
+                 :parameters {:header {:authorization string?}
+                              :path   {:id string?}}
+                 :responses {202 {:body        nil
+                                  :description "Success"}}
+                 #?@(:clj [:handler handler/service-redeploy]))}]
     ["/services/:id/rollback"
-     {:name :service-rollback
-      :post (array-map
-              :parameters {:path {:id string?}}
-              #?@(:clj [:handler handler/service-rollback]))}]
+     {:name    :service-rollback
+      :swagger {:tags ["service"]}
+      :post    (array-map
+                 :parameters {:header {:authorization string?}
+                              :path   {:id string?}}
+                 :responses {202 {:body        nil
+                                  :description "Success"}}
+                 #?@(:clj [:handler handler/service-rollback]))}]
     ;; Volume
     ["/volumes"
-     {:name :volumes
-      :get  (array-map
-              #?@(:clj [:handler handler/volumes]))
-      :post (array-map
-              :parameters {:body any?}
-              #?@(:clj [:handler handler/volume-create]))}]
+     {:name    :volumes
+      :swagger {:tags ["volume"]}
+      :get     (array-map
+                 :parameters {:header {:authorization string?}}
+                 :responses {200 {:body        [spec/volume]
+                                  :description "Success"}}
+                 #?@(:clj [:handler handler/volumes]))
+      :post    (array-map
+                 :parameters {:header {:authorization string?}
+                              :body   spec/volume-create}
+                 :responses {201 {:body        spec/volume
+                                  :description "Success"}}
+                 #?@(:clj [:handler handler/volume-create]))}]
     ["/volumes/:name"
-     {:name   :volume
-      :get    (array-map
-                :parameters {:path {:name string?}}
-                #?@(:clj [:handler handler/volume]))
-      :delete (array-map
-                :parameters {:path {:name string?}}
-                #?@(:clj [:handler handler/volume-delete]))}]
+     {:name    :volume
+      :swagger {:tags ["volume"]}
+      :get     (array-map
+                 :parameters {:header {:authorization string?}
+                              :path   {:name string?}}
+                 :responses {200 {:body        spec/volume
+                                  :description "Success"}}
+                 #?@(:clj [:handler handler/volume]))
+      :delete  (array-map
+                 :parameters {:header {:authorization string?}
+                              :path   {:name string?}}
+                 :responses {200 {:body        nil
+                                  :description "Success"}}
+                 #?@(:clj [:handler handler/volume-delete]))}]
     ["/volumes/:name/services"
-     {:name :volume-services
-      :get  (array-map
-              :parameters {:path {:name string?}}
-              #?@(:clj [:handler handler/volume-services]))}]
+     {:name    :volume-services
+      :swagger {:tags ["volume"]}
+      :get     (array-map
+                 :parameters {:header {:authorization string?}
+                              :path   {:name string?}}
+                 :responses {200 {:body        [spec/service]
+                                  :description "Success"}}
+                 #?@(:clj [:handler handler/volume-services]))}]
     ;; Placement
     ["/placement"
-     {:name :placement
-      :get  (array-map
-              #?@(:clj [:handler handler/placement]))}]
+     {:name    :placement
+      :swagger {:tags ["placement"]}
+      :get     (array-map
+                 :parameters {:header {:authorization string?}}
+                 :responses {200 {:body        [string?]
+                                  :description "Success"}}
+                 #?@(:clj [:handler handler/placement]))}]
     ;; Labels
     ["/labels"
+     {:swagger {:tags ["label"]}}
      ["/service"
       {:name :labels-service
        :get  (array-map
+               :parameters {:header {:authorization string?}}
+               :responses {200 {:body        [string?]
+                                :description "Success"}}
                #?@(:clj [:handler handler/labels-service]))}]]
     ;; Plugin
     ["/plugin"
+     {:swagger {:tags ["plugin"]}}
      ["/network"
       {:name :plugin-network
        :get  (array-map
+               :parameters {:header {:authorization string?}}
+               :responses {200 {:body        [string?]
+                                :description "Success"}}
                #?@(:clj [:handler handler/plugin-network]))}]
      ["/log"
       {:name :plugin-log
        :get  (array-map
+               :parameters {:header {:authorization string?}}
+               :responses {200 {:body        [string?]
+                                :description "Success"}}
                #?@(:clj [:handler handler/plugin-log]))}]
      ["/volume"
       {:name :plugin-volume
        :get  (array-map
+               :parameters {:header {:authorization string?}}
+               :responses {200 {:body        [string?]
+                                :description "Success"}}
                #?@(:clj [:handler handler/plugin-volume]))}]]]])
 
 (def backend-router (r/router backend {:data      {:coercion rss/coercion}
