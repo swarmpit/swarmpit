@@ -18,6 +18,7 @@
       (throw
         (ex-info (str "AWS client error: " (:message result))
                  {:status 401
+                  :type   :aws-client
                   :body   {:error (str "AWS client error: " (or (:message result)
                                                                 "Unknown error"))}}))
       result)))

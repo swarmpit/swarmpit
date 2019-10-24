@@ -67,6 +67,7 @@
           (let [error (.getMessage exception)]
             (ex-info (str scope " failure: " error)
                      {:status 500
+                      :type   :http-client
                       :body   {:error error}}))))
       (catch ExceptionInfo exception
         (throw
@@ -76,10 +77,12 @@
                 error (error-response data error-handler)]
             (ex-info (str scope " error: " error)
                      {:status  status
+                      :type    :http-client
                       :headers headers
                       :body    {:error error}}))))
       (catch TimeoutException _
         (throw
           (ex-info (str scope " error: Request timeout")
                    {:status 408
+                    :type   :http-client
                     :body   {:error "Request timeout"}}))))))

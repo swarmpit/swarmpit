@@ -14,6 +14,7 @@
         (let [error (:err result)]
           (ex-info (str "Docker error: " error)
                    {:status 400
+                    :type   :docker-cli
                     :body   {:error error}}))))))
 
 (defn- login-cmd
