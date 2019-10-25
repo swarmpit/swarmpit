@@ -44,6 +44,15 @@
   ([response] {:status 202
                :body   response}))
 
+(defn validate-parameters!
+  [valid-premise error]
+  (when-not valid-premise
+    (throw
+      (ex-info error
+               {:status 400
+                :type   :api
+                :body   {:error error}}))))
+
 ;; Index handler
 
 (defn index
@@ -151,11 +160,13 @@
 
 (defn user-create
   [{{:keys [body]} :parameters}]
-  (let [payload (assoc body :type "user")
-        response (api/create-user payload)]
-    (if (some? response)
-      (resp-created (select-keys response [:id]))
-      (resp-error 400 "User already exist"))))
+  (let [payload (assoc body :type "user")]
+    (validate-parameters! (> (count (:username payload)) 3) "Username must be at least 4 characters long")
+    (validate-parameters! (> (count (:password payload)) 3) "Password must be at least 4 characters long")
+    (let [response (api/create-user payload)]
+      (if (some? response)
+        (resp-created (select-keys response [:id]))
+        (resp-error 400 "User already exist")))))
 
 (defn user-update
   [{{:keys [body path]} :parameters}]

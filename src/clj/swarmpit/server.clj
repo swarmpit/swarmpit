@@ -30,11 +30,11 @@
   "Default safe handler for any exception."
   [^Exception e _]
   (let [response (ex-data e)]
-    (log/info e)
     (case (:type response)
       :http-client (dissoc response :headers)
       :aws-client response
       :docker-cli response
+      :api response
       {:status 500
        :body   (Throwable->map e)})))
 

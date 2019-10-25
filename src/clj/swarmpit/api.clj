@@ -585,6 +585,7 @@
       (throw
         (ex-info "Registry error: No matching registry linked with Swarmpit"
                  {:status 401
+                  :type   :api
                   :body   {:error (str "No matching registry ( " registry-address " ) linked with Swarmpit")}}))
       (case (:type registry)
         "ecr" (registry-ecr->v2 registry)
