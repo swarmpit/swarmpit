@@ -13,8 +13,6 @@
 
 (def swarmpit-home-page "https://swarmpit.io")
 
-(def swarmpit-revision-page "https://github.com/swarmpit/swarmpit/commit")
-
 (def menu
   [{:name    "Dashboard"
     :icon    (icon/dashboard {})
@@ -99,7 +97,7 @@
 (rum/defc drawer-title-version < rum/static [version]
   (when version
     [:a {:target "_blank"
-         :href   (str swarmpit-revision-page "/" (:revision version))}
+         :href   "/api-docs"}
      [:span.Swarmpit-title-version (parse-version version)]]))
 
 (rum/defc drawer-category < rum/static [name]
