@@ -5,7 +5,18 @@
             #?(:cljs [reitit.frontend :as rf])
             #?(:clj [reitit.swagger :as swagger])
             #?(:clj [swarmpit.handler :as handler])
+            #?(:clj [swarmpit.version :as version])
             #?(:clj [swarmpit.event.handler :as event-handler])))
+
+#?(:clj
+   (defn api-version []
+     (let [version (version/info)]
+       (clojure.string/replace
+         (:version version)
+         #"SNAPSHOT"
+         (->> (:revision version)
+              (take 7)
+              (apply str))))))
 
 (def backend
   [["/"
@@ -63,14 +74,16 @@
     ["/swagger.json"
      {:get (array-map
              :no-doc true
-             :swagger {:info {:version     "1.0"
-                              :title       "Swarmpit API"
-                              :description "Swarmpit backend API description"
-                              :contact     {:name  "Swarmpit Team"
-                                            :email "team@swarmpit.io"
-                                            :url   "https://swarmpit.io"}
-                              :license     {:name "Eclipse Public License"
-                                            :url  "http://www.eclipse.org/legal/epl-v10.html"}}}
+             :swagger {:info
+                       (array-map
+                         :title "Swarmpit API"
+                         :description "Swarmpit backend API description"
+                         :contact {:name  "Swarmpit Team"
+                                   :email "team@swarmpit.io"
+                                   :url   "https://swarmpit.io"}
+                         :license {:name "Eclipse Public License"
+                                   :url  "http://www.eclipse.org/legal/epl-v10.html"}
+                         #?@(:clj [:version (api-version)]))}
              #?@(:clj [:handler (swagger/create-swagger-handler)]))}]
     ["/me"
      {:name    :me
@@ -125,11 +138,13 @@
      {:name    :stacks
       :swagger {:tags ["stack"]}
       :get     (array-map
+                 :summary "Stack list"
                  :parameters {:header {:authorization string?}}
                  :responses {200 {:body        spec/stack
                                   :description "Success"}}
                  #?@(:clj [:handler handler/stacks]))
       :post    (array-map
+                 :summary "Create stack"
                  :parameters {:header {:authorization string?}
                               :body   spec/stack-compose}
                  :responses {201 {:body        nil
@@ -139,6 +154,7 @@
      {:name    :stack
       :swagger {:tags ["stack"]}
       :post    (array-map
+                 :summary "Edit stack"
                  :parameters {:header {:authorization string?}
                               :path   {:name string?}
                               :body   spec/stack-compose}
@@ -146,6 +162,7 @@
                                   :description "Success"}}
                  #?@(:clj [:handler handler/stack-update]))
       :delete  (array-map
+                 :summary "Delete stack"
                  :parameters {:header {:authorization string?}
                               :path   {:name string?}}
                  :responses {200 {:body        nil
@@ -155,6 +172,7 @@
      {:name    :stack-file
       :swagger {:tags ["stack"]}
       :get     (array-map
+                 :summary "Stack info"
                  :parameters {:header {:authorization string?}
                               :path   {:name string?}}
                  :responses {200 {:body        spec/stack-file
@@ -164,6 +182,7 @@
      {:name    :stack-compose
       :swagger {:tags ["stack"]}
       :get     (array-map
+                 :summary "Stack compose"
                  :parameters {:header {:authorization string?}
                               :path   {:name string?}}
                  :responses {200 {:body        spec/stack-compose
@@ -173,6 +192,7 @@
      {:name    :stack-services
       :swagger {:tags ["stack"]}
       :get     (array-map
+                 :summary "Stack services"
                  :parameters {:header {:authorization string?}
                               :path   {:name string?}}
                  :responses {200 {:body        [spec/service]
@@ -182,6 +202,7 @@
      {:name    :stack-networks
       :swagger {:tags ["stack"]}
       :get     (array-map
+                 :summary "Stack networks"
                  :parameters {:header {:authorization string?}
                               :path   {:name string?}}
                  :responses {200 {:body        [spec/network]
@@ -191,6 +212,7 @@
      {:name    :stack-volumes
       :swagger {:tags ["stack"]}
       :get     (array-map
+                 :summary "Stack volumes"
                  :parameters {:header {:authorization string?}
                               :path   {:name string?}}
                  :responses {200 {:body        [(merge spec/volume spec/mount)]
@@ -200,6 +222,7 @@
      {:name    :stack-configs
       :swagger {:tags ["stack"]}
       :get     (array-map
+                 :summary "Stack configs"
                  :parameters {:header {:authorization string?}
                               :path   {:name string?}}
                  :responses {200 {:body        [(dissoc spec/config :data)]
@@ -209,6 +232,7 @@
      {:name    :stack-secrets
       :swagger {:tags ["stack"]}
       :get     (array-map
+                 :summary "Stack secrets"
                  :parameters {:header {:authorization string?}
                               :path   {:name string?}}
                  :responses {200 {:body        [spec/secret]
@@ -218,6 +242,7 @@
      {:name    :stack-redeploy
       :swagger {:tags ["stack"]}
       :post    (array-map
+                 :summary "Redeploy stack"
                  :parameters {:header {:authorization string?}
                               :path   {:name string?}}
                  :responses {200 {:body        nil
@@ -227,6 +252,7 @@
      {:name    :stack-rollback
       :swagger {:tags ["stack"]}
       :post    (array-map
+                 :summary "Rollback stack"
                  :parameters {:header {:authorization string?}
                               :path   {:name string?}}
                  :responses {200 {:body        nil
@@ -239,6 +265,7 @@
       {:name    :users
        :swagger {:tags ["user"]}
        :get     (array-map
+                  :summary "User list"
                   :parameters {:header {:authorization string?}}
                   :responses {200 {:body        [spec/user]
                                    :description "Success"}}
@@ -254,18 +281,21 @@
       {:name    :user
        :swagger {:tags ["user"]}
        :get     (array-map
+                  :summary "User info"
                   :parameters {:header {:authorization string?}
                                :path   {:id string?}}
                   :responses {200 {:body        spec/user
                                    :description "Success"}}
                   #?@(:clj [:handler handler/user]))
        :delete  (array-map
+                  :summary "Delete user"
                   :parameters {:header {:authorization string?}
                                :path   {:id string?}}
                   :responses {200 {:body        nil
                                    :description "Success"}}
                   #?@(:clj [:handler handler/user-delete]))
        :post    (array-map
+                  :summary "Edit user"
                   :parameters {:header {:authorization string?}
                                :path   {:id string?}
                                :body   spec/user-update}
@@ -277,11 +307,13 @@
      {:name    :secrets
       :swagger {:tags ["secret"]}
       :get     (array-map
+                 :summary "Secret list"
                  :parameters {:header {:authorization string?}}
                  :responses {200 {:body        [spec/secret]
                                   :description "Success"}}
                  #?@(:clj [:handler handler/secrets]))
       :post    (array-map
+                 :summary "Create secret"
                  :parameters {:header {:authorization string?}
                               :body   spec/secret-create}
                  :responses {201 {:body        {:id string?}
@@ -291,6 +323,7 @@
      {:name    :secret
       :swagger {:tags ["secret"]}
       :get     (array-map
+                 :summary "Secret info"
                  :parameters {:header {:authorization string?}
                               :path   {:id string?}}
                  :responses {200 {:body        spec/secret
@@ -303,6 +336,7 @@
                               :path   {:id string?}}
                  #?@(:clj [:handler handler/secret-update]))
       :delete  (array-map
+                 :summary "Delete secret"
                  :parameters {:header {:authorization string?}
                               :path   {:id string?}}
                  :responses {200 {:body        nil
@@ -312,6 +346,7 @@
      {:name    :secret-services
       :swagger {:tags ["secret"]}
       :get     (array-map
+                 :summary "Secret services"
                  :parameters {:header {:authorization string?}
                               :path   {:id string?}}
                  :responses {200 {:body        [spec/service]
@@ -322,11 +357,13 @@
      {:name    :configs
       :swagger {:tags ["config"]}
       :get     (array-map
+                 :summary "Config list"
                  :parameters {:header {:authorization string?}}
                  :responses {200 {:body        [spec/config]
                                   :description "Success"}}
                  #?@(:clj [:handler handler/configs]))
       :post    (array-map
+                 :summary "Create config"
                  :parameters {:header {:authorization string?}
                               :body   spec/config-create}
                  :responses {201 {:body        {:id string?}
@@ -336,12 +373,14 @@
      {:name    :config
       :swagger {:tags ["config"]}
       :get     (array-map
+                 :summary "Config info"
                  :parameters {:header {:authorization string?}
                               :path   {:id string?}}
                  :responses {200 {:body        spec/config
                                   :description "Success"}}
                  #?@(:clj [:handler handler/config]))
       :delete  (array-map
+                 :summary "Delete config"
                  :parameters {:header {:authorization string?}
                               :path   {:id string?}}
                  :responses {200 {:body        nil
@@ -351,6 +390,7 @@
      {:name    :config-services
       :swagger {:tags ["config"]}
       :get     (array-map
+                 :summary "Config services"
                  :parameters {:header {:authorization string?}
                               :path   {:id string?}}
                  :responses {200 {:body        [spec/service]
@@ -361,6 +401,7 @@
      {:name    :public-repositories
       :swagger {:tags ["repository"]}
       :get     (array-map
+                 :summary "Public repositories"
                  :parameters {:header {:authorization string?}
                               :query  {:query string?
                                        :page  int?}}
@@ -420,6 +461,7 @@
      ["/tags"
       {:name :repository-tags
        :get  (array-map
+               :summary "Repository tags"
                :parameters {:header {:authorization string?}
                             :query  {:repository string?}}
                :responses {200 {:body        [string?]
@@ -428,6 +470,7 @@
      ["/ports"
       {:name :repository-ports
        :get  (array-map
+               :summary "Repository ports"
                :parameters {:header {:authorization string?}
                             :query  {:repository    string?
                                      :repositoryTag string?}}
@@ -441,11 +484,13 @@
      {:name    :networks
       :swagger {:tags ["network"]}
       :get     (array-map
+                 :summary "Network list"
                  :parameters {:header {:authorization string?}}
                  :responses {200 {:body        [spec/network]
                                   :description "Success"}}
                  #?@(:clj [:handler handler/networks]))
       :post    (array-map
+                 :summary "Create network"
                  :parameters {:header {:authorization string?}
                               :body   spec/network-create}
                  :responses {201 {:body        {:id string?}
@@ -455,12 +500,14 @@
      {:name    :network
       :swagger {:tags ["network"]}
       :get     (array-map
+                 :summary "Network info"
                  :parameters {:header {:authorization string?}
                               :path   {:id string?}}
                  :responses {200 {:body        spec/network
                                   :description "Success"}}
                  #?@(:clj [:handler handler/network]))
       :delete  (array-map
+                 :summary "Delete network"
                  :parameters {:header {:authorization string?}
                               :path   {:id string?}}
                  :responses {200 {:body        nil
@@ -470,6 +517,7 @@
      {:name    :network-services
       :swagger {:tags ["network"]}
       :get     (array-map
+                 :summary "Network services"
                  :parameters {:header {:authorization string?}
                               :path   {:id string?}}
                  :responses {200 {:body        [spec/service]
@@ -480,6 +528,7 @@
      {:name    :nodes
       :swagger {:tags ["node"]}
       :get     (array-map
+                 :summary "Node list"
                  :parameters {:header {:authorization string?}}
                  :responses {200 {:body        [spec/node]
                                   :description "Success"}}
@@ -488,6 +537,7 @@
      {:name    :nodes-ts
       :swagger {:tags ["node"]}
       :get     (array-map
+                 :summary "Nodes timeseries"
                  :parameters {:header {:authorization string?}}
                  :responses {200 {:body        [spec/node-stats]
                                   :description "Success"}
@@ -498,12 +548,14 @@
      {:name    :node
       :swagger {:tags ["node"]}
       :get     (array-map
+                 :summary "Node info"
                  :parameters {:header {:authorization string?}
                               :path   {:id string?}}
                  :responses {200 {:body        spec/node
                                   :description "Success"}}
                  #?@(:clj [:handler handler/node]))
       :post    (array-map
+                 :summary "Edit node"
                  :parameters {:header {:authorization string?}
                               :path   {:id string?}
                               :body   spec/node}
@@ -514,6 +566,7 @@
      {:name    :node-tasks
       :swagger {:tags ["node"]}
       :get     (array-map
+                 :summary "Node tasks"
                  :parameters {:header {:authorization string?}
                               :path   {:id string?}}
                  :responses {200 {:body        [spec/task]
@@ -524,11 +577,13 @@
      {:name    :services
       :swagger {:tags ["service"]}
       :get     (array-map
+                 :summary "Service list"
                  :parameters {:header {:authorization string?}}
                  :responses {200 {:body        [spec/service]
                                   :description "Success"}}
                  #?@(:clj [:handler handler/services]))
       :post    (array-map
+                 :summary "Create service"
                  :parameters {:header {:authorization string?}
                               :body   spec/service-create}
                  :responses {201 {:body        {:id string?}
@@ -538,12 +593,14 @@
      {:name    :service
       :swagger {:tags ["service"]}
       :get     (array-map
+                 :summary "Service info"
                  :parameters {:header {:authorization string?}
                               :path   {:id string?}}
                  :responses {200 {:body        spec/service
                                   :description "Success"}}
                  #?@(:clj [:handler handler/service]))
       :post    (array-map
+                 :summary "Edit service"
                  :parameters {:header {:authorization string?}
                               :path   {:id string?}
                               :body   spec/service-update}
@@ -551,6 +608,7 @@
                                   :description "Success"}}
                  #?@(:clj [:handler handler/service-update]))
       :delete  (array-map
+                 :summary "Delete service"
                  :parameters {:header {:authorization string?}
                               :path   {:id string?}}
                  :responses {200 {:body        nil
@@ -560,6 +618,7 @@
      {:name    :service-logs
       :swagger {:tags ["service"]}
       :get     (array-map
+                 :summary "Service logs"
                  :parameters {:header {:authorization string?}
                               :path   {:id string?}
                               :query  {:since string?}}
@@ -570,6 +629,7 @@
      {:name    :service-networks
       :swagger {:tags ["service"]}
       :get     (array-map
+                 :summary "Service networks"
                  :parameters {:header {:authorization string?}
                               :path   {:id string?}}
                  :responses {200 {:body        [spec/network]
@@ -579,6 +639,7 @@
      {:name    :service-tasks
       :swagger {:tags ["service"]}
       :get     (array-map
+                 :summary "Service tasks"
                  :parameters {:header {:authorization string?}
                               :path   {:id string?}}
                  :responses {200 {:body        [spec/task]
@@ -588,6 +649,7 @@
      {:name    :service-compose
       :swagger {:tags ["service"]}
       :get     (array-map
+                 :summary "Service compose"
                  :parameters {:header {:authorization string?}
                               :path   {:id string?}}
                  :responses {200 {:body        spec/stack-compose
@@ -597,6 +659,7 @@
      {:name    :service-redeploy
       :swagger {:tags ["service"]}
       :post    (array-map
+                 :summary "Redeploy service"
                  :parameters {:header {:authorization string?}
                               :path   {:id string?}}
                  :responses {202 {:body        nil
@@ -606,6 +669,7 @@
      {:name    :service-rollback
       :swagger {:tags ["service"]}
       :post    (array-map
+                 :summary "Rollback service"
                  :parameters {:header {:authorization string?}
                               :path   {:id string?}}
                  :responses {202 {:body        nil
@@ -616,11 +680,13 @@
      {:name    :volumes
       :swagger {:tags ["volume"]}
       :get     (array-map
+                 :summary "Volume list"
                  :parameters {:header {:authorization string?}}
                  :responses {200 {:body        [spec/volume]
                                   :description "Success"}}
                  #?@(:clj [:handler handler/volumes]))
       :post    (array-map
+                 :summary "Create volume"
                  :parameters {:header {:authorization string?}
                               :body   spec/volume-create}
                  :responses {201 {:body        spec/volume
@@ -630,12 +696,14 @@
      {:name    :volume
       :swagger {:tags ["volume"]}
       :get     (array-map
+                 :summary "Volume info"
                  :parameters {:header {:authorization string?}
                               :path   {:name string?}}
                  :responses {200 {:body        spec/volume
                                   :description "Success"}}
                  #?@(:clj [:handler handler/volume]))
       :delete  (array-map
+                 :summary "Delete volume"
                  :parameters {:header {:authorization string?}
                               :path   {:name string?}}
                  :responses {200 {:body        nil
@@ -645,6 +713,7 @@
      {:name    :volume-services
       :swagger {:tags ["volume"]}
       :get     (array-map
+                 :summary "Volume services"
                  :parameters {:header {:authorization string?}
                               :path   {:name string?}}
                  :responses {200 {:body        [spec/service]
@@ -655,6 +724,7 @@
      {:name    :placement
       :swagger {:tags ["placement"]}
       :get     (array-map
+                 :summary "Placement constraints"
                  :parameters {:header {:authorization string?}}
                  :responses {200 {:body        [string?]
                                   :description "Success"}}
@@ -665,6 +735,7 @@
      ["/service"
       {:name :labels-service
        :get  (array-map
+               :summary "Service labels"
                :parameters {:header {:authorization string?}}
                :responses {200 {:body        [string?]
                                 :description "Success"}}
@@ -675,6 +746,7 @@
      ["/network"
       {:name :plugin-network
        :get  (array-map
+               :summary "Network plugins"
                :parameters {:header {:authorization string?}}
                :responses {200 {:body        [string?]
                                 :description "Success"}}
@@ -682,6 +754,7 @@
      ["/log"
       {:name :plugin-log
        :get  (array-map
+               :summary "Logging plugins"
                :parameters {:header {:authorization string?}}
                :responses {200 {:body        [string?]
                                 :description "Success"}}
@@ -689,6 +762,7 @@
      ["/volume"
       {:name :plugin-volume
        :get  (array-map
+               :summary "Volume plugins"
                :parameters {:header {:authorization string?}}
                :responses {200 {:body        [string?]
                                 :description "Success"}}
