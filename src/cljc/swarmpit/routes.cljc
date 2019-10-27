@@ -4,13 +4,13 @@
             [swarmpit.routes-spec :as spec]
             #?(:cljs [reitit.frontend :as rf])
             #?(:clj [reitit.swagger :as swagger])
-            #?(:clj [swarmpit.handler :as handler])
             #?(:clj [swarmpit.version :as version])
+            #?(:clj [swarmpit.handler :as handler])
             #?(:clj [swarmpit.event.handler :as event-handler])))
 
 #?(:clj
    (defn api-version []
-     (let [version (version/info)]
+     (let [version (version/short-info)]
        (clojure.string/replace
          (:version version)
          #"SNAPSHOT"

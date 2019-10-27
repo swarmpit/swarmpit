@@ -24,3 +24,10 @@
    :statistics  (some? (cfg/config :influxdb-url))
    :docker      {:api    (read-string (cfg/config :docker-api))
                  :engine (cfg/config :docker-engine)}})
+
+(defn short-info
+  "Used for routes in compile time"
+  []
+  {:name     "swarmpit"
+   :version  (get pom-properties "version")
+   :revision (get pom-properties "revision")})

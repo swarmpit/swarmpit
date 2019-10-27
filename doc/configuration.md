@@ -19,11 +19,11 @@ Swarmpit database (CouchDB) url.
 Default is `http://localhost:5984`.
 
 ## `SWARMPIT_INFLUXDB`
-Swarmpit statistics database (InfluxDB) url. 
-Default is `http://localhost:8086`.
+Swarmpit statistics database (InfluxDB) url. If `nil` statistics are disabled. 
+Default is `nil`.
 
 ## `SWARMPIT_AGENT_URL`
-Set address of agent. If nil value is calculated dynamically. For dev purpose only!!! 
+Set address of agent. If `nil`, value is calculated dynamically. For DEV purpose only!!! 
 Default is `nil`.
 
 ## `SWARMPIT_WORK_DIR`
