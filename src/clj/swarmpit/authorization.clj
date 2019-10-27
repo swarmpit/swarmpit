@@ -2,13 +2,17 @@
   (:require [buddy.auth :refer [authenticated?]]
             [buddy.auth.accessrules :refer [success error wrap-access-rules]]
             [swarmpit.handler :refer [resp-error]]
-            [swarmpit.token :refer [admin?]]
+            [swarmpit.token :refer [admin? enabled?]]
             [swarmpit.couchdb.client :as cc]))
 
 (defn- authenticated-access
-  [request]
+  [{:keys [identity] :as request}]
   (if (authenticated? request)
-    true
+    (let [user (get-in identity [:usr])]
+      (if (enabled? user)
+        true
+        (error {:code    403
+                :message "Access by disabled user"})))
     (error {:code    401
             :message "Authentication failed"})))
 

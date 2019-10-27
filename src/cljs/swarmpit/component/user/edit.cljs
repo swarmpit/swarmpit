@@ -42,7 +42,10 @@
        :value "admin"} "admin")
     (comp/menu-item
       {:key   "user"
-       :value "user"} "user")))
+       :value "user"} "user")
+    (comp/menu-item
+      {:key   "disabled"
+       :value "disabled"} "disabled")))
 
 
 (defn- form-email [value]
