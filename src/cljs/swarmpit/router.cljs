@@ -23,7 +23,7 @@
                                  :params  (merge route-params query-params)} cursor))))
 
 (defn- on-navigate
-  [{:keys [data path-params]}]
+  [{:keys [data path-params] :as match}]
   (set-route {:handler      (:name data)
               :route-params path-params}))
 
