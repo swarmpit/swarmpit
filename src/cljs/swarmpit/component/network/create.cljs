@@ -223,7 +223,7 @@
 (defn- create-network-handler
   []
   (ajax/post
-    (routes/path-for-backend :network-create)
+    (routes/path-for-backend :networks)
     {:params     (state/get-value state/form-value-cursor)
      :state      [:processing?]
      :on-success (fn [{:keys [response origin?]}]

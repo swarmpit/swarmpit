@@ -93,7 +93,7 @@
 (defn- create-registry-handler
   []
   (ajax/post
-    (routes/path-for-backend :registry-create {:registryType :gitlab})
+    (routes/path-for-backend :registries {:registryType :gitlab})
     {:params     (state/get-value state/form-value-cursor)
      :state      [:processing?]
      :on-success (fn [{:keys [response origin?]}]

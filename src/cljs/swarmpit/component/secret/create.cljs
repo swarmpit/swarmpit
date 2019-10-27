@@ -47,7 +47,7 @@
 (defn- create-secret-handler
   []
   (ajax/post
-    (routes/path-for-backend :secret-create)
+    (routes/path-for-backend :secrets)
     {:params     (state/get-value state/form-value-cursor)
      :state      [:processing?]
      :on-success (fn [{:keys [response origin?]}]

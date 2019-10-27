@@ -50,7 +50,7 @@ git clone https://github.com/swarmpit/swarmpit
 docker stack deploy -c swarmpit/docker-compose.yml swarmpit
 ```
 
-[This stack](docker-compose.yml) is a composition of 3 services:
+[This stack](docker-compose.yml) is a composition of 4 services:
 
 * app - Swarmpit
 * [agent](https://github.com/swarmpit/agent) - Swarmpit agent

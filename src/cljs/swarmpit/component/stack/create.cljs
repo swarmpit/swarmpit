@@ -65,7 +65,7 @@
   []
   (let [{:keys [name] :as form-value} (state/get-value state/form-value-cursor)]
     (ajax/post
-      (routes/path-for-backend :stack-create)
+      (routes/path-for-backend :stacks)
       {:params     form-value
        :state      [:processing?]
        :on-success (fn [{:keys [origin?]}]

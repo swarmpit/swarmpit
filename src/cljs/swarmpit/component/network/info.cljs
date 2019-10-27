@@ -37,7 +37,7 @@
 (defn- delete-network-handler
   [network-id]
   (ajax/delete
-    (routes/path-for-backend :network-delete {:id network-id})
+    (routes/path-for-backend :network {:id network-id})
     {:on-success (fn [_]
                    (dispatch!
                      (routes/path-for-frontend :network-list))

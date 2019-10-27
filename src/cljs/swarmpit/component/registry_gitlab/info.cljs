@@ -29,8 +29,8 @@
 (defn- delete-registry-handler
   [registry-id]
   (ajax/delete
-    (routes/path-for-backend :registry-delete {:id           registry-id
-                                               :registryType :gitlab})
+    (routes/path-for-backend :registry {:id           registry-id
+                                        :registryType :gitlab})
     {:on-success (fn [_]
                    (dispatch!
                      (routes/path-for-frontend :registry-list))

@@ -57,7 +57,7 @@
 (defn- delete-service-handler
   [service-id]
   (ajax/delete
-    (routes/path-for-backend :service-delete {:id service-id})
+    (routes/path-for-backend :service {:id service-id})
     {:on-success (fn [_]
                    (dispatch!
                      (routes/path-for-frontend :service-list))

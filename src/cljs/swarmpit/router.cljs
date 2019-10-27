@@ -1,5 +1,5 @@
 (ns swarmpit.router
-  (:require [bidi.router :as br]
+  (:require [reitit.frontend.easy :as rfe]
             [cemerick.url :refer [query->map]]
             [clojure.walk :refer [keywordize-keys]]
             [swarmpit.component.state :as state]
@@ -8,13 +8,7 @@
 
 (def cursor [:route])
 
-(defonce !router (atom nil))
-
 (defonce !route (atom nil))
-
-(defn set-location
-  [location]
-  (br/set-location! @!router location))
 
 (defn set-route
   [location]
@@ -29,16 +23,22 @@
                                  :params  (merge route-params query-params)} cursor))))
 
 (defn- on-navigate
-  [location]
-  (set-route location))
+  [{:keys [data path-params] :as match}]
+  (set-route {:handler      (:name data)
+              :route-params path-params}))
 
 (defn not-found!
   [body]
   (if (not (= :not-found (:handler @!route)))
-    (on-navigate {:handler      :not-found
-                  :route-params {:origin (state/get-value state/route-cursor) :error body}})))
+    (set-route {:handler      :not-found
+                :route-params {:origin (state/get-value state/route-cursor) :error body}})))
 
 (defn start
   []
-  (let [router (br/start-router! routes/frontend {:on-navigate on-navigate})]
-    (reset! !router router)))
+  (rfe/start!
+    routes/frontend-router
+    (fn [m] (on-navigate m))
+    ;; set to false to enable HistoryAPI
+    {:use-fragment true}))
+
+

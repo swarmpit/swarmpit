@@ -58,7 +58,7 @@
 (defn- delete-config-handler
   [config-id]
   (ajax/delete
-    (routes/path-for-backend :config-delete {:id config-id})
+    (routes/path-for-backend :config {:id config-id})
     {:on-success (fn [_]
                    (dispatch!
                      (routes/path-for-frontend :config-list))

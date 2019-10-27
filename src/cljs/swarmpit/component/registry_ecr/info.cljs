@@ -29,8 +29,8 @@
 (defn- delete-ecr-handler
   [ecr-id]
   (ajax/delete
-    (routes/path-for-backend :registry-delete {:id           ecr-id
-                                               :registryType :ecr})
+    (routes/path-for-backend :registry {:id           ecr-id
+                                        :registryType :ecr})
     {:on-success (fn [_]
                    (dispatch!
                      (routes/path-for-frontend :registry-list))

@@ -19,6 +19,7 @@
             [swarmpit.component.service.form-resources :as resources]
             [swarmpit.component.service.form-deployment :as deployment]
             [swarmpit.component.service.form-deployment-placement :as placement]
+            [swarmpit.utils :refer [clean-nils]]
             [swarmpit.ajax :as ajax]
             [swarmpit.url :refer [dispatch!]]
             [swarmpit.routes :as routes]
@@ -44,7 +45,7 @@
         resources (state/get-value resources/form-value-cursor)
         deployment (state/get-value deployment/form-value-cursor)]
     (ajax/post
-      (routes/path-for-backend :service-create)
+      (routes/path-for-backend :services)
       {:params     (-> settings
                        (assoc :ports ports)
                        (assoc :networks networks)
@@ -56,7 +57,8 @@
                        (assoc :labels labels)
                        (assoc :logdriver logdriver)
                        (assoc :resources resources)
-                       (assoc :deployment deployment))
+                       (assoc :deployment deployment)
+                       (clean-nils))
        :state      [:processing?]
        :on-success (fn [{:keys [response origin?]}]
                      (when origin?

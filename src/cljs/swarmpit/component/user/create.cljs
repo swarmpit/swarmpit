@@ -85,7 +85,7 @@
 (defn- create-user-handler
   []
   (ajax/post
-    (routes/path-for-backend :user-create)
+    (routes/path-for-backend :users)
     {:params     (state/get-value state/form-value-cursor)
      :state      [:processing?]
      :on-success (fn [{:keys [response origin?]}]

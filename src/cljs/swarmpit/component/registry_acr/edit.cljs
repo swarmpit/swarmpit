@@ -61,8 +61,8 @@
 (defn- update-acr-handler
   [acr-id]
   (ajax/post
-    (routes/path-for-backend :registry-update {:id           acr-id
-                                               :registryType :acr})
+    (routes/path-for-backend :registry {:id           acr-id
+                                        :registryType :acr})
     {:params     (state/get-value state/form-value-cursor)
      :state      [:processing?]
      :on-success (fn [{:keys [origin?]}]

@@ -1,5 +1,6 @@
 (ns swarmpit.handler
   (:require [clojure.walk :refer [keywordize-keys]]
+            [clojure.tools.logging :as log]
             [net.cgrand.enlive-html :as html :refer [deftemplate]]
             [swarmpit.api :as api]
             [swarmpit.slt :as slt]
@@ -13,7 +14,7 @@
 (defn include-js [src revision]
   (first (html/html [:script {:src (str src "?r=" revision)}])))
 
-(deftemplate index "index.html"
+(deftemplate index-page "index.html"
              [revision]
              [:head] (html/append (map #(include-css % revision) ["css/main.css"]))
              [:body] (html/append (map #(include-js % revision) ["js/main.js"])))
@@ -43,465 +44,468 @@
   ([response] {:status 202
                :body   response}))
 
-;;; Handler
-
-(defmulti dispatch identity)
+(defn validate-parameters!
+  [valid-premise error]
+  (when-not valid-premise
+    (throw
+      (ex-info error
+               {:status 400
+                :type   :api
+                :body   {:error error}}))))
 
 ;; Index handler
 
-(defmethod dispatch :index [_]
-  (fn [_]
-    {:status  200
-     :headers {"Content-Type" "text/html"}
-     :body    (apply str (index (:revision (version/info))))}))
+(defn index
+  [_]
+  {:status  200
+   :headers {"Content-Type" "text/html"}
+   :body    (apply str (index-page (:revision (version/info))))})
 
 ;; Version handler
 
-(defmethod dispatch :version [_]
-  (fn [_]
-    (->> (version/info)
-         (resp-ok))))
+(defn version
+  [_]
+  (->> (version/info)
+       (resp-ok)))
 
 ;; SLT handler
 
-(defmethod dispatch :slt [_]
-  (fn [_]
-    (resp-ok {:slt (slt/create)})))
+(defn slt
+  [_]
+  (resp-ok {:slt (slt/create)}))
 
 ;; Login handler
 
-(defmethod dispatch :login [_]
-  (fn [{:keys [headers]}]
-    (let [token (get headers "authorization")]
-      (if (nil? token)
-        (resp-error 400 "Missing token")
-        (let [user (->> (token/decode-basic token)
-                        (api/user-by-credentials))]
-          (if (nil? user)
-            (resp-unauthorized "Invalid credentials")
-            (resp-ok {:token (token/generate-jwt user)})))))))
+(defn login
+  [{:keys [headers]}]
+  (let [token (get headers "authorization")]
+    (if (nil? token)
+      (resp-error 400 "Missing token")
+      (let [user (->> (token/decode-basic token)
+                      (api/user-by-credentials))]
+        (if (nil? user)
+          (resp-unauthorized "Invalid credentials")
+          (resp-ok {:token (token/generate-jwt user)}))))))
 
 ;; Password handler
 
-(defmethod dispatch :password [_]
-  (fn [{:keys [params identity]}]
-    (let [username (get-in identity [:usr :username])
-          payload (keywordize-keys params)]
-      (if (api/user-by-credentials (merge payload {:username username}))
-        (do (-> (api/user-by-username username)
-                (api/change-password (:new-password payload)))
-            (resp-ok))
-        (resp-error 403 "Invalid old password provided")))))
-
+(defn password
+  [{{:keys [body]} :parameters
+    {:keys [usr]}  :identity}]
+  (let [username (:username usr)]
+    (if (api/user-by-credentials (merge body {:username username}))
+      (do (-> (api/user-by-username username)
+              (api/change-password (:new-password body)))
+          (resp-ok))
+      (resp-error 403 "Invalid old password provided"))))
 
 ;; User api token handler
 
-(defmethod dispatch :api-token-generate [_]
-  (fn [{:keys [identity]}]
-    (->> identity :usr :username
-         (api/user-by-username)
-         (api/generate-api-token)
-         (resp-ok))))
+(defn api-token-generate
+  [{{:keys [usr]} :identity}]
+  (->> (:username usr)
+       (api/user-by-username)
+       (api/generate-api-token)
+       (resp-ok)))
 
-(defmethod dispatch :api-token-remove [_]
-  (fn [{:keys [identity]}]
-    (->> identity :usr :username
-         (api/user-by-username)
-         (api/remove-api-token))
-    (resp-ok)))
+(defn api-token-remove
+  [{{:keys [usr]} :identity}]
+  (->> (:username usr)
+       (api/user-by-username)
+       (api/remove-api-token))
+  (resp-ok))
 
 ;; User handler
 
-(defmethod dispatch :initialize [_]
-  (fn [{:keys [params]}]
-    (if (api/admin-exists?)
-      (resp-error 403 "Admin already exists")
-      (let [user (merge (keywordize-keys params) {:type "user" :role "admin"})
-            response (api/create-user user)]
-        (if (some? response)
-          (resp-created (select-keys response [:id]))
-          (resp-error 400 "User already exist"))))))
-
-(defmethod dispatch :me [_]
-  (fn [{:keys [identity]}]
-    (-> identity :usr :username
-        (api/user-by-username)
-        (select-keys [:username :email :role :api-token])
-        (resp-ok))))
-
-(defmethod dispatch :users [_]
-  (fn [_]
-    (->> (api/users)
-         (resp-ok))))
-
-(defmethod dispatch :user [_]
-  (fn [{:keys [route-params]}]
-    (let [user (api/user (:id route-params))]
-      (if (some? user)
-        (resp-ok user)
-        (resp-error 404 "user doesn't exist")))))
-
-(defmethod dispatch :user-delete [_]
-  (fn [{:keys [route-params identity]}]
-    (let [user (get-in identity [:usr :username])]
-      (if (= (:_id (api/user-by-username user))
-             (:id route-params))
-        (resp-error 400 "Operation not allowed")
-        (let [user (api/user (:id route-params))]
-          (api/delete-user (:id route-params))
-          (api/delete-user-registries (:username user))
-          (resp-ok))))))
-
-(defmethod dispatch :user-create [_]
-  (fn [{:keys [params]}]
-    (let [payload (assoc (keywordize-keys params) :type "user")
-          response (api/create-user payload)]
+(defn initialize
+  [{{:keys [body]} :parameters}]
+  (if (api/admin-exists?)
+    (resp-error 403 "Admin already exists")
+    (let [user (merge body {:type "user" :role "admin"})
+          response (api/create-user user)]
       (if (some? response)
         (resp-created (select-keys response [:id]))
         (resp-error 400 "User already exist")))))
 
-(defmethod dispatch :user-update [_]
-  (fn [{:keys [route-params params]}]
-    (let [payload (keywordize-keys params)]
-      (api/update-user (:id route-params) payload)
-      (resp-ok))))
+(defn me
+  [{{:keys [usr]} :identity}]
+  (-> (:username usr)
+      (api/user-by-username)
+      (select-keys [:username :email :role :api-token])
+      (resp-ok)))
+
+(defn users
+  [_]
+  (->> (api/users)
+       (resp-ok)))
+
+(defn user
+  [{{:keys [path]} :parameters}]
+  (let [user (api/user (:id path))]
+    (if (some? user)
+      (resp-ok user)
+      (resp-error 404 "user doesn't exist"))))
+
+(defn user-delete
+  [{{:keys [path]} :parameters
+    {:keys [usr]}  :identity}]
+  (let [user (:username usr)]
+    (if (= (:_id (api/user-by-username user))
+           (:id path))
+      (resp-error 400 "Operation not allowed")
+      (let [user (api/user (:id path))]
+        (api/delete-user (:id path))
+        (api/delete-user-registries (:username user))
+        (resp-ok)))))
+
+(defn user-create
+  [{{:keys [body]} :parameters}]
+  (let [payload (assoc body :type "user")]
+    (validate-parameters! (> (count (:username payload)) 3) "Username must be at least 4 characters long")
+    (validate-parameters! (> (count (:password payload)) 3) "Password must be at least 4 characters long")
+    (let [response (api/create-user payload)]
+      (if (some? response)
+        (resp-created (select-keys response [:id]))
+        (resp-error 400 "User already exist")))))
+
+(defn user-update
+  [{{:keys [body path]} :parameters}]
+  (api/update-user (:id path) body)
+  (resp-ok))
 
 ;; Service handler
 
-(defmethod dispatch :services [_]
-  (fn [_]
-    (->> (api/services)
-         (resp-ok))))
+(defn services
+  [_]
+  (->> (api/services)
+       (resp-ok)))
 
-(defmethod dispatch :service [_]
-  (fn [{:keys [route-params]}]
-    (->> (api/service (:id route-params))
-         (resp-ok))))
+(defn service
+  [{{:keys [path]} :parameters}]
+  (->> (api/service (:id path))
+       (resp-ok)))
 
-(defmethod dispatch :service-networks [_]
-  (fn [{:keys [route-params]}]
-    (->> (api/service-networks (:id route-params))
-         (resp-ok))))
+(defn service-networks
+  [{{:keys [path]} :parameters}]
+  (->> (api/service-networks (:id path))
+       (resp-ok)))
 
-(defmethod dispatch :service-tasks [_]
-  (fn [{:keys [route-params]}]
-    (->> (api/service-tasks (:id route-params))
-         (resp-ok))))
+(defn service-tasks
+  [{{:keys [path]} :parameters}]
+  (->> (api/service-tasks (:id path))
+       (resp-ok)))
 
-(defmethod dispatch :service-logs [_]
-  (fn [{:keys [route-params query-params]}]
-    (->> (keywordize-keys query-params)
-         :since
-         (api/service-logs (:id route-params))
-         (resp-ok))))
+(defn service-logs
+  [{{:keys [path query]} :parameters}]
+  (->> (:since query)
+       (api/service-logs (:id path))
+       (resp-ok)))
 
-(defmethod dispatch :service-create [_]
-  (fn [{:keys [params identity]}]
-    (let [owner (get-in identity [:usr :username])
-          payload (keywordize-keys params)]
-      (->> (api/create-service owner payload)
-           (resp-created)))))
+(defn service-create
+  [{{:keys [body]} :parameters
+    {:keys [usr]}  :identity}]
+  (let [owner (:username usr)]
+    (->> (api/create-service owner body)
+         (resp-created))))
 
-(defmethod dispatch :service-update [_]
-  (fn [{:keys [params identity]}]
-    (let [owner (get-in identity [:usr :username])
-          payload (keywordize-keys params)]
-      (api/update-service owner payload)
-      (resp-ok))))
-
-(defmethod dispatch :service-redeploy [_]
-  (fn [{:keys [route-params identity]}]
-    (let [owner (get-in identity [:usr :username])]
-      (api/redeploy-service owner (:id route-params))
-      (resp-accepted))))
-
-(defmethod dispatch :service-rollback [_]
-  (fn [{:keys [route-params identity]}]
-    (let [owner (get-in identity [:usr :username])]
-      (api/rollback-service owner (:id route-params))
-      (resp-accepted))))
-
-(defmethod dispatch :service-delete [_]
-  (fn [{:keys [route-params]}]
-    (api/delete-service (:id route-params))
+(defn service-update
+  [{{:keys [body path]} :parameters
+    {:keys [usr]}       :identity}]
+  (let [owner (:username usr)]
+    (api/update-service owner (:id path) body)
     (resp-ok)))
 
-(defmethod dispatch :service-compose [_]
-  (fn [{:keys [route-params]}]
-    (let [response (api/service-compose (:id route-params))]
-      (if (some? response)
-        (resp-ok {:name (:name route-params)
-                  :spec {:compose response}})
-        (resp-error 400 "Failed to create compose file")))))
+(defn service-redeploy
+  [{{:keys [path]} :parameters
+    {:keys [usr]}  :identity}]
+  (let [owner (:username usr)]
+    (api/redeploy-service owner (:id path))
+    (resp-accepted)))
 
-(defmethod dispatch :labels-service [_]
-  (fn [_]
-    (resp-ok (api/labels-service))))
+(defn service-rollback
+  [{{:keys [path]} :parameters
+    {:keys [usr]}  :identity}]
+  (let [owner (:username usr)]
+    (api/rollback-service owner (:id path))
+    (resp-accepted)))
+
+(defn service-delete
+  [{{:keys [path]} :parameters}]
+  (api/delete-service (:id path))
+  (resp-ok))
+
+(defn service-compose
+  [{{:keys [path]} :parameters}]
+  (let [response (api/service-compose (:id path))]
+    (if (some? response)
+      (resp-ok {:name (:name path)
+                :spec {:compose response}})
+      (resp-error 400 "Failed to create compose file"))))
+
+(defn labels-service
+  [_]
+  (resp-ok (api/labels-service)))
 
 ;; Network handler
 
-(defmethod dispatch :networks [_]
-  (fn [_]
-    (->> (api/networks)
-         (resp-ok))))
+(defn networks
+  [_]
+  (->> (api/networks)
+       (resp-ok)))
 
-(defmethod dispatch :network [_]
-  (fn [{:keys [route-params]}]
-    (->> (api/network (:id route-params))
-         (resp-ok))))
+(defn network
+  [{{:keys [path]} :parameters}]
+  (->> (api/network (:id path))
+       (resp-ok)))
 
-(defmethod dispatch :network-services [_]
-  (fn [{:keys [route-params]}]
-    (->> (api/services-by-network (:id route-params))
-         (resp-ok))))
+(defn network-services
+  [{{:keys [path]} :parameters}]
+  (->> (api/services-by-network (:id path))
+       (resp-ok)))
 
-(defmethod dispatch :network-create [_]
-  (fn [{:keys [params]}]
-    (let [payload (keywordize-keys params)]
-      (->> (api/create-network payload)
-           (resp-created)))))
+(defn network-create
+  [{{:keys [body]} :parameters}]
+  (->> (api/create-network body)
+       (resp-created)))
 
-(defmethod dispatch :network-delete [_]
-  (fn [{:keys [route-params]}]
-    (api/delete-network (:id route-params))
-    (resp-ok)))
+(defn network-delete
+  [{{:keys [path]} :parameters}]
+  (api/delete-network (:id path))
+  (resp-ok))
 
 ;; Volume handler
 
-(defmethod dispatch :volumes [_]
-  (fn [_]
-    (->> (api/volumes)
-         (resp-ok))))
+(defn volumes
+  [_]
+  (->> (api/volumes)
+       (resp-ok)))
 
-(defmethod dispatch :volume [_]
-  (fn [{:keys [route-params]}]
-    (->> (api/volume (:name route-params))
-         (resp-ok))))
+(defn volume
+  [{{:keys [path]} :parameters}]
+  (->> (api/volume (:name path))
+       (resp-ok)))
 
-(defmethod dispatch :volume-services [_]
-  (fn [{:keys [route-params]}]
-    (->> (api/services-by-volume (:name route-params))
-         (resp-ok))))
+(defn volume-services
+  [{{:keys [path]} :parameters}]
+  (->> (api/services-by-volume (:name path))
+       (resp-ok)))
 
-(defmethod dispatch :volume-create [_]
-  (fn [{:keys [params]}]
-    (let [payload (keywordize-keys params)]
-      (->> (api/create-volume payload)
-           (resp-created)))))
+(defn volume-create
+  [{{:keys [body]} :parameters}]
+  (->> (api/create-volume body)
+       (resp-created)))
 
-(defmethod dispatch :volume-delete [_]
-  (fn [{:keys [route-params]}]
-    (api/delete-volume (:name route-params))
-    (resp-ok)))
+(defn volume-delete
+  [{{:keys [path]} :parameters}]
+  (api/delete-volume (:name path))
+  (resp-ok))
 
 ;; Secret handler
 
-(defmethod dispatch :secrets [_]
-  (fn [_]
-    (->> (api/secrets)
-         (resp-ok))))
+(defn secrets
+  [_]
+  (->> (api/secrets)
+       (resp-ok)))
 
-(defmethod dispatch :secret [_]
-  (fn [{:keys [route-params]}]
-    (->> (api/secret (:id route-params))
-         (resp-ok))))
+(defn secret
+  [{{:keys [path]} :parameters}]
+  (->> (api/secret (:id path))
+       (resp-ok)))
 
-(defmethod dispatch :secret-services [_]
-  (fn [{:keys [route-params]}]
-    (->> (api/services-by-secret (:id route-params))
-         (resp-ok))))
+(defn secret-services
+  [{{:keys [path]} :parameters}]
+  (->> (api/services-by-secret (:id path))
+       (resp-ok)))
 
-(defmethod dispatch :secret-create [_]
-  (fn [{:keys [params]}]
-    (let [payload (keywordize-keys params)]
-      (->> (api/create-secret payload)
-           (resp-created)))))
+(defn secret-create
+  [{{:keys [body]} :parameters}]
+  (->> (api/create-secret body)
+       (resp-created)))
 
-(defmethod dispatch :secret-delete [_]
-  (fn [{:keys [route-params]}]
-    (api/delete-secret (:id route-params))
-    (resp-ok)))
+(defn secret-delete
+  [{{:keys [path]} :parameters}]
+  (api/delete-secret (:id path))
+  (resp-ok))
 
-(defmethod dispatch :secret-update [_]
-  (fn [{:keys [route-params params]}]
-    (let [payload (keywordize-keys params)]
-      (api/update-secret (:id route-params) payload)
-      (resp-ok))))
+(defn secret-update
+  [{{:keys [path body]} :parameters}]
+  (api/update-secret (:id path) body)
+  (resp-ok))
 
 ;; Config handler
 
-(defmethod dispatch :configs [_]
-  (fn [_]
-    (->> (api/configs)
-         (resp-ok))))
+(defn configs
+  [_]
+  (->> (api/configs)
+       (resp-ok)))
 
-(defmethod dispatch :config [_]
-  (fn [{:keys [route-params]}]
-    (->> (api/config (:id route-params))
-         (resp-ok))))
+(defn config
+  [{{:keys [path]} :parameters}]
+  (->> (api/config (:id path))
+       (resp-ok)))
 
-(defmethod dispatch :config-services [_]
-  (fn [{:keys [route-params]}]
-    (->> (api/services-by-config (:id route-params))
-         (resp-ok))))
+(defn config-services
+  [{{:keys [path]} :parameters}]
+  (->> (api/services-by-config (:id path))
+       (resp-ok)))
 
-(defmethod dispatch :config-create [_]
-  (fn [{:keys [params]}]
-    (let [payload (keywordize-keys params)]
-      (->> (api/create-config payload)
-           (resp-created)))))
+(defn config-create
+  [{{:keys [body]} :parameters}]
+  (->> (api/create-config body)
+       (resp-created)))
 
-(defmethod dispatch :config-delete [_]
-  (fn [{:keys [route-params]}]
-    (api/delete-config (:id route-params))
-    (resp-ok)))
+(defn config-delete
+  [{{:keys [path]} :parameters}]
+  (api/delete-config (:id path))
+  (resp-ok))
 
 ;; Node handler
 
-(defmethod dispatch :nodes [_]
-  (fn [_]
-    (->> (api/nodes)
-         (resp-ok))))
+(defn nodes
+  [_]
+  (->> (api/nodes)
+       (resp-ok)))
 
-(defmethod dispatch :nodes-ts [_]
-  (fn [_]
-    (if (stats/influx-configured?)
-      (->> (stats/hosts-timeseries)
-           (resp-ok))
-      (resp-error 400 "Statistics disabled"))))
+(defn nodes-ts
+  [_]
+  (if (stats/influx-configured?)
+    (->> (stats/hosts-timeseries)
+         (resp-ok))
+    (resp-error 400 "Statistics disabled")))
 
-(defmethod dispatch :node [_]
-  (fn [{:keys [route-params]}]
-    (->> (api/node (:id route-params))
-         (resp-ok))))
+(defn node
+  [{{:keys [path]} :parameters}]
+  (->> (api/node (:id path))
+       (resp-ok)))
 
-(defmethod dispatch :node-update [_]
-  (fn [{:keys [route-params params]}]
-    (let [payload (keywordize-keys params)]
-      (api/update-node (:id route-params) payload)
-      (resp-ok))))
+(defn node-update
+  [{{:keys [path body]} :parameters}]
+  (api/update-node (:id path) body)
+  (resp-ok))
 
-(defmethod dispatch :node-tasks [_]
-  (fn [{:keys [route-params]}]
-    (->> (api/node-tasks (:id route-params))
-         (resp-ok))))
+(defn node-tasks
+  [{{:keys [path]} :parameters}]
+  (->> (api/node-tasks (:id path))
+       (resp-ok)))
 
 ;; Statistics
 
-(defmethod dispatch :stats [_]
-  (fn [_]
-    (if (stats/ready?)
-      (->> (stats/cluster)
-           (resp-ok))
-      (resp-error 400 "Statistics not ready"))))
+(defn stats
+  [_]
+  (if (stats/ready?)
+    (->> (stats/cluster)
+         (resp-ok))
+    (resp-error 400 "Statistics not ready")))
 
 ;; Placement handler
 
-(defmethod dispatch :placement [_]
-  (fn [_]
-    (->> (api/placement)
-         (resp-ok))))
+(defn placement
+  [_]
+  (->> (api/placement)
+       (resp-ok)))
 
 ;; Plugin handler
 
-(defmethod dispatch :plugin-network [_]
-  (fn [_]
-    (->> (api/plugins-by-type "Network")
-         (filter #(not (contains? #{"null" "host"} %)))
-         (resp-ok))))
+(defn plugin-network
+  [_]
+  (->> (api/plugins-by-type "Network")
+       (filter #(not (contains? #{"null" "host"} %)))
+       (resp-ok)))
 
-(defmethod dispatch :plugin-log [_]
-  (fn [_]
-    (->> (api/plugins-by-type "Log")
-         (resp-ok))))
+(defn plugin-log
+  [_]
+  (->> (api/plugins-by-type "Log")
+       (resp-ok)))
 
-(defmethod dispatch :plugin-volume [_]
-  (fn [_]
-    (->> (api/plugins-by-type "Volume")
-         (resp-ok))))
+(defn plugin-volume
+  [_]
+  (->> (api/plugins-by-type "Volume")
+       (resp-ok)))
 
 ;; Task handler
 
-(defmethod dispatch :tasks [_]
-  (fn [_]
-    (->> (api/tasks)
-         (resp-ok))))
+(defn tasks
+  [_]
+  (->> (api/tasks)
+       (resp-ok)))
 
-(defmethod dispatch :task [_]
-  (fn [{:keys [route-params]}]
-    (->> (api/task (:id route-params))
-         (resp-ok))))
+(defn task
+  [{{:keys [path]} :parameters}]
+  (->> (api/task (:id path))
+       (resp-ok)))
 
-(defmethod dispatch :task-ts [_]
-  (fn [{:keys [route-params]}]
-    (if (stats/influx-configured?)
-      (->> (stats/task-timeseries (:name route-params))
-           (resp-ok))
-      (resp-error 400 "Statistics disabled"))))
+(defn task-ts
+  [{{:keys [path]} :parameters}]
+  (if (stats/influx-configured?)
+    (->> (stats/task-timeseries (:name path))
+         (resp-ok))
+    (resp-error 400 "Statistics disabled")))
 
 ;; Registry handler
 
-(defmethod dispatch :registries [_]
-  (fn [{:keys [identity route-params]}]
-    (let [owner (get-in identity [:usr :username])
-          registry (keyword (:registryType route-params))]
-      (if (api/supported-registry-type? registry)
-        (->> (case registry
-               :v2 (api/registries-v2 owner)
-               :dockerhub (api/dockerhubs owner)
-               :ecr (api/registries-ecr owner)
-               :acr (api/registries-acr owner)
-               :gitlab (api/registries-gitlab owner))
-             (resp-ok))
-        (resp-error 400 (str "Unknown registry type [" registry "]"))))))
+(defn registries
+  [{{:keys [path]} :parameters
+    {:keys [usr]}  :identity}]
+  (let [owner (:username usr)
+        registry (keyword (:registryType path))]
+    (if (api/supported-registry-type? registry)
+      (->> (case registry
+             :v2 (api/registries-v2 owner)
+             :dockerhub (api/dockerhubs owner)
+             :ecr (api/registries-ecr owner)
+             :acr (api/registries-acr owner)
+             :gitlab (api/registries-gitlab owner))
+           (resp-ok))
+      (resp-error 400 (str "Unknown registry type [" registry "]")))))
 
-(defmethod dispatch :registry [_]
-  (fn [{:keys [route-params]}]
-    (let [id (:id route-params)
-          registry (keyword (:registryType route-params))]
-      (if (api/supported-registry-type? registry)
-        (->> (case registry
-               :v2 (api/registry-v2 id)
-               :dockerhub (api/dockerhub id)
-               :ecr (api/registry-ecr id)
-               :acr (api/registry-acr id)
-               :gitlab (api/registry-gitlab id))
-             (resp-ok))
-        (resp-error 400 (str "Unknown registry type [" registry "]"))))))
+(defn registry
+  [{{:keys [path]} :parameters}]
+  (let [id (:id path)
+        registry (keyword (:registryType path))]
+    (if (api/supported-registry-type? registry)
+      (->> (case registry
+             :v2 (api/registry-v2 id)
+             :dockerhub (api/dockerhub id)
+             :ecr (api/registry-ecr id)
+             :acr (api/registry-acr id)
+             :gitlab (api/registry-gitlab id))
+           (resp-ok))
+      (resp-error 400 (str "Unknown registry type [" registry "]")))))
 
-(defmethod dispatch :registry-delete [_]
-  (fn [{:keys [route-params]}]
-    (let [id (:id route-params)
-          registry (keyword (:registryType route-params))]
-      (if (api/supported-registry-type? registry)
-        (do (case registry
-              :v2 (api/delete-v2-registry id)
-              :dockerhub (api/delete-dockerhub id)
-              :ecr (api/delete-ecr-registry id)
-              :acr (api/delete-acr-registry id)
-              :gitlab (api/delete-gitlab-registry id))
-            (resp-ok))
-        (resp-error 400 (str "Unknown registry type [" registry "]"))))))
+(defn registry-delete
+  [{{:keys [path]} :parameters}]
+  (let [id (:id path)
+        registry (keyword (:registryType path))]
+    (if (api/supported-registry-type? registry)
+      (do (case registry
+            :v2 (api/delete-v2-registry id)
+            :dockerhub (api/delete-dockerhub id)
+            :ecr (api/delete-ecr-registry id)
+            :acr (api/delete-acr-registry id)
+            :gitlab (api/delete-gitlab-registry id))
+          (resp-ok))
+      (resp-error 400 (str "Unknown registry type [" registry "]")))))
 
-(defmethod dispatch :registry-repositories [_]
-  (fn [{:keys [route-params]}]
-    (let [id (:id route-params)
-          registry (keyword (:registryType route-params))]
-      (if (api/supported-registry-type? registry)
-        (->> (case registry
-               :v2 (api/registry-v2-repositories id)
-               :dockerhub (api/dockerhub-repositories id)
-               :ecr (api/registry-ecr-repositories id)
-               :acr (api/registry-acr-repositories id)
-               :gitlab (api/registry-gitlab-repositories id))
-             (resp-ok))
-        (resp-error 400 (str "Unknown registry type " registry))))))
+;; TODO: Return 404 when invalid ID
+(defn registry-repositories
+  [{{:keys [path]} :parameters}]
+  (let [id (:id path)
+        registry (keyword (:registryType path))]
+    (if (api/supported-registry-type? registry)
+      (->> (case registry
+             :v2 (api/registry-v2-repositories id)
+             :dockerhub (api/dockerhub-repositories id)
+             :ecr (api/registry-ecr-repositories id)
+             :acr (api/registry-acr-repositories id)
+             :gitlab (api/registry-gitlab-repositories id))
+           (resp-ok))
+      (resp-error 400 (str "Unknown registry type " registry)))))
 
 ;;; Registry CREATE handler
 
-(defmulti registry-create (fn [registry payload] registry))
+(defmulti registry-add (fn [registry payload] registry))
 
-(defmethod registry-create :v2
+(defmethod registry-add :v2
   [_ payload]
   (try
     (api/registry-v2-info payload)
@@ -512,7 +516,7 @@
     (catch Exception e
       (resp-error 400 (get-in (ex-data e) [:body :error])))))
 
-(defmethod registry-create :dockerhub
+(defmethod registry-add :dockerhub
   [_ payload]
   (let [dockeruser-token (:token (api/dockerhub-login payload))
         dockeruser-info (api/dockerhub-info payload)
@@ -522,7 +526,7 @@
       (resp-created (select-keys response [:id]))
       (resp-error 400 "Dockerhub account already linked"))))
 
-(defmethod registry-create :ecr
+(defmethod registry-add :ecr
   [_ payload]
   (try
     (let [url (:proxyEndpoint (api/registry-ecr-token payload))
@@ -533,7 +537,7 @@
     (catch Exception e
       (resp-error 400 (get-in (ex-data e) [:body :error])))))
 
-(defmethod registry-create :acr
+(defmethod registry-add :acr
   [_ payload]
   (try
     (let [url (api/acr-url payload)
@@ -546,7 +550,7 @@
     (catch Exception e
       (resp-error 400 (get-in (ex-data e) [:body :error])))))
 
-(defmethod registry-create :gitlab
+(defmethod registry-add :gitlab
   [_ payload]
   (try
     (api/registry-gitlab-info payload)
@@ -557,21 +561,22 @@
     (catch Exception e
       (resp-error 400 (get-in (ex-data e) [:body :error])))))
 
-(defmethod dispatch :registry-create [_]
-  (fn [{:keys [params identity route-params]}]
-    (let [owner (get-in identity [:usr :username])
-          registry (keyword (:registryType route-params))
-          payload (assoc (keywordize-keys params) :owner owner
-                                                  :type registry)]
-      (if (api/supported-registry-type? registry)
-        (registry-create registry payload)
-        (resp-error 400 (str "Unknown registry type [" registry "]"))))))
+(defn registry-create
+  [{{:keys [path body]} :parameters
+    {:keys [usr]}       :identity}]
+  (let [owner (:username usr)
+        registry (keyword (:registryType path))
+        payload (assoc body :owner owner
+                            :type registry)]
+    (if (api/supported-registry-type? registry)
+      (registry-add registry payload)
+      (resp-error 400 (str "Unknown registry type [" registry "]")))))
 
 ;;; Registry UPDATE handler
 
-(defmulti registry-update (fn [registry payload id] registry))
+(defmulti registry-edit (fn [registry payload id] registry))
 
-(defmethod registry-update :v2
+(defmethod registry-edit :v2
   [_ payload id]
   (try
     (api/registry-v2-info payload)
@@ -580,14 +585,14 @@
     (catch Exception e
       (resp-error 400 (get-in (ex-data e) [:body :error])))))
 
-(defmethod registry-update :dockerhub
+(defmethod registry-edit :dockerhub
   [_ payload id]
   (when (:password payload)
     (api/dockerhub-login payload))
   (api/update-dockerhub id payload)
   (resp-ok))
 
-(defmethod registry-update :ecr
+(defmethod registry-edit :ecr
   [_ payload id]
   (try
     (let [url (:proxyEndpoint (api/registry-ecr-token payload))
@@ -597,7 +602,7 @@
     (catch Exception e
       (resp-error 400 (get-in (ex-data e) [:body :error])))))
 
-(defmethod registry-update :acr
+(defmethod registry-edit :acr
   [_ payload id]
   (try
     (api/registry-acr-info payload)
@@ -606,7 +611,7 @@
     (catch Exception e
       (resp-error 400 (get-in (ex-data e) [:body :error])))))
 
-(defmethod registry-update :gitlab
+(defmethod registry-edit :gitlab
   [_ payload id]
   (try
     (api/registry-gitlab-info payload)
@@ -615,134 +620,134 @@
     (catch Exception e
       (resp-error 400 (get-in (ex-data e) [:body :error])))))
 
-(defmethod dispatch :registry-update [_]
-  (fn [{:keys [route-params params]}]
-    (let [payload (keywordize-keys params)
-          id (:id route-params)
-          registry (keyword (:registryType route-params))]
-      (if (api/supported-registry-type? registry)
-        (registry-update registry payload id)
-        (resp-error 400 (str "Unknown registry type [" registry "]"))))))
+(defn registry-update
+  [{{:keys [path body]} :parameters}]
+  (let [id (:id path)
+        registry (keyword (:registryType path))]
+    (if (api/supported-registry-type? registry)
+      (registry-edit registry body id)
+      (resp-error 400 (str "Unknown registry type [" registry "]")))))
 
 ;; Public dockerhub handler
 
-(defmethod dispatch :public-repositories [_]
-  (fn [{:keys [query-params]}]
-    (let [query-params (keywordize-keys query-params)
-          repository-query (:query query-params)
-          repository-page (:page query-params)]
-      (->> (api/public-repositories repository-query repository-page)
-           (resp-ok)))))
+(defn public-repositories
+  [{{:keys [query]} :parameters}]
+  (let [repository-query (:query query)
+        repository-page (:page query)]
+    (->> (api/public-repositories repository-query repository-page)
+         (resp-ok))))
 
 ;; Repository handler
 
-(defmethod dispatch :repository-tags [_]
-  (fn [{:keys [query-params identity]}]
-    (let [owner (get-in identity [:usr :username])
-          query-params (keywordize-keys query-params)
-          repository-name (:repository query-params)]
-      (if (nil? repository-name)
-        (resp-error 400 "Parameter name missing")
-        (->> (api/repository-tags owner repository-name)
-             (resp-ok))))))
+(defn repository-tags
+  [{{:keys [query]} :parameters
+    {:keys [usr]}   :identity}]
+  (let [owner (:username usr)
+        repository-name (:repository query)]
+    (if (nil? repository-name)
+      (resp-error 400 "Parameter name missing")
+      (->> (api/repository-tags owner repository-name)
+           (resp-ok)))))
 
-(defmethod dispatch :repository-ports [_]
-  (fn [{:keys [query-params identity]}]
-    (let [owner (get-in identity [:usr :username])
-          query-params (keywordize-keys query-params)
-          repository-name (:repository query-params)
-          repository-tag (:repositoryTag query-params)]
-      (if (or (nil? repository-name)
-              (nil? repository-tag))
-        (resp-error 400 "Parameter name or tag missing")
-        (->> (api/repository-ports owner repository-name repository-tag)
-             (resp-ok))))))
+(defn repository-ports
+  [{{:keys [query]} :parameters
+    {:keys [usr]}   :identity}]
+  (let [owner (:username usr)
+        repository-name (:repository query)
+        repository-tag (:repositoryTag query)]
+    (if (or (nil? repository-name)
+            (nil? repository-tag))
+      (resp-error 400 "Parameter name or tag missing")
+      (->> (api/repository-ports owner repository-name repository-tag)
+           (resp-ok)))))
 
 ;; Stack handler
 
-(defmethod dispatch :stacks [_]
-  (fn [_]
-    (->> (api/stacks)
-         (resp-ok))))
+(defn stacks
+  [_]
+  (->> (api/stacks)
+       (resp-ok)))
 
-(defmethod dispatch :stack-create [_]
-  (fn [{:keys [identity params]}]
-    (let [owner (get-in identity [:usr :username])
-          payload (keywordize-keys params)]
-      (if (some? (api/stack (:name payload)))
-        (resp-error 400 "Stack already exist.")
-        (do (api/create-stack owner payload)
-            (resp-created))))))
+(defn stack-create
+  [{{:keys [body]} :parameters
+    {:keys [usr]}  :identity}]
+  (let [owner (:username usr)]
+    (if (some? (api/stack (:name body)))
+      (resp-error 400 "Stack already exist.")
+      (do (api/create-stack owner body)
+          (resp-created)))))
 
-(defmethod dispatch :stack-update [_]
-  (fn [{:keys [identity route-params params]}]
-    (let [owner (get-in identity [:usr :username])
-          payload (keywordize-keys params)]
-      (if (not= (:name route-params)
-                (:name payload))
-        (resp-error 400 "Stack invalid.")
-        (do (api/update-stack owner payload)
-            (resp-ok))))))
+(defn stack-update
+  [{{:keys [body path]} :parameters
+    {:keys [usr]}       :identity}]
+  (let [owner (:username usr)]
+    (if (not= (:name path)
+              (:name body))
+      (resp-error 400 "Stack invalid.")
+      (do (api/update-stack owner body)
+          (resp-ok)))))
 
-(defmethod dispatch :stack-redeploy [_]
-  (fn [{:keys [route-params identity]}]
-    (let [owner (get-in identity [:usr :username])]
-      (api/redeploy-stack owner (:name route-params))
-      (resp-ok))))
+(defn stack-redeploy
+  [{{:keys [path]} :parameters
+    {:keys [usr]}  :identity}]
+  (let [owner (:username usr)]
+    (api/redeploy-stack owner (:name path))
+    (resp-ok)))
 
-(defmethod dispatch :stack-rollback [_]
-  (fn [{:keys [route-params identity]}]
-    (let [owner (get-in identity [:usr :username])]
-      (api/rollback-stack owner (:name route-params))
-      (resp-ok))))
+(defn stack-rollback
+  [{{:keys [path]} :parameters
+    {:keys [usr]}  :identity}]
+  (let [owner (:username usr)]
+    (api/rollback-stack owner (:name path))
+    (resp-ok)))
 
-(defmethod dispatch :stack-delete [_]
-  (fn [{:keys [route-params]}]
-    (let [{:keys [result]} (api/delete-stack (:name route-params))]
-      (if (nil? (api/stack (:name route-params)))
-        (resp-ok)
-        (resp-error 400 result)))))
+(defn stack-delete
+  [{{:keys [path]} :parameters}]
+  (let [{:keys [result]} (api/delete-stack (:name path))]
+    (if (nil? (api/stack (:name path)))
+      (resp-ok)
+      (resp-error 400 result))))
 
-(defmethod dispatch :stack-file [_]
-  (fn [{:keys [route-params]}]
-    (let [response (api/stackfile (:name route-params))]
-      (if (some? response)
-        (resp-ok response)
-        (resp-error 400 "Stackfile not found")))))
+(defn stack-file
+  [{{:keys [path]} :parameters}]
+  (let [response (api/stackfile (:name path))]
+    (if (some? response)
+      (resp-ok response)
+      (resp-error 400 "Stackfile not found"))))
 
-(defmethod dispatch :stack-compose [_]
-  (fn [{:keys [route-params]}]
-    (let [response (api/stack-compose (:name route-params))]
-      (if (some? response)
-        (resp-ok {:name (:name route-params)
-                  :spec {:compose response}})
-        (resp-error 400 "Failed to create compose file")))))
+(defn stack-compose
+  [{{:keys [path]} :parameters}]
+  (let [response (api/stack-compose (:name path))]
+    (if (some? response)
+      (resp-ok {:name (:name path)
+                :spec {:compose response}})
+      (resp-error 400 "Failed to create compose file"))))
 
-(defmethod dispatch :stack-services [_]
-  (fn [{:keys [route-params]}]
-    (-> (api/stack-services (:name route-params))
-        (resp-ok))))
+(defn stack-services
+  [{{:keys [path]} :parameters}]
+  (-> (api/stack-services (:name path))
+      (resp-ok)))
 
-(defmethod dispatch :stack-networks [_]
-  (fn [{:keys [route-params]}]
-    (-> (api/stack-services (:name route-params))
-        (api/resources-by-services :networks api/networks)
-        (resp-ok))))
+(defn stack-networks
+  [{{:keys [path]} :parameters}]
+  (-> (api/stack-services (:name path))
+      (api/resources-by-services :networks api/networks)
+      (resp-ok)))
 
-(defmethod dispatch :stack-volumes [_]
-  (fn [{:keys [route-params]}]
-    (-> (api/stack-services (:name route-params))
-        (api/volumes-by-services)
-        (resp-ok))))
+(defn stack-volumes
+  [{{:keys [path]} :parameters}]
+  (-> (api/stack-services (:name path))
+      (api/volumes-by-services)
+      (resp-ok)))
 
-(defmethod dispatch :stack-configs [_]
-  (fn [{:keys [route-params]}]
-    (-> (api/stack-services (:name route-params))
-        (api/resources-by-services :configs api/configs)
-        (resp-ok))))
+(defn stack-configs
+  [{{:keys [path]} :parameters}]
+  (-> (api/stack-services (:name path))
+      (api/resources-by-services :configs api/configs)
+      (resp-ok)))
 
-(defmethod dispatch :stack-secrets [_]
-  (fn [{:keys [route-params]}]
-    (-> (api/stack-services (:name route-params))
-        (api/resources-by-services :secrets api/secrets)
-        (resp-ok))))
+(defn stack-secrets
+  [{{:keys [path]} :parameters}]
+  (-> (api/stack-services (:name path))
+      (api/resources-by-services :secrets api/secrets)
+      (resp-ok)))

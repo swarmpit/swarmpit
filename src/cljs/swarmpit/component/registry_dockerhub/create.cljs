@@ -47,7 +47,7 @@
 (defn add-user-handler
   []
   (ajax/post
-    (routes/path-for-backend :registry-create {:registryType :dockerhub})
+    (routes/path-for-backend :registries {:registryType :dockerhub})
     {:params     (state/get-value state/form-value-cursor)
      :state      [:processing?]
      :on-success (fn [{:keys [response origin?]}]

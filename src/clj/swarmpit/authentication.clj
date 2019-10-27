@@ -22,7 +22,7 @@
      :token-name "Bearer"
      :on-error   (fn [_ ex] (throw ex))}))
 
-(defn wrap-authentication
+(defn authentication-middleware
   [handler]
   (fn [request]
     (let [secret (:secret (cc/get-secret))

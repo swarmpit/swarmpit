@@ -15,7 +15,6 @@
                (get-in params [:origin :params :name]))
         message (or (get-in params [:error :error])
                     "What you are looking for, I do not have.")]
-    (print params)
     (comp/mui
       (html
         [:div.Swarmpit-form
