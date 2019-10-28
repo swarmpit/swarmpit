@@ -18,7 +18,8 @@
 
 (defn- admin-access
   [{:keys [identity]}]
-  (let [user (get-in identity [:usr])]
+  (let [username (get-in identity [:usr :username])
+        user (cc/user-by-username username)]
     (if (admin? user)
       true
       (error {:code    403

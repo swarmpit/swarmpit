@@ -7,12 +7,13 @@
 
 (defn- authfn
   [{:keys [iss jti usr] :as identity}]
-  (if (= "swarmpit-api" iss)
-    (when-not (= jti (-> (:username usr)
-                         (cc/user-by-username)
-                         :api-token :jti))
-      (throw (ex-info "API token invalid" {:cause :other}))))
-  identity)
+  (let [user (cc/user-by-username (:username usr))]
+    (if user
+      (if (= "swarmpit-api" iss)
+        (when-not (= jti (-> user :api-token :jti))
+          (throw (ex-info "Token discarded" {:cause :discarded}))))
+      (throw (ex-info "Token rejected" {:cause :rejected})))
+    identity))
 
 (defn- authentication-backend
   [secret]
@@ -33,7 +34,8 @@
           (let [error (case (:cause (ex-data ex))
                         :exp "Token expired"
                         :signature "Token invalid"
-                        :other ex
+                        :discarded "Token discarded" ;; User API token removed
+                        :rejected "Token rejected" ;; User does not exist
                         (Throwable->map ex))]
             (-> (resp-unauthorized error)
                 (assoc :headers {"X-Backend-Server" "swarmpit"}))))))))
