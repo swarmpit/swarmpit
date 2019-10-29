@@ -214,10 +214,10 @@ a {
 }
 
 .Swarmpit-dashbord-section-chips {
-    display: inline-flex;
     margin-left: auto;
     justify-content: center;
     flex-direction: column;
+    width: 120px;
 }
 
 /** Appbar **/
