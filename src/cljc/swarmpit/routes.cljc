@@ -675,6 +675,16 @@
                  :responses {202 {:body        nil
                                   :description "Success"}}
                  #?@(:clj [:handler handler/service-rollback]))}]
+    ["/services/:id/stop"
+     {:name    :service-stop
+      :swagger {:tags ["service"]}
+      :post    (array-map
+                 :summary "Stop service"
+                 :parameters {:header {:authorization string?}
+                              :path   {:id string?}}
+                 :responses {200 {:body        nil
+                                  :description "Success"}}
+                 #?@(:clj [:handler handler/service-stop]))}]
     ;; Volume
     ["/volumes"
      {:name    :volumes

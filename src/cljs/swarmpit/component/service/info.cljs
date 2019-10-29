@@ -89,6 +89,17 @@
                    (message/error
                      (str "Service rollback failed. " (:error response))))}))
 
+(defn- stop-service-handler
+  [service-id]
+  (ajax/post
+    (routes/path-for-backend :service-stop {:id service-id})
+    {:on-success (fn [_]
+                   (message/info
+                     (str "Service " service-id " is stopping.")))
+     :on-error   (fn [{:keys [response]}]
+                   (message/error
+                     (str "Service stopping failed. " (:error response))))}))
+
 (defn form-tasks [service tasks]
   (comp/card
     {:className "Swarmpit-card"}
@@ -126,6 +137,12 @@
     :icon     (comp/svg icon/rollback-path)
     :more     true
     :name     "Rollback service"}
+   {:onClick  #(stop-service-handler service-id)
+    :disabled (or (= "global" (:mode service))
+                  (= "not running" (:state service)))
+    :icon     (icon/stop {})
+    :more     true
+    :name     "Stop service"}
    {:onClick #(state/update-value [:open] true dialog/dialog-cursor)
     :icon    (comp/svg icon/trash-path)
     :name    "Delete service"}])

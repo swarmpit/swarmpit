@@ -154,6 +154,7 @@
 (def verified-icon (create-factory js/MaterialUIIcons.VerifiedUser))
 (def image-icon (create-factory js/MaterialUIIcons.Image))
 (def dashboard-icon (create-factory js/MaterialUIIcons.Dashboard))
+(def stop-icon (create-factory js/MaterialUIIcons.Stop))
 
 (def create-mui-theme js/MaterialUI.createMuiTheme)
 (def with-mobile-dialog js/MaterialUI.withMobileDialog)

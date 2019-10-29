@@ -229,6 +229,13 @@
     (api/rollback-service owner (:id path))
     (resp-accepted)))
 
+(defn service-stop
+  [{{:keys [path]} :parameters
+    {:keys [usr]}  :identity}]
+  (let [owner (:username usr)
+        result (api/stop-service owner (:id path))]
+    (resp-ok result)))
+
 (defn service-delete
   [{{:keys [path]} :parameters}]
   (api/delete-service (:id path))

@@ -969,6 +969,19 @@
       (-> service-origin
           :PreviousSpec))))
 
+(defn stop-service
+  [owner service-id]
+  (let [service-origin (dc/service service-id)
+        service (dmi/->service service-origin)]
+    (when (= "replicated" (:mode service))
+      (dc/update-service
+        (service-auth owner service)
+        service-id
+        (get-in service-origin [:Version :Index])
+        (-> service-origin
+            :Spec
+            (assoc-in [:Mode :Replicated :Replicas] 0))))))
+
 ;;; Node API
 
 (defn node-stats

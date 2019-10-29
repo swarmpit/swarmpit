@@ -172,3 +172,7 @@
 (defn dashboard
   [props]
   (f/dashboard-icon (clj->js props)))
+
+(defn stop
+  [props]
+  (f/stop-icon (clj->js props)))
