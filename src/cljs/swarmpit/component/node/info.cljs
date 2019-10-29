@@ -134,7 +134,8 @@
       {:className "Swarmpit-card"}
       (comp/card-header
         {:className "Swarmpit-table-card-header"
-         :title     (comp/typography {:variant "h6"} "Tasks")})
+         :title     (comp/typography {:variant "h6"} "Tasks")
+         :subheader (str "Running: " (count tasks))})
       (if (empty? tasks)
         (comp/card-content
           {}
