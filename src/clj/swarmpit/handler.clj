@@ -736,6 +736,11 @@
       (resp-ok response)
       (resp-error 400 "Stackfile not found"))))
 
+(defn stack-file-delete
+  [{{:keys [path]} :parameters}]
+  (api/delete-stackfile (:name path))
+  (resp-ok))
+
 (defn stack-compose
   [{{:keys [path]} :parameters}]
   (let [response (api/stack-compose (:name path))]

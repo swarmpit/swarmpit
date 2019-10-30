@@ -8,6 +8,7 @@
             [swarmpit.component.mixin :as mixin]
             [swarmpit.component.message :as message]
             [swarmpit.component.progress :as progress]
+            [swarmpit.component.dialog :as dialog]
             [swarmpit.ajax :as ajax]
             [swarmpit.routes :as routes]
             [swarmpit.url :refer [dispatch!]]
@@ -48,6 +49,19 @@
                    (message/error
                      (str "Stack deploy failed. " (:error response))))}))
 
+(defn- delete-stackfile-handler
+  [name]
+  (ajax/delete
+    (routes/path-for-backend :stack-file {:name name})
+    {:on-success (fn [_]
+                   (dispatch!
+                     (routes/path-for-frontend :stack-list))
+                   (message/info
+                     (str "Stackfile " name " has been removed.")))
+     :on-error   (fn [{:keys [response]}]
+                   (message/error
+                     (str "Stackfile removal failed. " (:error response))))}))
+
 (defn stackfile-handler
   [name]
   (ajax/get
@@ -81,6 +95,10 @@
   (comp/mui
     (html
       [:div.Swarmpit-form
+       (dialog/confirm-dialog
+         #(delete-stackfile-handler name)
+         "Delete stackfile?"
+         "Delete")
        [:div.Swarmpit-form-context
         [:div.Swarmpit-form-paper
          (common/edit-title (str "Activating " name))
@@ -110,7 +128,12 @@
                     (composite/progress-button
                       "Deploy"
                       #(deploy-stack-handler name)
-                      processing?)]))))
+                      processing?)
+                    (comp/button
+                      {:color    "secondary"
+                       :disabled processing?
+                       :onClick  #(state/update-value [:open] true dialog/dialog-cursor)}
+                      "Delete")]))))
            (comp/grid
              {:item true
               :xs   12

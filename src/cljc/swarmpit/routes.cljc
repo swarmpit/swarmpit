@@ -172,12 +172,19 @@
      {:name    :stack-file
       :swagger {:tags ["stack"]}
       :get     (array-map
-                 :summary "Stack info"
+                 :summary "Stack file"
                  :parameters {:header {:authorization string?}
                               :path   {:name string?}}
                  :responses {200 {:body        spec/stack-file
                                   :description "Success"}}
-                 #?@(:clj [:handler handler/stack-file]))}]
+                 #?@(:clj [:handler handler/stack-file]))
+      :delete  (array-map
+                 :summary "Delete stack file"
+                 :parameters {:header {:authorization string?}
+                              :path   {:name string?}}
+                 :responses {200 {:body        nil
+                                  :description "Success"}}
+                 #?@(:clj [:handler handler/stack-file-delete]))}]
     ["/stacks/:name/compose"
      {:name    :stack-compose
       :swagger {:tags ["stack"]}
