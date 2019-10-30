@@ -3,6 +3,7 @@
             [material.components :as comp]
             [material.component.list.basic :as list]
             [material.component.list.util :as list-util]
+            [material.component.label :as label]
             [swarmpit.component.state :as state]
             [swarmpit.component.mixin :as mixin]
             [swarmpit.component.progress :as progress]
@@ -14,6 +15,11 @@
             [swarmpit.component.common :as common]))
 
 (enable-console-print!)
+
+(defn- render-status [{:keys [state]}]
+  (case state
+    "deployed" (label/green state)
+    "inactive" (label/info state)))
 
 (def render-metadata
   {:table {:summary [{:name      "Name"
@@ -27,17 +33,24 @@
                      {:name      "Configs"
                       :render-fn (fn [item] (get-in item [:stackStats :configs]))}
                      {:name      "Secrets"
-                      :render-fn (fn [item] (get-in item [:stackStats :secrets]))}]}
-   :list  {:primary (fn [item] (:stackName item))}})
+                      :render-fn (fn [item] (get-in item [:stackStats :secrets]))}
+                     {:name      ""
+                      :status    true
+                      :render-fn (fn [item] (render-status item))}]}
+   :list  {:primary   (fn [item] (:stackName item))
+           :status-fn (fn [item] (render-status item))}})
 
 (defn onclick-handler
   [item]
-  (routes/path-for-frontend :stack-info {:name (:stackName item)}))
+  (case (:state item)
+    "deployed" (routes/path-for-frontend :stack-info {:name (:stackName item)})
+    "inactive" (routes/path-for-frontend :stack-activate {:name (:stackName item)})))
 
 (defn- format-response
   [response]
   (map #(hash-map
           :stackName (:stackName %)
+          :state (:state %)
           :stackFile (:stackFile %)
           :stackStats {:services (count (:services %))
                        :networks (count (:networks %))

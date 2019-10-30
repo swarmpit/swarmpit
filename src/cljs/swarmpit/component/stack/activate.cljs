@@ -1,4 +1,4 @@
-(ns swarmpit.component.stack.edit
+(ns swarmpit.component.stack.activate
   (:require [material.icon :as icon]
             [material.components :as comp]
             [material.component.form :as form]
@@ -8,16 +8,12 @@
             [swarmpit.component.mixin :as mixin]
             [swarmpit.component.message :as message]
             [swarmpit.component.progress :as progress]
-            [swarmpit.component.stack.compose :as compose]
             [swarmpit.ajax :as ajax]
             [swarmpit.routes :as routes]
             [swarmpit.url :refer [dispatch!]]
             [sablono.core :refer-macros [html]]
             [rum.core :as rum]
-            [clojure.set :as set]
             [swarmpit.component.common :as common]))
-
-(enable-console-print!)
 
 (def editor-id "compose")
 
@@ -28,15 +24,15 @@
     {:id              editor-id
      :fullWidth       true
      :className       "Swarmpit-codemirror"
-     :name            "data"
-     :key             "data"
+     :name            "config-view"
+     :key             "config-view"
      :multiline       true
      :disabled        true
      :required        true
      :InputLabelProps {:shrink true}
      :value           value}))
 
-(defn- update-stack-handler
+(defn- deploy-stack-handler
   [name]
   (ajax/post
     (routes/path-for-backend :stack {:name name})
@@ -47,21 +43,23 @@
                      (dispatch!
                        (routes/path-for-frontend :stack-info {:name name})))
                    (message/info
-                     (str "Stack " name " has been updated.")))
+                     (str "Stack " name " has been deployed.")))
      :on-error   (fn [{:keys [response]}]
                    (message/error
-                     (str "Stack update failed. " (:error response))))}))
+                     (str "Stack deploy failed. " (:error response))))}))
 
-(defn- stackfile-handler
-  [name handler]
+(defn stackfile-handler
+  [name]
   (ajax/get
     (routes/path-for-backend :stack-file {:name name})
     {:state      [:loading?]
      :on-success (fn [{:keys [response]}]
-                   (state/set-value
-                     (if (= :stack-previous handler)
-                       (set/rename-keys response {:previousSpec :spec}) response) state/form-value-cursor)
-                   (state/update-value [:previous?] (:previousSpec response) state/form-state-cursor))}))
+                   (state/update-value [:spec] (:spec response) state/form-value-cursor))}))
+
+(defn- init-form-value
+  [name]
+  (state/set-value {:name name
+                    :spec {:compose ""}} state/form-value-cursor))
 
 (def mixin-init-editor
   {:did-mount
@@ -70,34 +68,22 @@
        (.on editor "change" (fn [cm] (state/update-value [:spec :compose] (-> cm .getValue) state/form-value-cursor))))
      state)})
 
-(defn- init-form-state
-  []
-  (state/set-value {:valid?      false
-                    :previous?   false
-                    :loading?    true
-                    :processing? false} state/form-state-cursor))
-
-(defn- init-form-value
-  [name]
-  (state/set-value {:name name
-                    :spec {:compose ""}} state/form-value-cursor))
-
 (def mixin-init-form
   (mixin/init-form
-    (fn [{{:keys [name]} :params :keys [handler]}]
-      (init-form-state)
+    (fn [{{:keys [name]} :params}]
       (init-form-value name)
-      (stackfile-handler name handler))))
+      (stackfile-handler name))))
 
-(rum/defc form-edit < mixin-init-editor [{:keys [name spec]}
-                                         select
-                                         {:keys [processing? valid? previous?]}]
+(rum/defc form-edit < rum/reactive
+                      mixin-init-editor [{:keys [name spec]}
+                                         {:keys [processing?]}]
+  (print (:compose spec))
   (comp/mui
     (html
       [:div.Swarmpit-form
        [:div.Swarmpit-form-context
         [:div.Swarmpit-form-paper
-         (common/edit-title (str "Editing " name))
+         (common/edit-title (str "Activating " name))
          (comp/grid
            {:container true
             :className "Swarmpit-form-main-grid"
@@ -115,10 +101,6 @@
                (comp/grid
                  {:item true
                   :xs   12}
-                 (compose/form-select name select true previous?))
-               (comp/grid
-                 {:item true
-                  :xs   12}
                  (form-editor (:compose spec)))
                (comp/grid
                  {:item true
@@ -127,7 +109,7 @@
                    [:div.Swarmpit-form-buttons
                     (composite/progress-button
                       "Deploy"
-                      #(update-stack-handler name)
+                      #(deploy-stack-handler name)
                       processing?)]))))
            (comp/grid
              {:item true
@@ -138,18 +120,10 @@
               :xl   4}
              (form/open-in-new "Learn more about compose" doc-compose-link)))]]])))
 
-(rum/defc form-last < rum/reactive
-                      mixin-init-form [_]
+(rum/defc form < rum/reactive
+                 mixin-init-form [_]
   (let [state (state/react state/form-state-cursor)
         stackfile (state/react state/form-value-cursor)]
     (progress/form
       (:loading? state)
-      (form-edit stackfile :stack-last state))))
-
-(rum/defc form-previous < rum/reactive
-                          mixin-init-form [_]
-  (let [state (state/react state/form-state-cursor)
-        stackfile (state/react state/form-value-cursor)]
-    (progress/form
-      (:loading? state)
-      (form-edit stackfile :stack-previous state))))
+      (form-edit stackfile state))))

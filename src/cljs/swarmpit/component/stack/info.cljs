@@ -87,6 +87,19 @@
                    (message/error
                      (str "Stack removing failed. " (:error response))))}))
 
+(defn- deactivate-stack-handler
+  [stack-name]
+  (ajax/post
+    (routes/path-for-backend :stack-deactivate {:name stack-name})
+    {:on-success (fn [_]
+                   (dispatch!
+                     (routes/path-for-frontend :stack-list))
+                   (message/info
+                     (str "Stack " stack-name " has been deactivated.")))
+     :on-error   (fn [{:keys [response]}]
+                   (message/error
+                     (str "Stack deactivation failed. " (:error response))))}))
+
 (defn- redeploy-stack-handler
   [stack-name]
   (message/info
@@ -128,6 +141,11 @@
     :more     true
     :icon     (comp/svg icon/rollback-path)
     :name     "Rollback stack"}
+   {:onClick  #(deactivate-stack-handler stack-name)
+    :disabled (not (some? stackfile))
+    :more     true
+    :icon     (icon/stop {})
+    :name     "Deactivate stack"}
    {:onClick #(state/update-value [:open] true dialog/dialog-cursor)
     :icon    (comp/svg icon/trash-path)
     :name    "Delete stack"}])
