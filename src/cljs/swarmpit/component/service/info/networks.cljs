@@ -9,7 +9,7 @@
 
 (enable-console-print!)
 
-(rum/defc form < rum/static [networks service-id]
+(rum/defc form < rum/static [networks service-id immutable?]
   (comp/card
     {:className "Swarmpit-card"}
     (comp/card-header
@@ -17,6 +17,7 @@
        :title     (comp/typography {:variant "h6"} "Networks")
        :action    (comp/icon-button
                     {:aria-label "Edit"
+                     :disabled   immutable?
                      :href       (routes/path-for-frontend
                                    :service-edit
                                    {:id service-id}

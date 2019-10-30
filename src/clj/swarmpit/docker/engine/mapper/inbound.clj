@@ -24,6 +24,7 @@
 
 (def stack-label :com.docker.stack.namespace)
 (def autoredeploy-label :swarmpit.service.deployment.autoredeploy)
+(def immutable-label :swarmpit.service.immutable)
 (def agent-label :swarmpit.agent)
 
 (defn ->image-ports
@@ -320,6 +321,11 @@
   (when (contains? service-labels agent-label)
     true))
 
+(defn ->service-immutable
+  [service-labels]
+  (when (contains? service-labels immutable-label)
+    true))
+
 (defn ->service-healthcheck
   [service-healthcheck]
   (when service-healthcheck
@@ -370,6 +376,7 @@
        :mode service-mode
        :stack (-> service-labels stack-label)
        :agent (->service-agent service-labels)
+       :immutable (->service-immutable service-labels)
        :replicas replicas
        :state (if (= service-mode "replicated")
                 (->service-state replicas-running replicas)

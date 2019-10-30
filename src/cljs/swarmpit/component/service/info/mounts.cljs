@@ -57,7 +57,7 @@
       volume
       nil)))
 
-(rum/defc form < rum/static [mounts service-id]
+(rum/defc form < rum/static [mounts service-id immutable?]
   (let [bind (filter #(= "bind" (:type %)) mounts)
         named-volume (filter #(and (= "volume" (:type %)) (some? (:host %))) mounts)
         anonymous-volume (filter #(and (= "volume" (:type %)) (nil? (:host %))) mounts)]
@@ -68,6 +68,7 @@
          :title     (comp/typography {:variant "h6"} "Mounts")
          :action    (comp/icon-button
                       {:aria-label "Edit"
+                       :disabled   immutable?
                        :href       (routes/path-for-frontend
                                      :service-edit
                                      {:id service-id}

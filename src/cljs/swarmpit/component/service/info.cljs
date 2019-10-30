@@ -121,9 +121,10 @@
 
 (defn form-actions
   [service service-id]
-  [{:onClick #(dispatch! (routes/path-for-frontend :service-edit {:id service-id}))
-    :icon    (comp/svg icon/edit-path)
-    :name    "Edit service"}
+  [{:onClick  #(dispatch! (routes/path-for-frontend :service-edit {:id service-id}))
+    :icon     (comp/svg icon/edit-path)
+    :disabled (true? (:immutable service))
+    :name     "Edit service"}
    {:onClick #(dispatch! (routes/path-for-frontend :stack-create nil {:from service-id}))
     :icon    (comp/svg icon/stacks-path)
     :more    true
@@ -181,71 +182,71 @@
      :xs   12}
     (form-tasks service tasks)))
 
-(defn form-networks-grid [networks service-id]
+(defn form-networks-grid [networks service-id immutable?]
   (comp/grid
     {:item true
      :xs   12}
-    (networks/form networks service-id)))
+    (networks/form networks service-id immutable?)))
 
-(defn form-ports-grid [ports service-id]
+(defn form-ports-grid [ports service-id immutable?]
   (comp/grid
     {:item true
      :xs   12}
-    (ports/form ports service-id)))
+    (ports/form ports service-id immutable?)))
 
-(defn form-mounts-grid [mounts service-id]
+(defn form-mounts-grid [mounts service-id immutable?]
   (comp/grid
     {:item true
      :xs   12}
-    (mounts/form mounts service-id)))
+    (mounts/form mounts service-id immutable?)))
 
-(defn form-secrets-grid [secrets service-id]
+(defn form-secrets-grid [secrets service-id immutable?]
   (comp/grid
     {:item true
      :xs   12}
-    (secrets/form secrets service-id)))
+    (secrets/form secrets service-id immutable?)))
 
-(defn form-configs-grid [configs service-id]
+(defn form-configs-grid [configs service-id immutable?]
   (comp/grid
     {:item true
      :xs   12}
-    (configs/form configs service-id)))
+    (configs/form configs service-id immutable?)))
 
-(defn form-hosts-grid [hosts service-id]
+(defn form-hosts-grid [hosts service-id immutable?]
   (comp/grid
     {:item true
      :xs   12}
-    (hosts/form hosts service-id)))
+    (hosts/form hosts service-id immutable?)))
 
-(defn form-variables-grid [variables service-id]
+(defn form-variables-grid [variables service-id immutable?]
   (comp/grid
     {:item true
      :xs   12}
-    (variables/form variables service-id)))
+    (variables/form variables service-id immutable?)))
 
-(defn form-labels-grid [labels service-id]
+(defn form-labels-grid [labels service-id immutable?]
   (comp/grid
     {:item true
      :xs   12}
-    (labels/form labels service-id)))
+    (labels/form labels service-id immutable?)))
 
-(defn form-logdriver-grid [logdriver service-id]
+(defn form-logdriver-grid [logdriver service-id immutable?]
   (comp/grid
     {:item true
      :xs   12}
-    (logdriver/form logdriver service-id)))
+    (logdriver/form logdriver service-id immutable?)))
 
-(defn form-resources-grid [resources service-id]
+(defn form-resources-grid [resources service-id immutable?]
   (comp/grid
     {:item true
      :xs   12}
-    (resources/form resources service-id)))
+    (resources/form resources service-id immutable?)))
 
-(defn form-deployment-grid [deployment service-id]
+(defn form-deployment-grid [deployment service-id immutable?]
   (comp/grid
     {:item true
      :xs   12}
-    (deployment/form deployment service-id)))
+    (deployment/form deployment service-id immutable?)))
 
 (rum/defc form-info < rum/static [{:keys [service networks tasks]}]
   (let [ports (:ports service)
@@ -258,7 +259,8 @@
         logdriver (:logdriver service)
         resources (:resources service)
         deployment (:deployment service)
-        id (:id service)]
+        id (:id service)
+        immutable? (:immutable service)]
     (comp/mui
       (html
         [:div.Swarmpit-form
@@ -281,14 +283,14 @@
                   {:container true
                    :spacing   16}
                   (form-settings-grid service id tasks)
-                  (form-secrets-grid secrets id)
-                  (form-configs-grid configs id)
-                  (form-hosts-grid hosts id)
-                  (form-variables-grid variables id)
-                  (form-labels-grid labels id)
-                  (form-logdriver-grid logdriver id)
-                  (form-resources-grid resources id)
-                  (form-deployment-grid deployment id)))
+                  (form-secrets-grid secrets id immutable?)
+                  (form-configs-grid configs id immutable?)
+                  (form-hosts-grid hosts id immutable?)
+                  (form-variables-grid variables id immutable?)
+                  (form-labels-grid labels id immutable?)
+                  (form-logdriver-grid logdriver id immutable?)
+                  (form-resources-grid resources id immutable?)
+                  (form-deployment-grid deployment id immutable?)))
               (comp/grid
                 {:item true
                  :sm   6
@@ -297,9 +299,9 @@
                   {:container true
                    :spacing   16}
                   (form-tasks-grid service tasks)
-                  (form-networks-grid networks id)
-                  (form-ports-grid ports id)
-                  (form-mounts-grid mounts id)))))
+                  (form-networks-grid networks id immutable?)
+                  (form-ports-grid ports id immutable?)
+                  (form-mounts-grid mounts id immutable?)))))
           (comp/hidden
             {:smUp           true
              :implementation "js"}
@@ -308,17 +310,17 @@
                :spacing   16}
               (form-settings-grid service id tasks)
               (form-tasks-grid service tasks)
-              (form-networks-grid networks id)
-              (form-ports-grid ports id)
-              (form-mounts-grid mounts id)
-              (form-secrets-grid secrets id)
-              (form-configs-grid configs id)
-              (form-hosts-grid hosts id)
-              (form-variables-grid variables id)
-              (form-labels-grid labels id)
-              (form-logdriver-grid logdriver id)
-              (form-resources-grid resources id)
-              (form-deployment-grid deployment id)))]]))))
+              (form-networks-grid networks id immutable?)
+              (form-ports-grid ports id immutable?)
+              (form-mounts-grid mounts id immutable?)
+              (form-secrets-grid secrets id immutable?)
+              (form-configs-grid configs id immutable?)
+              (form-hosts-grid hosts id immutable?)
+              (form-variables-grid variables id immutable?)
+              (form-labels-grid labels id immutable?)
+              (form-logdriver-grid logdriver id immutable?)
+              (form-resources-grid resources id immutable?)
+              (form-deployment-grid deployment id immutable?)))]]))))
 
 (rum/defc form < rum/reactive
                  mixin-init-form

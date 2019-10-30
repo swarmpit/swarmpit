@@ -18,7 +18,7 @@
     (str value " Mb")
     "n/a"))
 
-(rum/defc form < rum/static [{:keys [limit reservation]} service-id]
+(rum/defc form < rum/static [{:keys [limit reservation]} service-id immutable?]
   (comp/card
     {:className "Swarmpit-form-card"}
     (comp/card-header
@@ -26,6 +26,7 @@
        :title     (comp/typography {:variant "h6"} "Resources")
        :action    (comp/icon-button
                     {:aria-label "Edit"
+                     :disabled   immutable?
                      :href       (routes/path-for-frontend
                                    :service-edit
                                    {:id service-id}

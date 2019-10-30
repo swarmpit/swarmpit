@@ -17,7 +17,7 @@
   {:primary   (fn [item] (:secretName item))
    :secondary (fn [item] (:secretTarget item))})
 
-(rum/defc form < rum/static [secrets service-id]
+(rum/defc form < rum/static [secrets service-id immutable?]
   (comp/card
     {:className "Swarmpit-card"}
     (comp/card-header
@@ -25,6 +25,7 @@
        :title     (comp/typography {:variant "h6"} "Secrets")
        :action    (comp/icon-button
                     {:aria-label "Edit"
+                     :disabled   immutable?
                      :href       (routes/path-for-frontend
                                    :service-edit
                                    {:id service-id}

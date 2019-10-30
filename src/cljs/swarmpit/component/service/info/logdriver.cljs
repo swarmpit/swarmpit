@@ -13,7 +13,7 @@
   {:primary   (fn [item] (:name item))
    :secondary (fn [item] (:value item))})
 
-(rum/defc form < rum/static [{:keys [name opts]} service-id]
+(rum/defc form < rum/static [{:keys [name opts]} service-id immutable?]
   (comp/card
     {:className "Swarmpit-card"}
     (comp/card-header
@@ -21,6 +21,7 @@
        :title     (comp/typography {:variant "h6"} "Log driver")
        :action    (comp/icon-button
                     {:aria-label "Edit"
+                     :disabled   immutable?
                      :href       (routes/path-for-frontend
                                    :service-edit
                                    {:id service-id}

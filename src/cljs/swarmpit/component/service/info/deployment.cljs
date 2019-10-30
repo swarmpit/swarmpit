@@ -15,7 +15,7 @@
      [:span name]
      [:span value]]))
 
-(rum/defc form < rum/static [deployment service-id]
+(rum/defc form < rum/static [deployment service-id immutable?]
   (let [autoredeploy (:autoredeploy deployment)
         update-delay (get-in deployment [:update :delay])
         update-parallelism (get-in deployment [:update :parallelism])
@@ -37,6 +37,7 @@
          :title     (comp/typography {:variant "h6"} "Deployment")
          :action    (comp/icon-button
                       {:aria-label "Edit"
+                       :disabled   immutable?
                        :href       (routes/path-for-frontend
                                      :service-edit
                                      {:id service-id}

@@ -17,7 +17,7 @@
   {:primary   (fn [item] (:configName item))
    :secondary (fn [item] (:configTarget item))})
 
-(rum/defc form < rum/static [configs service-id]
+(rum/defc form < rum/static [configs service-id immutable?]
   (comp/card
     {:className "Swarmpit-card"}
     (comp/card-header
@@ -25,6 +25,7 @@
        :title     (comp/typography {:variant "h6"} "Configs")
        :action    (comp/icon-button
                     {:aria-label "Edit"
+                     :disabled   immutable?
                      :href       (routes/path-for-frontend
                                    :service-edit
                                    {:id service-id}

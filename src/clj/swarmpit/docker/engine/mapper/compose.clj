@@ -4,7 +4,7 @@
             [swarmpit.utils :refer [clean select-keys* name-value->map]]
             [flatland.ordered.map :refer [ordered-map]]
             [swarmpit.docker.utils :refer [trim-stack in-stack? alias]]
-            [swarmpit.docker.engine.mapper.inbound :refer [autoredeploy-label agent-label]]
+            [swarmpit.docker.engine.mapper.inbound :as mi]
             [swarmpit.yaml :refer [->yaml]])
   (:refer-clojure :exclude [alias]))
 
@@ -21,9 +21,11 @@
   [service map]
   (merge map
          (when (-> service :deployment :autoredeploy)
-           {autoredeploy-label "true"})
+           {mi/autoredeploy-label "true"})
          (when (-> service :agent)
-           {agent-label "true"})))
+           {mi/agent-label "true"})
+         (when (-> service :immutable)
+           {mi/immutable-label "true"})))
 
 (defn targetable
   [source-key target-key item]

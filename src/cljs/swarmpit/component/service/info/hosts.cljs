@@ -12,7 +12,7 @@
   {:primary   (fn [item] (:name item))
    :secondary (fn [item] (:value item))})
 
-(rum/defc form < rum/static [hosts service-id]
+(rum/defc form < rum/static [hosts service-id immutable?]
   (comp/card
     {:className "Swarmpit-card"}
     (comp/card-header
@@ -20,6 +20,7 @@
        :title     (comp/typography {:variant "h6"} "Extra hosts")
        :action    (comp/icon-button
                     {:aria-label "Edit"
+                     :disabled   immutable?
                      :href       (routes/path-for-frontend
                                    :service-edit
                                    {:id service-id}
