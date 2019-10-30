@@ -257,6 +257,7 @@
    :hosts             [name-value]
    :variables         [name-value]
    :labels            [name-value]
+   (ds/opt :links)    [name-value]
    (ds/opt :stack)    string?
    (ds/opt :command)  [string?]
    (ds/opt :user)     string?

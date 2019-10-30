@@ -100,6 +100,7 @@
         registry (utils/linked-registry image)
         command (:command service)
         stack (:stack service)
+        links (:links service)
         mode (:mode service)]
     (comp/card
       {:className "Swarmpit-form-card"}
@@ -145,7 +146,14 @@
            :color    "primary"
            :disabled (not (contains? #{"json-file" "journald"} logdriver))
            :href     (routes/path-for-frontend :service-log {:id (:serviceName service)})}
-          "View log"))
+          "View log")
+        (->> links
+             (map #(comp/button
+                     {:size   "small"
+                      :color  "primary"
+                      :target "_blank"
+                      :href   (:value %)}
+                     (str/replace (:name %) #"_" " ")))))
       (comp/divider
         {})
       (comp/card-content

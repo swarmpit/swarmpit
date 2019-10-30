@@ -198,12 +198,19 @@
       (str repository ":" tag "@" digest)
       (str repository ":" tag))))
 
+(defn ->service-links
+  [service]
+  (->> (:links service)
+       (map #(hash-map (keyword (str mi/link-label (:name %))) (:value %)))
+       (into {})))
+
 (defn ->service-metadata
   [service image]
   (let [autoredeploy (get-in service [:deployment :autoredeploy])
         agent (:agent service)
         stack (:stack service)
-        immutable (:immutable service)]
+        immutable (:immutable service)
+        links (:links service)]
     (merge {}
            (when (some? stack)
              {:com.docker.stack.namespace stack
@@ -213,7 +220,9 @@
            (when (some? agent)
              {mi/agent-label (str agent)})
            (when (some? immutable)
-             {mi/immutable-label (str immutable)}))))
+             {mi/immutable-label (str immutable)})
+           (when (not-empty links)
+             (->service-links service)))))
 
 (defn ->service-container-metadata
   [service]

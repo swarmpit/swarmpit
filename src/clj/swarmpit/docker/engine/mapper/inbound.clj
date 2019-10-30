@@ -26,6 +26,7 @@
 (def autoredeploy-label :swarmpit.service.deployment.autoredeploy)
 (def immutable-label :swarmpit.service.immutable)
 (def agent-label :swarmpit.agent)
+(def link-label "swarmpit.service.link.")
 
 (defn ->image-ports
   [image-config]
@@ -223,6 +224,18 @@
                  :value (second variable)})))
        (into [])))
 
+(defn ->service-links
+  [service-labels]
+  (->> service-labels
+       (filter
+         (fn [[k _]]
+           (str/starts-with? (name k) link-label)))
+       (map
+         (fn [link]
+           {:name  (subs (name (first link)) (count link-label))
+            :value (second link)}))
+       (into [])))
+
 (defn ->service-labels
   [service-labels]
   (->> service-labels
@@ -377,6 +390,7 @@
        :stack (-> service-labels stack-label)
        :agent (->service-agent service-labels)
        :immutable (->service-immutable service-labels)
+       :links (->service-links service-labels)
        :replicas replicas
        :state (if (= service-mode "replicated")
                 (->service-state replicas-running replicas)

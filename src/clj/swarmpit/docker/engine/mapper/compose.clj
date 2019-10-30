@@ -1,6 +1,7 @@
 (ns swarmpit.docker.engine.mapper.compose
   (:require [clojure.string :as str]
             [clojure.set :refer [rename-keys]]
+            [clojure.tools.logging :as log]
             [swarmpit.utils :refer [clean select-keys* name-value->map]]
             [flatland.ordered.map :refer [ordered-map]]
             [swarmpit.docker.utils :refer [trim-stack in-stack? alias]]
@@ -17,6 +18,12 @@
        (into (sorted-map))
        (ordered-map)))
 
+(defn add-swarmpit-service-links
+  [service]
+  (->> (:links service)
+       (map #(hash-map (keyword (str mi/link-label (:name %))) (:value %)))
+       (into {})))
+
 (defn add-swarmpit-labels
   [service map]
   (merge map
@@ -25,7 +32,9 @@
          (when (-> service :agent)
            {mi/agent-label "true"})
          (when (-> service :immutable)
-           {mi/immutable-label "true"})))
+           {mi/immutable-label "true"})
+         (when (not-empty (:links service))
+           (add-swarmpit-service-links service))))
 
 (defn targetable
   [source-key target-key item]
