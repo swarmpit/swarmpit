@@ -294,6 +294,12 @@
                           :headers      {:Content-Type "application/json"}}})
       :body))
 
+(defn delete-node
+  [id]
+  (-> (execute {:method :DELETE
+                :api    (str "/nodes/" id)})
+      :body))
+
 (defn node-tasks
   [id]
   (let [query-params {:filters (generate-string {:node          [id]

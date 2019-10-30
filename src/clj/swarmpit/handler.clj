@@ -390,6 +390,11 @@
   (api/update-node (:id path) body)
   (resp-ok))
 
+(defn node-delete
+  [{{:keys [path]} :parameters}]
+  (api/delete-node (:id path))
+  (resp-ok))
+
 (defn node-tasks
   [{{:keys [path]} :parameters}]
   (->> (api/node-tasks (:id path))

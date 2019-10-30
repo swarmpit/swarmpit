@@ -571,7 +571,14 @@
                               :body   spec/node}
                  :responses {200 {:body        nil
                                   :description "Success"}}
-                 #?@(:clj [:handler handler/node-update]))}]
+                 #?@(:clj [:handler handler/node-update]))
+      :delete  (array-map
+                 :summary "Delete node"
+                 :parameters {:header {:authorization string?}
+                              :path   {:id string?}}
+                 :responses {200 {:body        nil
+                                  :description "Success"}}
+                 #?@(:clj [:handler handler/node-delete]))}]
     ["/nodes/:id/tasks"
      {:name    :node-tasks
       :swagger {:tags ["node"]}

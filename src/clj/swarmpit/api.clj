@@ -1015,6 +1015,10 @@
     (->> (dmo/->node node)
          (dc/update-node node-id node-version))))
 
+(defn delete-node
+  [node-id]
+  (dc/delete-node node-id))
+
 (defn node-tasks
   [node-id]
   (->> (dmi/->tasks (dc/node-tasks node-id)

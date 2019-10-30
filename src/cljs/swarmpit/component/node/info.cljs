@@ -6,16 +6,20 @@
             [material.component.list.basic :as list]
             [swarmpit.component.state :as state]
             [swarmpit.component.mixin :as mixin]
+            [swarmpit.component.message :as message]
             [swarmpit.component.progress :as progress]
             [swarmpit.component.task.list :as tasks]
+            [swarmpit.component.dialog :as dialog]
+            [swarmpit.component.action-menu :as menu]
+            [swarmpit.component.common :as common]
+            [swarmpit.storage :as storage]
             [swarmpit.url :refer [dispatch!]]
             [swarmpit.ajax :as ajax]
             [swarmpit.routes :as routes]
             [clojure.contrib.humanize :as humanize]
+            [clojure.contrib.inflect :as inflect]
             [sablono.core :refer-macros [html]]
-            [rum.core :as rum]
-            [swarmpit.component.common :as common]
-            [clojure.contrib.inflect :as inflect]))
+            [rum.core :as rum]))
 
 (enable-console-print!)
 
@@ -24,6 +28,15 @@
     "ready" (label/green value)
     "down" (label/red value)))
 
+(defn form-actions
+  [id]
+  [{:onClick #(dispatch! (routes/path-for-frontend :node-edit {:id id}))
+    :icon    (comp/svg icon/edit-path)
+    :name    "Edit node"}
+   {:onClick #(state/update-value [:open] true dialog/dialog-cursor)
+    :icon    (comp/svg icon/trash-path)
+    :name    "Delete node"}])
+
 (rum/defc form-general < rum/static [node]
   (let [cpu (-> node :resources :cpu (int))
         memory-bytes (-> node :resources :memory (* 1024 1024))
@@ -31,15 +44,15 @@
     (comp/card
       {:className "Swarmpit-form-card"}
       (comp/card-header
-        {:title     (:nodeName node)
-         :className "Swarmpit-form-card-header Swarmpit-card-header-responsive-title"
-         :subheader (:address node)
-         :action    (comp/tooltip
-                      {:title "Edit node"}
-                      (comp/icon-button
-                        {:aria-label "Edit"
-                         :href       (routes/path-for-frontend :node-edit {:id (:id node)})}
-                        (comp/svg icon/edit-path)))})
+        (merge
+          {:title     (:nodeName node)
+           :className "Swarmpit-form-card-header Swarmpit-card-header-responsive-title"
+           :subheader (:address node)}
+          (when (storage/admin?)
+            {:action (menu/menu
+                       (form-actions (:id node))
+                       :nodeGeneralMenuAnchor
+                       :nodeGeneralMenuOpened)})))
       (comp/card-content
         {:className "Swarmpit-table-card-content"}
         (html
@@ -85,14 +98,16 @@
   (comp/card
     {:className "Swarmpit-card"}
     (comp/card-header
-      {:className "Swarmpit-table-card-header"
-       :title     (comp/typography {:variant "h6"} "Labels")
-       :action    (comp/icon-button
-                    {:aria-label "Edit"
-                     :href       (routes/path-for-frontend
-                                   :node-edit {:id id}
-                                   {:section "Labels"})}
-                    (comp/svg icon/edit-path))})
+      (merge
+        {:className "Swarmpit-table-card-header"
+         :title     (comp/typography {:variant "h6"} "Labels")}
+        (when (storage/admin?)
+          {:action (comp/icon-button
+                     {:aria-label "Edit"
+                      :href       (routes/path-for-frontend
+                                    :node-edit {:id id}
+                                    {:section "Labels"})}
+                     (comp/svg icon/edit-path))})))
     (if (empty? labels)
       (comp/card-content
         {}
@@ -162,6 +177,19 @@
      :on-success (fn [{:keys [response]}]
                    (state/update-value [:node] response state/form-value-cursor))}))
 
+(defn- delete-node-handler
+  [node-id]
+  (ajax/delete
+    (routes/path-for-backend :node {:id node-id})
+    {:on-success (fn [_]
+                   (dispatch!
+                     (routes/path-for-frontend :node-list))
+                   (message/info
+                     (str "Node " node-id " has been removed.")))
+     :on-error   (fn [{:keys [response]}]
+                   (message/error
+                     (str "Node removal failed. " (:error response))))}))
+
 (defn- init-form-state
   []
   (state/set-value {:loading? true} state/form-state-cursor))
@@ -201,6 +229,10 @@
   (comp/mui
     (html
       [:div.Swarmpit-form
+       (dialog/confirm-dialog
+         #(delete-node-handler id)
+         "Delete node?"
+         "Delete")
        [:div.Swarmpit-form-context
         (comp/hidden
           {:xsDown         true

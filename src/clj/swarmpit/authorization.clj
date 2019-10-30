@@ -60,6 +60,9 @@
              :handler {:and [authenticated-access admin-access]}}
             {:pattern #"^/$"
              :handler any-access}
+            {:pattern        #"^/api/nodes/[a-zA-Z0-9]*$"
+             :request-method #{:delete :post}
+             :handler        {:and [authenticated-access admin-access]}}
             {:pattern        #"^/api/registry/(dockerhub|v2|ecr|acr|gitlab)/[a-zA-Z0-9]*/repositories$"
              :request-method :get
              :handler        {:and [authenticated-access registry-access]}}
