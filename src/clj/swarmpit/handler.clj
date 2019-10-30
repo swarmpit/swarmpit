@@ -712,6 +712,15 @@
   [{{:keys [path]} :parameters}]
   (let [{:keys [result]} (api/delete-stack (:name path))]
     (if (nil? (api/stack (:name path)))
+      (do
+        (api/delete-stackfile (:name path))
+        (resp-ok))
+      (resp-error 400 result))))
+
+(defn stack-deactivate
+  [{{:keys [path]} :parameters}]
+  (let [{:keys [result]} (api/delete-stack (:name path))]
+    (if (nil? (api/stack (:name path)))
       (resp-ok)
       (resp-error 400 result))))
 

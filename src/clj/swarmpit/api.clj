@@ -1118,7 +1118,7 @@
            (->compose)
            (->yaml)))
 
-(defn stacks
+(defn deployed-stacks
   []
   (->> (dissoc (group-by :stack (services)) nil)
        (map (fn [s]
@@ -1135,12 +1135,26 @@
                       stack-secrets (flatten (map :secrets stack-services))]
                   (when (not-empty stack-services)
                     {:stackName stack-name
-                     :stackFile (some? (stackfile stack-name))
+                     :state     "deployed"
                      :services  stack-services
                      :networks  (distinct-resources stack-networks)
                      :volumes   (distinct-resources stack-volumes)
                      :configs   (distinct-resources stack-configs)
                      :secrets   (distinct-resources stack-secrets)})))))))
+
+(defn inactive-stacks
+  [active-stacks]
+  (let [active-stacks (into #{} (map :stackName active-stacks))]
+    (->> (filter #(not (contains? active-stacks (:name %))) (cc/stackfiles))
+         (map (fn [{:keys [name]}]
+                (hash-map :stackName name
+                          :state "inactive"))))))
+
+(defn stacks
+  []
+  (let [deployed (deployed-stacks)]
+    (concat deployed
+            (inactive-stacks deployed))))
 
 (defn stack-login
   [owner stackfile-spec]

@@ -78,6 +78,10 @@
   [_]
   {:title "Stacks"})
 
+(defmethod render :stack-activate
+  [_]
+  {:title "Stacks"})
+
 ;;; Service view
 
 (defmethod render :service-list

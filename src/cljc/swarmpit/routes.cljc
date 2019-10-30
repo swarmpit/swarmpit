@@ -258,6 +258,16 @@
                  :responses {200 {:body        nil
                                   :description "Success"}}
                  #?@(:clj [:handler handler/stack-rollback]))}]
+    ["/stacks/:name/deactivate"
+     {:name    :stack-deactivate
+      :swagger {:tags ["stack"]}
+      :post    (array-map
+                 :summary "Deactivate stack"
+                 :parameters {:header {:authorization string?}
+                              :path   {:name string?}}
+                 :responses {200 {:body        nil
+                                  :description "Success"}}
+                 #?@(:clj [:handler handler/stack-deactivate]))}]
     ;; Admin
     ["/admin"
      {:swagger {:tags ["admin"]}}
@@ -803,6 +813,7 @@
    ["/stacks/:name/previous" :stack-previous]
    ["/stacks/:name/last" :stack-last]
    ["/stacks/:name/compose" :stack-compose]
+   ["/stacks/:name/activate" :stack-activate]
    ;; Network
    ["/networks" :network-list]
    ["/networks/create" :network-create]

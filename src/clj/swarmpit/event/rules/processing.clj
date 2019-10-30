@@ -10,18 +10,6 @@
   (match? [this type message])
   (process [this message]))
 
-(def cleanup-stackfiles
-  (reify Rule
-    (match? [_ type message]
-      (and (event? type)
-           (service-remove-event? message)))
-    (process [_ message]
-      (doseq [{:keys [name]} (api/stackfiles)]
-        (when (nil? (api/stack name))
-          (try
-            (api/delete-stackfile name)
-            (catch Exception _)))))))
-
 (def update-stats
   (reify Rule
     (match? [_ type message]
@@ -30,5 +18,4 @@
       (stats/store-to-cache message)
       (stats/store-to-db message))))
 
-(def list [cleanup-stackfiles
-           update-stats])
+(def list [update-stats])

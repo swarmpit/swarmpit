@@ -9,6 +9,7 @@
             [swarmpit.component.registry.create :as registry-create]
             [swarmpit.component.stack.edit :as stack-edit]
             [swarmpit.component.stack.compose :as stack-compose]
+            [swarmpit.component.stack.activate :as stack-activate]
             [swarmpit.component.stack.create :as stack-create]
             [swarmpit.component.stack.info :as stack-info]
             [swarmpit.component.stack.list :as stack-list]
@@ -133,6 +134,10 @@
 (defmethod dispatch :stack-compose
   [route]
   (stack-compose/form route))
+
+(defmethod dispatch :stack-activate
+  [route]
+  (stack-activate/form route))
 
 ;;; Service view
 
