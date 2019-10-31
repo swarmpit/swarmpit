@@ -120,6 +120,15 @@
               :disabled (or (:manager filter) false)
               :onClick  #(state/update-value [:filter :worker] (not (:worker filter)) state/form-state-cursor)}]})
 
+(defn pinned
+  [nodes]
+  (comp/grid
+    {:container true
+     :spacing   16}
+    (map-indexed
+      (fn [index item]
+        (node-item item index)) (sort-by :nodeName nodes))))
+
 (rum/defc form < rum/reactive
                  mixin-init-form
                  mixin/subscribe-form

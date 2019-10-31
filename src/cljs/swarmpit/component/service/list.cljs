@@ -113,6 +113,18 @@
           services
           onclick-handler)))))
 
+(defn pinned
+  [services]
+  (comp/card
+    {:className "Swarmpit-card"}
+    (when services
+      (comp/card-content
+        {:className "Swarmpit-table-card-content"}
+        (list/responsive
+          render-metadata
+          services
+          onclick-handler)))))
+
 (defn toolbar-render-metadata
   [filter]
   {:actions [{:name     "New service"
