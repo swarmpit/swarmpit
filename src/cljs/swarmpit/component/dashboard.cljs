@@ -8,6 +8,8 @@
             [swarmpit.component.progress :as progress]
             [swarmpit.component.common :as common]
             [swarmpit.component.plot :as plot]
+            [swarmpit.component.service.list :as services]
+            [swarmpit.component.node.list :as nodes]
             [swarmpit.event.source :as event]
             [swarmpit.ajax :as ajax]
             [swarmpit.routes :as routes]
@@ -66,10 +68,24 @@
   []
   (ajax/get
     (routes/path-for-backend :nodes)
-    {:state      [:loading?]
-     :on-success (fn [{:keys [response]}]
+    {:on-success (fn [{:keys [response]}]
                    (nodes-ts-handler)
                    (state/update-value [:nodes] response state/form-value-cursor))}))
+
+(defn- services-handler
+  []
+  (ajax/get
+    (routes/path-for-backend :services)
+    {:on-success (fn [{:keys [response origin?]}]
+                   (state/update-value [:services] response state/form-value-cursor))}))
+
+(defn- me-handler
+  []
+  (ajax/get
+    (routes/path-for-backend :me)
+    {:on-success (fn [{:keys [response]}]
+                   (state/update-value [:services-dashboard] (set (:service-dashboard response)) state/form-value-cursor)
+                   (state/update-value [:nodes-dashboard] (set (:node-dashboard response)) state/form-value-cursor))}))
 
 (defn- init-form-state
   []
@@ -78,9 +94,12 @@
 
 (defn- init-form-value
   []
-  (state/set-value {:stats    {}
-                    :nodes    []
-                    :nodes-ts []} state/form-value-cursor))
+  (state/set-value {:stats              {}
+                    :services           []
+                    :services-dashboard #{}
+                    :nodes              []
+                    :nodes-dashboard    #{}
+                    :nodes-ts           []} state/form-value-cursor))
 
 (def mixin-init-form
   (mixin/init-form
@@ -88,7 +107,9 @@
       (init-form-state)
       (init-form-value)
       (stats-handler)
-      (nodes-handler))))
+      (nodes-handler)
+      (services-handler)
+      (me-handler))))
 
 (defn- resource-chip
   [name count]
@@ -194,9 +215,12 @@
       {:className "Swarmpit-table-card-content"}
       (html [:div {:id plot-node-cpu-id}]))))
 
-(rum/defc form-info < rum/reactive [item]
+(rum/defc form-info < rum/reactive
+  [{:keys [stats services services-dashboard nodes nodes-dashboard] :as item}]
   (let [{:keys [node-stats-loading?]} (state/react state/form-state-cursor)
-        node-stats-empty? (empty? (:nodes-ts item))]
+        node-stats-empty? (empty? (:nodes-ts item))
+        pinned-services (filter #(contains? services-dashboard (:id %)) services)
+        pinned-nodes (filter #(contains? nodes-dashboard (:id %)) nodes)]
     (comp/mui
       (html
         [:div.Swarmpit-form
@@ -210,33 +234,44 @@
                :sm   6
                :lg   3
                :xl   3}
-              (dashboard-cluster
-                (:nodes item)))
+              (dashboard-cluster nodes))
             (comp/grid
               {:item true
                :xs   12
                :sm   6
                :lg   3
                :xl   3}
-              (dashboard-disk
-                (get-in item [:stats :disk])))
+              (dashboard-disk (:disk stats)))
             (comp/grid
               {:item true
                :xs   12
                :sm   6
                :lg   3
                :xl   3}
-              (dashboard-memory
-                (get-in item [:stats :memory])))
+              (dashboard-memory (:memory stats)))
             (comp/grid
               {:item true
                :xs   12
                :sm   6
                :lg   3
                :xl   3}
-              (dashboard-cpu
-                (get-in item [:stats :cpu])
-                (:nodes item)))
+              (dashboard-cpu (:cpu stats) nodes))
+            (when (not-empty pinned-services)
+              (comp/grid
+                {:item true
+                 :xs   12
+                 :sm   12
+                 :lg   12
+                 :xl   12}
+                (services/pinned pinned-services)))
+            (when (not-empty pinned-nodes)
+              (comp/grid
+                {:item true
+                 :xs   12
+                 :sm   12
+                 :lg   12
+                 :xl   12}
+                (nodes/pinned pinned-nodes)))
             (comp/grid
               (merge {:item true
                       :xs   12
