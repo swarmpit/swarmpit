@@ -112,6 +112,15 @@
   [user]
   (cc/set-api-token user nil))
 
+(defn update-dashbboard
+  [user dashboard-type update-fn resource]
+  (cc/update-dashboard
+    user
+    dashboard-type
+    (-> (get user dashboard-type)
+        (set)
+        (update-fn resource))))
+
 ;;; Secret API
 
 (defn secrets
