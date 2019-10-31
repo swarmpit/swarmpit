@@ -32,12 +32,22 @@
 (defn- label [item]
   (str (:state item) "  " (get-in item [:status :info])))
 
+(defn- me-handler
+  [service-id]
+  (ajax/get
+    (routes/path-for-backend :me)
+    {:on-success (fn [{:keys [response]}]
+                   (let [pinned-services (set (:service-dashboard response))]
+                     (when (contains? pinned-services service-id)
+                       (state/update-value [:pinned?] true state/form-state-cursor))))}))
+
 (defn- service-handler
   [service-id]
   (ajax/get
     (routes/path-for-backend :service {:id service-id})
     {:state      [:loading?]
      :on-success (fn [{:keys [response]}]
+                   (me-handler (:id response))
                    (state/update-value [:service] response state/form-value-cursor))}))
 
 (defn- service-networks-handler
@@ -89,6 +99,30 @@
                    (message/error
                      (str "Service rollback failed. " (:error response))))}))
 
+(defn- pin-service-handler
+  [service-id]
+  (ajax/post
+    (routes/path-for-backend :service-dashboard {:id service-id})
+    {:on-success (fn [_]
+                   (state/update-value [:pinned?] true state/form-state-cursor)
+                   (message/info
+                     (str "Service " service-id " pinned to dashboard.")))
+     :on-error   (fn [{:keys [response]}]
+                   (message/error
+                     (str "Service pin failed. " (:error response))))}))
+
+(defn- detach-service-handler
+  [service-id]
+  (ajax/delete
+    (routes/path-for-backend :service-dashboard {:id service-id})
+    {:on-success (fn [_]
+                   (state/update-value [:pinned?] false state/form-state-cursor)
+                   (message/info
+                     (str "Service " service-id " detached to dashboard.")))
+     :on-error   (fn [{:keys [response]}]
+                   (message/error
+                     (str "Service detach failed. " (:error response))))}))
+
 (defn- stop-service-handler
   [service-id]
   (ajax/post
@@ -120,8 +154,17 @@
         tasks/onclick-handler))))
 
 (defn form-actions
-  [service service-id]
-  [{:onClick  #(dispatch! (routes/path-for-frontend :service-edit {:id service-id}))
+  [service service-id pinned?]
+  [(if pinned?
+     {:onClick #(detach-service-handler service-id)
+      :icon    (icon/cancel {})
+      :more    true
+      :name    "Detach from dashboard"}
+     {:onClick #(pin-service-handler service-id)
+      :icon    (comp/svg icon/pin-path)
+      :more    true
+      :name    "Pin to dashboard"})
+   {:onClick  #(dispatch! (routes/path-for-frontend :service-edit {:id service-id}))
     :icon     (comp/svg icon/edit-path)
     :disabled (true? (:immutable service))
     :name     "Edit service"}
@@ -152,6 +195,7 @@
   []
   (state/set-value {:cmdAnchor nil
                     :cmdShow   false
+                    :pinned?   false
                     :menu?     false
                     :loading?  true} state/form-state-cursor))
 
@@ -170,11 +214,11 @@
       (service-networks-handler id)
       (service-tasks-handler id))))
 
-(defn form-settings-grid [service service-id tasks]
+(defn form-settings-grid [service service-id tasks pinned]
   (comp/grid
     {:item true
      :xs   12}
-    (settings/form service tasks (form-actions service service-id))))
+    (settings/form service tasks (form-actions service service-id pinned))))
 
 (defn form-tasks-grid [service tasks]
   (comp/grid
@@ -248,7 +292,7 @@
      :xs   12}
     (deployment/form deployment service-id immutable?)))
 
-(rum/defc form-info < rum/static [{:keys [service networks tasks]}]
+(rum/defc form-info < rum/static [{:keys [service networks tasks]} pinned?]
   (let [ports (:ports service)
         mounts (:mounts service)
         secrets (:secrets service)
@@ -282,7 +326,7 @@
                 (comp/grid
                   {:container true
                    :spacing   16}
-                  (form-settings-grid service id tasks)
+                  (form-settings-grid service id tasks pinned?)
                   (form-secrets-grid secrets id immutable?)
                   (form-configs-grid configs id immutable?)
                   (form-hosts-grid hosts id immutable?)
@@ -308,7 +352,7 @@
             (comp/grid
               {:container true
                :spacing   16}
-              (form-settings-grid service id tasks)
+              (form-settings-grid service id tasks pinned?)
               (form-tasks-grid service tasks)
               (form-networks-grid networks id immutable?)
               (form-ports-grid ports id immutable?)
@@ -329,4 +373,4 @@
         item (state/react state/form-value-cursor)]
     (progress/form
       (:loading? state)
-      (form-info item))))
+      (form-info item (:pinned? state)))))

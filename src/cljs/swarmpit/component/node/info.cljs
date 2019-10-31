@@ -28,16 +28,86 @@
     "ready" (label/green value)
     "down" (label/red value)))
 
+(defn- me-handler
+  [node-id]
+  (ajax/get
+    (routes/path-for-backend :me)
+    {:on-success (fn [{:keys [response]}]
+                   (let [pinned-nodes (set (:node-dashboard response))]
+                     (when (contains? pinned-nodes node-id)
+                       (state/update-value [:pinned?] true state/form-state-cursor))))}))
+
+(defn- node-tasks-handler
+  [node-id]
+  (ajax/get
+    (routes/path-for-backend :node-tasks {:id node-id})
+    {:on-success (fn [{:keys [response]}]
+                   (state/update-value [:tasks] response state/form-value-cursor))}))
+
+(defn- node-handler
+  [node-id]
+  (ajax/get
+    (routes/path-for-backend :node {:id node-id})
+    {:state      [:loading?]
+     :on-success (fn [{:keys [response]}]
+                   (state/update-value [:node] response state/form-value-cursor))}))
+
+(defn- delete-node-handler
+  [node-id]
+  (ajax/delete
+    (routes/path-for-backend :node {:id node-id})
+    {:on-success (fn [_]
+                   (dispatch!
+                     (routes/path-for-frontend :node-list))
+                   (message/info
+                     (str "Node " node-id " has been removed.")))
+     :on-error   (fn [{:keys [response]}]
+                   (message/error
+                     (str "Node removal failed. " (:error response))))}))
+
+(defn- pin-node-handler
+  [node-id]
+  (ajax/post
+    (routes/path-for-backend :node-dashboard {:id node-id})
+    {:on-success (fn [_]
+                   (state/update-value [:pinned?] true state/form-state-cursor)
+                   (message/info
+                     (str "Node " node-id " pinned to dashboard.")))
+     :on-error   (fn [{:keys [response]}]
+                   (message/error
+                     (str "Node pin failed. " (:error response))))}))
+
+(defn- detach-node-handler
+  [node-id]
+  (ajax/delete
+    (routes/path-for-backend :node-dashboard {:id node-id})
+    {:on-success (fn [_]
+                   (state/update-value [:pinned?] false state/form-state-cursor)
+                   (message/info
+                     (str "Node " node-id " detached to dashboard.")))
+     :on-error   (fn [{:keys [response]}]
+                   (message/error
+                     (str "Node detach failed. " (:error response))))}))
+
 (defn form-actions
-  [id]
-  [{:onClick #(dispatch! (routes/path-for-frontend :node-edit {:id id}))
+  [id pinned?]
+  [(if pinned?
+     {:onClick #(detach-node-handler id)
+      :icon    (icon/cancel {})
+      :more    true
+      :name    "Detach from dashboard"}
+     {:onClick #(pin-node-handler id)
+      :icon    (comp/svg icon/pin-path)
+      :more    true
+      :name    "Pin to dashboard"})
+   {:onClick #(dispatch! (routes/path-for-frontend :node-edit {:id id}))
     :icon    (comp/svg icon/edit-path)
     :name    "Edit node"}
    {:onClick #(state/update-value [:open] true dialog/dialog-cursor)
     :icon    (comp/svg icon/trash-path)
     :name    "Delete node"}])
 
-(rum/defc form-general < rum/static [node]
+(rum/defc form-general < rum/static [node pinned?]
   (let [cpu (-> node :resources :cpu (int))
         memory-bytes (-> node :resources :memory (* 1024 1024))
         disk-bytes (-> node :stats :disk :total)]
@@ -50,7 +120,7 @@
            :subheader (:address node)}
           (when (storage/admin?)
             {:action (menu/menu
-                       (form-actions (:id node))
+                       (form-actions (:id node) pinned?)
                        :nodeGeneralMenuAnchor
                        :nodeGeneralMenuOpened)})))
       (comp/card-content
@@ -162,50 +232,24 @@
             (filter #(not (= "shutdown" (:state %))) tasks)
             tasks/onclick-handler))))))
 
-(defn- node-tasks-handler
-  [node-id]
-  (ajax/get
-    (routes/path-for-backend :node-tasks {:id node-id})
-    {:on-success (fn [{:keys [response]}]
-                   (state/update-value [:tasks] response state/form-value-cursor))}))
-
-(defn- node-handler
-  [node-id]
-  (ajax/get
-    (routes/path-for-backend :node {:id node-id})
-    {:state      [:loading?]
-     :on-success (fn [{:keys [response]}]
-                   (state/update-value [:node] response state/form-value-cursor))}))
-
-(defn- delete-node-handler
-  [node-id]
-  (ajax/delete
-    (routes/path-for-backend :node {:id node-id})
-    {:on-success (fn [_]
-                   (dispatch!
-                     (routes/path-for-frontend :node-list))
-                   (message/info
-                     (str "Node " node-id " has been removed.")))
-     :on-error   (fn [{:keys [response]}]
-                   (message/error
-                     (str "Node removal failed. " (:error response))))}))
-
 (defn- init-form-state
   []
-  (state/set-value {:loading? true} state/form-state-cursor))
+  (state/set-value {:pinned?  false
+                    :loading? true} state/form-state-cursor))
 
 (def mixin-init-form
   (mixin/init-form
     (fn [{{:keys [id]} :params}]
       (init-form-state)
       (node-handler id)
-      (node-tasks-handler id))))
+      (node-tasks-handler id)
+      (me-handler id))))
 
-(defn form-general-grid [node]
+(defn form-general-grid [node pinned?]
   (comp/grid
     {:item true
      :xs   12}
-    (form-general node)))
+    (form-general node pinned?)))
 
 (defn form-plugins-grid [networks volumes]
   (comp/grid
@@ -225,7 +269,7 @@
      :xs   12}
     (form-tasks tasks)))
 
-(rum/defc form-info < rum/static [id {:keys [node tasks]}]
+(rum/defc form-info < rum/static [id {:keys [node tasks]} pinned?]
   (comp/mui
     (html
       [:div.Swarmpit-form
@@ -247,7 +291,7 @@
               (comp/grid
                 {:container true
                  :spacing   16}
-                (form-general-grid node)
+                (form-general-grid node pinned?)
                 (form-plugins-grid
                   (->> node :plugins :networks)
                   (->> node :plugins :volumes))
@@ -266,7 +310,7 @@
           (comp/grid
             {:container true
              :spacing   16}
-            (form-general-grid node)
+            (form-general-grid node pinned?)
             (form-task-grid tasks)
             (form-plugins-grid
               (->> node :plugins :networks)
@@ -280,4 +324,4 @@
         item (state/react state/form-value-cursor)]
     (progress/form
       (:loading? state)
-      (form-info id item))))
+      (form-info id item (:pinned? state)))))
