@@ -596,6 +596,23 @@
                  :responses {200 {:body        [spec/task]
                                   :description "Success"}}
                  #?@(:clj [:handler handler/node-tasks]))}]
+    ["/nodes/:id/dashboard"
+     {:name    :node-dashboard
+      :swagger {:tags ["node"]}
+      :post    (array-map
+                 :summary "Pin node to dashboard"
+                 :parameters {:header {:authorization string?}
+                              :path   {:id string?}}
+                 :responses {200 {:body        nil
+                                  :description "Success"}}
+                 #?@(:clj [:handler handler/dashboard-pin]))
+      :delete  (array-map
+                 :summary "Detache node from dashboard"
+                 :parameters {:header {:authorization string?}
+                              :path   {:id string?}}
+                 :responses {200 {:body        nil
+                                  :description "Success"}}
+                 #?@(:clj [:handler handler/dashboard-detach]))}]
     ;; Service
     ["/services"
      {:name    :services
@@ -709,6 +726,23 @@
                  :responses {200 {:body        nil
                                   :description "Success"}}
                  #?@(:clj [:handler handler/service-stop]))}]
+    ["/services/:id/dashboard"
+     {:name    :service-dashboard
+      :swagger {:tags ["service"]}
+      :post    (array-map
+                 :summary "Pin service to dashboard"
+                 :parameters {:header {:authorization string?}
+                              :path   {:id string?}}
+                 :responses {200 {:body        nil
+                                  :description "Success"}}
+                 #?@(:clj [:handler handler/dashboard-pin]))
+      :delete  (array-map
+                 :summary "Detache service from dashboard"
+                 :parameters {:header {:authorization string?}
+                              :path   {:id string?}}
+                 :responses {200 {:body        nil
+                                  :description "Success"}}
+                 #?@(:clj [:handler handler/dashboard-detach]))}]
     ;; Volume
     ["/volumes"
      {:name    :volumes

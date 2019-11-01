@@ -131,7 +131,7 @@
   [{{:keys [usr]} :identity}]
   (-> (:username usr)
       (api/user-by-username)
-      (select-keys [:username :email :role :api-token])
+      (select-keys [:username :email :role :api-token :service-dashboard :node-dashboard])
       (resp-ok)))
 
 (defn users
@@ -399,6 +399,27 @@
   [{{:keys [path]} :parameters}]
   (->> (api/node-tasks (:id path))
        (resp-ok)))
+
+;; Dashboard
+
+(defn dashboard-pin
+  [{{:keys [path]} :parameters
+    {:keys [usr]}  :identity
+    {:keys [data]} :reitit.core/match}]
+  (let [user (api/user-by-username (:username usr))]
+    (case (:name data)
+      :service-dashboard (api/service (:id path))
+      :node-dashboard (api/node (:id path)))
+    (api/update-dashbboard user (:name data) conj (:id path))
+    (resp-ok)))
+
+(defn dashboard-detach
+  [{{:keys [path]} :parameters
+    {:keys [usr]}  :identity
+    {:keys [data]} :reitit.core/match}]
+  (let [user (api/user-by-username (:username usr))]
+    (api/update-dashbboard user (:name data) disj (:id path))
+    (resp-ok)))
 
 ;; Statistics
 

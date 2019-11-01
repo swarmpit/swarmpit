@@ -331,6 +331,10 @@
   [user api-token]
   (update-doc user :api-token api-token))
 
+(defn update-dashboard
+  [user dashboard-type dashboard]
+  (update-doc user dashboard-type dashboard))
+
 ;; Stackfile
 
 (defn stackfiles

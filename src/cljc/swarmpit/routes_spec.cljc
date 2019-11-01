@@ -20,11 +20,13 @@
 ;; Apis
 
 (def me
-  {:username  string?
-   :role      string?
-   :api-token {:jti  string?
-               :mask string?}
-   :email     string?})
+  {:username                   string?
+   :role                       string?
+   :api-token                  {:jti  string?
+                                :mask string?}
+   :email                      string?
+   (ds/opt :node-dashboard)    [string?]
+   (ds/opt :service-dashboard) [string?]})
 
 (def stats
   {:cpu    {:usage number?}
@@ -336,14 +338,16 @@
    :results [repository]})
 
 (def user
-  {(ds/opt :email)     string?
-   (ds/opt :api-token) {:jti  string?
-                        :mask string?}
-   :role               string?
-   :type               string?
-   :username           string?
-   :_id                string?
-   :_rev               string?})
+  {(ds/opt :email)             string?
+   (ds/opt :api-token)         (ds/maybe {:jti  string?
+                                          :mask string?})
+   (ds/opt :node-dashboard)    [string?]
+   (ds/opt :service-dashboard) [string?]
+   :role                       string?
+   :type                       string?
+   :username                   string?
+   :_id                        string?
+   :_rev                       string?})
 
 (def user-create
   {(ds/opt :email) string?
@@ -352,14 +356,16 @@
    :username       string?})
 
 (def user-update
-  {(ds/opt :email)     string?
-   (ds/opt :api-token) {:jti  string?
-                        :mask string?}
-   :role               string?
-   :type               string?
-   :username           string?
-   :_id                string?
-   :_rev               string?})
+  {(ds/opt :email)             string?
+   (ds/opt :api-token)         (ds/maybe {:jti  string?
+                                          :mask string?})
+   (ds/opt :node-dashboard)    [string?]
+   (ds/opt :service-dashboard) [string?]
+   :role                       string?
+   :type                       string?
+   :username                   string?
+   :_id                        string?
+   :_rev                       string?})
 
 (def stack
   {:configs   [config-mount]
