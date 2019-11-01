@@ -89,17 +89,21 @@
                    (message/error
                      (str "Node detach failed. " (:error response))))}))
 
+(defn form-pin-action
+  [id pinned?]
+  (if pinned?
+    {:onClick #(detach-node-handler id)
+     :icon    (comp/svg icon/pin-path)
+     :more    true
+     :name    "Detach node"}
+    {:onClick #(pin-node-handler id)
+     :icon    (comp/svg icon/pin-path)
+     :more    true
+     :name    "Pin node"}))
+
 (defn form-actions
   [id pinned?]
-  [(if pinned?
-     {:onClick #(detach-node-handler id)
-      :icon    (icon/cancel {})
-      :more    true
-      :name    "Detach from dashboard"}
-     {:onClick #(pin-node-handler id)
-      :icon    (comp/svg icon/pin-path)
-      :more    true
-      :name    "Pin to dashboard"})
+  [(form-pin-action id pinned?)
    {:onClick #(dispatch! (routes/path-for-frontend :node-edit {:id id}))
     :icon    (comp/svg icon/edit-path)
     :name    "Edit node"}
@@ -118,9 +122,13 @@
           {:title     (:nodeName node)
            :className "Swarmpit-form-card-header Swarmpit-card-header-responsive-title"
            :subheader (:address node)}
-          (when (storage/admin?)
+          (if (storage/admin?)
             {:action (menu/menu
                        (form-actions (:id node) pinned?)
+                       :nodeGeneralMenuAnchor
+                       :nodeGeneralMenuOpened)}
+            {:action (menu/menu
+                       [(form-pin-action (:id node) pinned?)]
                        :nodeGeneralMenuAnchor
                        :nodeGeneralMenuOpened)})))
       (comp/card-content

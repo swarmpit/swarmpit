@@ -157,13 +157,13 @@
   [service service-id pinned?]
   [(if pinned?
      {:onClick #(detach-service-handler service-id)
-      :icon    (icon/cancel {})
+      :icon    (comp/svg icon/pin-path)
       :more    true
-      :name    "Detach from dashboard"}
+      :name    "Detach service"}
      {:onClick #(pin-service-handler service-id)
       :icon    (comp/svg icon/pin-path)
       :more    true
-      :name    "Pin to dashboard"})
+      :name    "Pin service"})
    {:onClick  #(dispatch! (routes/path-for-frontend :service-edit {:id service-id}))
     :icon     (comp/svg icon/edit-path)
     :disabled (true? (:immutable service))
