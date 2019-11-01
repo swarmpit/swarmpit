@@ -11,6 +11,7 @@
             [swarmpit.routes :as routes]
             [swarmpit.url :refer [dispatch!]]
             [sablono.core :refer-macros [html]]
+            [clojure.contrib.humanize :as humanize]
             [rum.core :as rum]))
 
 (enable-console-print!)
@@ -18,6 +19,8 @@
 (def render-metadata
   {:table {:summary [{:name      "Name"
                       :render-fn (fn [item] (:volumeName item))}
+                     {:name      "Size"
+                      :render-fn (fn [item] (humanize/filesize (:size item) :binary false))}
                      {:name      "Driver"
                       :render-fn (fn [item] (:driver item))}]}
    :list  {:primary   (fn [item] (:volumeName item))

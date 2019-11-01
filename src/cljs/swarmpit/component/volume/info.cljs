@@ -14,6 +14,7 @@
             [swarmpit.ajax :as ajax]
             [swarmpit.routes :as routes]
             [sablono.core :refer-macros [html]]
+            [clojure.contrib.humanize :as humanize]
             [rum.core :as rum]))
 
 (enable-console-print!)
@@ -50,7 +51,7 @@
   {:primary   (fn [item] (:name item))
    :secondary (fn [item] (:value item))})
 
-(rum/defc form-general < rum/static [{:keys [id stack volumeName driver mountpoint scope]}
+(rum/defc form-general < rum/static [{:keys [id stack volumeName driver mountpoint size scope]}
                                      services]
   (comp/card
     {:className "Swarmpit-form-card"}
@@ -68,8 +69,13 @@
       {}
       (html
         [:div.Swarmpit-volume-mount
-         [:span "Volume is mounted at:"]
-         [:span.Swarmpit-volume-mountpoint [:b mountpoint]]]))
+         [:span "Volume is mounted at: "]
+         [:span.Swarmpit-volume-mountpoint [:b mountpoint]]])
+      (html
+        [:div
+         [:br]
+         [:span "Space usage is: "]
+         [:span [:b (humanize/filesize size :binary false)]]]))
     (comp/card-content
       {}
       (form/item-labels
