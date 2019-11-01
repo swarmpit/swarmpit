@@ -2,6 +2,7 @@
   (:refer-clojure :exclude [list])
   (:require [swarmpit.api :as api]
             [swarmpit.docker.utils :as du]
+            [swarmpit.stats :as stats]
             [swarmpit.event.rules.predicate :refer :all]))
 
 (defn- service-id
@@ -20,6 +21,18 @@
       (get-in node-event-message [:Actor :ID])))
 
 ;; Subscribed Data
+
+(defn dashboard-data
+  [user]
+  (let [stats (when (stats/ready?) (stats/cluster))
+        nodes-ts (when (stats/influx-configured?) (stats/hosts-timeseries))
+        dashboard-user (api/user-by-username user)]
+    {:stats              stats
+     :services           (api/services)
+     :services-dashboard (:service-dashboard dashboard-user)
+     :nodes              (api/nodes)
+     :nodes-dashboard    (:node-dashboard dashboard-user)
+     :nodes-ts           nodes-ts}))
 
 (defn- service-info-data
   [service-event-message]
@@ -51,7 +64,19 @@
 (defprotocol Rule
   (match? [this type message])
   (subscription [this message])
-  (subscribed-data [this message]))
+  (subscribed-data [this message user]))
+
+(def refresh-dashboard
+  (reify Rule
+    (match? [_ type message]
+      (and (event? type)
+           (or (service-event? message)
+               (node-event? message))))
+    (subscription [_ message]
+      {:handler :index
+       :params  {}})
+    (subscribed-data [_ message user]
+      (dashboard-data user))))
 
 (def refresh-service-list
   (reify Rule
@@ -61,8 +86,8 @@
                (service-task-event? message))))
     (subscription [_ message]
       {:handler :service-list
-       :params  nil})
-    (subscribed-data [_ message]
+       :params  {}})
+    (subscribed-data [_ message user]
       (api/services))))
 
 (def refresh-service-info-by-name
@@ -74,7 +99,7 @@
     (subscription [_ message]
       {:handler :service-info
        :params  {:id (service-name message)}})
-    (subscribed-data [_ message]
+    (subscribed-data [_ message user]
       (service-info-data message))))
 
 (def refresh-service-info-by-id
@@ -86,7 +111,7 @@
     (subscription [_ message]
       {:handler :service-info
        :params  {:id (service-id message)}})
-    (subscribed-data [_ message]
+    (subscribed-data [_ message user]
       (service-info-data message))))
 
 (def refresh-task-list
@@ -96,8 +121,8 @@
            (service-task-event? message)))
     (subscription [_ message]
       {:handler :task-list
-       :params  nil})
-    (subscribed-data [_ message]
+       :params  {}})
+    (subscribed-data [_ message user]
       (api/tasks-memo))))
 
 (def refresh-task-info
@@ -108,7 +133,7 @@
     (subscription [_ message]
       {:handler :task-info
        :params  {:serviceName (service-name message)}})
-    (subscribed-data [_ message]
+    (subscribed-data [_ message user]
       (api/service-tasks (service-name message)))))
 
 (def refresh-node-info
@@ -119,7 +144,7 @@
     (subscription [_ message]
       {:handler :node-info
        :params  {:id (node-id message)}})
-    (subscribed-data [_ message]
+    (subscribed-data [_ message user]
       (node-info-data message))))
 
 (def refresh-node-list
@@ -129,8 +154,8 @@
            (node-event? message)))
     (subscription [_ message]
       {:handler :node-list
-       :params  nil})
-    (subscribed-data [_ message]
+       :params  {}})
+    (subscribed-data [_ message user]
       (api/nodes))))
 
 (def refresh-stack-list
@@ -140,8 +165,8 @@
            (service-event? message)))
     (subscription [_ message]
       {:handler :stack-list
-       :params  nil})
-    (subscribed-data [_ message]
+       :params  {}})
+    (subscribed-data [_ message user]
       (api/stacks))))
 
 (def refresh-stack-info
@@ -155,10 +180,11 @@
             stack-name (du/hypothetical-stack service-name)]
         {:handler :stack-info
          :params  {:name stack-name}}))
-    (subscribed-data [_ message]
+    (subscribed-data [_ message user]
       (stack-info-data message))))
 
-(def list [refresh-service-list
+(def list [refresh-dashboard
+           refresh-service-list
            refresh-service-info-by-name
            refresh-service-info-by-id
            refresh-task-list

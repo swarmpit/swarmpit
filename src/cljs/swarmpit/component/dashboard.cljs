@@ -84,8 +84,8 @@
   (ajax/get
     (routes/path-for-backend :me)
     {:on-success (fn [{:keys [response]}]
-                   (state/update-value [:services-dashboard] (set (:service-dashboard response)) state/form-value-cursor)
-                   (state/update-value [:nodes-dashboard] (set (:node-dashboard response)) state/form-value-cursor))}))
+                   (state/update-value [:services-dashboard] (:service-dashboard response) state/form-value-cursor)
+                   (state/update-value [:nodes-dashboard] (:node-dashboard response) state/form-value-cursor))}))
 
 (defn- init-form-state
   []
@@ -96,9 +96,9 @@
   []
   (state/set-value {:stats              {}
                     :services           []
-                    :services-dashboard #{}
+                    :services-dashboard []
                     :nodes              []
-                    :nodes-dashboard    #{}
+                    :nodes-dashboard    []
                     :nodes-ts           []} state/form-value-cursor))
 
 (def mixin-init-form
@@ -219,8 +219,8 @@
   [{:keys [stats services services-dashboard nodes nodes-dashboard] :as item}]
   (let [{:keys [node-stats-loading?]} (state/react state/form-state-cursor)
         node-stats-empty? (empty? (:nodes-ts item))
-        pinned-services (filter #(contains? services-dashboard (:id %)) services)
-        pinned-nodes (filter #(contains? nodes-dashboard (:id %)) nodes)]
+        pinned-services (filter #(contains? (set services-dashboard) (:id %)) services)
+        pinned-nodes (filter #(contains? (set nodes-dashboard) (:id %)) nodes)]
     (comp/mui
       (html
         [:div.Swarmpit-form

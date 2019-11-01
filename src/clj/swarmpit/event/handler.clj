@@ -1,12 +1,11 @@
 (ns swarmpit.event.handler
   (:require [org.httpkit.server :refer [with-channel on-close send!]]
             [clojure.walk :refer [keywordize-keys]]
+            [clojure.tools.logging :as log]
             [swarmpit.handler :refer [resp-accepted resp-error resp-unauthorized]]
             [swarmpit.event.channel :as channel]
             [swarmpit.event.processor :as processor]
             [swarmpit.event.rules.predicate :refer [stats?]]
-            [clojure.tools.logging :as log]
-
             [swarmpit.slt :as slt]))
 
 (defn events
@@ -27,6 +26,7 @@
 
 (defn event-push
   [{{:keys [body]} :parameters}]
+  (log/info body)
   (if (some? body)
     (let [event body]
       (processor/process event)

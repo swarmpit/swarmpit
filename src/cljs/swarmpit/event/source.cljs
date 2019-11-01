@@ -3,6 +3,7 @@
             [swarmpit.ajax :as ajax]
             [swarmpit.event.handler :as event]
             [goog.crypt.base64 :as b64]
+            [swarmpit.storage :as storage]
             [clojure.walk :refer [keywordize-keys]]))
 
 (def es (atom nil))
@@ -16,7 +17,8 @@
 (defn- event-source-url
   [token subscription]
   (routes/path-for-backend :events {} {:slt          token
-                                       :subscription (b64/encodeString subscription)}))
+                                       :subscription (b64/encodeString subscription)
+                                       :user         (storage/user)}))
 
 (defn- on-message!
   [event route handler]

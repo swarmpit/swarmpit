@@ -4,6 +4,7 @@
             [clojure.core.async :refer [go <! timeout]]
             [clojure.core.memoize :as memo]
             [clojure.edn :as edn]
+            [clojure.tools.logging :as log]
             [clojure.walk :refer [keywordize-keys]]
             [cheshire.core :refer [generate-string]]
             [swarmpit.base64 :as base64]
@@ -23,15 +24,19 @@
       (base64/decode)
       (edn/read-string)))
 
+(defn- subscription-user
+  [channel]
+  (-> (val channel)
+      (get-in [:query-params "user"])))
+
 (defn- subscribers
   ([channel-subscription]
    "Get subscribers based on given subscription"
    (->> @hub
-        (filter #(= channel-subscription (subscription %)))
-        (keys)))
+        (filter #(= channel-subscription (subscription %)))))
   ([]
    "Get all subscribers"
-   (-> @hub (keys))))
+   (-> @hub)))
 
 (defn list
   ([{:keys [type message] :as event}]
@@ -57,8 +62,9 @@
       (let [subscription (rule/subscription rule message)
             subscribers (subscribers subscription)]
         (doseq [subscriber subscribers]
-          (let [data (rule/subscribed-data rule message)]
-            (send! subscriber (event-data data) false)))))))
+          (let [user (subscription-user subscriber)
+                data (rule/subscribed-data rule message user)]
+            (send! (key subscriber) (event-data data) false)))))))
 
 (defn broadcast-statistics
   []
