@@ -26,7 +26,6 @@
 
 (defn event-push
   [{{:keys [body]} :parameters}]
-  (log/info body)
   (if (some? body)
     (let [event body]
       (processor/process event)
