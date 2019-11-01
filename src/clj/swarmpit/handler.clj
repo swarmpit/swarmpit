@@ -407,6 +407,9 @@
     {:keys [usr]}  :identity
     {:keys [data]} :reitit.core/match}]
   (let [user (api/user-by-username (:username usr))]
+    (case (:name data)
+      :service-dashboard (api/service (:id path))
+      :node-dashboard (api/node (:id path)))
     (api/update-dashbboard user (:name data) conj (:id path))
     (resp-ok)))
 
