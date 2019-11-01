@@ -13,6 +13,14 @@
   (when (some? label)
     {:filters (generate-string {:label [label]})}))
 
+;; Data usage
+
+(defn df
+  []
+  (-> (execute {:method :GET
+                :api    "/system/df"})
+      :body))
+
 ;; Service
 
 (defn services

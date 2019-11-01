@@ -291,7 +291,8 @@
    :options    [name-value]
    :scope      string?
    :stack      string?
-   :volumeName string?})
+   :volumeName string?
+   :size       number?})
 
 (def volume-create
   {:driver     string?

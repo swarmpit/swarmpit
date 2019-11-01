@@ -432,8 +432,9 @@
        (into [])))
 
 (defn ->volume
-  [volume]
-  (let [name (:Name volume)]
+  [volume usage]
+  (let [name (:Name volume)
+        volume-df (first (filter #(= name (:Name %)) (:Volumes usage)))]
     (array-map
       :id name
       :volumeName name
@@ -442,12 +443,13 @@
       :labels (:Labels volume)
       :options (map->name-value (:Options volume))
       :mountpoint (:Mountpoint volume)
-      :scope (:Scope volume))))
+      :scope (:Scope volume)
+      :size (get-in volume-df [:UsageData :Size]))))
 
 (defn ->volumes
-  [volumes]
+  [volumes usage]
   (->> (:Volumes volumes)
-       (map ->volume)
+       (map #(->volume % usage))
        (into [])))
 
 (defn ->secret
