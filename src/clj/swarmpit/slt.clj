@@ -11,9 +11,9 @@
        (base64/encode)))
 
 (defn create
-  []
+  [username]
   (let [slt (generate)]
-    (swap! cache assoc slt "slt")
+    (swap! cache assoc slt username)
     slt))
 
 (defn valid?
@@ -21,5 +21,9 @@
   (if (cache/has? @cache slt)
     true
     false))
+
+(defn user
+  [slt]
+  (cache/lookup @cache slt))
 
 

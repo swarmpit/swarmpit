@@ -71,8 +71,8 @@
 ;; SLT handler
 
 (defn slt
-  [_]
-  (resp-ok {:slt (slt/create)}))
+  [{{:keys [usr]}  :identity}]
+  (resp-ok {:slt (slt/create (:username usr))}))
 
 ;; Login handler
 

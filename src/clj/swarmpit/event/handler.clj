@@ -12,16 +12,18 @@
   [{:keys [parameters] :as request}]
   (let [slt (get-in parameters [:query :slt])]
     (if (slt/valid? slt)
-      (with-channel request channel
-                    (send! channel {:status  200
-                                    :headers {"Content-Type"                "text/event-stream"
-                                              "Access-Control-Allow-Origin" "*"
-                                              "Cache-Control"               "no-cache"
-                                              "Connection"                  "keep-alive"}
-                                    :body    ":ok\n\n"} false)
-                    (swap! channel/hub assoc channel request)
-                    (on-close channel (fn [_]
-                                        (swap! channel/hub dissoc channel))))
+      (let [user (slt/user slt)
+            request (assoc-in request [:identity] user)]
+        (with-channel request channel
+                      (send! channel {:status  200
+                                      :headers {"Content-Type"                "text/event-stream"
+                                                "Access-Control-Allow-Origin" "*"
+                                                "Cache-Control"               "no-cache"
+                                                "Connection"                  "keep-alive"}
+                                      :body    ":ok\n\n"} false)
+                      (swap! channel/hub assoc channel request)
+                      (on-close channel (fn [_]
+                                          (swap! channel/hub dissoc channel)))))
       (resp-unauthorized "Invalid slt"))))
 
 (defn event-push

@@ -26,8 +26,7 @@
 
 (defn- subscription-user
   [channel]
-  (-> (val channel)
-      (get-in [:query-params "user"])))
+  (-> (val channel) :identity))
 
 (defn- subscribers
   ([channel-subscription]
