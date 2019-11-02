@@ -90,6 +90,13 @@
        (map #(hash-map (keyword (:name %)) (:value %)))
        (into {})))
 
+(defn name-value->sorted-map
+  [name-value-coll]
+  (->> name-value-coll
+       (map #(hash-map (keyword (:name %)) (:value %)))
+       (into (sorted-map))
+       (ordered-map)))
+
 (defn map->name-value
   [map-col]
   (->> map-col

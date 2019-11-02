@@ -2,7 +2,7 @@
   (:require [clojure.string :as str]
             [clojure.set :refer [rename-keys]]
             [clojure.tools.logging :as log]
-            [swarmpit.utils :refer [clean select-keys* name-value->map]]
+            [swarmpit.utils :refer [clean select-keys* name-value->map name-value->sorted-map]]
             [flatland.ordered.map :refer [ordered-map]]
             [swarmpit.docker.utils :refer [trim-stack in-stack? alias]]
             [swarmpit.docker.engine.mapper.inbound :as mi]
@@ -27,10 +27,10 @@
 (defn add-swarmpit-labels
   [service map]
   (merge map
-         (when (-> service :deployment :autoredeploy)
-           {mi/autoredeploy-label "true"})
          (when (-> service :agent)
            {mi/agent-label "true"})
+         (when (-> service :deployment :autoredeploy)
+           {mi/autoredeploy-label "true"})
          (when (-> service :immutable)
            {mi/immutable-label "true"})
          (when (not-empty (:links service))
@@ -73,7 +73,7 @@
                              {:interval (str (:interval healthcheck) "s")}
                              {:timeout (str (:timeout healthcheck) "s")})))
      :tty (-> service :tty)
-     :environment (-> service :variables (name-value->map))
+     :environment (-> service :variables (name-value->sorted-map))
      :ports (->> service :ports
                  (map #(str (:hostPort %) ":" (:containerPort %) (when (= "udp" (:protocol %)) "/udp"))))
      :volumes (->> service :mounts
