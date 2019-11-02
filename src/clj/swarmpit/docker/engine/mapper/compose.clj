@@ -62,7 +62,7 @@
   {(keyword (alias :serviceName (or stack-name (:stack service)) service))
    (ordered-map
      :image (-> service :repository :image)
-     :command (some->> service :command (str/join " "))
+     :command (some->> service :command)
      :user (-> service :user)
      :working_dir (-> service :dir)
      :extra_hosts (->> service :hosts
