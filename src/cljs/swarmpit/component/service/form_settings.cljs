@@ -129,6 +129,12 @@
      :onChange        (fn [event]
                         (state/update-value [:replicas] (parse-int (-> event .-target .-value)) form-value-cursor))}))
 
+(defn- parse-cmd [command]
+  (let [arr (str/split command #"\n")]
+      (if (< 1 (count arr))
+        arr
+        (str/split command #" "))))
+
 (defn- form-command [value]
   (comp/text-field
     {:key             "command"
@@ -143,7 +149,7 @@
      :InputLabelProps {:shrink true}
      :onChange        (fn [event]
                         (let [value (-> event .-target .-value)]
-                          (state/update-value [:command] (when (< 0 (count value)) (str/split value #"\n")) form-value-cursor)))}))
+                          (state/update-value [:command] (when (< 0 (count value)) (parse-cmd value)) form-value-cursor)))}))
 
 (defn tags-handler
   [repository]
