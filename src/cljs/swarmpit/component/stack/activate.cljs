@@ -53,7 +53,8 @@
   [name]
   (ajax/delete
     (routes/path-for-backend :stack-file {:name name})
-    {:on-success (fn [_]
+    {:state      [:deleting?]
+     :on-success (fn [_]
                    (dispatch!
                      (routes/path-for-frontend :stack-list))
                    (message/info
@@ -90,7 +91,7 @@
 
 (rum/defc form-edit < rum/reactive
                       mixin-init-editor [{:keys [name spec]}
-                                         {:keys [processing?]}]
+                                         {:keys [processing? deleting?]}]
   (print (:compose spec))
   (comp/mui
     (html
@@ -101,7 +102,7 @@
          "Delete")
        [:div.Swarmpit-form-context
         [:div.Swarmpit-form-paper
-         (common/edit-title (str "Activating " name))
+         (common/edit-title (str "Activate " name))
          (comp/grid
            {:container true
             :className "Swarmpit-form-main-grid"

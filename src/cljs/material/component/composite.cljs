@@ -10,13 +10,16 @@
   ([action action-fn processing?]
    (progress-button action action-fn processing? false))
   ([action action-fn processing? disabled?]
+   (progress-button action action-fn processing? disabled? {}))
+  ([action action-fn processing? disabled? opts]
    (html
      [:div.Swarmpit-progress-button-wrapper
       (cmp/button
-        {:variant  "contained"
-         :color    "primary"
-         :disabled (or processing? disabled?)
-         :onClick  action-fn} action)
+        (merge
+          {:variant  "contained"
+           :color    "primary"
+           :disabled (or processing? disabled?)
+           :onClick  action-fn} opts) action)
       (when processing?
         (cmp/circular-progress
           {:size      24

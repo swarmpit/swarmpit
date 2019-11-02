@@ -12,8 +12,9 @@
             [swarmpit.routes :as routes]
             [swarmpit.url :refer [dispatch!]]
             [sablono.core :refer-macros [html]]
-            [rum.core :as rum]
-            [swarmpit.component.common :as common]))
+            [swarmpit.component.common :as common]
+            [clojure.string :as str]
+            [rum.core :as rum]))
 
 (enable-console-print!)
 
@@ -78,6 +79,23 @@
                      (message/error
                        (str "Stack deployment failed. " (:error response))))})))
 
+(defn- save-stack-handler
+  []
+  (let [{:keys [name] :as form-value} (state/get-value state/form-value-cursor)]
+    (ajax/post
+      (routes/path-for-backend :stack-file {:name name})
+      {:params     form-value
+       :state      [:saving?]
+       :on-success (fn [{:keys [origin?]}]
+                     (when origin?
+                       (dispatch!
+                         (routes/path-for-frontend :stack-list)))
+                     (message/info
+                       (str "Stack " name " succesfully saved.")))
+       :on-error   (fn [{:keys [response]}]
+                     (message/error
+                       (str "Stack save failed. " (:error response))))})))
+
 (def mixin-init-editor
   {:did-mount
    (fn [state]
@@ -88,7 +106,8 @@
 (defn- init-form-state
   []
   (state/set-value {:valid?      false
-                    :processing? false} state/form-state-cursor))
+                    :processing? false
+                    :saving?     false} state/form-state-cursor))
 
 (defn- init-form-value
   []
@@ -105,7 +124,7 @@
 (rum/defc form-edit < rum/reactive
                       mixin-init-editor [{{:keys [from]} :params}]
   (let [{:keys [spec name]} (state/react state/form-value-cursor)
-        {:keys [valid? processing?]} (state/react state/form-state-cursor)]
+        {:keys [valid? processing? saving?]} (state/react state/form-state-cursor)]
     (comp/mui
       (html
         [:div.Swarmpit-form
@@ -144,7 +163,14 @@
                       (composite/progress-button
                         "Deploy"
                         create-stack-handler
-                        processing?)]))))
+                        processing?
+                        (or saving? (str/blank? name)))
+                      (composite/progress-button
+                        "Save"
+                        save-stack-handler
+                        saving?
+                        (or processing? (str/blank? name))
+                        {:variant "text"})]))))
              (comp/grid
                {:item true
                 :xs   12
