@@ -178,6 +178,14 @@
                  :responses {200 {:body        spec/stack-file
                                   :description "Success"}}
                  #?@(:clj [:handler handler/stack-file]))
+      :post    (array-map
+                 :summary "Create stack file"
+                 :parameters {:header {:authorization string?}
+                              :path   {:name string?}
+                              :body   spec/stack-compose}
+                 :responses {200 {:body        nil
+                                  :description "Success"}}
+                 #?@(:clj [:handler handler/stack-file-create]))
       :delete  (array-map
                  :summary "Delete stack file"
                  :parameters {:header {:authorization string?}

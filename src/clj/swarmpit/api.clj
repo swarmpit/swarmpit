@@ -513,6 +513,10 @@
   [stack-name]
   (cc/stackfile stack-name))
 
+(defn create-stackfile
+  [{:keys [name spec] :as stackfile}]
+  (cc/create-stackfile stackfile))
+
 (defn delete-stackfile
   [stack-name]
   (-> (cc/stackfile stack-name)

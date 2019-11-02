@@ -71,7 +71,7 @@
 ;; SLT handler
 
 (defn slt
-  [{{:keys [usr]}  :identity}]
+  [{{:keys [usr]} :identity}]
   (resp-ok {:slt (slt/create (:username usr))}))
 
 ;; Login handler
@@ -756,6 +756,18 @@
     (if (some? response)
       (resp-ok response)
       (resp-error 400 "Stackfile not found"))))
+
+(defn stack-file-create
+  [{{:keys [body path]} :parameters}]
+  (if (= (:name path)
+         (:name body))
+    (let [stack (api/stackfile (:name path))]
+      (if stack
+        (resp-error 400 "Stack with given name already exist")
+        (do
+          (api/create-stackfile body)
+          (resp-ok))))
+    (resp-error 400 "Request mismatch")))
 
 (defn stack-file-delete
   [{{:keys [path]} :parameters}]
