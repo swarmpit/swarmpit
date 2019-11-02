@@ -143,7 +143,7 @@
      :InputLabelProps {:shrink true}
      :onChange        (fn [event]
                         (let [value (-> event .-target .-value)]
-                          (state/update-value [:command] (when (< 0 (count value)) (str/split value #" ")) form-value-cursor)))}))
+                          (state/update-value [:command] (when (< 0 (count value)) (str/split value #"\n")) form-value-cursor)))}))
 
 (defn tags-handler
   [repository]
@@ -190,4 +190,4 @@
       (comp/grid
         {:item true
          :xs   12}
-        (form-command (str/join " " command))))))
+        (form-command (str/join "\n" command))))))
