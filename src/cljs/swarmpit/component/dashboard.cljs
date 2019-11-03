@@ -1,8 +1,5 @@
 (ns swarmpit.component.dashboard
-  (:require [material.icon :as icon]
-            [material.components :as comp]
-            [material.component.label :as label]
-            [material.component.form :as form]
+  (:require [material.components :as comp]
             [swarmpit.component.mixin :as mixin]
             [swarmpit.component.state :as state]
             [swarmpit.component.progress :as progress]
@@ -10,7 +7,6 @@
             [swarmpit.component.plot :as plot]
             [swarmpit.component.service.list :as services]
             [swarmpit.component.node.list :as nodes]
-            [swarmpit.event.source :as event]
             [swarmpit.ajax :as ajax]
             [swarmpit.routes :as routes]
             [sablono.core :refer-macros [html]]
@@ -48,7 +44,7 @@
   []
   (ajax/get
     (routes/path-for-backend :stats)
-    {:state      [:loading?]
+    {:state      [:loading? :stats]
      :on-success (fn [{:keys [response]}]
                    (state/update-value [:stats] response state/form-value-cursor))
      :on-error   (fn [_])}))
@@ -57,10 +53,8 @@
   []
   (ajax/get
     (routes/path-for-backend :nodes-ts)
-    {:state      [:node-stats-loading?]
+    {:state      [:loading? :nodes-ts]
      :on-success (fn [{:keys [response]}]
-                   (node-cpu-plot response)
-                   (node-ram-plot response)
                    (state/update-value [:nodes-ts] response state/form-value-cursor))
      :on-error   (fn [_])}))
 
@@ -68,7 +62,8 @@
   []
   (ajax/get
     (routes/path-for-backend :nodes)
-    {:on-success (fn [{:keys [response]}]
+    {:state      [:loading? :nodes]
+     :on-success (fn [{:keys [response]}]
                    (nodes-ts-handler)
                    (state/update-value [:nodes] response state/form-value-cursor))}))
 
@@ -76,7 +71,8 @@
   []
   (ajax/get
     (routes/path-for-backend :services)
-    {:on-success (fn [{:keys [response origin?]}]
+    {:state      [:loading? :services]
+     :on-success (fn [{:keys [response origin?]}]
                    (state/update-value [:services] response state/form-value-cursor))}))
 
 (defn- me-handler
@@ -89,8 +85,10 @@
 
 (defn- init-form-state
   []
-  (state/set-value {:loading?            true
-                    :node-stats-loading? true} state/form-state-cursor))
+  (state/set-value {:loading? {:stats    true
+                               :services true
+                               :nodes    true
+                               :nodes-ts true}} state/form-state-cursor))
 
 (defn- init-form-value
   []
@@ -201,25 +199,34 @@
             (render-percentage usage)
             "graph-cpu")]]))))
 
-(rum/defc dashboard-node-ram-stats < rum/static []
+(rum/defc dashboard-node-ram-stats < rum/static
+                                     {:did-mount (fn [state _]
+                                                   (let [ts (first (:rum/args state))]
+                                                     (node-ram-plot ts))
+                                                   state)} [nodes-ts]
   (comp/card
-    {:className "Swarmpit-card"}
+    (if (empty? nodes-ts)
+      {:className "Swarmpit-card hide"}
+      {:className "Swarmpit-card"})
     (comp/card-content
       {:className "Swarmpit-table-card-content"}
       (html [:div {:id plot-node-ram-id}]))))
 
-(rum/defc dashboard-node-cpu-stats < rum/static []
+(rum/defc dashboard-node-cpu-stats < rum/static
+                                     {:did-mount (fn [state _]
+                                                   (let [ts (first (:rum/args state))]
+                                                     (node-cpu-plot ts))
+                                                   state)} [nodes-ts]
   (comp/card
-    {:className "Swarmpit-card"}
+    (if (empty? nodes-ts)
+      {:className "Swarmpit-card hide"}
+      {:className "Swarmpit-card"})
     (comp/card-content
       {:className "Swarmpit-table-card-content"}
       (html [:div {:id plot-node-cpu-id}]))))
 
-(rum/defc form-info < rum/reactive
-  [{:keys [stats services services-dashboard nodes nodes-dashboard] :as item}]
-  (let [{:keys [node-stats-loading?]} (state/react state/form-state-cursor)
-        node-stats-empty? (empty? (:nodes-ts item))
-        pinned-services (filter #(contains? (set services-dashboard) (:id %)) services)
+(rum/defc form-info < rum/static [{:keys [stats services services-dashboard nodes nodes-ts nodes-dashboard] :as item}]
+  (let [pinned-services (filter #(contains? (set services-dashboard) (:id %)) services)
         pinned-nodes (filter #(contains? (set nodes-dashboard) (:id %)) nodes)]
     (comp/mui
       (html
@@ -273,31 +280,30 @@
                  :xl   12}
                 (nodes/pinned pinned-nodes)))
             (comp/grid
-              (merge {:item true
-                      :xs   12
-                      :sm   12
-                      :md   12
-                      :lg   6
-                      :xl   6}
-                     (when (and (false? node-stats-loading?) node-stats-empty?)
-                       {:className "hide"}))
-              (dashboard-node-ram-stats))
+              {:item true
+               :xs   12
+               :sm   12
+               :md   12
+               :lg   6
+               :xl   6}
+              (dashboard-node-ram-stats nodes-ts))
             (comp/grid
-              (merge {:item true
-                      :xs   12
-                      :sm   12
-                      :md   12
-                      :lg   6
-                      :xl   6}
-                     (when (and (false? node-stats-loading?) node-stats-empty?)
-                       {:className "hide"}))
-              (dashboard-node-cpu-stats)))]]))))
+              {:item true
+               :xs   12
+               :sm   12
+               :md   12
+               :lg   6
+               :xl   6}
+              (dashboard-node-cpu-stats nodes-ts)))]]))))
 
 (rum/defc form < rum/reactive
                  mixin-init-form
                  mixin/subscribe-form [{{:keys [name]} :params}]
-  (let [state (state/react state/form-state-cursor)
+  (let [{:keys [loading?]} (state/react state/form-state-cursor)
         item (state/react state/form-value-cursor)]
     (progress/form
-      (:loading? state)
+      (or (:stats loading?)
+          (:nodes loading?)
+          (:nodes-ts loading?)
+          (:services loading?))
       (form-info item))))

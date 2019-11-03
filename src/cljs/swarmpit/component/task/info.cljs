@@ -21,8 +21,6 @@
 
 (def plot-ram-id "taskRamStats")
 
-(defonce stats (atom nil))
-
 (defn task-cpu-plot [stats-ts]
   (plot/single plot-cpu-id
                stats-ts
@@ -44,28 +42,26 @@
                     (filter #(= task-id (:id %)))
                     (first))]
       (if task
-        (state/set-value task state/form-value-cursor)
+        (state/update-value [:task] task state/form-value-cursor)
         (state/update-value [:state] "removed" state/form-value-cursor)))))
 
 (defn- task-stats-handler
   [task-name]
   (ajax/get
     (routes/path-for-backend :task-ts {:name task-name})
-    {:state      [:stats-loading?]
+    {:state      [:loading? :task-ts]
      :on-success (fn [{:keys [response]}]
-                   (task-cpu-plot response)
-                   (task-ram-plot response)
-                   (reset! stats response))
+                   (state/update-value [:task-ts] response state/form-value-cursor))
      :on-error   (fn [_])}))
 
 (defn- task-handler
   [route]
   (ajax/get
     (routes/path-for-backend :task (:params route))
-    {:state      [:loading?]
+    {:state      [:loading? :task]
      :on-success (fn [{:keys [response]}]
                    (task-stats-handler (:taskName response))
-                   (state/set-value response state/form-value-cursor)
+                   (state/update-value [:task] response state/form-value-cursor)
                    (event/open! (merge route {:params {:serviceName (:serviceName response)}})
                                 (event-handler (:id response))))}))
 
@@ -116,7 +112,7 @@
         (html
           [:div.Swarmpit-task-error
            (icon/error {:className "Swarmpit-task-error-icon"})
-           [:div (:error status)]])))
+           [:div.Swarmpit-task-error-message (:error status)]])))
     (comp/card-content
       {}
       (form/item-labels
@@ -147,16 +143,28 @@
       (form/item-date createdAt updatedAt)
       (form/item-id id))))
 
-(rum/defc form-cpu-stats < rum/static []
+(rum/defc form-cpu-stats < rum/static
+                           {:did-mount (fn [state _]
+                                         (let [ts (first (:rum/args state))]
+                                           (task-cpu-plot ts))
+                                         state)} [task-ts]
   (comp/card
-    {:className "Swarmpit-card"}
+    (if (empty? task-ts)
+      {:className "Swarmpit-card hide"}
+      {:className "Swarmpit-card"})
     (comp/card-content
       {:className "Swarmpit-table-card-content"}
       (html [:div {:id plot-cpu-id}]))))
 
-(rum/defc form-ram-stats < rum/static []
+(rum/defc form-ram-stats < rum/static
+                           {:did-mount (fn [state _]
+                                         (let [ts (first (:rum/args state))]
+                                           (task-ram-plot ts))
+                                         state)} [task-ts]
   (comp/card
-    {:className "Swarmpit-card"}
+    (if (empty? task-ts)
+      {:className "Swarmpit-card hide"}
+      {:className "Swarmpit-card"})
     (comp/card-content
       {:className "Swarmpit-table-card-content"}
       (html [:div {:id plot-ram-id}]))))
@@ -167,85 +175,84 @@
      :xs   12}
     (form-general task)))
 
-(defn form-cpu-stats-grid [loading? empty?]
+(defn form-cpu-stats-grid [task-ts]
   (comp/grid
-    (merge {:item true
-            :xs   12}
-           (when (and (false? loading?) empty?)
-             {:className "hide"}))
-    (form-cpu-stats)))
+    {:item true
+     :xs   12}
+    (form-cpu-stats task-ts)))
 
-(defn form-ram-stats-grid [loading? empty?]
+(defn form-ram-stats-grid [task-ts]
   (comp/grid
-    (merge {:item true
-            :xs   12}
-           (when (and (false? loading?) empty?)
-             {:className "hide"}))
-    (form-ram-stats)))
+    {:item true
+     :xs   12}
+    (form-ram-stats task-ts)))
 
-(rum/defc form-info < rum/reactive [item]
-  (let [{:keys [stats-loading?]} (state/react state/form-state-cursor)
-        stats (rum/react stats)
-        stats-empty? (empty? (:time stats))]
-    (comp/mui
-      (html
-        [:div.Swarmpit-form
-         [:div.Swarmpit-form-context
-          (comp/hidden
-            {:xsDown         true
-             :implementation "js"}
+(rum/defc form-info < rum/static [{:keys [task task-ts] :as item}]
+  (comp/mui
+    (html
+      [:div.Swarmpit-form
+       [:div.Swarmpit-form-context
+        (comp/hidden
+          {:xsDown         true
+           :implementation "js"}
+          (comp/grid
+            {:container true
+             :spacing   16}
             (comp/grid
-              {:container true
-               :spacing   16}
+              {:item true
+               :sm   6
+               :md   4}
               (comp/grid
-                {:item true
-                 :sm   6
-                 :md   4}
-                (comp/grid
-                  {:container true
-                   :spacing   16}
-                  (form-general-grid item)))
-              (comp/grid
-                {:item true
-                 :sm   6
-                 :md   8}
-                (comp/grid
-                  {:container true
-                   :spacing   16}
-                  (form-cpu-stats-grid stats-loading? stats-empty?)
-                  (form-ram-stats-grid stats-loading? stats-empty?)))))
-          (comp/hidden
-            {:smUp           true
-             :implementation "js"}
+                {:container true
+                 :spacing   16}
+                (form-general-grid task)))
             (comp/grid
-              {:container true
-               :spacing   16}
-              (form-general-grid item)
-              (form-cpu-stats-grid stats-loading? stats-empty?)
-              (form-ram-stats-grid stats-loading? stats-empty?)))]]))))
+              {:item true
+               :sm   6
+               :md   8}
+              (comp/grid
+                {:container true
+                 :spacing   16}
+                (form-cpu-stats-grid task-ts)
+                (form-ram-stats-grid task-ts)))))
+        (comp/hidden
+          {:smUp           true
+           :implementation "js"}
+          (comp/grid
+            {:container true
+             :spacing   16}
+            (form-general-grid task)
+            (form-cpu-stats-grid task-ts)
+            (form-ram-stats-grid task-ts)))]])))
 
 (def unsubscribe-form
   {:will-unmount (fn [state]
                    (event/close!)
                    state)})
 
+(defn- init-form-value
+  []
+  (state/set-value {:task    {}
+                    :task-ts []} state/form-value-cursor))
+
 (defn- init-form-state
   []
-  (state/set-value {:loading?       true
-                    :stats-loading? true
-                    :tab            0} state/form-state-cursor))
+  (state/set-value {:loading? {:task    true
+                               :task-ts true}} state/form-state-cursor))
 
 (def mixin-init-form
   (mixin/init-form
     (fn [route]
       (init-form-state)
+      (init-form-value)
       (task-handler route))))
 
 (rum/defc form < rum/reactive
                  unsubscribe-form
                  mixin-init-form [_]
-  (let [state (state/react state/form-state-cursor)
+  (let [{:keys [loading?]} (state/react state/form-state-cursor)
         item (state/react state/form-value-cursor)]
     (progress/form
-      (:loading? state)
+      (or (:task loading?)
+          (:task-ts loading?))
       (form-info item))))
