@@ -66,6 +66,11 @@
                           (str/blank? (:value %)))))
        (name-value->map)))
 
+(defn ->service-container-labels
+  [service]
+  (->> (:containerLabels service)
+       (name-value->map)))
+
 (defn ->service-log-options
   [service]
   (->> (get-in service [:logdriver :opts])
@@ -238,7 +243,9 @@
                      (->service-labels service)
                      (->service-metadata service (->service-image service false)))
    :TaskTemplate   {:ContainerSpec {:Image       (->service-image service true)
-                                    :Labels      (->service-container-metadata service)
+                                    :Labels      (merge
+                                                   (->service-container-labels service)
+                                                   (->service-container-metadata service))
                                     :Mounts      (->service-mounts service)
                                     :Secrets     (:secrets service)
                                     :Configs     (:configs service)

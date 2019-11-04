@@ -1,9 +1,7 @@
 (ns swarmpit.docker.engine.mapper.compose
-  (:require [clojure.string :as str]
-            [clojure.set :refer [rename-keys]]
-            [clojure.tools.logging :as log]
-            [swarmpit.utils :refer [clean select-keys* name-value->map name-value->sorted-map]]
+  (:require [clojure.set :refer [rename-keys]]
             [flatland.ordered.map :refer [ordered-map]]
+            [swarmpit.utils :refer [clean select-keys* name-value->map name-value->sorted-map]]
             [swarmpit.docker.utils :refer [trim-stack in-stack? alias]]
             [swarmpit.docker.engine.mapper.inbound :as mi]
             [swarmpit.yaml :refer [->yaml]])
@@ -63,6 +61,7 @@
    (ordered-map
      :image (-> service :repository :image)
      :command (some->> service :command)
+     :labels (->> service :containerLabels (name-value->map))
      :user (-> service :user)
      :working_dir (-> service :dir)
      :extra_hosts (->> service :hosts

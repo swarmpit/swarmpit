@@ -243,6 +243,12 @@
                          (str/starts-with? (name (key %)) "com.docker"))))
        (map->name-value)))
 
+(defn ->service-container-labels
+  [service-labels]
+  (->> service-labels
+       (filter #(not (str/starts-with? (name (key %)) "com.docker")))
+       (map->name-value)))
+
 (defn ->service-log-driver
   [service-task-template info]
   (or (get-in service-task-template [:LogDriver :Name]) (:LoggingDriver info)))
@@ -376,7 +382,8 @@
          image-info (str/split image #"@")
          image-name (first image-info)
          image-digest (second image-info)
-         healthcheck (get-in service-task-template [:ContainerSpec :Healthcheck])]
+         healthcheck (get-in service-task-template [:ContainerSpec :Healthcheck])
+         container-labels (get-in service-task-template [:ContainerSpec :Labels])]
      (array-map
        :id service-id
        :version (get-in service [:Version :Index])
@@ -409,6 +416,7 @@
        :hosts (->service-hosts service-spec)
        :variables (->service-variables service-spec)
        :labels (->service-labels service-labels)
+       :containerLabels (->service-container-labels container-labels)
        :command (get-in service-task-template [:ContainerSpec :Args])
        :user (get-in service-task-template [:ContainerSpec :User])
        :dir (get-in service-task-template [:ContainerSpec :Dir])
