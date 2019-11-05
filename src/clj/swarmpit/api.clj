@@ -206,13 +206,13 @@
   ([]
    (volumes nil))
   ([label]
-   (let [usage (dc/df)]
+   (let [usage (dc/df-memo)]
      (-> (dc/volumes label)
          (dmi/->volumes usage)))))
 
 (defn volume
   [volume-name]
-  (let [usage (dc/df)]
+  (let [usage (dc/df-memo)]
     (-> (dc/volume volume-name)
         (dmi/->volume usage))))
 

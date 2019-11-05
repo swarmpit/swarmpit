@@ -1,6 +1,6 @@
 (ns swarmpit.docker.engine.client
-  (:require [ring.util.codec :refer [form-encode]]
-            [cheshire.core :refer [generate-string]]
+  (:require [cheshire.core :refer [generate-string]]
+            [clojure.core.memoize :as memo]
             [swarmpit.base64 :as base64]
             [swarmpit.docker.engine.http :refer :all]))
 
@@ -20,6 +20,8 @@
   (-> (execute {:method :GET
                 :api    "/system/df"})
       :body))
+
+(def df-memo (memo/ttl df :ttl/threshold 10000))
 
 ;; Service
 
