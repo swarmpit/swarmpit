@@ -359,7 +359,7 @@ a {
     flex-grow: 1;
     min-height: 56px;
     align-items: flex-start;
-    padding-left: 24px;
+    padding-left: 18px;
     flex-direction: column;
     justify-content: center;
 }
@@ -1028,10 +1028,6 @@ a {
 
     .Swarmpit-title {
         min-height: 64px;
-    }
-
-    .Swarmpit-drawer-item-selected {
-        padding-left: 19px !important;
     }
 
     .Swarmpit-drawer-closed > div {
