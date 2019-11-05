@@ -291,14 +291,14 @@
            :implementation "js"}
           (comp/grid
             {:container true
-             :spacing   16}
+             :spacing   2}
             (comp/grid
               {:item true
                :sm   6
                :md   4}
               (comp/grid
                 {:container true
-                 :spacing   16}
+                 :spacing   2}
                 (form-general-grid node pinned?)
                 (form-plugins-grid
                   (->> node :plugins :networks)
@@ -310,14 +310,14 @@
                :md   8}
               (comp/grid
                 {:container true
-                 :spacing   16}
+                 :spacing   2}
                 (form-task-grid tasks)))))
         (comp/hidden
           {:smUp           true
            :implementation "js"}
           (comp/grid
             {:container true
-             :spacing   16}
+             :spacing   2}
             (form-general-grid node pinned?)
             (form-task-grid tasks)
             (form-plugins-grid

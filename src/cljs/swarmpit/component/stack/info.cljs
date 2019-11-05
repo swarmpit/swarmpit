@@ -199,7 +199,7 @@
                     :stackGeneralMenuOpened)})
     (comp/grid
       {:container true
-       :spacing   16}
+       :spacing   2}
       (comp/grid
         {:item true
          :xs   6}
@@ -384,14 +384,14 @@
            :implementation "js"}
           (comp/grid
             {:container true
-             :spacing   16}
+             :spacing   2}
             (comp/grid
               {:item true
                :sm   6
                :md   4}
               (comp/grid
                 {:container true
-                 :spacing   16}
+                 :spacing   2}
                 (form-general-grid stack-name stackfile item)
                 (form-secrets-grid stack-name secrets)
                 (form-configs-grid stack-name configs)))
@@ -401,7 +401,7 @@
                :md   8}
               (comp/grid
                 {:container true
-                 :spacing   16}
+                 :spacing   2}
                 (form-services-grid stack-name services)
                 (form-networks-grid stack-name networks)
                 (form-volumes-grid stack-name volumes)))))
@@ -410,7 +410,7 @@
            :implementation "js"}
           (comp/grid
             {:container true
-             :spacing   16}
+             :spacing   2}
             (form-general-grid stack-name stackfile item)
             (form-services-grid stack-name services)
             (form-networks-grid stack-name networks)

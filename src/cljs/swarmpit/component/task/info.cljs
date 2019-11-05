@@ -197,14 +197,14 @@
            :implementation "js"}
           (comp/grid
             {:container true
-             :spacing   16}
+             :spacing   2}
             (comp/grid
               {:item true
                :sm   6
                :md   4}
               (comp/grid
                 {:container true
-                 :spacing   16}
+                 :spacing   2}
                 (form-general-grid task)))
             (comp/grid
               {:item true
@@ -212,7 +212,7 @@
                :md   8}
               (comp/grid
                 {:container true
-                 :spacing   16}
+                 :spacing   2}
                 (form-cpu-stats-grid task-ts)
                 (form-ram-stats-grid task-ts)))))
         (comp/hidden
@@ -220,7 +220,7 @@
            :implementation "js"}
           (comp/grid
             {:container true
-             :spacing   16}
+             :spacing   2}
             (form-general-grid task)
             (form-cpu-stats-grid task-ts)
             (form-ram-stats-grid task-ts)))]])))

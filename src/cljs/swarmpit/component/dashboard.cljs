@@ -234,7 +234,7 @@
          [:div.Swarmpit-form-context
           (comp/grid
             {:container true
-             :spacing   16}
+             :spacing   2}
             (comp/grid
               {:item true
                :xs   12

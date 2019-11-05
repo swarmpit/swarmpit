@@ -161,14 +161,14 @@
            :implementation "js"}
           (comp/grid
             {:container true
-             :spacing   16}
+             :spacing   2}
             (comp/grid
               {:item true
                :sm   6
                :md   4}
               (comp/grid
                 {:container true
-                 :spacing   16}
+                 :spacing   2}
                 (form-general-grid network services)
                 (form-driver-grid network)))
             (comp/grid
@@ -177,14 +177,14 @@
                :md   8}
               (comp/grid
                 {:container true
-                 :spacing   16}
+                 :spacing   2}
                 (form-services-grid services)))))
         (comp/hidden
           {:smUp           true
            :implementation "js"}
           (comp/grid
             {:container true
-             :spacing   16}
+             :spacing   2}
             (form-general-grid network services)
             (form-services-grid services)
             (form-driver-grid network)))]])))

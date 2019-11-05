@@ -196,7 +196,7 @@
          (comp/grid
            {:container true
             :className "Swarmpit-form-main-grid"
-            :spacing   40}
+            :spacing   5}
            (comp/grid
              {:item true
               :xs   12
@@ -206,7 +206,7 @@
               :xl   8}
              (comp/grid
                {:container true
-                :spacing   40}
+                :spacing   5}
                (comp/grid
                  {:item true}
                  (form-role role))
