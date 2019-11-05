@@ -9,7 +9,11 @@
    (defn encode
      [data]
      (let [credentials-bytes (.getBytes (str data))]
-       (.encodeToString (Base64/getEncoder) credentials-bytes))))
+       (.encodeToString (Base64/getEncoder) credentials-bytes)))
+   :cljs
+   (defn encode
+     [data]
+     (b64/encodeString data)))
 
 #?(:clj
    (defn decode
@@ -20,7 +24,6 @@
    (defn decode
      [encoded-data]
      (b64/decodeString encoded-data)))
-
 
 (defn base64? [data]
   (and (= 0 (mod (count data) 4))

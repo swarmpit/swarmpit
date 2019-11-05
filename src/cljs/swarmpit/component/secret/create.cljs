@@ -9,6 +9,7 @@
             [swarmpit.url :refer [dispatch!]]
             [swarmpit.ajax :as ajax]
             [swarmpit.routes :as routes]
+            [swarmpit.base64 :as base64]
             [sablono.core :refer-macros [html]]
             [swarmpit.url :refer [dispatch!]]
             [rum.core :as rum]
@@ -46,19 +47,21 @@
 
 (defn- create-secret-handler
   []
-  (ajax/post
-    (routes/path-for-backend :secrets)
-    {:params     (state/get-value state/form-value-cursor)
-     :state      [:processing?]
-     :on-success (fn [{:keys [response origin?]}]
-                   (when origin?
-                     (dispatch!
-                       (routes/path-for-frontend :secret-info (select-keys response [:id]))))
-                   (message/info
-                     (str "Secret " (:id response) " has been created.")))
-     :on-error   (fn [{:keys [response]}]
-                   (message/error
-                     (str "Secret creation failed. " (:error response))))}))
+  (let [req (state/get-value state/form-value-cursor)]
+    (ajax/post
+      (routes/path-for-backend :secrets)
+      {:params     (-> req
+                       (assoc-in [:data] (base64/encode (:data req))))
+       :state      [:processing?]
+       :on-success (fn [{:keys [response origin?]}]
+                     (when origin?
+                       (dispatch!
+                         (routes/path-for-frontend :secret-info (select-keys response [:id]))))
+                     (message/info
+                       (str "Secret " (:id response) " has been created.")))
+       :on-error   (fn [{:keys [response]}]
+                     (message/error
+                       (str "Secret creation failed. " (:error response))))})))
 
 (defn- init-form-state
   []
