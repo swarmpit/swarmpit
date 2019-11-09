@@ -23,15 +23,18 @@
     [:div.Swarmpit-form-card-icon-item
      (icon/access-time
        {:className "Swarmpit-form-card-icon"})
-     [:div {:class "Swarmpit-form-card-icon-text"}
-      (when created
-        [:time {:date-time created
-                :title     (time/simplify created)}
-         (str "created " (time/humanize created))])
-      (when updated
-        [:time {:date-time updated
-                :title     (time/simplify updated)}
-         (str (when created ", ") "updated " (time/humanize updated))])]]))
+     (cmp/typography
+       {:color     "textSecondary"
+        :className "Swarmpit-form-card-icon-text"
+        :children  (html [:div
+                          (when created
+                            [:time {:date-time created
+                                    :title     (time/simplify created)}
+                             (str "created " (time/humanize created))])
+                          (when updated
+                            [:time {:date-time updated
+                                    :title     (time/simplify updated)}
+                             (str (when created ", ") "updated " (time/humanize updated))])])})]))
 
 (defn message [comp]
   (html

@@ -499,7 +499,7 @@ a {
 }
 
 .Swarmpit-table-head-cell {
-    text-transform: uppercase !important;
+    /*text-transform: uppercase !important;*/
 }
 
 .Swarmpit-table-row {
@@ -655,6 +655,7 @@ a {
 }
 
 .Swarmpit-form-card-icon {
+    color: rgba(0, 0, 0, 0.54);
     top: 1px;
     position: relative;
     margin-right: 3px;
@@ -671,6 +672,9 @@ a {
 
 .Swarmpit-form-card-icon-text {
     font-size: 12px !important;
+    display: flex;
+    flex-direction: row;
+    align-items: center;
 }
 
 .Swarmpit-form-card-labels {
