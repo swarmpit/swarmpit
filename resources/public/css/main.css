@@ -502,9 +502,14 @@ a {
     text-transform: uppercase !important;
 }
 
+.Swarmpit-table-row {
+   height: 48px !important;
+}
+
 .Swarmpit-table-row-cell {
     border-bottom: none !important;
     border-top: 1px solid rgba(224, 224, 224, 1);
+    padding: 4px 56px 4px 16px !important;
 }
 
 .Swarmpit-table-row-cell > a {
@@ -606,9 +611,10 @@ a {
     background-color: #fff;
 }
 
-.Swarmpit-form-select-icon > div > div {
+.Swarmpit-form-select-icon > div {
     display: flex !important;
     flex-direction: row !important;
+    align-items: center;
 }
 
 .Swarmpit-form-toolbar {
@@ -917,7 +923,7 @@ a {
 /* REPOSITORY */
 
 .Swarmpit-repo-registry-item {
-    padding: 0 !important;
+    margin-left: -16px;
 }
 
 .Swarmpit-repo-manual {
