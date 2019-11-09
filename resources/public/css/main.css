@@ -337,6 +337,10 @@ a {
     width: 200px;
 }
 
+.Swarmpit-drawer-item {
+    padding-left: 24px !important;
+}
+
 .Swarmpit-list-item-icon,
 .Swarmpit-drawer-item-icon,
 .Swarmpit-drawer-item-text > h6 {
@@ -345,7 +349,7 @@ a {
 
 .Swarmpit-drawer-item-selected {
     border-left: 5px solid #65519f !important;
-    padding-left: 11px !important;
+    padding-left: 19px !important;
 }
 
 .Swarmpit-drawer-item-icon-selected,
@@ -359,7 +363,7 @@ a {
     flex-grow: 1;
     min-height: 56px;
     align-items: flex-start;
-    padding-left: 18px;
+    padding-left: 24px;
     flex-direction: column;
     justify-content: center;
 }
