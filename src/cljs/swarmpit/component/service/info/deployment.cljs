@@ -8,13 +8,6 @@
 
 (enable-console-print!)
 
-(defn item [name value]
-  (html
-    [:div {:class "Swarmpit-row-space"
-           :key   (str "sdcci-" name)}
-     [:span name]
-     [:span value]]))
-
 (rum/defc form < rum/static [deployment service-id immutable?]
   (let [autoredeploy (:autoredeploy deployment)
         update-delay (get-in deployment [:update :delay])
@@ -51,13 +44,13 @@
           (comp/grid
             {:item true
              :xs   6}
-            (item "Autoredeploy" (str autoredeploy)))
+            (form/item "Autoredeploy" (str autoredeploy)))
           (comp/grid
             {:item true
              :xs   12}
             (form/subsection "Placements")
             (if (empty? placement)
-              (html [:span "No placement constraints defined."])
+              (form/item-info "No placement constraints defined.")
               (map #(comp/chip {:label (:rule %)
                                 :key   (str "lp-" (:rule %))}) placement)))
           (comp/grid
@@ -70,16 +63,16 @@
                :direction "column"}
               (comp/grid
                 {:item true}
-                (item "Condition" restart-policy-condition))
+                (form/item "Condition" restart-policy-condition))
               (comp/grid
                 {:item true}
-                (item "Delay" (str restart-policy-delay "s")))
+                (form/item "Delay" (str restart-policy-delay "s")))
               (comp/grid
                 {:item true}
-                (item "Window" (str restart-policy-window "s")))
+                (form/item "Window" (str restart-policy-window "s")))
               (comp/grid
                 {:item true}
-                (item "Max Attempts" restart-policy-attempts))))
+                (form/item "Max Attempts" restart-policy-attempts))))
           (comp/grid
             {:item true
              :xs   12
@@ -90,16 +83,16 @@
                :direction "column"}
               (comp/grid
                 {:item true}
-                (item "Parallelism" update-parallelism))
+                (form/item "Parallelism" update-parallelism))
               (comp/grid
                 {:item true}
-                (item "Delay" (str update-delay "s")))
+                (form/item "Delay" (str update-delay "s")))
               (comp/grid
                 {:item true}
-                (item "Order" update-order))
+                (form/item "Order" update-order))
               (comp/grid
                 {:item true}
-                (item "On Failure" update-failure-action))))
+                (form/item "On Failure" update-failure-action))))
           (when (= "rollback" (:failureAction update))
             (comp/grid
               {:item true
@@ -111,14 +104,14 @@
                  :direction "column"}
                 (comp/grid
                   {:item true}
-                  (item "Parallelism" rollback-parallelism))
+                  (form/item "Parallelism" rollback-parallelism))
                 (comp/grid
                   {:item true}
-                  (item "Delay" (str rollback-delay "s")))
+                  (form/item "Delay" (str rollback-delay "s")))
                 (comp/grid
                   {:item true}
-                  (item "Order" rollback-order))
+                  (form/item "Order" rollback-order))
                 (comp/grid
                   {:item true}
-                  (item "On Failure" rollback-failure-action))))))))))
+                  (form/item "On Failure" rollback-failure-action))))))))))
 

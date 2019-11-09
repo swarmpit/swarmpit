@@ -303,7 +303,7 @@
                 :xl   8}
                (comp/grid
                  {:container true
-                  :spacing   40}
+                  :spacing   5}
                  (form-settings)
                  (form-ports)
                  (form-mounts)

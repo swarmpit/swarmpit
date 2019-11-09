@@ -9,8 +9,14 @@
   (html
     [:div {:class "Swarmpit-row-space"
            :key   (str "sri-" name)}
-     [:span name]
-     [:span value]]))
+     (cmp/typography {:variant "body1"
+                      :color   "textSecondary"} name)
+     (cmp/typography {:variant "body1"
+                      :color   "textSecondary"} value)]))
+
+(defn item-info [message]
+  (cmp/typography {:variant "body1"
+                   :color   "textSecondary"} message))
 
 (defn item-date [created updated]
   (html
@@ -76,7 +82,7 @@
      [:div.Swarmpit-form-section
       [:div
        (cmp/typography
-         {:variant "subtitle1"} name)]
+         {:variant "subtitle2"} name)]
       [:div button]])))
 
 (defn open-in-new [text href]

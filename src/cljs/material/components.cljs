@@ -15,7 +15,8 @@
                              :dark         "#362870"
                              :contrastText "#fff"}}
    :typography  {:fontSize 13}
-   :overrides   {}
+   :overrides   {:MuiCardHeader  {:action {:color "rgb(117, 117, 117)"}}
+                 :MuiCardActions {:root {:padding "8px 16px 8px 16px"}}}
    :breakpoints {:values {:xs 0
                           :sm 600
                           :md 1080
