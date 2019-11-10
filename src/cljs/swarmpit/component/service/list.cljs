@@ -1,6 +1,7 @@
 (ns swarmpit.component.service.list
   (:require [material.icon :as icon]
             [material.components :as comp]
+            [material.component.form :as form]
             [material.component.list.basic :as list]
             [material.component.list.util :as list-util]
             [material.component.composite :as composite]
@@ -105,7 +106,7 @@
     (if (empty? services)
       (comp/card-content
         {}
-        (html [:div "No linked services found."]))
+        (form/item-info "No linked services found."))
       (comp/card-content
         {:className "Swarmpit-table-card-content"}
         (list/responsive
