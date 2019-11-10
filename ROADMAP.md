@@ -136,16 +136,32 @@ now supporting 3 major container registries such Amazon ECR, Azure Container Reg
 - [[#341](https://github.com/swarmpit/swarmpit/issues/341)] Support for gitlab.com registry
 - [[#260](https://github.com/swarmpit/swarmpit/issues/260)] Logs performance improvement
 
+### 1.8 Release
+
+Since 1.8 we finally supporting Swagger open API so integration with your CD should be really a piece of cake.
+Influx support is in place and dashboard statistics overview was introduced as well. User can PIN important 
+service/node to dashboard in order to have quick cluster overview on login. Support of custom links and immutable service mode in service view is out. We introduced few UX improvements such option to deactivate stack, saving generated stack
+for future use and ability to stop service on single click.
+
+- [[#359](https://github.com/swarmpit/swarmpit/issues/359)] Introduce dashboard, Influx integration
+- [[#359](https://github.com/swarmpit/swarmpit/issues/377)] Swagger API documentation
+- [[#286](https://github.com/swarmpit/swarmpit/issues/286)] Save the generated stack file for future deployment
+- [[#387](https://github.com/swarmpit/swarmpit/issues/387)] Pin service/node to dashboard 
+- [[#264](https://github.com/swarmpit/swarmpit/issues/264)] Support custom links in service UI
+- [[#316](https://github.com/swarmpit/swarmpit/issues/316)] Remove Nodes
+- [[#347](https://github.com/swarmpit/swarmpit/issues/347)] Immutable service mode
+- [[#267](https://github.com/swarmpit/swarmpit/issues/267)] Option to deactivate stack
+- [[#358](https://github.com/swarmpit/swarmpit/issues/358)] Support for Custom v2 Registries
+
 ## What we will bring into the game
 
 You can find here our goals and related features for future releases.
 
-### 1.8 Release
+### 1.9 Release
 
-UX improvements, advanced monitoring, dashboard, swagger
+UX improvements, TCP support, Material update to 4.x, ...
 
-- [[#359](https://github.com/swarmpit/swarmpit/issues/359)] Introduce dashboard, Influx integration
-- [[#359](https://github.com/swarmpit/swarmpit/issues/377)] Swagger API documentation
+- [[#318](https://github.com/swarmpit/swarmpit/issues/318)] Support Docker API connections over encrypted TCP
 
 ### 2.0 Release
 
