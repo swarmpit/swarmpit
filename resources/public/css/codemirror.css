@@ -33,7 +33,7 @@
     min-width: 20px;
     text-align: right;
     color: #999;
-    white-space: nowrap
+    white-space: nowrap;
 }
 
 .CodeMirror-guttermarker {
@@ -282,7 +282,6 @@ div.CodeMirror span.CodeMirror-nonmatchingbracket {
     left: 0;
     top: 0;
     min-height: 100%;
-    z-index: 3
 }
 
 .CodeMirror-gutter {
