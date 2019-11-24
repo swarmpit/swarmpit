@@ -155,6 +155,11 @@ a {
     padding: 24px;
 }
 
+.Swarmpit-autocomplete > div {
+    padding: 10px 14px !important;
+    background: #fff;
+}
+
 .Swarmpit-row {
     display: flex;
     flex-wrap: wrap;

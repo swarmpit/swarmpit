@@ -131,9 +131,9 @@
 
 (defn- parse-cmd [command]
   (let [arr (str/split command #"\n")]
-      (if (< 1 (count arr))
-        arr
-        (str/split command #" "))))
+    (if (< 1 (count arr))
+      arr
+      (str/split command #" "))))
 
 (defn- form-command [value]
   (comp/text-field
