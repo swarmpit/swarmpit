@@ -253,7 +253,7 @@
     (if (empty? networks)
       (comp/card-content
         {}
-        (html [:div "No networks in stack."]))
+        (form/item-info "No networks in stack."))
       (comp/card-content
         {:className "Swarmpit-table-card-content"}
         (list/responsive
@@ -272,7 +272,7 @@
     (if (empty? volumes)
       (comp/card-content
         {}
-        (html [:div "No volumes in stack."]))
+        (form/item-info "No volumes in stack."))
       (comp/card-content
         {:className "Swarmpit-table-card-content"}
         (list/responsive
@@ -291,7 +291,7 @@
     (if (empty? configs)
       (comp/card-content
         {}
-        (html [:div "No configs in stack."]))
+        (form/item-info "No configs in stack."))
       (comp/card-content
         {:className "Swarmpit-table-card-content"}
         (list/list
@@ -308,7 +308,7 @@
     (if (empty? secrets)
       (comp/card-content
         {}
-        (html [:div "No secrets in stack."]))
+        (form/item-info "No secrets in stack."))
       (comp/card-content
         {:className "Swarmpit-table-card-content"}
         (list/list
