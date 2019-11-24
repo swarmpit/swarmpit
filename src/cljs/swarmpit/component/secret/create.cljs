@@ -40,8 +40,9 @@
      :className       "Swarmpit-codemirror"
      :name            "data"
      :key             "data"
-     :variant         "outlined"
      :required        true
+     :multiline       true
+     :disabled        true
      :InputLabelProps {:shrink true}
      :value           value}))
 

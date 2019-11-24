@@ -856,14 +856,10 @@ a {
 
 .Swarmpit-codemirror {
     border-radius: 4px !important;
-}
-
-.Swarmpit-codemirror-yaml {
-    border-radius: 4px !important;
     border: 1px solid rgba(0, 0, 0, 0.23) !important;
 }
 
-.Swarmpit-codemirror-yaml > div {
+.Swarmpit-codemirror > div {
     padding: 0 !important;
 }
 
