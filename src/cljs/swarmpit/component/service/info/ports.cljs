@@ -1,6 +1,7 @@
 (ns swarmpit.component.service.info.ports
   (:require [material.icon :as icon]
             [material.components :as comp]
+            [material.component.form :as form]
             [material.component.list.basic :as list]
             [swarmpit.routes :as routes]
             [sablono.core :refer-macros [html]]
@@ -37,7 +38,7 @@
     (if (empty? ports)
       (comp/card-content
         {}
-        (html [:div "No ports exposed for the service."]))
+        (form/item-info "No ports exposed for the service."))
       (comp/card-content
         {:className "Swarmpit-table-card-content"}
         (list/responsive

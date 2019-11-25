@@ -14,7 +14,9 @@
                              :light        "#957ed1"
                              :dark         "#362870"
                              :contrastText "#fff"}}
-   :typography  {:useNextVariants true}
+   :typography  {:fontSize 13}
+   :overrides   {:MuiCardHeader  {:action {:color "rgb(117, 117, 117)"}}
+                 :MuiCardActions {:root {:padding "8px 16px 8px 16px"}}}
    :breakpoints {:values {:xs 0
                           :sm 600
                           :md 1080
@@ -25,7 +27,6 @@
 
 (defn mui [component]
   (f/mui-theme-provider (clj->js {:theme theme}) (f/css-baseline) component))
-
 
 (defn md [props dialog]
   (let [md (f/with-mobile-dialog js/MaterialUI.Dialog)]

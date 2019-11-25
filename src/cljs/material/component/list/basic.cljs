@@ -27,8 +27,9 @@
         (let [route (when onclick-handler-fn (onclick-handler-fn item))]
           (cmp/table-row
             (merge
-              {:key   (str "table-row-" index)
-               :hover true}
+              {:key       (str "table-row-" index)
+               :className "Swarmpit-table-row"
+               :hover     true}
               (when route
                 {:onClick #(dispatch! route)}))
             (->> (:summary render-metadata)

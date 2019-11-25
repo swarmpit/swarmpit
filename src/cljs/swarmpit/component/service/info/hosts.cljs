@@ -1,6 +1,7 @@
 (ns swarmpit.component.service.info.hosts
   (:require [material.icon :as icon]
             [material.components :as comp]
+            [material.component.form :as form]
             [material.component.list.basic :as list]
             [swarmpit.routes :as routes]
             [sablono.core :refer-macros [html]]
@@ -29,7 +30,7 @@
     (if (empty? hosts)
       (comp/card-content
         {}
-        (html [:div "No extra hosts defined for the service."]))
+        (form/item-info "No extra hosts defined for the service."))
       (comp/card-content
         {:className "Swarmpit-table-card-content"}
         (list/list

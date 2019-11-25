@@ -36,7 +36,7 @@
       {}
       (comp/grid
         {:container true
-         :spacing   40}
+         :spacing   5}
         (comp/grid
           {:item true
            :xs   12

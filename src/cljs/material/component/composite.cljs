@@ -59,7 +59,7 @@
       {:tabIndex   -1
        :onDelete   (:onClick removeProps)
        :deleteIcon (icon/cancel removeProps)
-       :style      {:marginRight "5px"}
+       :style      {:margin "2px"}
        :color      "primary"
        :variant    "outlined"
        :label      children})))
@@ -86,21 +86,17 @@
                 :overflow   "hidden"}} childs])))
 
 (defn autocomplete-control [props]
-  (let [{:keys [innerRef innerProps children selectProps]} (js->clj props :keywordize-keys true)
-        margin (get-in selectProps [:textFieldProps :margin])]
+  (let [{:keys [innerRef innerProps children selectProps]} (js->clj props :keywordize-keys true)]
     (cmp/text-field
       (merge (:textFieldProps selectProps)
              {:fullWidth  true
+              :multiline  true
+              :className  "Swarmpit-autocomplete"
               :variant    "outlined"
               :InputProps {:inputComponent autocomplete-input
                            :inputProps     (merge innerProps
-                                                  {:style    (merge
-                                                               {:display         "flex"
-                                                                :backgroundColor "#fff"}
-                                                               (when (= "normal" margin)
-                                                                 {:padding "10px 15px"})
-                                                               (when (= "dense" margin)
-                                                                 {:padding "6.5px 15px"}))
+                                                  {:style    {:display         "flex"
+                                                              :backgroundColor "#fff"}
                                                    :key      "input-key"
                                                    :inputRef innerRef
                                                    :children children})}}))))

@@ -29,7 +29,7 @@
                     (comp/svg icon/edit-path))})
     (comp/card-content
       {}
-      name)
+      (form/item name nil))
     (comp/card-content
       {:className "Swarmpit-table-card-content"}
       (when (not-empty opts)

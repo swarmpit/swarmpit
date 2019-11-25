@@ -87,7 +87,7 @@
   (let [{:keys [reservation limit]} (state/react form-value-cursor)]
     (comp/grid
       {:container true
-       :spacing   40}
+       :spacing   5}
       (comp/grid
         {:item true
          :xs   12

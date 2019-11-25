@@ -69,13 +69,19 @@
       {}
       (html
         [:div.Swarmpit-volume-mount
-         [:span "Volume is mounted at: "]
-         [:span.Swarmpit-volume-mountpoint [:b mountpoint]]])
+         (comp/typography {:color    "textPrimary"
+                           :children (html [:span "Volume is mounted at: "])})
+         (comp/typography {:color    "textSecondary"
+                           :variant  "body2"
+                           :children (html [:span.Swarmpit-volume-mountpoint mountpoint])})])
       (html
         [:div
          [:br]
-         [:span "Space usage is: "]
-         [:span [:b (humanize/filesize size :binary false)]]]))
+         (comp/typography {:color    "textPrimary"
+                           :children (html [:span "Space usage is: "])})
+         (comp/typography {:color    "textSecondary"
+                           :variant  "body2"
+                           :children (html [:span (humanize/filesize size :binary false)])})]))
     (comp/card-content
       {}
       (form/item-labels
@@ -101,7 +107,9 @@
     (comp/card-header
       {:className "Swarmpit-table-card-header Swarmpit-card-header-responsive-title"
        :title     (comp/typography {:variant "h6"} "Driver")})
-    (comp/card-content {} driver)
+    (comp/card-content
+      {}
+      (form/item driver nil))
     (comp/card-content
       {:className "Swarmpit-table-card-content"}
       (when (not-empty options)
@@ -154,14 +162,14 @@
            :implementation "js"}
           (comp/grid
             {:container true
-             :spacing   16}
+             :spacing   2}
             (comp/grid
               {:item true
                :sm   6
                :md   4}
               (comp/grid
                 {:container true
-                 :spacing   16}
+                 :spacing   2}
                 (form-general-grid volume services)
                 (form-driver-grid volume)))
             (comp/grid
@@ -170,14 +178,14 @@
                :md   8}
               (comp/grid
                 {:container true
-                 :spacing   16}
+                 :spacing   2}
                 (form-services-grid services)))))
         (comp/hidden
           {:smUp           true
            :implementation "js"}
           (comp/grid
             {:container true
-             :spacing   16}
+             :spacing   2}
             (form-general-grid volume services)
             (form-services-grid services)
             (form-driver-grid volume)))]])))

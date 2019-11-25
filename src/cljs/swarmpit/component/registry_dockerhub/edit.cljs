@@ -85,7 +85,7 @@
           (comp/grid
             {:container true
              :className "Swarmpit-form-main-grid"
-             :spacing   24}
+             :spacing   3}
             (comp/grid
               {:item true
                :xs   12}

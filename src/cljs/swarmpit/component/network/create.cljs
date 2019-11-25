@@ -78,7 +78,7 @@
   [{:keys [networkName internal attachable ingress]}]
   (comp/grid
     {:container true
-     :spacing   24}
+     :spacing   3}
     (comp/grid
       {:item true
        :xs   12}
@@ -141,7 +141,7 @@
   [{:keys [ipam enableIPv6]}]
   (comp/grid
     {:container true
-     :spacing   24}
+     :spacing   3}
     (comp/grid
       {:item true
        :xs   12}
@@ -275,7 +275,7 @@
            (comp/grid
              {:container true
               :className "Swarmpit-form-main-grid"
-              :spacing   40}
+              :spacing   5}
              (comp/grid
                {:item true
                 :xs   12
@@ -285,7 +285,7 @@
                 :xl   8}
                (comp/grid
                  {:container true
-                  :spacing   40}
+                  :spacing   5}
                  (comp/grid
                    {:item true
                     :xs   12

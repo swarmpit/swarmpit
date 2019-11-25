@@ -1,6 +1,7 @@
 (ns swarmpit.component.service.info.mounts
   (:require [material.icon :as icon]
             [material.components :as comp]
+            [material.component.form :as form]
             [material.component.list.basic :as list]
             [swarmpit.routes :as routes]
             [swarmpit.url :refer [dispatch!]]
@@ -78,7 +79,7 @@
       (if (empty? mounts)
         (comp/card-content
           {}
-          (html [:div "No mounts defined for the service."]))
+          (form/item-info "No mounts defined for the service."))
         (comp/card-content
           {:className "Swarmpit-table-card-content"}
           (form-bind bind)

@@ -59,24 +59,28 @@
      :margin          "normal"
      :multiline       true
      :value           value
-     :InputProps      {:readOnly true
-                       :style    {:fontFamily "monospace"}
-                       :className    "Swarmpit-form-input"}
+     :InputProps      {:readOnly  true
+                       :style     {:fontFamily "monospace"}
+                       :className "Swarmpit-form-input"}
      :InputLabelProps {:shrink true}}))
 
 (defn old-token-form [api-token]
-  [(comp/typography {:key "info"}
+  [(comp/typography {:key     "info"
+                     :variant "body2"}
                     ["Token for this user was already created. If you lost your token, please generate new one and "
                      "the former token will be revoked."])
    (form-token (str "Bearer ..." (:mask api-token)))])
 
 (defn new-token-form [token]
-  [(comp/typography {:key "notice"} "Copy your token and store it safely, value will be displayed only once.")
+  [(comp/typography {:key     "notice"
+                     :variant "body2"} "Copy your token and store it safely, value will be displayed only once.")
    (form-token (:token token))])
 
 (defn no-token-form []
-  [(comp/typography {:key "notoken"} "Your user doesn't have any API token.")
-   (comp/typography {:key "info"} "New token doesn't expire, but it can be revoked or regenenerated.")])
+  [(comp/typography {:key     "notoken"
+                     :variant "body2"} "Your user doesn't have any API token.")
+   (comp/typography {:key     "info"
+                     :variant "body2"} "New token doesn't expire, but it can be revoked or regenenerated.")])
 
 (rum/defc form-api-token < rum/reactive []
   (let [{:keys [api-token token]} (state/react state/form-value-cursor)
@@ -87,7 +91,7 @@
       [:div.Swarmpit-access-form
        (comp/grid
          {:container true
-          :spacing   24}
+          :spacing   3}
          (comp/grid
            {:item true
             :xs   12}

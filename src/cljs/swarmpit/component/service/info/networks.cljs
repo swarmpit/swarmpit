@@ -1,9 +1,10 @@
 (ns swarmpit.component.service.info.networks
   (:require [material.icon :as icon]
             [material.components :as comp]
+            [material.component.form :as form]
             [material.component.list.basic :as list]
-            [swarmpit.routes :as routes]
             [swarmpit.component.network.list :as networks]
+            [swarmpit.routes :as routes]
             [sablono.core :refer-macros [html]]
             [rum.core :as rum]))
 
@@ -26,7 +27,7 @@
     (if (empty? networks)
       (comp/card-content
         {}
-        (html [:div "No networks attached to the service."]))
+        (form/item-info "No networks attached to the service."))
       (comp/card-content
         {:className "Swarmpit-table-card-content"}
         (list/responsive

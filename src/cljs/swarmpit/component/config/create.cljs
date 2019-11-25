@@ -6,13 +6,13 @@
             [swarmpit.component.mixin :as mixin]
             [swarmpit.component.state :as state]
             [swarmpit.component.message :as message]
+            [swarmpit.component.common :as common]
             [swarmpit.url :refer [dispatch!]]
             [swarmpit.ajax :as ajax]
             [swarmpit.routes :as routes]
             [swarmpit.base64 :as base64]
             [sablono.core :refer-macros [html]]
-            [rum.core :as rum]
-            [swarmpit.component.common :as common]))
+            [rum.core :as rum]))
 
 (enable-console-print!)
 
@@ -39,8 +39,9 @@
      :fullWidth       true
      :name            "data"
      :key             "data"
-     :variant         "outlined"
      :required        true
+     :multiline       true
+     :disabled        true
      :InputLabelProps {:shrink true}
      :value           value}))
 
@@ -99,7 +100,7 @@
            (comp/grid
              {:container true
               :className "Swarmpit-form-main-grid"
-              :spacing   40}
+              :spacing   5}
              (comp/grid
                {:item true
                 :xs   12
@@ -109,7 +110,7 @@
                 :xl   8}
                (comp/grid
                  {:container true
-                  :spacing   40}
+                  :spacing   5}
                  (comp/grid
                    {:item true
                     :xs   12}

@@ -131,9 +131,9 @@
 
 (defn- parse-cmd [command]
   (let [arr (str/split command #"\n")]
-      (if (< 1 (count arr))
-        arr
-        (str/split command #" "))))
+    (if (< 1 (count arr))
+      arr
+      (str/split command #" "))))
 
 (defn- form-command [value]
   (comp/text-field
@@ -165,7 +165,7 @@
         {:keys [tags]} (state/react form-state-cursor)]
     (comp/grid
       {:container true
-       :spacing   24}
+       :spacing   3}
       (comp/grid
         {:item true
          :xs   12

@@ -318,14 +318,14 @@
              :implementation "js"}
             (comp/grid
               {:container true
-               :spacing   16}
+               :spacing   2}
               (comp/grid
                 {:item true
                  :sm   6
                  :md   4}
                 (comp/grid
                   {:container true
-                   :spacing   16}
+                   :spacing   2}
                   (form-settings-grid service id tasks pinned?)
                   (form-secrets-grid secrets id immutable?)
                   (form-configs-grid configs id immutable?)
@@ -341,7 +341,7 @@
                  :md   8}
                 (comp/grid
                   {:container true
-                   :spacing   16}
+                   :spacing   2}
                   (form-tasks-grid service tasks)
                   (form-networks-grid networks id immutable?)
                   (form-ports-grid ports id immutable?)
@@ -351,7 +351,7 @@
              :implementation "js"}
             (comp/grid
               {:container true
-               :spacing   16}
+               :spacing   2}
               (form-settings-grid service id tasks pinned?)
               (form-tasks-grid service tasks)
               (form-networks-grid networks id immutable?)
