@@ -97,7 +97,7 @@
         [:div.Swarmpit-form
          [:div.Swarmpit-form-context
           [:div.Swarmpit-form-paper
-           (common/edit-title "Create a new secret" "blob of data, such as a password or SSH private key")
+           (common/form-title "Create a new secret" "blob of data, such as a password or SSH private key")
            (comp/grid
              {:container true
               :className "Swarmpit-form-main-grid"

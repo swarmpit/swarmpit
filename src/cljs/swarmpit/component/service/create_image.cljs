@@ -326,7 +326,7 @@
         [:div.Swarmpit-form
          [:div.Swarmpit-form-context
           [:div.Swarmpit-form-paper
-           (common/edit-title "Select a repository" "define image for new service")
+           (common/form-title "Select a repository" "define image for new service")
            [:div.Swarmpit-repo-manual
             (comp/form-control
               {:component "fieldset"}

@@ -192,7 +192,7 @@
       [:div.Swarmpit-form
        [:div.Swarmpit-form-context
         [:div.Swarmpit-form-paper
-         (common/edit-title (str "Editing " nodeName))
+         (common/form-title (str "Editing " nodeName))
          (comp/grid
            {:container true
             :className "Swarmpit-form-main-grid"

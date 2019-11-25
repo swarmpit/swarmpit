@@ -136,7 +136,7 @@
       [:div.Swarmpit-form
        [:div.Swarmpit-form-context
         [:div.Swarmpit-form-paper
-         (common/edit-title (str "Editing " user))
+         (common/form-title (str "Editing " user))
          [:div.Swarmpit-registry-form
           (comp/grid
             {:container true

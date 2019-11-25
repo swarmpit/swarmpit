@@ -95,7 +95,7 @@
       [:div.Swarmpit-form
        [:div.Swarmpit-form-context
         [:div.Swarmpit-form-paper
-         (common/edit-title (str "Editing " spName))
+         (common/form-title (str "Editing " spName))
          [:div.Swarmpit-registry-form
           (comp/grid
             {:container true

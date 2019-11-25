@@ -587,12 +587,8 @@ a {
     background-color: #fff !important;
 }
 
-.Swarmpit-form-subtitle {
-    color: rgba(0, 0, 0, 0.54) !important;
-}
-
 .Swarmpit-form-title {
-    color: rgba(0, 0, 0, 0.87) !important;
+    margin-bottom: 16px;
 }
 
 .Swarmpit-form-title-divider {
@@ -606,14 +602,6 @@ a {
 
 .Swarmpit-form-paper {
     padding: 16px;
-}
-
-.Swarmpit-form-main-grid {
-    padding-top: 24px;
-}
-
-.Swarmpit-form-input {
-    background-color: #fff;
 }
 
 .Swarmpit-form-select-icon > div {
@@ -633,6 +621,7 @@ a {
 .Swarmpit-form-buttons {
     display: flex;
     justify-content: flex-start;
+    margin-top: 16px;
 }
 
 .Swarmpit-form-buttons > * {

@@ -271,7 +271,7 @@
         [:div.Swarmpit-form
          [:div.Swarmpit-form-context
           [:div.Swarmpit-form-paper
-           (common/edit-title "Create a new network" "connect services together by pluggable networks")
+           (common/form-title "Create a new network" "connect services together by pluggable networks")
            (comp/grid
              {:container true
               :className "Swarmpit-form-main-grid"

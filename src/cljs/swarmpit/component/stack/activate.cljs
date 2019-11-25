@@ -102,7 +102,7 @@
          "Delete")
        [:div.Swarmpit-form-context
         [:div.Swarmpit-form-paper
-         (common/edit-title (str "Activate " name))
+         (common/form-title (str "Activate " name))
          (comp/grid
            {:container true
             :className "Swarmpit-form-main-grid"

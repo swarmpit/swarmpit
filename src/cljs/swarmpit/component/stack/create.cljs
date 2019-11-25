@@ -130,7 +130,7 @@
         [:div.Swarmpit-form
          [:div.Swarmpit-form-context
           [:div.Swarmpit-form-paper
-           (common/edit-title "Create a new stack" "group of interrelated services that are orchestrated and scaled together")
+           (common/form-title "Create a new stack" "group of interrelated services that are orchestrated and scaled together")
            (comp/grid
              {:container true
               :className "Swarmpit-form-main-grid"

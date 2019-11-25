@@ -1,5 +1,6 @@
 (ns swarmpit.component.user.create
-  (:require [material.components :as comp]
+  (:require [material.icon :as icon]
+            [material.components :as comp]
             [material.component.composite :as composite]
             [swarmpit.component.mixin :as mixin]
             [swarmpit.component.state :as state]
@@ -125,35 +126,42 @@
       (html
         [:div.Swarmpit-form
          [:div.Swarmpit-form-context
-          [:div.Swarmpit-form-paper
-           (common/edit-title "Create a new user" "allow application access and management of the cluster")
-           [:div.Swarmpit-user-form
-            (comp/grid
-              {:container true
-               :className "Swarmpit-form-main-grid"
-               :spacing   3}
-              (comp/grid
-                {:item true
-                 :xs   12}
-                (form-username username))
-              (comp/grid
-                {:item true
-                 :xs   12}
-                (form-password password showPassword))
-              (comp/grid
-                {:item true
-                 :xs   12}
-                (form-role role))
-              (comp/grid
-                {:item true
-                 :xs   12}
-                (form-email email))
-              (comp/grid
-                {:item true
-                 :xs   12}
-                (html
-                  [:div.Swarmpit-form-buttons
-                   (composite/progress-button
-                     "Create"
-                     create-user-handler
-                     processing?)])))]]]]))))
+          (comp/container
+            {:maxWidth "sm"
+             :style    {:padding 0
+                        :margin  0}}
+            (common/form-title "Create user" "Allow application access and management of the cluster")
+            (comp/card
+              {:className "Swarmpit-form-card"}
+              (comp/card-header
+                {:title                "User details"
+                 :titleTypographyProps {:variant "h6"}})
+              (comp/card-content
+                {}
+                (comp/grid
+                  {:container true
+                   :spacing   3}
+                  (comp/grid
+                    {:item true
+                     :xs   12
+                     :md   6}
+                    (form-username username))
+                  (comp/grid
+                    {:item true
+                     :xs   12
+                     :md   6}
+                    (form-password password showPassword))
+                  (comp/grid
+                    {:item true
+                     :xs   12}
+                    (form-email email))
+                  (comp/grid
+                    {:item true
+                     :xs   12}
+                    (form-role role)))))
+            (html
+              [:div.Swarmpit-form-buttons
+               (composite/progress-button
+                 "Create"
+                 create-user-handler
+                 processing?)]))]]))))

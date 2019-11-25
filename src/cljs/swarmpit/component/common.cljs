@@ -29,17 +29,17 @@
                       :style   {:cursor "pointer"}} subheader])))
     (html [:span subheader])))
 
-(defn edit-title [title & subtitle]
-  [(comp/typography
-     {:variant   "h5"
-      :key       "title"
-      :className "Swarmpit-form-title"}
-     title)
-   (comp/typography
-     {:variant   "body1"
-      :key       "subtitle"
-      :className "Swarmpit-form-subtitle"}
-     subtitle)])
+(defn form-title [title & subtitle]
+  (html
+    [:div.Swarmpit-form-title
+     (comp/typography
+       {:variant   "h5"
+        :key       "title"}
+       title)
+     (comp/typography
+       {:variant   "body2"
+        :key       "subtitle"}
+       subtitle)]))
 
 (defn list-empty [title]
   (comp/typography

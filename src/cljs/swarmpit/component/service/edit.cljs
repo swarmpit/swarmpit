@@ -289,7 +289,7 @@
         [:div.Swarmpit-form
          [:div.Swarmpit-form-context
           [:div.Swarmpit-form-paper
-           (common/edit-title (str "Editing " (:serviceName settings)))
+           (common/form-title (str "Editing " (:serviceName settings)))
            (comp/grid
              {:container true
               :className "Swarmpit-form-main-grid"

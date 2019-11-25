@@ -20,7 +20,7 @@
         [:div.Swarmpit-form
          [:div.Swarmpit-form-context
           [:div.Swarmpit-form-paper
-           (common/edit-title "Not Found" id)
+           (common/form-title "Not Found" id)
            [:div.Swarmpit-user-form
             (comp/grid
               {:container true

@@ -99,7 +99,7 @@
       [:div.Swarmpit-form
        [:div.Swarmpit-form-context
         [:div.Swarmpit-form-paper
-         (common/edit-title (str "Editing " username))
+         (common/form-title (str "Editing " username))
          [:div.Swarmpit-user-form
           (comp/grid
             {:container true

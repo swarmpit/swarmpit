@@ -58,13 +58,16 @@
 (def storage (f/storage-icon))
 (def device-hub (f/device-hub-icon))
 
-(def warning (f/warning-icon))
 (def sync (f/sync-icon))
 (def add-circle (f/add-circle-icon))
 (def more (f/more-icon))
 (def logs (f/logs-icon))
 
 (def scroll-down (f/vertical-align-bottom-icon))
+
+(defn warning
+  [props]
+  (f/warning-icon (clj->js props)))
 
 (defn cancel
   [props]

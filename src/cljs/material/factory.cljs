@@ -82,6 +82,7 @@
 
 (def grid (create-factory js/MaterialUI.Grid))
 (def box (create-factory js/MaterialUI.Box))
+(def container (create-factory js/MaterialUI.Container))
 
 (def card (create-factory js/MaterialUI.Card))
 (def card-header (create-factory js/MaterialUI.CardHeader))

@@ -218,6 +218,10 @@
   [props & childs]
   (apply f/box (clj->js props) childs))
 
+(defn container
+  [props & childs]
+  (apply f/container (clj->js props) childs))
+
 (defn card
   [props & childs]
   (apply f/card (clj->js props) childs))
