@@ -160,16 +160,16 @@
              (step-item
                0
                true
-               registry-type-text
+               (comp/typography {:variant "body2"} registry-type-text)
                (registry-type-form registry))
              (step-item
                1
                valid?
-               (registry-text registry)
+               (comp/typography {:variant "body2"} (registry-text registry))
                (registry-form registry route))
              (step-item
                2
                true
-               registry-publish-text
+               (comp/typography {:variant "body2"} registry-publish-text)
                (registry-publish-form public)
                processing?))]]]))))
