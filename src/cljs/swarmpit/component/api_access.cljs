@@ -60,8 +60,7 @@
      :multiline       true
      :value           value
      :InputProps      {:readOnly  true
-                       :style     {:fontFamily "monospace"}
-                       :className "Swarmpit-form-input"}
+                       :style     {:fontFamily "monospace"}}
      :InputLabelProps {:shrink true}}))
 
 (defn old-token-form [api-token]
@@ -87,36 +86,41 @@
         state (if (and api-token (not token))
                 :old
                 (if token :new :none))]
-    (html
-      [:div.Swarmpit-access-form
-       (comp/grid
-         {:container true
-          :spacing   3}
-         (comp/grid
-           {:item true
-            :xs   12}
-           (case state
-             :old (old-token-form api-token)
-             :new (new-token-form token)
-             :none (no-token-form)))
-         (comp/grid
-           {:item true
-            :xs   12}
-           (html
-             [:div.Swarmpit-form-buttons
-              (comp/button
-                {:variant  "contained"
-                 :key      "submit"
-                 :disabled false
-                 :onClick  generate-handler
-                 :color    "primary"}
-                (case state :none "Generate" "Regenerate"))
-              (comp/button
-                {:variant  "outlined"
-                 :key      "remove"
-                 :disabled (= :none state)
-                 :onClick  remove-handler}
-                "Remove")])))])))
+    (comp/card
+      {:className "Swarmpit-form-card"}
+      (comp/card-header
+        {:title "Access token"})
+      (comp/divider {})
+      (comp/card-content
+        {}
+        (comp/grid
+          {:container true
+           :spacing   3}
+          (comp/grid
+            {:item true
+             :xs   12
+             :md   6
+             :sm   4}
+            (case state
+              :old (old-token-form api-token)
+              :new (new-token-form token)
+              :none (no-token-form)))))
+      (comp/divider {})
+      (comp/card-actions
+        {}
+        (comp/button
+          {:variant  "contained"
+           :key      "submit"
+           :disabled false
+           :onClick  generate-handler
+           :color    "primary"}
+          (case state :none "Generate" "Regenerate"))
+        (comp/button
+          {:variant  "outlined"
+           :key      "remove"
+           :disabled (= :none state)
+           :onClick  remove-handler}
+          "Remove")))))
 
 (rum/defc form < rum/reactive
                  mixin-init-form []

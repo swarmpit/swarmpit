@@ -15,7 +15,7 @@
                              :dark         "#362870"
                              :contrastText "#fff"}}
    :overrides   {:MuiCardHeader  {:action {:color "rgb(117, 117, 117)"}}
-                 :MuiCardActions {:root {:padding "8px 16px 8px 16px"}}}
+                 :MuiCardActions {:root {:padding 16}}}
    :breakpoints {:values {:xs 0
                           :sm 600
                           :md 1080
@@ -213,6 +213,10 @@
 (defn grid
   [props & childs]
   (apply f/grid (clj->js props) childs))
+
+(defn box
+  [props & childs]
+  (apply f/box (clj->js props) childs))
 
 (defn card
   [props & childs]

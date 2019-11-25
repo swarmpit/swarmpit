@@ -81,6 +81,7 @@
 (def step-content (create-factory js/MaterialUI.StepContent))
 
 (def grid (create-factory js/MaterialUI.Grid))
+(def box (create-factory js/MaterialUI.Box))
 
 (def card (create-factory js/MaterialUI.Card))
 (def card-header (create-factory js/MaterialUI.CardHeader))

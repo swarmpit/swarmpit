@@ -197,6 +197,16 @@
          icon/visibility
          icon/visibility-off)))))
 
+(defn tab-panel [{:keys [value index] :as props} childs]
+  (comp/typography
+    {:component       "div"
+     :role            "tabpanel"
+     :hidden          (not= value index)
+     :id              (str "scrollable-auto-tabpanel-" index)
+     :aria-labelledby (str "scrollable-auto-tab-" index)}
+    (when (= value index)
+      (comp/box {:style {:marginTop "24px"}} childs))))
+
 (defn resource-used [stat]
   (cond
     (< stat 75) {:name  "used"

@@ -28,8 +28,7 @@
      :required        true
      :onChange        #(state/update-value [:password] (-> % .-target .-value) state/form-value-cursor)
      :InputLabelProps {:shrink true}
-     :InputProps      {:endAdornment (common/show-password-adornment show-password?)
-                       :className    "Swarmpit-form-input"}}))
+     :InputProps      {:endAdornment (common/show-password-adornment show-password?)}}))
 
 (defn- form-new-password [password show-password?]
   (comp/text-field
@@ -46,8 +45,7 @@
      :required        true
      :onChange        #(state/update-value [:new-password] (-> % .-target .-value) state/form-value-cursor)
      :InputLabelProps {:shrink true}
-     :InputProps      {:endAdornment (common/show-password-adornment show-password?)
-                       :className    "Swarmpit-form-input"}}))
+     :InputProps      {:endAdornment (common/show-password-adornment show-password?)}}))
 
 (defn- form-confirm-password [confirm-password error? show-password?]
   (comp/text-field
@@ -66,8 +64,7 @@
      :onChange        #(and (state/update-value [:confirm-password] (-> % .-target .-value) state/form-value-cursor)
                             (state/update-value [:error?] (not= (:new-password (state/get-value state/form-value-cursor)) (-> % .-target .-value)) state/form-state-cursor))
      :InputLabelProps {:shrink true}
-     :InputProps      {:endAdornment (common/show-password-adornment show-password?)
-                       :className    "Swarmpit-form-input"}}))
+     :InputProps      {:endAdornment (common/show-password-adornment show-password?)}}))
 
 (defn- change-password-handler
   []
@@ -105,24 +102,39 @@
                  mixin-init-form []
   (let [{:keys [password new-password confirm-password]} (state/react state/form-state-cursor)
         {:keys [error? processing? showPassword]} (state/react state/form-state-cursor)]
-    (html
-      [:div.Swarmpit-user-form
-       (comp/grid
-         {:container true
-          :spacing   3}
-         (comp/grid
-           {:item true
-            :xs   12}
-           (form-password password showPassword)
-           (form-new-password new-password showPassword)
-           (form-confirm-password confirm-password error? showPassword))
-         (comp/grid
-           {:item true
-            :xs   12}
-           (html
-             [:div.Swarmpit-form-buttons
-              (composite/progress-button
-                "Change"
-                change-password-handler
-                processing?
-                (or error? (some? password) (some? new-password)))])))])))
+    (comp/card
+      {:className "Swarmpit-form-card"}
+      (comp/card-header
+        {:title "Change password"})
+      (comp/divider {})
+      (comp/card-content
+        {}
+        (comp/grid
+          {:container true
+           :spacing   3}
+          (comp/grid
+            {:item true
+             :xs   12
+             :sm   6
+             :md   4}
+            (form-password password showPassword))
+          (comp/grid
+            {:item true
+             :xs   12
+             :sm   6
+             :md   4}
+            (form-new-password new-password showPassword))
+          (comp/grid
+            {:item true
+             :xs   12
+             :sm   6
+             :md   4}
+            (form-confirm-password confirm-password error? showPassword))))
+      (comp/divider {})
+      (comp/card-actions
+        {}
+        (composite/progress-button
+          "Change"
+          change-password-handler
+          processing?
+          (or error? (some? password) (some? new-password)))))))

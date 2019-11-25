@@ -8,20 +8,30 @@
 
 (enable-console-print!)
 
+(defonce active-tab (atom 0))
+
 (rum/defc form < rum/reactive []
-  (comp/mui
-    (html
-      [:div.Swarmpit-form
-       [:div.Swarmpit-form-context
-        [:div.Swarmpit-form-paper
-         (common/edit-title "Password change")
-         (password/form)]
-        [:div.Swarmpit-form-paper (comp/divider)]
-        [:div.Swarmpit-form-paper
-         (common/edit-title "API access")
-         (api-access/form)]]])))
-
-
-
-
-
+  (let [active (rum/react active-tab)]
+    (comp/mui
+      (html
+        [:div.Swarmpit-form
+         [:div.Swarmpit-form-context
+          (comp/tabs
+            {:value          active
+             :onChange       (fn [_ v] (reset! active-tab v))
+             :indicatorColor "primary"
+             :textColor      "primary"
+             :variant        "scrollable"
+             :scrollButtons  "auto"
+             :aria-label     "scrollable auto tabs example"}
+            (comp/tab {:label "Security"})
+            (comp/tab {:label "API Access"}))
+          (comp/divider {})
+          (common/tab-panel
+            {:value active
+             :index 0}
+            (password/form))
+          (common/tab-panel
+            {:value active
+             :index 1}
+            (api-access/form))]]))))
