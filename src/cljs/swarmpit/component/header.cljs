@@ -195,6 +195,7 @@
          (comp/app-bar
            {:key       "appbar"
             :color     "primary"
+            :elevation 0
             :className "Swarmpit-appbar"}
            (comp/toolbar
              {:key            "appbar-toolbar"

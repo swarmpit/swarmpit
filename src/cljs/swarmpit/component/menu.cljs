@@ -124,7 +124,7 @@
            (when selected?
              {:className "Swarmpit-drawer-item-selected"})
            (when (= :index domain)
-             {:style {:marginTop "10px"}}))
+             {:style {:marginTop "15px"}}))
     (comp/list-item-icon
       (merge {:color "primary"
               :key   (str "drawer-item-icon-" name)}
@@ -151,7 +151,6 @@
       [:div.Swarmpit-title
        (drawer-title-name)
        (drawer-title-version version)]])
-   (comp/divider)
    (map
      (fn [{:keys [icon name handler domain]}]
        (let [selected? (= page-domain domain)]
@@ -180,13 +179,15 @@
               :open       mobileOpened
               :variant    "temporary"
               :onClose    #(state/update-value [:mobileOpened] false state/layout-cursor)
+              :PaperProps {:style {:backgroundColor "#fafafa"}}
               :ModalProps {:keepMounted true}}
              (drawer-content version page-domain docker-api)))
          (comp/hidden
            {:mdDown         true
             :implementation "css"}
            (comp/drawer
-             {:className "Swarmpit-drawer"
-              :open      true
-              :variant   "permanent"}
+             {:className  "Swarmpit-drawer"
+              :PaperProps {:style {:backgroundColor "#fafafa"}}
+              :open       true
+              :variant    "permanent"}
              (drawer-content version page-domain docker-api)))]))))
