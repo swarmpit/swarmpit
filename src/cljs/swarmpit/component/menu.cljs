@@ -112,19 +112,20 @@
 
 (rum/defc drawer-item < rum/static [name icon handler domain selected?]
   (comp/list-item
-    (merge {:button    true
-            :component "a"
-            :href      (routes/path-for-frontend handler)
-            :dense     true
-            :className "Swarmpit-drawer-item"
-            :key       (str "drawer-item-" name)
-            :onClick   (fn []
-                         (state/update-value [:mobileOpened] false state/layout-cursor)
-                         (url/dispatch! (routes/path-for-frontend handler)))}
+    (merge {:button        true
+            :component     "a"
+            :href          (routes/path-for-frontend handler)
+            :dense         true
+            :disableRipple true
+            :className     "Swarmpit-drawer-item"
+            :key           (str "drawer-item-" name)
+            :onClick       (fn []
+                             (state/update-value [:mobileOpened] false state/layout-cursor)
+                             (url/dispatch! (routes/path-for-frontend handler)))}
            (when selected?
              {:className "Swarmpit-drawer-item-selected"})
            (when (= :index domain)
-             {:style {:marginTop "15px"}}))
+             {:style {:marginTop "1rem"}}))
     (comp/list-item-icon
       (merge {:color "primary"
               :key   (str "drawer-item-icon-" name)}
