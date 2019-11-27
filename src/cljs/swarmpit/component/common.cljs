@@ -33,12 +33,12 @@
   (html
     [:div.Swarmpit-form-title
      (comp/typography
-       {:variant   "h5"
-        :key       "title"}
+       {:variant "h5"
+        :key     "title"}
        title)
      (comp/typography
-       {:variant   "body2"
-        :key       "subtitle"}
+       {:variant "body2"
+        :key     "subtitle"}
        subtitle)]))
 
 (defn list-empty [title]
@@ -56,14 +56,16 @@
        [:div.Swarmpit-section-desktop
         (comp/button
           {:aria-owns     (when anchorEl "list-filter-menu")
+           :className     "Swarmpit-form-toolbar-btn"
            :aria-haspopup "true"
            :color         "primary"
+           :variant       "outlined"
            :onClick       (fn [e]
                             (state/update-value [:listFilterAnchorEl] (.-currentTarget e) state/form-state-cursor))}
-          (icon/filter-list {:className "Swarmpit-button-icon"}) "Filter")]
+          (icon/filter-list {:className "Swarmpit-button-icon"}) "Show Filters")]
        [:div.Swarmpit-section-mobile
         (comp/tooltip
-          {:title "Filter"}
+          {:title "Show Filters"}
           (comp/icon-button
             {:aria-owns     (when anchorEl "list-filter-menu")
              :aria-haspopup "true"
@@ -100,8 +102,7 @@
   [title items filtered-items {:keys [actions filters] :as metadata}]
   (comp/mui
     (comp/toolbar
-      {:disableGutters true
-       :className      "Swarmpit-form-toolbar-context"}
+      {:disableGutters true}
       (comp/typography
         {:variant "subtitle1"
          :color   "inherit"
@@ -110,11 +111,7 @@
                (count filtered-items))
           (str "Total (" (count items) ")")
           (str "Total (" (count filtered-items) "/" (count items) ")")))
-      (when actions
-        (html
-          [:div {:style {:borderRight "0.1em solid black"
-                         :padding     "0.5em"
-                         :height      0}}]))
+      (html [:div.grow])
       (when actions
         (map-indexed
           (fn [index action]
@@ -123,6 +120,7 @@
                [:div.Swarmpit-section-desktop
                 (comp/button
                   {:color   "primary"
+                   :variant "contained"
                    :key     (str "toolbar-button-" index)
                    :onClick (:onClick action)}
                   ((:icon action) {:className "Swarmpit-button-icon"})
@@ -130,11 +128,12 @@
                [:div.Swarmpit-section-mobile
                 ;; Make FAB from first only (primary action)
                 (when (= 0 index)
-                  (comp/button
-                    {:variant   "fab"
-                     :className "Swarmpit-fab"
-                     :color     "primary"
-                     :onClick   (:onClick action)}
+                  (comp/fab
+                    {:className  "Swarmpit-fab"
+                     :color      "primary"
+                     :size       "large"
+                     :aria-label "add"
+                     :onClick    (:onClick action)}
                     ((:icon-alt action) {})))
                 (comp/tooltip
                   {:title (:name action)
@@ -144,7 +143,6 @@
                      :onClick (:onClick action)
                      :color   "primary"}
                     ((:icon action) {})))]])) actions))
-      (html [:div.grow])
       (when filters
         (list-toolbar-filter-menu title filters)))))
 
@@ -153,9 +151,8 @@
   (comp/mui
     (html
       [:div.Swarmpit-form
-       [:div
-        (list-toobar title items filtered-items toolbar-render-metadata)]
        [:div.Swarmpit-form-toolbar
+        (list-toobar title items filtered-items toolbar-render-metadata)
         (cond
           (empty? items) (list-empty title)
           (empty? filtered-items) (list-no-items-found)
@@ -174,9 +171,8 @@
   (comp/mui
     (html
       [:div.Swarmpit-form
-       [:div
-        (list-toobar title items filtered-items toolbar-render-metadata)]
        [:div.Swarmpit-form-toolbar
+        (list-toobar title items filtered-items toolbar-render-metadata)
         (cond
           (empty? items) (list-empty title)
           (empty? filtered-items) (list-no-items-found)

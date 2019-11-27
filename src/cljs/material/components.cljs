@@ -154,6 +154,10 @@
   [props & childs]
   (apply f/button (clj->js props) childs))
 
+(defn fab
+  [props comp]
+  (f/fab (clj->js props) comp))
+
 (defn hidden
   [props comp]
   (f/hidden (clj->js props) comp))

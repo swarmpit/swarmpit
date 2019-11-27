@@ -54,6 +54,7 @@
 
 (def chip (create-factory js/MaterialUI.Chip))
 (def button (create-factory js/MaterialUI.Button))
+(def fab (create-factory js/MaterialUI.Fab))
 (def icon-button (create-factory js/MaterialUI.IconButton))
 (def svg-icon (create-factory js/MaterialUI.SvgIcon))
 (def checkbox (create-factory js/MaterialUI.Checkbox))
