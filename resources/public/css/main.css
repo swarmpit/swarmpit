@@ -349,6 +349,18 @@ a {
     padding-left: 24px !important;
 }
 
+.Swarmpit-drawer-item:hover {
+    background-color: transparent !important;
+}
+
+.Swarmpit-drawer-item:hover > div,
+.Swarmpit-drawer-item:hover > div > h6 {
+    color: #65519f !important;
+}
+
+.Swarmpit-drawer-item > *:hover {
+}
+
 .Swarmpit-list-item-icon,
 .Swarmpit-drawer-item-icon,
 .Swarmpit-drawer-item-text > h6 {
@@ -356,8 +368,9 @@ a {
 }
 
 .Swarmpit-drawer-item-selected {
-    border-left: 5px solid #65519f !important;
-    padding-left: 19px !important;
+    background-color: rgba(99, 79, 158, 0.15) !important;
+    padding-left: 24px !important;
+    border-radius: 0 50px 50px 0 !important;
 }
 
 .Swarmpit-drawer-item-icon-selected,
@@ -620,11 +633,11 @@ a {
 }
 
 .Swarmpit-form-toolbar {
-    padding: 0 24px 24px;
+    padding: 10px 24px 24px;
 }
 
-.Swarmpit-form-toolbar-context {
-    padding: 0 24px;
+.Swarmpit-form-toolbar-btn {
+    margin-left: 8px !important;
 }
 
 .Swarmpit-form-buttons {
@@ -1105,12 +1118,7 @@ a {
     }
 
     .Swarmpit-form-toolbar {
-        padding: 0 10px 10px;
-    }
-
-    .Swarmpit-form-toolbar-context {
-        margin-top: 10px;
-        padding: 0 10px;
+        padding: 10px 10px 10px;
     }
 
     .Swarmpit-form-panel-search {
