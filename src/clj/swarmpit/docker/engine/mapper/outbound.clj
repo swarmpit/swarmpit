@@ -308,6 +308,7 @@
 
 (defn ->node
   [node]
-  {:Availability (:availability node)
+  {:Name         {:nodeName node}
+   :Availability (:availability node)
    :Role         (:role node)
    :Labels       (name-value->map (:labels node))})

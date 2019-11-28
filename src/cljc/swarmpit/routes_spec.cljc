@@ -317,6 +317,12 @@
                   :volumes  [string?]}
    :leader       boolean?})
 
+(def node-update
+  {:nodeName     string?
+   :role         string?
+   :availability string?
+   :labels       [name-value]})
+
 (def node-stats
   {:name   string?
    :time   [string?]

@@ -583,7 +583,7 @@
                  :summary "Edit node"
                  :parameters {:header {:authorization string?}
                               :path   {:id string?}
-                              :body   spec/node}
+                              :body   spec/node-update}
                  :responses {200 {:body        nil
                                   :description "Success"}}
                  #?@(:clj [:handler handler/node-update]))

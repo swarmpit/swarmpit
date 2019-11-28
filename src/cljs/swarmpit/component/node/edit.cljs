@@ -152,7 +152,7 @@
     (routes/path-for-backend :node {:id node-id})
     {:state      [:loading?]
      :on-success (fn [{:keys [response]}]
-                   (state/set-value response state/form-value-cursor)
+                   (state/set-value (select-keys response [:nodeName :availability :role]) state/form-value-cursor)
                    (state/set-value (-> (:labels response)
                                         (state/assoc-keys)) form-node-labels-cursor))}))
 
