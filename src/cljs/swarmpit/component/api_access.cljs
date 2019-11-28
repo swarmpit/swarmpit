@@ -59,8 +59,8 @@
      :margin          "normal"
      :multiline       true
      :value           value
-     :InputProps      {:readOnly  true
-                       :style     {:fontFamily "monospace"}}
+     :InputProps      {:readOnly true
+                       :style    {:fontFamily "monospace"}}
      :InputLabelProps {:shrink true}}))
 
 (defn old-token-form [api-token]
@@ -93,18 +93,14 @@
       (comp/divider {})
       (comp/card-content
         {}
-        (comp/grid
-          {:container true
-           :spacing   3}
-          (comp/grid
-            {:item true
-             :xs   12
-             :md   6
-             :sm   4}
-            (case state
-              :old (old-token-form api-token)
-              :new (new-token-form token)
-              :none (no-token-form)))))
+        (comp/container
+          {:maxWidth "sm"
+           :style    {:padding 0
+                      :margin  0}}
+          (case state
+            :old (old-token-form api-token)
+            :new (new-token-form token)
+            :none (no-token-form))))
       (comp/divider {})
       (comp/card-actions
         {}
