@@ -319,6 +319,7 @@
 
 (def node-update
   {:nodeName     string?
+   :version      number?
    :role         string?
    :availability string?
    :labels       [name-value]})
