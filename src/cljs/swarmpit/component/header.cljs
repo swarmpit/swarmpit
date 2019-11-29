@@ -4,6 +4,7 @@
             [swarmpit.routes :as routes]
             [swarmpit.storage :as storage]
             [swarmpit.event.source :as eventsource]
+            [swarmpit.component.common :as common]
             [swarmpit.component.state :as state]
             [swarmpit.url :refer [dispatch!]]
             [rum.core :as rum]
@@ -188,18 +189,22 @@
                      :onClick (:onClick %)} (:icon %)))))]))
 
 (rum/defc appbar < rum/reactive [{:keys [title subtitle search-fn actions]}]
-  (let [{:keys [mobileSearchOpened menuAnchorEl mobileMoreAnchorEl]} (state/react state/layout-cursor)]
+  (let [{:keys [mobileSearchOpened menuAnchorEl mobileMoreAnchorEl version]} (state/react state/layout-cursor)]
     (comp/mui
       (html
         [:div
          (comp/app-bar
            {:key       "appbar"
             :color     "primary"
-            :elevation 0
+            :elevation 1
             :className "Swarmpit-appbar"}
            (comp/toolbar
              {:key            "appbar-toolbar"
               :disableGutters false}
+             (html
+               [:div.Swarmpit-desktop-title
+                (common/title-name)
+                (common/title-version version)])
              (comp/icon-button
                {:key        "appbar-menu-btn"
                 :color      "inherit"

@@ -13,6 +13,27 @@
 
 (def tooltip-shown (atom false))
 
+(def swarmpit-home-page "https://swarmpit.io")
+
+(defn- parse-version [version]
+  (clojure.string/replace
+    (:version version)
+    #"SNAPSHOT"
+    (->> (:revision version)
+         (take 7)
+         (apply str))))
+
+(rum/defc title-name < rum/static []
+  [:a {:target "_blank"
+       :href   swarmpit-home-page}
+   [:span.Swarmpit-title-name "Swarmpit"]])
+
+(rum/defc title-version < rum/static [version]
+  (when version
+    [:a {:target "_blank"
+         :href   "/api-docs"}
+     [:span.Swarmpit-title-version (parse-version version)]]))
+
 (rum/defc form-subheader < rum/reactive [subheader tooltip]
   (if subheader
     (comp/click-away-listener
