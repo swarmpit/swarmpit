@@ -393,24 +393,31 @@ a {
     font-weight: 600 !important;
 }
 
+.Swarmpit-title {
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    margin-left: 15px;
+}
+
 .Swarmpit-menu-title {
     display: flex;
     flex-grow: 1;
-    min-height: 56px;
-    align-items: flex-start;
+    min-height: 64px;
+    align-items: center;
     padding-left: 24px;
-    flex-direction: column;
-    justify-content: center;
+    flex-direction: row;
     background: #65519f;
+    margin-left: -12px;
 }
 
 .Swarmpit-desktop-title {
     display: none;
-    min-height: 56px;
-    flex-direction: column;
-    justify-content: center;
-    /*background: #65519f;*/
-    width: 225px;
+    min-height: 64px;
+    align-items: center;
+    flex-direction: row;
+    width: 237px;
+    margin-left: -12px;
 }
 
 .Swarmpit-menu-title,

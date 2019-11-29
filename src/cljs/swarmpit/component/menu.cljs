@@ -114,7 +114,7 @@
    (html
      [:div.Swarmpit-toolbar
       [:div.Swarmpit-menu-title
-       (common/title-name)
+       (common/title-logo)
        (common/title-version version)]])
    (map
      (fn [{:keys [icon name handler domain]}]

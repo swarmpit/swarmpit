@@ -23,16 +23,22 @@
          (take 7)
          (apply str))))
 
-(rum/defc title-name < rum/static []
+(rum/defc title-logo < rum/static []
   [:a {:target "_blank"
        :href   swarmpit-home-page}
-   [:span.Swarmpit-title-name "Swarmpit"]])
+   [:img {:src    "img/swarmpit-transparent.png"
+          :height "50"
+          :width  "50"}]])
 
 (rum/defc title-version < rum/static [version]
   (when version
-    [:a {:target "_blank"
-         :href   "/api-docs"}
-     [:span.Swarmpit-title-version (parse-version version)]]))
+    [:div.Swarmpit-title
+     [:a {:target "_blank"
+          :href   swarmpit-home-page}
+      [:span.Swarmpit-title-name "Swarmpit"]]
+     [:a {:target "_blank"
+          :href   "/api-docs"}
+      [:span.Swarmpit-title-version (parse-version version)]]]))
 
 (rum/defc form-subheader < rum/reactive [subheader tooltip]
   (if subheader
