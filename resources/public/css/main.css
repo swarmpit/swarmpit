@@ -226,6 +226,9 @@ a {
 .Swarmpit-appbar {
     position: absolute;
     background: #65519f;
+    /*background: #fff !important;*/
+    /*color: #5f6368 !important;*/
+
     box-shadow: none;
     z-index: 1201 !important;
     transition: width 195ms cubic-bezier(0.4, 0, 0.6, 1) 0ms, margin 195ms cubic-bezier(0.4, 0, 0.6, 1) 0ms;
@@ -254,7 +257,11 @@ a {
 }
 
 .Swarmpit-appbar-search:hover {
-    background-color: rgba(255, 255, 255, 0.25);
+    background: rgba(255, 255, 255, 1);
+    color: #000;
+    border: 1px solid transparent;
+    box-shadow: 0 1px 1px 0 rgba(65, 69, 73, 0.3),
+    0 1px 3px 1px rgba(65, 69, 73, 0.15);
 }
 
 .Swarmpit-appbar-search-icon {
@@ -269,7 +276,6 @@ a {
 
 .Swarmpit-appbar-search-root {
     color: inherit !important;
-    width: 100%;
 }
 
 .Swarmpit-appbar-search-input {
@@ -280,6 +286,8 @@ a {
 .Swarmpit-appbar-search-mobile {
     position: absolute;
     display: flex;
+    top: 0 !important;
+    width: 100% !important;
 }
 
 .Swarmpit-appbar-search-mobile-root {
@@ -297,6 +305,8 @@ a {
 
 .Swarmpit-appbar-search-mobile-content {
     background-color: #fff !important;
+    width: 100% !important;
+    border-radius: 0 !important;
 }
 
 .Swarmpit-appbar-search-mobile-content-message {
@@ -399,7 +409,7 @@ a {
     min-height: 56px;
     flex-direction: column;
     justify-content: center;
-    background: #65519f;
+    /*background: #65519f;*/
     width: 225px;
 }
 
@@ -415,15 +425,12 @@ a {
 
 .Swarmpit-menu-title,
 .Swarmpit-desktop-title > a:hover {
-    /*color: rgba(0, 0, 0, 0.54);*/
     color: #fff;
     text-decoration: underline;
 }
 
 .Swarmpit-title-name {
-    /*color: rgba(0, 0, 0, 0.54);*/
     color: #fff;
-
     font-size: 1.3125rem;
     font-weight: 500;
     font-family: "Roboto", "Helvetica", "Arial", sans-serif;
@@ -431,9 +438,7 @@ a {
 }
 
 .Swarmpit-title-version {
-    /*color: rgba(0, 0, 0, 0.54);*/
     color: #fff;
-
     font-size: 0.75rem;
     font-weight: 400;
     font-family: "Roboto", "Helvetica", "Arial", sans-serif;
@@ -1158,5 +1163,10 @@ a {
 
     .Swarmpit-repo-registry-url {
         padding-left: 0;
+    }
+
+    .Swarmpit-appbar-search-mobile {
+        left: 0 !important;
+        right: 0 !important;
     }
 }
