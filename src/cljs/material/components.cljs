@@ -1,7 +1,8 @@
 (ns material.components
   (:refer-clojure :exclude [stepper list])
   (:require [material.factory :as f]
-            [sablono.core :refer-macros [html]]))
+            [sablono.core :refer-macros [html]]
+            [cuerdas.core :as str]))
 
 ;;; Theme components
 
@@ -14,6 +15,7 @@
                              :light        "#957ed1"
                              :dark         "#362870"
                              :contrastText "#fff"}}
+   :typography  {:fontFamily (str/join "," ["Roboto" "Helvetica" "Arial" "sans-serif"])}
    :overrides   {:MuiCardHeader  {:action {:color "rgb(117, 117, 117)"}}
                  :MuiCardActions {:root {:padding 16}}}
    :breakpoints {:values {:xs 0
@@ -159,8 +161,8 @@
   (f/fab (clj->js props) comp))
 
 (defn hidden
-  [props comp]
-  (f/hidden (clj->js props) comp))
+  [props & childs]
+  (f/hidden (clj->js props) childs))
 
 (defn app-bar
   [props drawer]
