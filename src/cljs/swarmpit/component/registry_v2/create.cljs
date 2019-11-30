@@ -86,7 +86,7 @@
      :InputProps      {:className    "Swarmpit-form-input"
                        :endAdornment (common/show-password-adornment show-password?)}}))
 
-(defn- create-registry-handler
+(defn create-registry-handler
   []
   (ajax/post
     (routes/path-for-backend :registries {:registryType :v2})
