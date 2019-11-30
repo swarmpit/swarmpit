@@ -28,19 +28,14 @@
     url('fonts/roboto-v18-latin_latin-ext-500.eot?#iefix') format('embedded-opentype'), /* IE6-IE8 */ url('fonts/roboto-v18-latin_latin-ext-500.woff2') format('woff2'), /* Super Modern Browsers */ url('fonts/roboto-v18-latin_latin-ext-500.woff') format('woff'), /* Modern Browsers */ url('fonts/roboto-v18-latin_latin-ext-500.ttf') format('truetype'), /* Safari, Android, iOS */ url('fonts/roboto-v18-latin_latin-ext-500.svg#Roboto') format('svg'); /* Legacy iOS */
 }
 
-html > body {
-    font: 14px "Roboto", sans-serif;
+html > body, h1, h2, h3, h4, h5, h6 {
+    font-family: "Roboto", "Helvetica", "Arial", sans-serif;
     -webkit-font-kerning: normal;
     font-kerning: normal;
     -webkit-text-size-adjust: 100%;
     -webkit-font-smoothing: antialiased;
     -moz-osx-font-smoothing: grayscale;
     text-rendering: geometricPrecision;
-    /*color: rgb(117, 117, 117);*/
-}
-
-html > button {
-    font-family: "Roboto", "Helvetica", "Arial", sans-serif;
 }
 
 a {
@@ -609,9 +604,50 @@ a {
 /** Stepper **/
 
 .Swarmpit-stepper {
+    padding: 0 !important;
+}
+
+.Swarmpit-stepper-vertical {
+}
+
+.Swarmpit-stepper-vertical-message {
+    margin-bottom: 10px !important;
+    margin-top: 10px !important;
+}
+
+.Swarmpit-stepper-horizontal {
+    margin-bottom: 60px !important;
     background-color: #fafafa !important;
-    padding: 24px 0 24px !important;
-    max-width: 400px;
+}
+
+.Swarmpit-stepper-horizontal-message {
+    margin-bottom: 20px !important;
+    margin-top: 20px !important;
+}
+
+/** Form card **/
+
+.Swarmpit-fcard {
+    margin-top: 16px;
+    overflow: visible !important;
+}
+
+.Swarmpit-fcard-header {
+    color: #fff;
+    padding-left: 16px;
+    padding-right: 16px;
+    position: relative;
+}
+
+.Swarmpit-fcard-header-title {
+    float: none;
+    display: inline-block;
+    padding: 15px;
+    margin-top: -36px !important;
+    margin-right: 0 !important;
+    border-radius: 3px;
+    background: #65519f;
+    box-shadow: 0 4px 20px 0 rgba(0, 0, 0, .14), 0 7px 10px -5px #65519f;
 }
 
 /** Form content **/
@@ -1156,7 +1192,8 @@ a {
     }
 
     .Swarmpit-form-context {
-        padding: 20px 10px;
+        /*padding: 20px 10px;*/
+        padding: 30px 10px 20px 10px;
     }
 
     .Swarmpit-node-stat {

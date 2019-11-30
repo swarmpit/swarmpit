@@ -3,6 +3,7 @@
             [sablono.core :refer-macros [html]]
             [material.icon :as icon]
             [material.components :as comp]
+            [material.component.form :as form]
             [material.component.composite :as composite]
             [swarmpit.component.common :as common]
             [swarmpit.component.mixin :as mixin]
@@ -48,7 +49,7 @@
      :select          true
      :value           value
      :variant         "outlined"
-     :margin          "normal"
+     :margin          "dense"
      :InputLabelProps {:shrink true}
      :InputProps      {:className "Swarmpit-form-input Swarmpit-form-select-icon"}
      :onChange        (fn [e]
@@ -99,41 +100,57 @@
                      :onChange #(state/update-value [:public] (-> % .-target .-checked) state/form-value-cursor)})
          :label   "Share"}))))
 
-(defn step-item
+(defn buttons
+  [index valid? processing?]
+  (html
+    [:div.Swarmpit-form-buttons
+     (comp/button
+       {:disabled (= 0 index)
+        :onClick  #(reset! step-index (dec index))} "Back")
+     (if (last-step? index)
+       (composite/progress-button
+         "Finish"
+         (case @registry
+           "dockerhub" #(dockerhub/add-user-handler)
+           "v2" #(v2/create-registry-handler)
+           "ecr" #(ecr/create-registry-handler)
+           "acr" #(acr/create-registry-handler)
+           "gitlab" #(gitlab/create-registry-handler))
+         processing?)
+       (comp/button
+         {:variant  "contained"
+          :color    "primary"
+          :disabled (not valid?)
+          :onClick  #(reset! step-index (inc index))} "Next"))]))
+
+(defn vertical-step-item
   ([index valid? text form]
-   (step-item index valid? text form false))
+   (vertical-step-item index valid? text form false))
   ([index valid? text form processing?]
    (comp/step
      {}
      (comp/step-label
-       {:style {:marginBottom "10px"}}
+       {}
        (nth steps index))
      (comp/step-content
        {}
        (comp/typography
-         {:style {:marginBottom "10px"}} text)
-       (html
-         [:div form])
-       (html
-         [:div.Swarmpit-form-buttons
-          (comp/button
-            {:disabled (= 0 index)
-             :onClick  #(reset! step-index (dec index))} "Back")
-          (if (last-step? index)
-            (composite/progress-button
-              "Finish"
-              (case @registry
-                "dockerhub" #(dockerhub/add-user-handler)
-                "v2" #(v2/create-registry-handler)
-                "ecr" #(ecr/create-registry-handler)
-                "acr" #(acr/create-registry-handler)
-                "gitlab" #(gitlab/create-registry-handler))
-              processing?)
-            (comp/button
-              {:variant  "contained"
-               :color    "primary"
-               :disabled (not valid?)
-               :onClick  #(reset! step-index (inc index))} "Next"))])))))
+         {:variant   "body2"
+          :className "Swarmpit-stepper-vertical-message"} text)
+       (comp/box {} form)
+       (buttons index valid? processing?)))))
+
+(defn horizontal-step-item
+  ([index valid? text form]
+   (horizontal-step-item index valid? text form false))
+  ([index valid? text form processing?]
+   (html
+     [:div
+      (comp/typography
+        {:variant   "body2"
+         :className "Swarmpit-stepper-horizontal-message"} text)
+      (comp/box {} form)
+      (buttons index valid? processing?)])))
 
 (def mixin-init-form
   (mixin/init-form
@@ -151,25 +168,88 @@
       (html
         [:div.Swarmpit-form
          [:div.Swarmpit-form-context
-          [:div.Swarmpit-form-paper
-           (common/form-title "Link image registry" "define repository access account")
-           (comp/stepper
-             {:className   "Swarmpit-stepper"
-              :activeStep  index
-              :orientation "vertical"}
-             (step-item
-               0
-               true
-               (comp/typography {:variant "body2"} registry-type-text)
-               (registry-type-form registry))
-             (step-item
-               1
-               valid?
-               (comp/typography {:variant "body2"} (registry-text registry))
-               (registry-form registry route))
-             (step-item
-               2
-               true
-               (comp/typography {:variant "body2"} registry-publish-text)
-               (registry-publish-form public)
-               processing?))]]]))))
+          (comp/hidden
+            {:xsDown         true
+             :implementation "js"}
+            (comp/container
+              {:maxWidth "md"}
+              (comp/stepper
+                {:className  "Swarmpit-stepper Swarmpit-stepper-horizontal"
+                 :activeStep index}
+                (comp/step
+                  {}
+                  (comp/step-label
+                    {}
+                    (nth steps 0)))
+                (comp/step
+                  {}
+                  (comp/step-label
+                    {}
+                    (nth steps 1)))
+                (comp/step
+                  {}
+                  (comp/step-label
+                    {}
+                    (nth steps 2))))
+              (comp/card
+                {:className "Swarmpit-form-card Swarmpit-fcard"}
+                (comp/box
+                  {:className "Swarmpit-fcard-header"}
+                  (comp/typography
+                    {:className "Swarmpit-fcard-header-title"
+                     :variant   "h6"
+                     :component "div"}
+                    "Link registry"))
+                (comp/card-content
+                  {}
+                  (case index
+                    0 (horizontal-step-item
+                        index
+                        true
+                        registry-type-text
+                        (registry-type-form registry))
+                    1 (horizontal-step-item
+                        index
+                        valid?
+                        (registry-text registry)
+                        (registry-form registry route))
+                    2 (horizontal-step-item
+                        index
+                        true
+                        registry-publish-text
+                        (registry-publish-form public)
+                        processing?))))))
+          (comp/hidden
+            {:smUp           true
+             :implementation "js"}
+            (comp/card
+              {:className "Swarmpit-form-card Swarmpit-fcard"}
+              (comp/box
+                {:className "Swarmpit-fcard-header"}
+                (comp/typography
+                  {:className "Swarmpit-fcard-header-title"
+                   :variant   "h6"
+                   :component "div"}
+                  "Link registry"))
+              (comp/card-content
+                {}
+                (comp/stepper
+                  {:className   "Swarmpit-stepper Swarmpit-stepper-vertical"
+                   :activeStep  index
+                   :orientation "vertical"}
+                  (vertical-step-item
+                    0
+                    true
+                    registry-type-text
+                    (registry-type-form registry))
+                  (vertical-step-item
+                    1
+                    valid?
+                    (registry-text registry)
+                    (registry-form registry route))
+                  (vertical-step-item
+                    2
+                    true
+                    registry-publish-text
+                    (registry-publish-form public)
+                    processing?)))))]]))))
