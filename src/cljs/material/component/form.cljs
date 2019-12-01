@@ -42,6 +42,13 @@
      (icon/info {:style {:marginRight "8px"}})
      [:span comp]]))
 
+(defn snackbar-message [text]
+  (cmp/snackbar-content
+    {:className "Swarmpit-label-info"
+     :elevation 0
+     :message   (html [:span.Swarmpit-message
+                       (icon/info {:className "Swarmpit-message-icon"}) text])}))
+
 (defn item-icon [icon comp]
   (html
     [:span.Swarmpit-message
