@@ -49,7 +49,7 @@
      :select          true
      :value           value
      :variant         "outlined"
-     :margin          "dense"
+     :margin          "normal"
      :InputLabelProps {:shrink true}
      :InputProps      {:className "Swarmpit-form-input Swarmpit-form-select-icon"}
      :onChange        (fn [e]
