@@ -155,7 +155,8 @@
         [:div.Swarmpit-form
          [:div.Swarmpit-form-context
           (comp/container
-            {:maxWidth "md"}
+            {:maxWidth  "md"
+             :className "Swarmpit-container"}
             (comp/card
               {:className "Swarmpit-form-card Swarmpit-fcard"}
               (comp/box
