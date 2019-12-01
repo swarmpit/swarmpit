@@ -23,6 +23,7 @@
      :variant         "outlined"
      :defaultValue    value
      :required        true
+     :margin          "normal"
      :InputLabelProps {:shrink true}
      :onChange        #(state/update-value [:username] (-> % .-target .-value) state/form-value-cursor)}))
 
@@ -38,6 +39,7 @@
                         "password")
      :defaultValue    value
      :onChange        #(state/update-value [:password] (-> % .-target .-value) state/form-value-cursor)
+     :margin          "normal"
      :InputLabelProps {:shrink true}
      :InputProps      {:className    "Swarmpit-form-input"
                        :endAdornment (common/show-password-adornment show-password?)}}))
@@ -46,10 +48,11 @@
   (comp/form-control
     {:component "fieldset"
      :key       "role-f"
-     :margin    "normal"
-     :style     {:width "200px"}}
+     :margin    "normal"}
     (comp/form-label
       {:key "rolel"} "Role")
+    (comp/form-helper-text
+      {} "Define account priviledges")
     (comp/radio-group
       {:name     "role"
        :key      "role-rg"
@@ -57,20 +60,20 @@
        :onChange #(state/update-value [:role] (-> % .-target .-value) state/form-value-cursor)}
       (comp/form-control-label
         {:control (comp/radio
-                    {:name  "admin-role"
-                     :color "primary"
-                     :key   "admin-role"})
-         :key     "ad-role"
-         :value   "admin"
-         :label   "Admin"})
-      (comp/form-control-label
-        {:control (comp/radio
                     {:name  "user-role"
                      :color "primary"
                      :key   "user-role"})
          :key     "usr-role"
          :value   "user"
-         :label   "User"}))))
+         :label   "User"})
+      (comp/form-control-label
+        {:control (comp/radio
+                    {:name  "admin-role"
+                     :color "primary"
+                     :key   "admin-role"})
+         :key     "ad-role"
+         :value   "admin"
+         :label   "Admin"}))))
 
 (defn- form-email [value]
   (comp/text-field
@@ -80,6 +83,7 @@
      :variant         "outlined"
      :defaultValue    value
      :required        true
+     :margin          "normal"
      :InputLabelProps {:shrink true}
      :onChange        #(state/update-value [:email] (-> % .-target .-value) state/form-value-cursor)}))
 
@@ -127,41 +131,30 @@
         [:div.Swarmpit-form
          [:div.Swarmpit-form-context
           (comp/container
-            {:maxWidth "sm"
-             :style    {:padding 0
-                        :margin  0}}
-            (common/form-title "Create user" "Allow application access and management of the cluster")
+            {:maxWidth  "sm"
+             :className "Swarmpit-container"}
             (comp/card
-              {:className "Swarmpit-form-card"}
-              (comp/card-header
-                {:title                "User details"
-                 :titleTypographyProps {:variant "h6"}})
+              {:className "Swarmpit-form-card Swarmpit-fcard"}
+              (comp/box
+                {:className "Swarmpit-fcard-header"}
+                (comp/typography
+                  {:className "Swarmpit-fcard-header-title"
+                   :variant   "h6"
+                   :component "div"}
+                  "Create user"))
               (comp/card-content
-                {}
-                (comp/grid
-                  {:container true
-                   :spacing   3}
-                  (comp/grid
-                    {:item true
-                     :xs   12
-                     :md   6}
-                    (form-username username))
-                  (comp/grid
-                    {:item true
-                     :xs   12
-                     :md   6}
-                    (form-password password showPassword))
-                  (comp/grid
-                    {:item true
-                     :xs   12}
-                    (form-email email))
-                  (comp/grid
-                    {:item true
-                     :xs   12}
-                    (form-role role)))))
-            (html
-              [:div.Swarmpit-form-buttons
-               (composite/progress-button
-                 "Create"
-                 create-user-handler
-                 processing?)]))]]))))
+                {:className "Swarmpit-fcard-content"}
+                (comp/typography
+                  {:variant   "body2"
+                   :className "Swarmpit-fcard-message"}
+                  "Allow application access and management of the cluster")
+                (form-username username)
+                (form-password password showPassword)
+                (form-email email)
+                (form-role role)
+                (comp/box
+                  {:className "Swarmpit-form-buttons"}
+                  (composite/progress-button
+                    "Create"
+                    create-user-handler
+                    processing?)))))]]))))

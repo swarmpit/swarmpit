@@ -113,7 +113,7 @@
                    :component "div"}
                   "Create secret"))
               (comp/card-content
-                {}
+                {:className "Swarmpit-fcard-content"}
                 (comp/typography
                   {:variant   "body2"
                    :className "Swarmpit-fcard-message"}

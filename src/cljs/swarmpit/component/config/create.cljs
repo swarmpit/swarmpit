@@ -111,16 +111,16 @@
                    :component "div"}
                   "Create config"))
               (comp/card-content
-                {}
+                {:className "Swarmpit-fcard-content"}
                 (comp/typography
                   {:variant   "body2"
                    :className "Swarmpit-fcard-message"}
                   "Store non-sensitive information such as config files")
                 (form-name configName)
                 (form-data data)
-                (html
-                  [:div.Swarmpit-form-buttons
-                   (composite/progress-button
-                     "Create"
-                     create-config-handler
-                     processing?)]))))]]))))
+                (comp/box
+                  {:className "Swarmpit-form-buttons"}
+                  (composite/progress-button
+                    "Create"
+                    create-config-handler
+                    processing?)))))]]))))

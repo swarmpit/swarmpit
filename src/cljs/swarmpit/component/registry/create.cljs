@@ -102,26 +102,26 @@
 
 (defn buttons
   [index valid? processing?]
-  (html
-    [:div.Swarmpit-form-buttons
-     (comp/button
-       {:disabled (= 0 index)
-        :onClick  #(reset! step-index (dec index))} "Back")
-     (if (last-step? index)
-       (composite/progress-button
-         "Finish"
-         (case @registry
-           "dockerhub" #(dockerhub/add-user-handler)
-           "v2" #(v2/create-registry-handler)
-           "ecr" #(ecr/create-registry-handler)
-           "acr" #(acr/create-registry-handler)
-           "gitlab" #(gitlab/create-registry-handler))
-         processing?)
-       (comp/button
-         {:variant  "contained"
-          :color    "primary"
-          :disabled (not valid?)
-          :onClick  #(reset! step-index (inc index))} "Next"))]))
+  (comp/box
+    {:className "Swarmpit-form-buttons"}
+    (comp/button
+      {:disabled (= 0 index)
+       :onClick  #(reset! step-index (dec index))} "Back")
+    (if (last-step? index)
+      (composite/progress-button
+        "Finish"
+        (case @registry
+          "dockerhub" #(dockerhub/add-user-handler)
+          "v2" #(v2/create-registry-handler)
+          "ecr" #(ecr/create-registry-handler)
+          "acr" #(acr/create-registry-handler)
+          "gitlab" #(gitlab/create-registry-handler))
+        processing?)
+      (comp/button
+        {:variant  "contained"
+         :color    "primary"
+         :disabled (not valid?)
+         :onClick  #(reset! step-index (inc index))} "Next"))))
 
 (defn vertical-step-item
   ([index valid? text form]
@@ -136,7 +136,7 @@
        {}
        (comp/typography
          {:variant   "body2"
-          :className "Swarmpit-stepper-vertical-message"} text)
+          :className "Swarmpit-fcard-message"} text)
        (comp/box {} form)
        (buttons index valid? processing?)))))
 
@@ -148,7 +148,7 @@
      [:div
       (comp/typography
         {:variant   "body2"
-         :className "Swarmpit-stepper-horizontal-message"} text)
+         :className "Swarmpit-fcard-message"} text)
       (comp/box {} form)
       (buttons index valid? processing?)])))
 
@@ -201,7 +201,7 @@
                      :component "div"}
                     "Link registry"))
                 (comp/card-content
-                  {}
+                  {:className "Swarmpit-fcard-content"}
                   (case index
                     0 (horizontal-step-item
                         index
@@ -232,7 +232,7 @@
                    :component "div"}
                   "Link registry"))
               (comp/card-content
-                {}
+                {:className "Swarmpit-fcard-content"}
                 (comp/stepper
                   {:className   "Swarmpit-stepper Swarmpit-stepper-vertical"
                    :activeStep  index

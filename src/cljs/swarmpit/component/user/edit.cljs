@@ -24,26 +24,58 @@
      :defaultValue    value
      :required        true
      :disabled        true
+     :margin          "normal"
      :InputLabelProps {:shrink true}}))
 
-(defn- form-role [value]
-  (comp/text-field
-    {:fullWidth       true
-     :label           "Role"
-     :key             "role"
-     :select          true
-     :value           value
-     :variant         "outlined"
-     :InputLabelProps {:shrink true}
-     :InputProps      {:className "Swarmpit-form-input"}
-     :onChange        #(state/update-value [:role] (-> % .-target .-value) state/form-value-cursor)}
-    (comp/menu-item
-      {:key   "admin"
-       :value "admin"} "admin")
-    (comp/menu-item
-      {:key   "user"
-       :value "user"} "user")))
+;(defn- form-role [value]
+;  (comp/text-field
+;    {:fullWidth       true
+;     :label           "Role"
+;     :key             "role"
+;     :select          true
+;     :value           value
+;     :variant         "outlined"
+;     :margin          "normal"
+;     :InputLabelProps {:shrink true}
+;     :InputProps      {:className "Swarmpit-form-input"}
+;     :onChange        #(state/update-value [:role] (-> % .-target .-value) state/form-value-cursor)}
+;    (comp/menu-item
+;      {:key   "admin"
+;       :value "admin"} "admin")
+;    (comp/menu-item
+;      {:key   "user"
+;       :value "user"} "user")))
 
+(defn- form-role [value]
+  (comp/form-control
+    {:component "fieldset"
+     :key       "role-f"
+     :margin    "normal"}
+    (comp/form-label
+      {:key "rolel"} "Role")
+    (comp/form-helper-text
+      {} "Define account priviledges")
+    (comp/radio-group
+      {:name     "role"
+       :key      "role-rg"
+       :value    value
+       :onChange #(state/update-value [:role] (-> % .-target .-value) state/form-value-cursor)}
+      (comp/form-control-label
+        {:control (comp/radio
+                    {:name  "user-role"
+                     :color "primary"
+                     :key   "user-role"})
+         :key     "usr-role"
+         :value   "user"
+         :label   "User"})
+      (comp/form-control-label
+        {:control (comp/radio
+                    {:name  "admin-role"
+                     :color "primary"
+                     :key   "admin-role"})
+         :key     "ad-role"
+         :value   "admin"
+         :label   "Admin"}))))
 
 (defn- form-email [value]
   (comp/text-field
@@ -53,6 +85,7 @@
      :key             "email"
      :defaultValue    value
      :required        true
+     :margin          "normal"
      :InputLabelProps {:shrink true}
      :onChange        #(state/update-value [:email] (-> % .-target .-value) state/form-value-cursor)}))
 
@@ -99,34 +132,28 @@
       [:div.Swarmpit-form
        [:div.Swarmpit-form-context
         (comp/container
-          {:maxWidth "sm"
-           :style    {:padding 0
-                      :margin  0}}
-          (common/form-title (str "Edit " username))
+          {:maxWidth  "sm"
+           :className "Swarmpit-container"}
           (comp/card
-            {:className "Swarmpit-form-card"}
-            (comp/card-header
-              {:title                "User details"
-               :titleTypographyProps {:variant "h6"}})
+            {:className "Swarmpit-form-card Swarmpit-fcard"}
+            (comp/box
+              {:className "Swarmpit-fcard-header"}
+              (comp/typography
+                {:className "Swarmpit-fcard-header-title"
+                 :variant   "h6"
+                 :component "div"}
+                "Edit user"))
             (comp/card-content
-              {}
-              (comp/grid
-                {:container true
-                 :spacing   3}
-                (comp/grid
-                  {:item true
-                   :xs   12}
-                  (form-email email))
-                (comp/grid
-                  {:item true
-                   :xs   12}
-                  (form-role role)))))
-          (html
-            [:div.Swarmpit-form-buttons
-             (composite/progress-button
-               "Save"
-               #(update-user-handler _id)
-               processing?)]))]])))
+              {:className "Swarmpit-fcard-content"}
+              (form-username username)
+              (form-email email)
+              (form-role role)
+              (comp/box
+                {:className "Swarmpit-form-buttons"}
+                (composite/progress-button
+                  "Save"
+                  #(update-user-handler _id)
+                  processing?)))))]])))
 
 (rum/defc form < rum/reactive
                  mixin-init-form [_]

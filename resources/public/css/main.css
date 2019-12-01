@@ -609,20 +609,9 @@ a {
 .Swarmpit-stepper-vertical {
 }
 
-.Swarmpit-stepper-vertical-message {
-    margin-bottom: 10px !important;
-    margin-top: 10px !important;
-}
-
 .Swarmpit-stepper-horizontal {
     margin-bottom: 60px !important;
     background-color: #fafafa !important;
-}
-
-.Swarmpit-fcard-message,
-.Swarmpit-stepper-horizontal-message {
-    margin-bottom: 20px !important;
-    margin-top: 20px !important;
 }
 
 /** Form card **/
@@ -648,6 +637,15 @@ a {
     border-radius: 3px;
     background: #65519f;
     box-shadow: 0 4px 20px 0 rgba(0, 0, 0, .14), 0 7px 10px -5px #65519f;
+}
+
+.Swarmpit-fcard-content {
+    margin-top: 10px;
+}
+
+.Swarmpit-fcard-message {
+    margin-bottom: 20px !important;
+    margin-top: 10px !important;
 }
 
 /** Form content **/

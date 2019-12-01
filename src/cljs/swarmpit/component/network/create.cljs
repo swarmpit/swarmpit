@@ -280,103 +280,40 @@
                    :component "div"}
                   "Create network"))
               (comp/card-content
-                {}
+                {:className "Swarmpit-fcard-content"}
                 (comp/typography
                   {:variant   "body2"
                    :className "Swarmpit-fcard-message"}
                   "Connect services together by pluggable networks")
-                (comp/box
-                  {}
+                (comp/grid
+                  {:container true
+                   :spacing   5}
                   (comp/grid
-                    {:container true
-                     :spacing   5}
-                    (comp/grid
-                      {:item true
-                       :xs   12
-                       :sm   6}
-                      (comp/typography
-                        {:variant      "h6"
-                         :gutterBottom true} "General")
-                      (section-general item))
-                    (comp/grid
-                      {:item true
-                       :xs   12
-                       :sm   6}
-                      (comp/typography
-                        {:variant      "h6"
-                         :gutterBottom true} "IPAM")
-                      (section-ipam item))
-                    (comp/grid
-                      {:item true
-                       :xs   12}
-                      (comp/typography
-                        {:variant      "h6"
-                         :gutterBottom true} "Driver")
-                      (section-driver item plugins)))
-                  (html
-                    [:div.Swarmpit-form-buttons
-                     (composite/progress-button
-                       "Create"
-                       #(create-network-handler)
-                       processing?)])))))
-
-
-
-          ;[:div.Swarmpit-form-paper
-          ; (common/form-title "Create a new network" "connect services together by pluggable networks")
-          ; (comp/grid
-          ;   {:container true
-          ;    :className "Swarmpit-form-main-grid"
-          ;    :spacing   5}
-          ;   (comp/grid
-          ;     {:item true
-          ;      :xs   12
-          ;      :sm   12
-          ;      :md   12
-          ;      :lg   8
-          ;      :xl   8}
-          ;     (comp/grid
-          ;       {:container true
-          ;        :spacing   5}
-          ;       (comp/grid
-          ;         {:item true
-          ;          :xs   12
-          ;          :sm   6}
-          ;         (comp/typography
-          ;           {:variant      "h6"
-          ;            :gutterBottom true} "General")
-          ;         (section-general item))
-          ;       (comp/grid
-          ;         {:item true
-          ;          :xs   12
-          ;          :sm   6}
-          ;         (comp/typography
-          ;           {:variant      "h6"
-          ;            :gutterBottom true} "IPAM")
-          ;         (section-ipam item))
-          ;       (comp/grid
-          ;         {:item true
-          ;          :xs   12}
-          ;         (comp/typography
-          ;           {:variant      "h6"
-          ;            :gutterBottom true} "Driver")
-          ;         (section-driver item plugins))
-          ;       (comp/grid
-          ;         {:item true
-          ;          :xs   12}
-          ;         (html
-          ;           [:div.Swarmpit-form-buttons
-          ;            (composite/progress-button
-          ;              "Create"
-          ;              #(create-network-handler)
-          ;              processing?)]))))
-          ;   (comp/grid
-          ;     {:item true
-          ;      :xs   12
-          ;      :sm   12
-          ;      :md   12
-          ;      :lg   4
-          ;      :xl   4}
-          ;     (form/open-in-new "Learn more about networks" doc-network-link)))]
-
-          ]]))))
+                    {:item true
+                     :xs   12
+                     :sm   6}
+                    (comp/typography
+                      {:variant      "h6"
+                       :gutterBottom true} "General")
+                    (section-general item))
+                  (comp/grid
+                    {:item true
+                     :xs   12
+                     :sm   6}
+                    (comp/typography
+                      {:variant      "h6"
+                       :gutterBottom true} "IPAM")
+                    (section-ipam item))
+                  (comp/grid
+                    {:item true
+                     :xs   12}
+                    (comp/typography
+                      {:variant      "h6"
+                       :gutterBottom true} "Driver")
+                    (section-driver item plugins)))
+                (comp/box
+                  {:className "Swarmpit-form-buttons"}
+                  (composite/progress-button
+                    "Create"
+                    #(create-network-handler)
+                    processing?)))))]]))))
