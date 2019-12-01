@@ -149,8 +149,8 @@
                   {:color   "primary"
                    :variant "contained"
                    :key     (str "toolbar-button-" index)
+                   :startIcon ((:icon action) {})
                    :onClick (:onClick action)}
-                  ((:icon action) {:className "Swarmpit-button-icon"})
                   (:name action))]
                [:div.Swarmpit-section-mobile
                 ;; Make FAB from first only (primary action)

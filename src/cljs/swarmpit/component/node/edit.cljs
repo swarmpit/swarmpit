@@ -8,12 +8,12 @@
             [swarmpit.component.state :as state]
             [swarmpit.component.message :as message]
             [swarmpit.component.progress :as progress]
+            [swarmpit.component.common :as common]
             [swarmpit.url :refer [dispatch!]]
             [swarmpit.ajax :as ajax]
             [swarmpit.routes :as routes]
             [sablono.core :refer-macros [html]]
-            [rum.core :as rum]
-            [swarmpit.component.common :as common]))
+            [rum.core :as rum]))
 
 (enable-console-print!)
 
@@ -28,20 +28,21 @@
      :name            "name"
      :key             "name"
      :variant         "outlined"
-     :margin          "normal"
-     :style           {:maxWidth "350px"}
      :defaultValue    value
      :required        true
      :disabled        true
+     :margin          "normal"
      :InputLabelProps {:shrink true}}))
 
 (defn- form-role [value]
   (comp/form-control
     {:component "fieldset"
      :key       "role-f"
-     :style     {:width "200px"}}
+     :margin    "normal"}
     (comp/form-label
       {:key "rolel"} "Role")
+    (comp/form-helper-text
+      {} "Role of the node")
     (comp/radio-group
       {:name     "role"
        :key      "role-rg"
@@ -68,9 +69,11 @@
   (comp/form-control
     {:component "fieldset"
      :key       "availability-f"
-     :style     {:width "200px"}}
+     :margin    "normal"}
     (comp/form-label
       {:key "availabilityl"} "Availability")
+    (comp/form-helper-text
+      {} "Availability of the node")
     (comp/radio-group
       {:name     "availability"
        :key      "availability-rg"
@@ -191,55 +194,55 @@
     (html
       [:div.Swarmpit-form
        [:div.Swarmpit-form-context
-        [:div.Swarmpit-form-paper
-         (common/form-title (str "Editing " nodeName))
-         (comp/grid
-           {:container true
-            :className "Swarmpit-form-main-grid"
-            :spacing   5}
-           (comp/grid
-             {:item true
-              :xs   12
-              :sm   12
-              :md   12
-              :lg   8
-              :xl   8}
-             (comp/grid
-               {:container true
-                :spacing   5}
-               (comp/grid
-                 {:item true}
-                 (form-role role))
-               (comp/grid
-                 {:item true}
-                 (form-availability availability))
-               (comp/grid
-                 {:item true
-                  :xs   12}
-                 (form/section
-                   "Labels"
-                   (comp/button
-                     {:color   "primary"
-                      :onClick add-label}
-                     (comp/svg icon/add-small-path) "Add label"))
-                 (form-label-table labels))
-               (comp/grid
-                 {:item true
-                  :xs   12}
-                 (html
-                   [:div.Swarmpit-form-buttons
-                    (composite/progress-button
-                      "Save"
-                      #(update-node-handler id version)
-                      processing?)]))))
-           (comp/grid
-             {:item true
-              :xs   12
-              :sm   12
-              :md   12
-              :lg   4
-              :xl   4}
-             (form/open-in-new "Learn more about nodes" doc-node-link)))]]])))
+        (comp/container
+          {:maxWidth  "md"
+           :className "Swarmpit-container"}
+          (comp/card
+            {:className "Swarmpit-form-card Swarmpit-fcard"}
+            (comp/box
+              {:className "Swarmpit-fcard-header"}
+              (comp/typography
+                {:className "Swarmpit-fcard-header-title"
+                 :variant   "h6"
+                 :component "div"}
+                "Edit node"))
+            (comp/card-content
+              {:className "Swarmpit-fcard-content"}
+              (comp/grid
+                {:container true
+                 :spacing   2}
+                (comp/grid
+                  {:item true
+                   :xs   12}
+                  (form-name nodeName))
+                (comp/grid
+                  {:item true
+                   :xs   12
+                   :sm   6}
+                  (form-role role))
+                (comp/grid
+                  {:item true
+                   :xs   12
+                   :sm   6}
+                  (form-availability availability))
+                (comp/grid
+                  {:item true
+                   :xs   12}
+                  (form/section
+                    "Labels"
+                    (comp/button
+                      {:color   "primary"
+                       :onClick add-label}
+                      (comp/svg icon/add-small-path) "Add label"))
+                  (form-label-table labels)))
+              (comp/box
+                {:className "Swarmpit-form-buttons"}
+                (composite/progress-button
+                  "Save"
+                  #(update-node-handler id version)
+                  processing?
+                  false
+                  {:startIcon (icon/save {})})))))]])))
 
 (rum/defc form < rum/reactive
                  mixin-init-form
