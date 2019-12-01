@@ -29,7 +29,9 @@
      :key             "name"
      :variant         "outlined"
      :defaultValue    value
+     :margin          "normal"
      :required        true
+     :helperText      "Specify secret name"
      :InputLabelProps {:shrink true}
      :onChange        #(state/update-value [:secretName] (-> % .-target .-value) state/form-value-cursor)}))
 
@@ -43,6 +45,7 @@
      :required        true
      :multiline       true
      :disabled        true
+     :margin          "normal"
      :InputProps      {:style {:padding 0}}
      :InputLabelProps {:shrink true}
      :value           value}))
@@ -98,30 +101,27 @@
         [:div.Swarmpit-form
          [:div.Swarmpit-form-context
           (comp/container
-            {:style {:padding 0
-                     :margin  0}}
-            (common/form-title "Create secret" "Blob of data, such as a password or SSH private key")
-
-
-
-
-
-            (comp/grid
-              {:container true
-               :spacing   2}
-              (comp/grid
-                {:item true
-                 :xs   12}
-                (form-name secretName))
-              (comp/grid
-                {:item true
-                 :xs   12}
-                (form-data data)))
-            (html
-              [:div.Swarmpit-form-buttons
-               (composite/progress-button
-                 "Create"
-                 create-secret-handler
-                 processing?)]))
-
-          ]]))))
+            {:maxWidth "md"}
+            (comp/card
+              {:className "Swarmpit-form-card Swarmpit-fcard"}
+              (comp/box
+                {:className "Swarmpit-fcard-header"}
+                (comp/typography
+                  {:className "Swarmpit-fcard-header-title"
+                   :variant   "h6"
+                   :component "div"}
+                  "Create secret"))
+              (comp/card-content
+                {}
+                (comp/typography
+                  {:variant   "body2"
+                   :className "Swarmpit-fcard-message"}
+                  "Blob of data, such as a password or SSH private key")
+                (form-name secretName)
+                (form-data data)
+                (html
+                  [:div.Swarmpit-form-buttons
+                   (composite/progress-button
+                     "Create"
+                     create-secret-handler
+                     processing?)]))))]]))))
