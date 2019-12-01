@@ -1,5 +1,6 @@
 (ns swarmpit.component.registry-gitlab.edit
-  (:require [material.components :as comp]
+  (:require [material.icon :as icon]
+            [material.components :as comp]
             [material.component.composite :as composite]
             [swarmpit.component.common :as common]
             [swarmpit.component.mixin :as mixin]
@@ -129,7 +130,9 @@
                 (composite/progress-button
                   "Save"
                   #(update-registry-handler _id)
-                  processing?)))))]])))
+                  processing?
+                  false
+                  {:startIcon (icon/save {})})))))]])))
 
 (rum/defc form < rum/reactive
                  mixin-init-form [_]

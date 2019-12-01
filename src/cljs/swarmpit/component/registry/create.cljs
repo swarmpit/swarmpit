@@ -84,7 +84,7 @@
     "gitlab" (gitlab/form route)))
 
 (def registry-publish-text
-  "Specify registry access across Swarmpit platform")
+  "Specify registry access level across Swarmpit platform")
 
 (defn- registry-publish-form [value]
   (comp/form-control
