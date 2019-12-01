@@ -54,6 +54,19 @@
             {:key   %
              :value %} %) supported-roles)))
 
+(defn- form-user [value]
+  (comp/text-field
+    {:label           "User"
+     :fullWidth       true
+     :name            "user"
+     :key             "user"
+     :variant         "outlined"
+     :defaultValue    value
+     :required        true
+     :disabled        true
+     :margin          "normal"
+     :InputLabelProps {:shrink true}}))
+
 (defn- form-access-key-id [access-key-id]
   (comp/text-field
     {:label           "Access Key Id"
@@ -81,11 +94,10 @@
      :defaultValue    access-key
      :onChange        #(state/update-value [:accessKey] (-> % .-target .-value) state/form-value-cursor)
      :InputLabelProps {:shrink true}
-     :InputProps      {:className    "Swarmpit-form-input"
-                       :endAdornment (common/show-password-adornment show-key?)}}))
+     :InputProps      {:endAdornment (common/show-password-adornment show-key?)}}))
 
 (defn- form-public [value]
-  (comp/checkbox
+  (comp/switch
     {:checked  value
      :value    (str value)
      :onChange #(state/update-value [:public] (-> % .-target .-checked) state/form-value-cursor)}))
@@ -135,34 +147,44 @@
     (html
       [:div.Swarmpit-form
        [:div.Swarmpit-form-context
-        [:div.Swarmpit-form-paper
-         (common/form-title (str "Editing " user))
-         [:div.Swarmpit-registry-form
-          (comp/grid
-            {:container true
-             :className "Swarmpit-form-main-grid"
-             :spacing   3}
-            (comp/grid
-              {:item true
-               :xs   12}
+        (comp/container
+          {:maxWidth  "sm"
+           :className "Swarmpit-container"}
+          (comp/card
+            {:className "Swarmpit-form-card Swarmpit-fcard"}
+            (comp/box
+              {:className "Swarmpit-fcard-header"}
+              (comp/typography
+                {:className "Swarmpit-fcard-header-title"
+                 :variant   "h6"
+                 :component "div"}
+                "Edit registry"))
+            (comp/card-content
+              {:className "Swarmpit-fcard-content"}
+              (comp/typography
+                {:variant   "body2"
+                 :className "Swarmpit-fcard-message"}
+                "Update Amazon ECR account settings")
+              (form-user user)
               (form-region region)
               (form-access-key-id accessKeyId)
-              (form-access-key accessKey showKey))
-            (comp/grid
-              {:item true
-               :xs   12}
-              (comp/form-control-label
-                {:control (form-public public)
-                 :label   "Share"}))
-            (comp/grid
-              {:item true
-               :xs   12}
-              (html
-                [:div.Swarmpit-form-buttons
-                 (composite/progress-button
-                   "Save"
-                   #(update-ecr-handler _id)
-                   processing?)])))]]]])))
+              (form-access-key accessKey showKey)
+              (comp/form-control
+                {:component "fieldset"
+                 :key       "role-f"
+                 :margin    "normal"}
+                (comp/form-label
+                  {:key "rolel"} "Make account Public")
+                (comp/form-helper-text
+                  {} "Means that anyone can search & deploy private repositories from this account")
+                (comp/form-control-label
+                  {:control (form-public public)}))
+              (comp/box
+                {:className "Swarmpit-form-buttons"}
+                (composite/progress-button
+                  "Save"
+                  #(update-ecr-handler _id)
+                  processing?)))))]])))
 
 (rum/defc form < rum/reactive
                  mixin-init-form [_]

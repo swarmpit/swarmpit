@@ -27,34 +27,15 @@
      :margin          "normal"
      :InputLabelProps {:shrink true}}))
 
-;(defn- form-role [value]
-;  (comp/text-field
-;    {:fullWidth       true
-;     :label           "Role"
-;     :key             "role"
-;     :select          true
-;     :value           value
-;     :variant         "outlined"
-;     :margin          "normal"
-;     :InputLabelProps {:shrink true}
-;     :InputProps      {:className "Swarmpit-form-input"}
-;     :onChange        #(state/update-value [:role] (-> % .-target .-value) state/form-value-cursor)}
-;    (comp/menu-item
-;      {:key   "admin"
-;       :value "admin"} "admin")
-;    (comp/menu-item
-;      {:key   "user"
-;       :value "user"} "user")))
-
 (defn- form-role [value]
   (comp/form-control
     {:component "fieldset"
      :key       "role-f"
      :margin    "normal"}
     (comp/form-label
-      {:key "rolel"} "Role")
+      {:key "rolel"} "Define Role")
     (comp/form-helper-text
-      {} "Define account priviledges")
+      {} "Specify account priviledges level")
     (comp/radio-group
       {:name     "role"
        :key      "role-rg"

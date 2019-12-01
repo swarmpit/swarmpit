@@ -14,6 +14,19 @@
 
 (enable-console-print!)
 
+(defn- form-username [value]
+  (comp/text-field
+    {:label           "Username"
+     :fullWidth       true
+     :name            "username"
+     :key             "username"
+     :variant         "outlined"
+     :defaultValue    value
+     :required        true
+     :disabled        true
+     :margin          "normal"
+     :InputLabelProps {:shrink true}}))
+
 (defn- form-password [value show-password?]
   (comp/text-field
     {:label           "New Password"
@@ -25,11 +38,11 @@
      :defaultValue    value
      :onChange        #(state/update-value [:password] (-> % .-target .-value) state/form-value-cursor)
      :InputLabelProps {:shrink true}
-     :InputProps      {:className    "Swarmpit-form-input"
-                       :endAdornment (common/show-password-adornment show-password?)}}))
+     :margin          "normal"
+     :InputProps      {:endAdornment (common/show-password-adornment show-password?)}}))
 
 (defn- form-public [value]
-  (comp/checkbox
+  (comp/switch
     {:checked  value
      :value    (str value)
      :onChange #(state/update-value [:public] (-> % .-target .-checked) state/form-value-cursor)}))
@@ -43,7 +56,7 @@
      :on-success (fn [{:keys [response]}]
                    (state/set-value response state/form-value-cursor))}))
 
-(defn- update-user-handler
+(defn- update-dockerhub-handler
   [user-id]
   (ajax/post
     (routes/path-for-backend :registry {:id           user-id
@@ -79,32 +92,42 @@
     (html
       [:div.Swarmpit-form
        [:div.Swarmpit-form-context
-        [:div.Swarmpit-form-paper
-         (common/form-title (str "Editing " username))
-         [:div.Swarmpit-registry-form
-          (comp/grid
-            {:container true
-             :className "Swarmpit-form-main-grid"
-             :spacing   3}
-            (comp/grid
-              {:item true
-               :xs   12}
-              (form-password password showPassword))
-            (comp/grid
-              {:item true
-               :xs   12}
-              (comp/form-control-label
-                {:control (form-public public)
-                 :label   "Share"}))
-            (comp/grid
-              {:item true
-               :xs   12}
-              (html
-                [:div.Swarmpit-form-buttons
-                 (composite/progress-button
-                   "Save"
-                   #(update-user-handler _id)
-                   processing?)])))]]]])))
+        (comp/container
+          {:maxWidth  "sm"
+           :className "Swarmpit-container"}
+          (comp/card
+            {:className "Swarmpit-form-card Swarmpit-fcard"}
+            (comp/box
+              {:className "Swarmpit-fcard-header"}
+              (comp/typography
+                {:className "Swarmpit-fcard-header-title"
+                 :variant   "h6"
+                 :component "div"}
+                "Edit registry"))
+            (comp/card-content
+              {:className "Swarmpit-fcard-content"}
+              (comp/typography
+                {:variant   "body2"
+                 :className "Swarmpit-fcard-message"}
+                "Update Dockerhub account settings")
+              (form-username username)
+              (form-password password showPassword)
+              (comp/form-control
+                {:component "fieldset"
+                 :key       "role-f"
+                 :margin    "normal"}
+                (comp/form-label
+                  {:key "rolel"} "Make account Public")
+                (comp/form-helper-text
+                  {} "Means that anyone can search & deploy private repositories from this account")
+                (comp/form-control-label
+                  {:control (form-public public)}))
+              (comp/box
+                {:className "Swarmpit-form-buttons"}
+                (composite/progress-button
+                  "Save"
+                  #(update-dockerhub-handler _id)
+                  processing?)))))]])))
 
 (rum/defc form < rum/reactive
                  mixin-init-form [_]

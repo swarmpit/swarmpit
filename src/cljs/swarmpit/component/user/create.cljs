@@ -50,9 +50,9 @@
      :key       "role-f"
      :margin    "normal"}
     (comp/form-label
-      {:key "rolel"} "Role")
+      {:key "rolel"} "Define Role")
     (comp/form-helper-text
-      {} "Define account priviledges")
+      {} "Specify account priviledges level")
     (comp/radio-group
       {:name     "role"
        :key      "role-rg"

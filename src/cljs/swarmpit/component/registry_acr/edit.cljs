@@ -14,6 +14,19 @@
 
 (enable-console-print!)
 
+(defn- form-principal-name [value]
+  (comp/text-field
+    {:label           "Service Principal Name"
+     :fullWidth       true
+     :name            "username"
+     :key             "username"
+     :variant         "outlined"
+     :defaultValue    value
+     :required        true
+     :disabled        true
+     :margin          "normal"
+     :InputLabelProps {:shrink true}}))
+
 (defn- form-principal-id [id]
   (comp/text-field
     {:label           "Service Principal ID"
@@ -40,11 +53,10 @@
      :defaultValue    password
      :onChange        #(state/update-value [:spPassword] (-> % .-target .-value) state/form-value-cursor)
      :InputLabelProps {:shrink true}
-     :InputProps      {:className    "Swarmpit-form-input"
-                       :endAdornment (common/show-password-adornment show-password?)}}))
+     :InputProps      {:endAdornment (common/show-password-adornment show-password?)}}))
 
 (defn- form-public [value]
-  (comp/checkbox
+  (comp/switch
     {:checked  value
      :value    (str value)
      :onChange #(state/update-value [:public] (-> % .-target .-checked) state/form-value-cursor)}))
@@ -94,33 +106,43 @@
     (html
       [:div.Swarmpit-form
        [:div.Swarmpit-form-context
-        [:div.Swarmpit-form-paper
-         (common/form-title (str "Editing " spName))
-         [:div.Swarmpit-registry-form
-          (comp/grid
-            {:container true
-             :className "Swarmpit-form-main-grid"
-             :spacing   3}
-            (comp/grid
-              {:item true
-               :xs   12}
+        (comp/container
+          {:maxWidth  "sm"
+           :className "Swarmpit-container"}
+          (comp/card
+            {:className "Swarmpit-form-card Swarmpit-fcard"}
+            (comp/box
+              {:className "Swarmpit-fcard-header"}
+              (comp/typography
+                {:className "Swarmpit-fcard-header-title"
+                 :variant   "h6"
+                 :component "div"}
+                "Edit registry"))
+            (comp/card-content
+              {:className "Swarmpit-fcard-content"}
+              (comp/typography
+                {:variant   "body2"
+                 :className "Swarmpit-fcard-message"}
+                "Update Azure ACR account settings")
+              (form-principal-name spName)
               (form-principal-id spId)
-              (form-principal-password spPassword showPassword))
-            (comp/grid
-              {:item true
-               :xs   12}
-              (comp/form-control-label
-                {:control (form-public public)
-                 :label   "Share"}))
-            (comp/grid
-              {:item true
-               :xs   12}
-              (html
-                [:div.Swarmpit-form-buttons
-                 (composite/progress-button
-                   "Save"
-                   #(update-acr-handler _id)
-                   processing?)])))]]]])))
+              (form-principal-password spPassword showPassword)
+              (comp/form-control
+                {:component "fieldset"
+                 :key       "role-f"
+                 :margin    "normal"}
+                (comp/form-label
+                  {:key "rolel"} "Make account Public")
+                (comp/form-helper-text
+                  {} "Means that anyone can search & deploy private repositories from this account")
+                (comp/form-control-label
+                  {:control (form-public public)}))
+              (comp/box
+                {:className "Swarmpit-form-buttons"}
+                (composite/progress-button
+                  "Save"
+                  #(update-acr-handler _id)
+                  processing?)))))]])))
 
 (rum/defc form < rum/reactive
                  mixin-init-form [_]

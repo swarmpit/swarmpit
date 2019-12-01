@@ -84,21 +84,22 @@
     "gitlab" (gitlab/form route)))
 
 (def registry-publish-text
-  "By default only user that has created registry account can
-   search & deploy private repositories. If you would like to share
-   this access with other members of your team check the share button.")
+  "Specify registry access across Swarmpit platform")
 
 (defn- registry-publish-form [value]
   (comp/form-control
-    {:component "fieldset"}
-    (comp/form-group
-      {}
-      (comp/form-control-label
-        {:control (comp/checkbox
-                    {:checked  value
-                     :value    (str value)
-                     :onChange #(state/update-value [:public] (-> % .-target .-checked) state/form-value-cursor)})
-         :label   "Share"}))))
+    {:component "fieldset"
+     :key       "role-f"
+     :margin    "normal"}
+    (comp/form-label
+      {:key "rolel"} "Make account Public")
+    (comp/form-helper-text
+      {} "Means that anyone can search & deploy private repositories from this account")
+    (comp/form-control-label
+      {:control (comp/switch
+                  {:checked  value
+                   :value    (str value)
+                   :onChange #(state/update-value [:public] (-> % .-target .-checked) state/form-value-cursor)})})))
 
 (defn buttons
   [index valid? processing?]
