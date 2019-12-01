@@ -1,5 +1,6 @@
 (ns swarmpit.component.user.edit
-  (:require [material.components :as comp]
+  (:require [material.icon :as icon]
+            [material.components :as comp]
             [material.component.composite :as composite]
             [swarmpit.component.mixin :as mixin]
             [swarmpit.component.state :as state]
@@ -134,7 +135,9 @@
                 (composite/progress-button
                   "Save"
                   #(update-user-handler _id)
-                  processing?)))))]])))
+                  processing?
+                  false
+                  {:startIcon (icon/save {})})))))]])))
 
 (rum/defc form < rum/reactive
                  mixin-init-form [_]

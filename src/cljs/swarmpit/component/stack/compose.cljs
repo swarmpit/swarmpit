@@ -8,18 +8,55 @@
             [swarmpit.component.mixin :as mixin]
             [swarmpit.component.message :as message]
             [swarmpit.component.progress :as progress]
+            [swarmpit.component.common :as common]
             [swarmpit.ajax :as ajax]
             [swarmpit.routes :as routes]
             [swarmpit.url :refer [dispatch!]]
             [sablono.core :refer-macros [html]]
-            [rum.core :as rum]
-            [swarmpit.component.common :as common]))
+            [rum.core :as rum]))
 
 (enable-console-print!)
 
 (def editor-id "compose")
 
 (def doc-compose-link "https://docs.docker.com/get-started/part3/#your-first-docker-composeyml-file")
+
+(defn form-name [value]
+  (comp/text-field
+    {:label           "Name"
+     :fullWidth       true
+     :name            "name"
+     :key             "name"
+     :variant         "outlined"
+     :defaultValue    value
+     :required        true
+     :disabled        true
+     :margin          "normal"
+     :InputLabelProps {:shrink true}}))
+
+(defn form-select [name value last? previous?]
+  (comp/text-field
+    {:fullWidth       true
+     :key             "compose-select"
+     :label           "Compose file"
+     :helperText      "Compose file source"
+     :select          true
+     :value           value
+     :variant         "outlined"
+     :margin          "normal"
+     :InputLabelProps {:shrink true}
+     :onChange        #(dispatch! (routes/path-for-frontend (keyword (-> % .-target .-value)) {:name name}))}
+    (comp/menu-item
+      {:key   "current"
+       :value :stack-compose} "Current engine state")
+    (comp/menu-item
+      {:key      "last"
+       :value    :stack-last
+       :disabled (not last?)} "Last deployed")
+    (comp/menu-item
+      {:key      "previous"
+       :value    :stack-previous
+       :disabled (not previous?)} "Previously deployed (rollback)")))
 
 (defn- form-editor [value]
   (comp/text-field
@@ -31,6 +68,7 @@
      :multiline       true
      :disabled        true
      :required        true
+     :margin          "normal"
      :InputLabelProps {:shrink true}
      :value           value}))
 
@@ -97,31 +135,6 @@
       (stackfile-handler name)
       (compose-handler name))))
 
-(defn form-select [name value last? previous?]
-  (comp/text-field
-    {:fullWidth       true
-     :key             "compose-select"
-     :label           "Compose file"
-     :helperText      "Compose file source"
-     :select          true
-     :value           value
-     :variant         "outlined"
-     :margin          "normal"
-     :InputLabelProps {:shrink true}
-     :InputProps      {:className "Swarmpit-form-input"}
-     :onChange        #(dispatch! (routes/path-for-frontend (keyword (-> % .-target .-value)) {:name name}))}
-    (comp/menu-item
-      {:key   "current"
-       :value :stack-compose} "Current engine state")
-    (comp/menu-item
-      {:key      "last"
-       :value    :stack-last
-       :disabled (not last?)} "Last deployed")
-    (comp/menu-item
-      {:key      "previous"
-       :value    :stack-previous
-       :disabled (not previous?)} "Previously deployed (rollback)")))
-
 (rum/defc form-edit < rum/reactive
                       mixin-init-editor [{:keys [name spec]}
                                          {:keys [processing? valid? last? previous?]}]
@@ -129,47 +142,31 @@
     (html
       [:div.Swarmpit-form
        [:div.Swarmpit-form-context
-        [:div.Swarmpit-form-paper
-         (common/form-title (str "Editing " name))
-         (comp/grid
-           {:container true
-            :className "Swarmpit-form-main-grid"
-            :spacing   5}
-           (comp/grid
-             {:item true
-              :xs   12
-              :sm   12
-              :md   12
-              :lg   8
-              :xl   8}
-             (comp/grid
-               {:container true
-                :spacing   5}
-               (comp/grid
-                 {:item true
-                  :xs   12}
-                 (form-select name :stack-compose last? previous?))
-               (comp/grid
-                 {:item true
-                  :xs   12}
-                 (form-editor (:compose spec)))
-               (comp/grid
-                 {:item true
-                  :xs   12}
-                 (html
-                   [:div.Swarmpit-form-buttons
-                    (composite/progress-button
-                      "Deploy"
-                      #(update-stack-handler name)
-                      processing?)]))))
-           (comp/grid
-             {:item true
-              :xs   12
-              :sm   12
-              :md   12
-              :lg   4
-              :xl   4}
-             (form/open-in-new "Learn more about compose" doc-compose-link)))]]])))
+        (comp/container
+          {:maxWidth  "md"
+           :className "Swarmpit-container"}
+          (comp/card
+            {:className "Swarmpit-form-card Swarmpit-fcard"}
+            (comp/box
+              {:className "Swarmpit-fcard-header"}
+              (comp/typography
+                {:className "Swarmpit-fcard-header-title"
+                 :variant   "h6"
+                 :component "div"}
+                "Edit stack"))
+            (comp/card-content
+              {:className "Swarmpit-fcard-content"}
+              (form-name name)
+              (form-select name :stack-compose last? previous?)
+              (form-editor (:compose spec))
+              (comp/box
+                {:className "Swarmpit-form-buttons"}
+                (composite/progress-button
+                  "Deploy"
+                  #(update-stack-handler name)
+                  processing?
+                  false
+                  {:startIcon (comp/svg {} icon/rocket-path)})))))]])))
 
 (rum/defc form < rum/reactive
                  mixin-init-form [_]

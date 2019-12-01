@@ -120,9 +120,9 @@
                   "Blob of data, such as a password or SSH private key")
                 (form-name secretName)
                 (form-data data)
-                (html
-                  [:div.Swarmpit-form-buttons
-                   (composite/progress-button
-                     "Create"
-                     create-secret-handler
-                     processing?)]))))]]))))
+                (comp/box
+                  {:className "Swarmpit-form-buttons"}
+                  (composite/progress-button
+                    "Create"
+                    create-secret-handler
+                    processing?)))))]]))))

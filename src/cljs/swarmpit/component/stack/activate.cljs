@@ -9,16 +9,29 @@
             [swarmpit.component.message :as message]
             [swarmpit.component.progress :as progress]
             [swarmpit.component.dialog :as dialog]
+            [swarmpit.component.common :as common]
             [swarmpit.ajax :as ajax]
             [swarmpit.routes :as routes]
             [swarmpit.url :refer [dispatch!]]
             [sablono.core :refer-macros [html]]
-            [rum.core :as rum]
-            [swarmpit.component.common :as common]))
+            [rum.core :as rum]))
 
 (def editor-id "compose")
 
 (def doc-compose-link "https://docs.docker.com/get-started/part3/#your-first-docker-composeyml-file")
+
+(defn- form-name [value]
+  (comp/text-field
+    {:label           "Name"
+     :fullWidth       true
+     :name            "name"
+     :key             "name"
+     :variant         "outlined"
+     :defaultValue    value
+     :required        true
+     :disabled        true
+     :margin          "normal"
+     :InputLabelProps {:shrink true}}))
 
 (defn- form-editor [value]
   (comp/text-field
@@ -30,6 +43,7 @@
      :multiline       true
      :disabled        true
      :required        true
+     :margin          "normal"
      :InputLabelProps {:shrink true}
      :value           value}))
 
@@ -101,48 +115,37 @@
          "Delete stackfile?"
          "Delete")
        [:div.Swarmpit-form-context
-        [:div.Swarmpit-form-paper
-         (common/form-title (str "Activate " name))
-         (comp/grid
-           {:container true
-            :className "Swarmpit-form-main-grid"
-            :spacing   5}
-           (comp/grid
-             {:item true
-              :xs   12
-              :sm   12
-              :md   12
-              :lg   8
-              :xl   8}
-             (comp/grid
-               {:container true
-                :spacing   5}
-               (comp/grid
-                 {:item true
-                  :xs   12}
-                 (form-editor (:compose spec)))
-               (comp/grid
-                 {:item true
-                  :xs   12}
-                 (html
-                   [:div.Swarmpit-form-buttons
-                    (composite/progress-button
-                      "Deploy"
-                      #(deploy-stack-handler name)
-                      processing?)
-                    (comp/button
-                      {:color    "secondary"
-                       :disabled processing?
-                       :onClick  #(state/update-value [:open] true dialog/dialog-cursor)}
-                      "Delete")]))))
-           (comp/grid
-             {:item true
-              :xs   12
-              :sm   12
-              :md   12
-              :lg   4
-              :xl   4}
-             (form/open-in-new "Learn more about compose" doc-compose-link)))]]])))
+        (comp/container
+          {:maxWidth  "md"
+           :className "Swarmpit-container"}
+          (comp/card
+            {:className "Swarmpit-form-card Swarmpit-fcard"}
+            (comp/box
+              {:className "Swarmpit-fcard-header"}
+              (comp/typography
+                {:className "Swarmpit-fcard-header-title"
+                 :variant   "h6"
+                 :component "div"}
+                "Activate stack"))
+            (comp/card-content
+              {:className "Swarmpit-fcard-content"}
+              (form-name name)
+              (form-editor (:compose spec))
+              (comp/box
+                {:className "Swarmpit-form-buttons"}
+                (composite/progress-button
+                  "Deploy"
+                  #(deploy-stack-handler name)
+                  processing?
+                  false
+                  {:startIcon (comp/svg {} icon/rocket-path)})
+                (comp/button
+                  {:color     "secondary"
+                   :variant   "contained"
+                   :startIcon (comp/svg {} icon/trash-path)
+                   :disabled  processing?
+                   :onClick   #(state/update-value [:open] true dialog/dialog-cursor)}
+                  "Delete")))))]])))
 
 (rum/defc form < rum/reactive
                  mixin-init-form [_]
