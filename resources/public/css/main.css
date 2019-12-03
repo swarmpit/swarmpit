@@ -648,18 +648,45 @@ a {
     margin-top: 10px !important;
 }
 
+.Swarmpit-fcard-actions {
+    padding-top: 0 !important;
+}
+
 /** Form content **/
 
 .Swarmpit-form {
     min-height: calc(100vh - 64px);
 }
 
-.Swarmpit-form-context {
-    padding: 24px 24px;
+.Swarmpit-form-item-wrapper {
+    margin-left: 16px;
 }
 
-.Swarmpit-form-wrapper {
-    padding: 16px;
+.Swarmpit-form-item {
+    align-items: stretch;
+    display: flex;
+    flex-wrap: wrap;
+    padding-top: 10px;
+    padding-bottom: 10px;
+}
+
+.Swarmpit-form-item-name {
+    flex-basis: 150px;
+    align-items: center;
+    display: flex;
+    margin-right: 24px;
+    color: rgba(0, 0, 0, 0.54);
+}
+
+.Swarmpit-form-item-value {
+    flex-grow: 1;
+    flex-shrink: 1;
+    word-break: break-all;
+    padding-right: 16px;
+}
+
+.Swarmpit-form-context {
+    padding: 24px 24px;
 }
 
 .Swarmpit-form-context input[type="number"],
@@ -673,15 +700,6 @@ a {
 
 .Swarmpit-form-title {
     margin-bottom: 16px;
-}
-
-.Swarmpit-form-title-divider {
-    margin-top: 5px !important;
-    margin-bottom: 20px !important;
-}
-
-.Swarmpit-grid-title-divider {
-    margin-top: 15px !important;
 }
 
 .Swarmpit-form-paper {
@@ -709,18 +727,13 @@ a {
 }
 
 .Swarmpit-form-buttons > * {
-    margin-right: 5px !important;
+    margin-right: 8px !important;
 }
 
 .Swarmpit-form-section {
     flex-direction: row;
     display: flex;
     align-items: center;
-}
-
-.Swarmpit-transparent-card {
-    box-shadow: none !important;
-    background-color: #fafafa !important;
 }
 
 .Swarmpit-form-card {
@@ -846,6 +859,18 @@ a {
     border-radius: 12px;
     text-transform: uppercase;
     vertical-align: baseline;
+}
+
+.Swarmpit-header-label {
+    color: #fff;
+    border-radius: 2px;
+    font-size: 10px !important;
+    font-weight: 500 !important;
+    padding: 4px 8px;
+    display: inline-flex;
+    height: 20px;
+    justify-content: center;
+    align-items: center;
 }
 
 @-webkit-keyframes pulse {
@@ -1182,6 +1207,14 @@ a {
 
     .Swarmpit-container {
         padding: 0 !important;
+    }
+
+    .Swarmpit-form-item {
+        flex-direction: column;
+    }
+
+    .Swarmpit-form-item-name {
+        flex-basis: 0;
     }
 
     .Swarmpit-form-toolbar {
