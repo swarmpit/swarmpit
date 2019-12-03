@@ -234,15 +234,15 @@
                       {:color   "primary"
                        :onClick add-label}
                       (comp/svg icon/add-small-path) "Add label"))
-                  (form-label-table labels)))
-              (comp/box
-                {:className "Swarmpit-form-buttons"}
-                (composite/progress-button
-                  "Save"
-                  #(update-node-handler id version)
-                  processing?
-                  false
-                  {:startIcon (icon/save {})})))))]])))
+                  (form-label-table labels))))
+            (comp/card-actions
+              {:className "Swarmpit-fcard-actions"}
+              (composite/progress-button
+                "Save"
+                #(update-node-handler id version)
+                processing?
+                false
+                {:startIcon (icon/save {})}))))]])))
 
 (rum/defc form < rum/reactive
                  mixin-init-form

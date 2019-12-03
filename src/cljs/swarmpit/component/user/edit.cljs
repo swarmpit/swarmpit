@@ -129,15 +129,15 @@
               {:className "Swarmpit-fcard-content"}
               (form-username username)
               (form-email email)
-              (form-role role)
-              (comp/box
-                {:className "Swarmpit-form-buttons"}
-                (composite/progress-button
-                  "Save"
-                  #(update-user-handler _id)
-                  processing?
-                  false
-                  {:startIcon (icon/save {})})))))]])))
+              (form-role role))
+            (comp/card-actions
+              {:className "Swarmpit-fcard-actions"}
+              (composite/progress-button
+                "Save"
+                #(update-user-handler _id)
+                processing?
+                false
+                {:startIcon (icon/save {})}))))]])))
 
 (rum/defc form < rum/reactive
                  mixin-init-form [_]

@@ -151,10 +151,10 @@
                 (form-username username)
                 (form-password password showPassword)
                 (form-email email)
-                (form-role role)
-                (comp/box
-                  {:className "Swarmpit-form-buttons"}
-                  (composite/progress-button
-                    "Create"
-                    create-user-handler
-                    processing?)))))]]))))
+                (form-role role))
+              (comp/card-actions
+                {:className "Swarmpit-fcard-actions"}
+                (composite/progress-button
+                  "Create"
+                  create-user-handler
+                  processing?))))]]))))

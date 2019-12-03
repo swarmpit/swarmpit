@@ -150,22 +150,22 @@
                    :className "Swarmpit-fcard-message"}
                   "Group of interrelated services that are orchestrated and scaled together")
                 (form-name name)
-                (form-editor (:compose spec))
-                (comp/box
-                  {:className "Swarmpit-form-buttons"}
-                  (composite/progress-button
-                    "Deploy"
-                    create-stack-handler
-                    processing?
-                    saving?
-                    {:startIcon (comp/svg {} icon/rocket-path)})
-                  (composite/progress-button
-                    "Save"
-                    save-stack-handler
-                    saving?
-                    processing?
-                    {:variant   "outlined"
-                     :startIcon (icon/save {})})))))]]))))
+                (form-editor (:compose spec)))
+              (comp/card-actions
+                {:className "Swarmpit-fcard-actions"}
+                (composite/progress-button
+                  "Deploy"
+                  create-stack-handler
+                  processing?
+                  saving?
+                  {:startIcon (comp/svg {} icon/rocket-path)})
+                (composite/progress-button
+                  "Save"
+                  save-stack-handler
+                  saving?
+                  processing?
+                  {:variant   "outlined"
+                   :startIcon (icon/save {})}))))]]))))
 
 (rum/defc form < rum/reactive
                  mixin-init-form [params]

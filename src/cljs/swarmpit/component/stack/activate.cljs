@@ -130,22 +130,22 @@
             (comp/card-content
               {:className "Swarmpit-fcard-content"}
               (form-name name)
-              (form-editor (:compose spec))
-              (comp/box
-                {:className "Swarmpit-form-buttons"}
-                (composite/progress-button
-                  "Deploy"
-                  #(deploy-stack-handler name)
-                  processing?
-                  false
-                  {:startIcon (comp/svg {} icon/rocket-path)})
-                (comp/button
-                  {:color     "secondary"
-                   :variant   "contained"
-                   :startIcon (comp/svg {} icon/trash-path)
-                   :disabled  processing?
-                   :onClick   #(state/update-value [:open] true dialog/dialog-cursor)}
-                  "Delete")))))]])))
+              (form-editor (:compose spec)))
+            (comp/card-actions
+              {:className "Swarmpit-fcard-actions"}
+              (composite/progress-button
+                "Deploy"
+                #(deploy-stack-handler name)
+                processing?
+                false
+                {:startIcon (comp/svg {} icon/rocket-path)})
+              (comp/button
+                {:color     "secondary"
+                 :variant   "contained"
+                 :startIcon (comp/svg {} icon/trash-path)
+                 :disabled  processing?
+                 :onClick   #(state/update-value [:open] true dialog/dialog-cursor)}
+                "Delete"))))]])))
 
 (rum/defc form < rum/reactive
                  mixin-init-form [_]

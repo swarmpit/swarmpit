@@ -54,6 +54,7 @@
   (comp/checkbox
     {:checked  value
      :key      "internal"
+     :color    "primary"
      :value    (str value)
      :onChange #(state/update-value [:internal] (-> % .-target .-checked) state/form-value-cursor)}))
 
@@ -61,6 +62,7 @@
   (comp/checkbox
     {:checked  value
      :key      "attachable"
+     :color    "primary"
      :disabled ingres?
      :value    (str value)
      :onChange #(state/update-value [:attachable] (-> % .-target .-checked) state/form-value-cursor)}))
@@ -69,6 +71,7 @@
   (comp/checkbox
     {:checked  value
      :key      "ingress"
+     :color    "primary"
      :disabled attachable?
      :value    (str value)
      :onChange #(state/update-value [:ingress] (-> % .-target .-checked) state/form-value-cursor)}))
@@ -104,6 +107,7 @@
   (comp/checkbox
     {:checked  value
      :key      "ipv6"
+     :color    "primary"
      :value    (str value)
      :onChange #(state/update-value [:enableIPv6] (-> % .-target .-checked) state/form-value-cursor)}))
 
@@ -310,10 +314,10 @@
                     (comp/typography
                       {:variant      "h6"
                        :gutterBottom true} "Driver")
-                    (section-driver item plugins)))
-                (comp/box
-                  {:className "Swarmpit-form-buttons"}
-                  (composite/progress-button
-                    "Create"
-                    #(create-network-handler)
-                    processing?)))))]]))))
+                    (section-driver item plugins))))
+              (comp/card-actions
+                {:className "Swarmpit-fcard-actions"}
+                (composite/progress-button
+                  "Create"
+                  #(create-network-handler)
+                  processing?))))]]))))

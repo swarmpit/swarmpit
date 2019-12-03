@@ -113,15 +113,15 @@
               {:className "Swarmpit-fcard-content"}
               (compose/form-name name)
               (compose/form-select name select true previous?)
-              (form-editor (:compose spec))
-              (comp/box
-                {:className "Swarmpit-form-buttons"}
-                (composite/progress-button
-                  "Deploy"
-                  #(update-stack-handler name)
-                  processing?
-                  false
-                  {:startIcon (comp/svg {} icon/rocket-path)})))))]])))
+              (form-editor (:compose spec)))
+            (comp/card-actions
+              {:className "Swarmpit-fcard-actions"}
+              (composite/progress-button
+                "Deploy"
+                #(update-stack-handler name)
+                processing?
+                false
+                {:startIcon (comp/svg {} icon/rocket-path)}))))]])))
 
 (rum/defc form-last < rum/reactive
                       mixin-init-form [_]

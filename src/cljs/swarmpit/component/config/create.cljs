@@ -117,10 +117,10 @@
                    :className "Swarmpit-fcard-message"}
                   "Store non-sensitive information such as config files")
                 (form-name configName)
-                (form-data data)
-                (comp/box
-                  {:className "Swarmpit-form-buttons"}
-                  (composite/progress-button
-                    "Create"
-                    create-config-handler
-                    processing?)))))]]))))
+                (form-data data))
+              (comp/card-actions
+                {:className "Swarmpit-fcard-actions"}
+                (composite/progress-button
+                  "Create"
+                  create-config-handler
+                  processing?))))]]))))
