@@ -56,7 +56,7 @@
          :aria-label "split button"}
         (comp/button
           {:startIcon (:icon main-action)
-           :onClick   #(:onClick main-action)}
+           :onClick   (:onClick main-action)}
           (:name main-action))
         (comp/button
           {:color         "primary"
