@@ -10,7 +10,7 @@
             [swarmpit.component.progress :as progress]
             [swarmpit.component.task.list :as tasks]
             [swarmpit.component.dialog :as dialog]
-            [swarmpit.component.menu :as menu]
+            [swarmpit.component.toolbar :as toolbar]
             [swarmpit.component.common :as common]
             [swarmpit.storage :as storage]
             [swarmpit.url :refer [dispatch!]]
@@ -25,8 +25,8 @@
 
 (defn- node-item-state [value]
   (case value
-    "ready" (label/green value)
-    "down" (label/red value)))
+    "ready" (label/header value "green")
+    "down" (label/header value "red")))
 
 (defn- me-handler
   [node-id]
@@ -90,26 +90,29 @@
                      (str "Node detach failed. " (:error response))))}))
 
 (defn form-pin-action
-  [id pinned?]
+  [id pinned? group?]
   (if pinned?
     {:onClick #(detach-node-handler id)
      :icon    (comp/svg icon/pin-path)
-     :more    true
-     :name    "Detach node"}
+     :group   group?
+     :name    "Detach"}
     {:onClick #(pin-node-handler id)
      :icon    (comp/svg icon/pin-path)
-     :more    true
-     :name    "Pin node"}))
+     :group   group?
+     :name    "Pin"}))
 
 (defn form-actions
   [id pinned?]
-  [(form-pin-action id pinned?)
+  [(form-pin-action id pinned? true)
    {:onClick #(dispatch! (routes/path-for-frontend :node-edit {:id id}))
     :icon    (comp/svg icon/edit-path)
-    :name    "Edit node"}
+    :main    true
+    :group   true
+    :name    "Edit"}
    {:onClick #(state/update-value [:open] true dialog/dialog-cursor)
     :icon    (comp/svg icon/trash-path)
-    :name    "Delete node"}])
+    :color   "secondary"
+    :name    "Delete"}])
 
 (rum/defc form-general < rum/static [node pinned?]
   (let [cpu (-> node :resources :cpu (int))
@@ -118,19 +121,15 @@
     (comp/card
       {:className "Swarmpit-form-card"}
       (comp/card-header
-        (merge
-          {:title     (:nodeName node)
-           :className "Swarmpit-form-card-header Swarmpit-card-header-responsive-title"
-           :subheader (:address node)}
-          (if (storage/admin?)
-            {:action (menu/menu
-                       (form-actions (:id node) pinned?)
-                       :nodeGeneralMenuAnchor
-                       :nodeGeneralMenuOpened)}
-            {:action (menu/menu
-                       [(form-pin-action (:id node) pinned?)]
-                       :nodeGeneralMenuAnchor
-                       :nodeGeneralMenuOpened)})))
+        {:title     (comp/typography {:variant "h6"} "Summary")
+         :subheader (form/item-labels
+                      [(node-item-state (:state node))
+                       (when (:leader node)
+                         (label/header "Leader" "primary"))
+                       (label/header (:role node) "info")
+                       (if (= "active" (:availability node))
+                         (label/header "active" "green")
+                         (label/header (:availability node) "info"))])})
       (comp/card-content
         {:className "Swarmpit-table-card-content"}
         (html
@@ -149,24 +148,12 @@
               (get-in node [:stats :memory :usedPercentage])
               (str (humanize/filesize memory-bytes :binary false) " ram")
               "graph-memory")]]))
-      (comp/card-content
-        {}
-        (html [:span (str "docker engine " (:engine node)) " on " [(:os node) " " (:arch node)]]))
-      (comp/card-content
-        {}
-        (form/item-labels
-          [(node-item-state (:state node))
-           (when (:leader node)
-             (label/primary "Leader"))
-           (label/grey (:role node))
-           (if (= "active" (:availability node))
-             (label/green "active")
-             (label/grey (:availability node)))]))
-      (comp/divider
-        {})
-      (comp/card-content
-        {:style {:paddingBottom "16px"}}
-        (form/item-id (:id node))))))
+      (form/item-main "ID" (:id node) false)
+      (form/item-main "Name" (:nodeName node))
+      (form/item-main "Address" (:address node))
+      (form/item-main "Engine" (:engine node))
+      (form/item-main "OS" (:os node))
+      (form/item-main "Arch" (:arch node)))))
 
 (def render-labels-metadata
   {:primary   (fn [item] (:name item))
@@ -278,7 +265,10 @@
          #(delete-node-handler id)
          "Delete node?"
          "Delete")
-       [:div.Swarmpit-form-context
+       [:div.Swarmpit-form-toolbar
+        (toolbar/toolbar "Node" id (if (storage/admin?)
+                                     (form-actions id pinned?)
+                                     [(form-pin-action id pinned? false)]))
         (comp/hidden
           {:xsDown         true
            :implementation "js"}
