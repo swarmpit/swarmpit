@@ -121,6 +121,7 @@
                    {:control (comp/checkbox
                                {:key     (str "filter-checkbox-" (:name %))
                                 :checked (:checked %)
+                                :color   "primary"
                                 :value   (str (:checked %))})
                     :key     (str "filter-label-" (:name %))
                     :label   (:name %)})) filters))])))
@@ -146,11 +147,11 @@
               [:div {:key (str "toolbar-item-" index)}
                [:div.Swarmpit-section-desktop
                 (comp/button
-                  {:color   "primary"
-                   :variant "contained"
-                   :key     (str "toolbar-button-" index)
+                  {:color     "primary"
+                   :variant   "contained"
+                   :key       (str "toolbar-button-" index)
                    :startIcon ((:icon action) {})
-                   :onClick (:onClick action)}
+                   :onClick   (:onClick action)}
                   (:name action))]
                [:div.Swarmpit-section-mobile
                 ;; Make FAB from first only (primary action)
@@ -204,6 +205,27 @@
           (empty? items) (list-empty title)
           (empty? filtered-items) (list-no-items-found)
           :else grid)]])))
+
+(rum/defc info-toobar < rum/reactive [domain id actions]
+  (comp/mui
+    (comp/toolbar
+      {:disableGutters true}
+      (comp/typography
+        {:variant "h5"
+         :noWrap  false}
+        (str domain " #" (subs id 0 10)))
+      (html [:div.grow])
+      (when actions
+        (map-indexed
+          (fn [index action]
+            (comp/button
+              {:className "Swarmpit-form-toolbar-btn"
+               :color     (or (:color action) "primary")
+               :variant   (or (:variant action) "contained")
+               :key       (str "toolbar-button-" index)
+               :startIcon (:icon action)
+               :onClick   (:onClick action)}
+              (:name action))) actions)))))
 
 (defn show-password-adornment
   ([show-password]

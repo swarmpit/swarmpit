@@ -185,3 +185,7 @@
 (defn save
   [props]
   (f/save-icon (clj->js props)))
+
+(defn arrow-dropdown
+  [props]
+  (f/arrow-dropdown-icon (clj->js props)))

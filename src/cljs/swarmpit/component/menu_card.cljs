@@ -1,4 +1,4 @@
-(ns swarmpit.component.action-menu
+(ns swarmpit.component.menu_card
   (:require [material.icon :as icon]
             [material.components :as comp]
             [swarmpit.component.state :as state]
@@ -82,25 +82,3 @@
        [:div.Swarmpit-action-menu-mobile
         (menu-more "mobile" items-hash anchor-mobile-key menu-open-mobile-key)
         (menu-popper items-hash items anchor-mobile-key menu-open-mobile-key)]])))
-
-(rum/defc actions < rum/static [items anchorKey menuOpenKey]
-  (let [items-hash (hash items)]
-    (comp/box
-      {}
-      (comp/button-group
-        {:variant    "contained"
-         :color      "primary"
-         :ref        anchorKey
-         :aria-label "split button"}
-        (comp/button
-          {:onClick #()}
-          "Actions")
-        (comp/button
-          {:color         "primary"
-           :size          "small"
-           :aria-label    "select action"
-           :aria-haspopup "menu"
-           :onClick       (fn [e]
-                            (state/update-value [menuOpenKey] true state/form-state-cursor))}
-          (icon/arrow-dropdown {})))
-      (menu-popper items-hash items anchorKey menuOpenKey))))

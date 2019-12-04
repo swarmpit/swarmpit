@@ -11,11 +11,7 @@
                              :light        "#957ed1"
                              :dark         "#362870"
                              :contrastText "#fff"}
-                 ;:secondary {:main         "#65519f"
-                 ;            :light        "#957ed1"
-                 ;            :dark         "#362870"
-                 ;            :contrastText "#fff"}
-                 }
+                 :secondary {:main "#d32f2f"}}
    :typography  {:fontFamily (str/join "," ["Roboto" "Helvetica" "Arial" "sans-serif"])}
    :overrides   {:MuiCardHeader  {:action {:color "rgb(117, 117, 117)"}}
                  :MuiCardActions {:root {:padding 16}}}
@@ -157,9 +153,13 @@
   [props & childs]
   (apply f/button (clj->js props) childs))
 
+(defn button-group
+  [props & childs]
+  (apply f/button-group (clj->js props) childs))
+
 (defn fab
-  [props comp]
-  (f/fab (clj->js props) comp))
+  [props & childs]
+  (apply f/fab (clj->js props) childs))
 
 (defn hidden
   [props & childs]

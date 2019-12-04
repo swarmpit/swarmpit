@@ -5,7 +5,7 @@
             [material.component.chart :as chart]
             [material.component.label :as label]
             [swarmpit.component.common :as common]
-            [swarmpit.component.action-menu :as menu]
+            [swarmpit.component.menu :as menu]
             [swarmpit.component.state :as state]
             [swarmpit.docker.utils :as utils]
             [swarmpit.routes :as routes]
@@ -80,19 +80,19 @@
 
 (defn- form-state [state]
   (case state
-    "running" (label/green state)
-    "not running" (label/info state)
-    "partly running" (label/yellow "running")))
+    "running" (label/header state "green")
+    "not running" (label/header state "info")
+    "partly running" (label/header "running" "yellow")))
 
 (defn- autoredeploy-label
   [autoredeploy]
-  (when autoredeploy (label/primary "autoredeploy")))
+  (when autoredeploy (label/header "autoredeploy" "primary")))
 
 (defn- agent-label
   [agent]
-  (when agent (label/primary "agent")))
+  (when agent (label/header "agent" "primary")))
 
-(rum/defc form < rum/reactive [service tasks actions]
+(rum/defc form < rum/reactive [service tasks]
   (let [image-digest (get-in service [:repository :imageDigest])
         image (get-in service [:repository :image])
         logdriver (get-in service [:logdriver :name])
@@ -104,35 +104,30 @@
         mode (:mode service)]
     (comp/card
       {:className "Swarmpit-form-card"}
+
       (comp/card-header
-        {:title     (:serviceName service)
-         :className "Swarmpit-form-card-header Swarmpit-card-header-responsive-title"
-         :subheader (common/form-subheader
-                      (if registry
-                        (utils/registry-repository image registry)
-                        image)
-                      image-digest)
-         :action    (menu/menu
-                      actions
-                      :serviceGeneralMenuAnchor
-                      :serviceGeneralMenuOpened)})
-      (when registry
-        (comp/card-content
-          {}
-          (form-registry registry)))
+        {:title     (comp/typography {:variant "h6"} "Summary")
+         :subheader (form/item-labels
+                      [(form-state (:state service))
+                       (agent-label (:agent service))
+                       (autoredeploy-label (-> service :deployment :autoredeploy))
+                       (label/header mode "grey")])})
       (comp/card-content
         {}
         (if (not (empty? desired-tasks))
           (form-replicas desired-tasks)
           (form/message "Service has been shut down."))
         (form-command command))
-      (comp/card-content
-        {}
-        (form/item-labels
-          [(form-state (:state service))
-           (agent-label (:agent service))
-           (autoredeploy-label (-> service :deployment :autoredeploy))
-           (label/grey mode)]))
+      (form/item-main "ID" (:id service) false)
+      (form/item-main "Name" (:serviceName service))
+      (when registry
+        (form/item-main "Registry" registry))
+      (form/item-main "Image" (if registry
+                            (utils/registry-repository image registry)
+                            image))
+      (form/item-main "Created" (form/item-date (:createdAt service)))
+      (form/item-main "Last update" (form/item-date (:updatedAt service)))
+      (comp/divider {})
       (comp/card-actions
         {}
         (when stack
@@ -153,11 +148,4 @@
                       :color  "primary"
                       :target "_blank"
                       :href   (:value %)}
-                     (str/replace (:name %) #"_" " ")))))
-      (comp/divider
-        {})
-      (comp/card-content
-        {:style {:paddingBottom "16px"}}
-        (form/item-date (:createdAt service)
-                        (:updatedAt service))
-        (form/item-id (:id service))))))
+                     (str/replace (:name %) #"_" " "))))))))

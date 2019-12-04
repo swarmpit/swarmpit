@@ -27,10 +27,12 @@
 (def render-metadata
   {:table {:summary [{:name      "Name"
                       :render-fn (fn [item] (:configName item))}
+                     {:name      "Last update"
+                      :render-fn (fn [item] (time/humanize (:updatedAt item)))}
                      {:name      "Created"
                       :render-fn (fn [item] (time/humanize (:createdAt item)))}]}
    :list  {:primary   (fn [item] (:configName item))
-           :secondary (fn [item] (time/humanize (:createdAt item)))}})
+           :secondary (fn [item] (time/humanize (:updatedAt item)))}})
 
 (defn onclick-handler
   [item]

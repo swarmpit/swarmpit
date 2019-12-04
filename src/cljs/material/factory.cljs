@@ -54,6 +54,7 @@
 
 (def chip (create-factory js/MaterialUI.Chip))
 (def button (create-factory js/MaterialUI.Button))
+(def button-group (create-factory js/MaterialUI.ButtonGroup))
 (def fab (create-factory js/MaterialUI.Fab))
 (def icon-button (create-factory js/MaterialUI.IconButton))
 (def svg-icon (create-factory js/MaterialUI.SvgIcon))
@@ -159,6 +160,7 @@
 (def dashboard-icon (create-factory js/MaterialUIIcons.Dashboard))
 (def stop-icon (create-factory js/MaterialUIIcons.Stop))
 (def save-icon (create-factory js/MaterialUIIcons.Save))
+(def arrow-dropdown-icon (create-factory js/MaterialUIIcons.ArrowDropDown))
 
 (def create-mui-theme js/MaterialUI.createMuiTheme)
 (def with-mobile-dialog js/MaterialUI.withMobileDialog)

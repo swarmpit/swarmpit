@@ -18,6 +18,7 @@
             [swarmpit.component.service.info.logdriver :as logdriver]
             [swarmpit.component.service.info.resources :as resources]
             [swarmpit.component.service.info.deployment :as deployment]
+            [swarmpit.component.toolbar :as toolbar]
             [swarmpit.component.task.list :as tasks]
             [swarmpit.component.message :as message]
             [swarmpit.url :refer [dispatch!]]
@@ -158,38 +159,41 @@
   [(if pinned?
      {:onClick #(detach-service-handler service-id)
       :icon    (comp/svg icon/pin-path)
-      :more    true
-      :name    "Detach service"}
+      :group   true
+      :name    "Detach"}
      {:onClick #(pin-service-handler service-id)
       :icon    (comp/svg icon/pin-path)
-      :more    true
-      :name    "Pin service"})
+      :group   true
+      :name    "Pin"})
    {:onClick  #(dispatch! (routes/path-for-frontend :service-edit {:id service-id}))
     :icon     (comp/svg icon/edit-path)
     :disabled (true? (:immutable service))
-    :name     "Edit service"}
+    :main     true
+    :group    true
+    :name     "Edit"}
    {:onClick #(dispatch! (routes/path-for-frontend :stack-create nil {:from service-id}))
     :icon    (comp/svg icon/stacks-path)
-    :more    true
-    :name    "Compose stack"}
+    :group   true
+    :name    "Compose"}
    {:onClick #(redeploy-service-handler service-id)
     :icon    (comp/svg icon/redeploy-path)
-    :more    true
-    :name    "Redeploy service"}
+    :group   true
+    :name    "Redeploy"}
    {:onClick  #(rollback-service-handler service-id)
     :disabled (not (get-in service [:deployment :rollbackAllowed]))
     :icon     (comp/svg icon/rollback-path)
-    :more     true
-    :name     "Rollback service"}
+    :group    true
+    :name     "Rollback"}
    {:onClick  #(stop-service-handler service-id)
     :disabled (or (= "global" (:mode service))
                   (= "not running" (:state service)))
     :icon     (icon/stop {})
-    :more     true
-    :name     "Stop service"}
+    :group    true
+    :name     "Stop"}
    {:onClick #(state/update-value [:open] true dialog/dialog-cursor)
     :icon    (comp/svg icon/trash-path)
-    :name    "Delete service"}])
+    :color   "secondary"
+    :name    "Delete"}])
 
 (defn- init-form-state
   []
@@ -218,7 +222,7 @@
   (comp/grid
     {:item true
      :xs   12}
-    (settings/form service tasks (form-actions service service-id pinned))))
+    (settings/form service tasks)))
 
 (defn form-tasks-grid [service tasks]
   (comp/grid
@@ -312,7 +316,8 @@
            #(delete-service-handler id)
            "Delete service?"
            "Delete")
-         [:div.Swarmpit-form-context
+         [:div.Swarmpit-form-toolbar
+          (toolbar/toolbar "Service" id (form-actions service id pinned?))
           (comp/hidden
             {:xsDown         true
              :implementation "js"}
@@ -322,7 +327,7 @@
               (comp/grid
                 {:item true
                  :sm   6
-                 :md   4}
+                 :md   5}
                 (comp/grid
                   {:container true
                    :spacing   2}
@@ -338,7 +343,7 @@
               (comp/grid
                 {:item true
                  :sm   6
-                 :md   8}
+                 :md   7}
                 (comp/grid
                   {:container true
                    :spacing   2}

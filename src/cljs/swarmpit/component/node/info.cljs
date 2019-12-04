@@ -10,7 +10,7 @@
             [swarmpit.component.progress :as progress]
             [swarmpit.component.task.list :as tasks]
             [swarmpit.component.dialog :as dialog]
-            [swarmpit.component.action-menu :as menu]
+            [swarmpit.component.menu :as menu]
             [swarmpit.component.common :as common]
             [swarmpit.storage :as storage]
             [swarmpit.url :refer [dispatch!]]
@@ -178,14 +178,7 @@
     (comp/card-header
       (merge
         {:className "Swarmpit-table-card-header"
-         :title     (comp/typography {:variant "h6"} "Labels")}
-        (when (storage/admin?)
-          {:action (comp/icon-button
-                     {:aria-label "Edit"
-                      :href       (routes/path-for-frontend
-                                    :node-edit {:id id}
-                                    {:section "Labels"})}
-                     (comp/svg icon/edit-path))})))
+         :title     (comp/typography {:variant "h6"} "Labels")}))
     (if (empty? labels)
       (comp/card-content
         {}

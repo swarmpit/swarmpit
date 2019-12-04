@@ -9,7 +9,9 @@
             [swarmpit.component.mixin :as mixin]
             [swarmpit.component.state :as state]
             [swarmpit.component.progress :as progress]
+            [swarmpit.component.toolbar :as toolbar]
             [swarmpit.component.service.list :as services]
+            [swarmpit.component.common :as common]
             [swarmpit.url :refer [dispatch!]]
             [swarmpit.ajax :as ajax]
             [swarmpit.routes :as routes]
@@ -56,68 +58,38 @@
   (comp/card
     {:className "Swarmpit-form-card"}
     (comp/card-header
-      {:title     volumeName
-       :classes   {:title "Swarmpit-card-header-responsive-title"}
-       :className "Swarmpit-form-card-header"
-       :action    (comp/tooltip
-                    {:title "Delete volume"}
-                    (comp/icon-button
-                      {:aria-label "Delete"
-                       :onClick    #(state/update-value [:open] true dialog/dialog-cursor)}
-                      (comp/svg icon/trash-path)))})
-    (comp/card-content
-      {}
-      (html
-        [:div.Swarmpit-volume-mount
-         (comp/typography {:color    "textPrimary"
-                           :children (html [:span "Volume is mounted at: "])})
-         (comp/typography {:color    "textSecondary"
-                           :variant  "body2"
-                           :children (html [:span.Swarmpit-volume-mountpoint mountpoint])})])
-      (html
-        [:div
-         [:br]
-         (comp/typography {:color    "textPrimary"
-                           :children (html [:span "Space usage is: "])})
-         (comp/typography {:color    "textSecondary"
-                           :variant  "body2"
-                           :children (html [:span (humanize/filesize size :binary false)])})]))
-    (comp/card-content
-      {}
-      (form/item-labels
-        [(when driver
-           (label/grey driver))]))
-    (comp/card-actions
-      {}
-      (when (and stack (not-empty services))
+      {:title (comp/typography {:variant "h6"} "Summary")})
+    (form/item-main "Name" volumeName false)
+    (form/item-main "Driver" driver)
+    (form/item-main "Scope" scope)
+    (form/item-main "Space usage" (humanize/filesize size :binary false))
+    (when (and stack (not-empty services))
+      (comp/card-actions
+        {}
         (comp/button
           {:size  "small"
            :color "primary"
            :href  (routes/path-for-frontend :stack-info {:name stack})}
-          "See stack")))
-    (comp/divider
-      {})
-    (comp/card-content
-      {:style {:paddingBottom "16px"}}
-      (form/item-id id))))
+          "See stack")))))
 
 (rum/defc form-driver < rum/static [{:keys [driver options]}]
   (comp/card
     {:className "Swarmpit-card"}
     (comp/card-header
       {:className "Swarmpit-table-card-header Swarmpit-card-header-responsive-title"
-       :title     (comp/typography {:variant "h6"} "Driver")})
-    (comp/card-content
-      {}
-      (form/item driver nil))
+       :title     (comp/typography {:variant "h6"} "Driver settings")})
     (comp/card-content
       {:className "Swarmpit-table-card-content"}
-      (when (not-empty options)
-        [(comp/divider {})
-         (list/list
-           form-driver-opts-render-metadata
-           options
-           nil)]))))
+      (list/list
+        form-driver-opts-render-metadata
+        options
+        nil))))
+
+(def form-actions
+  [{:onClick #(state/update-value [:open] true dialog/dialog-cursor)
+    :icon    (comp/svg icon/trash-path)
+    :color   "secondary"
+    :name    "Delete"}])
 
 (defn- init-form-state
   []
@@ -130,24 +102,6 @@
       (volume-handler name)
       (volume-services-handler name))))
 
-(defn form-general-grid [volume services]
-  (comp/grid
-    {:item true
-     :xs   12}
-    (form-general volume services)))
-
-(defn form-driver-grid [volume]
-  (comp/grid
-    {:item true
-     :xs   12}
-    (form-driver volume)))
-
-(defn form-services-grid [services]
-  (comp/grid
-    {:item true
-     :xs   12}
-    (services/linked services)))
-
 (rum/defc form-info < rum/static [{:keys [volume services]}]
   (comp/mui
     (html
@@ -156,39 +110,27 @@
          #(delete-volume-handler (:volumeName volume))
          "Delete volume?"
          "Delete")
-       [:div.Swarmpit-form-context
-        (comp/hidden
-          {:xsDown         true
-           :implementation "js"}
+       [:div.Swarmpit-form-toolbar
+        (comp/container
+          {:maxWidth  "md"
+           :className "Swarmpit-container"}
+          (toolbar/toolbar "Volume" (:volumeName volume) form-actions)
           (comp/grid
             {:container true
              :spacing   2}
             (comp/grid
               {:item true
-               :sm   6
-               :md   4}
+               :xs   12}
+              (form-general volume services))
+            (when (not-empty (:options volume))
               (comp/grid
-                {:container true
-                 :spacing   2}
-                (form-general-grid volume services)
-                (form-driver-grid volume)))
+                {:item true
+                 :xs   12}
+                (form-driver volume)))
             (comp/grid
               {:item true
-               :sm   6
-               :md   8}
-              (comp/grid
-                {:container true
-                 :spacing   2}
-                (form-services-grid services)))))
-        (comp/hidden
-          {:smUp           true
-           :implementation "js"}
-          (comp/grid
-            {:container true
-             :spacing   2}
-            (form-general-grid volume services)
-            (form-services-grid services)
-            (form-driver-grid volume)))]])))
+               :xs   12}
+              (services/linked services))))]])))
 
 (rum/defc form < rum/reactive
                  mixin-init-form
