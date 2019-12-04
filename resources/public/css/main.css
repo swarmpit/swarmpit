@@ -28,7 +28,7 @@
     url('fonts/roboto-v18-latin_latin-ext-500.eot?#iefix') format('embedded-opentype'), /* IE6-IE8 */ url('fonts/roboto-v18-latin_latin-ext-500.woff2') format('woff2'), /* Super Modern Browsers */ url('fonts/roboto-v18-latin_latin-ext-500.woff') format('woff'), /* Modern Browsers */ url('fonts/roboto-v18-latin_latin-ext-500.ttf') format('truetype'), /* Safari, Android, iOS */ url('fonts/roboto-v18-latin_latin-ext-500.svg#Roboto') format('svg'); /* Legacy iOS */
 }
 
-html > body, h1, h2, h3, h4, h5, h6 {
+html * {
     font-family: "Roboto", "Helvetica", "Arial", sans-serif;
     -webkit-font-kerning: normal;
     font-kerning: normal;
@@ -107,6 +107,10 @@ a {
     border: 1px solid rgba(0, 0, 0, 0.12);
 }
 
+.Swarmpit-card-avatar {
+    background-color: #65519f !important;
+}
+
 .Swarmpit-page {
     display: flex;
     justify-content: center;
@@ -143,6 +147,11 @@ a {
     border: 1px solid #DFE3E8;
     border-radius: 4px;
     padding: 24px;
+}
+
+.Swarmpit-menu-icon {
+    min-width: 0 !important;
+    margin-right: 8px;
 }
 
 .Swarmpit-autocomplete > div {
@@ -616,6 +625,30 @@ a {
 
 /** Form card **/
 
+.Swarmpit-ftoolbar-actions {
+    display: flex;
+    flex-direction: row;
+}
+
+.Swarmpit-ftoolbar-title {
+    margin-right: 10px !important;
+    font-weight: 500 !important;
+}
+
+.Swarmpit-ftoolbar-title:after {
+    left: 0;
+    width: 48px;
+    bottom: 15px;
+    height: 3px;
+    content: " ";
+    position: absolute;
+    background-color: #65519f;
+}
+
+.Swarmpit-ftoolbar-subtitle {
+    font-weight: lighter !important;
+}
+
 .Swarmpit-fcard {
     margin-top: 16px;
     overflow: visible !important;
@@ -628,6 +661,19 @@ a {
     position: relative;
 }
 
+.Swarmpit-fcard-header-icon {
+    width: 50px !important;
+    height: 50px !important;
+    float: left;
+    /*display: inline-block;*/
+    padding: 15px;
+    margin-top: -20px;
+    margin-right: 15px;
+    border-radius: 3px;
+    background: #65519f;
+    box-shadow: 0 4px 20px 0 rgba(0, 0, 0, .14), 0 7px 10px -5px #65519f;
+}
+
 .Swarmpit-fcard-header-title {
     float: none;
     display: inline-block;
@@ -636,6 +682,7 @@ a {
     margin-right: 0 !important;
     border-radius: 3px;
     background: #65519f;
+    font-weight: lighter !important;
     box-shadow: 0 4px 20px 0 rgba(0, 0, 0, .14), 0 7px 10px -5px #65519f;
 }
 
@@ -1006,6 +1053,9 @@ a {
     color: #d32f2f;
     font-size: 0.9em;
     align-items: center;
+    border: 1px solid #d32f2f;
+    padding: 16px;
+    border-radius: 2px;
 }
 
 .Swarmpit-task-error-icon {

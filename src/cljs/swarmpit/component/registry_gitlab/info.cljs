@@ -8,7 +8,7 @@
             [swarmpit.component.mixin :as mixin]
             [swarmpit.component.progress :as progress]
             [swarmpit.component.dialog :as dialog]
-            [swarmpit.component.action-menu :as menu]
+            [swarmpit.component.toolbar :as toolbar]
             [swarmpit.url :refer [dispatch!]]
             [swarmpit.ajax :as ajax]
             [swarmpit.routes :as routes]
@@ -45,10 +45,11 @@
   [{:onClick #(dispatch! (routes/path-for-frontend :registry-edit {:registryType :gitlab
                                                                    :id           id}))
     :icon    (comp/svg icon/edit-path)
-    :name    "Edit registry"}
+    :name    "Edit"}
    {:onClick #(state/update-value [:open] true dialog/dialog-cursor)
     :icon    (comp/svg icon/trash-path)
-    :name    "Delete registry"}])
+    :color   "secondary"
+    :name    "Delete"}])
 
 (defn- init-form-state
   []
@@ -68,33 +69,27 @@
          #(delete-registry-handler _id)
          "Remove account?"
          "Remove")
-       [:div.Swarmpit-form-context
-        (comp/card
-          {:className "Swarmpit-form-card Swarmpit-form-card-single"}
-          (comp/card-header
-            {:title     username
-             :className "Swarmpit-form-card-header Swarmpit-card-header-responsive-title"
-             :subheader url
-             :action    (menu/menu
-                          (form-actions _id)
-                          :gitlabGeneralMenuAnchor
-                          :gitlabGeneralMenuOpened)})
-          (comp/card-content
-            {}
-            (html
-              [:div
-               [:span "Authenticated with user " [:b username] "."]
-               [:br]
-               [:span "Account is " [:b (if public "public." "private.")]]]))
-          (comp/card-content
-            {}
-            (form/item-labels
-              [(label/grey "Gitlab registry")]))
-          (comp/divider
-            {})
-          (comp/card-content
-            {:style {:paddingBottom "16px"}}
-            (form/item-id _id)))]])))
+       [:div.Swarmpit-form-toolbar
+        (comp/container
+          {:maxWidth  "md"
+           :className "Swarmpit-container"}
+          (toolbar/toolbar "Registry" _id (form-actions _id))
+          (comp/card
+            {:className "Swarmpit-form-card"}
+            (comp/card-header
+              {:title     (comp/typography {:variant "h6"} "Info")
+               :avatar    (comp/avatar
+                            {:className "Swarmpit-card-avatar"}
+                            (comp/svg icon/gitlab-path))
+               :subheader (when public
+                            (label/header "Public" "info"))})
+            (comp/card-content
+              {}
+              (comp/typography
+                {:variant "body2"}
+                (html [:span "Authenticated with user " [:b username] "."])))
+            (form/item-main "ID" _id false)
+            (form/item-main "Url" url)))]])))
 
 (rum/defc form < rum/reactive
                  mixin-init-form
