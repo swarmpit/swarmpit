@@ -758,6 +758,7 @@ a {
     display: flex !important;
     flex-direction: row !important;
     align-items: center;
+    padding: 12px 14px;
 }
 
 .Swarmpit-form-toolbar {
@@ -1085,7 +1086,7 @@ a {
 /* REPOSITORY */
 
 .Swarmpit-repo-registry-item {
-    margin-left: -16px;
+    margin-left: -24px;
 }
 
 .Swarmpit-repo-manual {
@@ -1096,8 +1097,6 @@ a {
     font-weight: 500;
 }
 
-.Swarmpit-repo-card,
-.Swarmpit-repo-state,
 .Swarmpit-repo-progress {
     margin-top: 20px !important;
 }
