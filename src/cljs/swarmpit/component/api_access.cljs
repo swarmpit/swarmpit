@@ -64,46 +64,41 @@
      :InputLabelProps {:shrink true}}))
 
 (defn old-token-form [api-token]
-  [(comp/typography {:key     "info"
-                     :variant "body2"}
+  [(comp/typography {:key       "info"
+                     :className "Swarmpit-fcard-message"
+                     :variant   "body2"}
                     ["Token for this user was already created. If you lost your token, please generate new one and "
                      "the former token will be revoked."])
    (form-token (str "Bearer ..." (:mask api-token)))])
 
 (defn new-token-form [token]
-  [(comp/typography {:key     "notice"
-                     :variant "body2"} "Copy your token and store it safely, value will be displayed only once.")
+  [(comp/typography {:key       "notice"
+                     :className "Swarmpit-fcard-message"
+                     :variant   "body2"} "Copy your token and store it safely, value will be displayed only once.")
    (form-token (:token token))])
 
 (defn no-token-form []
-  [(comp/typography {:key     "notoken"
-                     :variant "body2"} "Your user doesn't have any API token.")
-   (comp/typography {:key     "info"
-                     :variant "body2"} "New token doesn't expire, but it can be revoked or regenenerated.")])
+  [(comp/typography {:key       "notoken"
+                     :className "Swarmpit-fcard-message"
+                     :variant   "body2"}
+                    "Your user doesn't have any API token."
+                    "New token doesn't expire, but it can be revoked or regenenerated.")])
 
 (rum/defc form-api-token < rum/reactive []
   (let [{:keys [api-token token]} (state/react state/form-value-cursor)
         state (if (and api-token (not token))
                 :old
                 (if token :new :none))]
-    (comp/card
-      {:className "Swarmpit-form-card"}
-      (comp/card-header
-        {:title "Access token"})
-      (comp/divider {})
+    (comp/paper
+      {:elevation 0}
       (comp/card-content
         {}
-        (comp/container
-          {:maxWidth "sm"
-           :style    {:padding 0
-                      :margin  0}}
-          (case state
-            :old (old-token-form api-token)
-            :new (new-token-form token)
-            :none (no-token-form))))
-      (comp/divider {})
+        (case state
+          :old (old-token-form api-token)
+          :new (new-token-form token)
+          :none (no-token-form)))
       (comp/card-actions
-        {}
+        {:className "Swarmpit-fcard-actions"}
         (comp/button
           {:variant  "contained"
            :key      "submit"

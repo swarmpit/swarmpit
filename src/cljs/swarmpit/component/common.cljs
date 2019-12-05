@@ -250,7 +250,7 @@
      :id              (str "scrollable-auto-tabpanel-" index)
      :aria-labelledby (str "scrollable-auto-tab-" index)}
     (when (= value index)
-      (comp/box {:style {:marginTop "24px"}} childs))))
+      (comp/box {} childs))))
 
 (defn resource-used [stat]
   (cond

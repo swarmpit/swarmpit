@@ -16,22 +16,36 @@
       (html
         [:div.Swarmpit-form
          [:div.Swarmpit-form-context
-          (comp/tabs
-            {:value          active
-             :onChange       (fn [_ v] (reset! active-tab v))
-             :indicatorColor "primary"
-             :textColor      "primary"
-             :variant        "scrollable"
-             :scrollButtons  "auto"
-             :aria-label     "scrollable auto tabs example"}
-            (comp/tab {:label "Security"})
-            (comp/tab {:label "API Access"}))
-          (comp/divider {})
-          (common/tab-panel
-            {:value active
-             :index 0}
-            (password/form))
-          (common/tab-panel
-            {:value active
-             :index 1}
-            (api-access/form))]]))))
+          (comp/container
+            {:maxWidth  "sm"
+             :className "Swarmpit-container"}
+            (comp/tabs
+              {:value          active
+               :onChange       (fn [_ v] (reset! active-tab v))
+               :indicatorColor "primary"
+               :textColor      "primary"
+               :variant        "scrollable"
+               :scrollButtons  "auto"
+               :aria-label     "scrollable auto tabs example"}
+              (comp/tab {:label "Password change"})
+              (comp/tab {:label "API Access"}))
+            (comp/divider {})
+            (comp/card
+              {:className "Swarmpit-form-card Swarmpit-tabs Swarmpit-fcard"}
+              (comp/box
+                {:className "Swarmpit-fcard-header"}
+                (comp/typography
+                  {:className "Swarmpit-fcard-header-title"
+                   :variant   "h6"
+                   :component "div"}
+                  (case active
+                    0 "Password change"
+                    1 "API Access")))
+              (common/tab-panel
+                {:value active
+                 :index 0}
+                (password/form))
+              (common/tab-panel
+                {:value active
+                 :index 1}
+                (api-access/form))))]]))))
