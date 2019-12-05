@@ -337,7 +337,8 @@
                   (form-hosts-grid hosts id immutable?)
                   (form-variables-grid variables id immutable?)
                   (form-labels-grid labels id immutable?)
-                  (form-logdriver-grid logdriver id immutable?)
+                  (when (not-empty (:opts logdriver))
+                    (form-logdriver-grid logdriver id immutable?))
                   (form-resources-grid resources id immutable?)
                   (form-deployment-grid deployment id immutable?)))
               (comp/grid
@@ -367,7 +368,8 @@
               (form-hosts-grid hosts id immutable?)
               (form-variables-grid variables id immutable?)
               (form-labels-grid labels id immutable?)
-              (form-logdriver-grid logdriver id immutable?)
+              (when (not-empty (:opts logdriver))
+                (form-logdriver-grid logdriver id immutable?))
               (form-resources-grid resources id immutable?)
               (form-deployment-grid deployment id immutable?)))]]))))
 
