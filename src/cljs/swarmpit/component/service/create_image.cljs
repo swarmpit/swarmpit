@@ -356,7 +356,7 @@
                     (form-registry registries active searching?)
                     (form-search repository active))))
               (when searching?
-                (comp/linear-progress {:className "Swarmpit-repo-progress"}))
+                (comp/linear-progress {:className "Swarmpit-progress"}))
               (cond
                 searching?
                 (comp/box {})

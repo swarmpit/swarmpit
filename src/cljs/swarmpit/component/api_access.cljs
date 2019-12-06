@@ -3,32 +3,12 @@
             [swarmpit.component.message :as message]
             [swarmpit.component.state :as state]
             [swarmpit.component.mixin :as mixin]
-            [swarmpit.component.progress :as progress]
-            [swarmpit.url :refer [dispatch!]]
             [swarmpit.ajax :as ajax]
             [swarmpit.routes :as routes]
             [sablono.core :refer-macros [html]]
             [rum.core :as rum]))
 
 (enable-console-print!)
-
-(defn- me-handler
-  []
-  (ajax/get
-    (routes/path-for-backend :me)
-    {:state      [:loading?]
-     :on-success (fn [{:keys [response]}]
-                   (state/update-value [:api-token] (:api-token response) state/form-value-cursor))}))
-
-(defn- init-form-state
-  []
-  (state/set-value {:loading? true} state/form-state-cursor))
-
-(def mixin-init-form
-  (mixin/init-form
-    (fn [_]
-      (init-form-state)
-      (me-handler))))
 
 (defn- generate-handler
   []
@@ -48,6 +28,24 @@
                    (state/update-value [:token] nil state/form-value-cursor))
      :on-error   (fn [_]
                    (message/error (str "Failed to remove API token.")))}))
+
+(defn- me-handler
+  []
+  (ajax/get
+    (routes/path-for-backend :me)
+    {:state      [:loading?]
+     :on-success (fn [{:keys [response]}]
+                   (state/update-value [:api-token] (:api-token response) state/form-value-cursor))}))
+
+(defn- init-form-state
+  []
+  (state/set-value {:loading? true} state/form-state-cursor))
+
+(def mixin-init-form
+  (mixin/init-form
+    (fn [_]
+      (init-form-state)
+      (me-handler))))
 
 (defn- form-token [value]
   (comp/text-field
@@ -84,39 +82,35 @@
                     "Your user doesn't have any API token."
                     "New token doesn't expire, but it can be revoked or regenenerated.")])
 
-(rum/defc form-api-token < rum/reactive []
-  (let [{:keys [api-token token]} (state/react state/form-value-cursor)
+(rum/defc form < rum/reactive
+                 mixin-init-form []
+  (let [{:keys [loading?]} (state/react state/form-state-cursor)
+        {:keys [api-token token]} (state/react state/form-value-cursor)
         state (if (and api-token (not token))
                 :old
                 (if token :new :none))]
-    (comp/paper
-      {:elevation 0}
-      (comp/card-content
-        {}
-        (case state
-          :old (old-token-form api-token)
-          :new (new-token-form token)
-          :none (no-token-form)))
-      (comp/card-actions
-        {:className "Swarmpit-fcard-actions"}
-        (comp/button
-          {:variant  "contained"
-           :key      "submit"
-           :disabled false
-           :onClick  generate-handler
-           :color    "primary"}
-          (case state :none "Generate" "Regenerate"))
-        (comp/button
-          {:variant  "outlined"
-           :key      "remove"
-           :disabled (= :none state)
-           :onClick  remove-handler}
-          "Remove")))))
-
-(rum/defc form < rum/reactive
-                 mixin-init-form []
-  (let [state (state/react state/form-state-cursor)]
-    (progress/form
-      (:loading? state)
-      (form-api-token))))
-
+    (if loading?
+      (comp/linear-progress {:className "Swarmpit-progress"})
+      (comp/paper
+        {:elevation 0}
+        (comp/card-content
+          {}
+          (case state
+            :old (old-token-form api-token)
+            :new (new-token-form token)
+            :none (no-token-form)))
+        (comp/card-actions
+          {:className "Swarmpit-fcard-actions"}
+          (comp/button
+            {:variant  "contained"
+             :key      "submit"
+             :disabled false
+             :onClick  generate-handler
+             :color    "primary"}
+            (case state :none "Generate" "Regenerate"))
+          (comp/button
+            {:variant  "outlined"
+             :key      "remove"
+             :disabled (= :none state)
+             :onClick  remove-handler}
+            "Remove"))))))

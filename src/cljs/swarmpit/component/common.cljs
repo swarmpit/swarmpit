@@ -26,7 +26,7 @@
 (rum/defc title-logo < rum/static []
   [:a {:target "_blank"
        :href   swarmpit-home-page}
-   [:img {:src    "img/swarmpit-transparent.png"
+   [:img {:src    "img/swarmpit.png"
           :height "50"
           :width  "50"}]])
 

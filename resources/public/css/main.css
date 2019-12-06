@@ -106,6 +106,10 @@ a {
     margin-top: 60px !important;
 }
 
+.Swarmpit-progress {
+    margin-top: 20px !important;
+}
+
 .Swarmpit-card {
     box-shadow: none !important;
     border: 1px solid rgba(0, 0, 0, 0.12);
@@ -232,11 +236,9 @@ a {
 
 .Swarmpit-appbar {
     position: absolute;
-    background: #65519f;
-    /*background: #fff !important;*/
-    /*color: #5f6368 !important;*/
-
-    box-shadow: none;
+    background: #fff !important;
+    color: #5f6368 !important;
+    box-shadow: 0 1px 6px 0 rgba(32,33,36,0.28) !important;
     z-index: 1201 !important;
     transition: width 195ms cubic-bezier(0.4, 0, 0.6, 1) 0ms, margin 195ms cubic-bezier(0.4, 0, 0.6, 1) 0ms;
 }
@@ -256,6 +258,7 @@ a {
     margin-right: 16px;
     margin-left: 0;
     width: 100%;
+    border: 1px solid #dfe1e5;
 }
 
 .Swarmpit-appbar-subtitle {
@@ -279,6 +282,7 @@ a {
     display: flex;
     align-items: center;
     justify-content: center;
+    color: #65519f;
 }
 
 .Swarmpit-appbar-search-root {
@@ -414,7 +418,7 @@ a {
     align-items: center;
     padding-left: 24px;
     flex-direction: row;
-    background: #65519f;
+    background: #fafafa;
     margin-left: -12px;
 }
 
@@ -427,24 +431,21 @@ a {
     margin-left: -12px;
 }
 
-.Swarmpit-menu-title,
-.Swarmpit-desktop-title > a:link {
+.Swarmpit-title > a:link {
     text-decoration: none;
 }
 
-.Swarmpit-menu-title,
-.Swarmpit-desktop-title > a:visited {
+.Swarmpit-title > a:visited {
     text-decoration: none;
 }
 
-.Swarmpit-menu-title,
-.Swarmpit-desktop-title > a:hover {
-    color: #fff;
+.Swarmpit-title > a:hover {
+    color: #5f6368;
     text-decoration: underline;
 }
 
 .Swarmpit-title-name {
-    color: #fff;
+    color: #5f6368;
     font-size: 1.3125rem;
     font-weight: 500;
     font-family: "Roboto", "Helvetica", "Arial", sans-serif;
@@ -452,7 +453,7 @@ a {
 }
 
 .Swarmpit-title-version {
-    color: #fff;
+    color: #5f6368;
     font-size: 0.75rem;
     font-weight: 400;
     font-family: "Roboto", "Helvetica", "Arial", sans-serif;
@@ -707,6 +708,7 @@ a {
 /** Form content **/
 
 .Swarmpit-form {
+    margin-top: 20px;
     min-height: calc(100vh - 64px);
 }
 
@@ -1099,10 +1101,6 @@ a {
 
 .Service-repo-separator {
     font-weight: 500;
-}
-
-.Swarmpit-repo-progress {
-    margin-top: 20px !important;
 }
 
 .Swarmpit-repo-registry-text {
