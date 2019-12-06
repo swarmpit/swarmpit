@@ -150,7 +150,8 @@
     :name     "Deactivate"}
    {:onClick #(state/update-value [:open] true dialog/dialog-cursor)
     :icon    (comp/svg icon/trash-path)
-    :color   "secondary"
+    :color   "default"
+    :variant "outlined"
     :name    "Delete"}])
 
 (rum/defc form-services-graph < rum/static [services]

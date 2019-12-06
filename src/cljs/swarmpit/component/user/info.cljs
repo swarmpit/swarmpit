@@ -49,7 +49,8 @@
    {:onClick  #(state/update-value [:open] true dialog/dialog-cursor)
     :disabled (= (storage/user) username)
     :icon     (comp/svg icon/trash-path)
-    :color    "secondary"
+    :color    "default"
+    :variant  "outlined"
     :name     "Delete"}])
 
 (defn- init-form-state

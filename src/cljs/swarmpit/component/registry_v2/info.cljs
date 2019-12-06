@@ -48,6 +48,8 @@
     :name    "Edit registry"}
    {:onClick #(state/update-value [:open] true dialog/dialog-cursor)
     :icon    (comp/svg icon/trash-path)
+    :color   "default"
+    :variant "outlined"
     :name    "Delete registry"}])
 
 (defn- init-form-state

@@ -48,7 +48,8 @@
     :name    "Edit"}
    {:onClick #(state/update-value [:open] true dialog/dialog-cursor)
     :icon    (comp/svg icon/trash-path)
-    :color   "secondary"
+    :color   "default"
+    :variant "outlined"
     :name    "Delete"}])
 
 (defn- init-form-state
@@ -77,10 +78,10 @@
           (comp/card
             {:className "Swarmpit-form-card"}
             (comp/card-header
-              {:title  (comp/typography {:variant "h6"} "Info")
-               :avatar (comp/avatar
-                         {:className "Swarmpit-card-avatar"}
-                         (comp/svg icon/azure-path))
+              {:title     (comp/typography {:variant "h6"} "Info")
+               :avatar    (comp/avatar
+                            {:className "Swarmpit-card-avatar"}
+                            (comp/svg icon/azure-path))
                :subheader (when public
                             (label/header "Public" "info"))})
             (comp/card-content

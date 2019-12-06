@@ -48,7 +48,8 @@
     :name    "Edit"}
    {:onClick #(state/update-value [:open] true dialog/dialog-cursor)
     :icon    (comp/svg icon/trash-path)
-    :color   "secondary"
+    :color   "default"
+    :variant "outlined"
     :name    "Delete"}])
 
 (defn- init-form-state
@@ -89,9 +90,9 @@
                 {:variant "body2"}
                 (html [:span "Authenticated with user " [:b username] "."])))
             (form/item-main "ID" _id false)
-            (form/item-main "Namespaces" (map #(comp/chip {:key %
-                                                       :style   {:marginRight "8px"}
-                                                       :label   %}) namespaces))
+            (form/item-main "Namespaces" (map #(comp/chip {:key   %
+                                                           :style {:marginRight "8px"}
+                                                           :label %}) namespaces))
             (form/item-main "Role" role)))]])))
 
 (rum/defc form < rum/reactive
