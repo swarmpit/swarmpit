@@ -238,7 +238,7 @@ a {
     position: absolute;
     background: #fff !important;
     color: #5f6368 !important;
-    box-shadow: 0 1px 6px 0 rgba(32,33,36,0.28) !important;
+    border-bottom: 1px solid rgba(0, 0, 0, 0.12);
     z-index: 1201 !important;
     transition: width 195ms cubic-bezier(0.4, 0, 0.6, 1) 0ms, margin 195ms cubic-bezier(0.4, 0, 0.6, 1) 0ms;
 }
@@ -986,7 +986,7 @@ a {
 }
 
 .Swarmpit-icon-ok > svg {
-    color: #43a047;
+    color: #52B359;
 }
 
 .Swarmpit-icon-error > svg {

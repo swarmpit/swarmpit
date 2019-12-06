@@ -11,7 +11,7 @@
                              :light        "#957ed1"
                              :dark         "#362870"
                              :contrastText "#fff"}
-                 :secondary {:main "#d32f2f"}}
+                 :secondary {:main "#8B9F51"}}
    :typography  {:fontFamily (str/join "," ["Roboto" "Helvetica" "Arial" "sans-serif"])}
    :overrides   {:MuiCardHeader  {:action {:color "rgb(117, 117, 117)"}}
                  :MuiCardActions {:root {:padding 16}}}

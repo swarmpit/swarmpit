@@ -256,7 +256,7 @@
   (cond
     (< stat 75) {:name  "used"
                  :value stat
-                 :color "#43a047"}
+                 :color "#52B359"}
     (> stat 90) {:name  "used"
                  :value stat
                  :color "#d32f2f"}

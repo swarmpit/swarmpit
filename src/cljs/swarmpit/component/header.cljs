@@ -212,20 +212,20 @@
                 :onClick    #(state/update-value [:mobileOpened] true state/layout-cursor)
                 :className  "Swarmpit-appbar-menu-btn"}
                icon/menu)
-             (comp/typography
-               {:key       "appbar-title"
-                :className "Swarmpit-appbar-title"
-                :variant   "h6"
-                :color     "inherit"
-                :noWrap    true}
-               title)
-             (comp/typography
-               {:key       "appbar-subtitle"
-                :className "Swarmpit-appbar-subtitle"
-                :variant   "subtitle1"
-                :color     "inherit"
-                :noWrap    false}
-               subtitle)
+             ;(comp/typography
+             ;  {:key       "appbar-title"
+             ;   :className "Swarmpit-appbar-title"
+             ;   :variant   "h6"
+             ;   :color     "inherit"
+             ;   :noWrap    true}
+             ;  title)
+             ;(comp/typography
+             ;  {:key       "appbar-subtitle"
+             ;   :className "Swarmpit-appbar-subtitle"
+             ;   :variant   "subtitle1"
+             ;   :color     "inherit"
+             ;   :noWrap    false}
+             ;  subtitle)
              (html [:div.grow])
              (appbar-desktop-section search-fn actions title)
              (appbar-mobile-section search-fn actions)
