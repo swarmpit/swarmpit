@@ -167,6 +167,7 @@
 
 (def create-mui-theme js/MaterialUI.createMuiTheme)
 (def with-mobile-dialog js/MaterialUI.withMobileDialog)
+(def use-scroll-trigger js/MaterialUI.useScrollTrigger)
 
 (defn responsive-dialog [component]
   (create-factory ((js/MaterialUI.withMobileDialog #js {:breakpoint "xs"}) component)))

@@ -6,6 +6,7 @@
             [swarmpit.event.source :as eventsource]
             [swarmpit.component.common :as common]
             [swarmpit.component.state :as state]
+            [swarmpit.component.mixin :as mixin]
             [swarmpit.url :refer [dispatch!]]
             [rum.core :as rum]
             [sablono.core :refer-macros [html]]
@@ -200,15 +201,32 @@
                      :key     (str "menu-btn-" (:name %))
                      :onClick (:onClick %)} (:icon %)))))]))
 
-(rum/defc appbar < rum/reactive [{:keys [title subtitle search-fn actions]}]
-  (let [{:keys [mobileSearchOpened menuAnchorEl mobileMoreAnchorEl version]} (state/react state/layout-cursor)]
+(defonce appbar-elevation (atom 0))
+
+(def mixin-on-scroll
+  {:did-mount
+   (fn [state]
+     (.addEventListener
+       js/window
+       "scroll"
+       (fn [_]
+         (let [top? (zero? (-> js/window .-scrollY))]
+           (if top?
+             (reset! appbar-elevation 0)
+             (reset! appbar-elevation 4))))) state)})
+
+(rum/defc appbar < rum/reactive
+                   mixin-on-scroll [{:keys [title subtitle search-fn actions]}]
+  (let [{:keys [mobileSearchOpened menuAnchorEl mobileMoreAnchorEl version]} (state/react state/layout-cursor)
+        elevation (rum/react appbar-elevation)]
     (comp/mui
       (html
         [:div
          (comp/app-bar
            {:key       "appbar"
             :color     "primary"
-            :elevation 0
+            :elevation elevation
+            :id        "Swarmpit-appbar"
             :className "Swarmpit-appbar"}
            (comp/toolbar
              {:key            "appbar-toolbar"

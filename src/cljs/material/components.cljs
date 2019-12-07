@@ -2,6 +2,7 @@
   (:refer-clojure :exclude [stepper list])
   (:require [material.factory :as f]
             [sablono.core :refer-macros [html]]
+            [goog.object :as gobject]
             [cuerdas.core :as str]))
 
 ;;; Theme components
