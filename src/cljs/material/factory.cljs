@@ -64,6 +64,8 @@
 (def snackbar (create-factory js/MaterialUI.Snackbar))
 (def snackbar-content (create-factory js/MaterialUI.SnackbarContent))
 (def text-field (create-factory js/MaterialUI.TextField))
+(def link (create-factory js/MaterialUI.Link))
+(def breadcrumbs (create-factory js/MaterialUI.Breadcrumbs))
 
 (def table (create-factory js/MaterialUI.Table))
 (def table-head (create-factory js/MaterialUI.TableHead))
@@ -161,6 +163,7 @@
 (def stop-icon (create-factory js/MaterialUIIcons.Stop))
 (def save-icon (create-factory js/MaterialUIIcons.Save))
 (def arrow-dropdown-icon (create-factory js/MaterialUIIcons.ArrowDropDown))
+(def exit-icon (create-factory js/MaterialUIIcons.ExitToApp))
 
 (def create-mui-theme js/MaterialUI.createMuiTheme)
 (def with-mobile-dialog js/MaterialUI.withMobileDialog)

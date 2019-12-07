@@ -189,3 +189,7 @@
 (defn arrow-dropdown
   [props]
   (f/arrow-dropdown-icon (clj->js props)))
+
+(defn exit
+  [props]
+  (f/exit-icon (clj->js props)))

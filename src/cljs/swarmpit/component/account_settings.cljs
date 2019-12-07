@@ -15,7 +15,7 @@
     (comp/mui
       (html
         [:div.Swarmpit-form
-         [:div.Swarmpit-form-context
+         [:div.Swarmpit-form-toolbar
           (comp/container
             {:maxWidth  "sm"
              :className "Swarmpit-container"}

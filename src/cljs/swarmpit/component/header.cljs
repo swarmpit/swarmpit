@@ -22,59 +22,71 @@
         (.update md5 (string/trim email))
         (crypt/byteArrayToHex (.digest md5))))))
 
-(defn- user-avatar []
-  (comp/avatar
-    {:className "Swarmpit-appbar-avatar"
-     :src       (str "https://www.gravatar.com/avatar/"
-                     (user-gravatar-hash (storage/email))
-                     "?d=https://raw.githubusercontent.com/swarmpit/swarmpit/master/resources/public/img/user.png")}))
-
-(rum/defc user-info < rum/static []
-  (html
-    [:div
-     [:span "Signed in as"]
-     [:br]
-     [:span.Swarmpit-appbar-user-menu-logged-user (storage/user)]]))
+(defn- user-avatar
+  ([]
+   (user-avatar false))
+  ([big?]
+   (comp/avatar
+     (merge
+       {:className "Swarmpit-appbar-avatar"
+        :src       (str "https://www.gravatar.com/avatar/"
+                        (user-gravatar-hash (storage/email))
+                        "?d=https://raw.githubusercontent.com/swarmpit/swarmpit/master/resources/public/img/user.png")}
+       (when big?
+         {:className "Swarmpit-appbar-avatar Swarmpit-appbar-avatar-big"})))))
 
 (rum/defc user-menu < rum/static [anchorEl]
-  (html
-    [:div
-     (comp/icon-button
-       {:aria-owns     (when anchorEl "Swarmpit-appbar-user-menu")
-        :aria-haspopup "true"
-        :onClick       (fn [e]
-                         (state/update-value [:menuAnchorEl] (.-currentTarget e) state/layout-cursor))
-        :color         "inherit"} (user-avatar))
-     (comp/menu
-       {:id              "Swarmpit-appbar-user-menu"
-        :key             "appbar-user-menu"
-        :anchorEl        anchorEl
-        :anchorOrigin    {:vertical   "top"
-                          :horizontal "right"}
-        :transformOrigin {:vertical   "top"
-                          :horizontal "right"}
-        :open            (some? anchorEl)
-        :onClose         #(state/update-value [:menuAnchorEl] nil state/layout-cursor)}
-       (comp/menu-item
-         {:key       "appbar-user-menu-logged-info"
-          :className "Swarmpit-appbar-user-menu-logged-info"
-          :disabled  true}
-         (user-info))
-       (comp/divider
-         {:key "appbar-user-menu-divider"})
-       (comp/menu-item
-         {:key     "appbar-user-menu-account-settings"
-          :onClick (fn []
-                     (state/update-value [:menuAnchorEl] nil state/layout-cursor)
-                     (dispatch!
-                       (routes/path-for-frontend :account-settings)))} "Settings")
-       (comp/menu-item
-         {:key     "appbar-user-menu-logout"
-          :onClick (fn []
-                     (storage/remove "token")
-                     (eventsource/close!)
-                     (dispatch!
-                       (routes/path-for-frontend :login)))} "Log out"))]))
+  (comp/box
+    {}
+    (comp/icon-button
+      {:onClick (fn [e]
+                  (state/update-value [:menuAnchorEl] (.-currentTarget e) state/layout-cursor))
+       :color   "inherit"} (user-avatar))
+    (comp/popper
+      {:open       (some? anchorEl)
+       :anchorEl   anchorEl
+       :placement  "bottom-end"
+       :className  "Swarmpit-popper"
+       :transition true}
+      (fn [props]
+        (let [{:keys [TransitionProps placement]} (js->clj props :keywordize-keys true)]
+          (comp/fade
+            (merge TransitionProps
+                   {:timeout 450})
+            (comp/paper
+              {}
+              (comp/click-away-listener
+                {:onClickAway #(state/update-value [:menuAnchorEl] nil state/layout-cursor)}
+                (comp/card
+                  {}
+                  (comp/card-content
+                    {:className "Swarmpit-appbar-user-menu"}
+                    (user-avatar true)
+                    (comp/typography
+                      {:variant "body1"} (storage/user))
+                    (comp/typography
+                      {:variant "body2"} (storage/email))
+                    (comp/button
+                      {:variant   "outlined"
+                       :className "Swarmpit-appbar-user-menu-action"
+                       :onClick   (fn []
+                                    (state/update-value [:menuAnchorEl] nil state/layout-cursor)
+                                    (dispatch!
+                                      (routes/path-for-frontend :account-settings)))}
+                      "Manage your account"))
+                  (comp/divider {})
+                  (comp/card-actions
+                    {:className "Swarmpit-appbar-user-menu"}
+                    (comp/button
+                      {:variant   "outlined"
+                       :startIcon (icon/exit {})
+                       :onClick   (fn []
+                                    (storage/remove "token")
+                                    (eventsource/close!)
+                                    (state/update-value [:menuAnchorEl] nil state/layout-cursor)
+                                    (dispatch!
+                                      (routes/path-for-frontend :login)))}
+                      "Log out")))))))))))
 
 (defn- mobile-actions-menu
   [actions mobileMoreAnchorEl]
@@ -212,20 +224,13 @@
                 :onClick    #(state/update-value [:mobileOpened] true state/layout-cursor)
                 :className  "Swarmpit-appbar-menu-btn"}
                icon/menu)
-             ;(comp/typography
-             ;  {:key       "appbar-title"
-             ;   :className "Swarmpit-appbar-title"
-             ;   :variant   "h6"
-             ;   :color     "inherit"
-             ;   :noWrap    true}
-             ;  title)
-             ;(comp/typography
-             ;  {:key       "appbar-subtitle"
-             ;   :className "Swarmpit-appbar-subtitle"
-             ;   :variant   "subtitle1"
-             ;   :color     "inherit"
-             ;   :noWrap    false}
-             ;  subtitle)
+             (comp/typography
+               {:key       "appbar-title"
+                :className "Swarmpit-appbar-title"
+                :variant   "h6"
+                :color     "inherit"
+                :noWrap    true}
+               title)
              (html [:div.grow])
              (appbar-desktop-section search-fn actions title)
              (appbar-mobile-section search-fn actions)

@@ -236,25 +236,27 @@ a {
 
 .Swarmpit-appbar {
     position: absolute;
-    background: #fff !important;
+    background: #fafafa !important;
     color: #5f6368 !important;
-    border-bottom: 1px solid rgba(0, 0, 0, 0.12);
     z-index: 1201 !important;
     transition: width 195ms cubic-bezier(0.4, 0, 0.6, 1) 0ms, margin 195ms cubic-bezier(0.4, 0, 0.6, 1) 0ms;
 }
 
-.Swarmpit-appbar-user-menu-logged-info {
-    opacity: 0.7 !important;
+.Swarmpit-appbar-user-menu {
+    align-items: center;
+    display: flex;
+    flex-direction: column;
 }
 
-.Swarmpit-appbar-user-menu-logged-user {
-    font-weight: 600;
+.Swarmpit-appbar-user-menu-action {
+    margin-top: 10px !important;
+    border-radius: 100px !important;
 }
 
 .Swarmpit-appbar-search {
     position: relative;
     border-radius: 4px;
-    background-color: rgba(255, 255, 255, 0.15);
+    background-color: #fafafa;
     margin-right: 16px;
     margin-left: 0;
     width: 100%;
@@ -282,7 +284,7 @@ a {
     display: flex;
     align-items: center;
     justify-content: center;
-    color: #65519f;
+    z-index: 1;
 }
 
 .Swarmpit-appbar-search-root {
@@ -331,6 +333,13 @@ a {
 
 .Swarmpit-appbar-avatar {
     border: 1px solid #fff;
+    background-color: #5f6368 !important;
+}
+
+.Swarmpit-appbar-avatar-big {
+    width: 60px !important;
+    height: 60px !important;
+    margin-bottom: 10px;
 }
 
 .Swarmpit-section-desktop,
@@ -1064,6 +1073,7 @@ a {
     border: 1px solid #d32f2f;
     padding: 16px;
     border-radius: 2px;
+    background-color: rgba(211, 47, 47, 0.1);
 }
 
 .Swarmpit-task-error-icon {
@@ -1169,6 +1179,10 @@ a {
         display: none !important;
     }
 
+    .Swarmpit-appbar-title {
+        display: none !important;
+    }
+
     .Swarmpit-desktop-title {
         display: flex;
     }
@@ -1211,11 +1225,6 @@ a {
     .Swarmpit-form-paper {
         padding-left: 24px;
         padding-right: 24px;
-    }
-
-    .Swarmpit-appbar-title,
-    .Swarmpit-appbar-subtitle {
-        display: block !important;
     }
 
     .Swarmpit-appbar-search {

@@ -149,7 +149,7 @@
             (comp/form-label
               {:key "rolel"} "Custom API")
             (comp/form-helper-text
-              {} "Registry URL is not suffixed with /v2/ api path, instead given value is used as based url")
+              {} (html [:span "Registry URL is not suffixed with " [:b "/v2"] " api path, instead given value is used as based url"]))
             (comp/form-control-label
               {:control (form-custom customApi)})))
         (comp/grid
