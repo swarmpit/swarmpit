@@ -115,10 +115,13 @@
         (comp/container
           {:maxWidth  "md"
            :className "Swarmpit-container"}
-          (toolbar/toolbar "Volume" (:volumeName volume) form-actions)
           (comp/grid
             {:container true
              :spacing   2}
+            (comp/grid
+              {:item true
+               :xs   12}
+              (toolbar/toolbar "Volume" (:volumeName volume) form-actions))
             (comp/grid
               {:item true
                :xs   12}

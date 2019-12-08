@@ -104,7 +104,9 @@
 
 (defn- init-form-state
   []
-  (state/set-value {:loading? false} state/form-state-cursor))
+  (state/set-value {:loading?    false
+                    :filter      {:state nil}
+                    :filterOpen? false} state/form-state-cursor))
 
 (def mixin-init-form
   (mixin/init-form
@@ -112,20 +114,36 @@
       (init-form-state)
       (tasks-handler))))
 
-(defn toolbar-render-metadata
-  [filter]
-  {:filters [{:checked  (:running filter)
-              :name     "Running state"
-              :disabled (or (:shutdown filter) (:failed filter) false)
-              :onClick  #(state/update-value [:filter :running] (not (:running filter)) state/form-state-cursor)}
-             {:checked  (:shutdown filter)
-              :name     "Shutdown state"
-              :disabled (or (:running filter) (:failed filter) false)
-              :onClick  #(state/update-value [:filter :shutdown] (not (:shutdown filter)) state/form-state-cursor)}
-             {:checked  (:failed filter)
-              :name     "Failed state"
-              :disabled (or (:running filter) (:shutdown filter) false)
-              :onClick  #(state/update-value [:filter :failed] (not (:failed filter)) state/form-state-cursor)}]})
+(rum/defc form-filters < rum/static [filterOpen? {:keys [state] :as filter}]
+  (common/list-filters
+    filterOpen?
+    (comp/text-field
+      {:fullWidth       true
+       :label           "State"
+       :helperText      "Filter by task state"
+       :select          true
+       :value           state
+       :variant         "outlined"
+       :margin          "normal"
+       :InputLabelProps {:shrink true}
+       :onChange        #(state/update-value [:filter :state] (-> % .-target .-value) state/form-state-cursor)}
+      (comp/menu-item
+        {:key   "running"
+         :value "running"} "running")
+      (comp/menu-item
+        {:key   "failed"
+         :value "failed"} "failed")
+      (comp/menu-item
+        {:key   "shutdown"
+         :value "shutdown"} "shutdown"))))
+
+(def toolbar-render-metadata
+  [{:name     "Show filters"
+    :onClick  #(state/update-value [:filterOpen?] true state/form-state-cursor)
+    :icon     icon/filter-list
+    :icon-alt icon/filter-list
+    :variant  "outlined"
+    :color    "default"}])
 
 (rum/defc form < rum/reactive
                  mixin-init-form
@@ -133,21 +151,22 @@
                  mixin/focus-filter [_]
   (let [{:keys [items]} (state/react state/form-value-cursor)
         {:keys [query]} (state/react state/search-cursor)
-        {:keys [loading? filter]} (state/react state/form-state-cursor)
+        {:keys [loading? filter filterOpen?]} (state/react state/form-state-cursor)
         filtered-items (->> (list-util/filter items query)
-                            (clojure.core/filter #(if (:running filter)
-                                                    (= "running" (:state %)) true))
-                            (clojure.core/filter #(if (:shutdown filter)
-                                                    (= "shutdown" (:state %)) true))
-                            (clojure.core/filter #(if (:failed filter)
-                                                    (= "failed" (:state %)) true))
+                            (clojure.core/filter #(if (some? (:state filter))
+                                                    (= (:state filter) (:state %))
+                                                    true))
                             (sort-by :createdAt)
                             (reverse))]
+
     (progress/form
       loading?
-      (common/list "Tasks"
-                   items
-                   filtered-items
-                   render-metadata
-                   onclick-handler
-                   (toolbar-render-metadata filter)))))
+      (comp/box
+        {}
+        (common/list "Tasks"
+                     items
+                     filtered-items
+                     render-metadata
+                     onclick-handler
+                     toolbar-render-metadata)
+        (form-filters filterOpen? filter)))))

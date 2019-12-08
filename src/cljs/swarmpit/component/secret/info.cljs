@@ -87,10 +87,13 @@
         (comp/container
           {:maxWidth  "md"
            :className "Swarmpit-container"}
-          (toolbar/toolbar "Secret" (:id secret) form-actions)
           (comp/grid
             {:container true
              :spacing   2}
+            (comp/grid
+              {:item true
+               :xs 12}
+              (toolbar/toolbar "Secret" (:secretName secret) form-actions))
             (comp/grid
               {:item true
                :xs   12}

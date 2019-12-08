@@ -56,10 +56,10 @@
       (networks-handler))))
 
 (def toolbar-render-metadata
-  {:actions [{:name     "New network"
-              :onClick  #(dispatch! (routes/path-for-frontend :network-create))
-              :icon     icon/add-circle-out
-              :icon-alt icon/add}]})
+  [{:name     "New network"
+    :onClick  #(dispatch! (routes/path-for-frontend :network-create))
+    :icon     icon/add-circle-out
+    :icon-alt icon/add}])
 
 (rum/defc form < rum/reactive
                  mixin-init-form

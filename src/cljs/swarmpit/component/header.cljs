@@ -87,7 +87,7 @@
                                     (state/update-value [:menuAnchorEl] nil state/layout-cursor)
                                     (dispatch!
                                       (routes/path-for-frontend :login)))}
-                      "Log out")))))))))))
+                      "Sign out")))))))))))
 
 (defn- mobile-actions-menu
   [actions mobileMoreAnchorEl]

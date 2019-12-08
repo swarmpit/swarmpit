@@ -173,10 +173,13 @@
         (comp/container
           {:maxWidth  "md"
            :className "Swarmpit-container"}
-          (toolbar/toolbar "Task" (:id task) nil)
           (comp/grid
             {:container true
              :spacing   2}
+            (comp/grid
+              {:item true
+               :xs 12}
+              (toolbar/toolbar "Task" (:taskName task) nil))
             (comp/grid
               {:item true
                :xs   12}

@@ -82,10 +82,10 @@
       (stack-handler))))
 
 (def toolbar-render-metadata
-  {:actions [{:name     "New stack"
-              :onClick  #(dispatch! (routes/path-for-frontend :stack-create))
-              :icon     icon/add-circle-out
-              :icon-alt icon/add}]})
+  [{:name     "New stack"
+    :onClick  #(dispatch! (routes/path-for-frontend :stack-create))
+    :icon     icon/add-circle-out
+    :icon-alt icon/add}])
 
 (rum/defc form < rum/reactive
                  mixin-init-form

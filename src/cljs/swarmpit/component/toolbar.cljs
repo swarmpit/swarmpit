@@ -50,7 +50,8 @@
     (comp/box
       {}
       (comp/button-group
-        {:variant    "contained"
+        {:className  "Swarmpit-form-toolbar-btn"
+         :variant    "contained"
          :color      "primary"
          :ref        anchorKey
          :aria-label "split button"}
@@ -75,33 +76,97 @@
       (comp/toolbar
         {:disableGutters true
          :className      "Swarmpit-ftoolbar"}
-        (comp/typography
-          {:variant   "h6"
-           :className "Swarmpit-ftoolbar-title"
-           :noWrap    false}
-          domain)
-        (comp/typography
-          {:variant   "h6"
-           :className "Swarmpit-ftoolbar-subtitle"
-           :noWrap    false}
-          (str "#" (subs id 0 10)))
-        (comp/hidden
-          {:xsDown         true
-           :implementation "js"}
+        (comp/grid
+          {:container  true
+           :spacing    3
+           :alignItems "flex-end"
+           :justify    "space-between"}
+          (comp/grid
+            {:item true}
+            (comp/box
+              {:className "Swarmpit-ftoolbar-info"}
+              (comp/typography
+                {:variant   "h6"
+                 :className "Swarmpit-ftoolbar-title"
+                 :noWrap    false}
+                domain)
+              (comp/typography
+                {:variant   "h6"
+                 :className "Swarmpit-ftoolbar-subtitle"
+                 :noWrap    false}
+                id)))
+          (comp/grid
+            {:item true}
+            (comp/box
+              {:className "Swarmpit-ftoolbar-actions"}
+              (when (not-empty group-actions)
+                (menu group-actions))
+              (when (not-empty single-actions)
+                (map-indexed
+                  (fn [index action]
+                    (comp/button
+                      (merge
+                        {:color     (or (:color action) "primary")
+                         :variant   (or (:variant action) "contained")
+                         :key       (str "toolbar-button-" index)
+                         :startIcon (:icon action)
+                         :onClick   (:onClick action)}
+                        (when (not= (dec (count single-actions)) index)
+                          {:className "Swarmpit-form-toolbar-btn"}))
+                      (:name action))) single-actions)))))))))
+
+(rum/defc list-toobar < rum/reactive
+  [title items filtered-items actions]
+  (comp/mui
+    (comp/toolbar
+      {:disableGutters true
+       :className      "Swarmpit-ftoolbar"}
+      (comp/grid
+        {:container  true
+         :spacing    3
+         :alignItems "flex-end"
+         :justify    "space-between"}
+        (comp/grid
+          {:item true}
           (comp/box
-            {:className "grow"}))
-        (comp/box
-          {:className "Swarmpit-ftoolbar-actions"}
-          (when (not-empty group-actions)
-            (menu group-actions))
-          (when (not-empty single-actions)
-            (map-indexed
-              (fn [index action]
-                (comp/button
-                  {:className "Swarmpit-form-toolbar-btn"
-                   :color     (or (:color action) "primary")
-                   :variant   (or (:variant action) "contained")
-                   :key       (str "toolbar-button-" index)
-                   :startIcon (:icon action)
-                   :onClick   (:onClick action)}
-                  (:name action))) single-actions)))))))
+            {:className "Swarmpit-ftoolbar-info"}
+            (comp/typography
+              {:variant   "subtitle1"
+               :className "Swarmpit-ftoolbar-title"
+               :noWrap    false}
+              (if (= (count items)
+                     (count filtered-items))
+                (str "Total (" (count items) ")")
+                (str "Total (" (count filtered-items) "/" (count items) ")")))))
+        (comp/grid
+          {:item true}
+          (comp/box
+            {:className "Swarmpit-ftoolbar-actions"}
+            (when (not-empty actions)
+              (map-indexed
+                (fn [index action]
+                  (comp/box
+                    {:key (str "toolbar-item-" index)}
+                    (comp/box
+                      {}
+                      (comp/button
+                        (merge
+                          {:color     (or (:color action) "primary")
+                           :variant   (or (:variant action) "contained")
+                           :key       (str "toolbar-button-" index)
+                           :startIcon ((:icon action) {})
+                           :onClick   (:onClick action)}
+                          (when (not= (dec (count actions)) index)
+                            {:className "Swarmpit-form-toolbar-btn"}))
+                        (:name action)))
+                    (comp/box
+                      {:className "Swarmpit-section-mobile"}
+                      ;; Make FAB from first only (primary action)
+                      (when (= 0 index)
+                        (comp/fab
+                          {:className  "Swarmpit-fab"
+                           :color      "primary"
+                           :size       "large"
+                           :aria-label "add"
+                           :onClick    (:onClick action)}
+                          ((:icon-alt action) {})))))) actions))))))))

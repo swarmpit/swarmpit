@@ -81,14 +81,11 @@
   [event]
   (state/update-value [:query] (-> event .-target .-value) state/search-cursor))
 
-(def form-actions
-  [{:onClick #(dispatch! (routes/path-for-frontend :service-create-image))
-    :icon    icon/add-circle
-    :name    "New service"}])
-
 (defn- init-form-state
   []
-  (state/set-value {:loading? false} state/form-state-cursor))
+  (state/set-value {:loading?    false
+                    :filter      {:state nil}
+                    :filterOpen? false} state/form-state-cursor))
 
 (def mixin-init-form
   (mixin/init-form
@@ -126,20 +123,37 @@
           services
           onclick-handler)))))
 
-(defn toolbar-render-metadata
-  [filter]
-  {:actions [{:name     "New service"
-              :onClick  #(dispatch! (routes/path-for-frontend :service-create-image))
-              :icon     icon/add-circle-out
-              :icon-alt icon/add}]
-   :filters [{:checked  (:running filter)
-              :name     "Running state"
-              :disabled (or (:shutdown filter) false)
-              :onClick  #(state/update-value [:filter :running] (not (:running filter)) state/form-state-cursor)}
-             {:checked  (:shutdown filter)
-              :name     "Shutdown state"
-              :disabled (or (:running filter) false)
-              :onClick  #(state/update-value [:filter :shutdown] (not (:shutdown filter)) state/form-state-cursor)}]})
+(rum/defc form-filters < rum/static [filterOpen? {:keys [state] :as filter}]
+  (common/list-filters
+    filterOpen?
+    (comp/text-field
+      {:fullWidth       true
+       :label           "State"
+       :helperText      "Filter by service state"
+       :select          true
+       :value           state
+       :variant         "outlined"
+       :margin          "normal"
+       :InputLabelProps {:shrink true}
+       :onChange        #(state/update-value [:filter :state] (-> % .-target .-value) state/form-state-cursor)}
+      (comp/menu-item
+        {:key   "running"
+         :value "running"} "running")
+      (comp/menu-item
+        {:key   "shutdown"
+         :value "shutdown"} "shutdown"))))
+
+(def toolbar-render-metadata
+  [{:name     "New service"
+    :onClick  #(dispatch! (routes/path-for-frontend :service-create-image))
+    :icon     icon/add-circle-out
+    :icon-alt icon/add}
+   {:name     "Show filters"
+    :onClick  #(state/update-value [:filterOpen?] true state/form-state-cursor)
+    :icon     icon/filter-list
+    :icon-alt icon/filter-list
+    :variant  "outlined"
+    :color    "default"}])
 
 (rum/defc form < rum/reactive
                  mixin-init-form
@@ -147,19 +161,23 @@
                  mixin/focus-filter [_]
   (let [{:keys [items]} (state/react state/form-value-cursor)
         {:keys [query]} (state/react state/search-cursor)
-        {:keys [loading? filter]} (state/react state/form-state-cursor)
+        {:keys [loading? filterOpen? filter]} (state/react state/form-state-cursor)
         filtered-items (->> (list-util/filter items query)
-                            (clojure.core/filter #(if (:running filter)
-                                                    (= "running" (:state %)) true))
-                            (clojure.core/filter #(if (:shutdown filter)
-                                                    (= 0 (get-in % [:status :tasks :total])) true))
+                            (clojure.core/filter #(if (some? (:state filter))
+                                                    (case (:state filter)
+                                                      "running" (= "running" (:state %))
+                                                      "shutdown" (= 0 (get-in % [:status :tasks :total])))
+                                                    true))
                             (sort-by :createdAt)
                             (reverse))]
     (progress/form
       loading?
-      (common/list "Services"
-                   items
-                   filtered-items
-                   render-metadata
-                   onclick-handler
-                   (toolbar-render-metadata filter)))))
+      (comp/box
+        {}
+        (common/list "Services"
+                     items
+                     filtered-items
+                     render-metadata
+                     onclick-handler
+                     toolbar-render-metadata)
+        (form-filters filterOpen? filter)))))

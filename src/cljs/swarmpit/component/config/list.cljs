@@ -62,10 +62,10 @@
       (configs-handler))))
 
 (def toolbar-render-metadata
-  {:actions [{:name     "New Config"
-              :onClick  #(dispatch! (routes/path-for-frontend :config-create))
-              :icon     icon/add-circle-out
-              :icon-alt icon/add}]})
+  [{:name     "New Config"
+    :onClick  #(dispatch! (routes/path-for-frontend :config-create))
+    :icon     icon/add-circle-out
+    :icon-alt icon/add}])
 
 (rum/defc form < rum/reactive
                  mixin-init-form

@@ -318,13 +318,16 @@
            "Delete service?"
            "Delete")
          [:div.Swarmpit-form-toolbar
-          (toolbar/toolbar "Service" id (form-actions service id pinned?))
           (comp/hidden
             {:xsDown         true
              :implementation "js"}
             (comp/grid
               {:container true
                :spacing   2}
+              (comp/grid
+                {:item true
+                 :xs   12}
+                (toolbar/toolbar "Service" (:serviceName service) (form-actions service id pinned?)))
               (comp/grid
                 {:item true
                  :sm   6
@@ -359,6 +362,10 @@
             (comp/grid
               {:container true
                :spacing   2}
+              (comp/grid
+                {:item true
+                 :xs   12}
+                (toolbar/toolbar "Service" (:serviceName service) (form-actions service id pinned?)))
               (form-settings-grid service id tasks pinned?)
               (form-tasks-grid service tasks)
               (form-networks-grid networks id immutable?)

@@ -137,6 +137,20 @@ a {
     z-index: 1;
 }
 
+.Swarmpit-filter {
+    padding: 24px 24px;
+    display: flex;
+    flex-direction: column;
+    width: 300px;
+    height: 100%;
+}
+
+.Swarmpit-filter-actions {
+    display: flex;
+    flex-direction: row;
+    justify-content: space-between;
+}
+
 .Swarmpit-message {
     display: flex;
     align-items: center;
@@ -256,11 +270,12 @@ a {
 .Swarmpit-appbar-search {
     position: relative;
     border-radius: 4px;
-    background-color: #fafafa;
     margin-right: 16px;
     margin-left: 0;
     width: 100%;
-    border: 1px solid #dfe1e5;
+    background: rgba(255, 255, 255, 1);
+    color: #000;
+    border: 1px solid rgba(65, 69, 73, 0.3);
 }
 
 .Swarmpit-appbar-subtitle {
@@ -269,8 +284,6 @@ a {
 }
 
 .Swarmpit-appbar-search:hover {
-    background: rgba(255, 255, 255, 1);
-    color: #000;
     border: 1px solid transparent;
     box-shadow: 0 1px 1px 0 rgba(65, 69, 73, 0.3),
     0 1px 3px 1px rgba(65, 69, 73, 0.15);
@@ -640,28 +653,29 @@ a {
 
 /** Form card **/
 
+.Swarmpit-ftoolbar {
+    min-height: 0 !important;
+    margin-top: 10px;
+}
+
+.Swarmpit-ftoolbar-info {
+    display: flex;
+    flex-direction: row;
+}
+
 .Swarmpit-ftoolbar-actions {
     display: flex;
     flex-direction: row;
 }
 
 .Swarmpit-ftoolbar-title {
-    margin-right: 10px !important;
-    font-weight: 500 !important;
-}
-
-.Swarmpit-ftoolbar-title:after {
-    left: 0;
-    width: 48px;
-    bottom: 15px;
-    height: 3px;
-    content: " ";
-    position: absolute;
-    background-color: #65519f;
+    margin-right: 5px !important;
+    font-weight: lighter !important;
 }
 
 .Swarmpit-ftoolbar-subtitle {
-    font-weight: lighter !important;
+    font-weight: 500 !important;
+    word-break: break-all;
 }
 
 .Swarmpit-fcard {
@@ -781,7 +795,7 @@ a {
 }
 
 .Swarmpit-form-toolbar-btn {
-    margin-left: 8px !important;
+    margin-right: 8px !important;
 }
 
 .Swarmpit-form-buttons {

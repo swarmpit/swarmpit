@@ -74,24 +74,33 @@
         (comp/container
           {:maxWidth  "md"
            :className "Swarmpit-container"}
-          (toolbar/toolbar "Registry" _id (form-actions _id))
-          (comp/card
-            {:className "Swarmpit-form-card"}
-            (comp/card-header
-              {:title     (comp/typography {:variant "h6"} "Info")
-               :avatar    (comp/avatar
-                            {:className "Swarmpit-card-avatar"}
-                            (comp/svg icon/registries-path))
-               :subheader (when public
-                            (label/header "Public" "info"))})
-            (comp/card-content
-              {}
-              (comp/typography
-                {:variant "body2"}
-                (html [:span "Authenticated with user " [:b username] "."])))
-            (form/item-main "ID" _id false)
-            (form/item-main "Name" name)
-            (form/item-main "Url" url)))]])))
+          (comp/grid
+            {:container true
+             :spacing   2}
+            (comp/grid
+              {:item true
+               :xs   12}
+              (toolbar/toolbar "Registry" _id (form-actions _id)))
+            (comp/grid
+              {:item true
+               :xs   12}
+              (comp/card
+                {:className "Swarmpit-form-card"}
+                (comp/card-header
+                  {:title     (comp/typography {:variant "h6"} "Info")
+                   :avatar    (comp/avatar
+                                {:className "Swarmpit-card-avatar"}
+                                (comp/svg icon/registries-path))
+                   :subheader (when public
+                                (label/header "Public" "info"))})
+                (comp/card-content
+                  {}
+                  (comp/typography
+                    {:variant "body2"}
+                    (html [:span "Authenticated with user " [:b username] "."])))
+                (form/item-main "ID" _id false)
+                (form/item-main "Name" name)
+                (form/item-main "Url" url)))))]])))
 
 (rum/defc form < rum/reactive
                  mixin-init-form

@@ -125,10 +125,13 @@
         (comp/container
           {:maxWidth  "md"
            :className "Swarmpit-container"}
-          (toolbar/toolbar "Config" (:id config) form-actions)
           (comp/grid
             {:container true
              :spacing   2}
+            (comp/grid
+              {:item true
+               :xs   12}
+              (toolbar/toolbar "Config" (:configName config) form-actions))
             (comp/grid
               {:item true
                :xs   12}

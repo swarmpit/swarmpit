@@ -267,15 +267,21 @@
          "Delete node?"
          "Delete")
        [:div.Swarmpit-form-toolbar
-        (toolbar/toolbar "Node" id (if (storage/admin?)
-                                     (form-actions id pinned?)
-                                     [(form-pin-action id pinned? false)]))
         (comp/hidden
           {:xsDown         true
            :implementation "js"}
           (comp/grid
             {:container true
              :spacing   2}
+            (comp/grid
+              {:item true
+               :xs   12}
+              (toolbar/toolbar
+                "Node"
+                (:nodeName node)
+                (if (storage/admin?)
+                  (form-actions id pinned?)
+                  [(form-pin-action id pinned? false)])))
             (comp/grid
               {:item true
                :sm   6
@@ -302,6 +308,15 @@
           (comp/grid
             {:container true
              :spacing   2}
+            (comp/grid
+              {:item true
+               :xs   12}
+              (toolbar/toolbar
+                "Node"
+                (:nodeName node)
+                (if (storage/admin?)
+                  (form-actions id pinned?)
+                  [(form-pin-action id pinned? false)])))
             (form-general-grid node pinned?)
             (form-task-grid tasks)
             (form-plugins-grid

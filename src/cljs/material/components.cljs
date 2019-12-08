@@ -65,6 +65,10 @@
   [props & childs]
   (apply f/drawer (clj->js props) childs))
 
+(defn swipeable-drawer
+  [props & childs]
+  (apply f/swipeable-drawer (clj->js props) childs))
+
 (defn menu
   [props & childs]
   (apply f/menu (clj->js props) childs))

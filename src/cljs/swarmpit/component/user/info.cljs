@@ -75,15 +75,24 @@
         (comp/container
           {:maxWidth  "md"
            :className "Swarmpit-container"}
-          (toolbar/toolbar "User" _id (form-actions username _id))
-          (comp/card
-            {:className "Swarmpit-form-card"}
-            (comp/card-header
-              {:title (comp/typography {:variant "h6"} "Profile")})
-            (form/item-main "ID" _id false)
-            (form/item-main "Username" username)
-            (form/item-main "Email" (if (str/blank? email) "-" email))
-            (form/item-main "Role" role)))]])))
+          (comp/grid
+            {:container true
+             :spacing   2}
+            (comp/grid
+              {:item true
+               :xs   12}
+              (toolbar/toolbar "User" username (form-actions username _id)))
+            (comp/grid
+              {:item true
+               :xs   12}
+              (comp/card
+                {:className "Swarmpit-form-card"}
+                (comp/card-header
+                  {:title (comp/typography {:variant "h6"} "Profile")})
+                (form/item-main "ID" _id false)
+                (form/item-main "Username" username)
+                (form/item-main "Email" (if (str/blank? email) "-" email))
+                (form/item-main "Role" role)))))]])))
 
 (rum/defc form < rum/reactive
                  mixin-init-form

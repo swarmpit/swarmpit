@@ -40,6 +40,7 @@
 
 (def typography (create-factory js/MaterialUI.Typography))
 (def drawer (create-factory js/MaterialUI.Drawer))
+(def swipeable-drawer (create-factory js/MaterialUI.SwipeableDrawer))
 (def divider (create-factory js/MaterialUI.Divider))
 (def toolbar (create-factory js/MaterialUI.Toolbar))
 (def appbar (create-factory js/MaterialUI.AppBar))

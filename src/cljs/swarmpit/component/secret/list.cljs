@@ -53,10 +53,10 @@
       (secrets-handler))))
 
 (def toolbar-render-metadata
-  {:actions [{:name     "New secret"
-              :onClick  #(dispatch! (routes/path-for-frontend :secret-create))
-              :icon     icon/add-circle-out
-              :icon-alt icon/add}]})
+  [{:name     "New secret"
+    :onClick  #(dispatch! (routes/path-for-frontend :secret-create))
+    :icon     icon/add-circle-out
+    :icon-alt icon/add}])
 
 (rum/defc form < rum/reactive
                  mixin-init-form

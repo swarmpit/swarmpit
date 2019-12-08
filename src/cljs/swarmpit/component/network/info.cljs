@@ -130,10 +130,13 @@
         (comp/container
           {:maxWidth  "md"
            :className "Swarmpit-container"}
-          (toolbar/toolbar "Network" (:id network) form-actions)
           (comp/grid
             {:container true
              :spacing   2}
+            (comp/grid
+              {:item true
+               :xs   12}
+              (toolbar/toolbar "Network" (:networkName network) form-actions))
             (comp/grid
               {:item true
                :xs   12}

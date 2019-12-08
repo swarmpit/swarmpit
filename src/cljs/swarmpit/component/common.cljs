@@ -2,14 +2,14 @@
   (:refer-clojure :exclude [list])
   (:require [material.icon :as icon]
             [material.components :as comp]
+            [material.component.chart :as chart]
             [material.component.list.basic :as list]
             [swarmpit.component.state :as state]
+            [swarmpit.component.toolbar :as toolbar]
             [sablono.core :refer-macros [html]]
-            [clojure.string :as str]
             [goog.string.format]
             [goog.string :as gstring]
-            [rum.core :as rum]
-            [material.component.chart :as chart]))
+            [rum.core :as rum]))
 
 (def tooltip-shown (atom false))
 
@@ -76,103 +76,27 @@
   (comp/typography
     {:key "nothing-match-text"} "Nothing matches this filter."))
 
-(rum/defc list-toolbar-filter-menu < rum/reactive [title filters]
-  (let [anchorEl (state/react (conj state/form-state-cursor :listFilterAnchorEl))]
-    (html
-      [:div
-       [:div.Swarmpit-section-desktop
+(rum/defc list-filters < rum/static [filterOpen? comp]
+  (comp/swipeable-drawer
+    {:anchor "right"
+     :open   filterOpen?}
+    (comp/box
+      {:className "Swarmpit-filter"}
+      (comp/box
+        {:className "Swarmpit-filter-actions"}
         (comp/button
-          {:aria-owns     (when anchorEl "list-filter-menu")
-           :className     "Swarmpit-form-toolbar-btn"
-           :aria-haspopup "true"
-           :color         "primary"
-           :variant       "outlined"
-           :onClick       (fn [e]
-                            (state/update-value [:listFilterAnchorEl] (.-currentTarget e) state/form-state-cursor))}
-          (icon/filter-list {:className "Swarmpit-button-icon"}) "Show Filters")]
-       [:div.Swarmpit-section-mobile
-        (comp/tooltip
-          {:title "Show Filters"}
-          (comp/icon-button
-            {:aria-owns     (when anchorEl "list-filter-menu")
-             :aria-haspopup "true"
-             :onClick       (fn [e]
-                              (state/update-value [:listFilterAnchorEl] (.-currentTarget e) state/form-state-cursor))
-             :color         "primary"}
-            (icon/filter-list {})))]
-       (comp/menu
-         {:id              "list-filter-menu"
-          :anchorEl        anchorEl
-          :anchorOrigin    {:vertical   "top"
-                            :horizontal "right"}
-          :transformOrigin {:vertical   "top"
-                            :horizontal "right"}
-          :open            (some? anchorEl)
-          :onClose         #(state/update-value [:listFilterAnchorEl] nil state/form-state-cursor)}
-         (comp/menu-item
-           {:className "Swarmpit-menu-info"
-            :disabled  true}
-           (html [:span (str "Filter " (str/lower-case title) " by")]))
-         (map #(comp/menu-item
-                 {:key      (str "filter-" (:name %))
-                  :disabled (:disabled %)
-                  :onClick  (:onClick %)}
-                 (comp/form-control-label
-                   {:control (comp/checkbox
-                               {:key     (str "filter-checkbox-" (:name %))
-                                :checked (:checked %)
-                                :color   "primary"
-                                :value   (str (:checked %))})
-                    :key     (str "filter-label-" (:name %))
-                    :label   (:name %)})) filters))])))
-
-(rum/defc list-toobar < rum/reactive
-  [title items filtered-items {:keys [actions filters] :as metadata}]
-  (comp/mui
-    (comp/toolbar
-      {:disableGutters true}
-      (comp/typography
-        {:variant "subtitle1"
-         :color   "inherit"
-         :noWrap  false}
-        (if (= (count items)
-               (count filtered-items))
-          (str "Total (" (count items) ")")
-          (str "Total (" (count filtered-items) "/" (count items) ")")))
-      (html [:div.grow])
-      (when actions
-        (map-indexed
-          (fn [index action]
-            (html
-              [:div {:key (str "toolbar-item-" index)}
-               [:div.Swarmpit-section-desktop
-                (comp/button
-                  {:color     "primary"
-                   :variant   "contained"
-                   :key       (str "toolbar-button-" index)
-                   :startIcon ((:icon action) {})
-                   :onClick   (:onClick action)}
-                  (:name action))]
-               [:div.Swarmpit-section-mobile
-                ;; Make FAB from first only (primary action)
-                (when (= 0 index)
-                  (comp/fab
-                    {:className  "Swarmpit-fab"
-                     :color      "primary"
-                     :size       "large"
-                     :aria-label "add"
-                     :onClick    (:onClick action)}
-                    ((:icon-alt action) {})))
-                (comp/tooltip
-                  {:title (:name action)
-                   :key   (str "toolbar-tooltip-" index)}
-                  (comp/icon-button
-                    {:key     (str "toolbar-icon-btn-" index)
-                     :onClick (:onClick action)
-                     :color   "primary"}
-                    ((:icon action) {})))]])) actions))
-      (when filters
-        (list-toolbar-filter-menu title filters)))))
+          {:onClick   #(state/update-value [:filterOpen?] false state/form-state-cursor)
+           :startIcon (icon/close {})
+           :variant   "text"
+           :color     "default"} "Close"))
+      comp
+      (comp/box {:className "grow"})
+      (comp/button
+        {:onClick   #(state/update-value [:filter] nil state/form-state-cursor)
+         :startIcon (comp/svg icon/trash-path)
+         :fullWidth true
+         :variant   "contained"
+         :color     "default"} "Clear"))))
 
 (rum/defc list < rum/reactive
   [title items filtered-items render-metadata onclick-handler toolbar-render-metadata]
@@ -180,19 +104,28 @@
     (html
       [:div.Swarmpit-form
        [:div.Swarmpit-form-toolbar
-        (list-toobar title items filtered-items toolbar-render-metadata)
-        (cond
-          (empty? items) (list-empty title)
-          (empty? filtered-items) (list-no-items-found)
-          :else
-          (comp/card
-            {:className "Swarmpit-card"}
-            (comp/card-content
-              {:className "Swarmpit-table-card-content"}
-              (list/responsive
-                render-metadata
-                filtered-items
-                onclick-handler))))]])))
+        (comp/grid
+          {:container true
+           :spacing   2}
+          (comp/grid
+            {:item true
+             :xs   12}
+            (toolbar/list-toobar title items filtered-items toolbar-render-metadata))
+          (comp/grid
+            {:item true
+             :xs   12}
+            (cond
+              (empty? items) (list-empty title)
+              (empty? filtered-items) (list-no-items-found)
+              :else
+              (comp/card
+                {:className "Swarmpit-card"}
+                (comp/card-content
+                  {:className "Swarmpit-table-card-content"}
+                  (list/responsive
+                    render-metadata
+                    filtered-items
+                    onclick-handler))))))]])))
 
 (rum/defc list-grid < rum/reactive
   [title items filtered-items grid toolbar-render-metadata]
@@ -200,32 +133,20 @@
     (html
       [:div.Swarmpit-form
        [:div.Swarmpit-form-toolbar
-        (list-toobar title items filtered-items toolbar-render-metadata)
-        (cond
-          (empty? items) (list-empty title)
-          (empty? filtered-items) (list-no-items-found)
-          :else grid)]])))
-
-(rum/defc info-toobar < rum/reactive [domain id actions]
-  (comp/mui
-    (comp/toolbar
-      {:disableGutters true}
-      (comp/typography
-        {:variant "h5"
-         :noWrap  false}
-        (str domain " #" (subs id 0 10)))
-      (html [:div.grow])
-      (when actions
-        (map-indexed
-          (fn [index action]
-            (comp/button
-              {:className "Swarmpit-form-toolbar-btn"
-               :color     (or (:color action) "primary")
-               :variant   (or (:variant action) "contained")
-               :key       (str "toolbar-button-" index)
-               :startIcon (:icon action)
-               :onClick   (:onClick action)}
-              (:name action))) actions)))))
+        (comp/grid
+          {:container true
+           :spacing   2}
+          (comp/grid
+            {:item true
+             :xs   12}
+            (toolbar/list-toobar title items filtered-items toolbar-render-metadata))
+          (comp/grid
+            {:item true
+             :xs   12}
+            (cond
+              (empty? items) (list-empty title)
+              (empty? filtered-items) (list-no-items-found)
+              :else grid)))]])))
 
 (defn show-password-adornment
   ([show-password]
