@@ -81,24 +81,23 @@
   ([name]
    (section name nil))
   ([name button]
-   (html
-     [:div {:class "Swarmpit-form-section"
-            :id    name}
-      [:div
-       (cmp/typography
-         {:variant "h6"} name)]
-      [:div button]])))
+   (cmp/box
+     {:class "Swarmpit-form-section"
+      :id    name}
+     (cmp/typography
+       {:variant "h6"} name)
+     button)))
 
 (defn subsection
   ([name]
    (subsection name nil))
   ([name button]
-   (html
-     [:div.Swarmpit-form-section
-      [:div
-       (cmp/typography
-         {:variant "subtitle2"} name)]
-      [:div button]])))
+   (cmp/box
+     {:class "Swarmpit-form-section Swarmpit-form-subsection"
+      :id    name}
+     (cmp/typography
+       {:variant "subtitle2"} name)
+     button)))
 
 (defn open-in-new [text href]
   (html

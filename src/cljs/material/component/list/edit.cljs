@@ -25,7 +25,7 @@
          :title     "Delete"
          :placement "top-start"}
         (cmp/icon-button
-          {:color   "secondary"
+          {:color   "primary"
            :onClick #(delete-handler-fn index)}
           (cmp/svg icon/trash-path))))))
 

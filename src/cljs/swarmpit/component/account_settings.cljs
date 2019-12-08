@@ -26,7 +26,7 @@
                :textColor      "primary"
                :variant        "scrollable"
                :scrollButtons  "auto"
-               :aria-label     "scrollable auto tabs example"}
+               :aria-label     "tabs"}
               (comp/tab {:label "Password change"})
               (comp/tab {:label "API Access"}))
             (comp/divider {})

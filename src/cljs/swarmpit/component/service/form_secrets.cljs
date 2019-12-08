@@ -83,7 +83,7 @@
   (let [{:keys [list]} (state/react form-state-cursor)
         secrets (state/react form-value-cursor)]
     (if (empty? secrets)
-      (html [:div "No secrets defined for the service."])
+      (form/item-info "No secrets defined for the service.")
       (if (empty? list)
         undefined-info
         (form-table secrets list)))))

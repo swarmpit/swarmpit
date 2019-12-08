@@ -3,7 +3,6 @@
             [swarmpit.component.state :as state]
             [material.component.composite :as composite]
             [swarmpit.component.service.form-ports :as ports]
-            [swarmpit.component.service.form-networks :as networks]
             [swarmpit.component.parser :refer [parse-int]]
             [swarmpit.ajax :as ajax]
             [swarmpit.routes :as routes]
@@ -24,7 +23,6 @@
      :label           "Image"
      :variant         "outlined"
      :margin          "normal"
-     :style           {:maxWidth "350px"}
      :fullWidth       true
      :disabled        true
      :required        true
@@ -40,7 +38,6 @@
        :textFieldProps {:label           "Tag"
                         :key             "tag"
                         :margin          "normal"
-                        :style           {:maxWidth "350px"}
                         :helperText      "Specify image tag or leave empty for latest"
                         :InputLabelProps {:shrink true}}
        :onChange       #(state/update-value [:repository :tag] (-> % .-value) form-value-cursor)
@@ -57,7 +54,6 @@
        :textFieldProps {:label           "Tag"
                         :key             "tag"
                         :margin          "normal"
-                        :style           {:maxWidth "350px"}
                         :helperText      "Specify image tag or leave empty for latest"
                         :InputLabelProps {:shrink true}}
        :onChange       (fn [v]
@@ -73,7 +69,6 @@
     {:key             "service-name"
      :label           "Service name"
      :variant         "outlined"
-     :style           {:maxWidth "350px"}
      :helperText      "Specify name or leave empty for random"
      :disabled        update-form?
      :fullWidth       true
@@ -165,7 +160,7 @@
         {:keys [tags]} (state/react form-state-cursor)]
     (comp/grid
       {:container true
-       :spacing   3}
+       :spacing   2}
       (comp/grid
         {:item true
          :xs   12
@@ -190,9 +185,6 @@
         (form-mode mode update-form?)
         (when (= "replicated" mode)
           (form-replicas replicas)))
-      (comp/grid
-        {:item true
-         :xs   12} (networks/form))
       (comp/grid
         {:item true
          :xs   12}

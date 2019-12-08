@@ -130,5 +130,5 @@
 (rum/defc form < rum/reactive []
   (let [ports (state/react form-value-cursor)]
     (if (empty? ports)
-      (html [:div "Service has no published ports."])
+      (form/item-info "Service has no published ports.")
       (form-table ports))))

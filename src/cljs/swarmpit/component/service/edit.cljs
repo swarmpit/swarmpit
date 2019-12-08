@@ -131,7 +131,8 @@
 (defn- init-form-state
   []
   (state/set-value {:processing? false
-                    :loading?    true} state/form-state-cursor)
+                    :loading?    true
+                    :active      0} state/form-state-cursor)
   (state/set-value {:valid? true
                     :tags   []} settings/form-state-cursor)
   (state/set-value {:volumes []} mounts/form-state-cursor)
@@ -157,182 +158,181 @@
       (placement/placement-handler)
       (labels/labels-handler))))
 
-(rum/defc form-settings < rum/static []
+(rum/defc form-general < rum/static []
   (comp/grid
     {:item true
      :xs   12}
-    (form/section "General")
     (settings/form true)))
 
-(rum/defc form-networks < rum/static []
+(rum/defc form-network < rum/static []
   (comp/grid
-    {:item    true
-     :gutters true
-     :xs      12}
-    (form/section "Networks")
-    (networks/form)))
+    {:container true
+     :spacing   2}
+    (comp/grid
+      {:item true
+       :xs   12}
+      (networks/form))
+    (comp/grid
+      {:item true
+       :xs   12}
+      (form/section
+        "Ports"
+        (comp/button
+          {:color   "primary"
+           :onClick ports/add-item}
+          (comp/svg icon/add-small-path) "Add port"))
+      (ports/form))
+    (comp/grid
+      {:item true
+       :xs   12}
+      (form/section
+        "Extra hosts"
+        (comp/button
+          {:color   "primary"
+           :onClick hosts/add-item}
+          (comp/svg icon/add-small-path) "Add host mapping"))
+      (hosts/form))))
 
-(rum/defc form-ports < rum/static []
+(rum/defc form-environment < rum/static []
   (comp/grid
-    {:item true
-     :xs   12}
-    (form/section
-      "Ports"
-      (comp/button
-        {:color   "primary"
-         :onClick ports/add-item}
-        (comp/svg icon/add-small-path) "Add port"))
-    (ports/form)))
+    {:container true
+     :spacing   2}
+    (comp/grid
+      {:item true
+       :xs   12}
+      (form/section
+        "Environment variables"
+        (comp/button
+          {:color   "primary"
+           :onClick variables/add-item}
+          (comp/svg icon/add-small-path) "Add variable"))
+      (variables/form))
+    (comp/grid
+      {:item true
+       :xs   12}
+      (form/section
+        "Labels"
+        (comp/button
+          {:color   "primary"
+           :onClick labels/add-item}
+          (comp/svg icon/add-small-path) "Add label"))
+      (labels/form))))
 
-(rum/defc form-mounts < rum/static []
+(rum/defc form-data < rum/static []
   (comp/grid
-    {:item true
-     :xs   12}
-    (form/section
-      "Mounts"
-      (comp/button
-        {:color   "primary"
-         :onClick mounts/add-item}
-        (comp/svg icon/add-small-path) "Add mount"))
-    (mounts/form)))
-
-(rum/defc form-secrets < rum/reactive []
-  (comp/grid
-    {:item true
-     :xs   12}
-    (form/section
-      "Secrets"
-      (comp/button
-        {:color   "primary"
-         :onClick secrets/add-item}
-        (comp/svg icon/add-small-path) "Add secret"))
-    (secrets/form)))
-
-(rum/defc form-configs < rum/reactive []
-  (comp/grid
-    {:item true
-     :xs   12}
-    (form/section
-      "Configs"
-      (comp/button
-        {:color   "primary"
-         :onClick configs/add-item}
-        (comp/svg icon/add-small-path) "Add config"))
-    (configs/form)))
-
-(rum/defc form-hosts < rum/static []
-  (comp/grid
-    {:item true
-     :xs   12}
-    (form/section
-      "Extra hosts"
-      (comp/button
-        {:color   "primary"
-         :onClick hosts/add-item}
-        (comp/svg icon/add-small-path) "Add host mapping"))
-    (hosts/form)))
-
-(rum/defc form-variables < rum/static []
-  (comp/grid
-    {:item true
-     :xs   12}
-    (form/section
-      "Environment variables"
-      (comp/button
-        {:color   "primary"
-         :onClick variables/add-item}
-        (comp/svg icon/add-small-path) "Add variable"))
-    (variables/form)))
-
-(rum/defc form-labels < rum/static []
-  (comp/grid
-    {:item true
-     :xs   12}
-    (form/section
-      "Labels"
-      (comp/button
-        {:color   "primary"
-         :onClick labels/add-item}
-        (comp/svg icon/add-small-path) "Add label"))
-    (labels/form)))
-
-(rum/defc form-logdriver < rum/static []
-  (comp/grid
-    {:item true
-     :xs   12}
-    (form/section
-      "Log driver")
-    (logdriver/form)))
+    {:container true
+     :spacing   2}
+    (comp/grid
+      {:item true
+       :xs   12}
+      (form/section
+        "Mounts"
+        (comp/button
+          {:color   "primary"
+           :onClick mounts/add-item}
+          (comp/svg icon/add-small-path) "Add mount"))
+      (mounts/form))
+    (when (<= 1.30 (state/get-value [:docker :api]))
+      (comp/grid
+        {:item true
+         :xs   12}
+        (form/section
+          "Configs"
+          (comp/button
+            {:color   "primary"
+             :onClick configs/add-item}
+            (comp/svg icon/add-small-path) "Add config"))
+        (configs/form)))
+    (comp/grid
+      {:item true
+       :xs   12}
+      (form/section
+        "Secrets"
+        (comp/button
+          {:color   "primary"
+           :onClick secrets/add-item}
+          (comp/svg icon/add-small-path) "Add secret"))
+      (secrets/form))))
 
 (rum/defc form-resources < rum/static []
   (comp/grid
     {:item true
      :xs   12}
-    (form/section
-      "Resources")
     (resources/form)))
 
 (rum/defc form-deployment < rum/static []
   (comp/grid
     {:item true
      :xs   12}
-    (form/section
-      "Deployment")
     (deployment/form)))
 
 (rum/defc form-edit < rum/reactive [id
                                     {:keys [settings]}
-                                    {:keys [processing?]}]
+                                    {:keys [processing? active]}]
   (let [resources-state (state/react resources/form-state-cursor)]
     (comp/mui
       (html
         [:div.Swarmpit-form
          [:div.Swarmpit-form-context
-          [:div.Swarmpit-form-paper
-           (common/form-title (str "Editing " (:serviceName settings)))
-           (comp/grid
-             {:container true
-              :className "Swarmpit-form-main-grid"
-              :spacing   5}
-             (comp/grid
-               {:item true
-                :xs   12
-                :sm   12
-                :md   12
-                :lg   8
-                :xl   8}
-               (comp/grid
-                 {:container true
-                  :spacing   5}
-                 (form-settings)
-                 (form-ports)
-                 (form-mounts)
-                 (form-secrets)
-                 (when (<= 1.30 (state/get-value [:docker :api]))
-                   (form-configs))
-                 (form-hosts)
-                 (form-variables)
-                 (form-labels)
-                 (form-logdriver)
-                 (form-resources)
-                 (form-deployment)
-                 (comp/grid
-                   {:item true
-                    :xs   12}
-                   (html
-                     [:div.Swarmpit-form-buttons
-                      (composite/progress-button
-                        "Save"
-                        #(update-service-handler id)
-                        processing?)]))))
-             (comp/grid
-               {:item true
-                :xs   12
-                :sm   12
-                :md   12
-                :lg   4
-                :xl   4}
-               (form/open-in-new "Learn more about compose" doc-services-link)))]]]))))
+          (comp/container
+            {:maxWidth  "md"
+             :className "Swarmpit-container"}
+            (comp/tabs
+              {:value          active
+               :onChange       (fn [_ v] (state/update-value [:active] v state/form-state-cursor))
+               :indicatorColor "primary"
+               :textColor      "primary"
+               :variant        "scrollable"
+               :scrollButtons  "auto"
+               :aria-label     "tabs"}
+              (comp/tab {:label "General"})
+              (comp/tab {:label "Network"})
+              (comp/tab {:label "Environment"})
+              (comp/tab {:label "Data"})
+              (comp/tab {:label "Resources"})
+              (comp/tab {:label "Deployment"}))
+            (comp/divider {})
+            (comp/card
+              {:className "Swarmpit-form-card Swarmpit-tabs Swarmpit-fcard"}
+              (comp/box
+                {:className "Swarmpit-fcard-header"}
+                (comp/typography
+                  {:className "Swarmpit-fcard-header-title"
+                   :variant   "h6"
+                   :component "div"}
+                  "Edit service"))
+              (comp/card-content
+                {:className "Swarmpit-fcard-content"}
+                (common/tab-panel
+                  {:value active
+                   :index 0}
+                  (form-general))
+                (common/tab-panel
+                  {:value active
+                   :index 1}
+                  (form-network))
+                (common/tab-panel
+                  {:value active
+                   :index 2}
+                  (form-environment))
+                (common/tab-panel
+                  {:value active
+                   :index 3}
+                  (form-data))
+                (common/tab-panel
+                  {:value active
+                   :index 4}
+                  (form-resources))
+                (common/tab-panel
+                  {:value active
+                   :index 5}
+                  (form-deployment)))
+              (comp/card-actions
+                {:className "Swarmpit-fcard-actions"}
+                (composite/progress-button
+                  "Save"
+                  #(update-service-handler id)
+                  processing?))))]]))))
 
 (rum/defc form < rum/reactive
                  mixin-init-form

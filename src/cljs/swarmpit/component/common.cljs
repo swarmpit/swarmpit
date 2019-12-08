@@ -163,7 +163,7 @@
          icon/visibility
          icon/visibility-off)))))
 
-(defn tab-panel [{:keys [value index] :as props} childs]
+(defn tab-panel [{:keys [value index] :as props} & childs]
   (comp/typography
     {:component       "div"
      :role            "tabpanel"

@@ -1,5 +1,6 @@
 (ns swarmpit.component.service.form-configs
   (:require [material.components :as comp]
+            [material.component.form :as form]
             [material.component.list.edit :as list]
             [swarmpit.component.state :as state]
             [swarmpit.ajax :as ajax]
@@ -82,7 +83,7 @@
   (let [{:keys [list]} (state/react form-state-cursor)
         configs (state/react form-value-cursor)]
     (if (empty? configs)
-      (html [:div "No configs defined for the service."])
+      (form/item-info "No configs defined for the service.")
       (if (empty? list)
         undefined-info
         (form-table configs list)))))

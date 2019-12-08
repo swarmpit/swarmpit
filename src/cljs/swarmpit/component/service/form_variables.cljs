@@ -1,5 +1,6 @@
 (ns swarmpit.component.service.form-variables
   (:require [material.components :as comp]
+            [material.component.form :as form]
             [material.component.list.edit :as list]
             [swarmpit.component.state :as state]
             [sablono.core :refer-macros [html]]
@@ -57,5 +58,5 @@
 (rum/defc form < rum/reactive []
   (let [variables (state/react form-value-cursor)]
     (if (empty? variables)
-      (html [:div "No environment variables defined for the service."])
+      (form/item-info "No environment variables defined for the service.")
       (form-table variables))))
