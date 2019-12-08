@@ -17,7 +17,8 @@
             [swarmpit.time :as time]
             [swarmpit.routes :as routes]
             [sablono.core :refer-macros [html]]
-            [rum.core :as rum]))
+            [rum.core :as rum]
+            [clojure.string :as str]))
 
 (enable-console-print!)
 
@@ -73,8 +74,10 @@
     (form/item-main "Name" networkName)
     (form/item-main "Driver" driver)
     (form/item-main "Created" (form/item-date created))
-    (form/item-main "Subnet" (:subnet ipam))
-    (form/item-main "Gateway" (:gateway ipam))
+    (when (not (str/blank? (:subnet ipam)))
+      (form/item-main "Subnet" (:subnet ipam)))
+    (when (not (str/blank? (:gateway ipam)))
+      (form/item-main "Gateway" (:gateway ipam)))
     (when (and stack (not-empty services))
       (comp/box
         {}
