@@ -2,7 +2,6 @@
   (:require [rum.core :as rum]
             [sablono.core :refer-macros [html]]
             [material.components :as comp]
-            [swarmpit.component.common :as common]
             [swarmpit.component.state :as state]
             [swarmpit.url :refer [dispatch!]]
             [swarmpit.routes :as routes]))
@@ -19,30 +18,24 @@
       (html
         [:div.Swarmpit-form
          [:div.Swarmpit-form-context
-          [:div.Swarmpit-form-paper
-           (common/form-title "Not Found" id)
-           [:div.Swarmpit-user-form
-            (comp/grid
-              {:container true
-               :className "Swarmpit-form-main-grid"
-               :spacing   3}
-              (comp/grid
-                {:item true
-                 :xs   12}
-                (html [:p message]))
-              (comp/grid
-                {:item true
-                 :xs   12}
-                (html
-                  [:div.Swarmpit-form-buttons
-                   (if (some? params)
-                     (comp/button
-                       {:onClick #(.back js/window.history)
-                        :color   "outlined"
-                        :variant "contained"}
-                       "Go back")
-                     (comp/button
-                       {:href    (routes/path-for-frontend :index)
-                        :color   "outlined"
-                        :variant "contained"}
-                       "go home"))])))]]]]))))
+          (comp/container
+            {:maxWidth  "sm"
+             :className "Swarmpit-container"}
+            (comp/box
+              {:className "Swarmpit-404"}
+              (comp/typography
+                {:variant "h2"} (html [:span [:b "404"] " Not Found"]))
+              (html [:p message])
+              (comp/box
+                {:className "Swarmpit-form-buttons"}
+                (if (some? params)
+                  (comp/button
+                    {:onClick #(.back js/window.history)
+                     :color   "default"
+                     :variant "outlined"}
+                    "Go back")
+                  (comp/button
+                    {:href    (routes/path-for-frontend :index)
+                     :color   "default"
+                     :variant "outlined"}
+                    "Go home")))))]]))))

@@ -16,7 +16,7 @@
   (keyword (first (str/split (name handler) #"-"))))
 
 (def single-pages
-  #{:login :error :unauthorized})
+  #{:login :error :not-found :unauthorized})
 
 (defn- page-layout?
   [handler]
