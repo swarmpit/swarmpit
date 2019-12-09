@@ -50,6 +50,12 @@ git clone https://github.com/swarmpit/swarmpit
 docker stack deploy -c swarmpit/docker-compose.yml swarmpit
 ```
 
+For ARM based cluster use special compose file.
+
+```
+docker stack deploy -c swarmpit/docker-compose.yml swarmpit
+```
+
 [This stack](docker-compose.yml) is a composition of 4 services:
 
 * app - Swarmpit
@@ -65,6 +71,17 @@ Feel free to edit the stackfile to change an application port and we strongly re
 to shared-volume driver type of your choice. Alternatively, you can link db service to the specific node by using [constraint](https://docs.docker.com/compose/compose-file/#placement).
 
 Swarmpit is published on port `888` by default.
+
+### Installation on ARM based cluster
+Procceed simmilary to manual installation with special compose file.
+
+```
+git clone https://github.com/swarmpit/swarmpit
+docker stack deploy -c swarmpit/docker-compose.arm.yml swarmpit
+```
+
+Swarmpit and agent images already support multiple architectures, official influx db image is also supporting ARM, but for 
+couchdb we have to use different image for now.
 
 ## Development
 
