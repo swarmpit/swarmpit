@@ -90,6 +90,11 @@ a {
     width: 100%;
 }
 
+.Swarmpit-container {
+    width: calc(100vw - 48px) !important;
+    padding: 0 !important;
+}
+
 .Swarmpit-toolbar {
     display: flex;
     align-items: center;
@@ -739,7 +744,7 @@ a {
 
 .Swarmpit-form {
     margin-top: 10px;
-    min-height: calc(100vh - 64px);
+    min-height: calc(100vh - 74px);
 }
 
 .Swarmpit-form-item-wrapper {
@@ -1288,7 +1293,7 @@ a {
     }
 
     .Swarmpit-container {
-        padding: 0 !important;
+        width: 100% !important;
     }
 
     .Swarmpit-form-item {

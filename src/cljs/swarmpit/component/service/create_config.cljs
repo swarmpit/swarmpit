@@ -250,7 +250,7 @@
                :textColor      "primary"
                :variant        "scrollable"
                :scrollButtons  "auto"
-               :aria-label     "tabs"}
+               :aria-label     "scrollable auto tabs"}
               (comp/tab {:label "General"})
               (comp/tab {:label "Network"})
               (comp/tab {:label "Environment"})
