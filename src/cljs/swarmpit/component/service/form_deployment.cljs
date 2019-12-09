@@ -3,7 +3,7 @@
             [material.components :as comp]
             [material.component.form :as form]
             [swarmpit.component.state :as state]
-            [swarmpit.component.service.form-logdriver :as logdriver]
+            [swarmpit.component.service.form-labels :as labels]
             [swarmpit.component.service.form-deployment-placement :as placement]
             [swarmpit.component.parser :refer [parse-int]]
             [sablono.core :refer-macros [html]]
@@ -218,11 +218,20 @@
                 restartPolicy]} (state/react form-value-cursor)]
     (comp/grid
       {:container true
-       :spacing   3}
+       :spacing   2}
       (comp/grid
-        {:item  true
-         :style {:marginBottom "10px"}
-         :xs    12}
+        {:item true
+         :xs   12}
+        (form/section
+          "Labels"
+          (comp/button
+            {:color   "primary"
+             :onClick labels/add-item}
+            (comp/svg icon/add-small-path) "Add label"))
+        (labels/form))
+      (comp/grid
+        {:item true
+         :xs   12}
         (comp/form-control
           {:component "fieldset"
            :margin    "normal"}
@@ -231,9 +240,11 @@
           (comp/form-helper-text
             {} "Periodically check for new image version and update service accordingly")
           (comp/form-control-label
-            {:control (form-autoredeploy autoredeploy)}))
-        (placement/form)
-        (logdriver/form))
+            {:control (form-autoredeploy autoredeploy)})))
+      (comp/grid
+        {:item true
+         :xs   12}
+        (placement/form))
       (comp/grid
         {:item true
          :xs   12

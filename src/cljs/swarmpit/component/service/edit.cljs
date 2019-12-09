@@ -211,21 +211,6 @@
       {:item true
        :xs   12}
       (form/section
-        "Labels"
-        (comp/button
-          {:color   "primary"
-           :onClick labels/add-item}
-          (comp/svg icon/add-small-path) "Add label"))
-      (labels/form))))
-
-(rum/defc form-data < rum/static []
-  (comp/grid
-    {:container true
-     :spacing   2}
-    (comp/grid
-      {:item true
-       :xs   12}
-      (form/section
         "Mounts"
         (comp/button
           {:color   "primary"
@@ -253,6 +238,12 @@
            :onClick secrets/add-item}
           (comp/svg icon/add-small-path) "Add secret"))
       (secrets/form))))
+
+(rum/defc form-logs < rum/static []
+  (comp/grid
+    {:item true
+     :xs   12}
+    (logdriver/form)))
 
 (rum/defc form-resources < rum/static []
   (comp/grid
@@ -288,9 +279,9 @@
               (comp/tab {:label "General"})
               (comp/tab {:label "Network"})
               (comp/tab {:label "Environment"})
-              (comp/tab {:label "Data"})
               (comp/tab {:label "Resources"})
-              (comp/tab {:label "Deployment"}))
+              (comp/tab {:label "Deployment"})
+              (comp/tab {:label "Logs"}))
             (comp/divider {})
             (comp/card
               {:className "Swarmpit-form-card Swarmpit-tabs Swarmpit-fcard"}
@@ -318,15 +309,15 @@
                 (common/tab-panel
                   {:value active
                    :index 3}
-                  (form-data))
-                (common/tab-panel
-                  {:value active
-                   :index 4}
                   (form-resources))
                 (common/tab-panel
                   {:value active
+                   :index 4}
+                  (form-deployment))
+                (common/tab-panel
+                  {:value active
                    :index 5}
-                  (form-deployment)))
+                  (form-logs)))
               (comp/card-actions
                 {:className "Swarmpit-fcard-actions"}
                 (composite/progress-button

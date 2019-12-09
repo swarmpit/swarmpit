@@ -124,7 +124,6 @@
       (form/item-main "Image" (if registry
                             (utils/registry-repository image registry)
                             image))
-      (form/item-main "Log driver" logdriver)
       (form/item-main "Created" (form/item-date (:createdAt service)))
       (form/item-main "Last update" (form/item-date (:updatedAt service)))
       (comp/divider {})

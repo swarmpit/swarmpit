@@ -28,6 +28,15 @@
                                    {:section "Log driver"})}
                     (comp/svg icon/edit-path))})
     (comp/card-content
+      {}
+      (comp/grid
+        {:container true
+         :spacing   5}
+        (comp/grid
+          {:item true
+           :xs   6}
+          (form/item "Driver" name))))
+    (comp/card-content
       {:className "Swarmpit-table-card-content"}
       (when (not-empty opts)
         [(comp/divider {})

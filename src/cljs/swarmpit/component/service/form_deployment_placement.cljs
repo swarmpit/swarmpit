@@ -25,7 +25,7 @@
       {:options        suggestions
        :textFieldProps {:label           "Placement"
                         :margin          "normal"
-                        :helperText      "Speficy placement constraints"
+                        :helperText      "Specify placement constraints"
                         :InputLabelProps {:shrink true}}
        :onChange       (fn [value]
                          (state/set-value

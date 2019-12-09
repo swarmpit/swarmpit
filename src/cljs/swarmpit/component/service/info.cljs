@@ -336,14 +336,13 @@
                   {:container true
                    :spacing   2}
                   (form-settings-grid service id tasks pinned?)
-                  (form-secrets-grid secrets id immutable?)
-                  (form-configs-grid configs id immutable?)
                   (form-hosts-grid hosts id immutable?)
                   (form-variables-grid variables id immutable?)
-                  (form-labels-grid labels id immutable?)
-                  (when (not-empty (:opts logdriver))
-                    (form-logdriver-grid logdriver id immutable?))
+                  (form-secrets-grid secrets id immutable?)
+                  (form-configs-grid configs id immutable?)
+                  (form-logdriver-grid logdriver id immutable?)
                   (form-resources-grid resources id immutable?)
+                  (form-labels-grid labels id immutable?)
                   (form-deployment-grid deployment id immutable?)))
               (comp/grid
                 {:item true
@@ -370,16 +369,15 @@
               (form-tasks-grid service tasks)
               (form-networks-grid networks id immutable?)
               (form-ports-grid ports id immutable?)
+              (form-hosts-grid hosts id immutable?)
+              (form-variables-grid variables id immutable?)
               (form-mounts-grid mounts id immutable?)
               (form-secrets-grid secrets id immutable?)
               (form-configs-grid configs id immutable?)
-              (form-hosts-grid hosts id immutable?)
-              (form-variables-grid variables id immutable?)
-              (form-labels-grid labels id immutable?)
-              (when (not-empty (:opts logdriver))
-                (form-logdriver-grid logdriver id immutable?))
               (form-resources-grid resources id immutable?)
-              (form-deployment-grid deployment id immutable?)))]]))))
+              (form-labels-grid labels id immutable?)
+              (form-deployment-grid deployment id immutable?)
+              (form-logdriver-grid logdriver id immutable?)))]]))))
 
 (rum/defc form < rum/reactive
                  mixin-init-form
