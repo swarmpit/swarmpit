@@ -42,7 +42,7 @@
      :onChange        #(state/update-value [:url] (-> % .-target .-value) state/form-value-cursor)}))
 
 (defn- form-custom [value]
-  (comp/checkbox
+  (comp/switch
     {:name     "custom"
      :label    "Custom"
      :color    "primary"
@@ -91,6 +91,7 @@
   (comp/switch
     {:checked  value
      :value    (str value)
+     :color    "primary"
      :onChange #(state/update-value [:public] (-> % .-target .-checked) state/form-value-cursor)}))
 
 (defn- registry-handler
