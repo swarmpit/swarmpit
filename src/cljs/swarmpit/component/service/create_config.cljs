@@ -177,7 +177,7 @@
       {:item true
        :xs   12}
       (form/section
-        "Environment variables"
+        "Variables"
         (comp/button
           {:color   "primary"
            :onClick variables/add-item}

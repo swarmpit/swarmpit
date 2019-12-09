@@ -48,6 +48,7 @@
   (comp/switch
     {:checked  value
      :value    (str value)
+     :color    "primary"
      :onChange #(state/update-value [:public] (-> % .-target .-checked) state/form-value-cursor)}))
 
 (defn- registry-handler
@@ -131,8 +132,7 @@
                   "Save"
                   #(update-registry-handler _id)
                   processing?
-                  false
-                  {:startIcon (icon/save {})})))))]])))
+                  false)))))]])))
 
 (rum/defc form < rum/reactive
                  mixin-init-form [_]

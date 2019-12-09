@@ -165,6 +165,7 @@
                   saving?
                   processing?
                   {:variant   "outlined"
+                   :color     "secondary"
                    :startIcon (icon/save {})}))))]]))))
 
 (rum/defc form < rum/reactive

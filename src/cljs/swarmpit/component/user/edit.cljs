@@ -135,9 +135,7 @@
               (composite/progress-button
                 "Save"
                 #(update-user-handler _id)
-                processing?
-                false
-                {:startIcon (icon/save {})}))))]])))
+                processing?))))]])))
 
 (rum/defc form < rum/reactive
                  mixin-init-form [_]

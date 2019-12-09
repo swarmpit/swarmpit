@@ -101,6 +101,7 @@
   (comp/switch
     {:checked  value
      :value    (str value)
+     :color    "primary"
      :onChange #(state/update-value [:public] (-> % .-target .-checked) state/form-value-cursor)}))
 
 (defn- ecr-handler
@@ -185,9 +186,7 @@
                 (composite/progress-button
                   "Save"
                   #(update-ecr-handler _id)
-                  processing?
-                  false
-                  {:startIcon (icon/save {})})))))]])))
+                  processing?)))))]])))
 
 (rum/defc form < rum/reactive
                  mixin-init-form [_]

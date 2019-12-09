@@ -240,9 +240,7 @@
               (composite/progress-button
                 "Save"
                 #(update-node-handler id version)
-                processing?
-                false
-                {:startIcon (icon/save {})}))))]])))
+                processing?))))]])))
 
 (rum/defc form < rum/reactive
                  mixin-init-form

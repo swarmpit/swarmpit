@@ -140,8 +140,8 @@
                 false
                 {:startIcon (comp/svg {} icon/rocket-path)})
               (comp/button
-                {:color     "secondary"
-                 :variant   "contained"
+                {:color     "default"
+                 :variant   "outlined"
                  :startIcon (comp/svg {} icon/trash-path)
                  :disabled  processing?
                  :onClick   #(state/update-value [:open] true dialog/dialog-cursor)}
