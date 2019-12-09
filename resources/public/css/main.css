@@ -1201,6 +1201,11 @@ a {
         margin-left: 225px;
     }
 
+    .Swarmpit-container {
+        padding-right: 24px !important;
+        padding-left: 24px !important;
+    }
+
     .Swarmpit-appbar-menu-btn {
         display: none !important;
     }

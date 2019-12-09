@@ -54,23 +54,6 @@
      :message   (html [:span.Swarmpit-message
                        (icon/error {:className "Swarmpit-message-icon"}) text])}))
 
-(defn item-icon [icon comp]
-  (html
-    [:span.Swarmpit-message
-     (icon {:style {:marginRight "8px"
-                    :fontSize    "16px"}})
-     [:span comp]]))
-
-(defn item-id [id]
-  (html
-    [:div.Swarmpit-form-card-icon-item
-     (icon/fingerprint
-       {:className "Swarmpit-form-card-icon"})
-     [:span.Swarmpit-form-card-icon-item-id
-      (cmp/typography
-        {:color     "textSecondary"
-         :className "Swarmpit-form-card-icon-text"} id)]]))
-
 (defn item-labels [labels]
   (html
     [:div {:class "Swarmpit-form-card-labels"
@@ -98,12 +81,3 @@
      (cmp/typography
        {:variant "subtitle2"} name)
      button)))
-
-(defn open-in-new [text href]
-  (html
-    [:a {:href      href
-         :className "Swarmpit-new-tab"
-         :target    "_blank"}
-     [:div text]
-     [:div (icon/open-in-new
-             {:className "Swarmpit-new-tab-ico"})]]))
