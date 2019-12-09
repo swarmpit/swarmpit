@@ -19,7 +19,7 @@
         :y           (y-key stats-ts)
         :connectgaps false
         :fill        "tozeroy"
-        :line        {:color "#43a047"}
+        :line        {:color "#52B359"}
         :type        "scatter"
         :mode        "lines"}]
       {:title  title
@@ -53,7 +53,7 @@
                     :type "scatter"
                     :mode "lines")
                   (when (zero? i)
-                    {:line {:color "#43a047"}}))) multi-stats-ts))
+                    {:line {:color "#52B359"}}))) multi-stats-ts))
       {:title      title
        :showlegend true
        :height     300

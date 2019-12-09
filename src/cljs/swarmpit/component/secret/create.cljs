@@ -29,7 +29,9 @@
      :key             "name"
      :variant         "outlined"
      :defaultValue    value
+     :margin          "normal"
      :required        true
+     :helperText      "Specify secret name"
      :InputLabelProps {:shrink true}
      :onChange        #(state/update-value [:secretName] (-> % .-target .-value) state/form-value-cursor)}))
 
@@ -43,6 +45,8 @@
      :required        true
      :multiline       true
      :disabled        true
+     :margin          "normal"
+     :InputProps      {:style {:padding 0}}
      :InputLabelProps {:shrink true}
      :value           value}))
 
@@ -96,44 +100,29 @@
       (html
         [:div.Swarmpit-form
          [:div.Swarmpit-form-context
-          [:div.Swarmpit-form-paper
-           (common/edit-title "Create a new secret" "blob of data, such as a password or SSH private key")
-           (comp/grid
-             {:container true
-              :className "Swarmpit-form-main-grid"
-              :spacing   5}
-             (comp/grid
-               {:item true
-                :xs   12
-                :sm   12
-                :md   12
-                :lg   8
-                :xl   8}
-               (comp/grid
-                 {:container true
-                  :spacing   5}
-                 (comp/grid
-                   {:item true
-                    :xs   12}
-                   (form-name secretName))
-                 (comp/grid
-                   {:item true
-                    :xs   12}
-                   (form-data data))
-                 (comp/grid
-                   {:item true
-                    :xs   12}
-                   (html
-                     [:div.Swarmpit-form-buttons
-                      (composite/progress-button
-                        "Create"
-                        create-secret-handler
-                        processing?)]))))
-             (comp/grid
-               {:item true
-                :xs   12
-                :sm   12
-                :md   12
-                :lg   4
-                :xl   4}
-               (form/open-in-new "Learn more about secrets" doc-secrets-link)))]]]))))
+          (comp/container
+            {:maxWidth  "md"
+             :className "Swarmpit-container"}
+            (comp/card
+              {:className "Swarmpit-form-card Swarmpit-fcard"}
+              (comp/box
+                {:className "Swarmpit-fcard-header"}
+                (comp/typography
+                  {:className "Swarmpit-fcard-header-title"
+                   :variant   "h6"
+                   :component "div"}
+                  "Create secret"))
+              (comp/card-content
+                {:className "Swarmpit-fcard-content"}
+                (comp/typography
+                  {:variant   "body2"
+                   :className "Swarmpit-fcard-message"}
+                  "Blob of data, such as a password or SSH private key")
+                (form-name secretName)
+                (form-data data))
+              (comp/card-actions
+                {:className "Swarmpit-fcard-actions"}
+                (composite/progress-button
+                  "Create"
+                  create-secret-handler
+                  processing?))))]]))))

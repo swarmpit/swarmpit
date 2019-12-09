@@ -28,14 +28,12 @@
   (comp/text-field
     {:fullWidth       true
      :key             "form-log-driver"
-     :label           "Driver"
+     :label           "Log Driver"
      :select          true
      :value           value
      :variant         "outlined"
-     :style           {:maxWidth "300px"}
      :margin          "normal"
      :InputLabelProps {:shrink true}
-     :InputProps      {:className "Swarmpit-form-input"}
      :onChange        #(state/update-value [:name] (-> % .-target .-value) form-value-cursor)}
     (comp/menu-item
       {:key   "none"
@@ -97,8 +95,7 @@
       {:container true}
       (comp/grid
         {:item true
-         :xs   12
-         :sm   6} (form-driver name plugins))
+         :xs   12} (form-driver name plugins))
       (comp/grid
         {:item true
          :xs   12}

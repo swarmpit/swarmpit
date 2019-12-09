@@ -22,7 +22,7 @@
                      :href       (routes/path-for-frontend
                                    :service-edit
                                    {:id service-id}
-                                   {:section "Networks"})}
+                                   {:section 1})}
                     (comp/svg icon/edit-path))})
     (if (empty? networks)
       (comp/card-content

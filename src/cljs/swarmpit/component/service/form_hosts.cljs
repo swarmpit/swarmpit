@@ -1,5 +1,6 @@
 (ns swarmpit.component.service.form-hosts
   (:require [material.components :as comp]
+            [material.component.form :as form]
             [material.component.list.edit :as list]
             [swarmpit.component.state :as state]
             [sablono.core :refer-macros [html]]
@@ -57,6 +58,6 @@
 (rum/defc form < rum/reactive []
   (let [hosts (state/react form-value-cursor)]
     (if (empty? hosts)
-      (html [:div "No extra hosts defined for the service."])
+      (form/item-info "No extra hosts defined for the service.")
       (form-table hosts))))
 

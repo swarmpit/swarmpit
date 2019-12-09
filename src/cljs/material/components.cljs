@@ -1,7 +1,8 @@
 (ns material.components
   (:refer-clojure :exclude [stepper list])
   (:require [material.factory :as f]
-            [sablono.core :refer-macros [html]]))
+            [sablono.core :refer-macros [html]]
+            [cuerdas.core :as str]))
 
 ;;; Theme components
 
@@ -10,12 +11,11 @@
                              :light        "#957ed1"
                              :dark         "#362870"
                              :contrastText "#fff"}
-                 :secondary {:main         "#65519f"
-                             :light        "#957ed1"
-                             :dark         "#362870"
-                             :contrastText "#fff"}}
+                 :secondary {:main "#8B9F51"}}
+   :typography  {:fontFamily (str/join "," ["Roboto" "Helvetica" "Arial" "sans-serif"])}
    :overrides   {:MuiCardHeader  {:action {:color "rgb(117, 117, 117)"}}
-                 :MuiCardActions {:root {:padding "8px 16px 8px 16px"}}}
+                 :MuiCardActions {:root {:padding 16}}
+                 :MuiPaper       {:elevation4 {:boxShadow "0px 4px 20px rgba(0, 0, 0, 0.15)"}}}
    :breakpoints {:values {:xs 0
                           :sm 600
                           :md 1080
@@ -64,6 +64,10 @@
 (defn drawer
   [props & childs]
   (apply f/drawer (clj->js props) childs))
+
+(defn swipeable-drawer
+  [props & childs]
+  (apply f/swipeable-drawer (clj->js props) childs))
 
 (defn menu
   [props & childs]
@@ -154,9 +158,17 @@
   [props & childs]
   (apply f/button (clj->js props) childs))
 
+(defn button-group
+  [props & childs]
+  (apply f/button-group (clj->js props) childs))
+
+(defn fab
+  [props & childs]
+  (apply f/fab (clj->js props) childs))
+
 (defn hidden
-  [props comp]
-  (f/hidden (clj->js props) comp))
+  [props & childs]
+  (f/hidden (clj->js props) childs))
 
 (defn app-bar
   [props drawer]
@@ -213,6 +225,14 @@
 (defn grid
   [props & childs]
   (apply f/grid (clj->js props) childs))
+
+(defn box
+  [props & childs]
+  (apply f/box (clj->js props) childs))
+
+(defn container
+  [props & childs]
+  (apply f/container (clj->js props) childs))
 
 (defn card
   [props & childs]

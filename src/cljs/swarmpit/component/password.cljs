@@ -15,59 +15,56 @@
 
 (defn- form-password [password show-password?]
   (comp/text-field
-    {:label           "Password"
-     :fullWidth       true
-     :name            "password"
-     :key             "password"
-     :variant         "outlined"
-     :margin          "normal"
-     :type            (if show-password?
-                        "text"
-                        "password")
-     :defaultValue    password
-     :required        true
-     :onChange        #(state/update-value [:password] (-> % .-target .-value) state/form-value-cursor)
-     :InputLabelProps {:shrink true}
-     :InputProps      {:endAdornment (common/show-password-adornment show-password?)
-                       :className    "Swarmpit-form-input"}}))
+    {:label        "Password"
+     :fullWidth    true
+     :name         "password"
+     :key          "password"
+     :variant      "outlined"
+     :margin       "normal"
+     :type         (if show-password?
+                     "text"
+                     "password")
+     :defaultValue password
+     :required     true
+     :onChange     #(state/update-value [:password] (-> % .-target .-value) state/form-value-cursor)
+     ;:InputLabelProps {:shrink true}
+     :InputProps   {:endAdornment (common/show-password-adornment show-password?)}}))
 
 (defn- form-new-password [password show-password?]
   (comp/text-field
-    {:label           "New password"
-     :fullWidth       true
-     :name            "new-password"
-     :key             "new-password"
-     :variant         "outlined"
-     :margin          "normal"
-     :type            (if show-password?
-                        "text"
-                        "password")
-     :defaultValue    password
-     :required        true
-     :onChange        #(state/update-value [:new-password] (-> % .-target .-value) state/form-value-cursor)
-     :InputLabelProps {:shrink true}
-     :InputProps      {:endAdornment (common/show-password-adornment show-password?)
-                       :className    "Swarmpit-form-input"}}))
+    {:label        "New password"
+     :fullWidth    true
+     :name         "new-password"
+     :key          "new-password"
+     :variant      "outlined"
+     :margin       "normal"
+     :type         (if show-password?
+                     "text"
+                     "password")
+     :defaultValue password
+     :required     true
+     :onChange     #(state/update-value [:new-password] (-> % .-target .-value) state/form-value-cursor)
+     ;:InputLabelProps {:shrink true}
+     :InputProps   {:endAdornment (common/show-password-adornment show-password?)}}))
 
 (defn- form-confirm-password [confirm-password error? show-password?]
   (comp/text-field
-    {:label           "Confirm password"
-     :fullWidth       true
-     :name            "confirm-password"
-     :key             "confirm-password"
-     :variant         "outlined"
-     :error           error?
-     :margin          "normal"
-     :type            (if show-password?
-                        "text"
-                        "password")
-     :defaultValue    confirm-password
-     :required        true
-     :onChange        #(and (state/update-value [:confirm-password] (-> % .-target .-value) state/form-value-cursor)
-                            (state/update-value [:error?] (not= (:new-password (state/get-value state/form-value-cursor)) (-> % .-target .-value)) state/form-state-cursor))
-     :InputLabelProps {:shrink true}
-     :InputProps      {:endAdornment (common/show-password-adornment show-password?)
-                       :className    "Swarmpit-form-input"}}))
+    {:label        "Confirm password"
+     :fullWidth    true
+     :name         "confirm-password"
+     :key          "confirm-password"
+     :variant      "outlined"
+     :error        error?
+     :margin       "normal"
+     :type         (if show-password?
+                     "text"
+                     "password")
+     :defaultValue confirm-password
+     :required     true
+     :onChange     #(and (state/update-value [:confirm-password] (-> % .-target .-value) state/form-value-cursor)
+                         (state/update-value [:error?] (not= (:new-password (state/get-value state/form-value-cursor)) (-> % .-target .-value)) state/form-state-cursor))
+     ;:InputLabelProps {:shrink true}
+     :InputProps   {:endAdornment (common/show-password-adornment show-password?)}}))
 
 (defn- change-password-handler
   []
@@ -105,24 +102,17 @@
                  mixin-init-form []
   (let [{:keys [password new-password confirm-password]} (state/react state/form-state-cursor)
         {:keys [error? processing? showPassword]} (state/react state/form-state-cursor)]
-    (html
-      [:div.Swarmpit-user-form
-       (comp/grid
-         {:container true
-          :spacing   3}
-         (comp/grid
-           {:item true
-            :xs   12}
-           (form-password password showPassword)
-           (form-new-password new-password showPassword)
-           (form-confirm-password confirm-password error? showPassword))
-         (comp/grid
-           {:item true
-            :xs   12}
-           (html
-             [:div.Swarmpit-form-buttons
-              (composite/progress-button
-                "Change"
-                change-password-handler
-                processing?
-                (or error? (some? password) (some? new-password)))])))])))
+    (comp/paper
+      {:elevation 0}
+      (comp/card-content
+        {}
+        (form-password password showPassword)
+        (form-new-password new-password showPassword)
+        (form-confirm-password confirm-password error? showPassword))
+      (comp/card-actions
+        {:className "Swarmpit-fcard-actions"}
+        (composite/progress-button
+          "Change"
+          change-password-handler
+          processing?
+          (or error? (some? password) (some? new-password)))))))

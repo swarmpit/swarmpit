@@ -101,24 +101,15 @@
 
 (defn- init-form-state
   []
-  (state/set-value {:loading? false} state/form-state-cursor))
+  (state/set-value {:loading?    false
+                    :filter      {:role nil}
+                    :filterOpen? false} state/form-state-cursor))
 
 (def mixin-init-form
   (mixin/init-form
     (fn [_]
       (init-form-state)
       (nodes-handler))))
-
-(defn toolbar-render-metadata
-  [filter]
-  {:filters [{:checked  (:manager filter)
-              :name     "Manager role"
-              :disabled (or (:worker filter) false)
-              :onClick  #(state/update-value [:filter :manager] (not (:manager filter)) state/form-state-cursor)}
-             {:checked  (:worker filter)
-              :name     "Worker role"
-              :disabled (or (:manager filter) false)
-              :onClick  #(state/update-value [:filter :worker] (not (:worker filter)) state/form-state-cursor)}]})
 
 (defn pinned
   [nodes]
@@ -129,29 +120,58 @@
       (fn [index item]
         (node-item item index)) (sort-by :nodeName nodes))))
 
+(rum/defc form-filters < rum/static [filterOpen? {:keys [role] :as filter}]
+  (common/list-filters
+    filterOpen?
+    (comp/text-field
+      {:fullWidth       true
+       :label           "Role"
+       :helperText      "Filter by node role"
+       :select          true
+       :value           role
+       :variant         "outlined"
+       :margin          "normal"
+       :InputLabelProps {:shrink true}
+       :onChange        #(state/update-value [:filter :role] (-> % .-target .-value) state/form-state-cursor)}
+      (comp/menu-item
+        {:key   "manager"
+         :value "manager"} "manager")
+      (comp/menu-item
+        {:key   "worker"
+         :value "worker"} "worker"))))
+
+(def toolbar-render-metadata
+  [{:name     "Show filters"
+    :onClick  #(state/update-value [:filterOpen?] true state/form-state-cursor)
+    :icon     icon/filter-list
+    :icon-alt icon/filter-list
+    :variant  "outlined"
+    :color    "default"}])
+
 (rum/defc form < rum/reactive
                  mixin-init-form
                  mixin/subscribe-form
                  mixin/focus-filter [_]
   (let [{:keys [items]} (state/react state/form-value-cursor)
         {:keys [query]} (state/react state/search-cursor)
-        {:keys [loading? filter]} (state/react state/form-state-cursor)
+        {:keys [loading? filterOpen? filter]} (state/react state/form-state-cursor)
         filtered-items (->> (list-util/filter items query)
-                            (clojure.core/filter #(if (:manager filter)
-                                                    (= "manager" (:role %)) true))
-                            (clojure.core/filter #(if (:worker filter)
-                                                    (= "worker" (:role %)) true)))]
+                            (clojure.core/filter #(if (some? (:role filter))
+                                                    (= (:role filter) (:role %))
+                                                    true)))]
     (progress/form
       loading?
-      (common/list-grid
-        "Nodes"
-        items
-        filtered-items
-        (comp/grid
-          {:container true
-           :spacing   2}
-          (map-indexed
-            (fn [index item]
-              (node-item item index)) (sort-by :nodeName filtered-items)))
-        (toolbar-render-metadata filter)))))
-
+      (comp/box
+        {}
+        (common/list-grid
+          "Nodes"
+          items
+          filtered-items
+          (comp/grid
+            {:container true
+             :spacing   2}
+            (map-indexed
+              (fn [index item]
+                (node-item item index)) (sort-by :nodeName filtered-items)))
+          toolbar-render-metadata)
+        (form-filters filterOpen? filter)))))

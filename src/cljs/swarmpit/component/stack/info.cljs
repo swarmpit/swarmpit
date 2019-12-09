@@ -4,27 +4,27 @@
             [material.component.form :as form]
             [material.component.chart :as chart]
             [material.component.list.basic :as list]
+            [material.component.label :as label]
             [swarmpit.component.message :as message]
             [swarmpit.component.state :as state]
             [swarmpit.component.mixin :as mixin]
             [swarmpit.component.dialog :as dialog]
             [swarmpit.component.progress :as progress]
-            [swarmpit.component.action-menu :as menu]
             [swarmpit.component.service.list :as services]
             [swarmpit.component.network.list :as networks]
             [swarmpit.component.volume.list :as volumes]
             [swarmpit.component.config.list :as configs]
             [swarmpit.component.secret.list :as secrets]
+            [swarmpit.component.toolbar :as toolbar]
+            [swarmpit.docker.utils :as utils]
+            [swarmpit.router :as router]
             [swarmpit.ajax :as ajax]
             [swarmpit.url :refer [dispatch!]]
             [swarmpit.routes :as routes]
             [clojure.string :refer [includes?]]
             [clojure.contrib.inflect :as inflect]
             [sablono.core :refer-macros [html]]
-            [rum.core :as rum]
-            [swarmpit.docker.utils :as utils]
-            [material.component.label :as label]
-            [swarmpit.router :as router]))
+            [rum.core :as rum]))
 
 (enable-console-print!)
 
@@ -130,25 +130,29 @@
   [stack-name stackfile]
   [{:onClick #(dispatch! (routes/path-for-frontend :stack-compose {:name stack-name}))
     :icon    (comp/svg icon/edit-path)
-    :name    "Edit stack"}
+    :main    true
+    :group   true
+    :name    "Edit"}
    {:onClick  #(redeploy-stack-handler stack-name)
     :disabled (not (some? (:spec stackfile)))
-    :more     true
     :icon     (comp/svg icon/redeploy-path)
-    :name     "Redeploy stack"}
+    :group    true
+    :name     "Redeploy"}
    {:onClick  #(rollback-stack-handler stack-name)
     :disabled (not (some? (:previousSpec stackfile)))
-    :more     true
     :icon     (comp/svg icon/rollback-path)
-    :name     "Rollback stack"}
+    :group    true
+    :name     "Rollback"}
    {:onClick  #(deactivate-stack-handler stack-name)
     :disabled (not (some? stackfile))
-    :more     true
     :icon     (icon/stop {})
-    :name     "Deactivate stack"}
+    :group    true
+    :name     "Deactivate"}
    {:onClick #(state/update-value [:open] true dialog/dialog-cursor)
     :icon    (comp/svg icon/trash-path)
-    :name    "Delete stack"}])
+    :color   "default"
+    :variant "outlined"
+    :name    "Delete"}])
 
 (rum/defc form-services-graph < rum/static [services]
   (let [data (->> services
@@ -174,8 +178,8 @@
 (defn- resource-chip
   [name count]
   (when (< 0 count)
-    (comp/grid
-      {:item true}
+    (comp/box
+      {:m 1}
       (comp/chip {:key    name
                   :avatar (comp/avatar {} count)
                   :label  (inflect/pluralize-noun count name)}))))
@@ -191,42 +195,27 @@
   (comp/card
     {:className "Swarmpit-form-card"}
     (comp/card-header
-      {:title     stack-name
-       :className "Swarmpit-form-card-header Swarmpit-card-header-responsive-title"
-       :action    (menu/menu
-                    (form-actions stack-name stackfile)
-                    :stackGeneralMenuAnchor
-                    :stackGeneralMenuOpened)})
-    (comp/grid
-      {:container true
-       :spacing   2}
+      {:title (comp/typography {:variant "h6"} "Summary")})
+    (comp/card-content
+      {}
       (comp/grid
-        {:item true
-         :xs   6}
-        (comp/card-content
-          {}
-          (form-services-graph services)))
-      (comp/grid
-        {:item  true
-         :xs    6
-         :style {:display "flex"}}
-        (comp/card-content
-          {:style {:display "flex"}}
-          (comp/grid
-            {:container  true
-             :spacing    8
-             :direction  "column"
-             :justify    "center"
-             :alignItems "flex-start"}
+        {:container true
+         :spacing   2}
+        (comp/grid
+          {:item true
+           :xs   6}
+          (form-services-graph services))
+        (comp/grid
+          {:item  true
+           :xs    6
+           :style {:display    "flex"
+                   :alignItems "center"}}
+          (comp/box
+            {:p 3}
             (resource-chip "network" (count networks))
             (resource-chip "volume" (count volumes))
             (resource-chip "config" (count configs))
-            (resource-chip "secret" (count secrets))))))
-    (comp/divider
-      {})
-    (comp/card-content
-      {:style {:paddingBottom "16px"}}
-      (form/item-id stack-name))))
+            (resource-chip "secret" (count secrets))))))))
 
 (rum/defc form-services < rum/static [stack-name services]
   (comp/card
@@ -378,13 +367,17 @@
          #(delete-stack-handler stack-name)
          "Delete stack?"
          "Delete")
-       [:div.Swarmpit-form-context
+       [:div.Swarmpit-form-toolbar
         (comp/hidden
           {:xsDown         true
            :implementation "js"}
           (comp/grid
             {:container true
              :spacing   2}
+            (comp/grid
+              {:item true
+               :xs   12}
+              (toolbar/toolbar "Stack" stack-name (form-actions stack-name stackfile)))
             (comp/grid
               {:item true
                :sm   6
@@ -411,6 +404,10 @@
           (comp/grid
             {:container true
              :spacing   2}
+            (comp/grid
+              {:item true
+               :xs   12}
+              (toolbar/toolbar "Stack" stack-name (form-actions stack-name stackfile)))
             (form-general-grid stack-name stackfile item)
             (form-services-grid stack-name services)
             (form-networks-grid stack-name networks)

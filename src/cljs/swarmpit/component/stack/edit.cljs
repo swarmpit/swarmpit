@@ -9,13 +9,13 @@
             [swarmpit.component.message :as message]
             [swarmpit.component.progress :as progress]
             [swarmpit.component.stack.compose :as compose]
+            [swarmpit.component.common :as common]
             [swarmpit.ajax :as ajax]
             [swarmpit.routes :as routes]
             [swarmpit.url :refer [dispatch!]]
             [sablono.core :refer-macros [html]]
             [rum.core :as rum]
-            [clojure.set :as set]
-            [swarmpit.component.common :as common]))
+            [clojure.set :as set]))
 
 (enable-console-print!)
 
@@ -33,6 +33,7 @@
      :multiline       true
      :disabled        true
      :required        true
+     :margin          "normal"
      :InputLabelProps {:shrink true}
      :value           value}))
 
@@ -96,47 +97,31 @@
     (html
       [:div.Swarmpit-form
        [:div.Swarmpit-form-context
-        [:div.Swarmpit-form-paper
-         (common/edit-title (str "Editing " name))
-         (comp/grid
-           {:container true
-            :className "Swarmpit-form-main-grid"
-            :spacing   5}
-           (comp/grid
-             {:item true
-              :xs   12
-              :sm   12
-              :md   12
-              :lg   8
-              :xl   8}
-             (comp/grid
-               {:container true
-                :spacing   5}
-               (comp/grid
-                 {:item true
-                  :xs   12}
-                 (compose/form-select name select true previous?))
-               (comp/grid
-                 {:item true
-                  :xs   12}
-                 (form-editor (:compose spec)))
-               (comp/grid
-                 {:item true
-                  :xs   12}
-                 (html
-                   [:div.Swarmpit-form-buttons
-                    (composite/progress-button
-                      "Deploy"
-                      #(update-stack-handler name)
-                      processing?)]))))
-           (comp/grid
-             {:item true
-              :xs   12
-              :sm   12
-              :md   12
-              :lg   4
-              :xl   4}
-             (form/open-in-new "Learn more about compose" doc-compose-link)))]]])))
+        (comp/container
+          {:maxWidth  "md"
+           :className "Swarmpit-container"}
+          (comp/card
+            {:className "Swarmpit-form-card Swarmpit-fcard"}
+            (comp/box
+              {:className "Swarmpit-fcard-header"}
+              (comp/typography
+                {:className "Swarmpit-fcard-header-title"
+                 :variant   "h6"
+                 :component "div"}
+                "Edit stack"))
+            (comp/card-content
+              {:className "Swarmpit-fcard-content"}
+              (compose/form-name name)
+              (compose/form-select name select true previous?)
+              (form-editor (:compose spec)))
+            (comp/card-actions
+              {:className "Swarmpit-fcard-actions"}
+              (composite/progress-button
+                "Deploy"
+                #(update-stack-handler name)
+                processing?
+                false
+                {:startIcon (comp/svg {} icon/rocket-path)}))))]])))
 
 (rum/defc form-last < rum/reactive
                       mixin-init-form [_]

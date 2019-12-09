@@ -25,7 +25,7 @@
                      :href       (routes/path-for-frontend
                                    :service-edit
                                    {:id service-id}
-                                   {:section "Environment variables"})}
+                                   {:section 2})}
                     (comp/svg icon/edit-path))})
     (if (empty? variables)
       (comp/card-content

@@ -40,7 +40,7 @@
      :onChange        #(state/update-value [:url] (-> % .-target .-value) state/form-value-cursor)}))
 
 (defn- form-custom [value]
-  (comp/checkbox
+  (comp/switch
     {:name     "custom"
      :label    "Custom"
      :color    "primary"
@@ -86,7 +86,7 @@
      :InputProps      {:className    "Swarmpit-form-input"
                        :endAdornment (common/show-password-adornment show-password?)}}))
 
-(defn- create-registry-handler
+(defn create-registry-handler
   []
   (ajax/post
     (routes/path-for-backend :registries {:registryType :v2})
@@ -132,22 +132,42 @@
                                       (str/blank? name)
                                       (str/blank? url))) state/form-state-cursor)
 
-    (html
-      [:div
-       (form-name name)
-       (form-url name)
-       (comp/form-control
-         {:component "fieldset"}
-         (comp/form-group
-           {}
-           (comp/form-control-label
-             {:control (form-custom customApi)
-              :label   "Custom API"})
-           (comp/form-control-label
-             {:control (form-auth withAuth)
-              :label   "Secured"})))
-       (when withAuth
-         (html
-           [:div
-            (form-username username)
-            (form-password password showPassword)]))])))
+    (comp/box
+      {}
+      (form-name name)
+      (form-url name)
+      (comp/grid
+        {:container true}
+        (comp/grid
+          {:item true
+           :xs   12
+           :sm   6}
+          (comp/form-control
+            {:component "fieldset"
+             :key       "role-f"
+             :margin    "normal"}
+            (comp/form-label
+              {:key "rolel"} "Custom API")
+            (comp/form-helper-text
+              {} (html [:span "Registry URL is not suffixed with " [:b "/v2"] " api path, instead given value is used as based url"]))
+            (comp/form-control-label
+              {:control (form-custom customApi)})))
+        (comp/grid
+          {:item true
+           :xs   12
+           :sm   6}
+          (comp/form-control
+            {:component "fieldset"
+             :key       "role-f"
+             :margin    "normal"}
+            (comp/form-label
+              {:key "rolel"} "Secured access")
+            (comp/form-helper-text
+              {} "Use basic auth within the registry")
+            (comp/form-control-label
+              {:control (form-auth withAuth)}))))
+      (when withAuth
+        (comp/box
+          {}
+          (form-username username)
+          (form-password password showPassword))))))

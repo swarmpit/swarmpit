@@ -17,7 +17,7 @@
                  [cljsjs/react-input-autosize "2.2.1-1"]
                  [cljsjs/react-autosuggest "9.3.4-0"]
                  [cljsjs/rc-slider "8.6.1-0"]
-                 [cljsjs/codemirror "5.44.0-1"]
+                 [cljsjs/codemirror "5.24.0-1"]
                  [cljsjs/js-yaml "3.3.1-0"]
                  [cljsjs/recharts "1.1.0-3"]
                  [cljsjs/plotly "1.45.3-0"]

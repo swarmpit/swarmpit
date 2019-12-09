@@ -152,10 +152,9 @@
     {:fullWidth       true
      :id              "repository"
      :value           repository
-     :margin          "dense"
+     :margin          "normal"
      :variant         "outlined"
      :placeholder     "Enter valid repository"
-     :style           {:maxWidth "400px"}
      :InputLabelProps {:shrink true}
      :InputProps      {:className    "Swarmpit-form-input"
                        :endAdornment (repository-adornmennt repository)}
@@ -250,11 +249,10 @@
      :value           active
      :helperText      "Repository source"
      :variant         "outlined"
-     :margin          "dense"
+     :margin          "normal"
      :disabled        searching?
-     :style           {:maxWidth "400px"}
      :InputLabelProps {:shrink true}
-     :InputProps      {:className "Swarmpit-form-input Swarmpit-form-select-icon"}
+     :InputProps      {:className "Swarmpit-form-select-icon"}
      :onChange        (fn [event]
                         (on-change-registry event registries))}
     (public-reg)
@@ -279,10 +277,9 @@
     {:fullWidth       true
      :id              "repository"
      :value           repository
-     :margin          "dense"
      :variant         "outlined"
      :placeholder     "Find repository"
-     :style           {:maxWidth "400px"}
+     :margin          "normal"
      :InputLabelProps {:shrink true}
      :InputProps      {:className "Swarmpit-form-input"
                        :startAdornment
@@ -325,51 +322,70 @@
       (html
         [:div.Swarmpit-form
          [:div.Swarmpit-form-context
-          [:div.Swarmpit-form-paper
-           (common/edit-title "Select a repository" "define image for new service")
-           [:div.Swarmpit-repo-manual
-            (comp/form-control
-              {:component "fieldset"}
-              (comp/form-group
-                {}
-                (comp/form-control-label
-                  {:control (form-manual manual)
-                   :label   (comp/typography
-                              {:className "Swarmpit-repo-manual-label"}
-                              "Specify repository manually")})))]
-           (if manual
-             (form-repository-manual repository)
-             [:div
-              [:div (form-registry registries active searching?)]
-              [:div (form-search repository active)]
+          (comp/container
+            {:maxWidth  "md"
+             :className "Swarmpit-container"}
+            (comp/card
+              {:className "Swarmpit-form-card Swarmpit-fcard"}
+              (comp/box
+                {:className "Swarmpit-fcard-header"}
+                (comp/typography
+                  {:className "Swarmpit-fcard-header-title"
+                   :variant   "h6"
+                   :component "div"}
+                  "Select repository"))
+              (comp/card-content
+                {:className "Swarmpit-fcard-content"}
+                (comp/typography
+                  {:variant   "body2"
+                   :className "Swarmpit-fcard-message"}
+                  "Define image for new service")
+                (comp/form-control
+                  {:component "fieldset"}
+                  (comp/form-group
+                    {}
+                    (comp/form-control-label
+                      {:control (form-manual manual)
+                       :label   (comp/typography
+                                  {:className "Swarmpit-repo-manual-label"}
+                                  "Specify repository manually")})))
+                (if manual
+                  (form-repository-manual repository)
+                  (comp/box
+                    {}
+                    (form-registry registries active searching?)
+                    (form-search repository active))))
               (when searching?
-                (comp/linear-progress {:className "Swarmpit-repo-progress"}))
+                (comp/linear-progress {:className "Swarmpit-progress"}))
               (cond
-                searching? [:span]
+                searching?
+                (comp/box {})
                 (and
                   (not (str/blank? repository))
-                  (empty? filtered-repositories)) (comp/typography
-                                                    {:className "Swarmpit-repo-state"} "Nothing matches this filter.")
-                (empty? repositories) [:span]
+                  (empty? filtered-repositories))
+                (comp/card-content
+                  {}
+                  (comp/typography
+                    {} "Nothing matches this filter."))
+                (empty? repositories)
+                (comp/box {})
                 :else
-                (comp/card
-                  {:className "Swarmpit-form-card Swarmpit-repo-card"}
-                  (comp/card-content
-                    {:className "Swarmpit-table-card-content"}
-                    (comp/list
-                      {:dense true}
-                      (map-indexed
-                        (fn [index item]
-                          (list/list-item
-                            render-list-metadata
-                            index
-                            item
-                            (last filtered-repositories)
-                            #(onclick-handler
-                               (if (or (= "dockerhub" (:type registry))
-                                       (nil? registry))
-                                 (:name item)
-                                 (du/repository (:url registry) (:name item)))))) filtered-repositories)))))])]]]))))
+                (comp/card-content
+                  {:className "Swarmpit-table-card-content"}
+                  (comp/list
+                    {:dense true}
+                    (map-indexed
+                      (fn [index item]
+                        (list/list-item
+                          render-list-metadata
+                          index
+                          item
+                          (last filtered-repositories)
+                          #(onclick-handler
+                             (if (or (= "dockerhub" (:type registry))
+                                     (nil? registry))
+                               (:name item)
+                               (du/repository (:url registry) (:name item)))))) filtered-repositories))))))]]))))
 
 (rum/defc form < rum/reactive
                  mixin-init-form [_]

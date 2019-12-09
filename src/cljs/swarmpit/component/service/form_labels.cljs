@@ -1,5 +1,6 @@
 (ns swarmpit.component.service.form-labels
   (:require [material.components :as comp]
+            [material.component.form :as form]
             [material.component.list.edit :as list]
             [material.component.composite :as composite]
             [swarmpit.component.state :as state]
@@ -82,5 +83,5 @@
   (let [{:keys [names]} (state/react form-state-cursor)
         labels (state/react form-value-cursor)]
     (if (empty? labels)
-      (html [:div "No labels defined for the service."])
+      (form/item-info "No labels defined for the service.")
       (form-table labels names))))

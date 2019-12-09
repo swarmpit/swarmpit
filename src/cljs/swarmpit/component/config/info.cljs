@@ -9,6 +9,8 @@
             [swarmpit.component.message :as message]
             [swarmpit.component.progress :as progress]
             [swarmpit.component.service.list :as services]
+            [swarmpit.component.common :as common]
+            [swarmpit.component.toolbar :as toolbar]
             [swarmpit.url :refer [dispatch!]]
             [swarmpit.ajax :as ajax]
             [swarmpit.routes :as routes]
@@ -72,26 +74,11 @@
   (comp/card
     {:className "Swarmpit-form-card"}
     (comp/card-header
-      {:title     (:configName config)
-       :className "Swarmpit-form-card-header Swarmpit-card-header-responsive-title"
-       :action    (comp/tooltip
-                    {:title "Delete config"}
-                    (comp/icon-button
-                      {:aria-label "Delete"
-                       :onClick    #(state/update-value [:open] true dialog/dialog-cursor)}
-                      (comp/svg icon/trash-path)))})
-    (comp/card-content
-      {}
-      (html
-        (if (empty? services)
-          [:span "Config is not used by any service"]
-          [:span "Config is used within " [:b (count services)] " " (inflect/pluralize-noun (count services) "service")])))
-    (comp/divider
-      {})
-    (comp/card-content
-      {:style {:paddingBottom "16px"}}
-      (form/item-date (:createdAt config) (:updatedAt config))
-      (form/item-id (:id config)))))
+      {:title (comp/typography {:variant "h6"} "Summary")})
+    (form/item-main "ID" (:id config) false)
+    (form/item-main "Name" (:configName config))
+    (form/item-main "Created" (form/item-date (:createdAt config)))
+    (form/item-main "Last Update" (form/item-date (:updatedAt config)))))
 
 (def mixin-init-editor
   {:did-mount
@@ -108,6 +95,13 @@
        :className "Swarmpit-form-table-header"})
     (form-data (parse-data (:data config)))))
 
+(def form-actions
+  [{:onClick #(state/update-value [:open] true dialog/dialog-cursor)
+    :icon    (comp/svg icon/trash-path)
+    :color   "default"
+    :variant "outlined"
+    :name    "Delete"}])
+
 (defn- init-form-state
   []
   (state/set-value {:loading? true} state/form-state-cursor))
@@ -119,24 +113,6 @@
       (config-handler id)
       (config-services-handler id))))
 
-(defn form-general-grid [config services]
-  (comp/grid
-    {:item true
-     :xs   12}
-    (form-general config services)))
-
-(defn form-config-grid [config]
-  (comp/grid
-    {:item true
-     :xs   12}
-      (form-config config)))
-
-(defn form-services-grid [services]
-  (comp/grid
-    {:item true
-     :xs   12}
-    (services/linked services)))
-
 (rum/defc form-info < rum/static [{:keys [config services]}]
   (comp/mui
     (html
@@ -145,39 +121,29 @@
          #(delete-config-handler (:id config))
          "Delete config?"
          "Delete")
-       [:div.Swarmpit-form-context
-        (comp/hidden
-          {:xsDown         true
-           :implementation "js"}
+       [:div.Swarmpit-form-toolbar
+        (comp/container
+          {:maxWidth  "md"
+           :className "Swarmpit-container"}
           (comp/grid
             {:container true
              :spacing   2}
             (comp/grid
               {:item true
-               :sm   6
-               :md   4}
-              (comp/grid
-                {:container true
-                 :spacing   2}
-                (form-general-grid config services)))
+               :xs   12}
+              (toolbar/toolbar "Config" (:configName config) form-actions))
             (comp/grid
               {:item true
-               :sm   6
-               :md   8}
-              (comp/grid
-                {:container true
-                 :spacing   2}
-                (form-services-grid services)
-                (form-config-grid config)))))
-        (comp/hidden
-          {:smUp           true
-           :implementation "js"}
-          (comp/grid
-            {:container true
-             :spacing   2}
-            (form-general-grid config services)
-            (form-services-grid services)
-            (form-config-grid config)))]])))
+               :xs   12}
+              (form-general config services))
+            (comp/grid
+              {:item true
+               :xs   12}
+              (form-config config))
+            (comp/grid
+              {:item true
+               :xs   12}
+              (services/linked services))))]])))
 
 (rum/defc form < rum/reactive
                  mixin-init-form

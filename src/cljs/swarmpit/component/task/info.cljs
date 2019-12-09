@@ -8,6 +8,7 @@
             [swarmpit.component.progress :as progress]
             [swarmpit.component.common :as common]
             [swarmpit.component.plot :as plot]
+            [swarmpit.component.toolbar :as toolbar]
             [swarmpit.event.source :as event]
             [swarmpit.ajax :as ajax]
             [swarmpit.routes :as routes]
@@ -67,56 +68,57 @@
 
 (defn form-state [value]
   (case value
-    "preparing" (label/pulsing value)
-    "starting" (label/pulsing value)
-    "pending" (label/yellow value)
-    "new" (label/blue value)
-    "ready" (label/blue value)
-    "assigned" (label/blue value)
-    "accepted" (label/blue value)
-    "complete" (label/blue value)
-    "running" (label/green value)
-    "shutdown" (label/grey value)
-    "orphaned" (label/grey value)
-    "removed" (label/grey value)
-    "rejected" (label/red value)
-    "failed" (label/red value)))
+    "preparing" (label/header value "pulsing")
+    "starting" (label/header value "pulsing")
+    "pending" (label/header value "yellow")
+    "new" (label/header value "blue")
+    "ready" (label/header value "blue")
+    "assigned" (label/header value "blue")
+    "accepted" (label/header value "blue")
+    "complete" (label/header value "blue")
+    "running" (label/header value "green")
+    "shutdown" (label/header value "grey")
+    "orphaned" (label/header value "grey")
+    "removed" (label/header value "grey")
+    "rejected" (label/header value "red")
+    "failed" (label/header value "red")))
 
 (rum/defc form-general < rum/static [{:keys [id taskName nodeName state status createdAt updatedAt repository serviceName logdriver stats]}]
   (comp/card
     {:className "Swarmpit-form-card"}
     (comp/card-header
-      {:title     taskName
-       :className "Swarmpit-form-card-header Swarmpit-card-header-responsive-title"
-       :subheader (common/form-subheader
-                    (:image repository)
-                    (:imageDigest repository))})
+      {:title     (comp/typography {:variant "h6"} "Summary")
+       :subheader (form-state state)})
     (comp/card-content
       {:className "Swarmpit-table-card-content"}
-      (html
-        [:div
-         (when (and stats (= "running" state))
-           [:div {:class "Swarmpit-node-stat"
-                  :key   (str "node-card-stat-cpu")}
-            (common/resource-pie
-              (get-in stats [:cpuPercentage])
-              (str (-> stats :cpuPercentage (Math/ceil)) "% cpu")
-              (str "graph-cpu"))
-            (common/resource-pie
-              (get-in stats [:memoryPercentage])
-              (str (humanize/filesize (-> stats :memory) :binary false) " ram")
-              (str "graph-memory"))])]))
+      (when (and stats (= "running" state))
+        (comp/box
+          {:class "Swarmpit-node-stat"
+           :key   (str "node-card-stat-cpu")}
+          (common/resource-pie
+            (get-in stats [:cpuPercentage])
+            (str (-> stats :cpuPercentage (Math/ceil)) "% cpu")
+            (str "graph-cpu"))
+          (common/resource-pie
+            (get-in stats [:memoryPercentage])
+            (str (humanize/filesize (-> stats :memory) :binary false) " ram")
+            (str "graph-memory")))))
     (when (:error status)
       (comp/card-content
         {}
-        (html
-          [:div.Swarmpit-task-error
-           (icon/error {:className "Swarmpit-task-error-icon"})
-           [:div.Swarmpit-task-error-message (:error status)]])))
-    (comp/card-content
-      {}
-      (form/item-labels
-        [(form-state state)]))
+        (comp/box
+          {:className "Swarmpit-task-error"}
+          (icon/error {:className "Swarmpit-task-error-icon"})
+          (comp/box
+            {:className "Swarmpit-task-error-message"} (:error status)))))
+    (form/item-main "ID" id false)
+    (form/item-main "Name" taskName)
+    (form/item-main "Image" (:image repository))
+    (when (:imageDigest repository)
+      (form/item-main "Image digest" (:imageDigest repository)))
+    (form/item-main "Created" (form/item-date createdAt))
+    (form/item-main "Last update" (form/item-date updatedAt))
+    (comp/divider {})
     (comp/card-actions
       {}
       (comp/button
@@ -135,13 +137,7 @@
          :color    "primary"
          :disabled (not (contains? #{"json-file" "journald"} logdriver))
          :href     (routes/path-for-frontend :service-task-log {:id serviceName :taskId id})}
-        "View log"))
-    (comp/divider
-      {})
-    (comp/card-content
-      {:style {:paddingBottom "16px"}}
-      (form/item-date createdAt updatedAt)
-      (form/item-id id))))
+        "View log"))))
 
 (rum/defc form-cpu-stats < rum/static
                            {:did-mount (fn [state _]
@@ -169,61 +165,33 @@
       {:className "Swarmpit-table-card-content"}
       (html [:div {:id plot-ram-id}]))))
 
-(defn form-general-grid [task]
-  (comp/grid
-    {:item true
-     :xs   12}
-    (form-general task)))
-
-(defn form-cpu-stats-grid [task-ts]
-  (comp/grid
-    {:item true
-     :xs   12}
-    (form-cpu-stats task-ts)))
-
-(defn form-ram-stats-grid [task-ts]
-  (comp/grid
-    {:item true
-     :xs   12}
-    (form-ram-stats task-ts)))
-
 (rum/defc form-info < rum/static [{:keys [task task-ts] :as item}]
   (comp/mui
     (html
       [:div.Swarmpit-form
-       [:div.Swarmpit-form-context
-        (comp/hidden
-          {:xsDown         true
-           :implementation "js"}
+       [:div.Swarmpit-form-toolbar
+        (comp/container
+          {:maxWidth  "md"
+           :className "Swarmpit-container"}
           (comp/grid
             {:container true
              :spacing   2}
             (comp/grid
               {:item true
-               :sm   6
-               :md   4}
-              (comp/grid
-                {:container true
-                 :spacing   2}
-                (form-general-grid task)))
+               :xs 12}
+              (toolbar/toolbar "Task" (:taskName task) nil))
             (comp/grid
               {:item true
-               :sm   6
-               :md   8}
-              (comp/grid
-                {:container true
-                 :spacing   2}
-                (form-cpu-stats-grid task-ts)
-                (form-ram-stats-grid task-ts)))))
-        (comp/hidden
-          {:smUp           true
-           :implementation "js"}
-          (comp/grid
-            {:container true
-             :spacing   2}
-            (form-general-grid task)
-            (form-cpu-stats-grid task-ts)
-            (form-ram-stats-grid task-ts)))]])))
+               :xs   12}
+              (form-general task))
+            (comp/grid
+              {:item true
+               :xs   12}
+              (form-cpu-stats task-ts))
+            (comp/grid
+              {:item true
+               :xs   12}
+              (form-ram-stats task-ts))))]])))
 
 (def unsubscribe-form
   {:will-unmount (fn [state]

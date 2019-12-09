@@ -28,19 +28,14 @@
     url('fonts/roboto-v18-latin_latin-ext-500.eot?#iefix') format('embedded-opentype'), /* IE6-IE8 */ url('fonts/roboto-v18-latin_latin-ext-500.woff2') format('woff2'), /* Super Modern Browsers */ url('fonts/roboto-v18-latin_latin-ext-500.woff') format('woff'), /* Modern Browsers */ url('fonts/roboto-v18-latin_latin-ext-500.ttf') format('truetype'), /* Safari, Android, iOS */ url('fonts/roboto-v18-latin_latin-ext-500.svg#Roboto') format('svg'); /* Legacy iOS */
 }
 
-html > body {
-    font: 14px "Roboto", sans-serif;
+html * {
+    font-family: "Roboto", "Helvetica", "Arial", sans-serif;
     -webkit-font-kerning: normal;
     font-kerning: normal;
     -webkit-text-size-adjust: 100%;
     -webkit-font-smoothing: antialiased;
     -moz-osx-font-smoothing: grayscale;
     text-rendering: geometricPrecision;
-    color: rgb(117, 117, 117);
-}
-
-html > button {
-    font-family: "Roboto", "Helvetica", "Arial", sans-serif;
 }
 
 a {
@@ -107,9 +102,21 @@ a {
     background-color: #fafafa;
 }
 
+.Swarmpit-tabs {
+    margin-top: 60px !important;
+}
+
+.Swarmpit-progress {
+    margin-top: 20px !important;
+}
+
 .Swarmpit-card {
     box-shadow: none !important;
     border: 1px solid rgba(0, 0, 0, 0.12);
+}
+
+.Swarmpit-card-avatar {
+    background-color: #65519f !important;
 }
 
 .Swarmpit-page {
@@ -130,14 +137,30 @@ a {
     z-index: 1;
 }
 
-.Swarmpit-message {
+.Swarmpit-filter {
+    padding: 24px 24px;
     display: flex;
+    flex-direction: column;
+    width: 300px;
+    height: 100%;
+}
+
+.Swarmpit-404 {
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
     align-items: center;
 }
 
-.Swarmpit-drawer > ::-webkit-scrollbar {
-    width: 0px; /* remove scrollbar space */
-    background: transparent; /* optional: just make scrollbar invisible */
+.Swarmpit-filter-actions {
+    display: flex;
+    flex-direction: row;
+    justify-content: space-between;
+}
+
+.Swarmpit-message {
+    display: flex;
+    align-items: center;
 }
 
 .Swarmpit-message-icon {
@@ -153,6 +176,11 @@ a {
     border: 1px solid #DFE3E8;
     border-radius: 4px;
     padding: 24px;
+}
+
+.Swarmpit-menu-icon {
+    min-width: 0 !important;
+    margin-right: 8px;
 }
 
 .Swarmpit-autocomplete > div {
@@ -229,28 +257,32 @@ a {
 
 .Swarmpit-appbar {
     position: absolute;
-    margin-left: 200px;
-    background: linear-gradient(60deg, #65519f, #362870);
-    box-shadow: none;
+    background: #fafafa !important;
+    color: #5f6368 !important;
     z-index: 1201 !important;
     transition: width 195ms cubic-bezier(0.4, 0, 0.6, 1) 0ms, margin 195ms cubic-bezier(0.4, 0, 0.6, 1) 0ms;
 }
 
-.Swarmpit-appbar-user-menu-logged-info {
-    opacity: 0.7 !important;
+.Swarmpit-appbar-user-menu {
+    align-items: center;
+    display: flex;
+    flex-direction: column;
 }
 
-.Swarmpit-appbar-user-menu-logged-user {
-    font-weight: 600;
+.Swarmpit-appbar-user-menu-action {
+    margin-top: 10px !important;
+    border-radius: 100px !important;
 }
 
 .Swarmpit-appbar-search {
     position: relative;
     border-radius: 4px;
-    background-color: rgba(255, 255, 255, 0.15);
     margin-right: 16px;
     margin-left: 0;
     width: 100%;
+    background: rgba(255, 255, 255, 1);
+    color: #000;
+    border: 1px solid rgba(65, 69, 73, 0.3);
 }
 
 .Swarmpit-appbar-subtitle {
@@ -259,7 +291,9 @@ a {
 }
 
 .Swarmpit-appbar-search:hover {
-    background-color: rgba(255, 255, 255, 0.25);
+    border: 1px solid transparent;
+    box-shadow: 0 1px 1px 0 rgba(65, 69, 73, 0.3),
+    0 1px 3px 1px rgba(65, 69, 73, 0.15);
 }
 
 .Swarmpit-appbar-search-icon {
@@ -270,11 +304,11 @@ a {
     display: flex;
     align-items: center;
     justify-content: center;
+    z-index: 1;
 }
 
 .Swarmpit-appbar-search-root {
     color: inherit !important;
-    width: 100%;
 }
 
 .Swarmpit-appbar-search-input {
@@ -285,6 +319,8 @@ a {
 .Swarmpit-appbar-search-mobile {
     position: absolute;
     display: flex;
+    top: 0 !important;
+    width: 100% !important;
 }
 
 .Swarmpit-appbar-search-mobile-root {
@@ -302,6 +338,8 @@ a {
 
 .Swarmpit-appbar-search-mobile-content {
     background-color: #fff !important;
+    width: 100% !important;
+    border-radius: 0 !important;
 }
 
 .Swarmpit-appbar-search-mobile-content-message {
@@ -315,6 +353,13 @@ a {
 
 .Swarmpit-appbar-avatar {
     border: 1px solid #fff;
+    background-color: #5f6368 !important;
+}
+
+.Swarmpit-appbar-avatar-big {
+    width: 60px !important;
+    height: 60px !important;
+    margin-bottom: 10px;
 }
 
 .Swarmpit-section-desktop,
@@ -334,16 +379,40 @@ a {
 /** Drawer **/
 
 .Swarmpit-drawer > div {
+    border-right: none;
     white-space: nowrap;
     transition: width 225ms cubic-bezier(0.4, 0, 0.6, 1) 0ms;
 }
 
+.Swarmpit-drawer > ::-webkit-scrollbar {
+    width: 0; /* remove scrollbar space */
+    background: transparent; /* optional: just make scrollbar invisible */
+}
+
 .Swarmpit-drawer-content {
-    width: 200px;
+    width: 225px;
+    background: #fafafa;
+}
+
+.Swarmpit-drawer-item,
+.Swarmpit-drawer-item-selected {
+    width: 210px !important;
 }
 
 .Swarmpit-drawer-item {
     padding-left: 24px !important;
+}
+
+.Swarmpit-drawer-item:hover {
+    background-color: transparent !important;
+}
+
+.Swarmpit-drawer-item:hover > div,
+.Swarmpit-drawer-item:hover > div > h6 {
+    color: #65519f !important;
+}
+
+.Swarmpit-drawer-item > *:hover {
 }
 
 .Swarmpit-list-item-icon,
@@ -353,8 +422,9 @@ a {
 }
 
 .Swarmpit-drawer-item-selected {
-    border-left: 5px solid #65519f !important;
-    padding-left: 19px !important;
+    background-color: rgba(99, 79, 158, 0.15) !important;
+    padding-left: 24px !important;
+    border-radius: 0 50px 50px 0 !important;
 }
 
 .Swarmpit-drawer-item-icon-selected,
@@ -365,12 +435,29 @@ a {
 
 .Swarmpit-title {
     display: flex;
-    flex-grow: 1;
-    min-height: 56px;
-    align-items: flex-start;
-    padding-left: 24px;
     flex-direction: column;
     justify-content: center;
+    margin-left: 15px;
+}
+
+.Swarmpit-menu-title {
+    display: flex;
+    flex-grow: 1;
+    min-height: 64px;
+    align-items: center;
+    padding-left: 24px;
+    flex-direction: row;
+    background: #fafafa;
+    margin-left: -12px;
+}
+
+.Swarmpit-desktop-title {
+    display: none;
+    min-height: 64px;
+    align-items: center;
+    flex-direction: row;
+    width: 237px;
+    margin-left: -12px;
 }
 
 .Swarmpit-title > a:link {
@@ -382,12 +469,12 @@ a {
 }
 
 .Swarmpit-title > a:hover {
-    color: rgba(0, 0, 0, 0.54);
+    color: #5f6368;
     text-decoration: underline;
 }
 
 .Swarmpit-title-name {
-    color: rgba(0, 0, 0, 0.54);
+    color: #5f6368;
     font-size: 1.3125rem;
     font-weight: 500;
     font-family: "Roboto", "Helvetica", "Arial", sans-serif;
@@ -395,7 +482,7 @@ a {
 }
 
 .Swarmpit-title-version {
-    color: rgba(0, 0, 0, 0.54);
+    color: #5f6368;
     font-size: 0.75rem;
     font-weight: 400;
     font-family: "Roboto", "Helvetica", "Arial", sans-serif;
@@ -505,6 +592,7 @@ a {
 
 .Swarmpit-table-head-cell {
     /*text-transform: uppercase !important;*/
+    /*color: rgba(0, 0, 0, 0.54) !important;*/
 }
 
 .Swarmpit-table-row {
@@ -559,23 +647,130 @@ a {
 /** Stepper **/
 
 .Swarmpit-stepper {
+    padding: 0 !important;
+}
+
+.Swarmpit-stepper-vertical {
+}
+
+.Swarmpit-stepper-horizontal {
+    margin-bottom: 60px !important;
     background-color: #fafafa !important;
-    padding: 24px 0 24px !important;
-    max-width: 400px;
+}
+
+/** Form card **/
+
+.Swarmpit-ftoolbar {
+    min-height: 0 !important;
+    margin-top: 10px;
+}
+
+.Swarmpit-ftoolbar-info {
+    display: flex;
+    flex-direction: row;
+}
+
+.Swarmpit-ftoolbar-actions {
+    display: flex;
+    flex-direction: row;
+}
+
+.Swarmpit-ftoolbar-title {
+    margin-right: 5px !important;
+    font-weight: lighter !important;
+}
+
+.Swarmpit-ftoolbar-subtitle {
+    font-weight: 500 !important;
+    word-break: break-all;
+}
+
+.Swarmpit-fcard {
+    margin-top: 16px;
+    overflow: visible !important;
+}
+
+.Swarmpit-fcard-header {
+    color: #fff;
+    padding-left: 16px;
+    padding-right: 16px;
+    position: relative;
+}
+
+.Swarmpit-fcard-header-icon {
+    width: 50px !important;
+    height: 50px !important;
+    float: left;
+    /*display: inline-block;*/
+    padding: 15px;
+    margin-top: -20px;
+    margin-right: 15px;
+    border-radius: 3px;
+    background: #65519f;
+    box-shadow: 0 4px 20px 0 rgba(0, 0, 0, .14), 0 7px 10px -5px #65519f;
+}
+
+.Swarmpit-fcard-header-title {
+    float: none;
+    display: inline-block;
+    padding: 15px;
+    margin-top: -36px !important;
+    margin-right: 0 !important;
+    border-radius: 3px;
+    background: #65519f;
+    font-weight: lighter !important;
+    box-shadow: 0 4px 20px 0 rgba(0, 0, 0, .14), 0 7px 10px -5px #65519f;
+}
+
+.Swarmpit-fcard-content {
+    margin-top: 10px;
+}
+
+.Swarmpit-fcard-message {
+    margin-bottom: 20px !important;
+    margin-top: 10px !important;
+}
+
+.Swarmpit-fcard-actions {
+    padding-top: 0 !important;
 }
 
 /** Form content **/
 
 .Swarmpit-form {
+    margin-top: 10px;
     min-height: calc(100vh - 64px);
+}
+
+.Swarmpit-form-item-wrapper {
+    margin-left: 16px;
+}
+
+.Swarmpit-form-item {
+    align-items: stretch;
+    display: flex;
+    flex-wrap: wrap;
+    padding-top: 10px;
+    padding-bottom: 10px;
+}
+
+.Swarmpit-form-item-name {
+    flex-basis: 150px;
+    align-items: center;
+    display: flex;
+    margin-right: 24px;
+    color: rgba(0, 0, 0, 0.54);
+}
+
+.Swarmpit-form-item-value {
+    flex-grow: 1;
+    flex-shrink: 1;
+    word-break: break-all;
+    padding-right: 16px;
 }
 
 .Swarmpit-form-context {
     padding: 24px 24px;
-}
-
-.Swarmpit-form-wrapper {
-    padding: 16px;
 }
 
 .Swarmpit-form-context input[type="number"],
@@ -587,67 +782,43 @@ a {
     background-color: #fff !important;
 }
 
-.Swarmpit-form-subtitle {
-    color: rgba(0, 0, 0, 0.54) !important;
-}
-
 .Swarmpit-form-title {
-    color: rgba(0, 0, 0, 0.87) !important;
-}
-
-.Swarmpit-form-title-divider {
-    margin-top: 5px !important;
-    margin-bottom: 20px !important;
-}
-
-.Swarmpit-grid-title-divider {
-    margin-top: 15px !important;
+    margin-bottom: 16px;
 }
 
 .Swarmpit-form-paper {
     padding: 16px;
 }
 
-.Swarmpit-form-main-grid {
-    padding-top: 24px;
-}
-
-.Swarmpit-form-input {
-    background-color: #fff;
-}
-
 .Swarmpit-form-select-icon > div {
     display: flex !important;
     flex-direction: row !important;
     align-items: center;
+    padding: 12px 14px;
 }
 
 .Swarmpit-form-toolbar {
     padding: 0 24px 24px;
 }
 
-.Swarmpit-form-toolbar-context {
-    padding: 0 24px;
+.Swarmpit-form-toolbar-btn {
+    margin-right: 8px !important;
 }
 
 .Swarmpit-form-buttons {
     display: flex;
     justify-content: flex-start;
+    margin-top: 16px;
 }
 
 .Swarmpit-form-buttons > * {
-    margin-right: 5px !important;
+    margin-right: 8px !important;
 }
 
 .Swarmpit-form-section {
     flex-direction: row;
     display: flex;
     align-items: center;
-}
-
-.Swarmpit-transparent-card {
-    box-shadow: none !important;
-    background-color: #fafafa !important;
 }
 
 .Swarmpit-form-card {
@@ -775,6 +946,18 @@ a {
     vertical-align: baseline;
 }
 
+.Swarmpit-header-label {
+    color: #fff;
+    border-radius: 2px;
+    font-size: 10px !important;
+    font-weight: 500 !important;
+    padding: 4px 8px;
+    display: inline-flex;
+    height: 20px;
+    justify-content: center;
+    align-items: center;
+}
+
 @-webkit-keyframes pulse {
     0% {
         -webkit-box-shadow: 0 0 0 0 rgba(204, 169, 44, 0.6);
@@ -833,7 +1016,7 @@ a {
 }
 
 .Swarmpit-icon-ok > svg {
-    color: #43a047;
+    color: #52B359;
 }
 
 .Swarmpit-icon-error > svg {
@@ -908,6 +1091,10 @@ a {
     color: #d32f2f;
     font-size: 0.9em;
     align-items: center;
+    border: 1px solid #d32f2f;
+    padding: 16px;
+    border-radius: 2px;
+    background-color: rgba(211, 47, 47, 0.1);
 }
 
 .Swarmpit-task-error-icon {
@@ -936,7 +1123,7 @@ a {
 /* REPOSITORY */
 
 .Swarmpit-repo-registry-item {
-    margin-left: -16px;
+    margin-left: -24px;
 }
 
 .Swarmpit-repo-manual {
@@ -945,12 +1132,6 @@ a {
 
 .Service-repo-separator {
     font-weight: 500;
-}
-
-.Swarmpit-repo-card,
-.Swarmpit-repo-state,
-.Swarmpit-repo-progress {
-    margin-top: 20px !important;
 }
 
 .Swarmpit-repo-registry-text {
@@ -1012,15 +1193,19 @@ a {
 
 @media (min-width: 1280px) {
     .Swarmpit-context {
-        margin-left: 200px;
-    }
-
-    .Swarmpit-appbar {
-        width: calc(100% - 200px) !important;
+        margin-left: 225px;
     }
 
     .Swarmpit-appbar-menu-btn {
         display: none !important;
+    }
+
+    .Swarmpit-appbar-title {
+        display: none !important;
+    }
+
+    .Swarmpit-desktop-title {
+        display: flex;
     }
 
     .Swarmpit-action-menu-desktop {
@@ -1049,7 +1234,8 @@ a {
         min-height: 64px;
     }
 
-    .Swarmpit-title {
+    .Swarmpit-menu-title,
+    .Swarmpit-desktop-title {
         min-height: 64px;
     }
 
@@ -1060,11 +1246,6 @@ a {
     .Swarmpit-form-paper {
         padding-left: 24px;
         padding-right: 24px;
-    }
-
-    .Swarmpit-appbar-title,
-    .Swarmpit-appbar-subtitle {
-        display: block !important;
     }
 
     .Swarmpit-appbar-search {
@@ -1106,13 +1287,20 @@ a {
         width: 100%;
     }
 
-    .Swarmpit-form-toolbar {
-        padding: 0 10px 10px;
+    .Swarmpit-container {
+        padding: 0 !important;
     }
 
-    .Swarmpit-form-toolbar-context {
-        margin-top: 10px;
-        padding: 0 10px;
+    .Swarmpit-form-item {
+        flex-direction: column;
+    }
+
+    .Swarmpit-form-item-name {
+        flex-basis: 0;
+    }
+
+    .Swarmpit-form-toolbar {
+        padding: 10px 10px 10px;
     }
 
     .Swarmpit-form-panel-search {
@@ -1121,7 +1309,7 @@ a {
     }
 
     .Swarmpit-form-context {
-        padding: 20px 10px;
+        padding: 30px 10px 20px 10px;
     }
 
     .Swarmpit-node-stat {
@@ -1135,5 +1323,10 @@ a {
 
     .Swarmpit-repo-registry-url {
         padding-left: 0;
+    }
+
+    .Swarmpit-appbar-search-mobile {
+        left: 0 !important;
+        right: 0 !important;
     }
 }

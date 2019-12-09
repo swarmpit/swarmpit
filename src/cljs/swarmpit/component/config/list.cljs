@@ -27,10 +27,12 @@
 (def render-metadata
   {:table {:summary [{:name      "Name"
                       :render-fn (fn [item] (:configName item))}
+                     {:name      "Last update"
+                      :render-fn (fn [item] (time/humanize (:updatedAt item)))}
                      {:name      "Created"
                       :render-fn (fn [item] (time/humanize (:createdAt item)))}]}
    :list  {:primary   (fn [item] (:configName item))
-           :secondary (fn [item] (time/humanize (:createdAt item)))}})
+           :secondary (fn [item] (time/humanize (:updatedAt item)))}})
 
 (defn onclick-handler
   [item]
@@ -60,10 +62,10 @@
       (configs-handler))))
 
 (def toolbar-render-metadata
-  {:actions [{:name     "New Config"
-              :onClick  #(dispatch! (routes/path-for-frontend :config-create))
-              :icon     icon/add-circle-out
-              :icon-alt icon/add}]})
+  [{:name     "New Config"
+    :onClick  #(dispatch! (routes/path-for-frontend :config-create))
+    :icon     icon/add-circle-out
+    :icon-alt icon/add}])
 
 (rum/defc form < rum/reactive
                  mixin-init-form

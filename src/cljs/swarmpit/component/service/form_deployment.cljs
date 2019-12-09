@@ -3,6 +3,7 @@
             [material.components :as comp]
             [material.component.form :as form]
             [swarmpit.component.state :as state]
+            [swarmpit.component.service.form-labels :as labels]
             [swarmpit.component.service.form-deployment-placement :as placement]
             [swarmpit.component.parser :refer [parse-int]]
             [sablono.core :refer-macros [html]]
@@ -22,7 +23,6 @@
      :defaultValue    value
      :variant         "outlined"
      :margin          "normal"
-     :style           {:maxWidth "150px"}
      :InputLabelProps {:shrink true}
      :onChange        #(state/update-value [:restartPolicy :attempts] (parse-int (-> % .-target .-value)) form-value-cursor)}))
 
@@ -36,7 +36,6 @@
      :defaultValue    value
      :variant         "outlined"
      :margin          "normal"
-     :style           {:maxWidth "150px"}
      :InputLabelProps {:shrink true}
      :onChange        #(state/update-value [:restartPolicy :delay] (parse-int (-> % .-target .-value)) form-value-cursor)}))
 
@@ -50,7 +49,6 @@
      :defaultValue    value
      :variant         "outlined"
      :margin          "normal"
-     :style           {:maxWidth "150px"}
      :InputLabelProps {:shrink true}
      :onChange        #(state/update-value [:restartPolicy :window] (parse-int (-> % .-target .-value)) form-value-cursor)}))
 
@@ -63,9 +61,7 @@
      :value           value
      :variant         "outlined"
      :margin          "normal"
-     :style           {:maxWidth "150px"}
      :InputLabelProps {:shrink true}
-     :InputProps      {:className "Swarmpit-form-input"}
      :onChange        #(state/update-value [:restartPolicy :condition] (-> % .-target .-value) form-value-cursor)}
     (comp/menu-item
       {:key   "p-any"
@@ -87,7 +83,6 @@
      :defaultValue    value
      :variant         "outlined"
      :margin          "normal"
-     :style           {:maxWidth "150px"}
      :InputLabelProps {:shrink true}
      :onChange        #(state/update-value [:update :parallelism] (parse-int (-> % .-target .-value)) form-value-cursor)}))
 
@@ -101,7 +96,6 @@
      :defaultValue    value
      :variant         "outlined"
      :margin          "normal"
-     :style           {:maxWidth "150px"}
      :InputLabelProps {:shrink true}
      :onChange        #(state/update-value [:update :delay] (parse-int (-> % .-target .-value)) form-value-cursor)}))
 
@@ -114,9 +108,7 @@
      :value           value
      :variant         "outlined"
      :margin          "normal"
-     :style           {:maxWidth "150px"}
      :InputLabelProps {:shrink true}
-     :InputProps      {:className "Swarmpit-form-input"}
      :onChange        #(state/update-value [:update :order] (-> % .-target .-value) form-value-cursor)}
     (comp/menu-item
       {:key   "u-start-first"
@@ -134,9 +126,7 @@
      :value           value
      :variant         "outlined"
      :margin          "normal"
-     :style           {:maxWidth "150px"}
      :InputLabelProps {:shrink true}
-     :InputProps      {:className "Swarmpit-form-input"}
      :onChange        #(state/update-value [:update :failureAction] (-> % .-target .-value) form-value-cursor)}
     (comp/menu-item
       {:key   "upause"
@@ -158,7 +148,6 @@
      :defaultValue    value
      :variant         "outlined"
      :margin          "normal"
-     :style           {:maxWidth "150px"}
      :InputLabelProps {:shrink true}
      :onChange        #(state/update-value [:rollback :parallelism] (parse-int (-> % .-target .-value)) form-value-cursor)}))
 
@@ -172,7 +161,6 @@
      :defaultValue    value
      :variant         "outlined"
      :margin          "normal"
-     :style           {:maxWidth "150px"}
      :InputLabelProps {:shrink true}
      :onChange        #(state/update-value [:rollback :delay] (parse-int (-> % .-target .-value)) form-value-cursor)}))
 
@@ -185,7 +173,6 @@
      :value           value
      :variant         "outlined"
      :margin          "normal"
-     :style           {:maxWidth "150px"}
      :InputLabelProps {:shrink true}
      :InputProps      {:className "Swarmpit-form-input"}
      :onChange        #(state/update-value [:rollback :order] (-> % .-target .-value) form-value-cursor)}
@@ -205,9 +192,7 @@
      :value           value
      :variant         "outlined"
      :margin          "normal"
-     :style           {:maxWidth "150px"}
      :InputLabelProps {:shrink true}
-     :InputProps      {:className "Swarmpit-form-input"}
      :onChange        #(state/update-value [:rollback :failureAction] (-> % .-target .-value) form-value-cursor)}
     (comp/menu-item
       {:key   "rpause"
@@ -233,17 +218,32 @@
                 restartPolicy]} (state/react form-value-cursor)]
     (comp/grid
       {:container true
-       :spacing   3}
+       :spacing   2}
+      (comp/grid
+        {:item true
+         :xs   12}
+        (form/section
+          "Labels"
+          (comp/button
+            {:color   "primary"
+             :onClick labels/add-item}
+            (comp/svg icon/add-small-path) "Add label"))
+        (labels/form))
       (comp/grid
         {:item true
          :xs   12}
         (comp/form-control
-          {:component "fieldset"}
-          (comp/form-group
-            {}
-            (comp/form-control-label
-              {:control (form-autoredeploy autoredeploy)
-               :label   "Autoredeploy"})))
+          {:component "fieldset"
+           :margin    "normal"}
+          (comp/form-label
+            {:key "rolel"} "Autoredeploy")
+          (comp/form-helper-text
+            {} "Periodically check for new image version and update service accordingly")
+          (comp/form-control-label
+            {:control (form-autoredeploy autoredeploy)})))
+      (comp/grid
+        {:item true
+         :xs   12}
         (placement/form))
       (comp/grid
         {:item true

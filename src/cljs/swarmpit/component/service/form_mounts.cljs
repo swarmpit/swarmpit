@@ -98,6 +98,7 @@
   (comp/checkbox
     {:key      (str "form-mount-readonly-" index)
      :checked  value
+     :color    "primary"
      :onChange #(state/update-item index :readOnly (-> % .-target .-checked) form-value-cursor)}))
 
 (defn- form-mounts-metadata [volume-list]
@@ -156,5 +157,5 @@
   (let [{:keys [volumes]} (state/react form-state-cursor)
         mounts (state/react form-value-cursor)]
     (if (empty? mounts)
-      (html [:div "No mounts defined for the service."])
+      (form/item-info "No mounts defined for the service.")
       (form-table mounts volumes))))

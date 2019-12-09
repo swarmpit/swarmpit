@@ -25,11 +25,17 @@
                      :href       (routes/path-for-frontend
                                    :service-edit
                                    {:id service-id}
-                                   {:section "Log driver"})}
+                                   {:section 5})}
                     (comp/svg icon/edit-path))})
     (comp/card-content
       {}
-      (form/item name nil))
+      (comp/grid
+        {:container true
+         :spacing   5}
+        (comp/grid
+          {:item true
+           :xs   6}
+          (form/item "Driver" name))))
     (comp/card-content
       {:className "Swarmpit-table-card-content"}
       (when (not-empty opts)

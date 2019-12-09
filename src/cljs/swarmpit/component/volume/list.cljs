@@ -54,10 +54,10 @@
       (volumes-handler))))
 
 (def toolbar-render-metadata
-  {:actions [{:name     "New volume"
-              :onClick  #(dispatch! (routes/path-for-frontend :volume-create))
-              :icon     icon/add-circle-out
-              :icon-alt icon/add}]})
+  [{:name     "New volume"
+    :onClick  #(dispatch! (routes/path-for-frontend :volume-create))
+    :icon     icon/add-circle-out
+    :icon-alt icon/add}])
 
 (rum/defc form < rum/reactive
                  mixin-init-form

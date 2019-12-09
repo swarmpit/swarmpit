@@ -1,5 +1,6 @@
 (ns swarmpit.component.registry-gitlab.edit
-  (:require [material.components :as comp]
+  (:require [material.icon :as icon]
+            [material.components :as comp]
             [material.component.composite :as composite]
             [swarmpit.component.common :as common]
             [swarmpit.component.mixin :as mixin]
@@ -13,6 +14,19 @@
             [rum.core :as rum]))
 
 (enable-console-print!)
+
+(defn- form-username [value]
+  (comp/text-field
+    {:label           "Username"
+     :fullWidth       true
+     :name            "username"
+     :key             "username"
+     :variant         "outlined"
+     :defaultValue    value
+     :required        true
+     :disabled        true
+     :margin          "normal"
+     :InputLabelProps {:shrink true}}))
 
 (defn- form-token [value show-token?]
   (comp/text-field
@@ -31,9 +45,10 @@
                        :endAdornment (common/show-password-adornment show-token? :showToken)}}))
 
 (defn- form-public [value]
-  (comp/checkbox
+  (comp/switch
     {:checked  value
      :value    (str value)
+     :color    "primary"
      :onChange #(state/update-value [:public] (-> % .-target .-checked) state/form-value-cursor)}))
 
 (defn- registry-handler
@@ -81,32 +96,43 @@
     (html
       [:div.Swarmpit-form
        [:div.Swarmpit-form-context
-        [:div.Swarmpit-form-paper
-         (common/edit-title (str "Editing " username))
-         [:div.Swarmpit-registry-form
-          (comp/grid
-            {:container true
-             :className "Swarmpit-form-main-grid"
-             :spacing   3}
-            (comp/grid
-              {:item true
-               :xs   12}
-              (form-token token showToken))
-            (comp/grid
-              {:item true
-               :xs   12}
-              (comp/form-control-label
-                {:control (form-public public)
-                 :label   "Share"}))
-            (comp/grid
-              {:item true
-               :xs   12}
-              (html
-                [:div.Swarmpit-form-buttons
-                 (composite/progress-button
-                   "Save"
-                   #(update-registry-handler _id)
-                   processing?)])))]]]])))
+        (comp/container
+          {:maxWidth  "sm"
+           :className "Swarmpit-container"}
+          (comp/card
+            {:className "Swarmpit-form-card Swarmpit-fcard"}
+            (comp/box
+              {:className "Swarmpit-fcard-header"}
+              (comp/typography
+                {:className "Swarmpit-fcard-header-title"
+                 :variant   "h6"
+                 :component "div"}
+                "Edit registry"))
+            (comp/card-content
+              {:className "Swarmpit-fcard-content"}
+              (comp/typography
+                {:variant   "body2"
+                 :className "Swarmpit-fcard-message"}
+                "Update Gitlab account settings")
+              (form-username username)
+              (form-token token showToken)
+              (comp/form-control
+                {:component "fieldset"
+                 :key       "role-f"
+                 :margin    "normal"}
+                (comp/form-label
+                  {:key "rolel"} "Make account Public")
+                (comp/form-helper-text
+                  {} "Means that anyone can search & deploy private repositories from this account")
+                (comp/form-control-label
+                  {:control (form-public public)}))
+              (comp/box
+                {:className "Swarmpit-form-buttons"}
+                (composite/progress-button
+                  "Save"
+                  #(update-registry-handler _id)
+                  processing?
+                  false)))))]])))
 
 (rum/defc form < rum/reactive
                  mixin-init-form [_]

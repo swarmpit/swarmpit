@@ -4,7 +4,9 @@
             [swarmpit.routes :as routes]
             [swarmpit.storage :as storage]
             [swarmpit.event.source :as eventsource]
+            [swarmpit.component.common :as common]
             [swarmpit.component.state :as state]
+            [swarmpit.component.mixin :as mixin]
             [swarmpit.url :refer [dispatch!]]
             [rum.core :as rum]
             [sablono.core :refer-macros [html]]
@@ -21,59 +23,71 @@
         (.update md5 (string/trim email))
         (crypt/byteArrayToHex (.digest md5))))))
 
-(defn- user-avatar []
-  (comp/avatar
-    {:className "Swarmpit-appbar-avatar"
-     :src       (str "https://www.gravatar.com/avatar/"
-                     (user-gravatar-hash (storage/email))
-                     "?d=https://raw.githubusercontent.com/swarmpit/swarmpit/master/resources/public/img/user.png")}))
-
-(rum/defc user-info < rum/static []
-  (html
-    [:div
-     [:span "Signed in as"]
-     [:br]
-     [:span.Swarmpit-appbar-user-menu-logged-user (storage/user)]]))
+(defn- user-avatar
+  ([]
+   (user-avatar false))
+  ([big?]
+   (comp/avatar
+     (merge
+       {:className "Swarmpit-appbar-avatar"
+        :src       (str "https://www.gravatar.com/avatar/"
+                        (user-gravatar-hash (storage/email))
+                        "?d=https://raw.githubusercontent.com/swarmpit/swarmpit/master/resources/public/img/user.png")}
+       (when big?
+         {:className "Swarmpit-appbar-avatar Swarmpit-appbar-avatar-big"})))))
 
 (rum/defc user-menu < rum/static [anchorEl]
-  (html
-    [:div
-     (comp/icon-button
-       {:aria-owns     (when anchorEl "Swarmpit-appbar-user-menu")
-        :aria-haspopup "true"
-        :onClick       (fn [e]
-                         (state/update-value [:menuAnchorEl] (.-currentTarget e) state/layout-cursor))
-        :color         "inherit"} (user-avatar))
-     (comp/menu
-       {:id              "Swarmpit-appbar-user-menu"
-        :key             "appbar-user-menu"
-        :anchorEl        anchorEl
-        :anchorOrigin    {:vertical   "top"
-                          :horizontal "right"}
-        :transformOrigin {:vertical   "top"
-                          :horizontal "right"}
-        :open            (some? anchorEl)
-        :onClose         #(state/update-value [:menuAnchorEl] nil state/layout-cursor)}
-       (comp/menu-item
-         {:key       "appbar-user-menu-logged-info"
-          :className "Swarmpit-appbar-user-menu-logged-info"
-          :disabled  true}
-         (user-info))
-       (comp/divider
-         {:key "appbar-user-menu-divider"})
-       (comp/menu-item
-         {:key     "appbar-user-menu-account-settings"
-          :onClick (fn []
-                     (state/update-value [:menuAnchorEl] nil state/layout-cursor)
-                     (dispatch!
-                       (routes/path-for-frontend :account-settings)))} "Settings")
-       (comp/menu-item
-         {:key     "appbar-user-menu-logout"
-          :onClick (fn []
-                     (storage/remove "token")
-                     (eventsource/close!)
-                     (dispatch!
-                       (routes/path-for-frontend :login)))} "Log out"))]))
+  (comp/box
+    {}
+    (comp/icon-button
+      {:onClick (fn [e]
+                  (state/update-value [:menuAnchorEl] (.-currentTarget e) state/layout-cursor))
+       :color   "inherit"} (user-avatar))
+    (comp/popper
+      {:open       (some? anchorEl)
+       :anchorEl   anchorEl
+       :placement  "bottom-end"
+       :className  "Swarmpit-popper"
+       :transition true}
+      (fn [props]
+        (let [{:keys [TransitionProps placement]} (js->clj props :keywordize-keys true)]
+          (comp/fade
+            (merge TransitionProps
+                   {:timeout 450})
+            (comp/paper
+              {}
+              (comp/click-away-listener
+                {:onClickAway #(state/update-value [:menuAnchorEl] nil state/layout-cursor)}
+                (comp/card
+                  {}
+                  (comp/card-content
+                    {:className "Swarmpit-appbar-user-menu"}
+                    (user-avatar true)
+                    (comp/typography
+                      {:variant "body1"} (storage/user))
+                    (comp/typography
+                      {:variant "body2"} (storage/email))
+                    (comp/button
+                      {:variant   "outlined"
+                       :className "Swarmpit-appbar-user-menu-action"
+                       :onClick   (fn []
+                                    (state/update-value [:menuAnchorEl] nil state/layout-cursor)
+                                    (dispatch!
+                                      (routes/path-for-frontend :account-settings)))}
+                      "Manage your account"))
+                  (comp/divider {})
+                  (comp/card-actions
+                    {:className "Swarmpit-appbar-user-menu"}
+                    (comp/button
+                      {:variant   "outlined"
+                       :startIcon (icon/exit {})
+                       :onClick   (fn []
+                                    (storage/remove "token")
+                                    (eventsource/close!)
+                                    (state/update-value [:menuAnchorEl] nil state/layout-cursor)
+                                    (dispatch!
+                                      (routes/path-for-frontend :login)))}
+                      "Sign out")))))))))))
 
 (defn- mobile-actions-menu
   [actions mobileMoreAnchorEl]
@@ -187,18 +201,40 @@
                      :key     (str "menu-btn-" (:name %))
                      :onClick (:onClick %)} (:icon %)))))]))
 
-(rum/defc appbar < rum/reactive [{:keys [title subtitle search-fn actions]}]
-  (let [{:keys [mobileSearchOpened menuAnchorEl mobileMoreAnchorEl]} (state/react state/layout-cursor)]
+(defonce appbar-elevation (atom 0))
+
+(def mixin-on-scroll
+  {:did-mount
+   (fn [state]
+     (.addEventListener
+       js/window
+       "scroll"
+       (fn [_]
+         (let [top? (zero? (-> js/window .-scrollY))]
+           (if top?
+             (reset! appbar-elevation 0)
+             (reset! appbar-elevation 4))))) state)})
+
+(rum/defc appbar < rum/reactive
+                   mixin-on-scroll [{:keys [title subtitle search-fn actions]}]
+  (let [{:keys [mobileSearchOpened menuAnchorEl mobileMoreAnchorEl version]} (state/react state/layout-cursor)
+        elevation (rum/react appbar-elevation)]
     (comp/mui
       (html
         [:div
          (comp/app-bar
            {:key       "appbar"
             :color     "primary"
+            :elevation elevation
+            :id        "Swarmpit-appbar"
             :className "Swarmpit-appbar"}
            (comp/toolbar
              {:key            "appbar-toolbar"
               :disableGutters false}
+             (html
+               [:div.Swarmpit-desktop-title
+                (common/title-logo)
+                (common/title-version version)])
              (comp/icon-button
                {:key        "appbar-menu-btn"
                 :color      "inherit"
@@ -213,13 +249,6 @@
                 :color     "inherit"
                 :noWrap    true}
                title)
-             (comp/typography
-               {:key       "appbar-subtitle"
-                :className "Swarmpit-appbar-subtitle"
-                :variant   "subtitle1"
-                :color     "inherit"
-                :noWrap    false}
-               subtitle)
              (html [:div.grow])
              (appbar-desktop-section search-fn actions title)
              (appbar-mobile-section search-fn actions)

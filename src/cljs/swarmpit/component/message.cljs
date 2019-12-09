@@ -57,9 +57,10 @@
 
 (rum/defc message < rum/reactive []
   (let [{:keys [open type text]} (state/react message-cursor)]
-    (case type
-      :info (info-message text open)
-      :error (error-message text open))))
+    (comp/mui
+      (case type
+        :info (info-message text open)
+        :error (error-message text open)))))
 
 (defn mount!
   []

@@ -8,11 +8,11 @@
             [swarmpit.component.mixin :as mixin]
             [swarmpit.component.message :as message]
             [swarmpit.component.progress :as progress]
+            [swarmpit.component.common :as common]
             [swarmpit.ajax :as ajax]
             [swarmpit.routes :as routes]
             [swarmpit.url :refer [dispatch!]]
             [sablono.core :refer-macros [html]]
-            [swarmpit.component.common :as common]
             [clojure.string :as str]
             [rum.core :as rum]))
 
@@ -34,6 +34,7 @@
      :helperText      "Specify stack name"
      :defaultValue    value
      :required        true
+     :margin          "normal"
      :InputLabelProps {:shrink true}
      :onChange        #(state/update-value [:name] (-> % .-target .-value) state/form-value-cursor)}))
 
@@ -47,6 +48,7 @@
      :multiline       true
      :disabled        true
      :required        true
+     :margin          "normal"
      :InputLabelProps {:shrink true}
      :value           value}))
 
@@ -129,57 +131,42 @@
       (html
         [:div.Swarmpit-form
          [:div.Swarmpit-form-context
-          [:div.Swarmpit-form-paper
-           (common/edit-title "Create a new stack" "group of interrelated services that are orchestrated and scaled together")
-           (comp/grid
-             {:container true
-              :className "Swarmpit-form-main-grid"
-              :spacing   5}
-             (comp/grid
-               {:item true
-                :xs   12
-                :sm   12
-                :md   12
-                :lg   8
-                :xl   8}
-               (comp/grid
-                 {:container true
-                  :spacing   5}
-                 (comp/grid
-                   {:item true
-                    :xs   12}
-                   (form-name name))
-                 (comp/grid
-                   {:item true
-                    :xs   12}
-                   (when-not from
-                     (html [:span.Swarmpit-message "Drag & drop or paste a compose file."]))
-                   (form-editor (:compose spec)))
-                 (comp/grid
-                   {:item true
-                    :xs   12}
-                   (html
-                     [:div.Swarmpit-form-buttons
-                      (composite/progress-button
-                        "Deploy"
-                        create-stack-handler
-                        processing?
-                        (or saving? (str/blank? name)))
-                      (composite/progress-button
-                        "Save"
-                        save-stack-handler
-                        saving?
-                        (or processing? (str/blank? name))
-                        {:variant "text"})]))))
-             (comp/grid
-               {:item true
-                :xs   12
-                :sm   12
-                :md   12
-                :lg   4
-                :xl   4}
-               (form/open-in-new "Learn more about compose" doc-compose-link)
-               (form/open-in-new "Format reference" doc-compose-ref-link)))]]]))))
+          (comp/container
+            {:maxWidth  "md"
+             :className "Swarmpit-container"}
+            (comp/card
+              {:className "Swarmpit-form-card Swarmpit-fcard"}
+              (comp/box
+                {:className "Swarmpit-fcard-header"}
+                (comp/typography
+                  {:className "Swarmpit-fcard-header-title"
+                   :variant   "h6"
+                   :component "div"}
+                  "Create stack"))
+              (comp/card-content
+                {:className "Swarmpit-fcard-content"}
+                (comp/typography
+                  {:variant   "body2"
+                   :className "Swarmpit-fcard-message"}
+                  "Group of interrelated services that are orchestrated and scaled together")
+                (form-name name)
+                (form-editor (:compose spec)))
+              (comp/card-actions
+                {:className "Swarmpit-fcard-actions"}
+                (composite/progress-button
+                  "Deploy"
+                  create-stack-handler
+                  processing?
+                  saving?
+                  {:startIcon (comp/svg {} icon/rocket-path)})
+                (composite/progress-button
+                  "Save"
+                  save-stack-handler
+                  saving?
+                  processing?
+                  {:variant   "outlined"
+                   :color     "secondary"
+                   :startIcon (icon/save {})}))))]]))))
 
 (rum/defc form < rum/reactive
                  mixin-init-form [params]

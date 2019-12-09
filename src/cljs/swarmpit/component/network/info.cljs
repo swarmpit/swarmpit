@@ -10,12 +10,15 @@
             [swarmpit.component.message :as message]
             [swarmpit.component.progress :as progress]
             [swarmpit.component.service.list :as services]
+            [swarmpit.component.common :as common]
+            [swarmpit.component.toolbar :as toolbar]
             [swarmpit.url :refer [dispatch!]]
             [swarmpit.ajax :as ajax]
             [swarmpit.time :as time]
             [swarmpit.routes :as routes]
             [sablono.core :refer-macros [html]]
-            [rum.core :as rum]))
+            [rum.core :as rum]
+            [clojure.string :as str]))
 
 (enable-console-print!)
 
@@ -56,67 +59,56 @@
   (comp/card
     {:className "Swarmpit-form-card"}
     (comp/card-header
-      {:title     networkName
-       :className "Swarmpit-form-card-header Swarmpit-card-header-responsive-title"
-       :action    (comp/tooltip
-                    {:title "Delete network"}
-                    (comp/icon-button
-                      {:aria-label "Delete"
-                       :onClick    #(state/update-value [:open] true dialog/dialog-cursor)}
-                      (comp/svg icon/trash-path)))})
-    (when (and (:subnet ipam)
-               (:gateway ipam))
-      (comp/card-content
+      {:title     (comp/typography {:variant "h6"} "Summary")
+       :subheader (when (or internal ingress attachable enableIPv6)
+                    (form/item-labels
+                      [(when internal
+                         (label/header "Internal" "primary"))
+                       (when ingress
+                         (label/header "Ingress" "primary"))
+                       (when attachable
+                         (label/header "Attachable" "primary"))
+                       (when enableIPv6
+                         (label/header "IPv6" "primary"))]))})
+    (form/item-main "ID" id false)
+    (form/item-main "Name" networkName)
+    (form/item-main "Driver" driver)
+    (form/item-main "Created" (form/item-date created))
+    (when (not (str/blank? (:subnet ipam)))
+      (form/item-main "Subnet" (:subnet ipam)))
+    (when (not (str/blank? (:gateway ipam)))
+      (form/item-main "Gateway" (:gateway ipam)))
+    (when (and stack (not-empty services))
+      (comp/box
         {}
-        (html
-          [:div
-           [:span "The subnet is listed as " [:b (:subnet ipam)]]
-           [:br]
-           [:span "The gateway IP in the above instance is " [:b (:gateway ipam)]]])))
-    (comp/card-content
-      {}
-      (form/item-labels
-        [(when driver
-           (label/grey driver))
-         (when internal
-           (label/grey "Internal"))
-         (when ingress
-           (label/grey "Ingress"))
-         (when attachable
-           (label/grey "Attachable"))
-         (when enableIPv6
-           (label/grey "IPv6"))]))
-    (comp/card-actions
-      {}
-      (when (and stack (not-empty services))
-        (comp/button
-          {:size  "small"
-           :color "primary"
-           :href  (routes/path-for-frontend :stack-info {:name stack})}
-          "See stack")))
-    (comp/divider
-      {})
-    (comp/card-content
-      {:style {:paddingBottom "16px"}}
-      (when (time/valid? created)
-        (form/item-date created nil))
-      (form/item-id id))))
+        (comp/divider {})
+        (comp/card-actions
+          {}
+          (comp/button
+            {:size  "small"
+             :color "primary"
+             :href  (routes/path-for-frontend :stack-info {:name stack})}
+            "See stack"))))))
 
 (rum/defc form-driver < rum/static [{:keys [driver options]}]
   (comp/card
     {:className "Swarmpit-card"}
     (comp/card-header
       {:className "Swarmpit-table-card-header"
-       :title     (comp/typography {:variant "h6"} "Driver")})
-    (comp/card-content {} driver)
+       :title     (comp/typography {:variant "h6"} "Driver settings")})
     (comp/card-content
       {:className "Swarmpit-table-card-content"}
-      (when (not-empty options)
-        [(comp/divider {})
-         (list/list
-          form-driver-opts-render-metadata
-          options
-          nil)]))))
+      (list/list
+        form-driver-opts-render-metadata
+        options
+        nil))))
+
+(def form-actions
+  [{:onClick #(state/update-value [:open] true dialog/dialog-cursor)
+    :icon    (comp/svg icon/trash-path)
+    :color   "default"
+    :variant "outlined"
+    :name    "Delete"}])
 
 (defn- init-form-state
   []
@@ -129,24 +121,6 @@
       (network-handler id)
       (network-services-handler id))))
 
-(defn form-general-grid [network services]
-  (comp/grid
-    {:item true
-     :xs   12}
-    (form-general network services)))
-
-(defn form-driver-grid [network]
-  (comp/grid
-    {:item true
-     :xs   12}
-    (form-driver network)))
-
-(defn form-services-grid [services]
-  (comp/grid
-    {:item true
-     :xs   12}
-    (services/linked services)))
-
 (rum/defc form-info < rum/static [{:keys [network services]}]
   (comp/mui
     (html
@@ -155,39 +129,30 @@
          #(delete-network-handler (:id network))
          "Delete network?"
          "Delete")
-       [:div.Swarmpit-form-context
-        (comp/hidden
-          {:xsDown         true
-           :implementation "js"}
+       [:div.Swarmpit-form-toolbar
+        (comp/container
+          {:maxWidth  "md"
+           :className "Swarmpit-container"}
           (comp/grid
             {:container true
              :spacing   2}
             (comp/grid
               {:item true
-               :sm   6
-               :md   4}
-              (comp/grid
-                {:container true
-                 :spacing   2}
-                (form-general-grid network services)
-                (form-driver-grid network)))
+               :xs   12}
+              (toolbar/toolbar "Network" (:networkName network) form-actions))
             (comp/grid
               {:item true
-               :sm   6
-               :md   8}
+               :xs   12}
+              (form-general network services))
+            (when (not-empty (:options network))
               (comp/grid
-                {:container true
-                 :spacing   2}
-                (form-services-grid services)))))
-        (comp/hidden
-          {:smUp           true
-           :implementation "js"}
-          (comp/grid
-            {:container true
-             :spacing   2}
-            (form-general-grid network services)
-            (form-services-grid services)
-            (form-driver-grid network)))]])))
+                {:item true
+                 :xs   12}
+                (form-driver network)))
+            (comp/grid
+              {:item true
+               :xs   12}
+              (services/linked services))))]])))
 
 (rum/defc form < rum/reactive
                  mixin-init-form

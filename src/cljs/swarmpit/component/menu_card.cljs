@@ -1,4 +1,4 @@
-(ns swarmpit.component.action-menu
+(ns swarmpit.component.menu_card
   (:require [material.icon :as icon]
             [material.components :as comp]
             [swarmpit.component.state :as state]

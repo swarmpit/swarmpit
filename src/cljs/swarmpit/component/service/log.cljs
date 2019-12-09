@@ -135,11 +135,13 @@
     (html
       [:div
        [:div.Swarmpit-log-history-fab
-        (comp/button
-          {:variant "extendedFab"
+        (comp/fab
+          {:variant "extended"
            :onClick #(state/update-value [:historyAnchorEl] (.-currentTarget %) state/form-state-cursor)}
           (icon/access-time {:className "Swarmpit-log-history-fab-ico"})
-          (get history-options history))]
+          (get history-options history)
+
+          )]
        (comp/menu
          {:id              "list-filter-menu"
           :anchorEl        anchorEl
@@ -168,9 +170,8 @@
 (rum/defc form-scroll < rum/static [autoscroll]
   (html
     [:div.Swarmpit-log-fab
-     (comp/button
-       {:variant "fab"
-        :color   (if autoscroll "primary")
+     (comp/fab
+       {:color   (if autoscroll "primary")
         :mini    true
         :onClick (fn []
                    (reset! last-scroll 0)

@@ -8,20 +8,44 @@
 
 (enable-console-print!)
 
+(defonce active-tab (atom 0))
+
 (rum/defc form < rum/reactive []
-  (comp/mui
-    (html
-      [:div.Swarmpit-form
-       [:div.Swarmpit-form-context
-        [:div.Swarmpit-form-paper
-         (common/edit-title "Password change")
-         (password/form)]
-        [:div.Swarmpit-form-paper (comp/divider)]
-        [:div.Swarmpit-form-paper
-         (common/edit-title "API access")
-         (api-access/form)]]])))
-
-
-
-
-
+  (let [active (rum/react active-tab)]
+    (comp/mui
+      (html
+        [:div.Swarmpit-form
+         [:div.Swarmpit-form-toolbar
+          (comp/container
+            {:maxWidth  "sm"
+             :className "Swarmpit-container"}
+            (comp/tabs
+              {:value          active
+               :onChange       (fn [_ v] (reset! active-tab v))
+               :indicatorColor "primary"
+               :textColor      "primary"
+               :variant        "scrollable"
+               :scrollButtons  "auto"
+               :aria-label     "tabs"}
+              (comp/tab {:label "Password change"})
+              (comp/tab {:label "API Access"}))
+            (comp/divider {})
+            (comp/card
+              {:className "Swarmpit-form-card Swarmpit-tabs Swarmpit-fcard"}
+              (comp/box
+                {:className "Swarmpit-fcard-header"}
+                (comp/typography
+                  {:className "Swarmpit-fcard-header-title"
+                   :variant   "h6"
+                   :component "div"}
+                  (case active
+                    0 "Password change"
+                    1 "API Access")))
+              (common/tab-panel
+                {:value active
+                 :index 0}
+                (password/form))
+              (common/tab-panel
+                {:value active
+                 :index 1}
+                (api-access/form))))]]))))

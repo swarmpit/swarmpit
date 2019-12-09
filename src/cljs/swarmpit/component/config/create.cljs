@@ -29,6 +29,8 @@
      :variant         "outlined"
      :defaultValue    value
      :required        true
+     :margin          "normal"
+     :helperText      "Specify config name"
      :InputLabelProps {:shrink true}
      :onChange        #(state/update-value [:configName] (-> % .-target .-value) state/form-value-cursor)}))
 
@@ -42,6 +44,7 @@
      :required        true
      :multiline       true
      :disabled        true
+     :margin          "normal"
      :InputLabelProps {:shrink true}
      :value           value}))
 
@@ -95,44 +98,29 @@
       (html
         [:div.Swarmpit-form
          [:div.Swarmpit-form-context
-          [:div.Swarmpit-form-paper
-           (common/edit-title "Create a new config" "store non-sensitive information such as config files")
-           (comp/grid
-             {:container true
-              :className "Swarmpit-form-main-grid"
-              :spacing   5}
-             (comp/grid
-               {:item true
-                :xs   12
-                :sm   12
-                :md   12
-                :lg   8
-                :xl   8}
-               (comp/grid
-                 {:container true
-                  :spacing   5}
-                 (comp/grid
-                   {:item true
-                    :xs   12}
-                   (form-name configName))
-                 (comp/grid
-                   {:item true
-                    :xs   12}
-                   (form-data data))
-                 (comp/grid
-                   {:item true
-                    :xs   12}
-                   (html
-                     [:div.Swarmpit-form-buttons
-                      (composite/progress-button
-                        "Create"
-                        create-config-handler
-                        processing?)]))))
-             (comp/grid
-               {:item true
-                :xs   12
-                :sm   12
-                :md   12
-                :lg   4
-                :xl   4}
-               (form/open-in-new "Learn more about configs" doc-configs-link)))]]]))))
+          (comp/container
+            {:className "Swarmpit-container"
+             :maxWidth  "md"}
+            (comp/card
+              {:className "Swarmpit-form-card Swarmpit-fcard"}
+              (comp/box
+                {:className "Swarmpit-fcard-header"}
+                (comp/typography
+                  {:className "Swarmpit-fcard-header-title"
+                   :variant   "h6"
+                   :component "div"}
+                  "Create config"))
+              (comp/card-content
+                {:className "Swarmpit-fcard-content"}
+                (comp/typography
+                  {:variant   "body2"
+                   :className "Swarmpit-fcard-message"}
+                  "Store non-sensitive information such as config files")
+                (form-name configName)
+                (form-data data))
+              (comp/card-actions
+                {:className "Swarmpit-fcard-actions"}
+                (composite/progress-button
+                  "Create"
+                  create-config-handler
+                  processing?))))]]))))

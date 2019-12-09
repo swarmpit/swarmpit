@@ -40,6 +40,7 @@
 
 (def typography (create-factory js/MaterialUI.Typography))
 (def drawer (create-factory js/MaterialUI.Drawer))
+(def swipeable-drawer (create-factory js/MaterialUI.SwipeableDrawer))
 (def divider (create-factory js/MaterialUI.Divider))
 (def toolbar (create-factory js/MaterialUI.Toolbar))
 (def appbar (create-factory js/MaterialUI.AppBar))
@@ -54,6 +55,8 @@
 
 (def chip (create-factory js/MaterialUI.Chip))
 (def button (create-factory js/MaterialUI.Button))
+(def button-group (create-factory js/MaterialUI.ButtonGroup))
+(def fab (create-factory js/MaterialUI.Fab))
 (def icon-button (create-factory js/MaterialUI.IconButton))
 (def svg-icon (create-factory js/MaterialUI.SvgIcon))
 (def checkbox (create-factory js/MaterialUI.Checkbox))
@@ -62,6 +65,8 @@
 (def snackbar (create-factory js/MaterialUI.Snackbar))
 (def snackbar-content (create-factory js/MaterialUI.SnackbarContent))
 (def text-field (create-factory js/MaterialUI.TextField))
+(def link (create-factory js/MaterialUI.Link))
+(def breadcrumbs (create-factory js/MaterialUI.Breadcrumbs))
 
 (def table (create-factory js/MaterialUI.Table))
 (def table-head (create-factory js/MaterialUI.TableHead))
@@ -81,6 +86,8 @@
 (def step-content (create-factory js/MaterialUI.StepContent))
 
 (def grid (create-factory js/MaterialUI.Grid))
+(def box (create-factory js/MaterialUI.Box))
+(def container (create-factory js/MaterialUI.Container))
 
 (def card (create-factory js/MaterialUI.Card))
 (def card-header (create-factory js/MaterialUI.CardHeader))
@@ -155,9 +162,13 @@
 (def image-icon (create-factory js/MaterialUIIcons.Image))
 (def dashboard-icon (create-factory js/MaterialUIIcons.Dashboard))
 (def stop-icon (create-factory js/MaterialUIIcons.Stop))
+(def save-icon (create-factory js/MaterialUIIcons.Save))
+(def arrow-dropdown-icon (create-factory js/MaterialUIIcons.ArrowDropDown))
+(def exit-icon (create-factory js/MaterialUIIcons.ExitToApp))
 
 (def create-mui-theme js/MaterialUI.createMuiTheme)
 (def with-mobile-dialog js/MaterialUI.withMobileDialog)
+(def use-scroll-trigger js/MaterialUI.useScrollTrigger)
 
 (defn responsive-dialog [component]
   (create-factory ((js/MaterialUI.withMobileDialog #js {:breakpoint "xs"}) component)))

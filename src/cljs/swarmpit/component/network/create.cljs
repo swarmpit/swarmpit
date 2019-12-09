@@ -26,9 +26,9 @@
      :key             "name"
      :margin          "normal"
      :variant         "outlined"
-     :style           {:maxWidth "350px"}
      :defaultValue    value
      :required        true
+     :helperText      "Specify network name"
      :InputLabelProps {:shrink true}
      :onChange        #(state/update-value [:networkName] (-> % .-target .-value) state/form-value-cursor)}))
 
@@ -38,7 +38,6 @@
      :key             "driver"
      :label           "Network driver"
      :helperText      "Driver to manage the Network "
-     :style           {:maxWidth "350px"}
      :select          true
      :value           value
      :margin          "normal"
@@ -55,6 +54,7 @@
   (comp/checkbox
     {:checked  value
      :key      "internal"
+     :color    "primary"
      :value    (str value)
      :onChange #(state/update-value [:internal] (-> % .-target .-checked) state/form-value-cursor)}))
 
@@ -62,6 +62,7 @@
   (comp/checkbox
     {:checked  value
      :key      "attachable"
+     :color    "primary"
      :disabled ingres?
      :value    (str value)
      :onChange #(state/update-value [:attachable] (-> % .-target .-checked) state/form-value-cursor)}))
@@ -70,6 +71,7 @@
   (comp/checkbox
     {:checked  value
      :key      "ingress"
+     :color    "primary"
      :disabled attachable?
      :value    (str value)
      :onChange #(state/update-value [:ingress] (-> % .-target .-checked) state/form-value-cursor)}))
@@ -78,7 +80,7 @@
   [{:keys [networkName internal attachable ingress]}]
   (comp/grid
     {:container true
-     :spacing   3}
+     :spacing   2}
     (comp/grid
       {:item true
        :xs   12}
@@ -105,6 +107,7 @@
   (comp/checkbox
     {:checked  value
      :key      "ipv6"
+     :color    "primary"
      :value    (str value)
      :onChange #(state/update-value [:enableIPv6] (-> % .-target .-checked) state/form-value-cursor)}))
 
@@ -117,7 +120,6 @@
      :key             "subnet"
      :placeholder     "e.g. 10.0.0.0/24"
      :helperText      "Subnet in CIDR format that represents a network segment"
-     :style           {:maxWidth "350px"}
      :margin          "normal"
      :defaultValue    value
      :InputLabelProps {:shrink true}
@@ -132,7 +134,6 @@
      :key             "gateway"
      :placeholder     "e.g. 10.0.0.1"
      :helperText      "IPv4 or IPv6 Gateway for the master subnet"
-     :style           {:maxWidth "350px"}
      :defaultValue    value
      :InputLabelProps {:shrink true}
      :onChange        #(state/update-value [:ipam :gateway] (-> % .-target .-value) state/form-value-cursor)}))
@@ -141,7 +142,7 @@
   [{:keys [ipam enableIPv6]}]
   (comp/grid
     {:container true
-     :spacing   3}
+     :spacing   2}
     (comp/grid
       {:item true
        :xs   12}
@@ -270,59 +271,53 @@
       (html
         [:div.Swarmpit-form
          [:div.Swarmpit-form-context
-          [:div.Swarmpit-form-paper
-           (common/edit-title "Create a new network" "connect services together by pluggable networks")
-           (comp/grid
-             {:container true
-              :className "Swarmpit-form-main-grid"
-              :spacing   5}
-             (comp/grid
-               {:item true
-                :xs   12
-                :sm   12
-                :md   12
-                :lg   8
-                :xl   8}
-               (comp/grid
-                 {:container true
-                  :spacing   5}
-                 (comp/grid
-                   {:item true
-                    :xs   12
-                    :sm   6}
-                   (comp/typography
-                     {:variant      "h6"
-                      :gutterBottom true} "General")
-                   (section-general item))
-                 (comp/grid
-                   {:item true
-                    :xs   12
-                    :sm   6}
-                   (comp/typography
-                     {:variant      "h6"
-                      :gutterBottom true} "IPAM")
-                   (section-ipam item))
-                 (comp/grid
-                   {:item true
-                    :xs   12}
-                   (comp/typography
-                     {:variant      "h6"
-                      :gutterBottom true} "Driver")
-                   (section-driver item plugins))
-                 (comp/grid
-                   {:item true
-                    :xs   12}
-                   (html
-                     [:div.Swarmpit-form-buttons
-                      (composite/progress-button
-                        "Create"
-                        #(create-network-handler)
-                        processing?)]))))
-             (comp/grid
-               {:item true
-                :xs   12
-                :sm   12
-                :md   12
-                :lg   4
-                :xl   4}
-               (form/open-in-new "Learn more about networks" doc-network-link)))]]]))))
+          (comp/container
+            {:maxWidth  "md"
+             :className "Swarmpit-container"}
+            (comp/card
+              {:className "Swarmpit-form-card Swarmpit-fcard"}
+              (comp/box
+                {:className "Swarmpit-fcard-header"}
+                (comp/typography
+                  {:className "Swarmpit-fcard-header-title"
+                   :variant   "h6"
+                   :component "div"}
+                  "Create network"))
+              (comp/card-content
+                {:className "Swarmpit-fcard-content"}
+                (comp/typography
+                  {:variant   "body2"
+                   :className "Swarmpit-fcard-message"}
+                  "Connect services together by pluggable networks")
+                (comp/grid
+                  {:container true
+                   :spacing   5}
+                  (comp/grid
+                    {:item true
+                     :xs   12
+                     :sm   6}
+                    (comp/typography
+                      {:variant      "h6"
+                       :gutterBottom true} "General")
+                    (section-general item))
+                  (comp/grid
+                    {:item true
+                     :xs   12
+                     :sm   6}
+                    (comp/typography
+                      {:variant      "h6"
+                       :gutterBottom true} "IPAM")
+                    (section-ipam item))
+                  (comp/grid
+                    {:item true
+                     :xs   12}
+                    (comp/typography
+                      {:variant      "h6"
+                       :gutterBottom true} "Driver")
+                    (section-driver item plugins))))
+              (comp/card-actions
+                {:className "Swarmpit-fcard-actions"}
+                (composite/progress-button
+                  "Create"
+                  #(create-network-handler)
+                  processing?))))]]))))

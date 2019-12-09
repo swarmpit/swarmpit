@@ -1,12 +1,19 @@
 (ns material.component.label
   (:refer-clojure :exclude [update])
-  (:require [sablono.core :refer-macros [html]]))
+  (:require [material.components :as comp]
+            [sablono.core :refer-macros [html]]))
 
 (defn base
   [label color]
   (html
     [:span {:class (str "Swarmpit-label Swarmpit-label-" color)
             :key   (str "label-" label)} label]))
+
+(defn header
+  [label color]
+  (comp/typography
+    {:variant   "overline"
+     :className (str "Swarmpit-header-label Swarmpit-label-" color)} label))
 
 (defn green
   [label]

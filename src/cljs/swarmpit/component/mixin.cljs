@@ -37,14 +37,9 @@
 (def scroll-to-section
   {:after-render
    (fn [state]
-     (let [scrolled? (state/get-value (conj state/form-state-cursor :scrolled))]
-       (when (nil? scrolled?)
-         (let [section (-> state :rum/args first :params :section)
-               el (.getElementById js/document section)]
-           (when (and el section)
-             (do
-               (.scrollIntoView el true)
-               (.scrollBy js/window 0 -74))))))
+     (let [section (-> state :rum/args first :params :section)]
+       (when section
+         (state/update-value [:active] (js/parseInt section) state/form-state-cursor)))
      state)})
 
 (def focus-filter

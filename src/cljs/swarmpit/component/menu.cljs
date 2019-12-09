@@ -1,17 +1,15 @@
 (ns swarmpit.component.menu
   (:require [material.icon :as icon]
             [material.components :as comp]
+            [swarmpit.component.common :as common]
             [swarmpit.component.state :as state]
             [swarmpit.storage :as storage]
-            [swarmpit.ajax :as ajax]
             [swarmpit.routes :as routes]
             [swarmpit.url :as url]
             [sablono.core :refer-macros [html]]
             [rum.core :as rum]))
 
 (enable-console-print!)
-
-(def swarmpit-home-page "https://swarmpit.io")
 
 (def menu
   [{:name    "Dashboard"
@@ -67,38 +65,10 @@
     :handler :user-list
     :domain  :user}])
 
-(defn- parse-version [version]
-  (clojure.string/replace
-    (:version version)
-    #"SNAPSHOT"
-    (->> (:revision version)
-         (take 7)
-         (apply str))))
-
 (defn- filter-menu [docker-api]
   (if (<= 1.30 docker-api)
     menu
     (filter #(not= :config (:domain %)) menu)))
-
-(defn version-handler
-  []
-  (ajax/get
-    (routes/path-for-backend :version)
-    {:headers    {"Authorization" nil}
-     :on-success (fn [{:keys [response]}]
-                   (state/update-value [:version] response state/layout-cursor)
-                   (state/set-value response))}))
-
-(rum/defc drawer-title-name < rum/static []
-  [:a {:target "_blank"
-       :href   swarmpit-home-page}
-   [:span.Swarmpit-title-name "Swarmpit"]])
-
-(rum/defc drawer-title-version < rum/static [version]
-  (when version
-    [:a {:target "_blank"
-         :href   "/api-docs"}
-     [:span.Swarmpit-title-version (parse-version version)]]))
 
 (rum/defc drawer-category < rum/static [name]
   (comp/list-item
@@ -112,19 +82,20 @@
 
 (rum/defc drawer-item < rum/static [name icon handler domain selected?]
   (comp/list-item
-    (merge {:button    true
-            :component "a"
-            :href      (routes/path-for-frontend handler)
-            :dense     true
-            :className "Swarmpit-drawer-item"
-            :key       (str "drawer-item-" name)
-            :onClick   (fn []
-                         (state/update-value [:mobileOpened] false state/layout-cursor)
-                         (url/dispatch! (routes/path-for-frontend handler)))}
+    (merge {:button        true
+            :component     "a"
+            :href          (routes/path-for-frontend handler)
+            :dense         true
+            :disableRipple true
+            :className     "Swarmpit-drawer-item"
+            :key           (str "drawer-item-" name)
+            :onClick       (fn []
+                             (state/update-value [:mobileOpened] false state/layout-cursor)
+                             (url/dispatch! (routes/path-for-frontend handler)))}
            (when selected?
              {:className "Swarmpit-drawer-item-selected"})
            (when (= :index domain)
-             {:style {:marginTop "10px"}}))
+             {:style {:marginTop "1rem"}}))
     (comp/list-item-icon
       (merge {:color "primary"
               :key   (str "drawer-item-icon-" name)}
@@ -138,20 +109,13 @@
                {:className "Swarmpit-drawer-item-text-selected"}
                {:className "Swarmpit-drawer-item-text"})))))
 
-(def retrieve-version
-  {:init
-   (fn [state]
-     (when (nil? (state/get-value [:version])) (version-handler))
-     state)})
-
 (rum/defc drawer-content < rum/static [version page-domain docker-api]
   [:div.Swarmpit-drawer-content
    (html
      [:div.Swarmpit-toolbar
-      [:div.Swarmpit-title
-       (drawer-title-name)
-       (drawer-title-version version)]])
-   (comp/divider)
+      [:div.Swarmpit-menu-title
+       (common/title-logo)
+       (common/title-version version)]])
    (map
      (fn [{:keys [icon name handler domain]}]
        (let [selected? (= page-domain domain)]
@@ -165,8 +129,7 @@
          (concat fmenu admin-menu)
          fmenu)))])
 
-(rum/defc drawer < rum/reactive
-                   retrieve-version [page-domain]
+(rum/defc drawer < rum/reactive [page-domain]
   (let [{:keys [mobileOpened version]} (state/react state/layout-cursor)
         docker-api (state/react state/docker-api-cursor)]
     (comp/mui
@@ -180,13 +143,15 @@
               :open       mobileOpened
               :variant    "temporary"
               :onClose    #(state/update-value [:mobileOpened] false state/layout-cursor)
+              :PaperProps {:style {:backgroundColor "#fafafa"}}
               :ModalProps {:keepMounted true}}
              (drawer-content version page-domain docker-api)))
          (comp/hidden
            {:mdDown         true
             :implementation "css"}
            (comp/drawer
-             {:className "Swarmpit-drawer"
-              :open      true
-              :variant   "permanent"}
+             {:className  "Swarmpit-drawer"
+              :PaperProps {:style {:backgroundColor "#fafafa"}}
+              :open       true
+              :variant    "permanent"}
              (drawer-content version page-domain docker-api)))]))))

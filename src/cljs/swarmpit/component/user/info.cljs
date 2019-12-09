@@ -8,14 +8,15 @@
             [swarmpit.component.state :as state]
             [swarmpit.component.common :as common]
             [swarmpit.component.dialog :as dialog]
-            [swarmpit.component.action-menu :as menu]
+            [swarmpit.component.toolbar :as toolbar]
             [swarmpit.component.progress :as progress]
             [swarmpit.url :refer [dispatch!]]
             [swarmpit.storage :as storage]
             [swarmpit.ajax :as ajax]
             [swarmpit.routes :as routes]
             [sablono.core :refer-macros [html]]
-            [rum.core :as rum]))
+            [rum.core :as rum]
+            [clojure.string :as str]))
 
 (enable-console-print!)
 
@@ -44,11 +45,13 @@
   [username id]
   [{:onClick #(dispatch! (routes/path-for-frontend :user-edit {:id id}))
     :icon    (comp/svg icon/edit-path)
-    :name    "Edit user"}
+    :name    "Edit"}
    {:onClick  #(state/update-value [:open] true dialog/dialog-cursor)
     :disabled (= (storage/user) username)
     :icon     (comp/svg icon/trash-path)
-    :name     "Delete user"}])
+    :color    "default"
+    :variant  "outlined"
+    :name     "Delete"}])
 
 (defn- init-form-state
   []
@@ -68,26 +71,28 @@
          #(delete-user-handler _id)
          "Delete user?"
          "Delete")
-       [:div.Swarmpit-form-context
-        (comp/card
-          {:className "Swarmpit-form-card Swarmpit-form-card-single"}
-          (comp/card-header
-            {:title     username
-             :className "Swarmpit-form-card-header Swarmpit-card-header-responsive-title"
-             :subheader email
-             :action    (menu/menu
-                          (form-actions username _id)
-                          :userGeneralMenuAnchor
-                          :userGeneralMenuOpened)})
-          (comp/card-content
-            {}
-            (form/item-labels
-              [(label/grey role)]))
-          (comp/divider
-            {})
-          (comp/card-content
-            {:style {:paddingBottom "16px"}}
-            (form/item-id _id)))]])))
+       [:div.Swarmpit-form-toolbar
+        (comp/container
+          {:maxWidth  "md"
+           :className "Swarmpit-container"}
+          (comp/grid
+            {:container true
+             :spacing   2}
+            (comp/grid
+              {:item true
+               :xs   12}
+              (toolbar/toolbar "User" username (form-actions username _id)))
+            (comp/grid
+              {:item true
+               :xs   12}
+              (comp/card
+                {:className "Swarmpit-form-card"}
+                (comp/card-header
+                  {:title (comp/typography {:variant "h6"} "Profile")})
+                (form/item-main "ID" _id false)
+                (form/item-main "Username" username)
+                (form/item-main "Email" (if (str/blank? email) "-" email))
+                (form/item-main "Role" role)))))]])))
 
 (rum/defc form < rum/reactive
                  mixin-init-form

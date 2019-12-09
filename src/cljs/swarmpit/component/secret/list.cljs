@@ -18,10 +18,12 @@
 (def render-metadata
   {:table {:summary [{:name      "Name"
                       :render-fn (fn [item] (:secretName item))}
+                     {:name      "Last update"
+                      :render-fn (fn [item] (time/humanize (:updatedAt item)))}
                      {:name      "Created"
                       :render-fn (fn [item] (time/humanize (:createdAt item)))}]}
    :list  {:primary   (fn [item] (:secretName item))
-           :secondary (fn [item] (time/humanize (:createdAt item)))}})
+           :secondary (fn [item] (time/humanize (:updatedAt item)))}})
 
 (defn onclick-handler
   [item]
@@ -51,10 +53,10 @@
       (secrets-handler))))
 
 (def toolbar-render-metadata
-  {:actions [{:name     "New secret"
-              :onClick  #(dispatch! (routes/path-for-frontend :secret-create))
-              :icon     icon/add-circle-out
-              :icon-alt icon/add}]})
+  [{:name     "New secret"
+    :onClick  #(dispatch! (routes/path-for-frontend :secret-create))
+    :icon     icon/add-circle-out
+    :icon-alt icon/add}])
 
 (rum/defc form < rum/reactive
                  mixin-init-form

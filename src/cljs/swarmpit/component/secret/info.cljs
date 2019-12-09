@@ -7,6 +7,8 @@
             [swarmpit.component.dialog :as dialog]
             [swarmpit.component.message :as message]
             [swarmpit.component.progress :as progress]
+            [swarmpit.component.toolbar :as toolbar]
+            [swarmpit.component.common :as common]
             [swarmpit.component.service.list :as services]
             [swarmpit.url :refer [dispatch!]]
             [swarmpit.ajax :as ajax]
@@ -49,32 +51,18 @@
   (comp/card
     {:className "Swarmpit-form-card"}
     (comp/card-header
-      {:title     (:secretName secret)
-       :className "Swarmpit-form-card-header Swarmpit-card-header-responsive-title"
-       :action    (comp/tooltip
-                    {:title "Delete secret"}
-                    (comp/icon-button
-                      {:aria-label "Delete"
-                       :onClick    #(state/update-value [:open] true dialog/dialog-cursor)}
-                      (comp/svg icon/trash-path)))})
-    (comp/card-content
-      {}
-      (html
-        (if (empty? services)
-          [:span "Secret is not used by any service"]
-          [:span "Secret is used within " [:b (count services)] " " (inflect/pluralize-noun (count services) "service")])))
-    (comp/divider
-      {})
-    (comp/card-content
-      {:style {:paddingBottom "16px"}}
-      (form/item-date (:createdAt secret) (:updatedAt secret))
-      (form/item-id (:id secret)))))
+      {:title (comp/typography {:variant "h6"} "Summary")})
+    (form/item-main "ID" (:id secret) false)
+    (form/item-main "Name" (:secretName secret))
+    (form/item-main "Created" (form/item-date (:createdAt secret)))
+    (form/item-main "Last Update" (form/item-date (:updatedAt secret)))))
 
-(defn form-actions
-  [{:keys [params]}]
-  [{:onClick #(delete-secret-handler (:id params))
+(def form-actions
+  [{:onClick #(state/update-value [:open] true dialog/dialog-cursor)
     :icon    (comp/svg icon/trash-path)
-    :name    "Delete secret"}])
+    :color   "default"
+    :variant "outlined"
+    :name    "Delete"}])
 
 (defn- init-form-state
   []
@@ -87,18 +75,6 @@
       (secret-handler id)
       (secret-services-handler id))))
 
-(defn form-general-grid [secret services]
-  (comp/grid
-    {:item true
-     :xs   12}
-    (form-general secret services)))
-
-(defn form-services-grid [services]
-  (comp/grid
-    {:item true
-     :xs   12}
-    (services/linked services)))
-
 (rum/defc form-info < rum/static [{:keys [secret services]}]
   (comp/mui
     (html
@@ -107,37 +83,25 @@
          #(delete-secret-handler (:id secret))
          "Delete secret?"
          "Delete")
-       [:div.Swarmpit-form-context
-        (comp/hidden
-          {:xsDown         true
-           :implementation "js"}
+       [:div.Swarmpit-form-toolbar
+        (comp/container
+          {:maxWidth  "md"
+           :className "Swarmpit-container"}
           (comp/grid
             {:container true
              :spacing   2}
             (comp/grid
               {:item true
-               :sm   6
-               :md   4}
-              (comp/grid
-                {:container true
-                 :spacing   2}
-                (form-general-grid secret services)))
+               :xs 12}
+              (toolbar/toolbar "Secret" (:secretName secret) form-actions))
             (comp/grid
               {:item true
-               :sm   6
-               :md   8}
-              (comp/grid
-                {:container true
-                 :spacing   2}
-                (form-services-grid services)))))
-        (comp/hidden
-          {:smUp           true
-           :implementation "js"}
-          (comp/grid
-            {:container true
-             :spacing   2}
-            (form-general-grid secret services)
-            (form-services-grid services)))]])))
+               :xs   12}
+              (form-general secret services))
+            (comp/grid
+              {:item true
+               :xs   12}
+              (services/linked services))))]])))
 
 (rum/defc form < rum/reactive
                  mixin-init-form
