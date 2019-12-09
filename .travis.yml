@@ -1,6 +1,11 @@
 language: clojure
-services:
-  - docker
+addons:
+  apt:
+    packages:
+      - docker-ce
+    sources:
+      - sourceline: 'deb [arch=amd64] https://download.docker.com/linux/ubuntu $(lsb_release -cs) stable test'
+        key_url: 'https://download.docker.com/linux/ubuntu/gpg'
 cache:
   directories:
     - ~/.m2
