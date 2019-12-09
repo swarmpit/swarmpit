@@ -50,12 +50,6 @@ git clone https://github.com/swarmpit/swarmpit
 docker stack deploy -c swarmpit/docker-compose.yml swarmpit
 ```
 
-For ARM based cluster use special compose file.
-
-```
-docker stack deploy -c swarmpit/docker-compose.yml swarmpit
-```
-
 [This stack](docker-compose.yml) is a composition of 4 services:
 
 * app - Swarmpit
