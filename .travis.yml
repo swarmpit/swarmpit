@@ -27,6 +27,7 @@ install:
 script:
   - lein deps
   - lein test :all
+  - bash dev/script/enable-experimental-docker.sh
   - bash dev/script/deploy-image.sh
 notifications:
   slack:
