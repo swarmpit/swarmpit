@@ -1,8 +1,9 @@
 #!/usr/bin/env bash
+set -e
 ORG=swarmpit
 REPO=swarmpit
 NAMESPACE=$ORG/$REPO
-BRANCH=${TRAVIS_BRANCH/\//-}
+TAG=${TRAVIS_BRANCH/\//-}
 
 if [ $DOCKER != "stable" ]
 then
@@ -10,29 +11,29 @@ then
 	exit 0
 fi
 
-lein uberjar || exit 1
-docker build -t $REPO . || exit 1
+if [ $TRAVIS_PULL_REQUEST == "false" ]
+then
+    if [ $TAG == "master" ]
+    then
+        TAG="latest"
+    fi
+else
+    TAG="pr-$TRAVIS_PULL_REQUEST-$TAG"
+fi
+
+IMAGE=$NAMESPACE:$TAG
+
+lein uberjar
+docker run --rm --privileged docker/binfmt:820fdd95a9972a5308930a2bdfb8573dd4447ad3
+docker buildx create --name multi
+docker buildx use multi
+docker buildx inspect --bootstrap
+docker buildx build --platform linux/amd64,linux/arm64,linux/arm/v7,linux/arm/v6 -t $IMAGE .
 
 if [ $TRAVIS_SECURE_ENV_VARS == "true" ] 
 then
 	docker login -u="$DOCKER_USERNAME" -p="$DOCKER_PASSWORD"
-	
-	if [ $TRAVIS_PULL_REQUEST == "false" ]
-	then
-		echo    "tagging  $NAMESPACE:$BRANCH"
-		docker tag $REPO "$NAMESPACE:$BRANCH"
-
-			if [ $BRANCH == "master" ]
-			then
-				echo    "tagging  $NAMESPACE:latest"
-				docker tag $REPO "$NAMESPACE:latest"
-			fi
-	else
-		echo    "tagging  $NAMESPACE:pr-$TRAVIS_PULL_REQUEST"
-		docker tag $REPO "$NAMESPACE:pr-$TRAVIS_PULL_REQUEST"
-	fi
-	
-	docker push "$NAMESPACE" || exit 1
+    docker buildx build --platform linux/amd64,linux/arm64,linux/arm/v7,linux/arm/v6 -t $IMAGE --push .
 else
 	echo "images can be pushed only from base repo"
 fi
