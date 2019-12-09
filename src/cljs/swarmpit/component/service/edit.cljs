@@ -327,7 +327,7 @@
 
 (rum/defc form < rum/reactive
                  mixin-init-form
-                 mixin/scroll-to-section [{{:keys [id section]} :params}]
+                 mixin/scroll-to-section [{{:keys [id]} :params}]
   (let [state (state/react state/form-state-cursor)
         service (state/react state/form-value-cursor)]
     (progress/form

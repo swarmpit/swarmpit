@@ -35,7 +35,7 @@
                    state)})
 
 (def scroll-to-section
-  {:after-render
+  {:did-mount
    (fn [state]
      (let [section (-> state :rum/args first :params :section)]
        (when section
