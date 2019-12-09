@@ -738,7 +738,7 @@ a {
 /** Form content **/
 
 .Swarmpit-form {
-    margin-top: 20px;
+    margin-top: 10px;
     min-height: calc(100vh - 64px);
 }
 

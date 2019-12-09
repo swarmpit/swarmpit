@@ -2,7 +2,6 @@
   (:refer-clojure :exclude [stepper list])
   (:require [material.factory :as f]
             [sablono.core :refer-macros [html]]
-            [goog.object :as gobject]
             [cuerdas.core :as str]))
 
 ;;; Theme components
@@ -15,7 +14,8 @@
                  :secondary {:main "#8B9F51"}}
    :typography  {:fontFamily (str/join "," ["Roboto" "Helvetica" "Arial" "sans-serif"])}
    :overrides   {:MuiCardHeader  {:action {:color "rgb(117, 117, 117)"}}
-                 :MuiCardActions {:root {:padding 16}}}
+                 :MuiCardActions {:root {:padding 16}}
+                 :MuiPaper       {:elevation4 {:boxShadow "0px 4px 20px rgba(0, 0, 0, 0.15)"}}}
    :breakpoints {:values {:xs 0
                           :sm 600
                           :md 1080
