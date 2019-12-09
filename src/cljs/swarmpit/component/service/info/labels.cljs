@@ -25,7 +25,7 @@
                      :href       (routes/path-for-frontend
                                    :service-edit
                                    {:id service-id}
-                                   {:section "Labels"})}
+                                   {:section 4})}
                     (comp/svg icon/edit-path))})
 
     (if (empty? labels)

@@ -33,7 +33,7 @@
                      :href       (routes/path-for-frontend
                                    :service-edit
                                    {:id service-id}
-                                   {:section "Ports"})}
+                                   {:section 1})}
                     (comp/svg icon/edit-path))})
     (if (empty? ports)
       (comp/card-content

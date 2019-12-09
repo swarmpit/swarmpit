@@ -25,7 +25,7 @@
                      :href       (routes/path-for-frontend
                                    :service-edit
                                    {:id service-id}
-                                   {:section "Extra hosts"})}
+                                   {:section 1})}
                     (comp/svg icon/edit-path))})
     (if (empty? hosts)
       (comp/card-content

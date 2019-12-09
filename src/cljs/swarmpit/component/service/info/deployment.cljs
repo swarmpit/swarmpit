@@ -34,7 +34,7 @@
                        :href       (routes/path-for-frontend
                                      :service-edit
                                      {:id service-id}
-                                     {:section "Deployment"})}
+                                     {:section 4})}
                       (comp/svg icon/edit-path))})
       (comp/card-content
         {}

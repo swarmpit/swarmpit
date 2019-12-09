@@ -25,7 +25,7 @@
                      :href       (routes/path-for-frontend
                                    :service-edit
                                    {:id service-id}
-                                   {:section "Log driver"})}
+                                   {:section 5})}
                     (comp/svg icon/edit-path))})
     (comp/card-content
       {}

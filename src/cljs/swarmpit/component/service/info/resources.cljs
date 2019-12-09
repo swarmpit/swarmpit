@@ -30,7 +30,7 @@
                      :href       (routes/path-for-frontend
                                    :service-edit
                                    {:id service-id}
-                                   {:section "Resources"})}
+                                   {:section 3})}
                     (comp/svg icon/edit-path))})
     (comp/card-content
       {}
