@@ -67,7 +67,7 @@ to shared-volume driver type of your choice. Alternatively, you can link db serv
 Swarmpit is published on port `888` by default.
 
 ### Installation on ARM based cluster
-Procceed simmilary to manual installation with special compose file.
+Follow manual installation with customised compose file.
 
 ```
 git clone https://github.com/swarmpit/swarmpit
