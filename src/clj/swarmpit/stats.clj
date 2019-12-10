@@ -1,8 +1,20 @@
 (ns swarmpit.stats
   (:require [clojure.core.cache :as cache]
+            [clojure.core.memoize :as memo]
+            [swarmpit.docker.engine.client :as docker]
             [swarmpit.influxdb.client :as influx]
             [swarmpit.influxdb.mapper :as m]
             [swarmpit.config :refer [config]]))
+
+(defn active-hosts
+  []
+  "List of running nodes"
+  (->> (docker/nodes)
+       (filter #(= "ready" (get-in % [:Status :State])))
+       (map :ID)
+       (set)))
+
+(def active-hosts-memo (memo/ttl active-hosts :ttl/threshold 5000))
 
 (def cache (atom (cache/basic-cache-factory {})))
 
@@ -10,7 +22,8 @@
   (some? (config :influxdb-url)))
 
 (defn ready? []
-  (not (empty? @cache)))
+  (not (and (empty? @cache)
+            (empty? (active-hosts-memo)))))
 
 (defn store-to-cache
   "Store stats in local cache"
@@ -44,7 +57,9 @@
 (defn cluster
   "Get latest cluster statistics"
   []
-  (let [hosts (vals @cache)
+  (let [cached-hosts (vals @cache)
+        active-hosts (active-hosts-memo)
+        hosts (filter #(contains? active-hosts (:id %)) cached-hosts)
         sum-fn (fn [ks] (reduce + (map #(get-in % ks) hosts)))
         mean-fn (fn [ks] (/ (sum-fn ks) (count hosts)))]
     {:cpu    {:usage (mean-fn [:cpu :usedPercentage])}
@@ -71,4 +86,3 @@
        (-> (influx/read-host-stats)
            (first)
            (get "series"))))
-
