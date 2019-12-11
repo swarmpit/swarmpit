@@ -18,7 +18,7 @@ More details about future and past releases can be found in [ROADMAP.md](ROADMAP
 
 ## Installation
 
-The only dependency for Swarmpit deployment is Docker with Swarm initialized, we are supporting Docker 1.13 and newer. Linux hosts on x86 and ARM architectures are currently supported.
+The only dependency for Swarmpit deployment is Docker with Swarm initialized, we are supporting Docker 1.13 and newer. Linux hosts on x86 and ARM architectures are supported as well.
 
 ### Package installer
 Installer is your guide to setup Swarmpit platform. For more details see the [installer](https://github.com/swarmpit/installer)
@@ -43,14 +43,14 @@ docker run -it --rm \
   swarmpit/install:edge
 ```
 ### Manual installation
-Simply deploy Swarmpit by using a compose file from our git repo with branch of corresponding version.
+Deploy Swarmpit by using a compose file from our git repo with branch of corresponding version.
 
 ```
 git clone https://github.com/swarmpit/swarmpit -b master
 docker stack deploy -c swarmpit/docker-compose.yml swarmpit
 ```
 
-For ARM based cluster is installation similar with its own special compose file.
+For ARM based cluster use custom compose file.
 
 ```
 git clone https://github.com/swarmpit/swarmpit -b master
