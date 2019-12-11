@@ -18,7 +18,7 @@ More details about future and past releases can be found in [ROADMAP.md](ROADMAP
 
 ## Installation
 
-The only dependency for Swarmpit deployment is Docker with Swarm initialized, we are supporting Docker 1.13 and newer.
+The only dependency for Swarmpit deployment is Docker with Swarm initialized, we are supporting Docker 1.13 and newer. Linux hosts on x86 and ARM architectures are currently supported.
 
 ### Package installer
 Installer is your guide to setup Swarmpit platform. For more details see the [installer](https://github.com/swarmpit/installer)
@@ -43,11 +43,18 @@ docker run -it --rm \
   swarmpit/install:edge
 ```
 ### Manual installation
-Simply deploy Swarmpit by using a compose file from our git repo.
+Simply deploy Swarmpit by using a compose file from our git repo with branch of corresponding version.
 
 ```
-git clone https://github.com/swarmpit/swarmpit
+git clone https://github.com/swarmpit/swarmpit -b master
 docker stack deploy -c swarmpit/docker-compose.yml swarmpit
+```
+
+For ARM based cluster is installation similar with its own special compose file.
+
+```
+git clone https://github.com/swarmpit/swarmpit -b master
+docker stack deploy -c swarmpit/docker-compose.arm.yml swarmpit
 ```
 
 [This stack](docker-compose.yml) is a composition of 4 services:
@@ -65,17 +72,6 @@ Feel free to edit the stackfile to change an application port and we strongly re
 to shared-volume driver type of your choice. Alternatively, you can link db service to the specific node by using [constraint](https://docs.docker.com/compose/compose-file/#placement).
 
 Swarmpit is published on port `888` by default.
-
-### Installation on ARM based cluster
-Follow manual installation with customised compose file.
-
-```
-git clone https://github.com/swarmpit/swarmpit
-docker stack deploy -c swarmpit/docker-compose.arm.yml swarmpit
-```
-
-Swarmpit and agent images already support multiple architectures, official influx db image is also supporting ARM, but for 
-couchdb we have to use different image for now.
 
 ## Development
 
