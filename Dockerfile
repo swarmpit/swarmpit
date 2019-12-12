@@ -1,7 +1,7 @@
 FROM openjdk:8u212-alpine
 MAINTAINER Pavol Noha <pavol.noha@gmail.com>
 
-RUN apk add --update curl docker && \
+RUN apk add --update curl docker java-jffi && \
     rm -rf /var/cache/apk/* && \
     rm /usr/bin/dockerd /usr/bin/containerd /usr/bin/runc
 
