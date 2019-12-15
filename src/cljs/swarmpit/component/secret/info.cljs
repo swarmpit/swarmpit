@@ -50,10 +50,7 @@
 (rum/defc form-general < rum/static [secret services]
   (comp/card
     {:className "Swarmpit-form-card"}
-    (comp/card-header
-      {:title (comp/typography {:variant "h6"} "Summary")})
     (form/item-main "ID" (:id secret) false)
-    (form/item-main "Name" (:secretName secret))
     (form/item-main "Created" (form/item-date (:createdAt secret)))
     (form/item-main "Last Update" (form/item-date (:updatedAt secret)))))
 

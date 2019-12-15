@@ -23,18 +23,18 @@
 
 (defn- node-item-state [value]
   (case value
-    "ready" (label/green value)
-    "down" (label/red value)))
+    "ready" (label/base value "green")
+    "down" (label/base value "red")))
 
 (defn- node-item-labels [item]
   (form/item-labels
     [(node-item-state (:state item))
      (when (:leader item)
-       (label/primary "leader"))
-     (label/grey (:role item))
+       (label/base "leader" "primary"))
+     (label/base (:role item) "grey")
      (if (= "active" (:availability item))
-       (label/green "active")
-       (label/grey (:availability item)))]))
+       (label/base "active" "green")
+       (label/base (:availability item) "grey"))]))
 
 (rum/defc node-item < rum/static [item index]
   (let [cpu (-> item :resources :cpu (int))

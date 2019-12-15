@@ -5,15 +5,9 @@
 
 (defn base
   [label color]
-  (html
-    [:span {:class (str "Swarmpit-label Swarmpit-label-" color)
-            :key   (str "label-" label)} label]))
-
-(defn header
-  [label color]
   (comp/typography
     {:variant   "overline"
-     :className (str "Swarmpit-header-label Swarmpit-label-" color)} label))
+     :className (str "Swarmpit-label Swarmpit-label-" color)} label))
 
 (defn green
   [label]

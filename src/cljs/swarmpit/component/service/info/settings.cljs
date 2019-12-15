@@ -80,17 +80,17 @@
 
 (defn- form-state [state]
   (case state
-    "running" (label/header state "green")
-    "not running" (label/header state "info")
-    "partly running" (label/header "running" "yellow")))
+    "running" (label/base state "green")
+    "not running" (label/base state "info")
+    "partly running" (label/base "running" "yellow")))
 
 (defn- autoredeploy-label
   [autoredeploy]
-  (when autoredeploy (label/header "autoredeploy" "primary")))
+  (when autoredeploy (label/base "autoredeploy" "primary")))
 
 (defn- agent-label
   [agent]
-  (when agent (label/header "agent" "primary")))
+  (when agent (label/base "agent" "primary")))
 
 (rum/defc form < rum/reactive [service tasks]
   (let [image (get-in service [:repository :image])
@@ -104,12 +104,11 @@
     (comp/card
       {:className "Swarmpit-form-card"}
       (comp/card-header
-        {:title     (comp/typography {:variant "h6"} "Summary")
-         :subheader (form/item-labels
+        {:subheader (form/item-labels
                       [(form-state (:state service))
                        (agent-label (:agent service))
                        (autoredeploy-label (-> service :deployment :autoredeploy))
-                       (label/header mode "grey")])})
+                       (label/base mode "grey")])})
       (comp/card-content
         {}
         (if (not (empty? desired-tasks))
@@ -117,7 +116,6 @@
           (form/message "Service has been shut down."))
         (form-command command))
       (form/item-main "ID" (:id service) false)
-      (form/item-main "Name" (:serviceName service))
       (when registry
         (form/item-main "Registry" registry))
       (form/item-main "Image" (if registry

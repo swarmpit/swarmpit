@@ -80,19 +80,19 @@
             (comp/grid
               {:item true
                :xs   12}
-              (toolbar/toolbar "Registry" _id (form-actions _id)))
+              (toolbar/toolbar "Registry" spName (form-actions _id)))
             (comp/grid
               {:item true
                :xs   12}
               (comp/card
                 {:className "Swarmpit-form-card"}
                 (comp/card-header
-                  {:title     (comp/typography {:variant "h6"} "Info")
+                  {:title     (comp/typography {:variant "h6"} "Azure ACR")
                    :avatar    (comp/avatar
                                 {:className "Swarmpit-card-avatar"}
                                 (comp/svg icon/azure-path))
                    :subheader (when public
-                                (label/header "Public" "info"))})
+                                (label/base "Public" "info"))})
                 (comp/card-content
                   {}
                   (comp/typography

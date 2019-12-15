@@ -25,8 +25,8 @@
 
 (defn- node-item-state [value]
   (case value
-    "ready" (label/header value "green")
-    "down" (label/header value "red")))
+    "ready" (label/base value "green")
+    "down" (label/base value "red")))
 
 (defn- me-handler
   [node-id]
@@ -122,15 +122,16 @@
     (comp/card
       {:className "Swarmpit-form-card"}
       (comp/card-header
-        {:title     (comp/typography {:variant "h6"} "Summary")
+        {
+         ;:title     (comp/typography {:variant "h6"} "Summary")
          :subheader (form/item-labels
                       [(node-item-state (:state node))
                        (when (:leader node)
-                         (label/header "Leader" "primary"))
-                       (label/header (:role node) "info")
+                         (label/base "Leader" "primary"))
+                       (label/base (:role node) "info")
                        (if (= "active" (:availability node))
-                         (label/header "active" "green")
-                         (label/header (:availability node) "info"))])})
+                         (label/base "active" "green")
+                         (label/base (:availability node) "info"))])})
       (comp/card-content
         {:className "Swarmpit-table-card-content"}
         (html

@@ -73,10 +73,7 @@
 (rum/defc form-general < rum/static [config services]
   (comp/card
     {:className "Swarmpit-form-card"}
-    (comp/card-header
-      {:title (comp/typography {:variant "h6"} "Summary")})
     (form/item-main "ID" (:id config) false)
-    (form/item-main "Name" (:configName config))
     (form/item-main "Created" (form/item-date (:createdAt config)))
     (form/item-main "Last Update" (form/item-date (:updatedAt config)))))
 

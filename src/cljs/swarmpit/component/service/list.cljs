@@ -32,14 +32,14 @@
 
 (defn- render-item-update-state [value]
   (case value
-    "rollback_started" (label/pulsing "rollback")
-    (label/pulsing value)))
+    "rollback_started" (label/base "rollback" "pulsing")
+    (label/base value "pulsing")))
 
 (defn- render-item-state [value]
   (case value
-    "running" (label/green value)
-    "not running" (label/info value)
-    "partly running" (label/yellow "running")))
+    "running" (label/base value "green")
+    "not running" (label/base value "info")
+    "partly running" (label/base value "yellow")))
 
 (defn- render-status [item]
   (let [update-status (get-in item [:status :update])]

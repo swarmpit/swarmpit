@@ -57,20 +57,20 @@
                                      services]
   (comp/card
     {:className "Swarmpit-form-card"}
-    (comp/card-header
-      {:title (comp/typography {:variant "h6"} "Summary")})
-    (form/item-main "Name" volumeName false)
-    (form/item-main "Driver" driver)
+    (form/item-main "Driver" driver false)
     (form/item-main "Scope" scope)
     (form/item-main "Space usage" (humanize/filesize size :binary false))
     (when (and stack (not-empty services))
-      (comp/card-actions
+      (comp/box
         {}
-        (comp/button
-          {:size  "small"
-           :color "primary"
-           :href  (routes/path-for-frontend :stack-info {:name stack})}
-          "See stack")))))
+        (comp/divider {})
+        (comp/card-actions
+          {}
+          (comp/button
+            {:size  "small"
+             :color "primary"
+             :href  (routes/path-for-frontend :stack-info {:name stack})}
+            "See stack"))))))
 
 (rum/defc form-driver < rum/static [{:keys [driver options]}]
   (comp/card

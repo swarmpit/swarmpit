@@ -968,19 +968,6 @@ a {
 
 .Swarmpit-label {
     color: #fff;
-    padding: 5px 12px;
-    display: inline-block;
-    font-size: 10px;
-    text-align: center;
-    font-weight: 600;
-    line-height: 1;
-    border-radius: 12px;
-    text-transform: uppercase;
-    vertical-align: baseline;
-}
-
-.Swarmpit-header-label {
-    color: #fff;
     border-radius: 2px;
     font-size: 10px !important;
     font-weight: 500 !important;

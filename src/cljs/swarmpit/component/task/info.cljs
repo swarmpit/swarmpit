@@ -70,27 +70,26 @@
 
 (defn form-state [value]
   (case value
-    "preparing" (label/header value "pulsing")
-    "starting" (label/header value "pulsing")
-    "pending" (label/header value "yellow")
-    "new" (label/header value "blue")
-    "ready" (label/header value "blue")
-    "assigned" (label/header value "blue")
-    "accepted" (label/header value "blue")
-    "complete" (label/header value "blue")
-    "running" (label/header value "green")
-    "shutdown" (label/header value "grey")
-    "orphaned" (label/header value "grey")
-    "removed" (label/header value "grey")
-    "rejected" (label/header value "red")
-    "failed" (label/header value "red")))
+    "preparing" (label/base value "pulsing")
+    "starting" (label/base value "pulsing")
+    "pending" (label/base value "yellow")
+    "new" (label/base value "blue")
+    "ready" (label/base value "blue")
+    "assigned" (label/base value "blue")
+    "accepted" (label/base value "blue")
+    "complete" (label/base value "blue")
+    "running" (label/base value "green")
+    "shutdown" (label/base value "grey")
+    "orphaned" (label/base value "grey")
+    "removed" (label/base value "grey")
+    "rejected" (label/base value "red")
+    "failed" (label/base value "red")))
 
 (rum/defc form-general < rum/static [{:keys [id taskName nodeName state status createdAt updatedAt repository serviceName logdriver stats]}]
   (comp/card
     {:className "Swarmpit-form-card"}
     (comp/card-header
-      {:title     (comp/typography {:variant "h6"} "Summary")
-       :subheader (form-state state)})
+      {:subheader (form-state state)})
     (comp/card-content
       {:className "Swarmpit-table-card-content"}
       (when (and stats (= "running" state))
@@ -114,7 +113,6 @@
           (comp/box
             {:className "Swarmpit-task-error-message"} (:error status)))))
     (form/item-main "ID" id false)
-    (form/item-main "Name" taskName)
     (form/item-main "Image" (:image repository))
     (when (:imageDigest repository)
       (form/item-main "Image digest" (:imageDigest repository)))

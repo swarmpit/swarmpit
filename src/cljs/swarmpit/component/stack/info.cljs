@@ -189,13 +189,13 @@
   (list/add-status
     render-metadata
     #(when (not (utils/in-stack? stack-name %))
-       (html [:span.Swarmpit-table-status (label/info "external")]))))
+       (html [:span.Swarmpit-table-status (label/base "external" "info")]))))
 
 (rum/defc form-general < rum/static [stack-name stackfile {:keys [services networks volumes configs secrets]}]
   (comp/card
     {:className "Swarmpit-form-card"}
     (comp/card-header
-      {:title (comp/typography {:variant "h6"} "Summary")})
+      {:subheader (label/base "deployed" "green")})
     (comp/card-content
       {}
       (comp/grid

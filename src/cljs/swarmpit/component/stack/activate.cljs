@@ -106,7 +106,6 @@
 (rum/defc form-edit < rum/reactive
                       mixin-init-editor [{:keys [name spec]}
                                          {:keys [processing? deleting?]}]
-  (print (:compose spec))
   (comp/mui
     (html
       [:div.Swarmpit-form

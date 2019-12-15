@@ -87,10 +87,7 @@
                :xs   12}
               (comp/card
                 {:className "Swarmpit-form-card"}
-                (comp/card-header
-                  {:title (comp/typography {:variant "h6"} "Profile")})
                 (form/item-main "ID" _id false)
-                (form/item-main "Username" username)
                 (form/item-main "Email" (if (str/blank? email) "-" email))
                 (form/item-main "Role" role)))))]])))
 

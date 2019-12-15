@@ -58,20 +58,18 @@
                                      services]
   (comp/card
     {:className "Swarmpit-form-card"}
-    (comp/card-header
-      {:title     (comp/typography {:variant "h6"} "Summary")
-       :subheader (when (or internal ingress attachable enableIPv6)
-                    (form/item-labels
+    (when (or internal ingress attachable enableIPv6)
+      (comp/card-header
+        {:subheader (form/item-labels
                       [(when internal
-                         (label/header "Internal" "primary"))
+                         (label/base "Internal" "primary"))
                        (when ingress
-                         (label/header "Ingress" "primary"))
+                         (label/base "Ingress" "primary"))
                        (when attachable
-                         (label/header "Attachable" "primary"))
+                         (label/base "Attachable" "primary"))
                        (when enableIPv6
-                         (label/header "IPv6" "primary"))]))})
+                         (label/base "IPv6" "primary"))])}))
     (form/item-main "ID" id false)
-    (form/item-main "Name" networkName)
     (form/item-main "Driver" driver)
     (form/item-main "Created" (form/item-date created))
     (when (not (str/blank? (:subnet ipam)))

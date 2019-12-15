@@ -17,9 +17,11 @@
 (enable-console-print!)
 
 (defn- render-status [{:keys [state]}]
-  (case state
-    "deployed" (label/green state)
-    "inactive" (label/info state)))
+  (html
+    [:span.Swarmpit-table-status
+     (case state
+       "deployed" (label/base state "green")
+       "inactive" (label/base state "info"))]))
 
 (def render-metadata
   {:table {:summary [{:name      "Name"

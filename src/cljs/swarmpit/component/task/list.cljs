@@ -35,19 +35,20 @@
   (html
     [:span.Swarmpit-table-status
      (case value
-       "preparing" (label/pulsing value)
-       "starting" (label/pulsing value)
-       "pending" (label/pulsing value)
-       "new" (label/blue value)
-       "ready" (label/blue value)
-       "assigned" (label/blue value)
-       "accepted" (label/blue value)
-       "complete" (label/blue value)
-       "running" (label/green value)
-       "shutdown" (label/grey value)
-       "orphaned" (label/grey value)
-       "rejected" (label/red value)
-       "failed" (label/red value))]))
+       "preparing" (label/base value "pulsing")
+       "starting" (label/base value "pulsing")
+       "pending" (label/base value "yellow")
+       "new" (label/base value "blue")
+       "ready" (label/base value "blue")
+       "assigned" (label/base value "blue")
+       "accepted" (label/base value "blue")
+       "complete" (label/base value "blue")
+       "running" (label/base value "green")
+       "shutdown" (label/base value "grey")
+       "orphaned" (label/base value "grey")
+       "removed" (label/base value "grey")
+       "rejected" (label/base value "red")
+       "failed" (label/base value "red"))]))
 
 (defn- render-item-name [item]
   (html
