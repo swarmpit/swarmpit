@@ -138,6 +138,7 @@
      :helperText      "The command to be run in the image"
      :fullWidth       true
      :multiline       true
+     :margin          "normal"
      :defaultValue    value
      :InputProps      {:style     {:fontFamily "monospace"}
                        :className "Swarmpit-form-input"}

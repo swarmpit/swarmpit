@@ -296,6 +296,19 @@
               (comp/card-actions
                 {:className "Swarmpit-fcard-actions"}
                 (composite/progress-button
-                  "Create"
+                  "Deploy"
                   create-service-handler
-                  processing?))))]]))))
+                  processing?
+                  false
+                  {:startIcon (comp/svg {} icon/rocket-path)})
+                (html [:div.grow])
+                (comp/button
+                  {:variant  "text"
+                   :disabled (= 0 active)
+                   :onClick  #(state/update-value [:active] (- active 1) state/form-state-cursor)}
+                  "Previous")
+                (comp/button
+                  {:variant  "text"
+                   :disabled (= 5 active)
+                   :onClick  #(state/update-value [:active] (+ active 1) state/form-state-cursor)}
+                  "Next"))))]]))))
