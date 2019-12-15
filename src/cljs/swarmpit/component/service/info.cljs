@@ -18,9 +18,11 @@
             [swarmpit.component.service.info.logdriver :as logdriver]
             [swarmpit.component.service.info.resources :as resources]
             [swarmpit.component.service.info.deployment :as deployment]
+            [swarmpit.component.service.log :as log]
             [swarmpit.component.toolbar :as toolbar]
             [swarmpit.component.task.list :as tasks]
             [swarmpit.component.message :as message]
+            [swarmpit.component.parser :refer [parse-int]]
             [swarmpit.url :refer [dispatch!]]
             [swarmpit.docker.utils :as utils]
             [swarmpit.ajax :as ajax]
@@ -219,7 +221,7 @@
       (service-networks-handler id)
       (service-tasks-handler id))))
 
-(defn form-settings-grid [service service-id tasks pinned]
+(defn form-settings-grid [service service-id tasks]
   (comp/grid
     {:item true
      :xs   12}
@@ -297,7 +299,9 @@
      :xs   12}
     (deployment/form deployment service-id immutable?)))
 
-(rum/defc form-info < rum/static [{:keys [service networks tasks]} pinned?]
+(rum/defc form-info < rum/static [{:keys [service networks tasks]}
+                                  {:keys [pinned? logs] :as state}
+                                  log]
   (let [ports (:ports service)
         mounts (:mounts service)
         secrets (:secrets service)
@@ -313,6 +317,7 @@
     (comp/mui
       (html
         [:div.Swarmpit-form
+         (log/dialog (:serviceName service) nil (= 1 log))
          (dialog/confirm-dialog
            #(delete-service-handler id)
            "Delete service?"
@@ -335,7 +340,7 @@
                 (comp/grid
                   {:container true
                    :spacing   2}
-                  (form-settings-grid service id tasks pinned?)
+                  (form-settings-grid service id tasks)
                   (form-hosts-grid hosts id immutable?)
                   (form-variables-grid variables id immutable?)
                   (form-secrets-grid secrets id immutable?)
@@ -365,7 +370,7 @@
                 {:item true
                  :xs   12}
                 (toolbar/toolbar "Service" (:serviceName service) (form-actions service id pinned?)))
-              (form-settings-grid service id tasks pinned?)
+              (form-settings-grid service id tasks)
               (form-tasks-grid service tasks)
               (form-networks-grid networks id immutable?)
               (form-ports-grid ports id immutable?)
@@ -381,9 +386,9 @@
 
 (rum/defc form < rum/reactive
                  mixin-init-form
-                 mixin/subscribe-form [_]
+                 mixin/subscribe-form [{{:keys [log]} :params}]
   (let [state (state/react state/form-state-cursor)
         item (state/react state/form-value-cursor)]
     (progress/form
       (:loading? state)
-      (form-info item (:pinned? state)))))
+      (form-info item state (parse-int log)))))

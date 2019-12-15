@@ -4,11 +4,11 @@
             [material.component.form :as form]
             [material.component.chart :as chart]
             [material.component.label :as label]
-            [swarmpit.component.common :as common]
-            [swarmpit.component.menu :as menu]
             [swarmpit.component.state :as state]
+            [swarmpit.component.service.log :as log]
             [swarmpit.docker.utils :as utils]
             [swarmpit.routes :as routes]
+            [swarmpit.url :refer [dispatch!]]
             [sablono.core :refer-macros [html]]
             [clojure.contrib.inflect :as inflect]
             [clojure.string :as str]
@@ -93,8 +93,7 @@
   (when agent (label/header "agent" "primary")))
 
 (rum/defc form < rum/reactive [service tasks]
-  (let [image-digest (get-in service [:repository :imageDigest])
-        image (get-in service [:repository :image])
+  (let [image (get-in service [:repository :image])
         logdriver (get-in service [:logdriver :name])
         desired-tasks (filter #(not= "shutdown" (:desiredState %)) tasks)
         registry (utils/linked-registry image)
@@ -122,8 +121,8 @@
       (when registry
         (form/item-main "Registry" registry))
       (form/item-main "Image" (if registry
-                            (utils/registry-repository image registry)
-                            image))
+                                (utils/registry-repository image registry)
+                                image))
       (form/item-main "Created" (form/item-date (:createdAt service)))
       (form/item-main "Last update" (form/item-date (:updatedAt service)))
       (comp/divider {})
@@ -139,7 +138,9 @@
           {:size     "small"
            :color    "primary"
            :disabled (not (contains? #{"json-file" "journald"} logdriver))
-           :href     (routes/path-for-frontend :service-log {:id (:serviceName service)})}
+           :href     (routes/path-for-frontend :service-info
+                                               {:id (:serviceName service)}
+                                               {:log 1})}
           "View log")
         (->> links
              (map #(comp/button

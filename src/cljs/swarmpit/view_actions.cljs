@@ -93,18 +93,6 @@
   [_]
   {:title "Services"})
 
-(defmethod render :service-log
-  [route]
-  {:title     "Logs"
-   :subtitle  (-> route :params :id)
-   :search-fn service-log/form-search-fn})
-
-(defmethod render :service-task-log
-  [{{:keys [id taskId]} :params}]
-  {:title     "Logs"
-   :subtitle  (str id " @ " taskId)
-   :search-fn service-log/form-search-fn})
-
 (defmethod render :service-create-image
   [_]
   {:title "Services"})

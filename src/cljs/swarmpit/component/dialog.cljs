@@ -67,8 +67,7 @@
          :open            open
          :aria-labelledby "form-full-dialog-title"}
         (comp/app-bar
-          {:color "primary"
-           :style {:position "relative"}}
+          {:color "primary"}
           (comp/toolbar
             {:disableGutters false}
             (comp/icon-button

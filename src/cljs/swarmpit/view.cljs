@@ -17,7 +17,6 @@
             [swarmpit.component.service.create-image :as service-image]
             [swarmpit.component.service.edit :as service-edit]
             [swarmpit.component.service.info :as service-info]
-            [swarmpit.component.service.log :as service-log]
             [swarmpit.component.service.list :as service-list]
             [swarmpit.component.network.create :as network-create]
             [swarmpit.component.network.info :as network-info]
@@ -148,14 +147,6 @@
 (defmethod dispatch :service-info
   [route]
   (service-info/form route))
-
-(defmethod dispatch :service-log
-  [route]
-  (service-log/form route))
-
-(defmethod dispatch :service-task-log
-  [route]
-  (service-log/form-task route))
 
 (defmethod dispatch :service-create-image
   [route]

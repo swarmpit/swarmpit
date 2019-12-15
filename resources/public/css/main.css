@@ -5,7 +5,11 @@
     font-weight: 300;
     src: url('fonts/roboto-v18-latin_latin-ext-300.eot'); /* IE9 Compat Modes */
     src: local('Roboto Light'), local('Roboto-Light'),
-    url('fonts/roboto-v18-latin_latin-ext-300.eot?#iefix') format('embedded-opentype'), /* IE6-IE8 */ url('fonts/roboto-v18-latin_latin-ext-300.woff2') format('woff2'), /* Super Modern Browsers */ url('fonts/roboto-v18-latin_latin-ext-300.woff') format('woff'), /* Modern Browsers */ url('fonts/roboto-v18-latin_latin-ext-300.ttf') format('truetype'), /* Safari, Android, iOS */ url('fonts/roboto-v18-latin_latin-ext-300.svg#Roboto') format('svg'); /* Legacy iOS */
+    url('fonts/roboto-v18-latin_latin-ext-300.eot?#iefix') format('embedded-opentype'), /* IE6-IE8 */
+    url('fonts/roboto-v18-latin_latin-ext-300.woff2') format('woff2'), /* Super Modern Browsers */
+    url('fonts/roboto-v18-latin_latin-ext-300.woff') format('woff'), /* Modern Browsers */
+    url('fonts/roboto-v18-latin_latin-ext-300.ttf') format('truetype'), /* Safari, Android, iOS */
+    url('fonts/roboto-v18-latin_latin-ext-300.svg#Roboto') format('svg'); /* Legacy iOS */
 }
 
 /* roboto-regular - latin_latin-ext */
@@ -15,7 +19,11 @@
     font-weight: 400;
     src: url('fonts/roboto-v18-latin_latin-ext-regular.eot'); /* IE9 Compat Modes */
     src: local('Roboto'), local('Roboto-Regular'),
-    url('fonts/roboto-v18-latin_latin-ext-regular.eot?#iefix') format('embedded-opentype'), /* IE6-IE8 */ url('fonts/roboto-v18-latin_latin-ext-regular.woff2') format('woff2'), /* Super Modern Browsers */ url('fonts/roboto-v18-latin_latin-ext-regular.woff') format('woff'), /* Modern Browsers */ url('fonts/roboto-v18-latin_latin-ext-regular.ttf') format('truetype'), /* Safari, Android, iOS */ url('fonts/roboto-v18-latin_latin-ext-regular.svg#Roboto') format('svg'); /* Legacy iOS */
+    url('fonts/roboto-v18-latin_latin-ext-regular.eot?#iefix') format('embedded-opentype'), /* IE6-IE8 */
+    url('fonts/roboto-v18-latin_latin-ext-regular.woff2') format('woff2'), /* Super Modern Browsers */
+    url('fonts/roboto-v18-latin_latin-ext-regular.woff') format('woff'), /* Modern Browsers */
+    url('fonts/roboto-v18-latin_latin-ext-regular.ttf') format('truetype'), /* Safari, Android, iOS */
+    url('fonts/roboto-v18-latin_latin-ext-regular.svg#Roboto') format('svg'); /* Legacy iOS */
 }
 
 /* roboto-500 - latin_latin-ext */
@@ -25,11 +33,15 @@
     font-weight: 500;
     src: url('fonts/roboto-v18-latin_latin-ext-500.eot'); /* IE9 Compat Modes */
     src: local('Roboto Medium'), local('Roboto-Medium'),
-    url('fonts/roboto-v18-latin_latin-ext-500.eot?#iefix') format('embedded-opentype'), /* IE6-IE8 */ url('fonts/roboto-v18-latin_latin-ext-500.woff2') format('woff2'), /* Super Modern Browsers */ url('fonts/roboto-v18-latin_latin-ext-500.woff') format('woff'), /* Modern Browsers */ url('fonts/roboto-v18-latin_latin-ext-500.ttf') format('truetype'), /* Safari, Android, iOS */ url('fonts/roboto-v18-latin_latin-ext-500.svg#Roboto') format('svg'); /* Legacy iOS */
+    url('fonts/roboto-v18-latin_latin-ext-500.eot?#iefix') format('embedded-opentype'), /* IE6-IE8 */
+    url('fonts/roboto-v18-latin_latin-ext-500.woff2') format('woff2'), /* Super Modern Browsers */
+    url('fonts/roboto-v18-latin_latin-ext-500.woff') format('woff'), /* Modern Browsers */
+    url('fonts/roboto-v18-latin_latin-ext-500.ttf') format('truetype'), /* Safari, Android, iOS */
+    url('fonts/roboto-v18-latin_latin-ext-500.svg#Roboto') format('svg'); /* Legacy iOS */
 }
 
-html * {
-    font-family: "Roboto", "Helvetica", "Arial", sans-serif;
+html > body {
+    font: 14px "Roboto", sans-serif;
     -webkit-font-kerning: normal;
     font-kerning: normal;
     -webkit-text-size-adjust: 100%;
@@ -874,7 +886,26 @@ a {
     background: black;
     color: #CCC;
     padding: 1em;
-    min-height: calc(100vh - 64px);
+    flex-grow: 1;
+}
+
+.Swarmpit-log-title {
+    margin-right: 5px !important;
+    font-weight: lighter !important;
+}
+
+.Swarmpit-log-appbar {
+    background: rgba(51, 51, 51, 0.90) !important;
+    color: #fff !important;
+}
+
+.Swarmpit-log-progress {
+    z-index: 1202 !important;
+    background-color: #333 !important;
+}
+
+.Swarmpit-log-progress > div {
+    background-color: #fff !important;
 }
 
 .Swarmpit-log-fresh {
@@ -882,9 +913,6 @@ a {
 }
 
 @media (min-width: 1280px) {
-    .Swarmpit-log {
-        padding-left: 2em;
-    }
 }
 
 @-webkit-keyframes cooldown {

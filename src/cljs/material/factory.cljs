@@ -16,6 +16,7 @@
 
 (def css-baseline (create-factory js/MaterialUI.CssBaseline))
 (def mui-theme-provider (create-factory js/MaterialUI.MuiThemeProvider))
+(def styles-provider (create-factory js/MaterialUI.StylesProvider))
 
 (def form-control (create-factory js/MaterialUI.FormControl))
 (def form-label (create-factory js/MaterialUI.FormLabel))

@@ -9,6 +9,8 @@
             [swarmpit.component.common :as common]
             [swarmpit.component.plot :as plot]
             [swarmpit.component.toolbar :as toolbar]
+            [swarmpit.component.service.log :as log]
+            [swarmpit.component.parser :refer [parse-int]]
             [swarmpit.event.source :as event]
             [swarmpit.ajax :as ajax]
             [swarmpit.routes :as routes]
@@ -136,7 +138,9 @@
         {:size     "small"
          :color    "primary"
          :disabled (not (contains? #{"json-file" "journald"} logdriver))
-         :href     (routes/path-for-frontend :service-task-log {:id serviceName :taskId id})}
+         :href     (routes/path-for-frontend :task-info
+                                             {:id id}
+                                             {:log 1})}
         "View log"))))
 
 (rum/defc form-cpu-stats < rum/static
@@ -165,10 +169,11 @@
       {:className "Swarmpit-table-card-content"}
       (html [:div {:id plot-ram-id}]))))
 
-(rum/defc form-info < rum/static [{:keys [task task-ts] :as item}]
+(rum/defc form-info < rum/static [{:keys [task task-ts] :as item} log]
   (comp/mui
     (html
       [:div.Swarmpit-form
+       (log/dialog (:serviceName task) (:id task) (= 1 log))
        [:div.Swarmpit-form-toolbar
         (comp/container
           {:maxWidth  "md"
@@ -178,7 +183,7 @@
              :spacing   2}
             (comp/grid
               {:item true
-               :xs 12}
+               :xs   12}
               (toolbar/toolbar "Task" (:taskName task) nil))
             (comp/grid
               {:item true
@@ -217,10 +222,10 @@
 
 (rum/defc form < rum/reactive
                  unsubscribe-form
-                 mixin-init-form [_]
+                 mixin-init-form [{{:keys [log]} :params}]
   (let [{:keys [loading?]} (state/react state/form-state-cursor)
         item (state/react state/form-value-cursor)]
     (progress/form
       (or (:task loading?)
           (:task-ts loading?))
-      (form-info item))))
+      (form-info item (parse-int log)))))

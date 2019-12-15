@@ -860,8 +860,6 @@
     ["/config" :service-create-config]]
    ["/services/:id" :service-info]
    ["/services/:id/edit" :service-edit]
-   ["/services/:id/log" :service-log]
-   ["/services/:id/log/:taskId" :service-task-log]
    ;; Stack
    ["/stacks" :stack-list]
    ["/stacks/create" :stack-create]
