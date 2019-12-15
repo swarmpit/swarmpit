@@ -159,8 +159,11 @@ You can find here our goals and related features for future releases.
 
 ### 1.9 Release
 
-UX improvements, TCP support, Material update to 4.x, ...
+UX improvements, TCP support, Material update to 4.x, Form restyling, ARM support, ...
 
+- [[#411](https://github.com/swarmpit/swarmpit/issues/411)] Upgrade to material v4
+- [[#415](https://github.com/swarmpit/swarmpit/issues/415)] Forms restyling (UX)
+- [[#130](https://github.com/swarmpit/swarmpit/issues/130)] Running swarmpit on ARM
 - [[#318](https://github.com/swarmpit/swarmpit/issues/318)] Support Docker API connections over encrypted TCP
 
 ### 2.0 Release
