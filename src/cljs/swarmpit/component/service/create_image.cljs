@@ -357,35 +357,36 @@
                     (form-search repository active))))
               (when searching?
                 (comp/linear-progress {:className "Swarmpit-progress"}))
-              (cond
-                searching?
-                (comp/box {})
-                (and
-                  (not (str/blank? repository))
-                  (empty? filtered-repositories))
-                (comp/card-content
-                  {}
-                  (comp/typography
-                    {} "Nothing matches this filter."))
-                (empty? repositories)
-                (comp/box {})
-                :else
-                (comp/card-content
-                  {:className "Swarmpit-table-card-content"}
-                  (comp/list
-                    {:dense true}
-                    (map-indexed
-                      (fn [index item]
-                        (list/list-item
-                          render-list-metadata
-                          index
-                          item
-                          (last filtered-repositories)
-                          #(onclick-handler
-                             (if (or (= "dockerhub" (:type registry))
-                                     (nil? registry))
-                               (:name item)
-                               (du/repository (:url registry) (:name item)))))) filtered-repositories))))))]]))))
+              (when (not manual)
+                (cond
+                  searching?
+                  (comp/box {})
+                  (and
+                    (not (str/blank? repository))
+                    (empty? filtered-repositories))
+                  (comp/card-content
+                    {}
+                    (comp/typography
+                      {} "Nothing matches this filter."))
+                  (empty? repositories)
+                  (comp/box {})
+                  :else
+                  (comp/card-content
+                    {:className "Swarmpit-table-card-content"}
+                    (comp/list
+                      {:dense true}
+                      (map-indexed
+                        (fn [index item]
+                          (list/list-item
+                            render-list-metadata
+                            index
+                            item
+                            (last filtered-repositories)
+                            #(onclick-handler
+                               (if (or (= "dockerhub" (:type registry))
+                                       (nil? registry))
+                                 (:name item)
+                                 (du/repository (:url registry) (:name item)))))) filtered-repositories)))))))]]))))
 
 (rum/defc form < rum/reactive
                  mixin-init-form [_]
