@@ -3,7 +3,8 @@
             [material.components :as comp]
             [swarmpit.component.state :as state]
             [sablono.core :refer-macros [html]]
-            [rum.core :as rum]))
+            [rum.core :as rum]
+            [cuerdas.core :as str]))
 
 (rum/defc menu-popper < rum/reactive [items-hash items anchorKey menuOpenKey]
   (let [moreAnchorEl (state/react (conj state/form-state-cursor anchorKey))
@@ -42,7 +43,7 @@
                           :key     (str "cmmit-" items-hash "-" (:name %))} (:name %))) items))))))))))
 
 (rum/defc menu < rum/static [items]
-  (let [items-hash (hash items)
+  (let [items-hash (hash (str/join (map :name items)))
         anchorKey (keyword (str "anchor-key-" items-hash))
         menuOpenKey (keyword (str "menu-key-" items-hash))
         main-action (first (filter #(= true (:main %)) items))
