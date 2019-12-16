@@ -132,8 +132,7 @@
                               :message      ""
                               :canSubmit    true
                               :showPassword false} ::login)
-                  rum/reactive
-                  menu/retrieve-version [state]
+                  rum/reactive [state]
   (let [local-state (::login state)
         initialized (state/react [:initialized])
         username (:username @local-state)
