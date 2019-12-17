@@ -27,7 +27,7 @@
    "8h"  "8 hours"
    "12h" "12 hours"
    "24h" "24 hours"
-   0   "all"})
+   0     "all"})
 
 (defn- auto-scroll!
   []
@@ -124,17 +124,18 @@
                                   (last)
                                   :timestamp)))))))
 
-(rum/defc line < rum/static [item index]
+(rum/defc line < rum/static [item index show-taskId]
   [:div
-   [:a.log-info {:href (routes/path-for-frontend :task-info
-                                                 {:id (:task item)}
-                                                 {:log 1})}
-    (str (subs (:task item) 0 7))]
+   (when show-taskId
+     [:a.log-info {:href (routes/path-for-frontend :task-info
+                                                   {:id (:task item)}
+                                                   {:log 1})}
+      (str (subs (:task item) 0 5) " ")])
    [:span {:class (if (< @last-glow index)
                     (do (swap! last-glow inc)
                         "log-body Swarmpit-log-fresh")
                     "log-body")}
-    (str " " (:line item))]])
+    (str (:line item))]])
 
 (rum/defc form-history < rum/reactive [history id taskId]
   (let [anchorEl (state/react (conj form-state-cursor :historyAnchorEl))]
@@ -182,7 +183,7 @@
                    (state/update-value [:autoscroll] (not autoscroll) form-state-cursor))}
        icon/scroll-down)]))
 
-(rum/defc form-logs < rum/static [{:keys [initialized error]} logs filtered-logs]
+(rum/defc form-logs < rum/static [{:keys [initialized error]} logs filtered-logs show-taskId]
   (html
     [:div
      (cond
@@ -191,7 +192,7 @@
        (not initialized) [:span ""]
        :else (->> filtered-logs
                   (take-last 500)
-                  (map #(rum/with-key (line % (:key %)) (:key %)))))]))
+                  (map #(rum/with-key (line % (:key %) show-taskId) (:key %)))))]))
 
 (rum/defc form < rum/reactive
                  mixin-refresh-form
@@ -205,14 +206,15 @@
                   :did-update (fn [state] (auto-scroll!) state)} [{:keys [id taskId]}]
   (let [{:keys [filter autoscroll history] :as log-state} (state/react form-state-cursor)
         log-data (rum/react logs)
-        filtered-logs (filter-items log-data (:predicate filter))]
+        filtered-logs (filter-items log-data (:predicate filter))
+        show-taskId (nil? taskId)]
     (html
       [:div.Swarmpit-log
        [:div.Swarmpit-toolbar]
        [:div
         (form-history history id taskId)
         (form-scroll autoscroll)
-        (form-logs log-state log-data filtered-logs)]])))
+        (form-logs log-state log-data filtered-logs show-taskId)]])))
 
 (rum/defc search-input < rum/static [filter]
   (html
@@ -294,12 +296,12 @@
               "Task"
               "Service"))
           (comp/typography
-            {:variant   "h6"
-             :color     "inherit"
-             :noWrap    true}
+            {:variant "h6"
+             :color   "inherit"
+             :noWrap  true}
             (if taskId
               taskId
-              serviceId))
+              (str serviceId "." taskId)))
           (html [:div.grow])
           (comp/box
             {:className "Swarmpit-appbar-section-desktop"}
