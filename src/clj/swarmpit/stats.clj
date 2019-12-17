@@ -6,15 +6,15 @@
             [swarmpit.influxdb.mapper :as m]
             [swarmpit.config :refer [config]]))
 
+(def nodes-memo (memo/ttl docker/nodes :ttl/threshold 5000))
+
 (defn active-hosts
   []
   "List of running nodes"
-  (->> (docker/nodes)
+  (->> (nodes-memo)
        (filter #(= "ready" (get-in % [:Status :State])))
        (map :ID)
        (set)))
-
-(def active-hosts-memo (memo/ttl active-hosts :ttl/threshold 5000))
 
 (def cache (atom (cache/basic-cache-factory {})))
 
@@ -23,7 +23,7 @@
 
 (defn ready? []
   (not (and (empty? @cache)
-            (empty? (active-hosts-memo)))))
+            (empty? (active-hosts)))))
 
 (defn store-to-cache
   "Store stats in local cache"
@@ -58,7 +58,7 @@
   "Get latest cluster statistics"
   []
   (let [cached-hosts (vals @cache)
-        active-hosts (active-hosts-memo)
+        active-hosts (active-hosts)
         hosts (filter #(contains? active-hosts (:id %)) cached-hosts)
         sum-fn (fn [ks] (reduce + (map #(get-in % ks) hosts)))
         mean-fn (fn [ks] (/ (sum-fn ks) (count hosts)))]
@@ -82,7 +82,7 @@
 (defn hosts-timeseries
   "Get hosts timeseries data for last 24 hours"
   []
-  (let [nodes (->> (docker/nodes)
+  (let [nodes (->> (nodes-memo)
                    (group-by :ID))
         node-name #(or (-> (get nodes %) first :Description :Hostname) %)]
     (->> (-> (influx/read-host-stats)
