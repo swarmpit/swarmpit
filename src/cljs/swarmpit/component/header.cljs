@@ -123,6 +123,7 @@
          {:placeholder      (str "Search " (string/lower-case title) " ...")
           :onChange         on-change-fn
           :defaultValue     query
+          :type             "search"
           :fullWidth        true
           :classes          {:root  "Swarmpit-appbar-search-root"
                              :input "Swarmpit-appbar-search-input"}
@@ -138,6 +139,7 @@
          {:placeholder      (str "Search " (string/lower-case title) " ...")
           :onChange         on-change-fn
           :defaultValue     query
+          :type             "search"
           :fullWidth        true
           :classes          {:root  "Swarmpit-appbar-search-mobile-root"
                              :input "Swarmpit-appbar-search-mobile-input"}
