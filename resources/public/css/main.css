@@ -154,6 +154,11 @@ a {
     z-index: 1;
 }
 
+.Swarmpit-doughnut {
+    width: 110px;
+    height: 110px;
+}
+
 .Swarmpit-filter {
     padding: 24px 24px;
     display: flex;

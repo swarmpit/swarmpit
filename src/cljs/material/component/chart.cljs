@@ -31,5 +31,3 @@
                 :position "center"} label))
            (when tooltip
              (comp/tooltip-chart tooltip))))])))
-
-

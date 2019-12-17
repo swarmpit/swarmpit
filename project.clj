@@ -21,7 +21,7 @@
                  [cljsjs/js-yaml "3.3.1-0"]
                  [cljsjs/recharts "1.1.0-3"]
                  [cljsjs/plotly "1.45.3-0"]
-                 [cljsjs/chartist "0.10.1-0"]
+                 [cljsjs/chartjs "2.9.3-0"]
                  [rum "0.11.2" :exclusions [cljsjs/react cljsjs/react-dom]]
                  [sablono "0.8.4"]
                  [ring "1.6.3" :exclusions [ring/ring-jetty-adapter]]
