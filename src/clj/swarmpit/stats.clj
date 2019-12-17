@@ -82,7 +82,11 @@
 (defn hosts-timeseries
   "Get hosts timeseries data for last 24 hours"
   []
-  (map #(m/->host-ts %)
-       (-> (influx/read-host-stats)
-           (first)
-           (get "series"))))
+  (let [nodes (->> (docker/nodes)
+                   (group-by :ID))
+        node-name #(or (-> (get nodes %) first :Description :Hostname) %)]
+    (->> (-> (influx/read-host-stats)
+             (first)
+             (get "series"))
+         (map #(m/->host-ts %))
+         (map #(update % :name node-name)))))
