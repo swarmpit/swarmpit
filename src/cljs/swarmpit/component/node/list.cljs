@@ -71,7 +71,7 @@
              {:className "Swarmpit-table-card-content"
               :key       (str "node-card-stats-" index)}
              (html
-               [:div {:class "Swarmpit-node-stat"
+               [:div {:class "Swarmpit-stat"
                       :key   (str "node-card-stat-" index)}
                 (common/resource-pie
                   (get-in item [:stats :cpu :usedPercentage])

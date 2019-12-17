@@ -40,34 +40,6 @@
           :href   "/api-docs"}
       [:span.Swarmpit-title-version (parse-version version)]]]))
 
-(rum/defc form-subheader < rum/reactive [subheader tooltip]
-  (if subheader
-    (comp/click-away-listener
-      {:onClickAway #(reset! tooltip-shown false)}
-      (comp/tooltip
-        {:PopperProps          {:disablePortal true}
-         :onClose              #(reset! tooltip-shown false)
-         :open                 (rum/react tooltip-shown)
-         :disableFocusListener true
-         :disableHoverListener true
-         :disableTouchListener true
-         :title                tooltip}
-        (html [:span {:onClick #(reset! tooltip-shown true)
-                      :style   {:cursor "pointer"}} subheader])))
-    (html [:span subheader])))
-
-(defn form-title [title & subtitle]
-  (html
-    [:div.Swarmpit-form-title
-     (comp/typography
-       {:variant "h5"
-        :key     "title"}
-       title)
-     (comp/typography
-       {:variant "body2"
-        :key     "subtitle"}
-       subtitle)]))
-
 (defn list-empty [title]
   (comp/typography
     {:key "empty-text"} (str "There are no " title " configured.")))
@@ -199,7 +171,7 @@
     (chart/pie
       data
       label
-      "Swarmpit-node-stat-graph"
+      "Swarmpit-stat-graph"
       id
       {:formatter (fn [value name props]
                     (render-percentage value))})))

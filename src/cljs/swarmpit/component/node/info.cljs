@@ -122,9 +122,7 @@
     (comp/card
       {:className "Swarmpit-form-card"}
       (comp/card-header
-        {
-         ;:title     (comp/typography {:variant "h6"} "Summary")
-         :subheader (form/item-labels
+        {:subheader (form/item-labels
                       [(node-item-state (:state node))
                        (when (:leader node)
                          (label/base "Leader" "primary"))
@@ -136,7 +134,7 @@
         {:className "Swarmpit-table-card-content"}
         (html
           [:div
-           [:div {:class "Swarmpit-node-stat"
+           [:div {:class "Swarmpit-stat"
                   :key   "node-card-stat-"}
             (common/resource-pie
               (get-in node [:stats :cpu :usedPercentage])
