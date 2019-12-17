@@ -1,5 +1,5 @@
 .CodeMirror {
-    font-family: Droid Sans Mono, monospace;
+    font-family: Menlo, monospace;
     font-size: 14px;
     line-height: 21px;
     color: rgb(117, 117, 117);
@@ -8,6 +8,10 @@
     min-height: 300px;
     border-radius: 4px;
     width: 100%;
+}
+
+.CodeMirror-line {
+    font-family: Menlo, monospace;
 }
 
 .CodeMirror-lines {

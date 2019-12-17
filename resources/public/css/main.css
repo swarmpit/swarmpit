@@ -886,7 +886,8 @@ a {
 /* Logs */
 
 .Swarmpit-log {
-    font-family: monospace;
+    font-family: Menlo, monospace;
+    white-space: pre-wrap;
     font-size: 13px;
     background: black;
     color: #CCC;
