@@ -937,6 +937,7 @@ a {
 
 .Swarmpit-log-fab {
     position: fixed;
+    opacity: 0.87;
     bottom: 20px;
     right: 20px;
 }

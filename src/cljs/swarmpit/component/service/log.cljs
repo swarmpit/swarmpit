@@ -188,7 +188,7 @@
      (cond
        error [:span "Logs for this service couldn't be fetched."]
        (and (empty? logs) initialized) [:span "No logs for given period."]
-       (not initialized) [:span "Loading..."]
+       (not initialized) [:span ""]
        :else (->> filtered-logs
                   (take-last 500)
                   (map #(rum/with-key (line % (:key %)) (:key %)))))]))
@@ -209,7 +209,7 @@
     (html
       [:div.Swarmpit-log
        [:div.Swarmpit-toolbar]
-       [:div.Swarmpit-form-toolbar
+       [:div
         (form-history history id taskId)
         (form-scroll autoscroll)
         (form-logs log-state log-data filtered-logs)]])))

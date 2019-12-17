@@ -125,7 +125,8 @@
 
 (rum/defc list < rum/static [render-metadata items onclick-handler-fn]
   (cmp/list
-    {:dense true}
+    {:dense true
+     :disablePadding true}
     (map-indexed
       (fn [index item]
         (list-item
