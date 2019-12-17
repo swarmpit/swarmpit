@@ -55,6 +55,7 @@
 (def toolbar-render-metadata
   [{:name     "New user"
     :onClick  #(dispatch! (routes/path-for-frontend :user-create))
+    :primary  true
     :icon     icon/add-circle-out
     :icon-alt icon/add}])
 

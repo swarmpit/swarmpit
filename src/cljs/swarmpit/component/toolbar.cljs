@@ -138,7 +138,7 @@
               (if (= (count items)
                      (count filtered-items))
                 (str "Total (" (count items) ")")
-                (str "Total (" (count filtered-items) "/" (count items) ")")))))
+                (html [:span "Total (" [:b (count filtered-items)] "/" (count items) ")"])))))
         (comp/grid
           {:item true}
           (comp/box
@@ -163,7 +163,7 @@
                     (comp/box
                       {:className "Swarmpit-section-mobile"}
                       ;; Make FAB from first only (primary action)
-                      (when (= 0 index)
+                      (when (:primary action)
                         (comp/fab
                           {:className  "Swarmpit-fab"
                            :color      "primary"

@@ -64,6 +64,7 @@
 (def toolbar-render-metadata
   [{:name     "New Config"
     :onClick  #(dispatch! (routes/path-for-frontend :config-create))
+    :primary  true
     :icon     icon/add-circle-out
     :icon-alt icon/add}])
 

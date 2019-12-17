@@ -146,6 +146,7 @@
 (def toolbar-render-metadata
   [{:name     "New service"
     :onClick  #(dispatch! (routes/path-for-frontend :service-create-image))
+    :primary  true
     :icon     icon/add-circle-out
     :icon-alt icon/add}
    {:name     "Show filters"

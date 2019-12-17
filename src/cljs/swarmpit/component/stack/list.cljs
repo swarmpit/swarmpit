@@ -86,6 +86,7 @@
 (def toolbar-render-metadata
   [{:name     "New stack"
     :onClick  #(dispatch! (routes/path-for-frontend :stack-create))
+    :primary  true
     :icon     icon/add-circle-out
     :icon-alt icon/add}])
 
