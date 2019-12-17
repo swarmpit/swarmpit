@@ -27,7 +27,7 @@
    "8h"  "8 hours"
    "12h" "12 hours"
    "24h" "24 hours"
-   nil   "all"})
+   0   "all"})
 
 (defn- auto-scroll!
   []

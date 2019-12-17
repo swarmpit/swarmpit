@@ -884,12 +884,12 @@
    fallback to native service api"
   [service-id since]
   (let [agent-tasks (dc/service-tasks-by-label :swarmpit.agent true)]
-    (try
       (if (empty? agent-tasks)
         (service-native-logs service-id since)
-        (service-agent-logs service-id since agent-tasks))
-      (catch Exception _
-        (service-native-logs service-id since)))))
+        (try
+          (service-agent-logs service-id since agent-tasks)
+          (catch Exception _
+            (service-native-logs service-id since))))))
 
 (defn delete-service
   [service-id]
