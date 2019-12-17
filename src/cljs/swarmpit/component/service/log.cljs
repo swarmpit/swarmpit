@@ -135,7 +135,9 @@
                     (do (swap! last-glow inc)
                         "log-body Swarmpit-log-fresh")
                     "log-body")}
-    (str (:line item))]])
+    (if (empty? (:line item))
+      (str " ")
+      (str (:line item)))]])
 
 (rum/defc form-history < rum/reactive [history id taskId]
   (let [anchorEl (state/react (conj form-state-cursor :historyAnchorEl))]
@@ -300,8 +302,8 @@
              :color   "inherit"
              :noWrap  true}
             (if taskId
-              taskId
-              (str serviceId "." taskId)))
+              (str serviceId "." (subs taskId 0 5))
+              serviceId))
           (html [:div.grow])
           (comp/box
             {:className "Swarmpit-appbar-section-desktop"}
