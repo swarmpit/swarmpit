@@ -42,11 +42,11 @@
         service (api/service service-id)
         tasks (api/service-tasks service-id)
         networks (api/service-networks service-id)
-        nodes (api/nodes)]
+        stats (when (stats/ready?) (stats/cluster))]
     {:service  service
      :tasks    tasks
      :networks networks
-     :nodes    nodes}))
+     :stats    stats}))
 
 (defn- node-info-data
   [node-event-message]
@@ -59,8 +59,12 @@
 (defn- stack-info-data
   [service-event-message]
   (let [service-name (service-name service-event-message)
-        stack-name (du/hypothetical-stack service-name)]
-    (api/stack stack-name)))
+        stack-name (du/hypothetical-stack service-name)
+        stack-tasks (api/stack-tasks stack-name)
+        stats (when (stats/ready?) (stats/cluster))]
+    (merge (api/stack stack-name)
+           {:tasks stack-tasks
+            :stats stats})))
 
 ;; Rules
 

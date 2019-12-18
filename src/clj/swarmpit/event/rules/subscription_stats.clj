@@ -1,19 +1,40 @@
 (ns swarmpit.event.rules.subscription-stats
   (:refer-clojure :exclude [list])
-  (:require [swarmpit.api :as api]))
+  (:require [swarmpit.api :as api]
+            [swarmpit.stats :as stats]))
 
-(def subscribers #{:service-info :task-list :task-info :node-list :node-info})
+(def subscribers #{:index :stack-info :service-info :task-list :task-info :node-list :node-info})
+
+(defn dashboard-data
+  [user]
+  (let [stats (when (stats/ready?) (stats/cluster))
+        nodes-ts (when (stats/influx-configured?) (stats/hosts-timeseries))
+        dashboard-user (api/user-by-username user)]
+    {:stats              stats
+     :services           (api/services)
+     :services-dashboard (:service-dashboard dashboard-user)
+     :nodes              (api/nodes)
+     :nodes-dashboard    (:node-dashboard dashboard-user)
+     :nodes-ts           nodes-ts}))
 
 (defn- service-info-data
   [service-id]
   (let [service (api/service service-id)
         tasks (api/service-tasks service-id)
         networks (api/service-networks service-id)
-        nodes (api/nodes)]
+        stats (when (stats/ready?) (stats/cluster))]
     {:service  service
      :tasks    tasks
      :networks networks
-     :nodes    nodes}))
+     :stats    stats}))
+
+(defn- stack-info-data
+  [stack-name]
+  (let [stack-tasks (api/stack-tasks stack-name)
+        stats (when (stats/ready?) (stats/cluster))]
+    (merge (api/stack stack-name)
+           {:tasks stack-tasks
+            :stats stats})))
 
 (defn- node-info-data
   [node-id]
@@ -23,9 +44,11 @@
      :tasks tasks}))
 
 (defn subscribed-data
-  [{:keys [handler params] :as subscription}]
+  [{:keys [handler params] :as subscription} user]
   (case handler
+    :index (dashboard-data user)
     :service-info (service-info-data (:id params))
+    :stack-info (stack-info-data (:name params))
     :task-list (api/tasks)
     :task-info (api/service-tasks (:serviceName params))
     :node-list (api/nodes)

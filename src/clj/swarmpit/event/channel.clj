@@ -71,8 +71,9 @@
   (go
     (let [subscribers (filter #(contains? stats/subscribers (:handler (subscription %))) @hub)]
       (doseq [subscriber subscribers]
-        (let [subscription (subscription subscriber)
-              data (stats/subscribed-data subscription)]
+        (let [user (subscription-user subscriber)
+              subscription (subscription subscriber)
+              data (stats/subscribed-data subscription user)]
           (send! (key subscriber) (event-data data) false))))))
 
 ;; To prevent data duplicity/spam we cache:
