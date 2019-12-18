@@ -19,7 +19,7 @@
                  [cljsjs/rc-slider "8.6.1-0"]
                  [cljsjs/codemirror "5.24.0-1"]
                  [cljsjs/js-yaml "3.3.1-0"]
-                 [cljsjs/recharts "1.1.0-3"]
+                 [cljsjs/recharts "1.6.2-0"]
                  [cljsjs/plotly "1.45.3-0"]
                  [cljsjs/chartjs "2.9.3-0"]
                  [rum "0.11.2" :exclusions [cljsjs/react cljsjs/react-dom]]

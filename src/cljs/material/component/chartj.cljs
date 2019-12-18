@@ -62,12 +62,16 @@
     (default
       chart-id
       {:type    "doughnut"
-       :data    {:datasets datasets}
+       :data    {:datasets datasets
+                 :labels   ["running" "down"]}
+
        :options {:responsive          true
                  :maintainAspectRatio false
                  :cutoutPercentage    75
-                 :legend              {:display false}
-                 :tooltips            {:callbacks {:label tooltip}}
+                 :legend              {:display true
+                                       :align   "center"}
+                 :tooltips            {:enabled   false
+                                       :callbacks {:label tooltip}}
                  :elements            {:center {:text        chart-title
                                                 :sidePadding 15}}}})))
 
