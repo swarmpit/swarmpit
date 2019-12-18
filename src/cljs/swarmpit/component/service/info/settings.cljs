@@ -6,11 +6,13 @@
             [material.component.label :as label]
             [swarmpit.component.state :as state]
             [swarmpit.component.service.log :as log]
+            [swarmpit.component.common :as common]
             [swarmpit.docker.utils :as utils]
             [swarmpit.routes :as routes]
             [swarmpit.url :refer [dispatch!]]
             [sablono.core :refer-macros [html]]
             [clojure.contrib.inflect :as inflect]
+            [clojure.contrib.humanize :as humanize]
             [clojure.string :as str]
             [rum.core :as rum]))
 
@@ -32,9 +34,10 @@
     (chart/pie
       data
       (str (count tasks) " " (inflect/pluralize-noun (count tasks) "replica"))
-      "Swarmpit-service-replicas-graph"
+      "Swarmpit-stat-graph"
       "replicas-pie"
-      {:formatter (fn [value name props]
+      {:className "Swarmpit-stat-label"
+       :formatter (fn [value name props]
                     (.-state (.-payload props)))})))
 
 (rum/defc form-registry < rum/static [registry]
@@ -92,10 +95,29 @@
   [agent]
   (when agent (label/base "agent" "primary")))
 
-(rum/defc form < rum/reactive [service tasks]
+(rum/defc form-stats [running-tasks desired-tasks active-nodes]
+  (let [cpu-usage (Math/ceil (reduce + (map #(get-in % [:stats :cpuPercentage]) running-tasks)))
+        memory-usage (reduce + (map #(get-in % [:stats :memoryPercentage]) running-tasks))
+        memory (reduce + (map #(get-in % [:stats :memory]) running-tasks))
+        mean-fn (fn [ks] (/ ks (count active-nodes)))]
+    (comp/box
+      {:className "Swarmpit-stat"}
+      (form-replicas desired-tasks)
+      (common/resource-pie
+        (mean-fn cpu-usage)
+        (str (mean-fn cpu-usage) "% cpu")
+        (str "graph-cpu"))
+      (common/resource-pie
+        (mean-fn memory-usage)
+        (str (humanize/filesize memory :binary false) " ram")
+        (str "graph-memory")))))
+
+(rum/defc form < rum/reactive [service tasks nodes]
   (let [image (get-in service [:repository :image])
         logdriver (get-in service [:logdriver :name])
         desired-tasks (filter #(not= "shutdown" (:desiredState %)) tasks)
+        running-tasks (filter #(= "running" (:state %)) tasks)
+        active-nodes (filter #(= "ready" (:state %)) nodes)
         registry (utils/linked-registry image)
         command (:command service)
         stack (:stack service)
@@ -109,11 +131,15 @@
                        (agent-label (:agent service))
                        (autoredeploy-label (-> service :deployment :autoredeploy))
                        (label/base mode "grey")])})
+      (if (not (empty? desired-tasks))
+        (comp/card-content
+          {:className "Swarmpit-table-card-content"}
+          (form-stats running-tasks desired-tasks active-nodes))
+        (comp/card-content
+          {}
+          (form/message "Service has been shut down.")))
       (comp/card-content
         {}
-        (if (not (empty? desired-tasks))
-          (form-replicas desired-tasks)
-          (form/message "Service has been shut down."))
         (form-command command))
       (form/item-main "ID" (:id service) false)
       (when registry

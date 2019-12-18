@@ -44,11 +44,20 @@
                      (when (contains? pinned-services service-id)
                        (state/update-value [:pinned?] true state/form-state-cursor))))}))
 
+(defn- nodes-handler
+  []
+  (ajax/get
+    (routes/path-for-backend :nodes)
+    {:state      [:loading? :nodes]
+     :on-success (fn [{:keys [response origin?]}]
+                   (when origin?
+                     (state/update-value [:nodes] response state/form-value-cursor)))}))
+
 (defn- service-handler
   [service-id]
   (ajax/get
     (routes/path-for-backend :service {:id service-id})
-    {:state      [:loading?]
+    {:state      [:loading? :service]
      :on-success (fn [{:keys [response]}]
                    (me-handler (:id response))
                    (state/update-value [:service] response state/form-value-cursor))}))
@@ -57,14 +66,16 @@
   [service-id]
   (ajax/get
     (routes/path-for-backend :service-networks {:id service-id})
-    {:on-success (fn [{:keys [response]}]
+    {:state      [:loading? :networks]
+     :on-success (fn [{:keys [response]}]
                    (state/update-value [:networks] response state/form-value-cursor))}))
 
 (defn- service-tasks-handler
   [service-id]
   (ajax/get
     (routes/path-for-backend :service-tasks {:id service-id})
-    {:on-success (fn [{:keys [response]}]
+    {:state      [:loading? :tasks]
+     :on-success (fn [{:keys [response]}]
                    (state/update-value [:tasks] response state/form-value-cursor))}))
 
 (defn- delete-service-handler
@@ -204,13 +215,17 @@
                     :cmdShow   false
                     :pinned?   false
                     :menu?     false
-                    :loading?  true} state/form-state-cursor))
+                    :loading?  {:service  true
+                                :tasks    true
+                                :networks true
+                                :nodes    true}} state/form-state-cursor))
 
 (defn- init-form-value
   []
   (state/set-value {:service  {}
                     :tasks    []
-                    :networks []} state/form-value-cursor))
+                    :networks []
+                    :nodes    []} state/form-value-cursor))
 
 (def mixin-init-form
   (mixin/init-form
@@ -219,13 +234,14 @@
       (init-form-value)
       (service-handler id)
       (service-networks-handler id)
-      (service-tasks-handler id))))
+      (service-tasks-handler id)
+      (nodes-handler))))
 
-(defn form-settings-grid [service service-id tasks]
+(defn form-settings-grid [service tasks nodes]
   (comp/grid
     {:item true
      :xs   12}
-    (settings/form service tasks)))
+    (settings/form service tasks nodes)))
 
 (defn form-tasks-grid [service tasks]
   (comp/grid
@@ -299,9 +315,11 @@
      :xs   12}
     (deployment/form deployment service-id immutable?)))
 
-(rum/defc form-info < rum/static [{:keys [service networks tasks]}
+(rum/defc form-info < rum/static [{:keys [service networks tasks nodes]}
                                   {:keys [pinned? logs] :as state}
                                   log]
+  (print nodes)
+
   (let [ports (:ports service)
         mounts (:mounts service)
         secrets (:secrets service)
@@ -340,7 +358,7 @@
                 (comp/grid
                   {:container true
                    :spacing   2}
-                  (form-settings-grid service id tasks)
+                  (form-settings-grid service tasks nodes)
                   (form-hosts-grid hosts id immutable?)
                   (form-variables-grid variables id immutable?)
                   (form-secrets-grid secrets id immutable?)
@@ -370,7 +388,7 @@
                 {:item true
                  :xs   12}
                 (toolbar/toolbar "Service" (:serviceName service) (form-actions service id pinned?)))
-              (form-settings-grid service id tasks)
+              (form-settings-grid service tasks nodes)
               (form-tasks-grid service tasks)
               (form-networks-grid networks id immutable?)
               (form-ports-grid ports id immutable?)
@@ -387,8 +405,11 @@
 (rum/defc form < rum/reactive
                  mixin-init-form
                  mixin/subscribe-form [{{:keys [log]} :params}]
-  (let [state (state/react state/form-state-cursor)
+  (let [{:keys [loading?] :as state} (state/react state/form-state-cursor)
         item (state/react state/form-value-cursor)]
     (progress/form
-      (:loading? state)
+      (or (:service loading?)
+          (:tasks loading?)
+          (:networks loading?)
+          (:nodes loading?))
       (form-info item state (parse-int log)))))

@@ -157,7 +157,7 @@
            :value stat
            :color "#ffa000"}))
 
-(defn- render-percentage
+(defn render-percentage
   [val]
   (if (some? val)
     (str (gstring/format "%.2f" val) "%")

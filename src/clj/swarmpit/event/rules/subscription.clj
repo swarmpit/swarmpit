@@ -3,7 +3,8 @@
   (:require [swarmpit.api :as api]
             [swarmpit.docker.utils :as du]
             [swarmpit.stats :as stats]
-            [swarmpit.event.rules.predicate :refer :all]))
+            [swarmpit.event.rules.predicate :refer :all]
+            [clojure.tools.logging :as log]))
 
 (defn- service-id
   [service-event-message]
@@ -40,10 +41,12 @@
                        (service-name service-event-message))
         service (api/service service-id)
         tasks (api/service-tasks service-id)
-        networks (api/service-networks service-id)]
+        networks (api/service-networks service-id)
+        nodes (api/nodes)]
     {:service  service
      :tasks    tasks
-     :networks networks}))
+     :networks networks
+     :nodes    nodes}))
 
 (defn- node-info-data
   [node-event-message]

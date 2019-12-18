@@ -8,10 +8,12 @@
   [service-id]
   (let [service (api/service service-id)
         tasks (api/service-tasks service-id)
-        networks (api/service-networks service-id)]
+        networks (api/service-networks service-id)
+        nodes (api/nodes)]
     {:service  service
      :tasks    tasks
-     :networks networks}))
+     :networks networks
+     :nodes    nodes}))
 
 (defn- node-info-data
   [node-id]
