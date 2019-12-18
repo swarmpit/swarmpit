@@ -16,6 +16,7 @@
             [swarmpit.component.config.list :as configs]
             [swarmpit.component.secret.list :as secrets]
             [swarmpit.component.toolbar :as toolbar]
+            [swarmpit.component.common :as common]
             [swarmpit.docker.utils :as utils]
             [swarmpit.router :as router]
             [swarmpit.ajax :as ajax]
@@ -23,6 +24,7 @@
             [swarmpit.routes :as routes]
             [clojure.string :refer [includes?]]
             [clojure.contrib.inflect :as inflect]
+            [clojure.contrib.humanize :as humanize]
             [sablono.core :refer-macros [html]]
             [rum.core :as rum]))
 
@@ -70,6 +72,14 @@
      :on-success (fn [{:keys [response]}]
                    (state/update-value [:secrets] response state/form-value-cursor))}))
 
+(defn- stack-tasks-handler
+  [stack-name]
+  (ajax/get
+    (routes/path-for-backend :stack-tasks {:name stack-name})
+    {:state      [:loading? :stack-tasks]
+     :on-success (fn [{:keys [response]}]
+                   (state/update-value [:tasks] response state/form-value-cursor))}))
+
 (defn- stackfile-handler
   [stack-name]
   (ajax/get
@@ -77,6 +87,15 @@
     {:state      [:loading? :stack-file]
      :on-success (fn [{:keys [response]}]
                    (state/update-value [:stackfile] response state/form-value-cursor))
+     :on-error   (fn [_])}))
+
+(defn- stats-handler
+  []
+  (ajax/get
+    (routes/path-for-backend :stats)
+    {:state      [:loading? :stats]
+     :on-success (fn [{:keys [response]}]
+                   (state/update-value [:stats] response state/form-value-cursor))
      :on-error   (fn [_])}))
 
 (defn- delete-stack-handler
@@ -175,7 +194,7 @@
     (chart/pie
       data
       (str (count services) " " (inflect/pluralize-noun (count services) "service"))
-      "Swarmpit-service-replicas-graph"
+      "Swarmpit-stat-graph"
       "sservices-pie"
       {:formatter (fn [value name props]
                     (.-state (.-payload props)))})))
@@ -196,31 +215,37 @@
     #(when (not (utils/in-stack? stack-name %))
        (html [:span.Swarmpit-table-status (label/base "external" "info")]))))
 
-(rum/defc form-general < rum/static [stack-name stackfile {:keys [services networks volumes configs secrets]}]
+(rum/defc form-stats [services tasks stats]
+  (let [cpu-usage (Math/ceil (reduce + (map #(get-in % [:stats :cpuPercentage]) tasks)))
+        memory (reduce + (map #(get-in % [:stats :memory]) tasks))
+        memory-total (get-in stats [:memory :total])
+        mean-fn (fn [ks] (/ ks (:hosts stats)))]
+    (comp/box
+      {:className "Swarmpit-stat"}
+      (form-services-graph services)
+      (common/resource-pie
+        (mean-fn cpu-usage)
+        (str (mean-fn cpu-usage) "% cpu")
+        (str "graph-cpu"))
+      (common/resource-pie
+        (* (/ memory memory-total) 100)
+        (str (humanize/filesize memory :binary false) " ram")
+        (str "graph-memory")))))
+
+(rum/defc form-general < rum/static [stack-name stackfile {:keys [services tasks networks volumes configs secrets stats]}]
   (comp/card
     {:className "Swarmpit-form-card"}
     (comp/card-header
       {:subheader (label/base "deployed" "green")})
     (comp/card-content
-      {}
-      (comp/grid
-        {:container true
-         :spacing   2}
-        (comp/grid
-          {:item true
-           :xs   6}
-          (form-services-graph services))
-        (comp/grid
-          {:item  true
-           :xs    6
-           :style {:display    "flex"
-                   :alignItems "center"}}
-          (comp/box
-            {:p 3}
-            (resource-chip "network" (count networks))
-            (resource-chip "volume" (count volumes))
-            (resource-chip "config" (count configs))
-            (resource-chip "secret" (count secrets))))))))
+      {:className "Swarmpit-table-card-content"}
+      (form-stats services tasks stats)
+      (comp/box
+        {:className "Swarmpit-row"}
+        (resource-chip "network" (count networks))
+        (resource-chip "volume" (count volumes))
+        (resource-chip "config" (count configs))
+        (resource-chip "secret" (count secrets))))))
 
 (rum/defc form-services < rum/static [stack-name services]
   (comp/card
@@ -318,7 +343,9 @@
                                :stack-volumes  true
                                :stack-configs  true
                                :stack-secrets  true
-                               :stack-file     true}} state/form-state-cursor))
+                               :stack-tasks    true
+                               :stack-file     true
+                               :nodes          true}} state/form-state-cursor))
 
 (def mixin-init-form
   (mixin/init-form
@@ -329,7 +356,9 @@
       (stack-volumes-handler name)
       (stack-configs-handler name)
       (stack-secrets-handler name)
-      (stackfile-handler name))))
+      (stack-tasks-handler name)
+      (stackfile-handler name)
+      (stats-handler))))
 
 (defn form-general-grid [stack-name stackfile item]
   (comp/grid
@@ -436,5 +465,7 @@
           (:stack-volumes loading?)
           (:stack-configs loading?)
           (:stack-secrets loading?)
-          (:stack-file loading?))
+          (:stack-tasks loading?)
+          (:stack-file loading?)
+          (:stats loading?))
       (form-info name item))))

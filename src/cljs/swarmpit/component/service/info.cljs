@@ -44,14 +44,14 @@
                      (when (contains? pinned-services service-id)
                        (state/update-value [:pinned?] true state/form-state-cursor))))}))
 
-(defn- nodes-handler
+(defn- stats-handler
   []
   (ajax/get
-    (routes/path-for-backend :nodes)
-    {:state      [:loading? :nodes]
-     :on-success (fn [{:keys [response origin?]}]
-                   (when origin?
-                     (state/update-value [:nodes] response state/form-value-cursor)))}))
+    (routes/path-for-backend :stats)
+    {:state      [:loading? :stats]
+     :on-success (fn [{:keys [response]}]
+                   (state/update-value [:stats] response state/form-value-cursor))
+     :on-error   (fn [_])}))
 
 (defn- service-handler
   [service-id]
@@ -218,7 +218,7 @@
                     :loading?  {:service  true
                                 :tasks    true
                                 :networks true
-                                :nodes    true}} state/form-state-cursor))
+                                :stats    true}} state/form-state-cursor))
 
 (defn- init-form-value
   []
@@ -235,13 +235,13 @@
       (service-handler id)
       (service-networks-handler id)
       (service-tasks-handler id)
-      (nodes-handler))))
+      (stats-handler))))
 
-(defn form-settings-grid [service tasks nodes]
+(defn form-settings-grid [service tasks stats]
   (comp/grid
     {:item true
      :xs   12}
-    (settings/form service tasks nodes)))
+    (settings/form service tasks stats)))
 
 (defn form-tasks-grid [service tasks]
   (comp/grid
@@ -315,7 +315,7 @@
      :xs   12}
     (deployment/form deployment service-id immutable?)))
 
-(rum/defc form-info < rum/static [{:keys [service networks tasks nodes]}
+(rum/defc form-info < rum/static [{:keys [service networks tasks stats]}
                                   {:keys [pinned?] :as state}
                                   log]
   (let [ports (:ports service)
@@ -356,7 +356,7 @@
                 (comp/grid
                   {:container true
                    :spacing   2}
-                  (form-settings-grid service tasks nodes)
+                  (form-settings-grid service tasks stats)
                   (form-hosts-grid hosts id immutable?)
                   (form-variables-grid variables id immutable?)
                   (form-secrets-grid secrets id immutable?)
@@ -386,7 +386,7 @@
                 {:item true
                  :xs   12}
                 (toolbar/toolbar "Service" (:serviceName service) (form-actions service id pinned?)))
-              (form-settings-grid service tasks nodes)
+              (form-settings-grid service tasks stats)
               (form-tasks-grid service tasks)
               (form-networks-grid networks id immutable?)
               (form-ports-grid ports id immutable?)
@@ -409,5 +409,5 @@
       (or (:service loading?)
           (:tasks loading?)
           (:networks loading?)
-          (:nodes loading?))
+          (:stats loading?))
       (form-info item state (parse-int log)))))

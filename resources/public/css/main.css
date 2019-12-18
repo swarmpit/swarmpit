@@ -149,6 +149,10 @@ a {
     z-index: 1;
 }
 
+.Swarmpit-popover {
+    padding: 1em 2em;
+}
+
 .Swarmpit-doughnut {
     width: 110px;
     height: 110px;
@@ -1103,20 +1107,6 @@ a {
     padding-bottom: 10px;
 }
 
-.Swarmpit-service-replicas-graph {
-    width: 150px;
-    height: 150px;
-}
-
-.Swarmpit-service-tabs {
-    border-bottom: 1px solid rgba(0, 0, 0, 0.12);
-}
-
-.Swarmpit-commmand {
-    display: flex;
-    align-items: flex-start;
-}
-
 .Swarmpit-task-error {
     display: flex;
     color: #d32f2f;
@@ -1138,6 +1128,11 @@ a {
     flex-direction: column;
 }
 
+.Swarmpit-commmand {
+    display: flex;
+    align-items: flex-start;
+}
+
 .Swarmpit-command-text {
     font-size: 0.9em;
     word-break: break-all;
@@ -1145,10 +1140,6 @@ a {
 
 .Swarmpit-command-text > pre {
     margin: 5px 5px 5px 0;
-}
-
-.Swarmpit-popover {
-    padding: 1em 2em;
 }
 
 /* REPOSITORY */

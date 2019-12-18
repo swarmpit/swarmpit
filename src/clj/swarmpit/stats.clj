@@ -62,7 +62,8 @@
         hosts (filter #(contains? active-hosts (:id %)) cached-hosts)
         sum-fn (fn [ks] (reduce + (map #(get-in % ks) hosts)))
         mean-fn (fn [ks] (/ (sum-fn ks) (count hosts)))]
-    {:cpu    {:usage (mean-fn [:cpu :usedPercentage])}
+    {:hosts  (count active-hosts)
+     :cpu    {:usage (mean-fn [:cpu :usedPercentage])}
      :memory {:usage (mean-fn [:memory :usedPercentage])
               :used  (sum-fn [:memory :used])
               :total (sum-fn [:memory :total])}
