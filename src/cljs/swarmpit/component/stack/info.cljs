@@ -32,7 +32,7 @@
   [stack-name]
   (ajax/get
     (routes/path-for-backend :stack-services {:name stack-name})
-    {:state      [:loading?]
+    {:state      [:loading? :stack-services]
      :on-success (fn [{:keys [response]}]
                    (state/update-value [:services] response state/form-value-cursor)
                    (when (empty? response)
@@ -42,35 +42,40 @@
   [stack-name]
   (ajax/get
     (routes/path-for-backend :stack-networks {:name stack-name})
-    {:on-success (fn [{:keys [response]}]
+    {:state      [:loading? :stack-networks]
+     :on-success (fn [{:keys [response]}]
                    (state/update-value [:networks] response state/form-value-cursor))}))
 
 (defn- stack-volumes-handler
   [stack-name]
   (ajax/get
     (routes/path-for-backend :stack-volumes {:name stack-name})
-    {:on-success (fn [{:keys [response]}]
+    {:state      [:loading? :stack-volumes]
+     :on-success (fn [{:keys [response]}]
                    (state/update-value [:volumes] response state/form-value-cursor))}))
 
 (defn- stack-configs-handler
   [stack-name]
   (ajax/get
     (routes/path-for-backend :stack-configs {:name stack-name})
-    {:on-success (fn [{:keys [response]}]
+    {:state      [:loading? :stack-configs]
+     :on-success (fn [{:keys [response]}]
                    (state/update-value [:configs] response state/form-value-cursor))}))
 
 (defn- stack-secrets-handler
   [stack-name]
   (ajax/get
     (routes/path-for-backend :stack-secrets {:name stack-name})
-    {:on-success (fn [{:keys [response]}]
+    {:state      [:loading? :stack-secrets]
+     :on-success (fn [{:keys [response]}]
                    (state/update-value [:secrets] response state/form-value-cursor))}))
 
 (defn- stackfile-handler
   [stack-name]
   (ajax/get
     (routes/path-for-backend :stack-file {:name stack-name})
-    {:on-success (fn [{:keys [response]}]
+    {:state      [:loading? :stack-file]
+     :on-success (fn [{:keys [response]}]
                    (state/update-value [:stackfile] response state/form-value-cursor))
      :on-error   (fn [_])}))
 
@@ -308,7 +313,12 @@
 (defn- init-form-state
   []
   (state/set-value {:menu?    false
-                    :loading? true} state/form-state-cursor))
+                    :loading? {:stack-services true
+                               :stack-networks true
+                               :stack-volumes  true
+                               :stack-configs  true
+                               :stack-secrets  true
+                               :stack-file     true}} state/form-state-cursor))
 
 (def mixin-init-form
   (mixin/init-form
@@ -418,8 +428,13 @@
 (rum/defc form < rum/reactive
                  mixin-init-form
                  mixin/subscribe-form [{{:keys [name]} :params}]
-  (let [state (state/react state/form-state-cursor)
+  (let [{:keys [loading?]} (state/react state/form-state-cursor)
         item (state/react state/form-value-cursor)]
     (progress/form
-      (:loading? state)
+      (or (:stack-services loading?)
+          (:stack-networks loading?)
+          (:stack-volumes loading?)
+          (:stack-configs loading?)
+          (:stack-secrets loading?)
+          (:stack-file loading?))
       (form-info name item))))

@@ -316,10 +316,8 @@
     (deployment/form deployment service-id immutable?)))
 
 (rum/defc form-info < rum/static [{:keys [service networks tasks nodes]}
-                                  {:keys [pinned? logs] :as state}
+                                  {:keys [pinned?] :as state}
                                   log]
-  (print nodes)
-
   (let [ports (:ports service)
         mounts (:mounts service)
         secrets (:secrets service)
