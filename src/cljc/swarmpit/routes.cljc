@@ -213,6 +213,16 @@
                  :responses {200 {:body        [spec/service]
                                   :description "Success"}}
                  #?@(:clj [:handler handler/stack-services]))}]
+    ["/stacks/:name/tasks"
+     {:name    :stack-tasks
+      :swagger {:tags ["stack"]}
+      :get     (array-map
+                 :summary "Stack tasks"
+                 :parameters {:header {:authorization string?}
+                              :path   {:name string?}}
+                 :responses {200 {:body        [spec/task]
+                                  :description "Success"}}
+                 #?@(:clj [:handler handler/stack-tasks]))}]
     ["/stacks/:name/networks"
      {:name    :stack-networks
       :swagger {:tags ["stack"]}

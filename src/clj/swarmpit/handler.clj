@@ -787,6 +787,11 @@
   (-> (api/stack-services (:name path))
       (resp-ok)))
 
+(defn stack-tasks
+  [{{:keys [path]} :parameters}]
+  (-> (api/stack-tasks (:name path))
+      (resp-ok)))
+
 (defn stack-networks
   [{{:keys [path]} :parameters}]
   (-> (api/stack-services (:name path))

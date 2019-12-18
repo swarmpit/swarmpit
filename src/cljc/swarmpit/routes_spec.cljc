@@ -29,7 +29,8 @@
    (ds/opt :service-dashboard) [string?]})
 
 (def stats
-  {:cpu    {:usage number?}
+  {:hosts  number?
+   :cpu    {:usage number?}
    :memory {:usage number?
             :used  number?
             :total number?}
