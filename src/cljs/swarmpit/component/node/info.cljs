@@ -132,22 +132,20 @@
                          (label/base (:availability node) "info"))])})
       (comp/card-content
         {:className "Swarmpit-table-card-content"}
-        (html
-          [:div
-           [:div {:class "Swarmpit-stat"
-                  :key   "node-card-stat-"}
-            (common/resource-pie
-              (get-in node [:stats :cpu :usedPercentage])
-              (str cpu " " (inflect/pluralize-noun cpu "core"))
-              "graph-cpu")
-            (common/resource-pie
-              (get-in node [:stats :disk :usedPercentage])
-              (str (humanize/filesize disk-bytes :binary false) " disk")
-              "graph-disk")
-            (common/resource-pie
-              (get-in node [:stats :memory :usedPercentage])
-              (str (humanize/filesize memory-bytes :binary false) " ram")
-              "graph-memory")]]))
+        (comp/box
+          {:class "Swarmpit-stat"}
+          (common/resource-pie
+            (get-in node [:stats :cpu :usedPercentage])
+            (str cpu " " (inflect/pluralize-noun cpu "core"))
+            "graph-cpu")
+          (common/resource-pie
+            (get-in node [:stats :disk :usedPercentage])
+            (str (humanize/filesize disk-bytes :binary false) " disk")
+            "graph-disk")
+          (common/resource-pie
+            (get-in node [:stats :memory :usedPercentage])
+            (str (humanize/filesize memory-bytes :binary false) " ram")
+            "graph-memory")))
       (form/item-main "ID" (:id node) false)
       (form/item-main "Name" (:nodeName node))
       (form/item-main "Address" (:address node))

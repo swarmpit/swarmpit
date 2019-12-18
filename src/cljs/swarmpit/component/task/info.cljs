@@ -94,8 +94,7 @@
       {:className "Swarmpit-table-card-content"}
       (when (and stats (= "running" state))
         (comp/box
-          {:class "Swarmpit-stat"
-           :key   (str "node-card-stat-cpu")}
+          {:class "Swarmpit-stat"}
           (common/resource-pie
             (get-in stats [:cpuPercentage])
             (str (-> stats :cpuPercentage (Math/ceil)) "% cpu")

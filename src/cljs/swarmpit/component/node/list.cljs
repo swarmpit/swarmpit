@@ -70,21 +70,21 @@
            (comp/card-content
              {:className "Swarmpit-table-card-content"
               :key       (str "node-card-stats-" index)}
-             (html
-               [:div {:class "Swarmpit-stat"
-                      :key   (str "node-card-stat-" index)}
-                (common/resource-pie
-                  (get-in item [:stats :cpu :usedPercentage])
-                  (str cpu " " (inflect/pluralize-noun cpu "core"))
-                  (str "graph-cpu-" index))
-                (common/resource-pie
-                  (get-in item [:stats :disk :usedPercentage])
-                  (str (humanize/filesize disk-bytes :binary false) " disk")
-                  (str "graph-disk-" index))
-                (common/resource-pie
-                  (get-in item [:stats :memory :usedPercentage])
-                  (str (humanize/filesize memory-bytes :binary false) " ram")
-                  (str "graph-memory-" index))])))]))))
+             (comp/box
+               {:class "Swarmpit-stat"
+                :key   (str "node-card-stat-" index)}
+               (common/resource-pie
+                 (get-in item [:stats :cpu :usedPercentage])
+                 (str cpu " " (inflect/pluralize-noun cpu "core"))
+                 (str "graph-cpu-" index))
+               (common/resource-pie
+                 (get-in item [:stats :disk :usedPercentage])
+                 (str (humanize/filesize disk-bytes :binary false) " disk")
+                 (str "graph-disk-" index))
+               (common/resource-pie
+                 (get-in item [:stats :memory :usedPercentage])
+                 (str (humanize/filesize memory-bytes :binary false) " ram")
+                 (str "graph-memory-" index)))))]))))
 
 (defn- nodes-handler
   []
