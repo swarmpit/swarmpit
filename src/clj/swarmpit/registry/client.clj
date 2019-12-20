@@ -108,6 +108,6 @@
         {:method  :HEAD
          :url     (build-url registry (str "/" repository-name "/manifests/" repository-tag))
          :options {:headers (merge (basic-auth registry)
-                                   {:Accept "application/vnd.docker.distribution.manifest.v2+json"})}})
+                                   {:Accept "application/vnd.docker.distribution.manifest.list.v2+json"})}})
       :headers
       :docker-content-digest))
