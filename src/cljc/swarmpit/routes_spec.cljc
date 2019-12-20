@@ -247,11 +247,15 @@
                         :protocol      string?
                         :mode          string?
                         :hostPort      number?}]
-   :mounts            [{:containerPath string?
-                        :host          string?
-                        :type          string?
-                        :readOnly      boolean?}]
-   :networks          [{:networkName string?}]
+   :mounts            [{:containerPath          string?
+                        :host                   string?
+                        :type                   string?
+                        :readOnly               boolean?
+                        (ds/opt :volumeOptions) {(ds/opt :labels) map?
+                                                 (ds/opt :driver) {:name             string?
+                                                                   (ds/opt :options) [name-value]}}}]
+   :networks          [{:networkName             string?
+                        (ds/opt :serviceAliases) [string?]}]
    :secrets           [{:secretName   string?
                         :secretTarget string?}]
    :configs           [{:configName   string?
