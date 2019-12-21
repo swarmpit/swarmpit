@@ -794,9 +794,10 @@
 
 (defn services-by-network
   [network-name]
-  (services-by #(contains? (->> (get-in % [:Spec :TaskTemplate :Networks])
-                                (map :Target)
-                                (set)) (:id (network network-name)))))
+  (->> (services-by any?)
+       (filter #(get (->> (get % :networks)
+                          (group-by :networkName))
+                     (:networkName (network network-name))))))
 
 (defn services-by-volume
   [volume-name]
