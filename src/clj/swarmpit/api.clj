@@ -826,7 +826,8 @@
 (defn service-networks
   [service-id]
   (dmi/->service-networks (dc/service service-id)
-                          (dc/networks)))
+                          (dc/networks)
+                          (dc/service-tasks service-id)))
 
 (defn service-tasks
   [service-id]
