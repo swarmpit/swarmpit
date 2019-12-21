@@ -25,9 +25,11 @@
 (defn item-date
   [date]
   (html
-    [:time {:date-time date
-            :title     (time/simplify date)}
-     (time/humanize date)]))
+    (if (= "0001-01-01T00:00:00Z" date)
+      "sometime"
+      [:time {:date-time date
+              :title     (time/simplify date)}
+       (time/humanize date)])))
 
 (defn item [name value]
   (html

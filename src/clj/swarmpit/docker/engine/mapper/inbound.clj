@@ -61,7 +61,6 @@
   [networks]
   (->> networks
        (map ->network)
-       (filter #(not (contains? #{"null" "host"} (:driver %))))
        (into [])))
 
 (defn ->plugins
