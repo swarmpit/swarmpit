@@ -770,6 +770,15 @@
          (filter #(contains? ids (:id %)))
          (vec))))
 
+(defn networks-by-services
+  [services]
+  (let [local-networks (->> services
+                            (map :networks)
+                            (flatten)
+                            (filter #(= "local" (:scope %)))
+                            (set))]
+    (resources-by-services services :networks #(concat (networks) local-networks))))
+
 (defn volumes-by-services
   [services]
   (let [volumes (->> (volumes)
@@ -794,9 +803,10 @@
 
 (defn services-by-network
   [network-name]
-  (services-by #(contains? (->> (get-in % [:Spec :TaskTemplate :Networks])
-                                (map :Target)
-                                (set)) (:id (network network-name)))))
+  (->> (services-by any?)
+       (filter #(get (->> (get % :networks)
+                          (group-by :networkName))
+                     (:networkName (network network-name))))))
 
 (defn services-by-volume
   [volume-name]
@@ -826,7 +836,8 @@
 (defn service-networks
   [service-id]
   (dmi/->service-networks (dc/service service-id)
-                          (dc/networks)))
+                          (dc/networks)
+                          (dc/service-tasks service-id)))
 
 (defn service-tasks
   [service-id]
@@ -1126,7 +1137,7 @@
      {:stackName stack-name
       :stackFile (some? (stackfile stack-name))
       :services  services
-      :networks  (resources-by-services services :networks networks)
+      :networks  (networks-by-services services)
       :volumes   (volumes-by-services services)
       :configs   (resources-by-services services :configs configs)
       :secrets   (resources-by-services services :secrets secrets)}))

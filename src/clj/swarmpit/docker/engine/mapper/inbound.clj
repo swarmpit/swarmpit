@@ -61,7 +61,7 @@
   [networks]
   (->> networks
        (map ->network)
-       (filter #(not (contains? #{"null" "host"} (:driver %))))
+       (filter #(not (contains? #{"null"} (:driver %))))
        (into [])))
 
 (defn ->plugins
@@ -177,9 +177,25 @@
                      :hostPort      (:PublishedPort p)}))
        (into [])))
 
+(defn- host-network
+  [tasks networks]
+  (let [network-id (->> tasks
+                        (map #(get % :NetworksAttachments))
+                        (flatten)
+                        (map #(get % :Network))
+                        (filter #(= "host" (get-in % [:Spec :Name])))
+                        (first)
+                        :ID)
+        host-network (->> networks
+                          (filter #(= "host" (get % :Driver)))
+                          (first))]
+    (when network-id {network-id [(assoc host-network :Id network-id)]})))
+
+
 (defn ->service-networks
-  [service networks]
-  (let [networks (group-by :Id networks)]
+  [service networks tasks]
+  (let [networks (merge (group-by :Id networks)
+                        (host-network tasks networks))]
     (->> (get-in service [:Spec :TaskTemplate :Networks])
          (map #(->> (get networks (:Target %))
                     (first)
@@ -410,7 +426,7 @@
                 :message (get-in service [:UpdateStatus :Message])}
        :ports (->service-ports service)
        :mounts (->service-mounts service-spec)
-       :networks (->service-networks service networks)
+       :networks (->service-networks service networks tasks)
        :secrets (->service-secrets service-spec)
        :configs (->service-configs service-spec)
        :hosts (->service-hosts service-spec)

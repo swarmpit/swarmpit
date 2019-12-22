@@ -18,7 +18,7 @@
     (routes/path-for-backend :networks)
     {:on-success (fn [{:keys [response]}]
                    (let [resp (->> response
-                                   (filter #(= "swarm" (:scope %)))
+                                   (filter #(or (= "swarm" (:scope %)) (= "host" (:driver %))))
                                    (into []))]
                      (state/update-value [:list] resp form-state-cursor)))}))
 

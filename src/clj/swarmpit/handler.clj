@@ -795,7 +795,7 @@
 (defn stack-networks
   [{{:keys [path]} :parameters}]
   (-> (api/stack-services (:name path))
-      (api/resources-by-services :networks api/networks)
+      (api/networks-by-services)
       (resp-ok)))
 
 (defn stack-volumes

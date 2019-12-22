@@ -333,6 +333,12 @@
                 :api    "/version"})
       :body))
 
+(defn swarm
+  []
+  (-> (execute {:method :GET
+                :api    "/swarm"})
+      :body))
+
 ;; Images
 
 (defn image
