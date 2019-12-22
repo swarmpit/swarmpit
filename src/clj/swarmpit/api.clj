@@ -770,6 +770,15 @@
          (filter #(contains? ids (:id %)))
          (vec))))
 
+(defn networks-by-services
+  [services]
+  (let [local-networks (->> services
+                            (map :networks)
+                            (flatten)
+                            (filter #(= "local" (:scope %)))
+                            (set))]
+    (resources-by-services services :networks #(concat (networks) local-networks))))
+
 (defn volumes-by-services
   [services]
   (let [volumes (->> (volumes)
@@ -1128,7 +1137,7 @@
      {:stackName stack-name
       :stackFile (some? (stackfile stack-name))
       :services  services
-      :networks  (resources-by-services services :networks networks)
+      :networks  (networks-by-services services)
       :volumes   (volumes-by-services services)
       :configs   (resources-by-services services :configs configs)
       :secrets   (resources-by-services services :secrets secrets)}))
