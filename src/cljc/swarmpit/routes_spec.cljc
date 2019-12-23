@@ -198,6 +198,12 @@
                  :autoredeploy    boolean?
                  :placement       [{:rule string?}]}})
 
+(def service-stats
+  {:service string?
+   :time    [string?]
+   :cpu     [number?]
+   :memory  [number?]})
+
 (def service-create
   {:repository        {:name string?
                        :tag  string?}

@@ -1,6 +1,7 @@
 (ns swarmpit.stats
   (:require [clojure.core.cache :as cache]
             [clojure.core.memoize :as memo]
+            [clojure.tools.logging :as log]
             [swarmpit.docker.engine.client :as docker]
             [swarmpit.influxdb.client :as influx]
             [swarmpit.influxdb.mapper :as m]
@@ -22,8 +23,8 @@
   (some? (config :influxdb-url)))
 
 (defn ready? []
-  (not (and (empty? @cache)
-            (empty? (active-hosts)))))
+  (some? (and (not-empty @cache)
+              (not-empty (active-hosts)))))
 
 (defn store-to-cache
   "Store stats in local cache"
@@ -79,6 +80,14 @@
       (get "series")
       (first)
       (m/->task-ts)))
+
+(defn services-timeseries
+  "Get services timeseries data for last 24 hours"
+  []
+  (map #(m/->task-ts %)
+       (-> (influx/read-services-stats (count (active-hosts)))
+           (first)
+           (get "series"))))
 
 (defn hosts-timeseries
   "Get hosts timeseries data for last 24 hours"

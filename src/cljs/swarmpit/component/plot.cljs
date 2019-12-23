@@ -34,7 +34,7 @@
                 :tickformat ".2f"
                 :rangemode  "tozero"}})))
 
-(defn multi [plot-id multi-stats-ts y-key title y-title]
+(defn multi [plot-id multi-stats-ts y-key name-key title y-title]
   (let [time (:time (first multi-stats-ts))
         now (last time)
         now-4-hours (time/in-past-string 60)]
@@ -43,17 +43,21 @@
       (into []
             (map-indexed
               (fn [i item]
-                (merge
-                  (hash-map
-                    :x (:time item)
-                    :y (y-key item)
-                    :name (subs (:name item) 0 15)
-                    :connectgaps false
-                    :fill "tozeroy"
-                    :type "scatter"
-                    :mode "lines")
-                  (when (zero? i)
-                    {:line {:color "#52B359"}}))) multi-stats-ts))
+                (let [name (name-key item)
+                      name-size (count name)]
+                  (merge
+                    (hash-map
+                      :x (:time item)
+                      :y (y-key item)
+                      :name (if (> name-size 15)
+                              (str (subs (name-key item) 0 15) "...")
+                              name)
+                      :connectgaps false
+                      :fill "tozeroy"
+                      :type "scatter"
+                      :mode "lines")
+                    (when (zero? i)
+                      {:line {:color "#52B359"}})))) multi-stats-ts))
       {:title      title
        :showlegend true
        :height     300
