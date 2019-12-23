@@ -320,7 +320,7 @@
 
 (defn update-user
   [user delta]
-  (let [allowed-delta (select-keys delta [:role :email])]
+  (let [allowed-delta (select-keys delta [:role :email :enabled])]
     (update-doc user allowed-delta)))
 
 (defn change-password

@@ -9,7 +9,9 @@
 
 (defn ->user
   [user]
-  (assoc user :password (->password (:password user))))
+  (as-> user %
+    (update % :password ->password)
+    (update % :enabled (fnil identity true))))
 
 (defn ->dockerhub
   [docker-user docker-user-info dockeruser-namespace]

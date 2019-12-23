@@ -378,6 +378,7 @@
    :role                       string?
    :type                       string?
    :username                   string?
+   :enabled                    boolean?
    :_id                        string?
    :_rev                       string?})
 

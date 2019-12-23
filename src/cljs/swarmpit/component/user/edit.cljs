@@ -71,6 +71,37 @@
      :InputLabelProps {:shrink true}
      :onChange        #(state/update-value [:email] (-> % .-target .-value) state/form-value-cursor)}))
 
+(defn- form-enabled [value]
+  (comp/form-control
+    {:component "fieldset"
+     :key       "enabled-f"
+     :margin    "normal"}
+    (comp/form-label
+      {:key "rolel"} "Define whether the user is enabled")
+    (comp/form-helper-text
+      {} "Specify account enablement")
+    (comp/radio-group
+      {:name     "enabled"
+       :key      "enabled-rg"
+       :value    value
+       :onChange #(state/update-value [:enabled] (-> % .-target .-value) state/form-value-cursor)}
+      (comp/form-control-label
+        {:control (comp/radio
+                    {:name  "user-role"
+                     :color "primary"
+                     :key   "user-disabled"})
+         :key     "enabled-user"
+         :value   true
+         :label   "Enabled"})
+      (comp/form-control-label
+        {:control (comp/radio
+                    {:name  "user-disabled"
+                     :color "primary"
+                     :key   "user-disabled"})
+         :key     "enabled-user"
+         :value   false
+         :label   "Disabled"}))))
+
 (defn- user-handler
   [user-id]
   (ajax/get
@@ -107,7 +138,7 @@
       (init-form-state)
       (user-handler id))))
 
-(rum/defc form-edit < rum/static [{:keys [_id username role email]}
+(rum/defc form-edit < rum/static [{:keys [_id username role email enabled]}
                                   {:keys [processing? valid?]}]
   (comp/mui
     (html
@@ -129,7 +160,8 @@
               {:className "Swarmpit-fcard-content"}
               (form-username username)
               (form-email email)
-              (form-role role))
+              (form-role role)
+              (form-enabled enabled))
             (comp/card-actions
               {:className "Swarmpit-fcard-actions"}
               (composite/progress-button

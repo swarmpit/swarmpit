@@ -75,6 +75,37 @@
          :value   "admin"
          :label   "Admin"}))))
 
+(defn- form-enabled [value]
+  (comp/form-control
+    {:component "fieldset"
+     :key       "enabled-f"
+     :margin    "normal"}
+    (comp/form-label
+      {:key "rolel"} "Define whether the user is enabled")
+    (comp/form-helper-text
+      {} "Specify account enablement")
+    (comp/radio-group
+      {:name     "enabled"
+       :key      "enabled-rg"
+       :value    value
+       :onChange #(state/update-value [:enabled] (-> % .-target .-value) state/form-value-cursor)}
+      (comp/form-control-label
+        {:control (comp/radio
+                    {:name  "user-role"
+                     :color "primary"
+                     :key   "user-disabled"})
+         :key     "enabled-user"
+         :value   true
+         :label   "Enabled"})
+      (comp/form-control-label
+        {:control (comp/radio
+                    {:name  "user-disabled"
+                     :color "primary"
+                     :key   "user-disabled"})
+         :key     "enabled-user"
+         :value   false
+         :label   "Disabled"}))))
+
 (defn- form-email [value]
   (comp/text-field
     {:label           "Email"
@@ -114,7 +145,8 @@
   (state/set-value {:username ""
                     :password ""
                     :email    ""
-                    :role     "user"} state/form-value-cursor))
+                    :role     "user"
+                    :enabled  true} state/form-value-cursor))
 
 (def mixin-init-form
   (mixin/init-form
@@ -124,7 +156,7 @@
 
 (rum/defc form < rum/reactive
                  mixin-init-form [_]
-  (let [{:keys [username password role email]} (state/react state/form-value-cursor)
+  (let [{:keys [username password role enabled email]} (state/react state/form-value-cursor)
         {:keys [valid? processing? showPassword]} (state/react state/form-state-cursor)]
     (comp/mui
       (html
@@ -151,7 +183,8 @@
                 (form-username username)
                 (form-password password showPassword)
                 (form-email email)
-                (form-role role))
+                (form-role role)
+                (form-enabled enabled))
               (comp/card-actions
                 {:className "Swarmpit-fcard-actions"}
                 (composite/progress-button

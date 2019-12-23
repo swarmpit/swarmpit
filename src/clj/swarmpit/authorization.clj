@@ -2,14 +2,14 @@
   (:require [buddy.auth :refer [authenticated?]]
             [buddy.auth.accessrules :refer [success error wrap-access-rules]]
             [swarmpit.handler :refer [resp-error]]
-            [swarmpit.token :refer [admin?]]
+            [swarmpit.token :refer [admin? enabled?]]
             [swarmpit.couchdb.client :as cc]))
 
 (defn- authenticated-access
   [request]
   (if (authenticated? request)
     true
-    (error {:code    401
+    (error {:code 401
             :message "Authentication failed"})))
 
 (defn- any-access
@@ -20,10 +20,15 @@
   [{:keys [identity]}]
   (let [username (get-in identity [:usr :username])
         user (cc/user-by-username username)]
-    (if (admin? user)
-      true
-      (error {:code    403
-              :message "Unauthorized admin access"}))))
+    (cond (not (enabled? user))
+          (error {:code 403
+                  :message "Unauthorized access by disabled user"})
+
+          (not (admin? user))
+          (error {:code 403
+                  :message "Unauthorized admin access"})
+
+          :else true)))
 
 (defn- owner-access
   [{:keys [path-params identity]}]
@@ -31,7 +36,7 @@
         entity (cc/get-doc (:id path-params))]
     (if (= (:owner entity) user)
       true
-      (error {:code    403
+      (error {:code 403
               :message "Unauthorized owner access"}))))
 
 (defn- registry-access
@@ -41,7 +46,7 @@
     (if (or (= (:owner entity) user)
             (:public entity))
       true
-      (error {:code    403
+      (error {:code 403
               :message "Unauthorized registry access"}))))
 
 (def rules [{:pattern #"^/login$"

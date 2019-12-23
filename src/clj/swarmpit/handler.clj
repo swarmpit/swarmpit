@@ -83,9 +83,14 @@
       (resp-error 400 "Missing token")
       (let [user (->> (token/decode-basic token)
                       (api/user-by-credentials))]
-        (if (nil? user)
-          (resp-unauthorized "Invalid credentials")
-          (resp-ok {:token (token/generate-jwt user)}))))))
+        (cond (nil? user)
+              (resp-unauthorized "Invalid credentials")
+
+              (not (:enabled user true))
+              (resp-unauthorized "Disabled user")
+
+              :else
+              (resp-ok {:token (token/generate-jwt user)}))))))
 
 ;; Password handler
 
@@ -170,8 +175,8 @@
 
 (defn user-update
   [{{:keys [body path]} :parameters}]
-  (api/update-user (:id path) body)
-  (resp-ok))
+  (-> (api/update-user (:id path) body)
+      (resp-ok)))
 
 ;; Service handler
 

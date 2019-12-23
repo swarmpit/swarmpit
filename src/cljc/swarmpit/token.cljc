@@ -14,6 +14,10 @@
 #?(:cljs
    (def r (t/reader :json)))
 
+(defn enabled?
+  [user]
+  (:enabled user true))
+
 (defn admin?
   [user]
   (= "admin" (:role user)))
