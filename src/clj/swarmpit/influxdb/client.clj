@@ -4,6 +4,14 @@
             [influxdb.convert :as convert]
             [swarmpit.config :refer [config]]))
 
+(defn- aggregation-interval
+  "Aggregation interval in order to remove nil points (disrupted plots)"
+  []
+  (let [fq (config :agent-stats-frequency)]
+    (if (>= 30 fq)
+      60
+      (* 2 fq))))
+
 (defn- execute [fn]
   (let [conn {:url (config :influxdb-url)}]
     (fn conn)))
@@ -56,30 +64,48 @@
                        :diskFree    (:free disk)}}))
 
 (defn read-task-stats
-  ([]
-   (read-doc
-     "SELECT
-       MAX(cpuUsage) as cpu,
-       MAX(memoryUsed) as memory
-        FROM swarmpit..task_stats
-         WHERE time > now() - 1d
-         GROUP BY time(1m), task, service"))
-  ([task-name]
-   (read-doc
-     (str
-       "SELECT
-         MAX(cpuUsage) as cpu,
-         MAX(memoryUsed) as memory
-          FROM swarmpit..task_stats
-           WHERE task = '" task-name "' AND time > now() - 1d
-           GROUP BY time(1m), task, service"))))
+  [task-name]
+  (read-doc
+    (str
+      "SELECT
+        MAX(cpu) as cpu,
+        MAX(memory) as memory
+         FROM
+          (SELECT
+            MAX(cpuUsage) as cpu,
+            MAX(memoryUsed) as memory
+             FROM swarmpit..task_stats
+              WHERE task = '" task-name "' AND time > now() - 1d
+              GROUP BY time(" (config :agent-stats-frequency) "s), task, service)
+          GROUP BY time(" (aggregation-interval) "s), task, service")))
+
+(defn read-services-stats
+  [hosts]
+  (read-doc
+    (str
+      "SELECT
+        MAX(cpu) as cpu,
+        MAX(memory) as memory
+         FROM
+          (SELECT
+            SUM(cpuUsage) / " hosts " as cpu,
+            SUM(memoryUsed) as memory
+             FROM swarmpit..task_stats
+              WHERE service != '-' AND time > now() - 1d
+              GROUP BY time(" (config :agent-stats-frequency) "s), service)
+          GROUP BY time(" (aggregation-interval) "s), service")))
 
 (defn read-host-stats
   []
   (read-doc
-    "SELECT
-      MAX(cpuUsage) as cpu,
-      MAX(memoryUsage) as memory
-       FROM swarmpit..host_stats
-        WHERE time > now() - 1d
-        GROUP BY time(1m), host"))
+    (str "SELECT
+      MAX(cpu) as cpu,
+      MAX(memory) as memory
+       FROM
+        (SELECT
+          MAX(cpuUsage) as cpu,
+          MAX(memoryUsage) as memory
+           FROM swarmpit..host_stats
+            WHERE time > now() - 1d
+            GROUP BY time(" (config :agent-stats-frequency) "s), host)
+        GROUP BY time(" (aggregation-interval) "s), host")))
