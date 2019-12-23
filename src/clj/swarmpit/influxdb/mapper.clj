@@ -4,8 +4,10 @@
 
 (defn ->task-tags [task-name host-name]
   (let [segments (drop 1 (str/split task-name #"/|\."))]
-    (if (= 1 segments)
-      nil
+    (if (= 1 (count segments))
+      {:task    (first segments)
+       :service "-" ;; can't be nil (influx throws exception)
+       :host    host-name}
       {:task    (str (first segments) "." (second segments))
        :service (first segments)
        :host    host-name})))
