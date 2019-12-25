@@ -1,11 +1,7 @@
 (ns swarmpit.docker.engine.mapper.inbound
   "Map docker domain to swarmpit domain"
   (:require [clojure.string :as str]
-            [swarmpit.utils :refer [map->name-value nano->]]))
-
-(defn- as-megabytes
-  [bytes]
-  (quot bytes (* 1024 1024)))
+            [swarmpit.utils :refer [map->name-value nano-> as-megabytes]]))
 
 (defn ->resources
   [resources]

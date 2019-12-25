@@ -142,3 +142,11 @@
         [base-pow suffix] (first (filter (fn [[base _]] (>= base-pow base)) pows))
         value (int (float (/ num (expt 10 base-pow))))]
     (str value suffix)))
+
+(defn as-megabytes
+  [bytes]
+  (quot bytes (* 1024 1024)))
+
+(defn as-bytes
+  [megabytes]
+  (* megabytes (* 1024 1024)))

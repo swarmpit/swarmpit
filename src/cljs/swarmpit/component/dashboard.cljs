@@ -29,31 +29,33 @@
               stats-ts
               :cpu
               :name
-              "CPU usage by Node"
-              "[%]"))
+              "CPU utilization by Node"
+              "[%]"
+              [0 100]))
 
 (defn node-ram-plot [stats-ts]
   (plot/multi plot-node-ram-id
               stats-ts
               :memory
               :name
-              "Memory usage by Node"
-              "[%]"))
+              "Memory utilization by Node"
+              "[%]"
+              [0 100]))
 
 (defn service-cpu-plot [tasks-ts]
   (plot/multi plot-service-cpu-id
               tasks-ts
               :cpu
               :service
-              "Service CPU usage"
-              "[%]"))
+              "CPU usage by Service"
+              "[Cores]"))
 
 (defn service-ram-plot [tasks-ts]
   (plot/multi plot-service-ram-id
               tasks-ts
               :memory
               :service
-              "Service Memory usage"
+              "Memory usage by Service"
               "[Mb]"))
 
 (defn- render-percentage
@@ -211,27 +213,26 @@
           (render-percentage usage)
           "graph-disk")]])))
 
-(rum/defc dashboard-cpu < rum/static [{:keys [usage] :as cpu} nodes]
-  (let [cores (apply + (map #(get-in % [:resources :cpu]) nodes))]
-    (comp/paper
-      {:elevation 0
-       :className "Swarmpit-paper Swarmpit-dashboard-paper"}
-      (html
-        [:div.Swarmpit-dashboard-section
-         [:div
-          (comp/typography
-            {:variant   "body2"
-             :className "Swarmpit-dashboard-section-title"}
-            "CPU")
-          (comp/typography
-            {:variant   "h5"
-             :className "Swarmpit-dashboard-section-value"}
-            (str cores " " (inflect/pluralize-noun cores "core")))]
-         [:div.Swarmpit-dashbord-section-graph
-          (common/resource-pie
-            usage
-            (render-percentage usage)
-            "graph-cpu")]]))))
+(rum/defc dashboard-cpu < rum/static [{:keys [usage cores] :as cpu}]
+  (comp/paper
+    {:elevation 0
+     :className "Swarmpit-paper Swarmpit-dashboard-paper"}
+    (html
+      [:div.Swarmpit-dashboard-section
+       [:div
+        (comp/typography
+          {:variant   "body2"
+           :className "Swarmpit-dashboard-section-title"}
+          "CPU")
+        (comp/typography
+          {:variant   "h5"
+           :className "Swarmpit-dashboard-section-value"}
+          (str cores " " (inflect/pluralize-noun cores "core")))]
+       [:div.Swarmpit-dashbord-section-graph
+        (common/resource-pie
+          usage
+          (render-percentage usage)
+          "graph-cpu")]])))
 
 (defn dashboard-node-ram-callback
   [state]
@@ -267,15 +268,15 @@
       {:className "Swarmpit-table-card-content"}
       (html [:div {:id plot-node-cpu-id}]))))
 
-(defn dashboard-task-ram-callback
+(defn dashboard-service-ram-callback
   [state]
   (let [ts (first (:rum/args state))]
     (service-ram-plot ts))
   state)
 
-(rum/defc dashboard-task-ram-stats < rum/static
-                                     {:did-mount  dashboard-task-ram-callback
-                                      :did-update dashboard-task-ram-callback} [services-ts]
+(rum/defc dashboard-service-ram-stats < rum/static
+                                        {:did-mount  dashboard-service-ram-callback
+                                         :did-update dashboard-service-ram-callback} [services-ts]
   (comp/card
     (if (empty? services-ts)
       {:className "Swarmpit-card hide"}
@@ -303,7 +304,11 @@
 
 (rum/defc form-info < rum/static [{:keys [stats services services-ts services-dashboard nodes nodes-ts nodes-dashboard] :as item}]
   (let [pinned-services (filter #(contains? (set services-dashboard) (:id %)) services)
-        pinned-nodes (filter #(contains? (set nodes-dashboard) (:id %)) nodes)]
+        pinned-nodes (filter #(contains? (set nodes-dashboard) (:id %)) nodes)
+        running-services (->> (filter #(not= "not running" (:state %)) services)
+                              (map :serviceName)
+                              (set))
+        services-ts (filter #(contains? running-services (:service %)) services-ts)]
     (comp/mui
       (html
         [:div.Swarmpit-form
@@ -338,7 +343,7 @@
                :sm   6
                :lg   3
                :xl   3}
-              (dashboard-cpu (:cpu stats) nodes))
+              (dashboard-cpu (:cpu stats)))
             (when (not-empty pinned-services)
               (comp/grid
                 {:item true
@@ -347,14 +352,6 @@
                  :lg   12
                  :xl   12}
                 (services/pinned pinned-services)))
-            (when (not-empty pinned-nodes)
-              (comp/grid
-                {:item true
-                 :xs   12
-                 :sm   12
-                 :lg   12
-                 :xl   12}
-                (nodes/pinned pinned-nodes)))
             (comp/grid
               {:item true
                :xs   12
@@ -362,7 +359,7 @@
                :md   12
                :lg   6
                :xl   6}
-              (dashboard-task-ram-stats services-ts))
+              (dashboard-service-ram-stats services-ts))
             (comp/grid
               {:item true
                :xs   12
@@ -371,6 +368,14 @@
                :lg   6
                :xl   6}
               (dashboard-service-cpu-stats services-ts))
+            (when (not-empty pinned-nodes)
+              (comp/grid
+                {:item true
+                 :xs   12
+                 :sm   12
+                 :lg   12
+                 :xl   12}
+                (nodes/pinned pinned-nodes)))
             (comp/grid
               {:item true
                :xs   12

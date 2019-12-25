@@ -7,29 +7,16 @@
             [swarmpit.component.state :as state]
             [swarmpit.component.mixin :as mixin]
             [swarmpit.component.progress :as progress]
+            [swarmpit.component.common :as common]
             [swarmpit.ajax :as ajax]
             [swarmpit.routes :as routes]
             [swarmpit.url :refer [dispatch!]]
             [sablono.core :refer-macros [html]]
-            [clojure.contrib.humanize :as humanize]
-            [goog.string :as gstring]
+            [clojure.contrib.inflect :as inflect]
             [goog.string.format]
-            [rum.core :as rum]
-            [swarmpit.component.common :as common]))
+            [rum.core :as rum]))
 
 (enable-console-print!)
-
-(defn- render-percentage
-  [val]
-  (if (some? val)
-    (str (gstring/format "%.2f" val) "%")
-    "-"))
-
-(defn- render-capacity
-  [val]
-  (if (some? val)
-    (humanize/filesize val :binary false)
-    "-"))
 
 (defn render-item-state [value]
   (html
@@ -60,14 +47,24 @@
       [:span.Swarmpit-table-cell-secondary
        (get-in item [:repository :image])]]]))
 
+(defn- render-item-cpu-usage [item]
+  (if (:stats item)
+    (html
+      [:div
+       [:div.Swarmpit-task-memory-usage
+        [:span (common/render-percentage (get-in item [:stats :cpuPercentage]))]
+        [:span.Swarmpit-table-cell-secondary
+         (str (common/render-cores (get-in item [:stats :cpu])) "core")]]])
+    (html [:span "-"])))
+
 (defn- render-item-memory-usage [item]
   (if (:stats item)
     (html
       [:div
        [:div.Swarmpit-task-memory-usage
-        [:span (render-percentage (get-in item [:stats :memoryPercentage]))]
+        [:span (common/render-percentage (get-in item [:stats :memoryPercentage]))]
         [:span.Swarmpit-table-cell-secondary
-         (render-capacity (get-in item [:stats :memory]))]]])
+         (common/render-capacity (get-in item [:stats :memory]))]]])
     (html [:span "-"])))
 
 (def render-metadata
@@ -76,8 +73,10 @@
                      {:name      "Node"
                       :render-fn (fn [item] (:nodeName item))}
                      {:name      "CPU Usage"
-                      :render-fn (fn [item] (render-percentage (get-in item [:stats :cpuPercentage])))}
+                      :tooltip   "Task cpu usage per Limit (resource/node)"
+                      :render-fn (fn [item] (render-item-cpu-usage item))}
                      {:name      "Memory Usage"
+                      :tooltip   "Task memory usage per Limit (resource/node)"
                       :render-fn (fn [item] (render-item-memory-usage item))}
                      {:name      ""
                       :status    true

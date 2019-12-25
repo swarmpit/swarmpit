@@ -8,7 +8,6 @@
          :db-url                "http://localhost:5984"
          :influxdb-url          nil
          :agent-url             nil
-         :agent-stats-frequency 30
          :work-dir              "/tmp"
          :password-hashing      {:alg        :pbkdf2+sha512
                                  :iterations 200000}}))
@@ -20,7 +19,6 @@
         :db-url                (env :swarmpit-db)
         :influxdb-url          (env :swarmpit-influxdb)
         :agent-url             (env :swarmpit-agent-url)
-        :agent-stats-frequency (env :swarmpit-agent-stats-frequency)
         :work-dir              (env :swarmpit-workdir)}
        (into {} (remove #(nil? (val %))))))
 

@@ -7,6 +7,8 @@
             [swarmpit.component.state :as state]
             [swarmpit.component.toolbar :as toolbar]
             [sablono.core :refer-macros [html]]
+            [clojure.contrib.humanize :as humanize]
+            [clojure.contrib.inflect :as inflect]
             [goog.string.format]
             [goog.string :as gstring]
             [rum.core :as rum]))
@@ -163,15 +165,30 @@
     (str (gstring/format "%.2f" val) "%")
     "-"))
 
-(rum/defc resource-pie < rum/static [stat label id]
-  (let [data [(resource-used stat)
-              {:name  "free"
-               :value (- 100 stat)
-               :color "#ccc"}]]
-    (chart/pie
-      data
-      label
-      "Swarmpit-stat-graph"
-      id
-      {:formatter (fn [value name props]
-                    (render-percentage value))})))
+(defn render-cores
+  [val]
+  (if (some? val)
+    (gstring/format "%.2f" val)
+    "-"))
+
+(defn render-capacity
+  [val]
+  (if (some? val)
+    (humanize/filesize val :binary false)
+    "-"))
+
+(rum/defc resource-pie < rum/static
+  ([stat label id]
+   (resource-pie stat label id 100))
+  ([stat label id limit]
+   (let [data [(resource-used stat)
+               {:name  "free"
+                :value (- limit stat)
+                :color "#ccc"}]]
+     (chart/pie
+       data
+       label
+       "Swarmpit-stat-graph"
+       id
+       {:formatter (fn [value name props]
+                     (render-percentage value))}))))

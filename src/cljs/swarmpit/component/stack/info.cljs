@@ -216,20 +216,21 @@
        (html [:span.Swarmpit-table-status (label/base "external" "info")]))))
 
 (rum/defc form-stats [services tasks stats]
-  (let [cpu-usage (Math/ceil (reduce + (map #(get-in % [:stats :cpuPercentage]) tasks)))
+  (let [cpu (reduce + (map #(get-in % [:stats :cpu]) tasks))
+        cpu-usage (* (/ cpu (get-in stats [:cpu :cores])) 100)
         memory (reduce + (map #(get-in % [:stats :memory]) tasks))
         memory-total (get-in stats [:memory :total])
-        mean-fn (fn [ks] (/ ks (:hosts stats)))]
+        memory-usage (* (/ memory memory-total) 100)]
     (comp/box
       {:className "Swarmpit-stat"}
       (form-services-graph services)
       (common/resource-pie
-        (mean-fn cpu-usage)
-        (str (mean-fn cpu-usage) "% cpu")
+        cpu-usage
+        (str (common/render-cores cpu) " core")
         (str "graph-cpu"))
       (common/resource-pie
-        (* (/ memory memory-total) 100)
-        (str (humanize/filesize memory :binary false) " ram")
+        memory-usage
+        (str (common/render-capacity memory) " ram")
         (str "graph-memory")))))
 
 (rum/defc form-general < rum/static [stack-name stackfile {:keys [services tasks networks volumes configs secrets stats]}]

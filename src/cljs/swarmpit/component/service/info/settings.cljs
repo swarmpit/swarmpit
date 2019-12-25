@@ -93,21 +93,38 @@
   [agent]
   (when agent (label/base "agent" "primary")))
 
-(rum/defc form-stats [running-tasks desired-tasks stats]
-  (let [cpu-usage (Math/ceil (reduce + (map #(get-in % [:stats :cpuPercentage]) running-tasks)))
+(defn calculate-cpu-limit
+  [running-tasks stats limit]
+  (if (zero? (:cpu limit))
+    (reduce + (map #(:cores (get (:resources stats)
+                                 (keyword (:nodeId %)))) running-tasks))
+    (:cpu limit)))
+
+(defn calculate-memory-limit
+  [running-tasks stats limit]
+  (if (zero? (:memory limit))
+    (reduce + (map #(:memory (get (:resources stats)
+                                  (keyword (:nodeId %)))) running-tasks))
+    (* (:memory limit)
+       (* 1024 1024))))
+
+(rum/defc form-stats [running-tasks desired-tasks stats limit]
+  (let [cpu (reduce + (map #(get-in % [:stats :cpu]) running-tasks))
+        cpu-limit (calculate-cpu-limit running-tasks stats limit)
+        cpu-usage (* (/ cpu cpu-limit) 100)
         memory (reduce + (map #(get-in % [:stats :memory]) running-tasks))
-        memory-total (get-in stats [:memory :total])
-        mean-fn (fn [ks] (/ ks (:hosts stats)))]
+        memory-limit (calculate-memory-limit running-tasks stats limit)
+        memory-usage (* (/ memory memory-limit) 100)]
     (comp/box
       {:className "Swarmpit-stat"}
       (form-replicas desired-tasks)
       (common/resource-pie
-        (mean-fn cpu-usage)
-        (str (mean-fn cpu-usage) "% cpu")
+        cpu-usage
+        (str (common/render-cores cpu) " core")
         (str "graph-cpu"))
       (common/resource-pie
-        (* (/ memory memory-total) 100)
-        (str (humanize/filesize memory :binary false) " ram")
+        memory-usage
+        (str (common/render-capacity memory) " ram")
         (str "graph-memory")))))
 
 (rum/defc form < rum/reactive [service tasks stats]
@@ -115,6 +132,7 @@
         logdriver (get-in service [:logdriver :name])
         desired-tasks (filter #(not= "shutdown" (:desiredState %)) tasks)
         running-tasks (filter #(= "running" (:state %)) tasks)
+        limit (get-in service [:resources :limit])
         registry (utils/linked-registry image)
         command (:command service)
         stack (:stack service)
@@ -131,7 +149,7 @@
       (if (not (empty? desired-tasks))
         (comp/card-content
           {:className "Swarmpit-table-card-content"}
-          (form-stats running-tasks desired-tasks stats))
+          (form-stats running-tasks desired-tasks stats limit))
         (comp/card-content
           {}
           (form/message "Service has been shut down.")))

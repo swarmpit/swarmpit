@@ -352,7 +352,7 @@
               (comp/grid
                 {:item true
                  :sm   6
-                 :md   5}
+                 :md   4}
                 (comp/grid
                   {:container true
                    :spacing   2}
@@ -368,7 +368,7 @@
               (comp/grid
                 {:item true
                  :sm   6
-                 :md   7}
+                 :md   8}
                 (comp/grid
                   {:container true
                    :spacing   2}
