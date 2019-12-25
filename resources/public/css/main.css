@@ -607,6 +607,11 @@ a {
     color: rgba(0, 0, 0, 0.54);
 }
 
+.Swarmpit-table-head-tooltip {
+    margin-left: 2px;
+    color: rgba(0, 0, 0, 0.54);
+}
+
 .Swarmpit-table-head-cell {
     /*text-transform: uppercase !important;*/
     /*color: rgba(0, 0, 0, 0.54) !important;*/
