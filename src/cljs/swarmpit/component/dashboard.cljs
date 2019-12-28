@@ -136,7 +136,7 @@
       (stats-handler)
       (nodes-handler)
       (services-handler)
-      (services-ts-handler)
+      ;(services-ts-handler)
       (me-handler))))
 
 (defn- resource-chip
@@ -406,5 +406,6 @@
           (:nodes loading?)
           (:nodes-ts loading?)
           (:services loading?)
-          (:services-ts loading?))
+          ;(:services-ts loading?)
+          )
       (form-info item))))

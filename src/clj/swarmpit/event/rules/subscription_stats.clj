@@ -9,12 +9,12 @@
   [user]
   (let [stats (when (stats/ready?) (stats/cluster))
         nodes-ts (when (stats/influx-configured?) (stats/hosts-timeseries))
-        services-ts (when (stats/influx-configured?) (stats/services-timeseries))
+        ;services-ts (when (stats/influx-configured?) (stats/services-timeseries))
         dashboard-user (api/user-by-username user)]
     {:stats              stats
      :services           (api/services)
      :services-dashboard (:service-dashboard dashboard-user)
-     :services-ts        services-ts
+     ;:services-ts        services-ts
      :nodes              (api/nodes)
      :nodes-dashboard    (:node-dashboard dashboard-user)
      :nodes-ts           nodes-ts}))
