@@ -15,7 +15,7 @@
 (defn format-memory
   [value]
   (if (> value 0)
-    (str value " Mb")
+    (str value " MiB")
     "n/a"))
 
 (rum/defc form < rum/static [{:keys [limit reservation]} service-id immutable?]

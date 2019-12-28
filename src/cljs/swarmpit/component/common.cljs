@@ -7,6 +7,8 @@
             [swarmpit.component.state :as state]
             [swarmpit.component.toolbar :as toolbar]
             [sablono.core :refer-macros [html]]
+            [clojure.contrib.humanize :as humanize]
+            [clojure.contrib.inflect :as inflect]
             [goog.string.format]
             [goog.string :as gstring]
             [rum.core :as rum]))
@@ -145,28 +147,46 @@
     (when (= value index)
       (comp/box {} childs))))
 
-(defn resource-used [stat]
-  (cond
-    (< stat 75) {:name  "used"
-                 :value stat
-                 :color "#52B359"}
-    (> stat 90) {:name  "used"
-                 :value stat
-                 :color "#d32f2f"}
-    :else {:name  "used"
-           :value stat
-           :color "#ffa000"}))
-
 (defn render-percentage
   [val]
   (if (some? val)
     (str (gstring/format "%.2f" val) "%")
     "-"))
 
-(rum/defc resource-pie < rum/static [stat label id]
-  (let [data [(resource-used stat)
+(defn render-cores
+  [val]
+  (if (some? val)
+    (gstring/format "%.2f" val)
+    "-"))
+
+(defn render-capacity
+  [val binary?]
+  (if (some? val)
+    (humanize/filesize val :binary binary?)
+    "-"))
+
+(defn resource-used [usage value]
+  (cond
+    (< usage 75) {:name  "used"
+                  :value usage
+                  :val   value
+                  :color "#52B359"}
+    (> usage 90) {:name  "used"
+                  :value usage
+                  :val   value
+                  :color "#d32f2f"}
+    :else {:name  "used"
+           :value usage
+           :val   value
+           :color "#ffa000"}))
+
+(rum/defc resource-pie < rum/static
+  [{:keys [usage value limit type]} label id]
+  (let [usage (or usage (* (/ value limit) 100))
+        data [(resource-used usage value)
               {:name  "free"
-               :value (- 100 stat)
+               :value (- 100 usage)
+               :val   (- limit value)
                :color "#ccc"}]]
     (chart/pie
       data
@@ -174,4 +194,9 @@
       "Swarmpit-stat-graph"
       id
       {:formatter (fn [value name props]
-                    (render-percentage value))})))
+                    (let [val (.-val (.-payload props))]
+                      (case type
+                        :disk (render-capacity val false)
+                        :memory (render-capacity val true)
+                        :cpu (str (render-cores val) " vCPU")
+                        val)))})))

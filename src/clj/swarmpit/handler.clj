@@ -180,6 +180,13 @@
   (->> (api/services)
        (resp-ok)))
 
+(defn services-ts
+  [_]
+  (if (stats/influx-configured?)
+    (->> (stats/services-timeseries)
+         (resp-ok))
+    (resp-error 400 "Statistics disabled")))
+
 (defn service
   [{{:keys [path]} :parameters}]
   (->> (api/service (:id path))

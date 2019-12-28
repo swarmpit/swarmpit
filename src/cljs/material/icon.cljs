@@ -106,6 +106,18 @@
   [props]
   (f/info-icon (clj->js props)))
 
+(defn info-outlined
+  [props]
+  (f/info-outlined-icon (clj->js props)))
+
+(defn help
+  [props]
+  (f/help-icon (clj->js props)))
+
+(defn help-outline
+  [props]
+  (f/help-outline-icon (clj->js props)))
+
 (defn error
   [props]
   (f/error-icon (clj->js props)))

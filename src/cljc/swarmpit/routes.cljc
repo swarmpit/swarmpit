@@ -648,6 +648,17 @@
                  :responses {201 {:body        {:id string?}
                                   :description "Success"}}
                  #?@(:clj [:handler handler/service-create]))}]
+    ["/services/ts"
+     {:name    :services-ts
+      :swagger {:tags ["service"]}
+      :get     (array-map
+                 :summary "Services timeseries"
+                 :parameters {:header {:authorization string?}}
+                 :responses {200 {:body        [spec/service-stats]
+                                  :description "Success"}
+                             400 {:body        {:error string?}
+                                  :description "Statistics disabled"}}
+                 #?@(:clj [:handler handler/services-ts]))}]
     ["/services/:id"
      {:name    :service
       :swagger {:tags ["service"]}

@@ -2,11 +2,7 @@
   "Map swarmpit domain to docker domain"
   (:require [clojure.string :as str]
             [swarmpit.docker.engine.mapper.inbound :as mi]
-            [swarmpit.utils :refer [name-value->map ->nano]]))
-
-(defn- as-bytes
-  [megabytes]
-  (* megabytes (* 1024 1024)))
+            [swarmpit.utils :refer [name-value->map ->nano as-bytes]]))
 
 (defn ->auth-config
   "Pass registry or dockeruser entity"

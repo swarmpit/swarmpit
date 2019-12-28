@@ -1,6 +1,7 @@
 (ns material.component.list.basic
   (:refer-clojure :exclude [list])
   (:require [material.components :as cmp]
+            [material.icon :as icon]
             [swarmpit.url :refer [dispatch!]]
             [sablono.core :refer-macros [html]]
             [rum.core :as rum]))
@@ -16,7 +17,16 @@
           (cmp/table-cell
             {:key       (str "table-head-cell-" index)
              :className "Swarmpit-table-head-cell"}
-            (:name header))) (:summary render-metadata)))))
+            (cmp/box
+              {:className "Swarmpit-row"}
+              (cmp/typography {:variant "subtitle2"} (:name header))
+              (when (:tooltip header)
+                (cmp/tooltip
+                  {:title     (:tooltip header)
+                   :placement "bottom"}
+                  (icon/help-outline {:className "Swarmpit-table-head-tooltip"
+                                       :fontSize  "small"}))))))
+        (:summary render-metadata)))))
 
 (defn table-body
   [render-metadata items onclick-handler-fn]
@@ -125,7 +135,7 @@
 
 (rum/defc list < rum/static [render-metadata items onclick-handler-fn]
   (cmp/list
-    {:dense true
+    {:dense          true
      :disablePadding true}
     (map-indexed
       (fn [index item]

@@ -15,7 +15,7 @@
             [swarmpit.ajax :as ajax]
             [swarmpit.routes :as routes]
             [sablono.core :refer-macros [html]]
-            [clojure.contrib.humanize :as humanize]
+            [clojure.contrib.inflect :as inflect]
             [rum.core :as rum]))
 
 (enable-console-print!)
@@ -28,15 +28,15 @@
   (plot/single plot-cpu-id
                stats-ts
                :cpu
-               "CPU Usage"
-               "[%]"))
+               "CPU usage"
+               "[vCPU]"))
 
 (defn task-ram-plot [stats-ts]
   (plot/single plot-ram-id
                stats-ts
                :memory
-               "Memory Usage"
-               "[MB]"))
+               "Memory usage"
+               "[MiB]"))
 
 (defn- event-handler
   [task-id]
@@ -85,6 +85,24 @@
     "rejected" (label/base value "red")
     "failed" (label/base value "red")))
 
+(rum/defc form-stats [{:keys [cpuPercentage cpuLimit cpu memoryPercentage memoryLimit memory] :as stats}]
+  (comp/box
+    {:class "Swarmpit-stat"}
+    (common/resource-pie
+      {:value cpu
+       :limit cpuLimit
+       :usage cpuPercentage
+       :type  :cpu}
+      (str cpuLimit " vCPU")
+      (str "graph-cpu"))
+    (common/resource-pie
+      {:value memory
+       :limit memoryLimit
+       :usage memoryPercentage
+       :type  :memory}
+      (str (common/render-capacity memoryLimit true) " ram")
+      (str "graph-memory"))))
+
 (rum/defc form-general < rum/static [{:keys [id taskName nodeName state status createdAt updatedAt repository serviceName logdriver stats]}]
   (comp/card
     {:className "Swarmpit-form-card"}
@@ -93,16 +111,7 @@
     (comp/card-content
       {:className "Swarmpit-table-card-content"}
       (when (and stats (= "running" state))
-        (comp/box
-          {:class "Swarmpit-stat"}
-          (common/resource-pie
-            (get-in stats [:cpuPercentage])
-            (str (-> stats :cpuPercentage (Math/ceil)) "% cpu")
-            (str "graph-cpu"))
-          (common/resource-pie
-            (get-in stats [:memoryPercentage])
-            (str (humanize/filesize (-> stats :memory) :binary false) " ram")
-            (str "graph-memory")))))
+        (form-stats stats)))
     (when (:error status)
       (comp/card-content
         {}
