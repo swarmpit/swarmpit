@@ -169,15 +169,15 @@
   (cond
     (< usage 75) {:name  "used"
                   :value usage
-                  :val   value
+                  :hover value
                   :color "#52B359"}
     (> usage 90) {:name  "used"
                   :value usage
-                  :val   value
+                  :hover value
                   :color "#d32f2f"}
     :else {:name  "used"
            :value usage
-           :val   value
+           :hover value
            :color "#ffa000"}))
 
 (rum/defc resource-pie < rum/static
@@ -186,7 +186,7 @@
         data [(resource-used usage value)
               {:name  "free"
                :value (- 100 usage)
-               :val   (- limit value)
+               :hover (- limit value)
                :color "#ccc"}]]
     (chart/pie
       data
@@ -194,9 +194,9 @@
       "Swarmpit-stat-graph"
       id
       {:formatter (fn [value name props]
-                    (let [val (.-val (.-payload props))]
+                    (let [hover-value (.-hover (.-payload props))]
                       (case type
-                        :disk (render-capacity val false)
-                        :memory (render-capacity val true)
-                        :cpu (str (render-cores val) " vCPU")
-                        val)))})))
+                        :disk (render-capacity hover-value false)
+                        :memory (render-capacity hover-value true)
+                        :cpu (str (render-cores hover-value) " vCPU")
+                        hover-value)))})))
