@@ -111,20 +111,22 @@
 (rum/defc form-stats [running-tasks desired-tasks stats limit]
   (let [cpu (reduce + (map #(get-in % [:stats :cpu]) running-tasks))
         cpu-limit (calculate-cpu-limit running-tasks stats limit)
-        cpu-usage (* (/ cpu cpu-limit) 100)
         memory (reduce + (map #(get-in % [:stats :memory]) running-tasks))
-        memory-limit (calculate-memory-limit running-tasks stats limit)
-        memory-usage (* (/ memory memory-limit) 100)]
+        memory-limit (calculate-memory-limit running-tasks stats limit)]
     (comp/box
       {:className "Swarmpit-stat"}
       (form-replicas desired-tasks)
       (common/resource-pie
-        cpu-usage
-        (str (common/render-cores cpu) " core")
+        {:value cpu
+         :limit cpu-limit
+         :type  :cpu}
+        (str cpu-limit " vCPU")
         (str "graph-cpu"))
       (common/resource-pie
-        memory-usage
-        (str (common/render-capacity memory) " ram")
+        {:value memory
+         :limit memory-limit
+         :type  :memory}
+        (str (common/render-capacity memory-limit true) " ram")
         (str "graph-memory")))))
 
 (rum/defc form < rum/reactive [service tasks stats]

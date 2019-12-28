@@ -36,55 +36,72 @@
        (label/base "active" "green")
        (label/base (:availability item) "grey"))]))
 
+(rum/defc node-stats < rum/static [item index]
+  (let [cpu-usage (get-in item [:stats :cpu :usedPercentage])
+        cpu-limit (-> item :resources :cpu (int))
+        disk (get-in item [:stats :disk :used])
+        disk-usage (get-in item [:stats :disk :usedPercentage])
+        disk-limit (get-in item [:stats :disk :total])
+        memory (get-in item [:stats :memory :used])
+        memory-usage (get-in item [:stats :memory :usedPercentage])
+        memory-limit (get-in item [:stats :memory :total])]
+    (comp/box
+      {:class "Swarmpit-stat"
+       :key   (str "node-card-stat-" index)}
+      (common/resource-pie
+        {:value (/ cpu-limit cpu-usage)
+         :limit cpu-limit
+         :usage cpu-usage
+         :type  :cpu}
+        (str cpu-limit " vCPU")
+        (str "graph-cpu-" index))
+      (common/resource-pie
+        {:value disk
+         :limit disk-limit
+         :usage disk-usage
+         :type  :disk}
+        (str (common/render-capacity disk-limit false) " disk")
+        (str "graph-disk-" index))
+      (common/resource-pie
+        {:value memory
+         :limit memory-limit
+         :usage memory-usage
+         :type  :memory}
+        (str (common/render-capacity memory-limit true) " ram")
+        (str "graph-memory-" index)))))
+
 (rum/defc node-item < rum/static [item index]
-  (let [cpu (-> item :resources :cpu (int))
-        memory-bytes (-> item :resources :memory (* 1024 1024))
-        disk-bytes (-> item :stats :disk :total)]
-    (comp/grid
-      {:item true
-       :xs   12
-       :sm   6
-       :md   6
-       :lg   4
-       :xl   3
-       :key  (str "node-" index)}
-      (html
-        [:a {:class "Swarmpit-node-href"
-             :key   (str "node-href--" index)
-             :href  (routes/path-for-frontend :node-info {:id (:id item)})}
-         (comp/card
-           {:className "Swarmpit-form-card"
-            :key       (str "node-card-" index)}
-           (comp/card-header
-             {:title     (:nodeName item)
-              :className "Swarmpit-form-card-header"
-              :key       (str "node-card-header-" index)
-              :subheader (:address item)
-              :avatar    (comp/svg (icon/os-path (:os item)))})
-           (comp/card-content
-             {:key (str "node-card-engine-" index)}
-             (str "docker " (:engine item)))
-           (comp/card-content
-             {:key (str "node-card-labels-" index)}
-             (node-item-labels item))
-           (comp/card-content
-             {:className "Swarmpit-table-card-content"
-              :key       (str "node-card-stats-" index)}
-             (comp/box
-               {:class "Swarmpit-stat"
-                :key   (str "node-card-stat-" index)}
-               (common/resource-pie
-                 (get-in item [:stats :cpu :usedPercentage])
-                 (str cpu " " (inflect/pluralize-noun cpu "core"))
-                 (str "graph-cpu-" index))
-               (common/resource-pie
-                 (get-in item [:stats :disk :usedPercentage])
-                 (str (humanize/filesize disk-bytes :binary false) " disk")
-                 (str "graph-disk-" index))
-               (common/resource-pie
-                 (get-in item [:stats :memory :usedPercentage])
-                 (str (humanize/filesize memory-bytes :binary false) " ram")
-                 (str "graph-memory-" index)))))]))))
+  (comp/grid
+    {:item true
+     :xs   12
+     :sm   6
+     :md   6
+     :lg   4
+     :xl   3
+     :key  (str "node-" index)}
+    (html
+      [:a {:class "Swarmpit-node-href"
+           :key   (str "node-href--" index)
+           :href  (routes/path-for-frontend :node-info {:id (:id item)})}
+       (comp/card
+         {:className "Swarmpit-form-card"
+          :key       (str "node-card-" index)}
+         (comp/card-header
+           {:title     (:nodeName item)
+            :className "Swarmpit-form-card-header"
+            :key       (str "node-card-header-" index)
+            :subheader (:address item)
+            :avatar    (comp/svg (icon/os-path (:os item)))})
+         (comp/card-content
+           {:key (str "node-card-engine-" index)}
+           (str "docker " (:engine item)))
+         (comp/card-content
+           {:key (str "node-card-labels-" index)}
+           (node-item-labels item))
+         (comp/card-content
+           {:className "Swarmpit-table-card-content"
+            :key       (str "node-card-stats-" index)}
+           (node-stats item index)))])))
 
 (defn- nodes-handler
   []

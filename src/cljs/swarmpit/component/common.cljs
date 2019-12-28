@@ -147,18 +147,6 @@
     (when (= value index)
       (comp/box {} childs))))
 
-(defn resource-used [stat]
-  (cond
-    (< stat 75) {:name  "used"
-                 :value stat
-                 :color "#52B359"}
-    (> stat 90) {:name  "used"
-                 :value stat
-                 :color "#d32f2f"}
-    :else {:name  "used"
-           :value stat
-           :color "#ffa000"}))
-
 (defn render-percentage
   [val]
   (if (some? val)
@@ -172,23 +160,43 @@
     "-"))
 
 (defn render-capacity
-  [val]
+  [val binary?]
   (if (some? val)
-    (humanize/filesize val :binary false)
+    (humanize/filesize val :binary binary?)
     "-"))
 
+(defn resource-used [usage value]
+  (cond
+    (< usage 75) {:name  "used"
+                  :value usage
+                  :val   value
+                  :color "#52B359"}
+    (> usage 90) {:name  "used"
+                  :value usage
+                  :val   value
+                  :color "#d32f2f"}
+    :else {:name  "used"
+           :value usage
+           :val   value
+           :color "#ffa000"}))
+
 (rum/defc resource-pie < rum/static
-  ([stat label id]
-   (resource-pie stat label id 100))
-  ([stat label id limit]
-   (let [data [(resource-used stat)
-               {:name  "free"
-                :value (- limit stat)
-                :color "#ccc"}]]
-     (chart/pie
-       data
-       label
-       "Swarmpit-stat-graph"
-       id
-       {:formatter (fn [value name props]
-                     (render-percentage value))}))))
+  [{:keys [usage value limit type]} label id]
+  (let [usage (or usage (* (/ value limit) 100))
+        data [(resource-used usage value)
+              {:name  "free"
+               :value (- 100 usage)
+               :val   (- limit value)
+               :color "#ccc"}]]
+    (chart/pie
+      data
+      label
+      "Swarmpit-stat-graph"
+      id
+      {:formatter (fn [value name props]
+                    (let [val (.-val (.-payload props))]
+                      (case type
+                        :disk (render-capacity val false)
+                        :memory (render-capacity val true)
+                        :cpu (str (render-cores val) " vCPU")
+                        val)))})))

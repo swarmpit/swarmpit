@@ -217,20 +217,23 @@
 
 (rum/defc form-stats [services tasks stats]
   (let [cpu (reduce + (map #(get-in % [:stats :cpu]) tasks))
-        cpu-usage (* (/ cpu (get-in stats [:cpu :cores])) 100)
+        cpu-total (get-in stats [:cpu :cores])
         memory (reduce + (map #(get-in % [:stats :memory]) tasks))
-        memory-total (get-in stats [:memory :total])
-        memory-usage (* (/ memory memory-total) 100)]
+        memory-total (get-in stats [:memory :total])]
     (comp/box
       {:className "Swarmpit-stat"}
       (form-services-graph services)
       (common/resource-pie
-        cpu-usage
-        (str (common/render-cores cpu) " core")
+        {:value cpu
+         :limit cpu-total
+         :type  :cpu}
+        (str cpu-total " vCPU")
         (str "graph-cpu"))
       (common/resource-pie
-        memory-usage
-        (str (common/render-capacity memory) " ram")
+        {:value memory
+         :limit memory-total
+         :type  :memory}
+        (str (common/render-capacity memory-total true) " ram")
         (str "graph-memory")))))
 
 (rum/defc form-general < rum/static [stack-name stackfile {:keys [services tasks networks volumes configs secrets stats]}]

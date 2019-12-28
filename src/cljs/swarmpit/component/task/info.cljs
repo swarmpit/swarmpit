@@ -29,14 +29,14 @@
                stats-ts
                :cpu
                "CPU usage"
-               "[Cores]"))
+               "[vCPU]"))
 
 (defn task-ram-plot [stats-ts]
   (plot/single plot-ram-id
                stats-ts
                :memory
                "Memory usage"
-               "[Mb]"))
+               "[MiB]"))
 
 (defn- event-handler
   [task-id]
@@ -85,16 +85,22 @@
     "rejected" (label/base value "red")
     "failed" (label/base value "red")))
 
-(rum/defc form-stats [{:keys [cpuPercentage cpu memoryPercentage memory] :as stats}]
+(rum/defc form-stats [{:keys [cpuPercentage cpuLimit cpu memoryPercentage memoryLimit memory] :as stats}]
   (comp/box
     {:class "Swarmpit-stat"}
     (common/resource-pie
-      cpuPercentage
-      (str (common/render-cores cpu) " core")
+      {:value cpu
+       :limit cpuLimit
+       :usage cpuPercentage
+       :type  :cpu}
+      (str cpuLimit " vCPU")
       (str "graph-cpu"))
     (common/resource-pie
-      memoryPercentage
-      (str (common/render-capacity memory) " ram")
+      {:value memory
+       :limit memoryLimit
+       :usage memoryPercentage
+       :type  :memory}
+      (str (common/render-capacity memoryLimit true) " ram")
       (str "graph-memory"))))
 
 (rum/defc form-general < rum/static [{:keys [id taskName nodeName state status createdAt updatedAt repository serviceName logdriver stats]}]

@@ -43,7 +43,7 @@
      :variant         "outlined"
      :margin          "normal"
      :style           {:maxWidth "300px"}
-     :helperText      "Use minimum of 4 MB or leave blank for unlimited"
+     :helperText      "Use minimum of 4 MiB or leave blank for unlimited"
      :min             4
      :fullWidth       true
      :required        true
@@ -75,7 +75,7 @@
      :variant         "outlined"
      :margin          "normal"
      :style           {:maxWidth "300px"}
-     :helperText      "Use minimum of 4 MB or leave blank for unlimited"
+     :helperText      "Use minimum of 4 MiB or leave blank for unlimited"
      :min             4
      :fullWidth       true
      :required        true

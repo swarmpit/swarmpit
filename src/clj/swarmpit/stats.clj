@@ -5,7 +5,7 @@
             [swarmpit.docker.engine.client :as docker]
             [swarmpit.influxdb.client :as influx]
             [swarmpit.influxdb.mapper :as m]
-            [swarmpit.utils :refer [nano-> as-megabytes]]
+            [swarmpit.utils :refer [nano-> as-MiB]]
             [swarmpit.config :refer [config]]))
 
 (def nodes-memo (memo/ttl docker/nodes :ttl/threshold 5000))

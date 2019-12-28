@@ -115,43 +115,60 @@
     :variant "outlined"
     :name    "Delete"}])
 
+(rum/defc form-stats < rum/static [item]
+  (let [cpu-usage (get-in item [:stats :cpu :usedPercentage])
+        cpu-limit (-> item :resources :cpu (int))
+        disk (get-in item [:stats :disk :used])
+        disk-usage (get-in item [:stats :disk :usedPercentage])
+        disk-limit (get-in item [:stats :disk :total])
+        memory (get-in item [:stats :memory :used])
+        memory-usage (get-in item [:stats :memory :usedPercentage])
+        memory-limit (get-in item [:stats :memory :total])]
+    (comp/box
+      {:class "Swarmpit-stat"}
+      (common/resource-pie
+        {:value (/ cpu-limit cpu-usage)
+         :limit cpu-limit
+         :usage cpu-usage
+         :type  :cpu}
+        (str cpu-limit " vCPU")
+        "graph-cpu")
+      (common/resource-pie
+        {:value disk
+         :limit disk-limit
+         :usage disk-usage
+         :type  :disk}
+        (str (common/render-capacity disk-limit false) " disk")
+        "graph-disk")
+      (common/resource-pie
+        {:value memory
+         :limit memory-limit
+         :usage memory-usage
+         :type  :memory}
+        (str (common/render-capacity memory-limit true) " ram")
+        "graph-memory"))))
+
 (rum/defc form-general < rum/static [node pinned?]
-  (let [cpu (-> node :resources :cpu (int))
-        memory-bytes (-> node :resources :memory (* 1024 1024))
-        disk-bytes (-> node :stats :disk :total)]
-    (comp/card
-      {:className "Swarmpit-form-card"}
-      (comp/card-header
-        {:subheader (form/item-labels
-                      [(node-item-state (:state node))
-                       (when (:leader node)
-                         (label/base "Leader" "primary"))
-                       (label/base (:role node) "info")
-                       (if (= "active" (:availability node))
-                         (label/base "active" "green")
-                         (label/base (:availability node) "info"))])})
-      (comp/card-content
-        {:className "Swarmpit-table-card-content"}
-        (comp/box
-          {:class "Swarmpit-stat"}
-          (common/resource-pie
-            (get-in node [:stats :cpu :usedPercentage])
-            (str cpu " " (inflect/pluralize-noun cpu "core"))
-            "graph-cpu")
-          (common/resource-pie
-            (get-in node [:stats :disk :usedPercentage])
-            (str (humanize/filesize disk-bytes :binary false) " disk")
-            "graph-disk")
-          (common/resource-pie
-            (get-in node [:stats :memory :usedPercentage])
-            (str (humanize/filesize memory-bytes :binary false) " ram")
-            "graph-memory")))
-      (form/item-main "ID" (:id node) false)
-      (form/item-main "Name" (:nodeName node))
-      (form/item-main "Address" (:address node))
-      (form/item-main "Engine" (:engine node))
-      (form/item-main "OS" (:os node))
-      (form/item-main "Arch" (:arch node)))))
+  (comp/card
+    {:className "Swarmpit-form-card"}
+    (comp/card-header
+      {:subheader (form/item-labels
+                    [(node-item-state (:state node))
+                     (when (:leader node)
+                       (label/base "Leader" "primary"))
+                     (label/base (:role node) "info")
+                     (if (= "active" (:availability node))
+                       (label/base "active" "green")
+                       (label/base (:availability node) "info"))])})
+    (comp/card-content
+      {:className "Swarmpit-table-card-content"}
+      (form-stats node))
+    (form/item-main "ID" (:id node) false)
+    (form/item-main "Name" (:nodeName node))
+    (form/item-main "Address" (:address node))
+    (form/item-main "Engine" (:engine node))
+    (form/item-main "OS" (:os node))
+    (form/item-main "Arch" (:arch node))))
 
 (def render-labels-metadata
   {:primary   (fn [item] (:name item))

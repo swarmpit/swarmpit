@@ -48,7 +48,7 @@
               :cpu
               :service
               "CPU usage by Service"
-              "[Cores]"))
+              "[vCPU]"))
 
 (defn service-ram-plot [tasks-ts]
   (plot/multi plot-service-ram-id
@@ -56,13 +56,7 @@
               :memory
               :service
               "Memory usage by Service"
-              "[Mb]"))
-
-(defn- render-percentage
-  [val]
-  (if (some? val)
-    (str (gstring/format "%.2f" val) "%")
-    "-"))
+              "[MiB]"))
 
 (defn- stats-handler
   []
@@ -171,7 +165,7 @@
         (resource-chip "manager" (count (filter #(= "manager" (:role %)) nodes)))
         (resource-chip "worker" (count (filter #(= "worker" (:role %)) nodes)))]])))
 
-(rum/defc dashboard-memory < rum/static [{:keys [usage total] :as memory}]
+(rum/defc dashboard-memory < rum/static [{:keys [usage used total] :as memory}]
   (comp/paper
     {:elevation 0
      :className "Swarmpit-paper Swarmpit-dashboard-paper"}
@@ -185,14 +179,17 @@
         (comp/typography
           {:variant   "h5"
            :className "Swarmpit-dashboard-section-value"}
-          (str (humanize/filesize total :binary false) " ram"))]
+          (common/render-capacity used true))]
        [:div.Swarmpit-dashbord-section-graph
         (common/resource-pie
-          usage
-          (render-percentage usage)
+          {:value used
+           :limit total
+           :usage usage
+           :type  :memory}
+          (str (common/render-capacity total true) " ram")
           "graph-memory")]])))
 
-(rum/defc dashboard-disk < rum/static [{:keys [usage total] :as disk}]
+(rum/defc dashboard-disk < rum/static [{:keys [usage used total] :as disk}]
   (comp/paper
     {:elevation 0
      :className "Swarmpit-paper Swarmpit-dashboard-paper"}
@@ -206,11 +203,14 @@
         (comp/typography
           {:variant   "h5"
            :className "Swarmpit-dashboard-section-value"}
-          (str (humanize/filesize total :binary false) " size"))]
+          (common/render-capacity used false))]
        [:div.Swarmpit-dashbord-section-graph
         (common/resource-pie
-          usage
-          (render-percentage usage)
+          {:value used
+           :limit total
+           :usage usage
+           :type  :disk}
+          (str (common/render-capacity total false) " size")
           "graph-disk")]])))
 
 (rum/defc dashboard-cpu < rum/static [{:keys [usage cores] :as cpu}]
@@ -227,11 +227,14 @@
         (comp/typography
           {:variant   "h5"
            :className "Swarmpit-dashboard-section-value"}
-          (str cores " " (inflect/pluralize-noun cores "core")))]
+          (common/render-cores (/ cores usage)))]
        [:div.Swarmpit-dashbord-section-graph
         (common/resource-pie
-          usage
-          (render-percentage usage)
+          {:value (/ cores usage)
+           :limit cores
+           :usage usage
+           :type  :cpu}
+          (str cores " vCPU")
           "graph-cpu")]])))
 
 (defn dashboard-node-ram-callback

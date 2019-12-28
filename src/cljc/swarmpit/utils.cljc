@@ -112,16 +112,6 @@
   [number]
   (when number (/ number 1000000000)))
 
-(defn megabytes->bytes
-  [megabytes]
-  (when (some? megabytes)
-    (* megabytes (* 1000 1000))))
-
-(defn bytes->megabytes
-  [bytes]
-  (when (some? bytes)
-    (double (/ bytes (* 1000 1000)))))
-
 (def ^:private pows [[100 "googol"]
                      [33 "d"]
                      [30 "n"]
@@ -143,10 +133,10 @@
         value (int (float (/ num (expt 10 base-pow))))]
     (str value suffix)))
 
-(defn as-megabytes
+(defn as-MiB
   [bytes]
   (quot bytes (* 1024 1024)))
 
 (defn as-bytes
-  [megabytes]
-  (* megabytes (* 1024 1024)))
+  [MiB]
+  (* MiB (* 1024 1024)))

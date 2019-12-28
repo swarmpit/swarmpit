@@ -1,6 +1,6 @@
 (ns swarmpit.influxdb.mapper
   (:require [clojure.string :as str]
-            [swarmpit.utils :refer [bytes->megabytes]]))
+            [swarmpit.utils :refer [as-MiB]]))
 
 (defn ->task-tags [task-name host-name]
   (let [segments (drop 1 (str/split task-name #"/|\."))]
@@ -21,7 +21,8 @@
      :time    (into [] (map first values))
      :cpu     (into [] (map second values))
      :memory  (into [] (->> (map #(nth % 2) values)
-                            (map #(bytes->megabytes %))))}))
+                            (map #(when (some? %)
+                                    (as-MiB %)))))}))
 
 (defn ->host-ts [series]
   (let [values (get series "values")

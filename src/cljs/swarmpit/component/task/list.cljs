@@ -54,7 +54,7 @@
        [:div.Swarmpit-task-memory-usage
         [:span (common/render-percentage (get-in item [:stats :cpuPercentage]))]
         [:span.Swarmpit-table-cell-secondary
-         (str (common/render-cores (get-in item [:stats :cpu])) "core")]]])
+         (str (common/render-cores (get-in item [:stats :cpu])) "vCPU")]]])
     (html [:span "-"])))
 
 (defn- render-item-memory-usage [item]
@@ -64,7 +64,7 @@
        [:div.Swarmpit-task-memory-usage
         [:span (common/render-percentage (get-in item [:stats :memoryPercentage]))]
         [:span.Swarmpit-table-cell-secondary
-         (common/render-capacity (get-in item [:stats :memory]))]]])
+         (common/render-capacity (get-in item [:stats :memory]) true)]]])
     (html [:span "-"])))
 
 (def render-metadata
