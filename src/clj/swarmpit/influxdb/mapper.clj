@@ -31,3 +31,19 @@
      :time   (into [] (map first values))
      :cpu    (into [] (map second values))
      :memory (into [] (map #(nth % 2) values))}))
+
+(defn ->service-cpu-ts [series]
+  (let [values (get series "values")
+        tags (get series "tags")]
+    {:service (get tags "service")
+     :time    (into [] (map first values))
+     :cpu     (into [] (map second values))}))
+
+(defn ->service-memory-ts [series]
+  (let [values (get series "values")
+        tags (get series "tags")]
+    {:service (get tags "service")
+     :time    (into [] (map first values))
+     :memory  (into [] (->> (map second values)
+                            (map #(when (some? %)
+                                    (as-MiB %)))))}))

@@ -136,7 +136,7 @@
       (stats-handler)
       (nodes-handler)
       (services-handler)
-      ;(services-ts-handler)
+      (services-ts-handler)
       (me-handler))))
 
 (defn- resource-chip
@@ -279,9 +279,9 @@
 
 (rum/defc dashboard-service-ram-stats < rum/static
                                         {:did-mount  dashboard-service-ram-callback
-                                         :did-update dashboard-service-ram-callback} [services-ts]
+                                         :did-update dashboard-service-ram-callback} [services-memory-ts]
   (comp/card
-    (if (empty? services-ts)
+    (if (empty? services-memory-ts)
       {:className "Swarmpit-card hide"}
       {:className "Swarmpit-card"})
     (comp/card-content
@@ -296,9 +296,9 @@
 
 (rum/defc dashboard-service-cpu-stats < rum/static
                                         {:did-mount  dashboard-service-cpu-callback
-                                         :did-update dashboard-service-cpu-callback} [services-ts]
+                                         :did-update dashboard-service-cpu-callback} [services-cpu-ts]
   (comp/card
-    (if (empty? services-ts)
+    (if (empty? services-cpu-ts)
       {:className "Swarmpit-card hide"}
       {:className "Swarmpit-card"})
     (comp/card-content
@@ -311,7 +311,8 @@
         running-services (->> (filter #(not= "not running" (:state %)) services)
                               (map :serviceName)
                               (set))
-        services-ts (filter #(contains? running-services (:service %)) services-ts)]
+        services-cpu-ts (filter #(contains? running-services (:service %)) (:cpu services-ts))
+        services-memory-ts (filter #(contains? running-services (:service %)) (:memory services-ts))]
     (comp/mui
       (html
         [:div.Swarmpit-form
@@ -362,7 +363,7 @@
                :md   12
                :lg   6
                :xl   6}
-              (dashboard-service-ram-stats services-ts))
+              (dashboard-service-ram-stats services-memory-ts))
             (comp/grid
               {:item true
                :xs   12
@@ -370,7 +371,7 @@
                :md   12
                :lg   6
                :xl   6}
-              (dashboard-service-cpu-stats services-ts))
+              (dashboard-service-cpu-stats services-cpu-ts))
             (when (not-empty pinned-nodes)
               (comp/grid
                 {:item true
@@ -406,6 +407,5 @@
           (:nodes loading?)
           (:nodes-ts loading?)
           (:services loading?)
-          ;(:services-ts loading?)
-          )
+          (:services-ts loading?))
       (form-info item))))

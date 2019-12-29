@@ -132,10 +132,14 @@
 (defn services-timeseries
   "Get services timeseries data for last 24 hours"
   []
-  (map #(m/->task-ts %)
-       (-> (influx/read-services-stats)
-           (first)
-           (get "series"))))
+  {:cpu    (map #(m/->service-cpu-ts %)
+                (-> (influx/read-services-cpu-stats)
+                    (first)
+                    (get "series")))
+   :memory (map #(m/->service-memory-ts %)
+                (-> (influx/read-services-memory-stats)
+                    (first)
+                    (get "series")))})
 
 (defn hosts-timeseries
   "Get hosts timeseries data for last 24 hours"

@@ -66,20 +66,31 @@
           WHERE task = '" task-name "' AND time > now() - 1d
           GROUP BY time(1m), task, service")))
 
-(defn read-services-stats
+(defn read-services-cpu-stats
   []
   (read-doc
     "SELECT
-      SUM(cpu) as cpu,
+      SUM(cpu) as cpu
+       FROM
+        (SELECT
+          MAX(cpuUsage) / 100  as cpu
+           FROM swarmpit..task_stats
+            WHERE time > now() - 1d
+            GROUP BY time(1m), task, service ORDER BY ASC SLIMIT 10)
+       GROUP BY time(1m), service ORDER BY ASC"))
+
+(defn read-services-memory-stats
+  []
+  (read-doc
+    "SELECT
       SUM(memory) as memory
        FROM
         (SELECT
-          MAX(cpuUsage) / 100 as cpu,
           MAX(memoryUsed) as memory
            FROM swarmpit..task_stats
             WHERE time > now() - 1d
-            GROUP BY time(1m), task, service)
-        GROUP BY time(1m), service"))
+            GROUP BY time(1m), task, service ORDER BY ASC SLIMIT 10)
+       GROUP BY time(1m), service ORDER BY ASC"))
 
 (defn read-host-stats
   []
