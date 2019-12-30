@@ -214,28 +214,29 @@
           "graph-disk")]])))
 
 (rum/defc dashboard-cpu < rum/static [{:keys [usage cores] :as cpu}]
-  (comp/paper
-    {:elevation 0
-     :className "Swarmpit-paper Swarmpit-dashboard-paper"}
-    (html
-      [:div.Swarmpit-dashboard-section
-       [:div
-        (comp/typography
-          {:variant   "body2"
-           :className "Swarmpit-dashboard-section-title"}
-          "CPU")
-        (comp/typography
-          {:variant   "h5"
-           :className "Swarmpit-dashboard-section-value"}
-          (common/render-cores (/ cores usage)))]
-       [:div.Swarmpit-dashbord-section-graph
-        (common/resource-pie
-          {:value (/ cores usage)
-           :limit cores
-           :usage usage
-           :type  :cpu}
-          (str cores " vCPU")
-          "graph-cpu")]])))
+  (let [used (* cores (/ usage 100))]
+    (comp/paper
+      {:elevation 0
+       :className "Swarmpit-paper Swarmpit-dashboard-paper"}
+      (html
+        [:div.Swarmpit-dashboard-section
+         [:div
+          (comp/typography
+            {:variant   "body2"
+             :className "Swarmpit-dashboard-section-title"}
+            "CPU")
+          (comp/typography
+            {:variant   "h5"
+             :className "Swarmpit-dashboard-section-value"}
+            (common/render-cores (if (js/isNaN used) nil used)))]
+         [:div.Swarmpit-dashbord-section-graph
+          (common/resource-pie
+            {:value used
+             :limit cores
+             :usage usage
+             :type  :cpu}
+            (str cores " vCPU")
+            "graph-cpu")]]))))
 
 (defn dashboard-node-ram-callback
   [state]
