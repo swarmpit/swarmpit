@@ -129,6 +129,8 @@
       (first)
       (m/->task-ts)))
 
+(def task-timeseries-memo (memo/ttl task-timeseries :ttl/threshold 5000))
+
 (defn services-timeseries
   "Get services timeseries data for last 24 hours"
   []
@@ -141,6 +143,8 @@
                     (first)
                     (get "series")))})
 
+(def services-timeseries-memo (memo/ttl services-timeseries :ttl/threshold 5000))
+
 (defn hosts-timeseries
   "Get hosts timeseries data for last 24 hours"
   []
@@ -152,3 +156,5 @@
              (get "series"))
          (map #(m/->host-ts %))
          (map #(update % :name node-name)))))
+
+(def hosts-timeseries-memo (memo/ttl hosts-timeseries :ttl/threshold 5000))

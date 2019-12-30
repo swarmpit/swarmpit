@@ -8,8 +8,8 @@
 (defn dashboard-data
   [user]
   (let [stats (when (stats/ready?) (stats/cluster))
-        nodes-ts (when (stats/influx-configured?) (stats/hosts-timeseries))
-        services-ts (when (stats/influx-configured?) (stats/services-timeseries))
+        nodes-ts (when (stats/influx-configured?) (stats/hosts-timeseries-memo))
+        services-ts (when (stats/influx-configured?) (stats/services-timeseries-memo))
         dashboard-user (api/user-by-username user)]
     {:stats              stats
      :services           (api/services)

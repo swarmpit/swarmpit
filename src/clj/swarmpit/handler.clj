@@ -183,7 +183,7 @@
 (defn services-ts
   [_]
   (if (stats/influx-configured?)
-    (->> (stats/services-timeseries)
+    (->> (stats/services-timeseries-memo)
          (resp-ok))
     (resp-error 400 "Statistics disabled")))
 
@@ -383,7 +383,7 @@
 (defn nodes-ts
   [_]
   (if (stats/influx-configured?)
-    (->> (stats/hosts-timeseries)
+    (->> (stats/hosts-timeseries-memo)
          (resp-ok))
     (resp-error 400 "Statistics disabled")))
 
@@ -477,7 +477,7 @@
 (defn task-ts
   [{{:keys [path]} :parameters}]
   (if (stats/influx-configured?)
-    (->> (stats/task-timeseries (:name path))
+    (->> (stats/task-timeseries-memo (:name path))
          (resp-ok))
     (resp-error 400 "Statistics disabled")))
 
