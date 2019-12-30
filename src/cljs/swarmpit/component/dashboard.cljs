@@ -214,7 +214,7 @@
           "graph-disk")]])))
 
 (rum/defc dashboard-cpu < rum/static [{:keys [usage cores] :as cpu}]
-  (let [used (/ cores usage)]
+  (let [used (* cores (/ usage 100))]
     (comp/paper
       {:elevation 0
        :className "Swarmpit-paper Swarmpit-dashboard-paper"}

@@ -127,7 +127,7 @@
     (comp/box
       {:class "Swarmpit-stat"}
       (common/resource-pie
-        {:value (/ cpu-limit cpu-usage)
+        {:value (* cpu-limit (/ cpu-usage 100))
          :limit cpu-limit
          :usage cpu-usage
          :type  :cpu}
