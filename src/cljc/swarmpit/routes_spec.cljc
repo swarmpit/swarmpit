@@ -149,54 +149,56 @@
    :attachable  boolean?})
 
 (def service
-  {:id          string?
-   :version     number?
-   :createdAt   string?
-   :updatedAt   string?
-   :repository  {:name        string?
-                 :tag         string?
-                 :image       string?
-                 :imageDigest string?}
-   :serviceName string?
-   :mode        string?
-   :stack       string?
-   :agent       boolean?
-   :replicas    number?
-   :state       string?
-   :status      {:tasks   {:running number?
-                           :total   number?}
-                 :update  string?
-                 :message string?}
-   :ports       [port]
-   :mounts      [mount]
-   :networks    [network]
-   :secrets     [secret-mount]
-   :configs     [config-mount]
-   :hosts       [name-value]
-   :variables   [name-value]
-   :labels      [name-value]
-   :command     [string?]
-   :user        string?
-   :dir         string?
-   :tty         boolean?
-   :healthcheck {:test     string?
-                 :interval number?
-                 :timeout  number?
-                 :retries  number?}
-   :logdriver   {:name string?
-                 :opts [name-value]}
-   :resources   {:reservation resources
-                 :limit       resources}
-   :deployment  {:update          deploy
-                 :forceUpdate     number?
-                 :restartPolicy   {:condition string?
-                                   :delay     number?
-                                   :window    number?
-                                   :attempts  number?}
-                 :rollback        deploy
-                 :rollbackAllowed boolean?
-                 :autoredeploy    boolean?
-                 :placement       [{:rule string?}]}})
+  {:id              string?
+   :version         number?
+   :createdAt       string?
+   :updatedAt       string?
+   :repository      {:name        string?
+                     :tag         string?
+                     :image       string?
+                     :imageDigest string?}
+   :serviceName     string?
+   :mode            string?
+   :replicas        number?
+   :state           string?
+   :status          {:tasks   {:running number?
+                               :total   number?}
+                     :update  string?
+                     :message string?}
+   :ports           [port]
+   :mounts          [mount]
+   :networks        [network]
+   :secrets         [secret-mount]
+   :configs         [config-mount]
+   :hosts           [name-value]
+   :variables       [name-value]
+   :labels          [name-value]
+   :containerLabels [name-value]
+   :command         [string?]
+   :stack           string?
+   :agent           boolean?
+   :links           [name-value]
+   :user            string?
+   :dir             string?
+   :tty             boolean?
+   :healthcheck     {:test     string?
+                     :interval number?
+                     :timeout  number?
+                     :retries  number?}
+   :logdriver       {:name string?
+                     :opts [name-value]}
+   :resources       {:reservation resources
+                     :limit       resources}
+   :deployment      {:update          deploy
+                     :forceUpdate     number?
+                     :restartPolicy   {:condition string?
+                                       :delay     number?
+                                       :window    number?
+                                       :attempts  number?}
+                     :rollback        deploy
+                     :rollbackAllowed boolean?
+                     :autoredeploy    boolean?
+                     :placement       [{:rule string?}]}})
 
 (def service-stats
   {:cpu    {:service string?
@@ -229,9 +231,6 @@
    :variables         [name-value]
    :labels            [name-value]
    (ds/opt :command)  [string?]
-   (ds/opt :user)     string?
-   (ds/opt :dir)      string?
-   (ds/opt :tty)      boolean?
    :logdriver         {:name string?
                        :opts [name-value]}
    :resources         {:reservation resources
@@ -246,51 +245,57 @@
                        :placement     [{:rule string?}]}})
 
 (def service-update
-  {:repository        {:name string?
-                       :tag  string?}
-   :serviceName       string?
-   :version           number?
-   :mode              string?
-   (ds/opt :replicas) number?
-   :ports             [{:containerPort number?
-                        :protocol      string?
-                        :mode          string?
-                        :hostPort      number?}]
-   :mounts            [{:containerPath          string?
-                        :host                   string?
-                        :type                   string?
-                        :readOnly               boolean?
-                        (ds/opt :volumeOptions) {(ds/opt :labels) map?
-                                                 (ds/opt :driver) {:name             string?
-                                                                   (ds/opt :options) [name-value]}}}]
-   :networks          [{:networkName             string?
-                        (ds/opt :serviceAliases) [string?]}]
-   :secrets           [{:secretName   string?
-                        :secretTarget string?}]
-   :configs           [{:configName   string?
-                        :configTarget string?}]
-   :hosts             [name-value]
-   :variables         [name-value]
-   :labels            [name-value]
-   :containerLabels   [name-value]
-   (ds/opt :links)    [name-value]
-   (ds/opt :stack)    string?
-   (ds/opt :command)  [string?]
-   (ds/opt :user)     string?
-   (ds/opt :dir)      string?
-   (ds/opt :tty)      boolean?
-   :logdriver         {:name string?
-                       :opts [name-value]}
-   :resources         {:reservation resources
-                       :limit       resources}
-   :deployment        {:update        deploy
-                       :restartPolicy {:condition       string?
-                                       :delay           number?
-                                       (ds/opt :window) number?
-                                       :attempts        number?}
-                       :rollback      deploy
-                       :autoredeploy  boolean?
-                       :placement     [{:rule string?}]}})
+  {:repository               {:name string?
+                              :tag  string?}
+   :serviceName              string?
+   :version                  number?
+   :mode                     string?
+   (ds/opt :replicas)        number?
+   :ports                    [{:containerPort number?
+                               :protocol      string?
+                               :mode          string?
+                               :hostPort      number?}]
+   :mounts                   [{:containerPath          string?
+                               :host                   string?
+                               :type                   string?
+                               :readOnly               boolean?
+                               (ds/opt :volumeOptions) {(ds/opt :labels) map?
+                                                        (ds/opt :driver) {:name             string?
+                                                                          (ds/opt :options) [name-value]}}}]
+   :networks                 [{:networkName             string?
+                               (ds/opt :serviceAliases) [string?]}]
+   :secrets                  [{:secretName   string?
+                               :secretTarget string?}]
+   :configs                  [{:configName   string?
+                               :configTarget string?}]
+   :hosts                    [name-value]
+   :variables                [name-value]
+   :labels                   [name-value]
+   (ds/opt :containerLabels) [name-value]
+   (ds/opt :command)         [string?]
+   (ds/opt :stack)           string?
+   (ds/opt :agent)           boolean?
+   (ds/opt :immutable)       boolean?
+   (ds/opt :links)           [name-value]
+   (ds/opt :user)            string?
+   (ds/opt :dir)             string?
+   (ds/opt :tty)             boolean?
+   (ds/opt :healthcheck)     {:test     string?
+                              :interval number?
+                              :timeout  number?
+                              :retries  number?}
+   :logdriver                {:name string?
+                              :opts [name-value]}
+   :resources                {:reservation resources
+                              :limit       resources}
+   :deployment               {:update        deploy
+                              :restartPolicy {:condition       string?
+                                              :delay           number?
+                                              (ds/opt :window) number?
+                                              :attempts        number?}
+                              :rollback      deploy
+                              :autoredeploy  boolean?
+                              :placement     [{:rule string?}]}})
 
 (def service-logs
   {:line      string?
