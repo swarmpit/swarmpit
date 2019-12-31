@@ -1,5 +1,6 @@
 (ns swarmpit.influxdb.client
   (:require [swarmpit.http :refer :all]
+            [clojure.string :as str]
             [influxdb.client :as client]
             [influxdb.convert :as convert]
             [swarmpit.config :refer [config]]))
@@ -66,31 +67,59 @@
           WHERE task = '" task-name "' AND time > now() - 1d
           GROUP BY time(1m), task, service")))
 
-(defn read-services-cpu-stats
+(defn read-services-top-memory-usage
   []
   (read-doc
     "SELECT
-      SUM(cpu) as cpu
+      TOP(memoryUsed, service, 10)
        FROM
         (SELECT
-          MAX(cpuUsage) / 100  as cpu
+          memoryUsed
            FROM swarmpit..task_stats
             WHERE time > now() - 1d
-            GROUP BY time(1m), task, service ORDER BY ASC SLIMIT 10)
-       GROUP BY time(1m), service ORDER BY ASC"))
+            GROUP BY service)"))
+
+(defn read-services-top-cpu-usage
+  []
+  (read-doc
+    "SELECT
+      TOP(cpuUsage, service, 10)
+       FROM
+        (SELECT
+          cpuUsage
+           FROM swarmpit..task_stats
+            WHERE time > now() - 1d
+            GROUP BY service)"))
+
+(defn read-services-cpu-stats
+  [services]
+  (let [services-regex (str/join "|" services)]
+    (read-doc
+      (str
+        "SELECT
+          SUM(cpu) as cpu
+           FROM
+            (SELECT
+              MAX(cpuUsage) / 100 as cpu
+               FROM swarmpit..task_stats
+                WHERE time > now() - 1d AND service =~ /" services-regex "/
+                GROUP BY time(1m), task, service)
+            GROUP BY time(1m), service"))))
 
 (defn read-services-memory-stats
-  []
-  (read-doc
-    "SELECT
-      SUM(memory) as memory
-       FROM
-        (SELECT
-          MAX(memoryUsed) as memory
-           FROM swarmpit..task_stats
-            WHERE time > now() - 1d
-            GROUP BY time(1m), task, service ORDER BY ASC SLIMIT 10)
-       GROUP BY time(1m), service ORDER BY ASC"))
+  [services]
+  (let [services-regex (str/join "|" services)]
+    (read-doc
+      (str
+        "SELECT
+          SUM(memory) as memory
+           FROM
+            (SELECT
+              MAX(memoryUsed) as memory
+               FROM swarmpit..task_stats
+                WHERE time > now() - 1d AND service =~ /" services-regex "/
+                GROUP BY time(1m), task, service)
+            GROUP BY time(1m), service"))))
 
 (defn read-host-stats
   []
