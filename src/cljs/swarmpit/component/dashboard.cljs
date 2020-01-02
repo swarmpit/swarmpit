@@ -228,7 +228,7 @@
           (comp/typography
             {:variant   "h5"
              :className "Swarmpit-dashboard-section-value"}
-            (common/render-cores (if (js/isNaN used) nil used)))]
+            (common/render-cores (if (some? cpu) used nil)))]
          [:div.Swarmpit-dashbord-section-graph
           (common/resource-pie
             {:value used

@@ -63,7 +63,9 @@
 (defn node
   "Get latest node stats from local cache"
   [node-id]
-  (get @cache node-id))
+  (let [stats (get @cache node-id)]
+    (when stats
+      (assoc-in stats [:cpu :cores] (host-cpus node-id)))))
 
 (defn task-raw
   "Get latest raw task stats from local cache"
