@@ -406,7 +406,5 @@
     (progress/form
       (or (:stats loading?)
           (:nodes loading?)
-          (:nodes-ts loading?)
-          (:services loading?)
-          (:services-ts loading?))
+          (:services loading?))
       (form-info item))))
