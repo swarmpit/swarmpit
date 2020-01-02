@@ -16,9 +16,8 @@
               :data              data
               :dataKey           "value"
               :isAnimationActive false
-              :cx                "50"
-              :innerRadius       "60%"
-              :outerRadius       "80%"
+              :innerRadius       "80%"
+              :outerRadius       "100%"
               :startAngle        90
               :endAngle          -270
               :fill              "#8884d8"}
@@ -27,7 +26,9 @@
                  (comp/cell {:fill (:color item)
                              :key  (str "pie-cell-" id "-" index)})) data)
              (comp/re-label
-               {:width    30
-                :position "center"} label))
+               (merge {:width    30
+                       :position "center"}
+                      (when (= "Loading" label)
+                        {:fill "#ccc"})) label))
            (when tooltip
              (comp/tooltip-chart tooltip))))])))

@@ -188,15 +188,33 @@
                :value (- 100 usage)
                :hover (- limit value)
                :color "#ccc"}]]
-    (chart/pie
-      data
-      label
-      "Swarmpit-stat-graph"
-      id
-      {:formatter (fn [value name props]
-                    (let [hover-value (.-hover (.-payload props))]
-                      (case type
-                        :disk (render-capacity hover-value false)
-                        :memory (render-capacity hover-value true)
-                        :cpu (str (render-cores hover-value) " vCPU")
-                        hover-value)))})))
+    (if limit
+      (chart/pie
+        data
+        label
+        "Swarmpit-stat-graph"
+        id
+        {:formatter (fn [value name props]
+                      (let [hover-value (.-hover (.-payload props))]
+                        (case type
+                          :disk (render-capacity hover-value false)
+                          :memory (render-capacity hover-value true)
+                          :cpu (str (render-cores hover-value) " vCPU")
+                          hover-value)))})
+      (chart/pie
+        [{:value 100
+          :color "#ccc"}]
+        "Loading"
+        "Swarmpit-stat-skeleton"
+        id
+        nil))))
+
+(rum/defc resource-pie-empty < rum/static
+  [id]
+  (chart/pie
+    [{:value 100
+      :color "#ccc"}]
+    "-"
+    "Swarmpit-stat-graph"
+    id
+    nil))

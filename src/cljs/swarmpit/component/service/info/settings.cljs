@@ -93,20 +93,31 @@
   [agent]
   (when agent (label/base "agent" "primary")))
 
+(defn calculate-limit
+  "Calculate limit from task nodes if not specified"
+  [type running-tasks stats]
+  (let [nodes (->> (group-by :nodeId running-tasks)
+                   (map #(keyword (first %)))
+                   (into []))
+        nodes-resources (select-keys (:resources stats) nodes)]
+    (->> (map second nodes-resources)
+         (map type)
+         (reduce +))))
+
 (defn calculate-cpu-limit
   [running-tasks stats limit]
   (if (zero? (:cpu limit))
-    (reduce + (map #(:cores (get (:resources stats)
-                                 (keyword (:nodeId %)))) running-tasks))
-    (:cpu limit)))
+    (calculate-limit :cores running-tasks stats)
+    (* (:cpu limit)
+       (count running-tasks))))
 
 (defn calculate-memory-limit
   [running-tasks stats limit]
   (if (zero? (:memory limit))
-    (reduce + (map #(:memory (get (:resources stats)
-                                  (keyword (:nodeId %)))) running-tasks))
+    (calculate-limit :memory running-tasks stats)
     (* (:memory limit)
-       (* 1024 1024))))
+       (* 1024 1024)
+       (count running-tasks))))
 
 (rum/defc form-stats [running-tasks desired-tasks stats limit]
   (let [cpu (reduce + (map #(get-in % [:stats :cpu]) running-tasks))

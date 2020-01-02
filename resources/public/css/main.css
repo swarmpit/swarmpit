@@ -1055,13 +1055,48 @@ a {
 .Swarmpit-stat {
     display: flex;
     flex-direction: row;
+    margin: 10px;
+}
+
+.Swarmpit-stat-empty {
+    height: 110px;
 }
 
 .Swarmpit-stat-graph {
-    min-width: 96px;
-    min-height: 96px;
-    width: 120px;
-    height: 120px;
+    width: 90px;
+    height: 90px;
+}
+
+.Swarmpit-stat-skeleton {
+    height: 90px;
+    width: 90px;
+    display: inline-block;
+    position: relative;
+    overflow: hidden;
+}
+
+.Swarmpit-stat-skeleton::after {
+    position: absolute;
+    top: 0;
+    right: 0;
+    bottom: 0;
+    left: 0;
+    transform: translateX(-100%);
+    background-image: linear-gradient(
+            90deg,
+            rgba(255, 255, 255, 0) 0,
+            rgba(255, 255, 255, 0.2) 20%,
+            rgba(255, 255, 255, 0.5) 60%,
+            rgba(255, 255, 255, 0)
+    );
+    animation: shimmer 5s infinite;
+    content: '';
+}
+
+@keyframes shimmer {
+    100% {
+        transform: translateX(100%);
+    }
 }
 
 /* Codemirror custom */
@@ -1173,6 +1208,10 @@ a {
 
 .recharts-tooltip-wrapper {
     z-index: 1;
+}
+
+.recharts-wrapper {
+    margin: 0 auto;
 }
 
 /**** MEDIA ****/
