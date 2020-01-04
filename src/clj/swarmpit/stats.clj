@@ -131,7 +131,7 @@
       (first)
       (m/->task-ts)))
 
-(def task-timeseries-memo (memo/ttl task-timeseries :ttl/threshold 5000))
+(def task-timeseries-memo (memo/ttl task-timeseries :ttl/threshold 60000))
 
 (defn ->services
   "Get service name col from top series result"
@@ -142,39 +142,15 @@
                      (first)
                      (get "values"))))
 
-(defn services-top-cpu-timeseries
-  "Get top 10 services CPU usage for last 24 hours"
-  []
-  (let [top-10-series (influx/read-services-top-cpu-usage)]
-    (->services top-10-series)))
-
-(def services-top-cpu-memo (memo/ttl services-top-cpu-timeseries :ttl/threshold 60000))
-(def services-cpu-stats-memo (memo/ttl influx/read-services-cpu-stats :ttl/threshold 5000))
-
-(defn services-top-ram-timeseries
-  "Get top 10 services Memory usage for last 24 hours"
-  []
-  (let [top-10-series (influx/read-services-top-memory-usage)]
-    (->services top-10-series)))
-
-(def services-top-ram-memo (memo/ttl services-top-ram-timeseries :ttl/threshold 60000))
-(def services-ram-stats-memo (memo/ttl influx/read-services-memory-stats :ttl/threshold 5000))
-
 (defn services-timeseries
   "Get services timeseries data for last 24 hours"
   []
-  {:cpu    (map #(m/->service-cpu-ts %)
-                (-> (services-top-cpu-memo)
-                    (services-cpu-stats-memo)
-                    (first)
-                    (get "series")))
-   :memory (map #(m/->service-memory-ts %)
-                (-> (services-top-ram-memo)
-                    (services-ram-stats-memo)
-                    (first)
-                    (get "series")))})
+  (map #(m/->task-ts %)
+       (-> (influx/read-service-stats)
+           (first)
+           (get "series"))))
 
-(def services-timeseries-memo (memo/ttl services-timeseries :ttl/threshold 5000))
+(def services-timeseries-memo (memo/ttl services-timeseries :ttl/threshold 60000))
 
 (defn hosts-timeseries
   "Get hosts timeseries data for last 24 hours"
@@ -188,4 +164,4 @@
          (map #(m/->host-ts %))
          (map #(update % :name node-name)))))
 
-(def hosts-timeseries-memo (memo/ttl hosts-timeseries :ttl/threshold 5000))
+(def hosts-timeseries-memo (memo/ttl hosts-timeseries :ttl/threshold 60000))

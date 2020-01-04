@@ -312,8 +312,7 @@
         running-services (->> (filter #(not= "not running" (:state %)) services)
                               (map :serviceName)
                               (set))
-        services-cpu-ts (filter #(contains? running-services (:service %)) (:cpu services-ts))
-        services-memory-ts (filter #(contains? running-services (:service %)) (:memory services-ts))]
+        services-ts (filter #(contains? running-services (:service %)) services-ts)]
     (comp/mui
       (html
         [:div.Swarmpit-form
@@ -364,7 +363,7 @@
                :md   12
                :lg   6
                :xl   6}
-              (dashboard-service-ram-stats services-memory-ts))
+              (dashboard-service-ram-stats services-ts))
             (comp/grid
               {:item true
                :xs   12
@@ -372,7 +371,7 @@
                :md   12
                :lg   6
                :xl   6}
-              (dashboard-service-cpu-stats services-cpu-ts))
+              (dashboard-service-cpu-stats services-ts))
             (when (not-empty pinned-nodes)
               (comp/grid
                 {:item true
