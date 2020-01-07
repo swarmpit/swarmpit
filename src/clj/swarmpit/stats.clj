@@ -142,13 +142,16 @@
                      (first)
                      (get "values"))))
 
-(defn services-timeseries
-  "Get services timeseries data for last 24 hours"
-  []
-  (map #(m/->task-ts %)
-       (-> (influx/read-service-stats)
-           (first)
-           (get "series"))))
+;(defn services-timeseries
+;  "Get services timeseries data for last 24 hours"
+;  []
+;  (map #(m/->task-ts %)
+;       (-> (influx/read-service-stats)
+;           (first)
+;           (get "series"))))
+
+(defn services-timeseries []
+  [])
 
 (def services-timeseries-memo (memo/ttl services-timeseries :ttl/threshold 60000))
 
