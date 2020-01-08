@@ -163,12 +163,31 @@
         WHERE task = '" task-name "'
         GROUP BY task, service")))
 
+(def services-list ["2pocket_backend"
+                    "2pocket_cron"
+                    "2pocket_mongo-backup"
+                    "2pocket_queue"
+                    "2pocket_queue-ui"
+                    "2pocket_redis"
+                    "2pocket_vectron"
+                    "2pocket_webadmin"
+                    "swarmpit_app"
+                    "swarmpit_agent"
+                    "swarmpit_db"
+                    "swarmpit_influxdb"
+                    "timesheet_app"
+                    "timesheet_backup"
+                    "timesheet_redis"])
+
 (defn read-service-stats
   []
-  (read-doc
-    "SELECT cpu, memory
-      FROM swarmpit.a_day.downsampled_services
-      GROUP BY service"))
+  (let [services-regex (str/join "|" services-list)]
+    (read-doc
+      (str
+        "SELECT cpu, memory
+          FROM swarmpit.a_day.downsampled_services
+          WHERE service =~ /" services-regex "/
+          GROUP BY service"))))
 
 (defn read-host-stats
   []
