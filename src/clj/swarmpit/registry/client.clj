@@ -95,8 +95,8 @@
       :body))
 
 (defn- request-manifest
-  [registry repository-name repository-tag type]
-  (let [response (execute-with-fallback {:method  :GET
+  [registry repository-name repository-tag method type]
+  (let [response (execute-with-fallback {:method  method
                                          :url     (build-url registry (str "/" repository-name "/manifests/" repository-tag))
                                          :options {:headers (merge (basic-auth registry)
                                                                    {:Accept type})}})
@@ -105,14 +105,14 @@
 
 (defn manifest
   [registry repository-name repository-tag]
-  (:body (request-manifest registry repository-name repository-tag
+  (:body (request-manifest registry repository-name repository-tag :GET
                            "application/vnd.docker.distribution.manifest.v1+prettyjws")))
 
 (defn digest
   [registry repository-name repository-tag]
-  (-> (or (request-manifest registry repository-name repository-tag
+  (-> (or (request-manifest registry repository-name repository-tag :HEAD
                             "application/vnd.docker.distribution.manifest.list.v2+json")
-          (request-manifest registry repository-name repository-tag
+          (request-manifest registry repository-name repository-tag :HEAD
                             "application/vnd.docker.distribution.manifest.v2+json"))
       :headers
       :docker-content-digest))
