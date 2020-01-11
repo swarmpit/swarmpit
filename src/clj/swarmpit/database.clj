@@ -50,7 +50,9 @@
   (ic/create-a-day-rp)
   (ic/task-cq)
   (ic/host-cq)
-  (ic/service-cq))
+  (ic/service-cq)
+  (ic/service-max-cpu-cq)
+  (ic/service-max-memory-cq))
 
 (defn init-couch
   []

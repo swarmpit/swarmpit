@@ -91,7 +91,7 @@
      END"))
 
 (defn service-cq
-  "Warning: Dependant on [cq_tasks_1m] (must be created first)"
+  "Warning: Dependant on [cq_tasks_1m]"
   []
   (manage-doc
     "CREATE CONTINUOUS QUERY cq_services_1m ON swarmpit
@@ -102,6 +102,32 @@
        INTO a_day.downsampled_services
        FROM swarmpit.a_day.downsampled_tasks
        GROUP BY time(1m), service
+     END"))
+
+(defn service-max-cpu-cq
+  "Warning: Dependant on [cq_services_1m]"
+  []
+  (manage-doc
+    "CREATE CONTINUOUS QUERY cq_top_cpu_services_30m ON swarmpit
+     BEGIN
+       SELECT
+        TOP(cpu)
+       INTO a_day.downsampled_top_cpu_services
+       FROM swarmpit.a_day.downsampled_services
+       GROUP BY time(30m), service
+     END"))
+
+(defn service-max-memory-cq
+  "Warning: Dependant on [cq_services_1m]"
+  []
+  (manage-doc
+    "CREATE CONTINUOUS QUERY cq_top_memory_services_30m ON swarmpit
+     BEGIN
+       SELECT
+        TOP(memory)
+       INTO a_day.downsampled_top_memory_services
+       FROM swarmpit.a_day.downsampled_services
+       GROUP BY time(30m), service
      END"))
 
 (defn host-cq
@@ -116,6 +142,10 @@
        FROM swarmpit..host_stats
        GROUP BY time(1m), host
      END"))
+
+(defn drop-continuous-queries
+  [cq]
+  (manage-doc (str "DROP CONTINUOUS QUERY " cq " ON swarmpit")))
 
 (defn list-continuous-queries
   []
@@ -163,30 +193,15 @@
         WHERE task = '" task-name "'
         GROUP BY task, service")))
 
-(def services-list ["2pocket_backend"
-                    "2pocket_cron"
-                    "2pocket_mongo-backup"
-                    "2pocket_queue"
-                    "2pocket_queue-ui"
-                    "2pocket_redis"
-                    "2pocket_vectron"
-                    "2pocket_webadmin"
-                    "swarmpit_app"
-                    "swarmpit_agent"
-                    "swarmpit_db"
-                    "swarmpit_influxdb"
-                    "timesheet_app"
-                    "timesheet_backup"
-                    "timesheet_redis"])
+;; WHERE service =~ /" services-regex "/
 
 (defn read-service-stats
   []
-  (let [services-regex (str/join "|" services-list)]
+  (let [services-regex (str/join "|" [])]
     (read-doc
       (str
         "SELECT cpu, memory
           FROM swarmpit.a_day.downsampled_services
-          WHERE service =~ /" services-regex "/
           GROUP BY service"))))
 
 (defn read-host-stats
