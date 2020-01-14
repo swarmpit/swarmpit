@@ -48,10 +48,10 @@ services:
     deploy:
       resources:
         limits:
-          cpus: '0.70'
-          memory: 256M
+          cpus: '0.60'
+          memory: 512M
         reservations:
-          cpus: '0.35'
+          cpus: '0.30'
           memory: 128M
 
   agent:
