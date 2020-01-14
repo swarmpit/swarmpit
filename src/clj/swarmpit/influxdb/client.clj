@@ -104,28 +104,16 @@
        GROUP BY time(1m), service
      END"))
 
-(defn service-max-cpu-cq
+(defn service-max-usage-cq
   "Warning: Dependant on [cq_services_1m]"
   []
   (manage-doc
-    "CREATE CONTINUOUS QUERY cq_top_cpu_services_30m ON swarmpit
+    "CREATE CONTINUOUS QUERY cq_max_usage_services_30m ON swarmpit
      BEGIN
        SELECT
-        TOP(cpu)
-       INTO a_day.downsampled_top_cpu_services
-       FROM swarmpit.a_day.downsampled_services
-       GROUP BY time(30m), service
-     END"))
-
-(defn service-max-memory-cq
-  "Warning: Dependant on [cq_services_1m]"
-  []
-  (manage-doc
-    "CREATE CONTINUOUS QUERY cq_top_memory_services_30m ON swarmpit
-     BEGIN
-       SELECT
-        TOP(memory)
-       INTO a_day.downsampled_top_memory_services
+        MAX(cpu) as max_cpu,
+        MAX(memory) as max_memory
+       INTO a_day.downsampled_max_usage_services
        FROM swarmpit.a_day.downsampled_services
        GROUP BY time(30m), service
      END"))
@@ -193,16 +181,22 @@
         WHERE task = '" task-name "'
         GROUP BY task, service")))
 
-;; WHERE service =~ /" services-regex "/
-
 (defn read-service-stats
-  []
-  (let [services-regex (str/join "|" [])]
+  [services]
+  (let [services-regex (str/join "|" services)]
     (read-doc
       (str
         "SELECT cpu, memory
           FROM swarmpit.a_day.downsampled_services
+          WHERE service =~ /" services-regex "/
           GROUP BY service"))))
+
+(defn read-max-usage-service-stats
+  []
+  (read-doc
+    "SELECT MAX(max_cpu), MAX(max_memory)
+      FROM swarmpit.a_day.downsampled_max_usage_services
+      GROUP BY service"))
 
 (defn read-host-stats
   []

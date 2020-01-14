@@ -648,17 +648,28 @@
                  :responses {201 {:body        {:id string?}
                                   :description "Success"}}
                  #?@(:clj [:handler handler/service-create]))}]
-    ["/services/ts"
-     {:name    :services-ts
+    ["/services/ts/cpu"
+     {:name    :services-ts-cpu
       :swagger {:tags ["service"]}
       :get     (array-map
-                 :summary "Services timeseries"
+                 :summary "Services cpu timeseries"
                  :parameters {:header {:authorization string?}}
                  :responses {200 {:body        [spec/service-stats]
                                   :description "Success"}
                              400 {:body        {:error string?}
                                   :description "Statistics disabled"}}
-                 #?@(:clj [:handler handler/services-ts]))}]
+                 #?@(:clj [:handler handler/services-ts-cpu]))}]
+    ["/services/ts/memory"
+     {:name    :services-ts-memory
+      :swagger {:tags ["service"]}
+      :get     (array-map
+                 :summary "Services ram timeseries"
+                 :parameters {:header {:authorization string?}}
+                 :responses {200 {:body        [spec/service-stats]
+                                  :description "Success"}
+                             400 {:body        {:error string?}
+                                  :description "Statistics disabled"}}
+                 #?@(:clj [:handler handler/services-ts-memory]))}]
     ["/services/:id"
      {:name    :service
       :swagger {:tags ["service"]}

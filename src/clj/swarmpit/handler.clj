@@ -180,10 +180,17 @@
   (->> (api/services)
        (resp-ok)))
 
-(defn services-ts
+(defn services-ts-cpu
   [_]
   (if (stats/influx-configured?)
-    (->> (stats/services-timeseries-memo)
+    (->> (stats/services-cpu-timeseries-memo)
+         (resp-ok))
+    (resp-error 400 "Statistics disabled")))
+
+(defn services-ts-memory
+  [_]
+  (if (stats/influx-configured?)
+    (->> (stats/services-memory-timeseries-memo)
          (resp-ok))
     (resp-error 400 "Statistics disabled")))
 

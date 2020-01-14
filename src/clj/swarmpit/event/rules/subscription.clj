@@ -27,12 +27,14 @@
   [user]
   (let [stats (when (stats/ready?) (stats/cluster))
         nodes-ts (when (stats/influx-configured?) (stats/hosts-timeseries-memo))
-        services-ts (when (stats/influx-configured?) (stats/services-timeseries-memo))
+        services-ts-cpu (when (stats/influx-configured?) (stats/services-cpu-timeseries-memo))
+        services-ts-memory (when (stats/influx-configured?) (stats/services-memory-timeseries-memo))
         dashboard-user (api/user-by-username user)]
     {:stats              stats
      :services           (api/services)
      :services-dashboard (:service-dashboard dashboard-user)
-     :services-ts        services-ts
+     :services-ts-cpu    services-ts-cpu
+     :services-ts-memory services-ts-memory
      :nodes              (api/nodes)
      :nodes-dashboard    (:node-dashboard dashboard-user)
      :nodes-ts           nodes-ts}))
