@@ -150,7 +150,7 @@
        (-> (influx/read-service-stats
              (->> services-max-usage
                   (sort-by sort-by-type)
-                  (take-last 15)
+                  (take-last 10)
                   (map :service)
                   (into [])))
            (first)
