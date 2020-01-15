@@ -144,7 +144,7 @@
         (comp/paper
           {:className "Swarmpit-login-paper"}
           (html
-            [:img {:src    "img/swarmpit.png"
+            [:img {:src    "img/icon.svg"
                    :width  "100%"}])
           (html
             (progress/form (nil? initialized)

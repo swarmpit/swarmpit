@@ -83,3 +83,12 @@
      (cmp/typography
        {:variant "subtitle2"} name)
      button)))
+
+(defn open-in-new [text href]
+  (html
+    [:a {:href      href
+         :className "Swarmpit-new-tab"
+         :target    "_blank"}
+     [:div text]
+     [:div (icon/open-in-new
+             {:className "Swarmpit-new-tab-ico"})]]))

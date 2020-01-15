@@ -13,11 +13,9 @@
             [goog.string :as gstring]
             [rum.core :as rum]))
 
-(def tooltip-shown (atom false))
-
 (def swarmpit-home-page "https://swarmpit.io")
 
-(defn- parse-version [version]
+(defn parse-version [version]
   (clojure.string/replace
     (:version version)
     #"SNAPSHOT"
@@ -28,19 +26,13 @@
 (rum/defc title-logo < rum/static []
   [:a {:target "_blank"
        :href   swarmpit-home-page}
-   [:img {:src    "img/swarmpit.png"
+   [:img {:src    "img/logo.svg"
           :height "50"
-          :width  "50"}]])
+          :width  "200"}]])
 
 (rum/defc title-version < rum/static [version]
   (when version
-    [:div.Swarmpit-title
-     [:a {:target "_blank"
-          :href   swarmpit-home-page}
-      [:span.Swarmpit-title-name "Swarmpit"]]
-     [:a {:target "_blank"
-          :href   "/api-docs"}
-      [:span.Swarmpit-title-version (parse-version version)]]]))
+    [:span.Swarmpit-title-version (str "v" (parse-version version))]))
 
 (defn list-empty [title]
   (comp/typography

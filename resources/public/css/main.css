@@ -66,6 +66,7 @@ a {
     -webkit-border-radius: 0 50px 50px 0;
     border-radius: 0 50px 50px 0;
     color: rgb(117, 117, 117);
+    height: 37px;
 }
 
 .Swarmpit-new-tab:hover {
@@ -358,8 +359,7 @@ a {
 }
 
 .Swarmpit-appbar-avatar {
-    border: 1px solid #fff;
-    background-color: #5f6368 !important;
+    /*border: 1px solid rgba(65, 69, 73, 0.3);*/
 }
 
 .Swarmpit-appbar-avatar-big {
@@ -398,6 +398,13 @@ a {
 .Swarmpit-drawer-content {
     width: 225px;
     background: #fafafa;
+    flex-grow: 1;
+    display: flex;
+    flex-direction: column;
+}
+
+.Swarmpit-drawer-divider {
+    margin-left: 16px !important;
 }
 
 .Swarmpit-drawer-item,
@@ -419,6 +426,12 @@ a {
 }
 
 .Swarmpit-drawer-item > *:hover {
+}
+
+.Swarmpit-drawer-footer-item-text {
+    color: #757575;
+    flex: none !important;
+    margin-right: 5px;
 }
 
 .Swarmpit-list-item-icon,
@@ -488,6 +501,10 @@ a {
 }
 
 .Swarmpit-title-version {
+    border: 1px solid #5f6368;
+    padding: 1px 5px 1px 5px;
+    background-color: #fff;
+    border-radius: 15px;
     color: #5f6368;
     font-size: 0.75rem;
     font-weight: 400;

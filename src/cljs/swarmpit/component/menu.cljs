@@ -1,6 +1,7 @@
 (ns swarmpit.component.menu
   (:require [material.icon :as icon]
             [material.components :as comp]
+            [material.component.form :as form]
             [swarmpit.component.common :as common]
             [swarmpit.component.state :as state]
             [swarmpit.storage :as storage]
@@ -65,6 +66,31 @@
     :handler :user-list
     :domain  :user}])
 
+(defn footer-menu [version]
+  (comp/box
+    {}
+    (comp/divider {:className "Swarmpit-drawer-divider"})
+    (comp/list-item
+      {:button        true
+       :component     "a"
+       :href          "/api-docs"
+       :target        "_blank"
+       :className     "Swarmpit-drawer-item"
+       :dense         true
+       :disableRipple true}
+      (comp/list-item-text
+        {:className "Swarmpit-drawer-footer-item-text"
+         :primary   (comp/typography {:variant "subtitle2"} "Swagger API")})
+      (comp/list-item-icon
+        {:color "primary"} (icon/open-in-new {:style {:fontSize 15}})))
+    (comp/list-item
+      {:button        false
+       :className     "Swarmpit-drawer-item"
+       :dense         true
+       :disableRipple true}
+      (comp/list-item-text
+        {:primary (common/title-version version)}))))
+
 (defn- filter-menu [docker-api]
   (if (<= 1.30 docker-api)
     menu
@@ -111,23 +137,27 @@
 
 (rum/defc drawer-content < rum/static [version page-domain docker-api]
   [:div.Swarmpit-drawer-content
-   (html
-     [:div.Swarmpit-toolbar
-      [:div.Swarmpit-menu-title
-       (common/title-logo)
-       (common/title-version version)]])
-   (map
-     (fn [{:keys [icon name handler domain]}]
-       (let [selected? (= page-domain domain)]
-         (rum/with-key
-           (if (some? icon)
-             (drawer-item name icon handler domain selected?)
-             (drawer-category name))
-           name)))
-     (let [fmenu (filter-menu docker-api)]
-       (if (storage/admin?)
-         (concat fmenu admin-menu)
-         fmenu)))])
+   (comp/box
+     {:className "Swarmpit-toolbar"}
+     (comp/box
+       {:className "Swarmpit-menu-title"}
+       (common/title-logo)))
+   (comp/box
+     {}
+     (map
+       (fn [{:keys [icon name handler domain]}]
+         (let [selected? (= page-domain domain)]
+           (rum/with-key
+             (if (some? icon)
+               (drawer-item name icon handler domain selected?)
+               (drawer-category name))
+             name)))
+       (let [fmenu (filter-menu docker-api)]
+         (if (storage/admin?)
+           (concat fmenu admin-menu)
+           fmenu))))
+   (comp/box {:className "grow"})
+   (footer-menu version)])
 
 (rum/defc drawer < rum/reactive [page-domain]
   (let [{:keys [mobileOpened version]} (state/react state/layout-cursor)
@@ -143,15 +173,13 @@
               :open       mobileOpened
               :variant    "temporary"
               :onClose    #(state/update-value [:mobileOpened] false state/layout-cursor)
-              :PaperProps {:style {:backgroundColor "#fafafa"}}
               :ModalProps {:keepMounted true}}
              (drawer-content version page-domain docker-api)))
          (comp/hidden
            {:mdDown         true
             :implementation "css"}
            (comp/drawer
-             {:className  "Swarmpit-drawer"
-              :PaperProps {:style {:backgroundColor "#fafafa"}}
-              :open       true
-              :variant    "permanent"}
+             {:className "Swarmpit-drawer"
+              :open      true
+              :variant   "permanent"}
              (drawer-content version page-domain docker-api)))]))))

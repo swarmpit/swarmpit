@@ -30,9 +30,7 @@
    (comp/avatar
      (merge
        {:className "Swarmpit-appbar-avatar"
-        :src       (str "https://www.gravatar.com/avatar/"
-                        (user-gravatar-hash (storage/email))
-                        "?d=https://raw.githubusercontent.com/swarmpit/swarmpit/master/resources/public/img/user.png")}
+        :src       (str "https://eu.ui-avatars.com/api/?name=" (storage/user))}
        (when big?
          {:className "Swarmpit-appbar-avatar Swarmpit-appbar-avatar-big"})))))
 
@@ -40,9 +38,10 @@
   (comp/box
     {}
     (comp/icon-button
-      {:onClick (fn [e]
-                  (state/update-value [:menuAnchorEl] (.-currentTarget e) state/layout-cursor))
-       :color   "inherit"} (user-avatar))
+      {:onClick       (fn [e]
+                        (state/update-value [:menuAnchorEl] (.-currentTarget e) state/layout-cursor))
+       :disableRipple true
+       :color         "inherit"} (user-avatar))
     (comp/popper
       {:open       (some? anchorEl)
        :anchorEl   anchorEl
@@ -235,8 +234,7 @@
               :disableGutters false}
              (html
                [:div.Swarmpit-desktop-title
-                (common/title-logo)
-                (common/title-version version)])
+                (common/title-logo)])
              (comp/icon-button
                {:key        "appbar-menu-btn"
                 :color      "inherit"
