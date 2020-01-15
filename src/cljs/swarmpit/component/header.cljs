@@ -234,7 +234,8 @@
               :disableGutters false}
              (html
                [:div.Swarmpit-desktop-title
-                (common/title-logo)])
+                (common/title-logo)
+                (common/title-version version)])
              (comp/icon-button
                {:key        "appbar-menu-btn"
                 :color      "inherit"

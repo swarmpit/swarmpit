@@ -428,6 +428,11 @@ a {
 .Swarmpit-drawer-item > *:hover {
 }
 
+.Swarmpit-drawer-footer {
+    width: 210px !important;
+    padding-bottom: 1rem !important;
+}
+
 .Swarmpit-drawer-footer-item-text {
     color: #757575;
     flex: none !important;
@@ -501,10 +506,13 @@ a {
 }
 
 .Swarmpit-title-version {
-    border: 1px solid #5f6368;
-    padding: 1px 5px 1px 5px;
-    background-color: #fff;
-    border-radius: 15px;
+    position: absolute;
+    left: 72px;
+    top: 40px;
+    /*border: 1px solid #5f6368;*/
+    /*padding: 1px 5px 1px 5px;*/
+    /*background-color: #fff;*/
+    /*border-radius: 15px;*/
     color: #5f6368;
     font-size: 0.75rem;
     font-weight: 400;

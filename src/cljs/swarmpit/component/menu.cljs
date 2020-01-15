@@ -66,9 +66,9 @@
     :handler :user-list
     :domain  :user}])
 
-(defn footer-menu [version]
+(defn footer []
   (comp/box
-    {}
+    {:className "Swarmpit-drawer-footer"}
     (comp/divider {:className "Swarmpit-drawer-divider"})
     (comp/list-item
       {:button        true
@@ -82,14 +82,7 @@
         {:className "Swarmpit-drawer-footer-item-text"
          :primary   (comp/typography {:variant "subtitle2"} "Swagger API")})
       (comp/list-item-icon
-        {:color "primary"} (icon/open-in-new {:style {:fontSize 15}})))
-    (comp/list-item
-      {:button        false
-       :className     "Swarmpit-drawer-item"
-       :dense         true
-       :disableRipple true}
-      (comp/list-item-text
-        {:primary (common/title-version version)}))))
+        {:color "primary"} (icon/open-in-new {:style {:fontSize 15}})))))
 
 (defn- filter-menu [docker-api]
   (if (<= 1.30 docker-api)
@@ -141,7 +134,8 @@
      {:className "Swarmpit-toolbar"}
      (comp/box
        {:className "Swarmpit-menu-title"}
-       (common/title-logo)))
+       (common/title-logo)
+       (common/title-version version)))
    (comp/box
      {}
      (map
@@ -157,7 +151,7 @@
            (concat fmenu admin-menu)
            fmenu))))
    (comp/box {:className "grow"})
-   (footer-menu version)])
+   (footer)])
 
 (rum/defc drawer < rum/reactive [page-domain]
   (let [{:keys [mobileOpened version]} (state/react state/layout-cursor)
