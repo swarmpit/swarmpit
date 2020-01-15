@@ -31,3 +31,11 @@
      :time   (into [] (map first values))
      :cpu    (into [] (map second values))
      :memory (into [] (map #(nth % 2) values))}))
+
+(defn ->service-max-usage [series]
+  (->> (map #(let [values (first (get % "values"))
+                   service (get-in % ["tags" "service"])]
+               (hash-map :service service
+                         :cpu (second values)
+                         :memory (nth values 2))) series)
+       (set)))

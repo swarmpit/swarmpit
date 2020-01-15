@@ -67,13 +67,22 @@
                    (state/update-value [:stats] response state/form-value-cursor))
      :on-error   (fn [_])}))
 
-(defn- services-ts-handler
+(defn- services-ts-cpu-handler
   []
   (ajax/get
-    (routes/path-for-backend :services-ts)
-    {:state      [:loading? :services-ts]
+    (routes/path-for-backend :services-ts-cpu)
+    {:state      [:loading? :services-ts-cpu]
      :on-success (fn [{:keys [response]}]
-                   (state/update-value [:services-ts] response state/form-value-cursor))
+                   (state/update-value [:services-ts-cpu] response state/form-value-cursor))
+     :on-error   (fn [_])}))
+
+(defn- services-ts-memory-handler
+  []
+  (ajax/get
+    (routes/path-for-backend :services-ts-memory)
+    {:state      [:loading? :services-ts-memory]
+     :on-success (fn [{:keys [response]}]
+                   (state/update-value [:services-ts-memory] response state/form-value-cursor))
      :on-error   (fn [_])}))
 
 (defn- nodes-ts-handler
@@ -112,18 +121,20 @@
 
 (defn- init-form-state
   []
-  (state/set-value {:loading? {:stats       true
-                               :nodes       true
-                               :nodes-ts    true
-                               :services    true
-                               :services-ts true}} state/form-state-cursor))
+  (state/set-value {:loading? {:stats              true
+                               :nodes              true
+                               :nodes-ts           true
+                               :services           true
+                               :services-ts-cpu    true
+                               :services-ts-memory true}} state/form-state-cursor))
 
 (defn- init-form-value
   []
   (state/set-value {:stats              {}
                     :services           []
                     :services-dashboard []
-                    :services-ts        []
+                    :services-ts-cpu    []
+                    :services-ts-memory []
                     :nodes              []
                     :nodes-dashboard    []
                     :nodes-ts           []} state/form-value-cursor))
@@ -136,7 +147,8 @@
       (stats-handler)
       (nodes-handler)
       (services-handler)
-      ;(services-ts-handler)
+      (services-ts-cpu-handler)
+      (services-ts-memory-handler)
       (me-handler))))
 
 (defn- resource-chip
@@ -280,9 +292,9 @@
 
 (rum/defc dashboard-service-ram-stats < rum/static
                                         {:did-mount  dashboard-service-ram-callback
-                                         :did-update dashboard-service-ram-callback} [services-ts]
+                                         :did-update dashboard-service-ram-callback} [services-memory-ts]
   (comp/card
-    (if (empty? services-ts)
+    (if (empty? services-memory-ts)
       {:className "Swarmpit-card hide"}
       {:className "Swarmpit-card"})
     (comp/card-content
@@ -297,22 +309,25 @@
 
 (rum/defc dashboard-service-cpu-stats < rum/static
                                         {:did-mount  dashboard-service-cpu-callback
-                                         :did-update dashboard-service-cpu-callback} [services-ts]
+                                         :did-update dashboard-service-cpu-callback} [services-cpu-ts]
   (comp/card
-    (if (empty? services-ts)
+    (if (empty? services-cpu-ts)
       {:className "Swarmpit-card hide"}
       {:className "Swarmpit-card"})
     (comp/card-content
       {:className "Swarmpit-table-card-content"}
       (html [:div {:id plot-service-cpu-id}]))))
 
-(rum/defc form-info < rum/static [{:keys [stats services services-ts services-dashboard nodes nodes-ts nodes-dashboard] :as item}]
+(rum/defc form-info < rum/static [{:keys [stats
+                                          services
+                                          services-ts-cpu
+                                          services-ts-memory
+                                          services-dashboard
+                                          nodes
+                                          nodes-ts
+                                          nodes-dashboard] :as item}]
   (let [pinned-services (filter #(contains? (set services-dashboard) (:id %)) services)
-        pinned-nodes (filter #(contains? (set nodes-dashboard) (:id %)) nodes)
-        running-services (->> (filter #(not= "not running" (:state %)) services)
-                              (map :serviceName)
-                              (set))
-        services-ts (filter #(contains? running-services (:service %)) services-ts)]
+        pinned-nodes (filter #(contains? (set nodes-dashboard) (:id %)) nodes)]
     (comp/mui
       (html
         [:div.Swarmpit-form
@@ -363,7 +378,7 @@
                :md   12
                :lg   6
                :xl   6}
-              (dashboard-service-ram-stats services-ts))
+              (dashboard-service-ram-stats services-ts-memory))
             (comp/grid
               {:item true
                :xs   12
@@ -371,7 +386,7 @@
                :md   12
                :lg   6
                :xl   6}
-              (dashboard-service-cpu-stats services-ts))
+              (dashboard-service-cpu-stats services-ts-cpu))
             (when (not-empty pinned-nodes)
               (comp/grid
                 {:item true
@@ -405,8 +420,5 @@
     (progress/form
       (or (:stats loading?)
           (:nodes loading?)
-          (:nodes-ts loading?)
-          (:services loading?)
-          ;(:services-ts loading?)
-          )
+          (:services loading?))
       (form-info item))))

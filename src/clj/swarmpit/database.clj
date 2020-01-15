@@ -44,6 +44,15 @@
   []
   (ic/create-database))
 
+(defn- setup-influx-database
+  []
+  (ic/create-an-hour-rp)
+  (ic/create-a-day-rp)
+  (ic/task-cq)
+  (ic/host-cq)
+  (ic/service-cq)
+  (ic/service-max-usage-cq))
+
 (defn init-couch
   []
   (wait-for-db 100 couch-ready? "CouchDB")
@@ -56,7 +65,10 @@
   (when (influx-configured?)
     (do
       (wait-for-db 100 influx-ready? "InfluxDB")
-      (create-influx-database))))
+      (create-influx-database)
+      (setup-influx-database)
+      (log/info "InfluxDB RP:" (ic/retention-policy-summary))
+      (log/info "InfluxDB CQ:" (ic/continuous-query-summary)))))
 
 (defn init
   []
