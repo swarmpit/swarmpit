@@ -205,3 +205,11 @@
 (defn exit
   [props]
   (f/exit-icon (clj->js props)))
+
+(defn keyboard-arrow-left
+  [props]
+  (f/keyboard-arrow-left-icon (clj->js props)))
+
+(defn keyboard-arrow-right
+  [props]
+  (f/keyboard-arrow-right-icon (clj->js props)))

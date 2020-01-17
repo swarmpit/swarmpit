@@ -206,6 +206,10 @@
   [props & childs]
   (apply f/table-footer (clj->js props) childs))
 
+(defn table-pagination
+  [props]
+  (f/table-pagination (clj->js props)))
+
 (defn expansion-panel
   [props & childs]
   (apply f/expansion-panel (clj->js props) childs))

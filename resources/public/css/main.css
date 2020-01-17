@@ -646,6 +646,11 @@ a {
     color: #000;
 }
 
+.Swarmpit-table-footer {
+    display: flex !important;
+    flex-direction: row-reverse;
+}
+
 .Swarmpit-table-info-row {
     height: 26px !important;
 }

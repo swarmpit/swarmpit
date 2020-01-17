@@ -88,7 +88,7 @@
                 {:className "Swarmpit-card"}
                 (comp/card-content
                   {:className "Swarmpit-table-card-content"}
-                  (list/responsive
+                  (list/responsive-footer
                     render-metadata
                     filtered-items
                     onclick-handler))))))]])))

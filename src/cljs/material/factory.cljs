@@ -75,6 +75,7 @@
 (def table-row (create-factory js/MaterialUI.TableRow))
 (def table-body (create-factory js/MaterialUI.TableBody))
 (def table-footer (create-factory js/MaterialUI.TableFooter))
+(def table-pagination (create-factory js/MaterialUI.TablePagination))
 
 (def expansion-panel (create-factory js/MaterialUI.ExpansionPanel))
 (def expansion-panel-summary (create-factory js/MaterialUI.ExpansionPanelSummary))
@@ -169,6 +170,8 @@
 (def save-icon (create-factory js/MaterialUIIcons.Save))
 (def arrow-dropdown-icon (create-factory js/MaterialUIIcons.ArrowDropDown))
 (def exit-icon (create-factory js/MaterialUIIcons.ExitToApp))
+(def keyboard-arrow-left-icon (create-factory js/MaterialUIIcons.KeyboardArrowLeft))
+(def keyboard-arrow-right-icon (create-factory js/MaterialUIIcons.KeyboardArrowRight))
 
 (def create-mui-theme js/MaterialUI.createMuiTheme)
 (def with-mobile-dialog js/MaterialUI.withMobileDialog)
