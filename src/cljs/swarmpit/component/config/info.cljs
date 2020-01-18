@@ -23,11 +23,6 @@
 
 (def editor-id "config-view")
 
-(defn- parse-data [data]
-  (if (base64/base64? data)
-    (base64/decode data)
-    data))
-
 (defn- form-data [value]
   (comp/text-field
     {:id              editor-id
@@ -90,7 +85,7 @@
     (comp/card-header
       {:title     (comp/typography {:variant "h6"} "Data")
        :className "Swarmpit-form-table-header"})
-    (form-data (parse-data (:data config)))))
+    (form-data (base64/decode (:data config)))))
 
 (def form-actions
   [{:onClick #(state/update-value [:open] true dialog/dialog-cursor)

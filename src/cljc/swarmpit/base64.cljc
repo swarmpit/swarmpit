@@ -1,9 +1,7 @@
 (ns swarmpit.base64
   #?(:clj  (:import java.util.Base64)
-     :cljs (:require [goog.crypt.base64 :as b64])))
-
-(def base64-regex
-  #"^(?:[A-Za-z0-9+\/]{4})*(?:[A-Za-z0-9+\/]{2}==|[A-Za-z0-9+\/]{3}=)?$")
+     :cljs (:require [goog.crypt :as crypt]
+                     [goog.crypt.base64 :as b64])))
 
 #?(:clj
    (defn encode
@@ -13,7 +11,8 @@
    :cljs
    (defn encode
      [data]
-     (b64/encodeString data)))
+     (-> (crypt/stringToUtf8ByteArray data)
+         (b64/encodeByteArray))))
 
 #?(:clj
    (defn decode
@@ -23,13 +22,5 @@
    :cljs
    (defn decode
      [encoded-data]
-     (b64/decodeString encoded-data)))
-
-(defn base64? [data]
-  (and (= 0 (mod (count data) 4))
-       (some? (re-matches base64-regex data))
-       (let [str (decode data)]
-         (->> (map #?(:clj int
-                      :cljs #(.charCodeAt % 0)) str)
-              (reduce +)
-              (> (* 128 (count str)))))))
+     (-> (b64/decodeStringToByteArray encoded-data)
+         (crypt/utf8ByteArrayToString))))
