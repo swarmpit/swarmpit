@@ -1,6 +1,7 @@
 (ns swarmpit.component.task.list
   (:require [material.icon :as icon]
             [material.components :as comp]
+            [material.component.form :as form]
             [material.component.list.basic :as list]
             [material.component.list.util :as list-util]
             [material.component.label :as label]
@@ -67,20 +68,30 @@
          (common/render-capacity (get-in item [:stats :memory]) true)]]])
     (html [:span "-"])))
 
+(defn- render-item-status [item]
+  (let [error (get-in item [:status :error])]
+    (if error
+      (comp/tooltip
+        {:title           error
+         :TransitionProps {:className "Swarmpit-table-error-tooltip"}
+         :placement       "left"}
+        (render-item-state (:state item)))
+      (render-item-state (:state item)))))
+
 (def render-metadata
   {:table {:summary [{:name      "Task"
                       :render-fn (fn [item] (render-item-name item))}
-                     {:name      "Node"
-                      :render-fn (fn [item] (:nodeName item))}
                      {:name      "CPU Usage"
                       :tooltip   "Task cpu usage per Limit (resource/node)"
                       :render-fn (fn [item] (render-item-cpu-usage item))}
                      {:name      "Memory Usage"
                       :tooltip   "Task memory usage per Limit (resource/node)"
                       :render-fn (fn [item] (render-item-memory-usage item))}
+                     {:name      "Last update"
+                      :render-fn (fn [item] (form/item-date (:updatedAt item)))}
                      {:name      ""
                       :status    true
-                      :render-fn (fn [item] (render-item-state (:state item)))}]}
+                      :render-fn (fn [item] (render-item-status item))}]}
    :list  {:primary   (fn [item] (:taskName item))
            :secondary (fn [item] (get-in item [:repository :image]))
            :status-fn (fn [item] (render-item-state (:state item)))}})
