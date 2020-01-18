@@ -192,6 +192,9 @@
                                   (swap! footer-state assoc :page 0))})))))
 
 (rum/defc responsive-footer < rum/reactive
+                              {:init (fn [state _]
+                                       (swap! footer-state assoc :page 0)
+                                       state)}
   [render-metadata items onclick-handler-fn]
   (let [fs (rum/react footer-state)]
     (cmp/mui
