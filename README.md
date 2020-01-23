@@ -1,4 +1,4 @@
-[![swarmpit](https://raw.githubusercontent.com/swarmpit/swarmpit/master/resources/public/img/logo.svg?r1)](https://swarmpit.io)
+[![swarmpit](https://raw.githubusercontent.com/swarmpit/swarmpit/master/resources/public/img/logo.svg?sanitize=true)](https://swarmpit.io)
 
 Lightweight mobile-friendly Docker Swarm management UI
 
