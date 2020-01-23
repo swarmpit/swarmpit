@@ -1,4 +1,4 @@
-[![swarmpit](http://swarmpit.io/img/logo-swarmpit.svg?r1)](http://swarmpit.io)
+[![swarmpit](http://swarmpit.io/img/logo-swarmpit.svg?r1)](https://swarmpit.io)
 
 Lightweight mobile-friendly Docker Swarm management UI
 
@@ -6,7 +6,8 @@ Lightweight mobile-friendly Docker Swarm management UI
 [![gitter](https://badges.gitter.im/trezor/community.svg)](https://gitter.im/swarmpit_io/swarmpit) 
 [![Build Status](https://travis-ci.org/swarmpit/swarmpit.svg?branch=master)](https://travis-ci.org/swarmpit/swarmpit)
 [![PRs Welcome](https://img.shields.io/badge/PRs-welcome-brightgreen.svg)](https://github.com/swarmpit/swarmpit/pulls)
-[![Donate](https://img.shields.io/badge/Donate-PayPal-green.svg)](https://www.paypal.com/cgi-bin/webscr?cmd=_s-xclick&hosted_button_id=KD4RQBDWFE25U)
+
+[![Twitter URL](https://img.shields.io/twitter/url/https/twitter.com/fold_left.svg?style=social&label=Follow%20%40swarmpit_io)](https://twitter.com/swarmpit_io)
 
 <img src="https://raw.githubusercontent.com/swarmpit/swarmpit/master/resources/public/imac.png">
 
@@ -14,7 +15,7 @@ Swarmpit provides simple and easy to use interface for your Docker Swarm cluster
 
 More details about future and past releases can be found in [ROADMAP.md](ROADMAP.md)
 
-[![Twitter URL](https://img.shields.io/twitter/url/https/twitter.com/fold_left.svg?style=social&label=Follow%20%40swarmpit_io)](https://twitter.com/swarmpit_io)
+[![opencollective](https://opencollective.com/swarmpit/tiers/backers.svg?avatarHeight=50)](https://opencollective.com/swarmpit)
 
 ## Installation
 
