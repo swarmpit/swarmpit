@@ -175,21 +175,22 @@
 
 (rum/defc footer < rum/reactive [items]
   (let [{:keys [rowsPerPage page]} (rum/react footer-state)]
-    (cmp/table-footer
-      {:className "Swarmpit-table-footer"}
-      (cmp/table-row
-        {}
-        (cmp/table-pagination
-          {:rowsPerPageOptions  []
-           :component           "div"
-           :count               (count items)
-           :rowsPerPage         rowsPerPage
-           :page                page
-           :onChangePage        (fn [e new-page]
-                                  (swap! footer-state assoc :page new-page))
-           :onChangeRowsPerPage (fn [e]
-                                  (swap! footer-state assoc :rowsPerPage (-> e .-target .-value))
-                                  (swap! footer-state assoc :page 0))})))))
+    (when (> (count items) rowsPerPage)
+      (cmp/table-footer
+        {:className "Swarmpit-table-footer"}
+        (cmp/table-row
+          {}
+          (cmp/table-pagination
+            {:rowsPerPageOptions  []
+             :component           "div"
+             :count               (count items)
+             :rowsPerPage         rowsPerPage
+             :page                page
+             :onChangePage        (fn [e new-page]
+                                    (swap! footer-state assoc :page new-page))
+             :onChangeRowsPerPage (fn [e]
+                                    (swap! footer-state assoc :rowsPerPage (-> e .-target .-value))
+                                    (swap! footer-state assoc :page 0))}))))))
 
 (rum/defc responsive-footer < rum/reactive
                               {:init (fn [state _]
