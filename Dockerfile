@@ -1,9 +1,11 @@
-FROM openjdk:8u212-alpine
-MAINTAINER Pavol Noha <pavol.noha@gmail.com>
+FROM debian:stretch-slim
 
-RUN apk add --update curl docker && \
-    rm -rf /var/cache/apk/* && \
-    rm /usr/bin/dockerd /usr/bin/containerd /usr/bin/runc
+RUN apt-get update && \
+    mkdir -p /usr/share/man/man1 && \
+    apt-get install -y ca-certificates curl openjdk-8-jre-headless libjffi-java
+
+ADD dev/script/install-docker-client.sh .
+RUN bash install-docker-client.sh
 
 RUN mkdir -p /usr/src/app
 WORKDIR /usr/src/app
