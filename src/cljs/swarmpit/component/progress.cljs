@@ -12,7 +12,7 @@
      (html
        [:div
         {:style (merge {:width          "100%"
-                        :height         "100vh"
+                        :height         "80vh"
                         :display        "flex"
                         :alignItems     "center"
                         :justifyContent "center"}
