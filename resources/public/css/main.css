@@ -662,6 +662,7 @@ a {
 
 .Swarmpit-table-footer {
     display: flex !important;
+    border-top: 1px solid rgba(224, 224, 224, 1);
     flex-direction: row-reverse;
 }
 
