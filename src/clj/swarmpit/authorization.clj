@@ -50,6 +50,8 @@
              :handler any-access}
             {:pattern #"^/version$"
              :handler any-access}
+            {:pattern #"^/info"
+             :handler authenticated-access}
             {:pattern #"^/initialize$"
              :handler any-access}
             {:pattern #"^/slt"

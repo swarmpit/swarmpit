@@ -70,6 +70,8 @@
     {:networks (->> (get m "Network")
                     (map :Name))
      :volumes  (->> (get m "Volume")
+                    (map :Name))
+     :log      (->> (get m "Log")
                     (map :Name))}))
 
 (defn ->node

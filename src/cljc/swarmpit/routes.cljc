@@ -40,6 +40,11 @@
      :get  (array-map
              :no-doc true
              #?@(:clj [:handler handler/version]))}]
+   ["/info"
+    {:name :info
+     :get  (array-map
+             :no-doc true
+             #?@(:clj [:handler handler/info]))}]
    ["/login"
     {:name :login
      :post (array-map

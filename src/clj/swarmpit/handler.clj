@@ -68,6 +68,11 @@
   (->> (version/info)
        (resp-ok)))
 
+(defn info
+  [_]
+  (->> (version/long-info)
+       (resp-ok)))
+
 ;; SLT handler
 
 (defn slt

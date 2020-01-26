@@ -140,3 +140,13 @@
 (defn as-bytes
   [MiB]
   (* MiB (* 1024 1024)))
+
+(defn freq-of
+  "frequencies of values in key"
+  [key coll]
+  (->> coll (map key) (frequencies)))
+
+(defn filter-by
+  "filter objects that has value in key"
+  [key value coll]
+  (filter #(= value (get % key)) coll))
