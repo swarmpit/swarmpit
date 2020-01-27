@@ -102,5 +102,3 @@
                                       :used  (->> services (map :secrets) (flatten) (set) (count))}
                            :configs  {:total (count (api/configs))
                                       :used  (->> services (map :configs) (flatten) (set) (count))}}})))
-
-(long-info)
