@@ -2,6 +2,7 @@
   (:require [reitit.core :as r]
             [reitit.coercion.spec :as rss]
             [swarmpit.routes-spec :as spec]
+            [clojure.string :as str]
             #?(:cljs [reitit.frontend :as rf])
             #?(:clj [reitit.swagger :as swagger])
             #?(:clj [swarmpit.version :as version])
@@ -925,6 +926,7 @@
   ([handler params]
    (path-for-backend handler params nil))
   ([handler params query]
-   (-> backend-router
-       (r/match-by-name handler params)
-       (r/match->path query))))
+   (str/replace
+     (-> backend-router
+         (r/match-by-name handler params)
+         (r/match->path query)) #"^/" "")))
