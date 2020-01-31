@@ -15,7 +15,10 @@
    :typography  {:fontFamily (str/join "," ["Roboto" "Helvetica" "Arial" "sans-serif"])}
    :overrides   {:MuiCardHeader  {:action {:color "rgb(117, 117, 117)"}}
                  :MuiCardActions {:root {:padding 16}}
-                 :MuiPaper       {:elevation4 {:boxShadow "0px 4px 20px rgba(0, 0, 0, 0.15)"}}}
+                 :MuiPaper       {:elevation4 {:boxShadow "0px 4px 20px rgba(0, 0, 0, 0.15)"}}
+                 :MuiContainer   {:maxWidthMd {"@media (min-width: 1080px)" {:maxWidth (- 1080 48)}}}
+
+                 }
    :breakpoints {:values {:xs 0
                           :sm 600
                           :md 1080

@@ -83,7 +83,6 @@ a {
 }
 
 .Swarmpit-container {
-    width: calc(100vw - 48px) !important;
     padding: 0 !important;
 }
 
@@ -1291,6 +1290,12 @@ a {
 
     .Swarmpit-action-menu-mobile {
         display: none;
+    }
+}
+
+@media (max-width: 1280px) {
+    .Swarmpit-container {
+        width: calc(100vw - 48px) !important;
     }
 }
 
