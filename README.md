@@ -2,7 +2,7 @@
 
 Lightweight mobile-friendly Docker Swarm management UI
 
-[![version](https://img.shields.io/github/release-pre/swarmpit/swarmpit.svg)](https://github.com/swarmpit/swarmpit/releases) 
+[![Financial Contributors on Open Collective](https://opencollective.com/swarmpit/all/badge.svg?label=financial+contributors)](https://opencollective.com/swarmpit) [![version](https://img.shields.io/github/release-pre/swarmpit/swarmpit.svg)](https://github.com/swarmpit/swarmpit/releases) 
 [![gitter](https://badges.gitter.im/trezor/community.svg)](https://gitter.im/swarmpit_io/swarmpit) 
 [![Build Status](https://travis-ci.org/swarmpit/swarmpit.svg?branch=master)](https://travis-ci.org/swarmpit/swarmpit)
 [![PRs Welcome](https://img.shields.io/badge/PRs-welcome-brightgreen.svg)](https://github.com/swarmpit/swarmpit/pulls)
@@ -86,3 +86,33 @@ Everything about building, issue reporting and setting up development environmen
 
 Deploys Swarmpit to play-with-docker sandbox. Please wait few moments till application is up and running before accessing
 port 888. Initialization might take a few seconds.
+
+## Contributors
+
+### Code Contributors
+
+This project exists thanks to all the people who contribute. [[Contribute](CONTRIBUTING.md)].
+<a href="https://github.com/swarmpit/swarmpit/graphs/contributors"><img src="https://opencollective.com/swarmpit/contributors.svg?width=890&button=false" /></a>
+
+### Financial Contributors
+
+Become a financial contributor and help us sustain our community. [[Contribute](https://opencollective.com/swarmpit/contribute)]
+
+#### Individuals
+
+<a href="https://opencollective.com/swarmpit"><img src="https://opencollective.com/swarmpit/individuals.svg?width=890"></a>
+
+#### Organizations
+
+Support this project with your organization. Your logo will show up here with a link to your website. [[Contribute](https://opencollective.com/swarmpit/contribute)]
+
+<a href="https://opencollective.com/swarmpit/organization/0/website"><img src="https://opencollective.com/swarmpit/organization/0/avatar.svg"></a>
+<a href="https://opencollective.com/swarmpit/organization/1/website"><img src="https://opencollective.com/swarmpit/organization/1/avatar.svg"></a>
+<a href="https://opencollective.com/swarmpit/organization/2/website"><img src="https://opencollective.com/swarmpit/organization/2/avatar.svg"></a>
+<a href="https://opencollective.com/swarmpit/organization/3/website"><img src="https://opencollective.com/swarmpit/organization/3/avatar.svg"></a>
+<a href="https://opencollective.com/swarmpit/organization/4/website"><img src="https://opencollective.com/swarmpit/organization/4/avatar.svg"></a>
+<a href="https://opencollective.com/swarmpit/organization/5/website"><img src="https://opencollective.com/swarmpit/organization/5/avatar.svg"></a>
+<a href="https://opencollective.com/swarmpit/organization/6/website"><img src="https://opencollective.com/swarmpit/organization/6/avatar.svg"></a>
+<a href="https://opencollective.com/swarmpit/organization/7/website"><img src="https://opencollective.com/swarmpit/organization/7/avatar.svg"></a>
+<a href="https://opencollective.com/swarmpit/organization/8/website"><img src="https://opencollective.com/swarmpit/organization/8/avatar.svg"></a>
+<a href="https://opencollective.com/swarmpit/organization/9/website"><img src="https://opencollective.com/swarmpit/organization/9/avatar.svg"></a>
