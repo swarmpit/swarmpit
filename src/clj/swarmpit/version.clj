@@ -7,6 +7,7 @@
             [swarmpit.docker.engine.client :as client]
             [swarmpit.utils :refer [freq-of filter-by]]
             [swarmpit.couchdb.client :as db]
+            [swarmpit.stats :as stats]
             [buddy.core.hash :as hash]
             [buddy.core.codecs :refer [bytes->hex]])
   (:import (java.util Properties)))
@@ -47,6 +48,7 @@
         networks (api/networks)
         volumes (api/volumes)
         stacks (api/stacks)
+        resources (when (stats/ready?) (stats/cluster))
         nodes (filter-by :state "ready" (api/nodes))
         service (->> services (filter #(= "swarmpit/swarmpit" (get-in % [:repository :name]))) (first))
         agent (->> (api/stack (:stack service)) :services (filter #(= "swarmpit/agent" (get-in % [:repository :name]))) (first))]
@@ -67,11 +69,12 @@
                                       :networks (count (filter :stack networks))
                                       :volumes  (count (filter #(contains? (->> (map :stackName stacks) (set)) (:stack %))
                                                                volumes))}
-                           :nodes    {:ready    (count nodes)
-                                      :managers (count (filter-by :role "manager" nodes))
-                                      :arch     (freq-of :arch nodes)
-                                      :os       (freq-of :os nodes)
-                                      :engine   (freq-of :engine nodes)}
+                           :nodes    {:ready     (count nodes)
+                                      :managers  (count (filter-by :role "manager" nodes))
+                                      :arch      (freq-of :arch nodes)
+                                      :os        (freq-of :os nodes)
+                                      :resources (select-keys resources [:cpu :disk :memory])
+                                      :engine    (freq-of :engine nodes)}
                            :services {:deployed     (count services)
                                       :running      (count running)
                                       :command      (count (filter :command services))
