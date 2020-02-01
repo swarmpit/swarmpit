@@ -968,13 +968,13 @@
                        (merge-service service-origin service-delta))))
 
 (defn redeploy-service
-  [owner service-id]
+  [owner service-id new-tag]
   (let [service-origin (dc/service service-id)
         service (dmi/->service service-origin)
         repository-name (get-in service [:repository :name])
         repository-tag (get-in service [:repository :tag])
-        image-digest (repository-digest owner repository-name repository-tag)
-        image (str repository-name ":" repository-tag "@" image-digest)]
+        image-digest (repository-digest owner repository-name (or new-tag repository-tag))
+        image (str repository-name ":" (or new-tag repository-tag) "@" image-digest)]
     (dc/update-service
       (service-auth owner service)
       service-id

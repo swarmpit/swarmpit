@@ -230,10 +230,10 @@
     (resp-ok)))
 
 (defn service-redeploy
-  [{{:keys [path]} :parameters
-    {:keys [usr]}  :identity}]
+  [{{:keys [path query]} :parameters
+    {:keys [usr]}        :identity}]
   (let [owner (:username usr)]
-    (api/redeploy-service owner (:id path))
+    (api/redeploy-service owner (:id path) (:tag query))
     (resp-accepted)))
 
 (defn service-rollback

@@ -2,6 +2,7 @@
   (:require [reitit.core :as r]
             [reitit.coercion.spec :as rss]
             [swarmpit.routes-spec :as spec]
+            [spec-tools.data-spec :as ds]
             [clojure.string :as str]
             #?(:cljs [reitit.frontend :as rf])
             #?(:clj [reitit.swagger :as swagger])
@@ -742,8 +743,10 @@
       :swagger {:tags ["service"]}
       :post    (array-map
                  :summary "Redeploy service"
+                 :description "Redeploy service with newest image version or different tag if specified"
                  :parameters {:header {:authorization string?}
-                              :path   {:id string?}}
+                              :path   {:id string?}
+                              :query  {(ds/opt :tag) string?}}
                  :responses {202 {:body        nil
                                   :description "Success"}}
                  #?@(:clj [:handler handler/service-redeploy]))}]
