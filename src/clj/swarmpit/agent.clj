@@ -21,7 +21,7 @@
                                                      (:tag repository))]
             (when (not= current-digest
                         latest-digest)
-              (api/redeploy-service nil id)
+              (api/redeploy-service nil id nil)
               (log/info "Service" id "(" name ") autoredeploy fired! DIGEST: [" current-digest "] -> [" latest-digest "]")))
           (catch ExceptionInfo e
             (log/error "Service" id "(" name ") autoredeploy failed! " (ex-data e))))))))
