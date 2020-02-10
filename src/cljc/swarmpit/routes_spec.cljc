@@ -181,7 +181,7 @@
    :user            string?
    :dir             string?
    :tty             boolean?
-   :healthcheck     {:test     string?
+   :healthcheck     {:test     [string?]
                      :interval number?
                      :timeout  number?
                      :retries  number?}
@@ -280,7 +280,7 @@
    (ds/opt :user)            string?
    (ds/opt :dir)             string?
    (ds/opt :tty)             boolean?
-   (ds/opt :healthcheck)     {:test     string?
+   (ds/opt :healthcheck)     {:test     [string?]
                               :interval number?
                               :timeout  number?
                               :retries  number?}
