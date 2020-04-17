@@ -2,10 +2,11 @@
 
 Lightweight mobile-friendly Docker Swarm management UI
 
-[![Financial Contributors on Open Collective](https://opencollective.com/swarmpit/all/badge.svg?label=financial+contributors)](https://opencollective.com/swarmpit) [![version](https://img.shields.io/github/release-pre/swarmpit/swarmpit.svg)](https://github.com/swarmpit/swarmpit/releases) 
+[![version](https://img.shields.io/github/release-pre/swarmpit/swarmpit.svg)](https://github.com/swarmpit/swarmpit/releases) 
 [![gitter](https://badges.gitter.im/trezor/community.svg)](https://gitter.im/swarmpit_io/swarmpit) 
 [![Build Status](https://travis-ci.org/swarmpit/swarmpit.svg?branch=master)](https://travis-ci.org/swarmpit/swarmpit)
 [![PRs Welcome](https://img.shields.io/badge/PRs-welcome-brightgreen.svg)](https://github.com/swarmpit/swarmpit/pulls)
+[![Financial Contributors on Open Collective](https://opencollective.com/swarmpit/all/badge.svg?label=financial+contributors)](https://opencollective.com/swarmpit) 
 
 [![Twitter URL](https://img.shields.io/twitter/url/https/twitter.com/fold_left.svg?style=social&label=Follow%20%40swarmpit_io)](https://twitter.com/swarmpit_io)
 
