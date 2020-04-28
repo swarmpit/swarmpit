@@ -2,7 +2,7 @@ version: '3.3'
 
 services:
   app:
-    image: swarmpit/swarmpit:1.9
+    image: swarmpit/swarmpit:latest
     environment:
       - SWARMPIT_DB=http://db:5984
       - SWARMPIT_INFLUXDB=http://influxdb:8086
@@ -55,7 +55,7 @@ services:
           memory: 128M
 
   agent:
-    image: swarmpit/agent:2.2
+    image: swarmpit/agent:latest
     environment:
       - DOCKER_API_VERSION=1.35
     volumes:
