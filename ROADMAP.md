@@ -140,7 +140,8 @@ now supporting 3 major container registries such Amazon ECR, Azure Container Reg
 
 Since 1.8 we finally supporting Swagger open API so integration with your CD should be really a piece of cake.
 Influx support is in place and dashboard statistics overview was introduced as well. User can PIN important 
-service/node to dashboard in order to have quick cluster overview on login. Support of custom links and immutable service mode in service view is out. We introduced few UX improvements such option to deactivate stack, saving generated stack
+service/node to dashboard in order to have quick cluster overview on login. Support of custom links and immutable service
+mode in service view is out. We introduced few UX improvements such option to deactivate stack, saving generated stack
 for future use and ability to stop service on single click.
 
 - [[#359](https://github.com/swarmpit/swarmpit/issues/359)] Introduce dashboard, Influx integration
@@ -153,18 +154,20 @@ for future use and ability to stop service on single click.
 - [[#267](https://github.com/swarmpit/swarmpit/issues/267)] Option to deactivate stack
 - [[#358](https://github.com/swarmpit/swarmpit/issues/358)] Support for Custom v2 Registries
 
-## What we will bring into the game
-
-You can find here our goals and related features for future releases.
-
 ### 1.9 Release
 
-UX improvements, TCP support, Material update to 4.x, Form restyling, ARM support, ...
+In 1.9 we upgrade to material v4 which brings way new UI experience & forms. Swarmpit is ready to deploy to ARM 
+based cluster thanks to @lumir-mrkva with custom compose file `docker-compose.arm.yml`. Last but not least we integrate
+service plots and standartise dashboard metrics so user have better overview of cluster health without additional tooling.
 
 - [[#411](https://github.com/swarmpit/swarmpit/issues/411)] Upgrade to material v4
 - [[#415](https://github.com/swarmpit/swarmpit/issues/415)] Forms restyling (UX)
 - [[#130](https://github.com/swarmpit/swarmpit/issues/130)] Running swarmpit on ARM
-- [[#318](https://github.com/swarmpit/swarmpit/issues/318)] Support Docker API connections over encrypted TCP
+- [[#130](https://github.com/swarmpit/swarmpit/issues/446)] Integrate service plots and standardise metrics values
+
+## What we will bring into the game
+
+You can find here our goals and related features for future releases.
 
 ### 2.0 Release
 
