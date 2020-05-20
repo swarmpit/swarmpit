@@ -75,6 +75,10 @@ to shared-volume driver type of your choice. Alternatively, you can link db serv
 
 Swarmpit is published on port `888` by default.
 
+## Configuration
+
+Refer to following [document](https://github.com/swarmpit/swarmpit/blob/master/doc/configuration.md) 
+
 ## Development
 
 Swarmpit is written purely in Clojure and utilizes React on front-end. CouchDB is used to persist application data & InfluxDB for cluster statistics.
