@@ -140,3 +140,12 @@
 (defn as-bytes
   [MiB]
   (* MiB (* 1024 1024)))
+
+#?(:clj
+   (defn parse-int [s]
+     (try (Integer/parseInt s)
+          (catch Exception _ s))))
+
+#?(:cljs
+   (defn parse-int [s]
+     (js/parseInt s)))

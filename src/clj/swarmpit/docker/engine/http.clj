@@ -2,7 +2,8 @@
   (:require [clj-http.conn-mgr :as conn-mgr]
             [swarmpit.http :refer :all]
             [cheshire.core :refer [parse-string generate-string]]
-            [swarmpit.config :refer [config]])
+            [swarmpit.config :refer [config]]
+            [swarmpit.utils :refer [parse-int]])
   (:import (org.apache.http.config RegistryBuilder)
            (swarmpit.socket UnixSocketFactory)
            (org.apache.http.impl.conn BasicHttpClientConnectionManager)))
@@ -41,5 +42,5 @@
                      :options       (merge {:connection-manager (make-conn-manager)
                                             :retry-handler      (fn [& _] false)} options)
                      :scope         "Docker"
-                     :timeout       (config :docker-http-timeout)
+                     :timeout       (parse-int (config :docker-http-timeout))
                      :error-handler :message}))
