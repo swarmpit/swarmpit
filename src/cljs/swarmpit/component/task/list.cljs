@@ -81,6 +81,8 @@
 (def render-metadata
   {:table {:summary [{:name      "Task"
                       :render-fn (fn [item] (render-item-name item))}
+                     {:name      "Node"
+                      :render-fn (fn [item] (:nodeName item))}
                      {:name      "CPU Usage"
                       :tooltip   "Task cpu usage per Limit (resource/node)"
                       :render-fn (fn [item] (render-item-cpu-usage item))}
