@@ -27,6 +27,7 @@
    "us-east-1"
    "us-west-2"
    "us-west-1"
+   "ap-east-1"
    "ap-south-1"
    "ap-northeast-3"
    "ap-northeast-2"
@@ -41,6 +42,7 @@
    "eu-west-2"
    "eu-west-1"
    "eu-north-1"
+   "me-south-1"
    "sa-east-1"
    "us-gov-east-1"
    "us-gov-west-1"])
