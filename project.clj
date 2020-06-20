@@ -10,6 +10,7 @@
                  [org.clojure/tools.logging "0.4.1"]
                  [cljsjs/react "16.8.6-0"]
                  [cljsjs/react-dom "16.8.6-0"]
+                 [cljsjs/react-window "1.8.5-0"]
                  [cljsjs/material-ui "4.5.1-0"]
                  [cljsjs/material-ui-icons "4.4.1-0"]
                  [cljsjs/react-select "2.1.1"]
@@ -78,15 +79,25 @@
   :cljsbuild {:builds
               [{:id           "app"
                 :source-paths ["src/cljs" "src/cljc"]
+
+                ;; The presence of a :figwheel configuration here
+                ;; will cause figwheel to inject the figwheel client
+                ;; into your build
                 :figwheel     true
                 :compiler     {:main                 swarmpit.app
-                               :preloads             [devtools.preload]
                                :asset-path           "js/out"
                                :output-to            "resources/public/js/main.js"
                                :output-dir           "resources/public/js/out"
                                :infer-externs        true
                                :parallel-build       true
-                               :source-map-timestamp true}}
+                               :source-map-timestamp true
+                               ;; To console.log CLJS data-structures make sure you enable devtools in Chrome
+                               ;; https://github.com/binaryage/cljs-devtools
+                               :preloads             [devtools.preload]}}
+
+               ;; This next build is a compressed minified build for
+               ;; production. You can build this with:
+               ;; lein cljsbuild once min
                {:id           "min"
                 :source-paths ["src/cljs" "src/cljc"]
                 :jar          true
@@ -95,28 +106,30 @@
                                :output-dir           "target"
                                :source-map-timestamp true
                                :parallel-build       true
-                               :closure-defines      {"goog.DEBUG" false}
-                               :optimizations        :advanced
                                :infer-externs        true
-                               :pretty-print         false}}]}
+                               :optimizations        :advanced
+                               :closure-defines      {"goog.DEBUG" false}
+                               :pretty-print         false
+                               :pseudo-names         false}}]}
   :figwheel {:css-dirs       ["resources/public/css"]
              :ring-handler   repl.user/http-handler
              :server-logfile "log/figwheel.log"}
-  :profiles {:dev
-             {:dependencies [[figwheel "0.5.17"]
-                             [figwheel-sidecar "0.5.17"]
-                             [cider/piggieback "0.4.1"]
-                             [nrepl/nrepl "0.6.0"]
-                             [binaryage/devtools "0.9.10"]
-                             [criterium "0.4.4"]]
-              :plugins      [[lein-figwheel "0.5.17"]
-                             [lein-doo "0.1.6"]]
-              :source-paths ["dev"]
-              :repl-options {:nrepl-middleware [cider.piggieback/wrap-cljs-repl]}}
-             :prod
-             {:source-paths ^:replace ["src/clj" "src/cljc"]
-              :prep-tasks   ["javac" "compile" ["cljsbuild" "once" "min"]]
-              :omit-source  true
-              :aot          :all}
-             :uberjar
-             [:prod]})
+
+  ;; Setting up nREPL for Figwheel and ClojureScript dev
+  ;; Please see:
+  ;; https://github.com/bhauman/lein-figwheel/wiki/Using-the-Figwheel-REPL-within-NRepl
+  :profiles {:dev     {:dependencies [[figwheel "0.5.17"]
+                                      [figwheel-sidecar "0.5.17"]
+                                      [cider/piggieback "0.4.1"]
+                                      [nrepl/nrepl "0.6.0"]
+                                      [binaryage/devtools "0.9.10"]
+                                      [criterium "0.4.4"]]
+                       :plugins      [[lein-figwheel "0.5.17"]
+                                      [lein-doo "0.1.6"]]
+                       :source-paths ["dev"]
+                       :repl-options {:nrepl-middleware [cider.piggieback/wrap-cljs-repl]}}
+             :prod    {:source-paths ^:replace ["src/clj" "src/cljc"]
+                       :prep-tasks   ["javac" "compile" ["cljsbuild" "once" "min"]]
+                       :omit-source  true
+                       :aot          :all}
+             :uberjar [:prod]})
