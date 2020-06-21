@@ -1,6 +1,6 @@
 (ns swarmpit.component.service.form-deployment-placement
-  (:require [swarmpit.component.state :as state]
-            [material.component.composite :as composite]
+  (:require [material.components :as comp]
+            [swarmpit.component.state :as state]
             [swarmpit.ajax :as ajax]
             [swarmpit.routes :as routes]
             [rum.core :as rum]))
@@ -19,22 +19,27 @@
                    (state/update-value [:list] response form-state-cursor))}))
 
 (defn- form-placement [placement placement-list]
-  (let [suggestions (map #(hash-map :label %
-                                    :value %) placement-list)]
-    (composite/autocomplete
-      {:options        suggestions
-       :textFieldProps {:label           "Placement"
-                        :margin          "normal"
-                        :helperText      "Specify placement constraints"
-                        :InputLabelProps {:shrink true}}
-       :onChange       (fn [value]
-                         (state/set-value
-                           (->> (js->clj value)
-                                (map #(hash-map :rule (get % "value")))) form-value-cursor))
-       :value          (map #(hash-map :label (:rule %)
-                                       :value (:rule %)) placement)
-       :placeholder    "Add placement"
-       :isMulti        true})))
+  (let [placements (map #(hash-map :rule %) placement-list)]
+    (comp/autocomplete
+      {:id                    "placement-autocomplete"
+       :multiple              true
+       :filterSelectedOptions true
+       :options               placements
+       :value                 placement
+       :getOptionLabel        (fn [option] (goog.object/get option "rule"))
+       :renderInput           (fn [params]
+                                (comp/text-field-js
+                                  (js/Object.assign
+                                    params
+                                    #js {:label      "Placement"
+                                         :fullWidth  true
+                                         :margin     "normal"
+                                         :variant    "outlined"
+                                         :helperText "Specify placement constraints"})))
+       :onChange              (fn [e v]
+                                (state/set-value
+                                  (->> (js->clj v)
+                                       (map #(hash-map :rule (get % "rule")))) form-value-cursor))})))
 
 (rum/defc form < rum/reactive []
   (let [{:keys [list]} (state/react form-state-cursor)
