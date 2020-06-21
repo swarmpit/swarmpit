@@ -92,7 +92,8 @@
     (if loading?
       (comp/linear-progress {:className "Swarmpit-progress"})
       (comp/paper
-        {:elevation 0}
+        {:className "Swarmpit-form-card"
+         :elevation 0}
         (comp/card-content
           {}
           (case state

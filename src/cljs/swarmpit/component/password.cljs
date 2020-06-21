@@ -103,7 +103,8 @@
   (let [{:keys [password new-password confirm-password]} (state/react state/form-state-cursor)
         {:keys [error? processing? showPassword]} (state/react state/form-state-cursor)]
     (comp/paper
-      {:elevation 0}
+      {:className "Swarmpit-form-card"
+       :elevation 0}
       (comp/card-content
         {}
         (form-password password showPassword)

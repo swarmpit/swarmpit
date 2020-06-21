@@ -106,6 +106,10 @@ a {
     margin-top: 20px !important;
 }
 
+.Swarmpit-section {
+    margin-bottom: 10px !important;
+}
+
 .Swarmpit-card {
     box-shadow: none !important;
     border: 1px solid rgba(0, 0, 0, 0.12);
@@ -380,10 +384,6 @@ a {
 .Swarmpit-appbar-search-mobile-message {
     display: flex;
     align-items: center;
-}
-
-.Swarmpit-appbar-avatar {
-    /*border: 1px solid rgba(65, 69, 73, 0.3);*/
 }
 
 .Swarmpit-appbar-avatar-big {

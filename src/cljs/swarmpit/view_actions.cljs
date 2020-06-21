@@ -30,7 +30,7 @@
 
 (defmethod render :account-settings
   [_]
-  {:title "Account Settings"})
+  {:title "Settings"})
 
 ;;; Distribution view
 
