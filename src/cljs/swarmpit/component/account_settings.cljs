@@ -27,7 +27,7 @@
       [:div.Swarmpit-form
        [:div.Swarmpit-form-toolbar
         (comp/container
-          {:maxWidth  "md"
+          {:maxWidth  "sm"
            :className "Swarmpit-container"}
           (form-password)
           (form-api-access))]])))
