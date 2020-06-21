@@ -1,51 +1,45 @@
 (ns swarmpit.component.toolbar
   (:require [material.icon :as icon]
             [material.components :as comp]
-            [swarmpit.component.state :as state]
             [sablono.core :refer-macros [html]]
-            [rum.core :as rum]
-            [cuerdas.core :as str]))
+            [clojure.string :refer [join]]
+            [rum.core :as rum]))
 
-(rum/defc menu-popper < rum/reactive [items-hash items anchorKey menuOpenKey]
-  (let [moreAnchorEl (state/react (conj state/form-state-cursor anchorKey))
-        menuOpen? (state/react (conj state/form-state-cursor menuOpenKey))]
-    (comp/popper
-      {:open          (or menuOpen? false)
-       :anchorEl      moreAnchorEl
-       :placement     "bottom-end"
-       :className     "Swarmpit-popper"
-       :disablePortal true
-       :transition    true}
-      (fn [props]
-        (let [{:keys [TransitionProps placement]} (js->clj props :keywordize-keys true)]
-          (comp/fade
-            (merge TransitionProps
-                   {:timeout 450})
-            (comp/paper
-              {:key (str "cmpop-" items-hash)}
-              (comp/click-away-listener
-                {:key         (str "cmpocal-" items-hash)
-                 :onClickAway #(state/update-value [menuOpenKey] false state/form-state-cursor)}
-                (comp/menu-list
-                  {:key (str "cmml-" items-hash)}
-                  (map
-                    #(comp/menu-item
-                       {:key      (str "cmmi-" items-hash "-" (:name %))
-                        :disabled (:disabled %)
-                        :onClick  (fn []
-                                    ((:onClick %))
-                                    (state/update-value [menuOpenKey] false state/form-state-cursor))}
-                       (comp/list-item-icon
-                         {:key       (str "cmmii-" items-hash "-" (:name %))
-                          :className "Swarmpit-menu-icon"} (:icon %))
-                       (comp/typography
-                         {:variant "inherit"
-                          :key     (str "cmmit-" items-hash "-" (:name %))} (:name %))) items))))))))))
+(rum/defc menu-popper < rum/reactive [items-hash items anchor]
+  (comp/popper
+    {:open          (some? @anchor)
+     :anchorEl      @anchor
+     :placement     "bottom-end"
+     :className     "Swarmpit-popper"
+     :disablePortal true
+     :transition    true}
+    (fn [props]
+      (let [{:keys [TransitionProps placement]} (js->clj props :keywordize-keys true)]
+        (comp/fade
+          (merge TransitionProps
+                 {:timeout 450})
+          (comp/paper
+            (comp/click-away-listener
+              {:onClickAway #(reset! anchor nil)}
+              (comp/menu-list
+                (map
+                  #(comp/menu-item
+                     {:key      (str "cmmi-" items-hash "-" (:name %))
+                      :disabled (:disabled %)
+                      :onClick  (fn []
+                                  ((:onClick %))
+                                  (reset! anchor nil))}
+                     (comp/list-item-icon
+                       {:key       (str "cmmii-" items-hash "-" (:name %))
+                        :className "Swarmpit-menu-icon"} (:icon %))
+                     (comp/typography
+                       {:variant "inherit"
+                        :key     (str "cmmit-" items-hash "-" (:name %))} (:name %))) items)))))))))
 
-(rum/defc menu < rum/static [items]
-  (let [items-hash (hash (str/join (map :name items)))
-        anchorKey (keyword (str "anchor-key-" items-hash))
-        menuOpenKey (keyword (str "menu-key-" items-hash))
+(rum/defcs menu < rum/static
+                  (rum/local nil :menu/anchor)
+  [{anchor :menu/anchor} items]
+  (let [items-hash (join (map :name items))
         main-action (first (filter #(= true (:main %)) items))
         rest-actions (filter #(not= true (:main %)) items)]
     (comp/box
@@ -54,7 +48,6 @@
         {:className  "Swarmpit-form-toolbar-btn"
          :variant    "contained"
          :color      "primary"
-         :ref        anchorKey
          :aria-label "split button"}
         (comp/button
           {:startIcon (:icon main-action)
@@ -65,10 +58,9 @@
            :size          "small"
            :aria-label    "select action"
            :aria-haspopup "menu"
-           :onClick       (fn [e]
-                            (state/update-value [menuOpenKey] true state/form-state-cursor))}
+           :onClick       #(reset! anchor (.-currentTarget %))}
           (icon/arrow-dropdown {})))
-      (menu-popper items-hash rest-actions anchorKey menuOpenKey))))
+      (menu-popper items-hash rest-actions anchor))))
 
 (rum/defc toolbar < rum/reactive [domain id actions]
   (let [group-actions (filter #(= true (:group %)) actions)
@@ -155,7 +147,7 @@
                           {:color     (or (:color action) "primary")
                            :variant   (or (:variant action) "contained")
                            :key       (str "toolbar-button-" index)
-                           :startIcon ((:icon action) {})
+                           :startIcon (:icon action)
                            :onClick   (:onClick action)}
                           (when (not= (dec (count actions)) index)
                             {:className "Swarmpit-form-toolbar-btn"}))
@@ -170,4 +162,4 @@
                            :size       "large"
                            :aria-label "add"
                            :onClick    (:onClick action)}
-                          ((:icon-alt action) {})))))) actions))))))))
+                          (:icon-alt action)))))) actions))))))))
