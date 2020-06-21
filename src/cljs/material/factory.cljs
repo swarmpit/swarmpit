@@ -1,198 +1,26 @@
 (ns material.factory
-  (:refer-clojure :exclude [list])
-  (:require [cljsjs.react]
-            [cljsjs.recharts]
-            [cljsjs.react-select]
-            [cljsjs.react-autosuggest]
-            [cljsjs.rc-slider]
-            [material-ui]
-            [material-ui-icons]))
+  (:require [sablono.util :refer [camel-case-keys]]))
 
 (set! *warn-on-infer* true)
 
-(def create-factory js/React.createFactory)
+(def props-kebab->camel->js (comp clj->js camel-case-keys))
 
-;;; Material-UI
+(defn create-mui-cmp
+  ([react-class args]
+   (let [first-arg (first args)
+         args (if (or (map? first-arg)
+                      (nil? first-arg))
+                args
+                (cons {} args))]
+     (apply js/React.createElement
+            react-class
+            (props-kebab->camel->js (first args))
+            (rest args))))
+  ([root-obj type args]
+   (create-mui-cmp (aget root-obj type) args)))
 
-(def css-baseline (create-factory js/MaterialUI.CssBaseline))
-(def mui-theme-provider (create-factory js/MaterialUI.MuiThemeProvider))
-(def styles-provider (create-factory js/MaterialUI.StylesProvider))
+(defn create-element [comp opts & children]
+  (apply js/React.createElement comp (clj->js opts) children))
 
-(def form-control (create-factory js/MaterialUI.FormControl))
-(def form-label (create-factory js/MaterialUI.FormLabel))
-(def form-control-label (create-factory js/MaterialUI.FormControlLabel))
-(def form-group (create-factory js/MaterialUI.FormGroup))
-(def form-helper-text (create-factory js/MaterialUI.FormHelperText))
-
-(def input (create-factory js/MaterialUI.Input))
-(def input-label (create-factory js/MaterialUI.InputLabel))
-(def input-adornment (create-factory js/MaterialUI.InputAdornment))
-
-(def list (create-factory js/MaterialUI.List))
-(def list-subheader (create-factory js/MaterialUI.ListSubheader))
-(def list-item (create-factory js/MaterialUI.ListItem))
-(def list-item-text (create-factory js/MaterialUI.ListItemText))
-(def list-item-secondary-action (create-factory js/MaterialUI.ListItemSecondaryAction))
-(def list-item-icon (create-factory js/MaterialUI.ListItemIcon))
-
-(def menu (create-factory js/MaterialUI.Menu))
-(def menu-item (create-factory js/MaterialUI.MenuItem))
-(def menu-list (create-factory js/MaterialUI.MenuList))
-
-(def typography (create-factory js/MaterialUI.Typography))
-(def drawer (create-factory js/MaterialUI.Drawer))
-(def swipeable-drawer (create-factory js/MaterialUI.SwipeableDrawer))
-(def divider (create-factory js/MaterialUI.Divider))
-(def toolbar (create-factory js/MaterialUI.Toolbar))
-(def appbar (create-factory js/MaterialUI.AppBar))
-(def avatar (create-factory js/MaterialUI.Avatar))
-(def paper (create-factory js/MaterialUI.Paper))
-(def hidden (create-factory js/MaterialUI.Hidden))
-
-(def dialog (create-factory js/MaterialUI.Dialog))
-(def dialog-title (create-factory js/MaterialUI.DialogTitle))
-(def dialog-content (create-factory js/MaterialUI.DialogContent))
-(def dialog-actions (create-factory js/MaterialUI.DialogActions))
-
-(def chip (create-factory js/MaterialUI.Chip))
-(def button (create-factory js/MaterialUI.Button))
-(def button-group (create-factory js/MaterialUI.ButtonGroup))
-(def fab (create-factory js/MaterialUI.Fab))
-(def icon-button (create-factory js/MaterialUI.IconButton))
-(def svg-icon (create-factory js/MaterialUI.SvgIcon))
-(def checkbox (create-factory js/MaterialUI.Checkbox))
-(def select (create-factory js/MaterialUI.Select))
-(def tooltip (create-factory js/MaterialUI.Tooltip))
-(def snackbar (create-factory js/MaterialUI.Snackbar))
-(def snackbar-content (create-factory js/MaterialUI.SnackbarContent))
-(def text-field (create-factory js/MaterialUI.TextField))
-(def link (create-factory js/MaterialUI.Link))
-(def breadcrumbs (create-factory js/MaterialUI.Breadcrumbs))
-
-(def table (create-factory js/MaterialUI.Table))
-(def table-head (create-factory js/MaterialUI.TableHead))
-(def table-cell (create-factory js/MaterialUI.TableCell))
-(def table-row (create-factory js/MaterialUI.TableRow))
-(def table-body (create-factory js/MaterialUI.TableBody))
-(def table-footer (create-factory js/MaterialUI.TableFooter))
-(def table-pagination (create-factory js/MaterialUI.TablePagination))
-
-(def expansion-panel (create-factory js/MaterialUI.ExpansionPanel))
-(def expansion-panel-summary (create-factory js/MaterialUI.ExpansionPanelSummary))
-(def expansion-panel-details (create-factory js/MaterialUI.ExpansionPanelDetails))
-(def expansion-panel-actions (create-factory js/MaterialUI.ExpansionPanelActions))
-
-(def stepper (create-factory js/MaterialUI.Stepper))
-(def step (create-factory js/MaterialUI.Step))
-(def step-label (create-factory js/MaterialUI.StepLabel))
-(def step-content (create-factory js/MaterialUI.StepContent))
-
-(def grid (create-factory js/MaterialUI.Grid))
-(def box (create-factory js/MaterialUI.Box))
-(def container (create-factory js/MaterialUI.Container))
-
-(def card (create-factory js/MaterialUI.Card))
-(def card-header (create-factory js/MaterialUI.CardHeader))
-(def card-content (create-factory js/MaterialUI.CardContent))
-(def card-actions (create-factory js/MaterialUI.CardActions))
-(def card-media (create-factory js/MaterialUI.CardMedia))
-
-(def tab (create-factory js/MaterialUI.Tab))
-(def tabs (create-factory js/MaterialUI.Tabs))
-
-(def radio-group (create-factory js/MaterialUI.RadioGroup))
-(def radio (create-factory js/MaterialUI.Radio))
-(def switch (create-factory js/MaterialUI.Switch))
-
-(def popper (create-factory js/MaterialUI.Popper))
-(def grow (create-factory js/MaterialUI.Grow))
-(def fade (create-factory js/MaterialUI.Fade))
-(def no-ssr (create-factory js/MaterialUI.NoSsr))
-(def portal (create-factory js/MaterialUI.Portal))
-(def popover (create-factory js/MaterialUI.Popover))
-
-(def linear-progress (create-factory js/MaterialUI.LinearProgress))
-(def circular-progress (create-factory js/MaterialUI.CircularProgress))
-
-(def click-away-listener (create-factory js/MaterialUI.ClickAwayListener))
-
-;;; Material-UI Icons
-
-(def visibility-icon (create-factory js/MaterialUIIcons.Visibility))
-(def visibility-off-icon (create-factory js/MaterialUIIcons.VisibilityOff))
-(def menu-icon (create-factory js/MaterialUIIcons.Menu))
-(def chevron-left-icon (create-factory js/MaterialUIIcons.ChevronLeft))
-(def chevron-right-icon (create-factory js/MaterialUIIcons.ChevronRight))
-(def account-circle-icon (create-factory js/MaterialUIIcons.AccountCircle))
-(def expand-more-icon (create-factory js/MaterialUIIcons.ExpandMore))
-(def check-circle-icon (create-factory js/MaterialUIIcons.CheckCircle))
-(def search-icon (create-factory js/MaterialUIIcons.Search))
-(def key-icon (create-factory js/MaterialUIIcons.VpnKey))
-(def settings-icon (create-factory js/MaterialUIIcons.Settings))
-(def receipt-icon (create-factory js/MaterialUIIcons.Receipt))
-(def storage-icon (create-factory js/MaterialUIIcons.Storage))
-(def device-hub-icon (create-factory js/MaterialUIIcons.DeviceHub))
-(def dns-icon (create-factory js/MaterialUIIcons.Dns))
-(def error-icon (create-factory js/MaterialUIIcons.Error))
-(def warning-icon (create-factory js/MaterialUIIcons.Warning))
-(def cancel-icon (create-factory js/MaterialUIIcons.Cancel))
-(def sync-icon (create-factory js/MaterialUIIcons.Sync))
-(def access-time-icon (create-factory js/MaterialUIIcons.AccessTime))
-(def fingerprint-icon (create-factory js/MaterialUIIcons.Fingerprint))
-(def check-icon (create-factory js/MaterialUIIcons.Check))
-(def close-icon (create-factory js/MaterialUIIcons.Close))
-(def add-icon (create-factory js/MaterialUIIcons.Add))
-(def add-circle-icon (create-factory js/MaterialUIIcons.AddCircle))
-(def more-icon (create-factory js/MaterialUIIcons.MoreVert))
-(def label-icon (create-factory js/MaterialUIIcons.Label))
-(def info-icon (create-factory js/MaterialUIIcons.Info))
-(def info-outlined-icon (create-factory js/MaterialUIIcons.InfoOutlined))
-(def help-icon (create-factory js/MaterialUIIcons.Help))
-(def help-outline-icon (create-factory js/MaterialUIIcons.HelpOutline))
-(def vertical-align-bottom-icon (create-factory js/MaterialUIIcons.VerticalAlignBottom))
-(def logs-icon (create-factory js/MaterialUIIcons.Subject))
-(def circle-icon (create-factory js/MaterialUIIcons.FiberManualRecord))
-(def filter-list-icon (create-factory js/MaterialUIIcons.FilterList))
-(def add-circle-out-icon (create-factory js/MaterialUIIcons.AddCircleOutline))
-(def cloud-icon (create-factory js/MaterialUIIcons.Cloud))
-(def storage-icon (create-factory js/MaterialUIIcons.Storage))
-(def computer-icon (create-factory js/MaterialUIIcons.Computer))
-(def share-icon (create-factory js/MaterialUIIcons.Share))
-(def lock-icon (create-factory js/MaterialUIIcons.Lock))
-(def open-in-new-icon (create-factory js/MaterialUIIcons.OpenInNew))
-(def group-icon (create-factory js/MaterialUIIcons.Group))
-(def arrow-forward-icon (create-factory js/MaterialUIIcons.ArrowForward))
-(def star-icon (create-factory js/MaterialUIIcons.Star))
-(def verified-icon (create-factory js/MaterialUIIcons.VerifiedUser))
-(def image-icon (create-factory js/MaterialUIIcons.Image))
-(def dashboard-icon (create-factory js/MaterialUIIcons.Dashboard))
-(def stop-icon (create-factory js/MaterialUIIcons.Stop))
-(def save-icon (create-factory js/MaterialUIIcons.Save))
-(def arrow-dropdown-icon (create-factory js/MaterialUIIcons.ArrowDropDown))
-(def exit-icon (create-factory js/MaterialUIIcons.ExitToApp))
-(def keyboard-arrow-left-icon (create-factory js/MaterialUIIcons.KeyboardArrowLeft))
-(def keyboard-arrow-right-icon (create-factory js/MaterialUIIcons.KeyboardArrowRight))
-
-(def create-mui-theme js/MaterialUI.createMuiTheme)
-(def with-mobile-dialog js/MaterialUI.withMobileDialog)
-(def use-scroll-trigger js/MaterialUI.useScrollTrigger)
-
-(defn responsive-dialog [component]
-  (create-factory ((js/MaterialUI.withMobileDialog #js {:breakpoint "xs"}) component)))
-
-;; Recharts
-
-(def pie-chart (create-factory js/Recharts.PieChart))
-(def pie (create-factory js/Recharts.Pie))
-(def tooltip-chart (create-factory js/Recharts.Tooltip))
-(def cell (create-factory js/Recharts.Cell))
-(def legend (create-factory js/Recharts.Legend))
-(def label (create-factory js/Recharts.Label))
-(def responsive-container (create-factory js/Recharts.ResponsiveContainer))
-
-;; React components
-
-(def react-select (create-factory js/Select))
-(def react-autosuggest (create-factory js/Autosuggest))
-(def rc-slider (create-factory (.-default js/Slider)))
-(def rc-slider-handle (create-factory js/Slider.Handle))
+(defn create-js-element [comp opts & children]
+  (apply js/React.createElement comp opts children))

@@ -1,8 +1,7 @@
 (ns material.icon
   (:refer-clojure :exclude [remove key])
-  (:require [material.factory :as f]))
-
-(def home-path "M10 20v-6h4v6h5v-8h3L12 3 2 12h3v8z")
+  (:require ["@material-ui/icons"]
+            [material.factory :refer [create-mui-cmp]]))
 
 (def stacks-path "M24 7.501l-12-6-12 6 12 6 12-6zM12 3.491l8.017 4.008-8.017 4.008-8.017-4.008 8.017-4.008zM21.597 10.798l2.403 1.202-12 6-12-6 2.403-1.202 9.597 4.798zM21.597 15.298l2.403 1.202-12 6-12-6 2.403-1.202 9.597 4.798z")
 (def services-path "M6.352 20.12l4.235-2.117v-3.462l-4.235 1.809v3.772zM5.646 15.11l4.456-1.908-4.456-1.908-4.456 1.908zM17.648 20.12l4.235-2.117v-3.462l-4.235 1.809v3.772zM16.941 15.11l4.456-1.908-4.456-1.908-4.456 1.908zM12 11.878l4.235-1.82v-2.933l-4.235 1.809v2.944zM11.294 7.698l4.864-2.084-4.864-2.084-4.864 2.084zM23.296 13.412v4.588q0 0.398-0.21 0.739t-0.574 0.519l-4.941 2.47q-0.277 0.154-0.628 0.154t-0.628-0.154l-4.941-2.47q-0.056-0.022-0.078-0.044-0.022 0.022-0.078 0.044l-4.941 2.47q-0.277 0.154-0.628 0.154t-0.628-0.154l-4.941-2.47q-0.364-0.177-0.574-0.519t-0.21-0.739v-4.588q0-0.42 0.237-0.771t0.623-0.53l4.786-2.051v-4.412q0-0.42 0.237-0.771t0.623-0.53l4.941-2.117q0.254-0.111 0.552-0.111t0.552 0.111l4.941 2.117q0.386 0.177 0.623 0.53t0.237 0.771v4.412l4.786 2.051q0.398 0.177 0.628 0.53t0.232 0.771z")
@@ -23,8 +22,6 @@
 (def gitlab-path "M 11.820312 21.910156 L 1.066406 14.089844 C 0.933594 14 0.800781 13.820312 0.753906 13.644531 C 0.710938 13.464844 0.710938 13.289062 0.753906 13.109375 L 2 9.332031 Z M 5.289062 1.734375 L 7.734375 9.332031 L 2 9.332031 L 4.445312 1.734375 C 4.488281 1.554688 4.667969 1.464844 4.84375 1.464844 C 5.109375 1.421875 5.246094 1.554688 5.289062 1.734375 Z M 7.734375 9.332031 L 15.910156 9.332031 L 11.820312 21.910156 Z M 22.933594 13.15625 C 22.976562 13.332031 22.976562 13.511719 22.933594 13.6875 C 22.890625 13.867188 22.753906 14 22.621094 14.132812 L 11.820312 21.910156 L 21.644531 9.332031 Z M 21.644531 9.332031 L 15.957031 9.332031 L 18.398438 1.734375 C 18.445312 1.554688 18.621094 1.464844 18.800781 1.464844 C 19.023438 1.464844 19.15625 1.554688 19.199219 1.734375 Z M 21.644531 9.332031")
 (def rocket-path "M17.528 22.147c0 0 0.251-1.509-1.298-3.352 1.508-4.231 1.718-8.083 1.718-8.083s3.1 0.712 3.1 3.77c-0.001 5.236-3.519 7.666-3.519 7.666zM8.984 20.308c0 0-2.076-6.662-2.076-9.426 0-1.244 0.14-2.35 0.358-3.354h9.457c0.22 1.005 0.361 2.112 0.361 3.355 0 2.722-2.070 9.425-2.070 9.425h-6.031zM11.992 9.052c-1.063 0-1.926 0.863-1.926 1.927s0.862 1.927 1.926 1.927c1.064 0 1.927-0.862 1.927-1.927s-0.863-1.927-1.927-1.927zM11.579 0.447v-2.623h0.75v2.557c0.857 0.624 3.177 2.609 4.226 6.431h-9.12c1.014-3.718 3.222-5.68 4.144-6.364zM6.472 22.147c0 0-3.518-2.43-3.518-7.666 0-3.057 3.1-3.769 3.1-3.769s0.209 3.853 1.717 8.084c-1.55 1.843-1.298 3.352-1.298 3.352zM13.268 22.534l-0.628-0.628-0.67 2.095-0.796-2.095-0.545 1.088-0.796-1.969h4.314l-0.878 1.509z")
 
-(def add-path "M19 13h-6v6h-2v-6H5v-2h6V5h2v6h6v2z")
-(def remove-path "M19 13H5v-2h14v2z")
 (def add-small-path "M13 7h-2v4H7v2h4v4h2v-4h4v-2h-4V7zm-1-5C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm0 18c-4.41 0-8-3.59-8-8s3.59-8 8-8 8 3.59 8 8-3.59 8-8 8z")
 (def trash-path "M6 19c0 1.1.9 2 2 2h8c1.1 0 2-.9 2-2V7H6v12zM19 4h-3.5l-1-1h-5l-1 1H5v2h14V4z")
 
@@ -46,170 +43,58 @@
 (def hash-path "M13.272 13.714l0.857-3.429h-3.402l-0.857 3.429h3.402zM23.558 6.964l-0.75 3c-0.054 0.188-0.214 0.321-0.415 0.321h-4.379l-0.857 3.429h4.165c0.134 0 0.254 0.067 0.335 0.161 0.080 0.107 0.121 0.241 0.080 0.375l-0.75 3c-0.040 0.188-0.214 0.321-0.415 0.321h-4.379l-1.085 4.393c-0.054 0.188-0.228 0.321-0.415 0.321h-3c-0.134 0-0.268-0.067-0.348-0.161-0.080-0.107-0.107-0.241-0.080-0.375l1.045-4.179h-3.402l-1.085 4.393c-0.054 0.188-0.228 0.321-0.415 0.321h-3.013c-0.121 0-0.254-0.067-0.335-0.161-0.080-0.107-0.107-0.241-0.080-0.375l1.045-4.179h-4.165c-0.134 0-0.254-0.067-0.335-0.161-0.080-0.107-0.107-0.241-0.080-0.375l0.75-3c0.054-0.188 0.214-0.321 0.415-0.321h4.379l0.857-3.429h-4.165c-0.134 0-0.254-0.067-0.335-0.161-0.080-0.107-0.121-0.241-0.080-0.375l0.75-3c0.040-0.188 0.214-0.321 0.415-0.321h4.379l1.085-4.393c0.054-0.188 0.228-0.321 0.429-0.321h3c0.121 0 0.254 0.067 0.335 0.161 0.080 0.107 0.107 0.241 0.080 0.375l-1.045 4.179h3.402l1.085-4.393c0.054-0.188 0.228-0.321 0.429-0.321h3c0.121 0 0.254 0.067 0.335 0.161 0.080 0.107 0.107 0.241 0.080 0.375l-1.045 4.179h4.165c0.134 0 0.254 0.067 0.335 0.161 0.080 0.107 0.107 0.241 0.080 0.375z")
 (def terminal-path "M 4 3 C 2.90625 3 2 3.90625 2 5 L 2 19 C 2 20.09375 2.90625 21 4 21 L 20 21 C 21.09375 21 22 20.09375 22 19 L 22 5 C 22 3.90625 21.09375 3 20 3 Z M 4 7 L 20 7 L 20 19 L 4 19 Z M 6 9 L 8.5625 12 L 6 15 L 8.53125 15 L 11.0625 12 L 8.53125 9 Z M 12 13 L 12 15 L 18 15 L 18 13 Z")
 
-(def visibility (f/visibility-icon))
-(def visibility-off (f/visibility-off-icon))
-(def menu (f/menu-icon))
-(def chevron-left (f/chevron-left-icon))
-(def chevron-right (f/chevron-right-icon))
-(def account-circle (f/account-circle-icon))
-(def expand-more (f/expand-more-icon))
-(def key (f/key-icon))
-(def receipt (f/receipt-icon))
-(def dns (f/dns-icon))
-(def storage (f/storage-icon))
-(def device-hub (f/device-hub-icon))
+(def ^:private create-mui-icon (partial create-mui-cmp js/MaterialUIIcons))
 
-(def sync (f/sync-icon))
-(def add-circle (f/add-circle-icon))
-(def more (f/more-icon))
-(def logs (f/logs-icon))
-
-(def scroll-down (f/vertical-align-bottom-icon))
-
-(defn warning
-  [props]
-  (f/warning-icon (clj->js props)))
-
-(defn cancel
-  [props]
-  (f/cancel-icon (clj->js props)))
-
-(defn circle
-  [props]
-  (f/circle-icon (clj->js props)))
-
-(defn access-time
-  [props]
-  (f/access-time-icon (clj->js props)))
-
-(defn fingerprint
-  [props]
-  (f/fingerprint-icon (clj->js props)))
-
-(defn label
-  [props]
-  (f/label-icon (clj->js props)))
-
-(defn settings
-  [props]
-  (f/settings-icon (clj->js props)))
-
-(defn check
-  [props]
-  (f/check-icon (clj->js props)))
-
-(defn close
-  [props]
-  (f/close-icon (clj->js props)))
-
-(defn info
-  [props]
-  (f/info-icon (clj->js props)))
-
-(defn info-outlined
-  [props]
-  (f/info-outlined-icon (clj->js props)))
-
-(defn help
-  [props]
-  (f/help-icon (clj->js props)))
-
-(defn help-outline
-  [props]
-  (f/help-outline-icon (clj->js props)))
-
-(defn error
-  [props]
-  (f/error-icon (clj->js props)))
-
-(defn check-circle
-  [props]
-  (f/check-circle-icon (clj->js props)))
-
-(defn add-circle-out
-  [props]
-  (f/add-circle-out-icon (clj->js props)))
-
-(defn add
-  [props]
-  (f/add-icon (clj->js props)))
-
-(defn cloud
-  [props]
-  (f/cloud-icon (clj->js props)))
-
-(defn storage
-  [props]
-  (f/storage-icon (clj->js props)))
-
-(defn computer
-  [props]
-  (f/computer-icon (clj->js props)))
-
-(defn filter-list
-  [props]
-  (f/filter-list-icon (clj->js props)))
-
-(defn share
-  [props]
-  (f/share-icon (clj->js props)))
-
-(defn lock
-  [props]
-  (f/lock-icon (clj->js props)))
-
-(defn open-in-new
-  [props]
-  (f/open-in-new-icon (clj->js props)))
-
-(defn group
-  [props]
-  (f/group-icon (clj->js props)))
-
-(defn search
-  [props]
-  (f/search-icon (clj->js props)))
-
-(defn arrow-forward
-  [props]
-  (f/arrow-forward-icon (clj->js props)))
-
-(defn star
-  [props]
-  (f/star-icon (clj->js props)))
-
-(defn verified
-  [props]
-  (f/verified-icon (clj->js props)))
-
-(defn image
-  [props]
-  (f/image-icon (clj->js props)))
-
-(defn dashboard
-  [props]
-  (f/dashboard-icon (clj->js props)))
-
-(defn stop
-  [props]
-  (f/stop-icon (clj->js props)))
-
-(defn save
-  [props]
-  (f/save-icon (clj->js props)))
-
-(defn arrow-dropdown
-  [props]
-  (f/arrow-dropdown-icon (clj->js props)))
-
-(defn exit
-  [props]
-  (f/exit-icon (clj->js props)))
-
-(defn keyboard-arrow-left
-  [props]
-  (f/keyboard-arrow-left-icon (clj->js props)))
-
-(defn keyboard-arrow-right
-  [props]
-  (f/keyboard-arrow-right-icon (clj->js props)))
+(defn visibility [& args] (create-mui-icon "Visibility" args))
+(defn visibility-off [& args] (create-mui-icon "VisibilityOff" args))
+(defn menu [& args] (create-mui-icon "Menu" args))
+(defn chevron-left [& args] (create-mui-icon "ChevronLeft" args))
+(defn chevron-right [& args] (create-mui-icon "ChevronRight" args))
+(defn account-circle [& args] (create-mui-icon "AccountCircle" args))
+(defn expand-more [& args] (create-mui-icon "ExpandMore" args))
+(defn check-circle [& args] (create-mui-icon "CheckCircle" args))
+(defn search [& args] (create-mui-icon "Search" args))
+(defn key [& args] (create-mui-icon "VpnKey" args))
+(defn settings [& args] (create-mui-icon "Settings" args))
+(defn receipt [& args] (create-mui-icon "Receipt" args))
+(defn storage [& args] (create-mui-icon "Storage" args))
+(defn device-hub [& args] (create-mui-icon "DeviceHub" args))
+(defn dns [& args] (create-mui-icon "Dns" args))
+(defn error [& args] (create-mui-icon "Error" args))
+(defn warning [& args] (create-mui-icon "Warning" args))
+(defn cancel [& args] (create-mui-icon "Cancel" args))
+(defn sync [& args] (create-mui-icon "Sync" args))
+(defn access-time [& args] (create-mui-icon "AccessTime" args))
+(defn fingerprint [& args] (create-mui-icon "Fingerprint" args))
+(defn check [& args] (create-mui-icon "Check" args))
+(defn close [& args] (create-mui-icon "Close" args))
+(defn add [& args] (create-mui-icon "Add" args))
+(defn add-circle [& args] (create-mui-icon "AddCircle" args))
+(defn add-circle-out [& args] (create-mui-icon "AddCircleOutline" args))
+(defn more [& args] (create-mui-icon "MoreVert" args))
+(defn label [& args] (create-mui-icon "Label" args))
+(defn info [& args] (create-mui-icon "Info" args))
+(defn info-outlined [& args] (create-mui-icon "InfoOutlined" args))
+(defn help [& args] (create-mui-icon "Help" args))
+(defn help-outline [& args] (create-mui-icon "HelpOutline" args))
+(defn scroll-down [& args] (create-mui-icon "VerticalAlignBottom" args))
+(defn logs [& args] (create-mui-icon "Subject" args))
+(defn circle [& args] (create-mui-icon "FiberManualRecord" args))
+(defn filter-list [& args] (create-mui-icon "FilterList" args))
+(defn cloud [& args] (create-mui-icon "Cloud" args))
+(defn computer [& args] (create-mui-icon "Computer" args))
+(defn share [& args] (create-mui-icon "Share" args))
+(defn lock [& args] (create-mui-icon "Lock" args))
+(defn open-in-new [& args] (create-mui-icon "OpenInNew" args))
+(defn group [& args] (create-mui-icon "Group" args))
+(defn arrow-forward [& args] (create-mui-icon "ArrowForward" args))
+(defn star [& args] (create-mui-icon "Star" args))
+(defn verified [& args] (create-mui-icon "VerifiedUser" args))
+(defn image [& args] (create-mui-icon "Image" args))
+(defn dashboard [& args] (create-mui-icon "Dashboard" args))
+(defn stop [& args] (create-mui-icon "Stop" args))
+(defn save [& args] (create-mui-icon "Save" args))
+(defn arrow-dropdown [& args] (create-mui-icon "ArrowDropDown" args))
+(defn exit [& args] (create-mui-icon "ExitToApp" args))
+(defn keyboard-arrow-left [& args] (create-mui-icon "KeyboardArrowLeft" args))
+(defn keyboard-arrow-right [& args] (create-mui-icon "KeyboardArrowRight" args))
