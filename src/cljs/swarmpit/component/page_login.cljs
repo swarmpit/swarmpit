@@ -79,8 +79,8 @@
          :onMouseDown (fn [event]
                         (.preventDefault event))}
         (if show-password?
-          icon/visibility
-          icon/visibility-off)))))
+          (icon/visibility)
+          (icon/visibility-off))))))
 
 (defn- form-password [value error local-state]
   (let [show-password? (:showPassword @local-state)]

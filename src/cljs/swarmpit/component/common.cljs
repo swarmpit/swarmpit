@@ -126,8 +126,8 @@
         :onMouseDown (fn [event]
                        (.preventDefault event))}
        (if show-password
-         icon/visibility
-         icon/visibility-off)))))
+         (icon/visibility)
+         (icon/visibility-off))))))
 
 (defn tab-panel [{:keys [value index] :as props} & childs]
   (comp/typography

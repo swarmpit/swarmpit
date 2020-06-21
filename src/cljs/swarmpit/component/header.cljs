@@ -184,7 +184,7 @@
           :aria-haspopup "true"
           :onClick       (fn [e]
                            (state/update-value [:mobileMoreAnchorEl] (.-currentTarget e) state/layout-cursor))
-          :color         "inherit"} icon/more))]))
+          :color         "inherit"} (icon/more)))]))
 
 (rum/defc appbar-desktop-section < rum/static [search-fn actions title]
   (html
@@ -242,7 +242,7 @@
                 :aria-label "Open drawer"
                 :onClick    #(state/update-value [:mobileOpened] true state/layout-cursor)
                 :className  "Swarmpit-appbar-menu-btn"}
-               icon/menu)
+               (icon/menu))
              (comp/typography
                {:key       "appbar-title"
                 :className "Swarmpit-appbar-title"

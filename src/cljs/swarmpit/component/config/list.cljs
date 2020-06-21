@@ -65,8 +65,8 @@
   [{:name     "New Config"
     :onClick  #(dispatch! (routes/path-for-frontend :config-create))
     :primary  true
-    :icon     icon/add-circle-out
-    :icon-alt icon/add}])
+    :icon     (icon/add-circle-out)
+    :icon-alt (icon/add)}])
 
 (rum/defc form < rum/reactive
                  mixin-init-form

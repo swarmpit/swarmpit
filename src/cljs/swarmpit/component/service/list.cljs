@@ -147,12 +147,12 @@
   [{:name     "New service"
     :onClick  #(dispatch! (routes/path-for-frontend :service-create-image))
     :primary  true
-    :icon     icon/add-circle-out
-    :icon-alt icon/add}
+    :icon     (icon/add-circle-out)
+    :icon-alt (icon/add)}
    {:name     "Show filters"
     :onClick  #(state/update-value [:filterOpen?] true state/form-state-cursor)
-    :icon     icon/filter-list
-    :icon-alt icon/filter-list
+    :icon     (icon/filter-list)
+    :icon-alt (icon/filter-list)
     :variant  "outlined"
     :color    "default"}])
 
