@@ -61,6 +61,7 @@
 (defn device-hub [& args] (create-mui-icon "DeviceHub" args))
 (defn dns [& args] (create-mui-icon "Dns" args))
 (defn error [& args] (create-mui-icon "Error" args))
+(defn error-out [& args] (create-mui-icon "ErrorOutline" args))
 (defn warning [& args] (create-mui-icon "Warning" args))
 (defn cancel [& args] (create-mui-icon "Cancel" args))
 (defn sync [& args] (create-mui-icon "Sync" args))

@@ -10,83 +10,102 @@
             [swarmpit.url :refer [dispatch!]]
             [rum.core :as rum]
             [sablono.core :refer-macros [html]]
-            [clojure.string :as string]
-            [goog.crypt :as crypt])
+            [clojure.string :as string])
   (:import [goog.crypt Md5]))
 
 (enable-console-print!)
 
-(defn- user-gravatar-hash [email]
-  (let [md5 (Md5.)]
-    (when (some? email)
-      (do
-        (.update md5 (string/trim email))
-        (crypt/byteArrayToHex (.digest md5))))))
+(defn menu-badge [initials]
+  (comp/badge
+    {:classes      {:badge "Swarmpit-appbar-avatar-badge"}
+     :overlap      "circle"
+     :anchorOrigin {:vertical   "bottom"
+                    :horizontal "right"}
+     :variant      "dot"}
+    (comp/avatar initials)))
 
-(defn- user-avatar
-  ([]
-   (user-avatar false))
-  ([big?]
-   (comp/avatar
-     (merge
-       {:className "Swarmpit-appbar-avatar"
-        :src       (str "https://eu.ui-avatars.com/api/?name=" (storage/user))}
-       (when big?
-         {:className "Swarmpit-appbar-avatar Swarmpit-appbar-avatar-big"})))))
+(defn menu-dropdown []
+  (icon/expand-more
+    {:color     "primary"
+     :className "Swarmpit-appbar-dropdown-icon"}))
+
+(defn menu-user [username]
+  (comp/card-content
+    (comp/typography
+      {:variant "body2"
+       :color   "textSecondary"} "Username")
+    (comp/typography
+      {:variant "body1"} username)))
+
+(defn menu []
+  (comp/menu-list
+    {:disablePadding true}
+    (comp/menu-item
+      {:button  true
+       :onClick (fn []
+                  (state/update-value [:menuAnchorEl] nil state/layout-cursor)
+                  (dispatch!
+                    (routes/path-for-frontend :account-settings)))}
+      (comp/list-item-icon
+        {:className "Swarmpit-appbar-menu-icon"}
+        (icon/settings {:fontSize "small"}))
+      (comp/list-item-text
+        {:primary "Settings"}))
+    (comp/link
+      {:href   "https://github.com/swarmpit/swarmpit/issues/new"
+       :color  "inherit"
+       :target "_blank"}
+      (comp/menu-item
+        (comp/list-item-icon
+          {:className "Swarmpit-appbar-menu-icon"}
+          (icon/error-out {:fontSize "small"}))
+        (comp/list-item-text
+          {:primary "Report issue"})))
+    (comp/divider)
+    (comp/menu-item
+      {:button  true
+       :onClick (fn []
+                  (storage/remove "token")
+                  (eventsource/close!)
+                  (state/update-value [:menuAnchorEl] nil state/layout-cursor)
+                  (dispatch!
+                    (routes/path-for-frontend :login)))}
+      (comp/list-item-icon
+        {:className "Swarmpit-appbar-menu-icon"}
+        (icon/exit {:fontSize "small"}))
+      (comp/list-item-text
+        {:primary "Sign out"}))))
+
+(defn badge [username]
+  (when username
+    (->> (string/split username #" ")
+         (map #(get % 0))
+         (string/join))))
 
 (rum/defc user-menu < rum/static [anchorEl]
   (comp/box
-    {}
-    (comp/icon-button
-      {:onClick       (fn [e]
-                        (state/update-value [:menuAnchorEl] (.-currentTarget e) state/layout-cursor))
-       :disableRipple true
-       :color         "inherit"} (user-avatar))
+    (comp/button
+      {:className "PnsAppBar-user"
+       :onClick   (fn [e]
+                    (state/update-value [:menuAnchorEl] (.-currentTarget e) state/layout-cursor))
+       :classes   {:endIcon "Swarmpit-appbar-dropdown"}
+       :startIcon (menu-badge (badge (storage/user)))
+       :endIcon   (menu-dropdown)} "")
     (comp/popper
-      {:open       (some? anchorEl)
-       :anchorEl   anchorEl
-       :placement  "bottom-end"
-       :className  "Swarmpit-popper"
-       :transition true}
-      (fn [props]
-        (let [{:keys [TransitionProps placement]} (js->clj props :keywordize-keys true)]
-          (comp/fade
-            (merge TransitionProps
-                   {:timeout 450})
-            (comp/paper
-              {}
-              (comp/click-away-listener
-                {:onClickAway #(state/update-value [:menuAnchorEl] nil state/layout-cursor)}
-                (comp/card
-                  {}
-                  (comp/card-content
-                    {:className "Swarmpit-appbar-user-menu"}
-                    (user-avatar true)
-                    (comp/typography
-                      {:variant "body1"} (storage/user))
-                    (comp/typography
-                      {:variant "body2"} (storage/email))
-                    (comp/button
-                      {:variant   "outlined"
-                       :className "Swarmpit-appbar-user-menu-action"
-                       :onClick   (fn []
-                                    (state/update-value [:menuAnchorEl] nil state/layout-cursor)
-                                    (dispatch!
-                                      (routes/path-for-frontend :account-settings)))}
-                      "Manage your account"))
-                  (comp/divider {})
-                  (comp/card-actions
-                    {:className "Swarmpit-appbar-user-menu"}
-                    (comp/button
-                      {:variant   "outlined"
-                       :startIcon (icon/exit {})
-                       :onClick   (fn []
-                                    (storage/remove "token")
-                                    (eventsource/close!)
-                                    (state/update-value [:menuAnchorEl] nil state/layout-cursor)
-                                    (dispatch!
-                                      (routes/path-for-frontend :login)))}
-                      "Sign out")))))))))))
+      {:open          (some? anchorEl)
+       :className     "PnsAppBar-user-popper"
+       :anchorEl      anchorEl
+       :placement     "bottom-end"
+       :disablePortal true
+       :transition    true}
+      (fn [_]
+        (comp/paper
+          (comp/click-away-listener
+            {:onClickAway #(state/update-value [:menuAnchorEl] nil state/layout-cursor)}
+            (comp/card
+              (menu-user (storage/user))
+              (comp/divider)
+              (menu))))))))
 
 (defn- mobile-actions-menu
   [actions mobileMoreAnchorEl]

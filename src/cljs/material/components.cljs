@@ -104,6 +104,7 @@
 (defn checkbox [& args] (create-mui-el "Checkbox" args))
 (defn fab [& args] (create-mui-el "Fab" args))
 
+;; Special cases if parent ref must be passed to child (clj merge is loosing props)
 (def text-field-js (partial create-js-element js/MaterialUI.TextField))
 
 ;; Utils
@@ -134,7 +135,54 @@
 (defn re-label [& args] (create-rechart-el "Label" args))
 (defn responsive-container [& args] (create-rechart-el "ResponsiveContainer" args))
 
-;;; Theme components
+;; Theme components
+(def theme-typography
+  {:h1        {:fontWeight    500
+               :fontSize      "35px"
+               :letterSpacing "-0.24px"
+               :lineHeight    "40px"}
+   :h2        {:fontWeight    300
+               :fontSize      "35px"
+               :letterSpacing "-0.24px"
+               :lineHeight    "40px"}
+   :h3        {:fontWeight    500
+               :fontSize      "24px"
+               :letterSpacing "-0.06px"
+               :lineHeight    "28px"}
+   :h4        {:fontWeight    500
+               :fontSize      "20px"
+               :letterSpacing "-0.06px"
+               :lineHeight    "24px"}
+   :h5        {:fontWeight    500
+               :fontSize      "16px"
+               :letterSpacing "-0.06px"
+               :lineHeight    "20px"}
+   :h6        {:fontWeight    500
+               :fontSize      "14px"
+               :letterSpacing "-0.05px"
+               :lineHeight    "20px"}
+   :subtitle1 {:fontSize      "16px"
+               :letterSpacing "-0.05px"
+               :lineHeight    "25px"}
+   :subtitle2 {:fontWeight    400
+               :fontSize      "14px"
+               :letterSpacing "-0.05px"
+               :lineHeight    "21px"}
+   :body1     {:fontSize      "14px"
+               :letterSpacing "-0.05px"
+               :lineHeight    "21px"}
+   :body2     {:fontSize      "12px"
+               :letterSpacing "-0.04px"
+               :lineHeight    "18px"}
+   :caption   {:fontSize      "11px"
+               :letterSpacing "0.33px"
+               :lineHeight    "13px"}
+   :overline  {:fontWeight    500
+               :fontSize      "11px"
+               :letterSpacing "0.33px"
+               :lineHeight    "13px"
+               :textTransform "uppercase"}})
+
 (def theme-overrides
   {:MuiCardHeader  {:action {:color "rgb(117, 117, 117)"}}
    :MuiCardActions {:root {:padding 16}}
