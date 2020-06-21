@@ -51,7 +51,7 @@
                         (state/update-value [anchorKey] n state/form-state-cursor)))
      :onClick       (fn [e]
                       (state/update-value [menuOpenKey] true state/form-state-cursor))
-     :color         "inherit"} icon/more))
+     :color         "inherit"} (icon/more)))
 
 (rum/defc menu < rum/static [items anchorKey menuOpenKey]
   (let [generate-key (fn [k type] (keyword (str (name k) "-" type)))

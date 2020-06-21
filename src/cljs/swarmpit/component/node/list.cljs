@@ -163,8 +163,8 @@
 (def toolbar-render-metadata
   [{:name     "Show filters"
     :onClick  #(state/update-value [:filterOpen?] true state/form-state-cursor)
-    :icon     icon/filter-list
-    :icon-alt icon/filter-list
+    :icon     (icon/filter-list)
+    :icon-alt (icon/filter-list)
     :variant  "outlined"
     :color    "default"}])
 

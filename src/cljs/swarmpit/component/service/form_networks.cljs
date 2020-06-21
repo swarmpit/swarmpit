@@ -1,6 +1,6 @@
 (ns swarmpit.component.service.form-networks
-  (:require [swarmpit.component.state :as state]
-            [material.component.composite :as composite]
+  (:require [material.components :as comp]
+            [swarmpit.component.state :as state]
             [swarmpit.ajax :as ajax]
             [swarmpit.routes :as routes]
             [sablono.core :refer-macros [html]]
@@ -23,24 +23,26 @@
                      (state/update-value [:list] resp form-state-cursor)))}))
 
 (defn- form-network [networks network-list]
-  (let [suggestions (map #(hash-map :label (:networkName %)
-                                    :value (:networkName %)) network-list)]
-    (composite/autocomplete
-      {:options        suggestions
-       :textFieldProps {:id              "Networks"
-                        :label           "Network"
-                        :helperText      "Attach to network"
-                        :margin          "normal"
-                        :InputLabelProps {:shrink true}}
-       :onChange       (fn [value]
-                         (state/set-value
-                           (->> (js->clj value)
-                                (map #(hash-map :networkName (get % "value")))) form-value-cursor))
-       :value          (map #(hash-map :label (:networkName %)
-                                       :value (:networkName %)
-                                       :key (:networkName %)) networks)
-       :placeholder    "Add network"
-       :isMulti        true})))
+  (comp/autocomplete
+    {:id                    "network-autocomplete"
+     :multiple              true
+     :filterSelectedOptions true
+     :value                 networks
+     :options               network-list
+     :getOptionLabel        (fn [option] (goog.object/get option "networkName"))
+     :renderInput           (fn [params]
+                              (comp/text-field-js
+                                (js/Object.assign
+                                  params
+                                  #js {:label      "Network"
+                                       :fullWidth  true
+                                       :margin     "normal"
+                                       :variant    "outlined"
+                                       :helperText "Attach to network"})))
+     :onChange              (fn [e v]
+                              (state/set-value
+                                (->> (js->clj v)
+                                     (map #(hash-map :networkName (get % "networkName")))) form-value-cursor))}))
 
 (rum/defc form < rum/reactive []
   (let [{:keys [list]} (state/react form-state-cursor)

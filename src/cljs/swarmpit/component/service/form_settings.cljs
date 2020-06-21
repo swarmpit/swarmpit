@@ -1,7 +1,6 @@
 (ns swarmpit.component.service.form-settings
   (:require [material.components :as comp]
             [swarmpit.component.state :as state]
-            [material.component.composite :as composite]
             [swarmpit.component.service.form-ports :as ports]
             [swarmpit.component.parser :refer [parse-int]]
             [swarmpit.ajax :as ajax]
@@ -31,38 +30,45 @@
 
 (defn- form-image-tag [value tags]
   "For update services there is no port preload"
-  (let [suggestions (map #(hash-map :label %
-                                    :value %) tags)]
-    (composite/autocomplete
-      {:options        suggestions
-       :textFieldProps {:label           "Tag"
-                        :key             "tag"
-                        :margin          "normal"
-                        :helperText      "Specify image tag or leave empty for latest"
-                        :InputLabelProps {:shrink true}}
-       :onChange       #(state/update-value [:repository :tag] (-> % .-value) form-value-cursor)
-       :value          {:label (:tag value)
-                        :value (:tag value)}
-       :placeholder    "Search a tag"})))
+  (comp/autocomplete
+    {:id             "tag-autocomplete"
+     :freeSolo       true
+     :options        tags
+     :value          (:tag value)
+     :getOptionLabel (fn [option] option)
+     :renderInput    (fn [params]
+                       (comp/text-field-js
+                         (js/Object.assign
+                           params
+                           #js {:label      "Search a tag"
+                                :fullWidth  true
+                                :margin     "normal"
+                                :variant    "outlined"
+                                :helperText "Specify image tag or leave empty for latest"})))
+     :onChange       (fn [e v]
+                       (state/update-value [:repository :tag] v form-value-cursor))}))
 
-(defn- form-image-tag-preloaded [value tags]
+(defn form-image-tag-preloaded [value tags]
+  (print value)
   "Preload ports for services created via swarmpit"
-  (let [suggestions (map #(hash-map :label %
-                                    :value %) tags)]
-    (composite/autocomplete
-      {:options        suggestions
-       :textFieldProps {:label           "Tag"
-                        :key             "tag"
-                        :margin          "normal"
-                        :helperText      "Specify image tag or leave empty for latest"
-                        :InputLabelProps {:shrink true}}
-       :onChange       (fn [v]
-                         (state/update-value [:repository :tag] (-> v .-value) form-value-cursor)
-                         (ports/load-suggestable-ports (merge value
-                                                              {:tag (-> v .-value)})))
-       :value          {:label (:tag value)
-                        :value (:tag value)}
-       :placeholder    "Search a tag"})))
+  (comp/autocomplete
+    {:id             "tag-preload-autocomplete"
+     :freeSolo       true
+     :options        tags
+     :value          (:tag value)
+     :getOptionLabel (fn [option] option)
+     :renderInput    (fn [params]
+                       (comp/text-field-js
+                         (js/Object.assign
+                           params
+                           #js {:label      "Search a tag"
+                                :fullWidth  true
+                                :margin     "normal"
+                                :variant    "outlined"
+                                :helperText "Specify image tag or leave empty for latest"})))
+     :onChange       (fn [e v]
+                       (state/update-value [:repository :tag] v form-value-cursor)
+                       (ports/load-suggestable-ports (merge value {:tag v})))}))
 
 (defn- form-name [value update-form?]
   (comp/text-field

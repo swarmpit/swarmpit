@@ -154,8 +154,8 @@
   [{:name     "Link registry"
     :onClick  #(dispatch! (routes/path-for-frontend :registry-create))
     :primary  true
-    :icon     icon/add-circle-out
-    :icon-alt icon/add}])
+    :icon     (icon/add-circle-out)
+    :icon-alt (icon/add)}])
 
 (rum/defc form < rum/reactive
                  mixin-init-form

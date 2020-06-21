@@ -1,406 +1,187 @@
 (ns material.components
   (:refer-clojure :exclude [stepper list])
-  (:require [material.factory :as f]
+  (:require ["@material-ui/core"]
+            ["react-window"]
+            [cljsjs.recharts]
             [sablono.core :refer-macros [html]]
-            [cuerdas.core :as str]))
+            [material.factory :refer [create-mui-cmp create-element create-js-element]]))
+
+(def create-mui-theme js/MaterialUI.createMuiTheme)
+
+(def create-mui-el (partial create-mui-cmp js/MaterialUI))
+(def create-mui-lab-el (partial create-mui-cmp js/MaterialUILab))
+(def create-rechart-el (partial create-mui-cmp js/Recharts))
+(def create-rw-el (partial create-mui-cmp js/ReactWindow))
+
+(defn theme-provider [& args] (create-mui-el "ThemeProvider" args))
+(defn css-baseline [& args] (create-mui-el "CssBaseline" args))
+
+;; Layout
+(defn container [& args] (create-mui-el "Container" args))
+(defn box [& args] (create-mui-el "Box" args))
+(defn grid [& args] (create-mui-el "Grid" args))
+(defn hidden [& args] (create-mui-el "Hidden" args))
+
+;; Navigation
+(defn drawer [& args] (create-mui-el "Drawer" args))
+(defn swipeable-drawer [& args] (create-mui-el "SwipeableDrawer" args))
+(defn menu [& args] (create-mui-el "Menu" args))
+(defn menu-list [& args] (create-mui-el "MenuList" args))
+(defn menu-item [& args] (create-mui-el "MenuItem" args))
+(defn link [& args] (create-mui-el "Link" args))
+(defn tabs [& args] (create-mui-el "Tabs" args))
+(defn tab [& args] (create-mui-el "Tab" args))
+(defn stepper [& args] (create-mui-el "Stepper" args))
+(defn step [& args] (create-mui-el "Step" args))
+(defn step-label [& args] (create-mui-el "StepLabel" args))
+(defn step-content [& args] (create-mui-el "StepContent" args))
+
+;; Surface
+(defn app-bar [& args] (create-mui-el "AppBar" args))
+(defn toolbar [& args] (create-mui-el "Toolbar" args))
+(defn paper [& args] (create-mui-el "Paper" args))
+(defn card [& args] (create-mui-el "Card" args))
+(defn card-header [& args] (create-mui-el "CardHeader" args))
+(defn card-content [& args] (create-mui-el "CardContent" args))
+(defn card-actions [& args] (create-mui-el "CardActions" args))
+(defn card-media [& args] (create-mui-el "CardMedia" args))
+
+;; Feedback
+(defn dialog [& args] (create-mui-el "Dialog" args))
+(defn dialog-title [& args] (create-mui-el "DialogTitle" args))
+(defn dialog-content [& args] (create-mui-el "DialogContent" args))
+(defn dialog-actions [& args] (create-mui-el "DialogActions" args))
+(defn circular-progress [& args] (create-mui-el "CircularProgress" args))
+(defn linear-progress [& args] (create-mui-el "LinearProgress" args))
+(defn snackbar [& args] (create-mui-el "Snackbar" args))
+(defn snackbar-content [& args] (create-mui-el "SnackbarContent" args))
+(defn backdrop [& args] (create-mui-el "Backdrop" args))
+
+;; Data Display
+(defn typography [& args] (create-mui-el "Typography" args))
+(defn divider [& args] (create-mui-el "Divider" args))
+(defn collapse [& args] (create-mui-el "Collapse" args))
+(defn list [& args] (create-mui-el "List" args))
+(defn list-item [& args] (create-mui-el "ListItem" args))
+(defn list-item-text [& args] (create-mui-el "ListItemText" args))
+(defn list-item-icon [& args] (create-mui-el "ListItemIcon" args))
+(defn list-item-secondary-action [& args] (create-mui-el "ListItemSecondaryAction" args))
+(defn table [& args] (create-mui-el "Table" args))
+(defn table-head [& args] (create-mui-el "TableHead" args))
+(defn table-body [& args] (create-mui-el "TableBody" args))
+(defn table-cell [& args] (create-mui-el "TableCell" args))
+(defn table-row [& args] (create-mui-el "TableRow" args))
+(defn table-footer [& args] (create-mui-el "TableFooter" args))
+(defn table-pagination [& args] (create-mui-el "TablePagination" args))
+(defn icon-button [& args] (create-mui-el "IconButton" args))
+(defn svg-icon [& args] (create-mui-el "SvgIcon" args))
+(defn avatar [& args] (create-mui-el "Avatar" args))
+(defn badge [& args] (create-mui-el "Badge" args))
+(defn chip [& args] (create-mui-el "Chip" args))
+(defn tooltip [& args] (create-mui-el "Tooltip" args))
+
+(defn svg
+  ([props d] (svg-icon props (html [:path {:d d}])))
+  ([d] (svg-icon (html [:path {:d d}]))))
+
+;; Inputs
+(defn text-field [& args] (create-mui-el "TextField" args))
+(defn select [& args] (create-mui-el "Select" args))
+(defn input [& args] (create-mui-el "Input" args))
+(defn input-base [& args] (create-mui-el "InputBase" args))
+(defn input-adornment [& args] (create-mui-el "InputAdornment" args))
+(defn button [& args] (create-mui-el "Button" args))
+(defn button-group [& args] (create-mui-el "ButtonGroup" args))
+(defn radio-group [& args] (create-mui-el "RadioGroup" args))
+(defn radio [& args] (create-mui-el "Radio" args))
+(defn form-group [& args] (create-mui-el "FormGroup" args))
+(defn form-label [& args] (create-mui-el "FormLabel" args))
+(defn form-control [& args] (create-mui-el "FormControl" args))
+(defn form-control-label [& args] (create-mui-el "FormControlLabel" args))
+(defn form-helper-text [& args] (create-mui-el "FormHelperText" args))
+(defn slider [& args] (create-mui-el "Slider" args))
+(defn switch [& args] (create-mui-el "Switch" args))
+(defn checkbox [& args] (create-mui-el "Checkbox" args))
+(defn fab [& args] (create-mui-el "Fab" args))
+
+(def text-field-js (partial create-js-element js/MaterialUI.TextField))
+
+;; Utils
+(defn popper [& args] (create-mui-el "Popper" args))
+(defn popover [& args] (create-mui-el "Popover" args))
+(defn fade [& args] (create-mui-el "Fade" args))
+(defn grow [& args] (create-mui-el "Grow" args))
+(defn no-ssr [& args] (create-mui-el "NoSsr" args))
+(defn click-away-listener [& args] (create-mui-el "ClickAwayListener" args))
+
+;; Lab
+(defn toggle-button-group [& args] (create-mui-lab-el "ToggleButtonGroup" args))
+(defn toggle-button [& args] (create-mui-lab-el "ToggleButton" args))
+(defn skeleton [& args] (create-mui-lab-el "Skeleton" args))
+(defn alert [& args] (create-mui-lab-el "Alert" args))
+(defn speed-dial [& args] (create-mui-lab-el "SpeedDial" args))
+(defn speed-dial-action [& args] (create-mui-lab-el "SpeedDialAction" args))
+(defn speed-dial-icon [& args] (create-mui-lab-el "SpeedDialIcon" args))
+(defn pagination [& args] (create-mui-lab-el "Pagination" args))
+(defn autocomplete [& args] (create-mui-lab-el "Autocomplete" args))
+
+;; Recharts
+(defn pie-chart [& args] (create-rechart-el "PieChart" args))
+(defn pie [& args] (create-rechart-el "Pie" args))
+(defn tooltip-chart [& args] (create-rechart-el "Tooltip" args))
+(defn cell [& args] (create-rechart-el "Cell" args))
+(defn legend [& args] (create-rechart-el "Legend" args))
+(defn re-label [& args] (create-rechart-el "Label" args))
+(defn responsive-container [& args] (create-rechart-el "ResponsiveContainer" args))
 
 ;;; Theme components
+(def theme-overrides
+  {:MuiCardHeader  {:action {:color "rgb(117, 117, 117)"}}
+   :MuiCardActions {:root {:padding 16}}
+   :MuiPaper       {:elevation4 {:boxShadow "0px 4px 20px rgba(0, 0, 0, 0.15)"}}
+   :MuiContainer   {:maxWidthMd {"@media (min-width: 1080px)" {:maxWidth (- 1080 48)}}}})
 
-(def theme-props
+(def theme-breakpoints
+  {:values {:xs 0
+            :sm 600
+            :md 1080
+            :lg 1280
+            :xl 1920}})
+
+;; Light theme props
+(def light-theme-props
   {:palette     {:primary   {:main         "#65519f"
                              :light        "#957ed1"
                              :dark         "#362870"
                              :contrastText "#fff"}
                  :secondary {:main "#8B9F51"}}
-   :typography  {:fontFamily (str/join "," ["Roboto" "Helvetica" "Arial" "sans-serif"])}
-   :overrides   {:MuiCardHeader  {:action {:color "rgb(117, 117, 117)"}}
-                 :MuiCardActions {:root {:padding 16}}
-                 :MuiPaper       {:elevation4 {:boxShadow "0px 4px 20px rgba(0, 0, 0, 0.15)"}}
-                 :MuiContainer   {:maxWidthMd {"@media (min-width: 1080px)" {:maxWidth (- 1080 48)}}}
+   :overrides   theme-overrides
+   :breakpoints theme-breakpoints})
 
-                 }
-   :breakpoints {:values {:xs 0
-                          :sm 600
-                          :md 1080
-                          :lg 1280
-                          :xl 1920}}})
+;; Dark theme props
+(def dark-theme-props
+  {:palette     {:primary   {:main         "#65519f"
+                             :light        "#957ed1"
+                             :dark         "#362870"
+                             :contrastText "#fff"}
+                 :secondary {:main "#8B9F51"}}
+   :overrides   theme-overrides
+   :breakpoints theme-breakpoints})
 
-(def theme (f/create-mui-theme (clj->js theme-props)))
+(def dark-theme
+  (create-mui-theme (clj->js dark-theme-props)))
+
+(def light-theme
+  (create-mui-theme (clj->js light-theme-props)))
+
+(defn theme [theme]
+  (set! (-> js/document .-documentElement .-className) theme)
+  (case theme
+    "dark" dark-theme
+    light-theme))
 
 (defn mui [component]
-  (f/mui-theme-provider (clj->js {:theme theme}) (f/css-baseline) component))
-
-(defn md [props dialog]
-  (let [md (f/with-mobile-dialog js/MaterialUI.Dialog)]
-    (md props dialog)))
-
-;;; Single material-ui components
-
-(defn divider
-  ([props] (f/divider (clj->js props)))
-  ([] (f/divider nil)))
-
-(defn form-control
-  [props & childs]
-  (apply f/form-control (clj->js props) childs))
-
-(defn form-label
-  [props label]
-  (f/form-label (clj->js props) label))
-
-(defn form-control-label
-  [props]
-  (f/form-control-label (clj->js props)))
-
-(defn form-group
-  [props & childs]
-  (apply f/form-group (clj->js props) childs))
-
-(defn form-helper-text
-  [props & childs]
-  (apply f/form-helper-text (clj->js props) childs))
-
-(defn toolbar
-  [props & childs]
-  (apply f/toolbar (clj->js props) childs))
-
-(defn drawer
-  [props & childs]
-  (apply f/drawer (clj->js props) childs))
-
-(defn swipeable-drawer
-  [props & childs]
-  (apply f/swipeable-drawer (clj->js props) childs))
-
-(defn menu
-  [props & childs]
-  (apply f/menu (clj->js props) childs))
-
-(defn menu-item
-  [props & childs]
-  (apply f/menu-item (clj->js props) childs))
-
-(defn menu-list
-  [props & childs]
-  (apply f/menu-list (clj->js props) childs))
-
-(defn paper
-  [props & childs]
-  (apply f/paper (clj->js props) childs))
-
-(defn dialog
-  [props & childs]
-  (apply f/dialog (clj->js props) childs))
-
-(defn responsive-dialog
-  [props & childs]
-  (let [dialog (f/responsive-dialog js/MaterialUI.Dialog)]
-    (apply dialog (clj->js props) childs)))
-
-(defn dialog-title
-  [props title]
-  (f/dialog-title (clj->js props) title))
-
-(defn dialog-content
-  [props & childs]
-  (apply f/dialog-content (clj->js props) childs))
-
-(defn dialog-actions
-  [props & childs]
-  (apply f/dialog-actions (clj->js props) childs))
-
-(defn input
-  [props]
-  (f/input (clj->js props)))
-
-(defn input-adornment
-  [props adorment]
-  (f/input-adornment (clj->js props) adorment))
-
-(defn input-label
-  [props label]
-  (f/input-label (clj->js props) label))
-
-(defn avatar
-  [props & childs]
-  (apply f/avatar (clj->js props) childs))
-
-(defn chip
-  [props]
-  (f/chip (clj->js props)))
-
-(defn list
-  [props & childs]
-  (apply f/list (clj->js props) childs))
-
-(defn list-subheader
-  [props & childs]
-  (apply f/list-subheader (clj->js props) childs))
-
-(defn list-item
-  [props & childs]
-  (apply f/list-item (clj->js props) childs))
-
-(defn list-item-icon
-  [props icon]
-  (f/list-item-icon (clj->js props) icon))
-
-(defn list-item-text
-  [props]
-  (f/list-item-text (clj->js props)))
-
-(defn list-item-secondary-action
-  [props & childs]
-  (apply f/list-item-secondary-action (clj->js props) childs))
-
-(defn icon-button
-  [props icon]
-  (f/icon-button (clj->js props) icon))
-
-(defn button
-  [props & childs]
-  (apply f/button (clj->js props) childs))
-
-(defn button-group
-  [props & childs]
-  (apply f/button-group (clj->js props) childs))
-
-(defn fab
-  [props & childs]
-  (apply f/fab (clj->js props) childs))
-
-(defn hidden
-  [props & childs]
-  (f/hidden (clj->js props) childs))
-
-(defn app-bar
-  [props drawer]
-  (f/appbar (clj->js props) drawer))
-
-(defn typography
-  [props & childs]
-  (apply f/typography (clj->js props) childs))
-
-(defn svg
-  ([props d] (f/svg-icon (clj->js props) (html [:path {:d d}])))
-  ([d] (f/svg-icon nil (html [:path {:d d}]))))
-
-(defn table
-  [props & childs]
-  (apply f/table (clj->js props) childs))
-
-(defn table-head
-  [props & childs]
-  (apply f/table-head (clj->js props) childs))
-
-(defn table-cell
-  [props comp]
-  (f/table-cell (clj->js props) comp))
-
-(defn table-body
-  [props & childs]
-  (apply f/table-body (clj->js props) childs))
-
-(defn table-row
-  [props & childs]
-  (apply f/table-row (clj->js props) childs))
-
-(defn table-footer
-  [props & childs]
-  (apply f/table-footer (clj->js props) childs))
-
-(defn table-pagination
-  [props]
-  (f/table-pagination (clj->js props)))
-
-(defn expansion-panel
-  [props & childs]
-  (apply f/expansion-panel (clj->js props) childs))
-
-(defn expansion-panel-details
-  [props comp]
-  (f/expansion-panel-details (clj->js props) comp))
-
-(defn expansion-panel-summary
-  [props & childs]
-  (apply f/expansion-panel-summary (clj->js props) childs))
-
-(defn expansion-panel-actions
-  [props & childs]
-  (apply f/expansion-panel-actions (clj->js props) childs))
-
-(defn grid
-  [props & childs]
-  (apply f/grid (clj->js props) childs))
-
-(defn box
-  [props & childs]
-  (apply f/box (clj->js props) childs))
-
-(defn container
-  [props & childs]
-  (apply f/container (clj->js props) childs))
-
-(defn card
-  [props & childs]
-  (apply f/card (clj->js props) childs))
-
-(defn card-header
-  [props]
-  (f/card-header (clj->js props)))
-
-(defn card-content
-  [props & childs]
-  (apply f/card-content (clj->js props) childs))
-
-(defn card-actions
-  [props & childs]
-  (apply f/card-actions (clj->js props) childs))
-
-(defn card-media
-  [props]
-  (f/card-media (clj->js props)))
-
-(defn checkbox
-  ([props] (f/checkbox (clj->js props)))
-  ([] (f/checkbox nil)))
-
-(defn stepper
-  [props & childs]
-  (apply f/stepper (clj->js props) childs))
-
-(defn step
-  [props & childs]
-  (apply f/step (clj->js props) childs))
-
-(defn step-label
-  [props label]
-  (f/step-label (clj->js props) label))
-
-(defn step-content
-  [props & childs]
-  (apply f/step-content (clj->js props) childs))
-
-(defn select
-  [props & childs]
-  (apply f/select (clj->js props) childs))
-
-(defn tooltip
-  [props comp]
-  (f/tooltip (clj->js props) comp))
-
-(defn snackbar
-  [props content]
-  (f/snackbar (clj->js props) content))
-
-(defn snackbar-content
-  ([props] (f/snackbar-content (clj->js props)))
-  ([] (f/snackbar-content nil)))
-
-(defn text-field
-  ([props & childs] (apply f/text-field (clj->js props) childs))
-  ([] (f/text-field nil)))
-
-(defn tab
-  [props]
-  (f/tab (clj->js props)))
-
-(defn tabs
-  [props & childs]
-  (apply f/tabs (clj->js props) childs))
-
-(defn popper
-  [props grow-fn]
-  (f/popper (clj->js props) grow-fn))
-
-(defn grow
-  [props comp]
-  (f/grow (clj->js props) comp))
-
-(defn fade
-  [props comp]
-  (f/fade (clj->js props) comp))
-
-(defn no-ssr
-  [props & childs]
-  (apply f/no-ssr (clj->js props) childs))
-
-(defn portal
-  [props & childs]
-  (apply f/portal (clj->js props) childs))
-
-(defn popover
-  [props & childs]
-  (apply f/popover (clj->js props) childs))
-
-(defn radio
-  ([props] (f/radio (clj->js props)))
-  ([] (f/radio nil)))
-
-(defn radio-group
-  [props & childs]
-  (apply f/radio-group (clj->js props) childs))
-
-(defn switch
-  [props & childs]
-  (apply f/switch (clj->js props) childs))
-
-(defn linear-progress
-  ([props] (f/linear-progress (clj->js props)))
-  ([] (f/linear-progress nil)))
-
-(defn circular-progress
-  ([props] (f/circular-progress (clj->js props)))
-  ([] (f/circular-progress nil)))
-
-(defn click-away-listener
-  [props content]
-  (f/click-away-listener (clj->js props) content))
-
-;;; Single recharts components
-
-(defn pie-chart
-  [props & childs]
-  (apply f/pie-chart (clj->js props) childs))
-
-(defn tooltip-chart
-  [props]
-  (f/tooltip-chart (clj->js props)))
-
-(defn pie
-  [props & childs]
-  (apply f/pie (clj->js props) childs))
-
-(defn cell
-  [props]
-  (f/cell (clj->js props)))
-
-(defn legend
-  [props]
-  (f/legend (clj->js props)))
-
-(defn re-label
-  [props label]
-  (f/label (clj->js props) label))
-
-(defn responsive-container
-  [props comp]
-  (f/responsive-container (clj->js props) comp))
-
-;;; Single react components
-
-(defn react-select
-  [props]
-  (f/react-select (clj->js props)))
-
-(defn react-autosuggest
-  [props]
-  (f/react-autosuggest (clj->js props)))
-
-(defn rc-slider
-  [props]
-  (f/rc-slider (clj->js props)))
-
-(defn rc-slider-handle
-  [props]
-  (f/rc-slider-handle (clj->js props)))
+  (theme-provider
+    {:theme (theme "light")}
+    (css-baseline)
+    component))

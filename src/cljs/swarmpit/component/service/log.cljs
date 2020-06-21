@@ -183,7 +183,7 @@
         :onClick (fn []
                    (reset! last-scroll 0)
                    (state/update-value [:autoscroll] (not autoscroll) form-state-cursor))}
-       icon/scroll-down)]))
+       (icon/scroll-down))]))
 
 (rum/defc form-logs < rum/static [{:keys [initialized error]} logs filtered-logs show-taskId]
   (html

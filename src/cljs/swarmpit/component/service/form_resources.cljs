@@ -25,15 +25,16 @@
      [:div.Swarmpit-service-slider-title
       (str "CPU  " "(" (cpu-value value) ")")]
      [:div
-      (comp/rc-slider
+      (comp/slider
         {:key          "cpu-reservation"
          :min          0
          :max          2
          :step         0.10
          :defaultValue 0
+         :marks        true
          :value        value
          :style        {:maxWidth "300px"}
-         :onChange     #(state/update-value [:reservation :cpu] (parse-float %) form-value-cursor)})]]))
+         :onChange     (fn [e v] (state/update-value [:reservation :cpu] (parse-float v) form-value-cursor))})]]))
 
 (defn- form-memory-reservation [value]
   (comp/text-field
@@ -57,15 +58,16 @@
      [:div.Swarmpit-service-slider-title
       (str "CPU  " "(" (cpu-value value) ")")]
      [:div
-      (comp/rc-slider
+      (comp/slider
         {:key          "cpu-limit"
          :min          0
          :max          2
          :step         0.10
          :defaultValue 0
          :value        value
+         :marks        true
          :style        {:maxWidth "300px"}
-         :onChange     #(state/update-value [:limit :cpu] (parse-float %) form-value-cursor)})]]))
+         :onChange     (fn [e v] (state/update-value [:limit :cpu] (parse-float v) form-value-cursor))})]]))
 
 (defn- form-memory-limit [value]
   (comp/text-field
