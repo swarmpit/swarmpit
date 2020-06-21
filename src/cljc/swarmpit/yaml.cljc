@@ -27,7 +27,7 @@
   [map]
   "Parse YAML to JSON format"
   #?(:clj  (generate-string map)
-     :cljs (.dump js/jsyaml (clj->js json))))
+     :cljs (.dump js/jsyaml (clj->js map))))
 
 (defn ->json
   [yaml]
