@@ -7,7 +7,6 @@
             [swarmpit.authentication :refer [authentication-middleware]]
             [swarmpit.authorization :refer [authorization-middleware]]
             [org.httpkit.server :refer [run-server]]
-            [clojure.tools.logging :as log]
             [swarmpit.routes :as routes]
             [swarmpit.setup :as setup]
             [swarmpit.database :as db]
@@ -24,7 +23,8 @@
             [reitit.ring.middleware.parameters :as parameters]
             [reitit.spec :as rs]
             [expound.alpha :as e]
-            [muuntaja.core :as m]))
+            [muuntaja.core :as m]
+            [taoensso.timbre :refer [info]]))
 
 (defn default-exception-handler
   "Default safe handler for any exception."
@@ -88,10 +88,11 @@
           wrap-gzip))))
 
 (defn -main [& [port]]
-  (log/info "Swarmpit is starting...")
+  (info "Swarmpit is starting...")
   (db/init)
   (let [port (or port 8080)]
     (run-server app {:port port} :thread 8 :queue-size 300000)
-    (log/info "Swarmpit running on port" port))
+    (info "Swarmpit running on port" port))
   (agent/init)
-  (setup/docker))
+  (setup/docker)
+  (setup/log))

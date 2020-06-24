@@ -1,6 +1,13 @@
 (ns swarmpit.aws.client
   (:require [cognitect.aws.client.api :as aws]
-            [cognitect.aws.credentials :as credentials]))
+            [cognitect.aws.credentials :as credentials]
+            [taoensso.timbre :refer [info error]]))
+
+(defn- log-error [op service result]
+  (info "|>" "Execute" op)
+  (info "|>" "Service" service)
+  (error "|<" "Request Execution failed:" (:message result))
+  (error "|<" result))
 
 (defn- client [{:keys [service region accessKeyId accessKey]}]
   (aws/client {:api                  service
@@ -15,12 +22,14 @@
                  (client (merge acc {:service service}))
                  {:op op})]
     (if (some? (:__type result))
-      (throw
-        (ex-info (str "AWS client error: " (:message result))
-                 {:status 401
-                  :type   :aws-client
-                  :body   {:error (str "AWS client error: " (or (:message result)
-                                                                "Unknown error"))}}))
+      (let [error (or (:message result) "Unknown error")]
+        (log-error op service result)
+        (throw
+          (ex-info
+            (str "AWS client error: " (:message result))
+            {:status 401
+             :type   :aws-client
+             :body   {:error (str "AWS client error: " error)}})))
       result)))
 
 (defn ecr-token [ecr]

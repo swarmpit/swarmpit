@@ -25,6 +25,14 @@
          (subvec vector 0 index)
          (subvec vector (inc index)))))
 
+(defn update-in-if-present
+  "Apply f to every k from ks in m if the key is present in m."
+  [m ks f]
+  (reduce (fn [acc k]
+            (if (contains? acc k)
+              (update-in acc [k] f)
+              acc)) m ks))
+
 (defn select-keys*
   "Better select-keys supporting also nested maps. E.g. [[:name] [:node :nodeName]]"
   [m paths]
