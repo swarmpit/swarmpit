@@ -1,7 +1,23 @@
 (ns swarmpit.log
-  (:require [taoensso.encore :as enc]
+  (:require [cheshire.core :refer [generate-string]]
+            [swarmpit.utils :refer [update-in-if-present]]
+            [taoensso.encore :as enc]
             [taoensso.timbre :as timbre]
             [clojure.string :as str]))
+
+(defn hide-sensitive-data [fragment-map]
+  (update-in-if-present
+    fragment-map
+    [:password :secret :Authorization]
+    (fn [a]
+      (cond
+        (str/starts-with? a "Basic") (str "Basic *****")
+        (str/starts-with? a "Bearer") (str "Bearer *****")
+        (str/starts-with? a "JWT") (str "JWT *****")
+        :else "*****"))))
+
+(defn pretty-print [fragment-map]
+  (generate-string (hide-sensitive-data fragment-map) {:pretty true}))
 
 (defn output-fn
   ([data] (output-fn nil data))
