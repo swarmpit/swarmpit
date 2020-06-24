@@ -1,13 +1,17 @@
 (ns swarmpit.aws.client
   (:require [cognitect.aws.client.api :as aws]
             [cognitect.aws.credentials :as credentials]
-            [taoensso.timbre :refer [info error]]))
+            [taoensso.encore :as enc]
+            [taoensso.timbre :refer [error]]
+            [swarmpit.log :refer [pretty-print]]))
 
 (defn- log-error [op service result]
-  (info "|>" "Execute" op)
-  (info "|>" "Service" service)
-  (error "|<" "Request Execution failed:" (:message result))
-  (error "|<" result))
+  (error
+    (str
+      "Request execution failed! Service: " (name service)
+      enc/system-newline "|> Operation: " (name op)
+      enc/system-newline "|< Message: " (:message result)
+      enc/system-newline "|< Data: " (pretty-print result))))
 
 (defn- client [{:keys [service region accessKeyId accessKey]}]
   (aws/client {:api                  service

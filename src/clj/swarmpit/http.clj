@@ -2,10 +2,8 @@
   (:require [cheshire.core :refer [parse-string parse-stream generate-string]]
             [clj-http.client :as http]
             [taoensso.encore :as enc]
-            [taoensso.timbre :refer [info error]]
-            [swarmpit.utils :refer [update-in-if-present]]
-            [swarmpit.log :refer [pretty-print]]
-            [clojure.string :as str])
+            [taoensso.timbre :refer [error]]
+            [swarmpit.log :refer [pretty-print]])
   (:import (java.util.concurrent TimeoutException ExecutionException)
            (java.io IOException)
            (clojure.lang ExceptionInfo)))
@@ -56,39 +54,17 @@
     (catch Exception _
       response-data)))
 
-(defn- hide-sensitive-data [request-fragment-map]
-  (update-in-if-present
-    request-fragment-map
-    [:password :secret :Authorization]
-    (fn [a]
-      (cond
-        (str/starts-with? a "Basic") (str "Basic *****")
-        (str/starts-with? a "Bearer") (str "Bearer *****")
-        (str/starts-with? a "JWT") (str "JWT *****")
-        :else "*****"))))
-
-(defn- log-error-lop [{:keys [method url options] :as request} ex]
+(defn- log-error [{:keys [method url options scope] :as request} ex]
   (let [request-headers (:headers options)
         request-body (:body options)]
     (error
       (str
-        "Request Execution failed!"
+        "Request execution failed! Scope: " scope
         enc/system-newline "|> " (name method) " " url
         enc/system-newline "|> Headers: " (pretty-print request-headers)
         enc/system-newline "|> Payload: " (pretty-print request-body)
-        enc/system-newline "|< Error Message: " (.getMessage ex)
-        enc/system-newline "|< Error Data: " (pretty-print (ex-data ex))))))
-
-(defn- log-error [{:keys [method url options] :as request} ex]
-  (let [request-headers (:headers options)
-        request-body (:body options)]
-    (info "|>" (name method) url)
-    (doseq [[k v] (hide-sensitive-data request-headers)]
-      (info "|>" (name k) ":" v))
-    (when request-body
-      (info "|>" (generate-string (hide-sensitive-data request-body) {:pretty true})))
-    (error "|<" "Request Execution failed:" (.getMessage ex))
-    (error "|<" ex)))
+        enc/system-newline "|< Message: " (.getMessage ex)
+        enc/system-newline "|< Data: " (pretty-print (ex-data ex))))))
 
 (defn execute-in-scope
   "Execute http request and parse result"
@@ -105,7 +81,7 @@
         {:headers response-headers
          :body    response-body})
       (catch IOException exception
-        (log-error-lop request exception)
+        (log-error request exception)
         (throw
           (let [error (.getMessage exception)]
             (ex-info (str scope " failure: " error)
@@ -113,7 +89,7 @@
                       :type   :http-client
                       :body   {:error error}}))))
       (catch ExceptionInfo exception
-        (log-error-lop request exception)
+        (log-error request exception)
         (throw
           (let [data (some-> exception (ex-data))
                 status (:status data)
@@ -125,7 +101,7 @@
                       :headers headers
                       :body    {:error error}}))))
       (catch TimeoutException exception
-        (log-error-lop request exception)
+        (log-error request exception)
         (throw
           (ex-info (str scope " error: Request timeout")
                    {:status 408

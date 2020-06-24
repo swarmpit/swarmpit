@@ -9,7 +9,6 @@
   (let [services (->> (api/services)
                       (filter #(get-in % [:deployment :autoredeploy]))
                       (filter #(not (= "updating" get-in % [:status :update]))))]
-    (info "Autoredeploy agent checking for updates. Services to be checked:" (count services))
     (doseq [service services]
       (let [id (:id service)
             name (:serviceName service)

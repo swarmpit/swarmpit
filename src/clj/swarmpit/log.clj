@@ -5,10 +5,12 @@
             [taoensso.timbre :as timbre]
             [clojure.string :as str]))
 
+(def sensitive-tokens [:password :secret :Authorization])
+
 (defn hide-sensitive-data [fragment-map]
   (update-in-if-present
     fragment-map
-    [:password :secret :Authorization]
+    sensitive-tokens
     (fn [a]
       (cond
         (str/starts-with? a "Basic") (str "Basic *****")
