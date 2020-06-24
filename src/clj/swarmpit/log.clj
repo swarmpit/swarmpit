@@ -12,7 +12,6 @@
          thread-id (.getId (Thread/currentThread))]
      (str
        (force timestamp_) " "
-       (force hostname_) " "
        (str/upper-case (name level)) " "
        "[" (or ?ns-str ?file "?") ":" (or ?line "?") "](" thread-id ") - "
        (force msg_)
