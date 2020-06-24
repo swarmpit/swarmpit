@@ -1,6 +1,9 @@
 (ns swarmpit.http
   (:require [cheshire.core :refer [parse-string parse-stream generate-string]]
-            [clj-http.client :as http])
+            [clj-http.client :as http]
+            [taoensso.encore :as enc]
+            [taoensso.timbre :refer [error]]
+            [swarmpit.log :refer [pretty-print]])
   (:import (java.util.concurrent TimeoutException ExecutionException)
            (java.io IOException)
            (clojure.lang ExceptionInfo)))
@@ -51,18 +54,34 @@
     (catch Exception _
       response-data)))
 
+(defn- log-error [{:keys [method url options scope] :as request} ex]
+  (let [request-headers (:headers options)
+        request-body (:body options)]
+    (error
+      (str
+        "Request execution failed! Scope: " scope
+        enc/system-newline "|> " (name method) " " url
+        enc/system-newline "|> Headers: " (pretty-print request-headers)
+        enc/system-newline "|> Payload: " (pretty-print request-body)
+        enc/system-newline "|< Message: " (.getMessage ex)
+        enc/system-newline "|< Data: " (pretty-print (ex-data ex))))))
+
 (defn execute-in-scope
   "Execute http request and parse result"
-  [{:keys [method url options scope timeout error-handler]}]
+  [{:keys [method url options scope timeout error-handler] :as request}]
   (let [scope (or scope "HTTP")
-        timeout (or timeout default-timeout)]
+        timeout (or timeout default-timeout)
+        request-method (req-func method)
+        request-options (req-options options)]
     (try
-      (let [response (with-timeout timeout ((req-func method) url (req-options options)))
+      (let [response (with-timeout timeout (request-method url request-options))
             response-body (-> response :body)
-            response-headers (-> response :headers)]
+            response-headers (-> response :headers)
+            response-body (ok-response response-body)]
         {:headers response-headers
-         :body    (ok-response response-body)})
+         :body    response-body})
       (catch IOException exception
+        (log-error request exception)
         (throw
           (let [error (.getMessage exception)]
             (ex-info (str scope " failure: " error)
@@ -70,6 +89,7 @@
                       :type   :http-client
                       :body   {:error error}}))))
       (catch ExceptionInfo exception
+        (log-error request exception)
         (throw
           (let [data (some-> exception (ex-data))
                 status (:status data)
@@ -80,7 +100,8 @@
                       :type    :http-client
                       :headers headers
                       :body    {:error error}}))))
-      (catch TimeoutException _
+      (catch TimeoutException exception
+        (log-error request exception)
         (throw
           (ex-info (str scope " error: Request timeout")
                    {:status 408

@@ -20,7 +20,7 @@
   [user]
   (-> (execute {:method  :POST
                 :api     "/users/login"
-                :options {:body    user
+                :options {:body    (select-keys user [:username :password])
                           :headers {:Content-Type "application/json"}}})
       :body))
 

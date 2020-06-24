@@ -40,6 +40,8 @@
                  [environ "1.1.0"]
                  [fullspectrum/influxdb-client "1.0.0"]
                  [me.raynes/conch "0.8.0"]
+                 [com.taoensso/encore "2.120.0"]
+                 [com.taoensso/timbre "4.10.0"]
                  [com.andrewmcveigh/cljs-time "0.5.1"]
                  [com.cemerick/url "0.1.1"]
                  [com.cemerick/friend "0.2.3"]

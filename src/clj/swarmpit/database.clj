@@ -1,9 +1,9 @@
 (ns swarmpit.database
-  (:require [clojure.tools.logging :as log]
-            [swarmpit.couchdb.client :as cc]
+  (:require [swarmpit.couchdb.client :as cc]
             [swarmpit.influxdb.client :as ic]
             [swarmpit.config :refer [config]]
-            [swarmpit.couchdb.migration :refer [migrate]]))
+            [swarmpit.couchdb.migration :refer [migrate]]
+            [taoensso.timbre :refer [info error]]))
 
 (defn- couch-ready?
   []
@@ -21,13 +21,13 @@
 
 (defn- wait-for-db
   [sec running-fn db-type]
-  (log/info (str "Waiting for " db-type " ..."))
+  (info "Waiting for" db-type "...")
   (loop [n sec]
     (if (running-fn)
-      (log/info "... connected after" (- sec n) "sec")
+      (info "..." db-type "connected in" (- sec n) "sec")
       (if (zero? n)
         (do
-          (log/error "... timeout")
+          (error "..." db-type "connection timeout")
           (throw (ex-info (str db-type " timeout") nil)))
         (do
           (Thread/sleep 1000)
@@ -57,7 +57,7 @@
   []
   (wait-for-db 100 couch-ready? "CouchDB")
   (when (not (:error (create-couch-database)))
-    (log/info "DB schema created"))
+    (info "CouchDB schema created"))
   (migrate))
 
 (defn init-influx
@@ -67,8 +67,8 @@
       (wait-for-db 100 influx-ready? "InfluxDB")
       (create-influx-database)
       (setup-influx-database)
-      (log/info "InfluxDB RP:" (ic/retention-policy-summary))
-      (log/info "InfluxDB CQ:" (ic/continuous-query-summary)))))
+      (info "InfluxDB RP:" (ic/retention-policy-summary))
+      (info "InfluxDB CQ:" (ic/continuous-query-summary)))))
 
 (defn init
   []

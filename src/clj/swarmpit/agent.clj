@@ -1,15 +1,14 @@
 (ns swarmpit.agent
   (:import (clojure.lang ExceptionInfo))
-  (:require [clojure.tools.logging :as log]
-            [org.httpkit.timer :refer [schedule-task]]
-            [swarmpit.api :as api]))
+  (:require [org.httpkit.timer :refer [schedule-task]]
+            [swarmpit.api :as api]
+            [taoensso.timbre :refer [info error]]))
 
 (defn- autoredeploy-job
   []
   (let [services (->> (api/services)
                       (filter #(get-in % [:deployment :autoredeploy]))
                       (filter #(not (= "updating" get-in % [:status :update]))))]
-    (log/debug "Autoredeploy agent checking for updates. Services to be checked:" (count services))
     (doseq [service services]
       (let [id (:id service)
             name (:serviceName service)
@@ -22,9 +21,9 @@
             (when (not= current-digest
                         latest-digest)
               (api/redeploy-service nil id nil)
-              (log/info "Service" id "(" name ") autoredeploy fired! DIGEST: [" current-digest "] -> [" latest-digest "]")))
+              (info "Service" id "(" name ") autoredeploy fired! DIGEST: [" current-digest "] -> [" latest-digest "]")))
           (catch ExceptionInfo e
-            (log/error "Service" id "(" name ") autoredeploy failed! " (ex-data e))))))))
+            (error "Service" id "(" name ") autoredeploy failed! " (ex-data e))))))))
 
 (defn init []
   (schedule-task 60000

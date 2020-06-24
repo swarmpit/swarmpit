@@ -43,7 +43,8 @@
   (cfg/update! {:influxdb-url "http://localhost:8086"})
   (db/init)
   (agent/init)
-  (setup/docker))
+  (setup/docker)
+  (setup/log))
 
 (defn fig-start
   "This starts the figwheel server and watch based auto-compiler."
