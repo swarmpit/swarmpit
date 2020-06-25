@@ -1,8 +1,9 @@
 (ns swarmpit.agent
-  (:import (clojure.lang ExceptionInfo))
-  (:require [org.httpkit.timer :refer [schedule-task]]
-            [swarmpit.api :as api]
-            [taoensso.timbre :refer [info error]]))
+  (:require [swarmpit.api :as api]
+            [chime.core :as chime]
+            [taoensso.timbre :refer [info debug error]])
+  (:import (clojure.lang ExceptionInfo)
+           (java.time Instant Duration)))
 
 (defn- autoredeploy-job
   []
@@ -26,6 +27,8 @@
             (error "Service" id "(" name ") autoredeploy failed! " (ex-data e))))))))
 
 (defn init []
-  (schedule-task 60000
-                 (autoredeploy-job)
-                 (init)))
+  (let [start (.plusSeconds (Instant/now) 60)]
+    (chime/chime-at
+      (chime/periodic-seq start (Duration/ofMinutes 1))
+      (fn [time]
+        (autoredeploy-job)))))
