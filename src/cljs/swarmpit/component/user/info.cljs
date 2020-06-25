@@ -71,25 +71,24 @@
          #(delete-user-handler _id)
          "Delete user?"
          "Delete")
-       [:div.Swarmpit-form-toolbar
-        (comp/container
-          {:maxWidth  "md"
-           :className "Swarmpit-container"}
-          (comp/grid
-            {:container true
-             :spacing   2}
-            (comp/grid
-              {:item true
-               :xs   12}
-              (toolbar/toolbar "User" username (form-actions username _id)))
-            (comp/grid
-              {:item true
-               :xs   12}
-              (comp/card
-                {:className "Swarmpit-form-card"}
-                (form/item-main "ID" _id false)
-                (form/item-main "Email" (if (str/blank? email) "-" email))
-                (form/item-main "Role" role)))))]])))
+       (comp/container
+         {:maxWidth  "md"
+          :className "Swarmpit-container"}
+         (comp/grid
+           {:container true
+            :spacing   2}
+           (comp/grid
+             {:item true
+              :xs   12}
+             (toolbar/toolbar "User" username (form-actions username _id)))
+           (comp/grid
+             {:item true
+              :xs   12}
+             (comp/card
+               {:className "Swarmpit-form-card"}
+               (form/item-main "ID" _id false)
+               (form/item-main "Email" (if (str/blank? email) "-" email))
+               (form/item-main "Role" role)))))])))
 
 (rum/defc form < rum/reactive
                  mixin-init-form

@@ -111,30 +111,29 @@
          #(delete-volume-handler (:volumeName volume))
          "Delete volume?"
          "Delete")
-       [:div.Swarmpit-form-toolbar
-        (comp/container
-          {:maxWidth  "md"
-           :className "Swarmpit-container"}
-          (comp/grid
-            {:container true
-             :spacing   2}
-            (comp/grid
-              {:item true
-               :xs   12}
-              (toolbar/toolbar "Volume" (:volumeName volume) form-actions))
-            (comp/grid
-              {:item true
-               :xs   12}
-              (form-general volume services))
-            (when (not-empty (:options volume))
-              (comp/grid
-                {:item true
-                 :xs   12}
-                (form-driver volume)))
-            (comp/grid
-              {:item true
-               :xs   12}
-              (services/linked services))))]])))
+       (comp/container
+         {:maxWidth  "md"
+          :className "Swarmpit-container"}
+         (comp/grid
+           {:container true
+            :spacing   2}
+           (comp/grid
+             {:item true
+              :xs   12}
+             (toolbar/toolbar "Volume" (:volumeName volume) form-actions))
+           (comp/grid
+             {:item true
+              :xs   12}
+             (form-general volume services))
+           (when (not-empty (:options volume))
+             (comp/grid
+               {:item true
+                :xs   12}
+               (form-driver volume)))
+           (comp/grid
+             {:item true
+              :xs   12}
+             (services/linked services))))])))
 
 (rum/defc form < rum/reactive
                  mixin-init-form

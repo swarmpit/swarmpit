@@ -80,25 +80,24 @@
          #(delete-secret-handler (:id secret))
          "Delete secret?"
          "Delete")
-       [:div.Swarmpit-form-toolbar
-        (comp/container
-          {:maxWidth  "md"
-           :className "Swarmpit-container"}
-          (comp/grid
-            {:container true
-             :spacing   2}
-            (comp/grid
-              {:item true
-               :xs 12}
-              (toolbar/toolbar "Secret" (:secretName secret) form-actions))
-            (comp/grid
-              {:item true
-               :xs   12}
-              (form-general secret services))
-            (comp/grid
-              {:item true
-               :xs   12}
-              (services/linked services))))]])))
+       (comp/container
+         {:maxWidth  "md"
+          :className "Swarmpit-container"}
+         (comp/grid
+           {:container true
+            :spacing   2}
+           (comp/grid
+             {:item true
+              :xs 12}
+             (toolbar/toolbar "Secret" (:secretName secret) form-actions))
+           (comp/grid
+             {:item true
+              :xs   12}
+             (form-general secret services))
+           (comp/grid
+             {:item true
+              :xs   12}
+             (services/linked services))))])))
 
 (rum/defc form < rum/reactive
                  mixin-init-form

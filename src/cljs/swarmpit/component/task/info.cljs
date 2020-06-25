@@ -149,11 +149,16 @@
                                              {:log 1})}
         "View log"))))
 
+(defn form-cpu-stats-callback
+  [state]
+  (let [ts (first (:rum/args state))]
+    (task-cpu-plot ts))
+  state)
+
 (rum/defc form-cpu-stats < rum/static
-                           {:did-mount (fn [state _]
-                                         (let [ts (first (:rum/args state))]
-                                           (task-cpu-plot ts))
-                                         state)} [task-ts]
+                           {:did-mount    form-cpu-stats-callback
+                            :will-unmount (fn [state] (plot/purge plot-cpu-id) state)}
+  [task-ts]
   (comp/card
     (if (empty? task-ts)
       {:className "Swarmpit-card hide"}
@@ -162,11 +167,16 @@
       {:className "Swarmpit-table-card-content"}
       (html [:div {:id plot-cpu-id}]))))
 
+(defn form-ram-stats-callback
+  [state]
+  (let [ts (first (:rum/args state))]
+    (task-ram-plot ts))
+  state)
+
 (rum/defc form-ram-stats < rum/static
-                           {:did-mount (fn [state _]
-                                         (let [ts (first (:rum/args state))]
-                                           (task-ram-plot ts))
-                                         state)} [task-ts]
+                           {:did-mount    form-ram-stats-callback
+                            :will-unmount (fn [state] (plot/purge plot-ram-id) state)}
+  [task-ts]
   (comp/card
     (if (empty? task-ts)
       {:className "Swarmpit-card hide"}

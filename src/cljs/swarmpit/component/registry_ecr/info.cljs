@@ -70,36 +70,35 @@
          #(delete-ecr-handler _id)
          "Remove account?"
          "Remove")
-       [:div.Swarmpit-form-toolbar
-        (comp/container
-          {:maxWidth  "md"
-           :className "Swarmpit-container"}
-          (comp/grid
-            {:container true
-             :spacing   2}
-            (comp/grid
-              {:item true
-               :xs   12}
-              (toolbar/toolbar "Registry" user (form-actions _id)))
-            (comp/grid
-              {:item true
-               :xs   12}
-              (comp/card
-                {:className "Swarmpit-form-card"}
-                (comp/card-header
-                  {:title     (comp/typography {:variant "h6"} "Amazon ECR")
-                   :avatar    (comp/avatar
-                                {:className "Swarmpit-card-avatar"}
-                                (comp/svg icon/amazon-path))
-                   :subheader (when public
-                                (label/base "Public" "info"))})
-                (comp/card-content
-                  {}
-                  (comp/typography
-                    {:variant "body2"}
-                    (html [:span "Authenticated with IAM user " [:b user] "."])))
-                (form/item-main "ID" _id false)
-                (form/item-main "Url" url)))))]])))
+       (comp/container
+         {:maxWidth  "md"
+          :className "Swarmpit-container"}
+         (comp/grid
+           {:container true
+            :spacing   2}
+           (comp/grid
+             {:item true
+              :xs   12}
+             (toolbar/toolbar "Registry" user (form-actions _id)))
+           (comp/grid
+             {:item true
+              :xs   12}
+             (comp/card
+               {:className "Swarmpit-form-card"}
+               (comp/card-header
+                 {:title     (comp/typography {:variant "h6"} "Amazon ECR")
+                  :avatar    (comp/avatar
+                               {:className "Swarmpit-card-avatar"}
+                               (comp/svg icon/amazon-path))
+                  :subheader (when public
+                               (label/base "Public" "info"))})
+               (comp/card-content
+                 {}
+                 (comp/typography
+                   {:variant "body2"}
+                   (html [:span "Authenticated with IAM user " [:b user] "."])))
+               (form/item-main "ID" _id false)
+               (form/item-main "Url" url)))))])))
 
 (rum/defc form < rum/reactive
                  mixin-init-form

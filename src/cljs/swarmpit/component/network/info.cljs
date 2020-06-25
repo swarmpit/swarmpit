@@ -127,30 +127,29 @@
          #(delete-network-handler (:id network))
          "Delete network?"
          "Delete")
-       [:div.Swarmpit-form-toolbar
-        (comp/container
-          {:maxWidth  "md"
-           :className "Swarmpit-container"}
-          (comp/grid
-            {:container true
-             :spacing   2}
-            (comp/grid
-              {:item true
-               :xs   12}
-              (toolbar/toolbar "Network" (:networkName network) form-actions))
-            (comp/grid
-              {:item true
-               :xs   12}
-              (form-general network services))
-            (when (not-empty (:options network))
-              (comp/grid
-                {:item true
-                 :xs   12}
-                (form-driver network)))
-            (comp/grid
-              {:item true
-               :xs   12}
-              (services/linked services))))]])))
+       (comp/container
+         {:maxWidth  "md"
+          :className "Swarmpit-container"}
+         (comp/grid
+           {:container true
+            :spacing   2}
+           (comp/grid
+             {:item true
+              :xs   12}
+             (toolbar/toolbar "Network" (:networkName network) form-actions))
+           (comp/grid
+             {:item true
+              :xs   12}
+             (form-general network services))
+           (when (not-empty (:options network))
+             (comp/grid
+               {:item true
+                :xs   12}
+               (form-driver network)))
+           (comp/grid
+             {:item true
+              :xs   12}
+             (services/linked services))))])))
 
 (rum/defc form < rum/reactive
                  mixin-init-form
