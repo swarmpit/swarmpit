@@ -61,7 +61,7 @@
       (comp/slider
         {:key          "cpu-limit"
          :min          0
-         :max          2
+         :max          4
          :step         0.10
          :defaultValue 0
          :value        value
