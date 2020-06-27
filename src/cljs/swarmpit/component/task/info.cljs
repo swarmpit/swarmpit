@@ -28,15 +28,17 @@
   (plot/single plot-cpu-id
                stats-ts
                :cpu
-               "CPU usage"
-               "[vCPU]"))
+               {:title      "CPU usage"
+                :showlegend false
+                :yaxis      {:title "[vCPU]"}}))
 
 (defn task-ram-plot [stats-ts]
   (plot/single plot-ram-id
                stats-ts
                :memory
-               "Memory usage"
-               "[MiB]"))
+               {:title      "Memory usage"
+                :showlegend false
+                :yaxis      {:title "[MiB]"}}))
 
 (defn- event-handler
   [task-id]

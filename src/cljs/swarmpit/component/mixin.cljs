@@ -1,5 +1,7 @@
 (ns swarmpit.component.mixin
   (:require [rum.core :as rum]
+            [goog.dom :refer [getElement]]
+            [goog.object :refer [get]]
             [swarmpit.event.source :as event]
             [swarmpit.component.state :as state]))
 
@@ -41,6 +43,18 @@
        (when section
          (state/update-value [:active] (js/parseInt section) state/form-state-cursor)))
      state)})
+
+(defn resize [div-id callback]
+  {:did-mount
+   (fn [state]
+     (.addEventListener
+       js/window
+       "resize"
+       (fn []
+         (let [el (getElement div-id)
+               width (get el "offsetWidth")
+               height (get el "offsetHeight")]
+           (callback width height)))) state)})
 
 (def focus-filter
   {:did-mount (fn [state]

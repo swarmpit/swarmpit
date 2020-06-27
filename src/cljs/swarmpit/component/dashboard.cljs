@@ -29,34 +29,34 @@
               stats-ts
               :cpu
               :name
-              "CPU utilization by Node"
-              "[%]"
-              [0 100]))
+              {:title "CPU utilization by Node"
+               :yaxis {:title "[%]"
+                       :range [0 100]}}))
 
 (defn node-ram-plot [stats-ts]
   (plot/multi plot-node-ram-id
               stats-ts
               :memory
               :name
-              "Memory utilization by Node"
-              "[%]"
-              [0 100]))
+              {:title "Memory utilization by Node"
+               :yaxis {:title "[%]"
+                       :range [0 100]}}))
 
 (defn service-cpu-plot [tasks-ts]
   (plot/multi plot-service-cpu-id
               tasks-ts
               :cpu
               :service
-              "CPU usage by Service"
-              "[vCPU]"))
+              {:title "CPU usage by Service"
+               :yaxis {:title "[vCPU]"}}))
 
 (defn service-ram-plot [tasks-ts]
   (plot/multi plot-service-ram-id
               tasks-ts
               :memory
               :service
-              "Memory usage by Service"
-              "[MiB]"))
+              {:title "Memory usage by Service"
+               :yaxis {:title "[MiB]"}}))
 
 (defn- stats-handler
   []
@@ -126,7 +126,8 @@
                                :nodes-ts           true
                                :services           true
                                :services-ts-cpu    true
-                               :services-ts-memory true}} state/form-state-cursor))
+                               :services-ts-memory true
+                               :mobile             false}} state/form-state-cursor))
 
 (defn- init-form-value
   []
@@ -257,8 +258,10 @@
   state)
 
 (rum/defc dashboard-node-ram-stats < rum/static
-                                     {:did-mount  dashboard-node-ram-callback
-                                      :did-update dashboard-node-ram-callback} [nodes-ts]
+                                     {:did-mount    dashboard-node-ram-callback
+                                      :did-update   dashboard-node-ram-callback
+                                      :will-unmount (fn [state] (plot/purge plot-node-ram-id) state)}
+  [nodes-ts]
   (comp/card
     (if (empty? nodes-ts)
       {:className "Swarmpit-card hide"}
@@ -274,8 +277,10 @@
   state)
 
 (rum/defc dashboard-node-cpu-stats < rum/static
-                                     {:did-mount  dashboard-node-cpu-callback
-                                      :did-update dashboard-node-cpu-callback} [nodes-ts]
+                                     {:did-mount    dashboard-node-cpu-callback
+                                      :did-update   dashboard-node-cpu-callback
+                                      :will-unmount (fn [state] (plot/purge plot-node-cpu-id) state)}
+  [nodes-ts]
   (comp/card
     (if (empty? nodes-ts)
       {:className "Swarmpit-card hide"}
@@ -291,8 +296,10 @@
   state)
 
 (rum/defc dashboard-service-ram-stats < rum/static
-                                        {:did-mount  dashboard-service-ram-callback
-                                         :did-update dashboard-service-ram-callback} [services-memory-ts]
+                                        {:did-mount    dashboard-service-ram-callback
+                                         :did-update   dashboard-service-ram-callback
+                                         :will-unmount (fn [state] (plot/purge plot-service-ram-id) state)}
+  [services-memory-ts]
   (comp/card
     (if (empty? services-memory-ts)
       {:className "Swarmpit-card hide"}
@@ -304,12 +311,13 @@
 (defn dashboard-service-cpu-callback
   [state]
   (let [ts (first (:rum/args state))]
-    (service-cpu-plot ts))
-  state)
+    (service-cpu-plot ts)) state)
 
 (rum/defc dashboard-service-cpu-stats < rum/static
-                                        {:did-mount  dashboard-service-cpu-callback
-                                         :did-update dashboard-service-cpu-callback} [services-cpu-ts]
+                                        {:did-mount    dashboard-service-cpu-callback
+                                         :did-update   dashboard-service-cpu-callback
+                                         :will-unmount (fn [state] (plot/purge plot-service-cpu-id) state)}
+  [services-cpu-ts]
   (comp/card
     (if (empty? services-cpu-ts)
       {:className "Swarmpit-card hide"}
@@ -318,14 +326,15 @@
       {:className "Swarmpit-table-card-content"}
       (html [:div {:id plot-service-cpu-id}]))))
 
-(rum/defc form-info < rum/static [{:keys [stats
-                                          services
-                                          services-ts-cpu
-                                          services-ts-memory
-                                          services-dashboard
-                                          nodes
-                                          nodes-ts
-                                          nodes-dashboard] :as item}]
+(rum/defc form-info < rum/static
+  [{:keys [stats
+           services
+           services-ts-cpu
+           services-ts-memory
+           services-dashboard
+           nodes
+           nodes-ts
+           nodes-dashboard] :as item}]
   (let [pinned-services (filter #(contains? (set services-dashboard) (:id %)) services)
         pinned-nodes (filter #(contains? (set nodes-dashboard) (:id %)) nodes)]
     (comp/mui
@@ -414,7 +423,8 @@
 
 (rum/defc form < rum/reactive
                  mixin-init-form
-                 mixin/subscribe-form [{{:keys [name]} :params}]
+                 mixin/subscribe-form
+  [{{:keys [name]} :params}]
   (let [{:keys [loading?]} (state/react state/form-state-cursor)
         item (state/react state/form-value-cursor)]
     (progress/form
