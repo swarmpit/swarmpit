@@ -676,7 +676,7 @@ a {
 .Swarmpit-table-row-cell {
     border-bottom: none !important;
     border-top: 1px solid rgba(224, 224, 224, 1);
-    padding: 4px 56px 4px 16px !important;
+    padding: 4px 16px 4px 16px !important;
 }
 
 .Swarmpit-table-row-cell > a {
