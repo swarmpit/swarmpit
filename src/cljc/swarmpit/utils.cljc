@@ -1,13 +1,14 @@
 (ns swarmpit.utils
   (:require [clojure.walk]
             #?(:clj [flatland.ordered.map :refer [ordered-map]])
-            #?(:clj [clojure.math.numeric-tower :refer [floor expt round]])))
+            #?(:clj [clojure.math.numeric-tower :refer [floor expt round]]))
+  #?(:clj (:import (java.lang Math))))
 
 #?(:cljs (def ^:private floor (.-floor js/Math)))
 #?(:cljs (def ^:private round (.-round js/Math)))
 #?(:cljs (def ^:private expt (.-pow js/Math)))
 #?(:cljs (def ^:private rounding-const 1000000))
-#?(:clj  (def ^:private log10 #(java.lang.Math/log10 %))
+#?(:clj  (def ^:private log10 #(Math/log10 %))
    :cljs (def ^:private log10 (or (.-log10 js/Math)
                                   #(/ (.round js/Math
                                               (* rounding-const
@@ -15,7 +16,7 @@
                                                     js/Math.LN10)))
                                       rounding-const))))
 
-#?(:clj  (def ^:private log #(java.lang.Math/log %))
+#?(:clj  (def ^:private log #(Math/log %))
    :cljs (def ^:private log (.-log js/Math)))
 
 (defn remove-el
