@@ -28,6 +28,7 @@
                  [buddy/buddy-hashers "1.2.0"]
                  [metosin/reitit "0.3.10"]
                  [clojure-humanize "0.2.2"]
+                 [http-kit "2.2.0"]
                  [enlive "1.1.6"]
                  [expound "0.7.2"]
                  [clj-time "0.15.0"]
