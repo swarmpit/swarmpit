@@ -58,6 +58,10 @@ a {
     flex-grow: 1;
 }
 
+.nested {
+    padding-left: 42px !important;
+}
+
 .Swarmpit-new-tab {
     display: flex;
     flex-direction: row;
@@ -275,6 +279,10 @@ a {
 .Swarmpit-appbar-menu-icon {
     min-width: 0 !important;
     margin-right: 8px;
+}
+
+.Swarmpit-appbar-popper {
+    min-width: 200px;
 }
 
 .Swarmpit-appbar-dropdown {

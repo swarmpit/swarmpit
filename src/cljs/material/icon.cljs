@@ -52,6 +52,7 @@
 (defn chevron-right [& args] (create-mui-icon "ChevronRight" args))
 (defn account-circle [& args] (create-mui-icon "AccountCircle" args))
 (defn expand-more [& args] (create-mui-icon "ExpandMore" args))
+(defn expand-less [& args] (create-mui-icon "ExpandLess" args))
 (defn check-circle [& args] (create-mui-icon "CheckCircle" args))
 (defn search [& args] (create-mui-icon "Search" args))
 (defn key [& args] (create-mui-icon "VpnKey" args))
@@ -99,3 +100,4 @@
 (defn exit [& args] (create-mui-icon "ExitToApp" args))
 (defn keyboard-arrow-left [& args] (create-mui-icon "KeyboardArrowLeft" args))
 (defn keyboard-arrow-right [& args] (create-mui-icon "KeyboardArrowRight" args))
+(defn supervisor-account [& args] (create-mui-icon "SupervisorAccount" args))

@@ -1,10 +1,8 @@
 (ns swarmpit.component.menu
   (:require [material.icon :as icon]
             [material.components :as comp]
-            [material.component.form :as form]
             [swarmpit.component.common :as common]
             [swarmpit.component.state :as state]
-            [swarmpit.storage :as storage]
             [swarmpit.routes :as routes]
             [swarmpit.url :as url]
             [sablono.core :refer-macros [html]]
@@ -58,13 +56,6 @@
     :handler :config-list
     :route   "configs"
     :domain  :config}])
-
-(def admin-menu
-  [{:name "ADMIN"}
-   {:name    "Users"
-    :icon    (comp/svg icon/users-path)
-    :handler :user-list
-    :domain  :user}])
 
 (defn footer []
   (comp/box
@@ -146,10 +137,7 @@
                (drawer-item name icon handler domain selected?)
                (drawer-category name))
              name)))
-       (let [fmenu (filter-menu docker-api)]
-         (if (storage/admin?)
-           (concat fmenu admin-menu)
-           fmenu))))
+       (filter-menu docker-api)))
    (comp/box {:className "grow"})
    (footer)])
 

@@ -37,7 +37,27 @@
     (comp/typography
       {:variant "body1"} username)))
 
-(defn menu []
+(defn admin-menu [open]
+  (comp/collapse
+    {:in            @open
+     :timeout       "auto"
+     :unmountOnExit true}
+    (comp/menu-item
+      {:className      "nested"
+       :disablePadding true
+       :onClick        (fn []
+                         (state/update-value [:menuAnchorEl] nil state/layout-cursor)
+                         (dispatch!
+                           (routes/path-for-frontend :user-list)))}
+      (comp/list-item-icon
+        {:className "Swarmpit-appbar-menu-icon"}
+        (comp/svg {:fontSize "small"} icon/users-path))
+      (comp/list-item-text
+        {:primary "Users"}))))
+
+(rum/defcs menu < rum/static
+                  (rum/local false :admin/open)
+  [{open :admin/open}]
   (comp/menu-list
     {:disablePadding true}
     (comp/menu-item
@@ -51,11 +71,25 @@
         (icon/settings {:fontSize "small"}))
       (comp/list-item-text
         {:primary "Settings"}))
+    (when (storage/admin?)
+      (comp/menu-item
+        {:button  true
+         :onClick #(reset! open (not @open))}
+        (comp/list-item-icon
+          {:className "Swarmpit-appbar-menu-icon"}
+          (icon/supervisor-account {:fontSize "small"}))
+        (comp/list-item-text
+          {:primary "Admin"})
+        (if @open
+          (icon/expand-less)
+          (icon/expand-more))))
+    (admin-menu open)
     (comp/link
       {:href   "https://github.com/swarmpit/swarmpit/issues/new"
        :color  "inherit"
        :target "_blank"}
       (comp/menu-item
+        {:button true}
         (comp/list-item-icon
           {:className "Swarmpit-appbar-menu-icon"}
           (icon/error-out {:fontSize "small"}))
@@ -93,7 +127,7 @@
        :endIcon   (menu-dropdown)} "")
     (comp/popper
       {:open          (some? anchorEl)
-       :className     "PnsAppBar-user-popper"
+       :className     "Swarmpit-appbar-popper"
        :anchorEl      anchorEl
        :placement     "bottom-end"
        :disablePortal true
