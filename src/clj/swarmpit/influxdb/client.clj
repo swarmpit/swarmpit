@@ -141,13 +141,15 @@
 
 (defn continuous-query-summary
   []
-  (->> (-> (list-continuous-queries)
-           (first)
-           (get "series")
-           (first)
-           (get "values"))
-       (map first)
-       (set)))
+  (let [queries (-> (list-continuous-queries)
+                    (first)
+                    (get "series"))
+        swarmpit-queries (-> (filter #(= "swarmpit" (get % "name")) queries)
+                             (first)
+                             (get "values"))]
+    (->> swarmpit-queries
+         (map first)
+         (set))))
 
 (defn write-task-points
   [tags {:keys [cpuPercentage memory memoryLimit memoryPercentage] :as task}]
