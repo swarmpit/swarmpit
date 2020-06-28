@@ -88,6 +88,7 @@
 (defn share [& args] (create-mui-icon "Share" args))
 (defn lock [& args] (create-mui-icon "Lock" args))
 (defn open-in-new [& args] (create-mui-icon "OpenInNew" args))
+(defn open-in-browser [& args] (create-mui-icon "OpenInBrowser" args))
 (defn group [& args] (create-mui-icon "Group" args))
 (defn arrow-forward [& args] (create-mui-icon "ArrowForward" args))
 (defn star [& args] (create-mui-icon "Star" args))
@@ -101,3 +102,4 @@
 (defn keyboard-arrow-left [& args] (create-mui-icon "KeyboardArrowLeft" args))
 (defn keyboard-arrow-right [& args] (create-mui-icon "KeyboardArrowRight" args))
 (defn supervisor-account [& args] (create-mui-icon "SupervisorAccount" args))
+(defn github [& args] (create-mui-icon "GitHub" args))
