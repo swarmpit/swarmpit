@@ -10,6 +10,12 @@
   (try (cc/version)
        (catch Exception _ false)))
 
+(defn- couch-schema-ready?
+  []
+  (try
+    (cc/database-exist?)
+    (catch Exception _ false)))
+
 (defn- influx-ready?
   []
   (try (ic/ping)
@@ -35,10 +41,7 @@
 
 (defn- create-couch-database
   []
-  (try
-    (cc/create-database)
-    (catch Exception ex
-      (:body (ex-data ex)))))
+  (cc/create-database))
 
 (defn- create-influx-database
   []
@@ -56,8 +59,11 @@
 (defn init-couch
   []
   (wait-for-db 100 couch-ready? "CouchDB")
-  (when (not (:error (create-couch-database)))
-    (info "CouchDB schema created"))
+  (if (couch-schema-ready?)
+    (info "Swarmpit DB already exist")
+    (do
+      (create-couch-database)
+      (info "Swarmpit DB successfully created")))
   (migrate))
 
 (defn init-influx

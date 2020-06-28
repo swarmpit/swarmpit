@@ -22,9 +22,9 @@
             (when (not= current-digest
                         latest-digest)
               (api/redeploy-service nil id nil)
-              (info "Service" id "(" name ") autoredeploy fired! DIGEST: [" current-digest "] -> [" latest-digest "]")))
+              (info "Service" id (str "(" name ")") "autoredeploy fired! DIGEST:" (str "[" current-digest "] -> [" latest-digest "]"))))
           (catch ExceptionInfo e
-            (error "Service" id "(" name ") autoredeploy failed! " (ex-data e))))))))
+            (error "Service" id (str "(" name ")") "autoredeploy failed!" (ex-data e))))))))
 
 (defn init []
   (let [start (.plusSeconds (Instant/now) 60)]

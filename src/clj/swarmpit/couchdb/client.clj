@@ -84,6 +84,12 @@
                 :api    "/"})
       :body))
 
+(defn database-exist?
+  []
+  (-> (execute {:method :HEAD
+                :api    "/swarmpit"})
+      :status))
+
 (defn create-database
   []
   (-> (execute {:method :PUT

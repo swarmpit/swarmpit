@@ -77,8 +77,10 @@
       (let [response (with-timeout timeout (request-method url request-options))
             response-body (-> response :body)
             response-headers (-> response :headers)
+            response-status (-> response :status)
             response-body (ok-response response-body)]
-        {:headers response-headers
+        {:status  response-status
+         :headers response-headers
          :body    response-body})
       (catch IOException exception
         (log-error request exception)
