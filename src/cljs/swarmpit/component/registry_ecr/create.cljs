@@ -18,7 +18,7 @@
              [:a {:href   "https://docs.aws.amazon.com/AmazonECR/latest/userguide/ECR_IAM_user_policies.html"
                   :target "_blank"} "IAM ECR User Guide"]
              [:br]
-             [:span "We strongly recommned you to set "]
+             [:span "We strongly recommend you to set "]
              [:a {:href   "https://docs.aws.amazon.com/AmazonECR/latest/userguide/ecr_managed_policies.html#AmazonEC2ContainerRegistryReadOnly"
                   :target "_blank"} "READ-ONLY Access"]]))
 

@@ -18,7 +18,7 @@
              [:a {:href   "https://docs.microsoft.com/en-us/azure/container-registry/container-registry-auth-service-principal"
                   :target "_blank"} "ACR SP Auth"]
              [:br]
-             [:span "We strongly recommned you to use "]
+             [:span "We strongly recommend you to use "]
              [:a {:href   "https://raw.githubusercontent.com/swarmpit/tooling/master/azure/create-acr-sp.sh"
                   :target "_blank"} "READER role only"]]))
 
