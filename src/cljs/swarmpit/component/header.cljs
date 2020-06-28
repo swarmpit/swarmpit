@@ -141,31 +141,6 @@
               (comp/divider)
               (menu))))))))
 
-(defn- mobile-actions-menu
-  [actions mobileMoreAnchorEl]
-  (comp/menu
-    {:id              "Swarmpit-appbar-action-menu"
-     :key             "Swarmpit-appbar-action-menu"
-     :anchorEl        mobileMoreAnchorEl
-     :anchorOrigin    {:vertical   "top"
-                       :horizontal "right"}
-     :transformOrigin {:vertical   "top"
-                       :horizontal "right"}
-     :open            (some? mobileMoreAnchorEl)
-     :onClose         #(state/update-value [:mobileMoreAnchorEl] nil state/layout-cursor)}
-    (->> actions
-         (map #(comp/menu-item
-                 {:key      (str "mobile-menu-item-" (:name %))
-                  :disabled (:disabled %)
-                  :onClick  (fn []
-                              ((:onClick %))
-                              (state/update-value [:mobileMoreAnchorEl] nil state/layout-cursor))}
-                 (comp/list-item-icon
-                   {:key (str "mobile-menu-item-icon-" (:name %))} (:icon %))
-                 (comp/typography
-                   {:variant "inherit"
-                    :key     (str "mobile-menu-item-text-" (:name %))} (:name %)))))))
-
 (rum/defc search-input < rum/reactive [on-change-fn title]
   (let [{:keys [query]} (state/react state/search-cursor)]
     (html
@@ -222,7 +197,7 @@
        :message          (mobile-search-message on-change-fn title)
        :action           (mobile-search-action)})))
 
-(rum/defc appbar-mobile-section < rum/static [search-fn actions]
+(rum/defc appbar-mobile-section < rum/static [search-fn]
   (html
     [:div.Swarmpit-appbar-section-mobile
      (when search-fn
@@ -230,30 +205,13 @@
          {:key           "menu-search"
           :aria-haspopup "true"
           :onClick       #(state/update-value [:mobileSearchOpened] true state/layout-cursor)
-          :color         "inherit"} (icon/search {})))
-     (when (some? actions)
-       (comp/icon-button
-         {:key           "menu-more"
-          :aria-haspopup "true"
-          :onClick       (fn [e]
-                           (state/update-value [:mobileMoreAnchorEl] (.-currentTarget e) state/layout-cursor))
-          :color         "inherit"} (icon/more)))]))
+          :color         "inherit"} (icon/search {})))]))
 
-(rum/defc appbar-desktop-section < rum/static [search-fn actions title]
+(rum/defc appbar-desktop-section < rum/static [search-fn title]
   (html
     [:div.Swarmpit-appbar-section-desktop
      (when search-fn
-       (search-input search-fn title))
-     (->> actions
-          (filter #(or (nil? (:disabled %))
-                       (false? (:disabled %))))
-          (map #(comp/tooltip
-                  {:title (:name %)
-                   :key   (str "menu-tooltip-" (:name %))}
-                  (comp/icon-button
-                    {:color   "inherit"
-                     :key     (str "menu-btn-" (:name %))
-                     :onClick (:onClick %)} (:icon %)))))]))
+       (search-input search-fn title))]))
 
 (defonce appbar-elevation (atom 0))
 
@@ -270,8 +228,8 @@
              (reset! appbar-elevation 4))))) state)})
 
 (rum/defc appbar < rum/reactive
-                   mixin-on-scroll [{:keys [title subtitle search-fn actions]}]
-  (let [{:keys [mobileSearchOpened menuAnchorEl mobileMoreAnchorEl version]} (state/react state/layout-cursor)
+                   mixin-on-scroll [{:keys [title search-fn]}]
+  (let [{:keys [mobileSearchOpened menuAnchorEl version]} (state/react state/layout-cursor)
         elevation (rum/react appbar-elevation)]
     (comp/mui
       (html
@@ -304,8 +262,7 @@
                 :noWrap    true}
                title)
              (html [:div.grow])
-             (appbar-desktop-section search-fn actions title)
-             (appbar-mobile-section search-fn actions)
+             (appbar-desktop-section search-fn title)
+             (appbar-mobile-section search-fn)
              (user-menu menuAnchorEl)))
-         (mobile-actions-menu actions mobileMoreAnchorEl)
          (mobile-search search-fn title mobileSearchOpened)]))))

@@ -6,8 +6,7 @@
          (atom {:route   nil
                 :layout  {:mobileOpened       false
                           :mobileSearchOpened false
-                          :menuAnchorEl       nil
-                          :mobileMoreAnchorEl nil}
+                          :menuAnchorEl       nil}
                 :dialog  {:open false}
                 :search  {:query ""}
                 :message {:text ""
