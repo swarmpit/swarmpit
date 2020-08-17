@@ -35,6 +35,7 @@
                  [clj-http "3.8.0"]
                  [clj-yaml "0.4.0"]
                  [cljs-ajax "0.5.8"]
+                 [markdown-clj "1.10.4"]
                  [cheshire "5.9.0"]
                  [digest "1.4.5"]
                  [environ "1.1.0"]

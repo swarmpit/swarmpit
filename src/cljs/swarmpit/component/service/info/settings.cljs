@@ -197,7 +197,7 @@
         (->> links
              (map #(comp/button
                      {:size   "small"
-                      :color  "primary"
+                      :color  "default"
                       :target "_blank"
                       :href   (:value %)}
                      (str/replace (:name %) #"_" " "))))))))

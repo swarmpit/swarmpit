@@ -57,23 +57,37 @@
     :route   "configs"
     :domain  :config}])
 
-(defn footer []
+(rum/defc footer < rum/static []
   (comp/box
-    {:className "Swarmpit-drawer-footer"}
-    (comp/divider {:className "Swarmpit-drawer-divider"})
-    (comp/list-item
-      {:button        true
-       :component     "a"
-       :href          "/api-docs"
-       :target        "_blank"
-       :className     "Swarmpit-drawer-item"
-       :dense         true
-       :disableRipple true}
-      (comp/list-item-text
-        {:className "Swarmpit-drawer-footer-item-text"
-         :primary   (comp/typography {:variant "subtitle2"} "Swagger API")})
-      (comp/list-item-icon
-        {:color "primary"} (icon/open-in-new {:style {:fontSize 15}})))))
+    (comp/list
+      {:className "Swarmpit-drawer-footer"}
+      (comp/divider {:className "Swarmpit-drawer-divider"})
+      (comp/list-item
+        {:button        true
+         :component     "a"
+         :href          "/docs"
+         :target        "_blank"
+         :className     "Swarmpit-drawer-item"
+         :dense         true
+         :disableRipple true}
+        (comp/list-item-text
+          {:className "Swarmpit-drawer-footer-item-text"
+           :primary   (comp/typography {:variant "subtitle2"} "Documentation")})
+        (comp/list-item-icon
+          {:color "primary"} (icon/open-in-new {:style {:fontSize 15}})))
+      (comp/list-item
+        {:button        true
+         :component     "a"
+         :href          "/api-docs"
+         :target        "_blank"
+         :className     "Swarmpit-drawer-item"
+         :dense         true
+         :disableRipple true}
+        (comp/list-item-text
+          {:className "Swarmpit-drawer-footer-item-text"
+           :primary   (comp/typography {:variant "subtitle2"} "Swagger API")})
+        (comp/list-item-icon
+          {:color "primary"} (icon/open-in-new {:style {:fontSize 15}}))))))
 
 (defn- filter-menu [docker-api]
   (if (<= 1.30 docker-api)

@@ -1,12 +1,15 @@
 (ns swarmpit.handler
   (:require [clojure.walk :refer [keywordize-keys]]
             [clojure.tools.logging :as log]
+            [clojure.java.io :as io]
             [net.cgrand.enlive-html :as html :refer [deftemplate]]
+            [markdown.core :as md]
             [swarmpit.api :as api]
             [swarmpit.slt :as slt]
             [swarmpit.token :as token]
             [swarmpit.stats :as stats]
-            [swarmpit.version :as version]))
+            [swarmpit.version :as version])
+  (:import (java.io StringReader)))
 
 (defn include-css [href revision]
   (first (html/html [:link {:href (str href "?r=" revision) :rel "stylesheet"}])))
@@ -14,10 +17,24 @@
 (defn include-js [src revision]
   (first (html/html [:script {:src (str src "?r=" revision)}])))
 
+(defn md->body []
+  (-> (slurp "/Users/PaloTropiHlouposti/Workspace/swarmpit/swarmpit/doc/configuration.md")
+      (md/md-to-html-string)
+      (StringReader.)
+      (html/html-resource)
+      (first)
+      :content
+      (first)
+      :content))
+
 (deftemplate index-page "index.html"
              [revision]
              [:head] (html/append (map #(include-css % revision) ["css/main.css"]))
              [:body] (html/append (map #(include-js % revision) ["js/main.js"])))
+
+(deftemplate doc-page "doc.html"
+             []
+             [:body] (html/append (md->body)))
 
 (defn resp-error
   [status response]
@@ -60,6 +77,14 @@
   {:status  200
    :headers {"Content-Type" "text/html"}
    :body    (apply str (index-page (:revision (version/info))))})
+
+;; Documentation handler
+
+(defn docs
+  [_]
+  {:status  200
+   :headers {"Content-Type" "text/html"}
+   :body    (apply str (doc-page))})
 
 ;; Version handler
 

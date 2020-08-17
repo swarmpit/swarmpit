@@ -26,6 +26,11 @@
      :get  (array-map
              :no-doc true
              #?@(:clj [:handler handler/index]))}]
+   ["/docs"
+    {:name :doc
+     :get  (array-map
+             :no-doc true
+             #?@(:clj [:handler handler/docs]))}]
    ["/events"
     {:name :events
      :get  (array-map
