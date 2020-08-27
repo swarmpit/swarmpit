@@ -21,6 +21,11 @@
 (defn pretty-print [fragment-map]
   (generate-string (hide-sensitive-data fragment-map) {:pretty true}))
 
+(defn pretty-print-ex [fragment-map]
+  (-> fragment-map
+      (select-keys [:headers :status :body :reason-phrase :type])
+      (pretty-print)))
+
 (defn output-fn
   ([data] (output-fn nil data))
   ([opts data]

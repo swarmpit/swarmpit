@@ -3,7 +3,7 @@
             [clj-http.client :as http]
             [taoensso.encore :as enc]
             [taoensso.timbre :refer [error]]
-            [swarmpit.log :refer [pretty-print]])
+            [swarmpit.log :refer [pretty-print pretty-print-ex]])
   (:import (java.util.concurrent TimeoutException ExecutionException)
            (java.io IOException)
            (clojure.lang ExceptionInfo)))
@@ -64,7 +64,7 @@
         enc/system-newline "|> Headers: " (pretty-print request-headers)
         enc/system-newline "|> Payload: " (pretty-print request-body)
         enc/system-newline "|< Message: " (.getMessage ex)
-        enc/system-newline "|< Data: " (pretty-print (ex-data ex))))))
+        enc/system-newline "|< Data: " (pretty-print-ex (ex-data ex))))))
 
 (defn execute-in-scope
   "Execute http request and parse result"
