@@ -11,5 +11,5 @@ arch=${ARCH:-$arch}
 url=https://download.docker.com/linux/static/stable/"$arch"/docker-"$version".tgz
 echo installing $url
 cd /tmp || exit
-curl $url | tar xz docker/docker
+curl -k $url | tar xz docker/docker
 mv docker/docker /usr/bin/docker
