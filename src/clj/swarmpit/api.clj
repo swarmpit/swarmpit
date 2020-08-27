@@ -1146,7 +1146,9 @@
 
 (defn stack-compose
   [stack-name]
-  (some-> (stack stack-name) (->compose) (->yaml)))
+  (let [yaml (some-> (stack stack-name) (->compose) (->yaml))]
+    (when yaml
+      (str/replace yaml "$" "$$"))))
 
 (defn service-compose
   [service-name]
