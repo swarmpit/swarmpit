@@ -84,7 +84,7 @@
       (let [user (->> (token/decode-basic token)
                       (api/user-by-credentials))]
         (if (nil? user)
-          (resp-unauthorized "Invalid credentials")
+          (resp-unauthorized "The username or password you entered is incorrect.")
           (resp-ok {:token (token/generate-jwt user)}))))))
 
 ;; Password handler
@@ -122,10 +122,15 @@
   (if (api/admin-exists?)
     (resp-error 403 "Admin already exists")
     (let [user (merge body {:type "user" :role "admin"})
-          response (api/create-user user)]
-      (if (some? response)
-        (resp-created (select-keys response [:id]))
-        (resp-error 400 "User already exist")))))
+          username (:username user)
+          password (:password user)]
+      (cond
+        (> 4 (count username)) (resp-error 400 "User must be at least 4 characters long.")
+        (> 8 (count password)) (resp-error 400 "Password must be at least 8 characters long.")
+        :else (let [response (api/create-user user)]
+                (if (some? response)
+                  (resp-created (select-keys response [:id]))
+                  (resp-error 400 "User already exist")))))))
 
 (defn me
   [{{:keys [usr]} :identity}]

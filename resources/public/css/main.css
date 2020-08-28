@@ -130,7 +130,6 @@ a {
 .Swarmpit-page {
     display: flex;
     justify-content: center;
-    background: #E1E2E1;
     min-height: 100vh;
 }
 
@@ -541,10 +540,6 @@ a {
     position: absolute;
     left: 72px;
     top: 40px;
-    /*border: 1px solid #5f6368;*/
-    /*padding: 1px 5px 1px 5px;*/
-    /*background-color: #fff;*/
-    /*border-radius: 15px;*/
     color: #5f6368;
     font-size: 0.75rem;
     font-weight: 400;
@@ -555,17 +550,30 @@ a {
 /** Login screen **/
 
 .Swarmpit-login-layout {
-    width: 300px;
-    margin-left: auto;
-    margin-right: auto;
+    margin: 0 auto;
+    width: 460px;
+    position: relative;
+}
+
+.Swarmpit-login-version {
+    color: #5f6368;
+    font-size: 0.75rem;
+    font-weight: 400;
+    font-family: "Roboto", "Helvetica", "Arial", sans-serif;
+    line-height: 1.375em;
+}
+
+.Swarmpit-login-logo {
+    margin-bottom: 20px;
 }
 
 .Swarmpit-login-paper {
-    margin-top: 64px;
+    margin: 130px auto 0;
     display: flex;
     flex-direction: column;
     align-items: center;
-    padding: 16px 24px 24px;
+    padding: 42px 42px 36px;
+    border: 1px solid #eaeced;
 }
 
 .Swarmpit-login-avatar {

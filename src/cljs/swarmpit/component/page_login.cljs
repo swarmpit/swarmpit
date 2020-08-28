@@ -2,6 +2,7 @@
   (:require [material.icon :as icon]
             [material.components :as comp]
             [swarmpit.component.state :as state]
+            [swarmpit.component.common :as common]
             [swarmpit.url :refer [dispatch!]]
             [swarmpit.storage :as storage]
             [swarmpit.ajax :as ajax]
@@ -10,7 +11,6 @@
             [clojure.string :as str]
             [rum.core :as rum]
             [sablono.core :refer-macros [html]]
-            [swarmpit.component.menu :as menu]
             [swarmpit.component.progress :as progress]))
 
 (enable-console-print!)
@@ -40,33 +40,35 @@
   [local-state]
   (ajax/post
     (routes/path-for-backend :initialize)
-    {:headers {"Authorization" nil}
-     :params (select-keys @local-state [:username :password])
+    {:headers    {"Authorization" nil}
+     :params     (select-keys @local-state [:username :password])
      :on-success (fn [_]
+                   (swap! local-state assoc :message "")
                    (login-handler local-state)
                    (state/set-value true [:initialized]))
      :on-error   (fn [{:keys [response]}]
                    (swap! local-state assoc :message (:error response)))}))
 
 (defn- on-enter
-  [event local-state]
+  [event local-state login?]
   (if (= 13 (.-charCode event))
-    (login-handler local-state)))
+    (if login?
+      (login-handler local-state)
+      (create-admin-handler local-state))))
 
 (defn- form-username [value local-state]
   (comp/text-field
-    {:id              "user"
-     :key             "Swarmpit-login-username-input"
-     :label           "Username"
-     :variant         "outlined"
-     :fullWidth       true
-     :required        true
-     :autoComplete    "user"
-     :autoFocus       true
-     :defaultValue    value
-     :onChange        (fn [event]
-                        (swap! local-state assoc :username (-> event .-target .-value)))
-     :InputLabelProps {:shrink true}}))
+    {:id           "user"
+     :key          "Swarmpit-login-username-input"
+     :label        "Username"
+     :variant      "outlined"
+     :fullWidth    true
+     :required     true
+     :autoComplete "user"
+     :autoFocus    true
+     :defaultValue value
+     :onChange     (fn [event]
+                     (swap! local-state assoc :username (-> event .-target .-value)))}))
 
 (defn- form-password-adornment [local-state]
   (let [show-password? (:showPassword @local-state)]
@@ -82,59 +84,55 @@
           (icon/visibility)
           (icon/visibility-off))))))
 
-(defn- form-password [value error local-state]
+(defn- form-password [value error local-state login?]
   (let [show-password? (:showPassword @local-state)]
     (comp/text-field
-      {:id              "password"
-       :key             "Swarmpit-login-password-input"
-       :label           "Password"
-       :variant         "outlined"
-       :error           (not (str/blank? error))
-       :helperText      (when (not (str/blank? error))
-                          "The username or password you entered is incorrect.")
-       :fullWidth       true
-       :required        true
-       :type            (if show-password?
-                          "text"
-                          "password")
-       :defaultValue    value
-       :onChange        (fn [event]
-                          (swap! local-state assoc :password (-> event .-target .-value)))
-       :onKeyPress      (fn [event]
-                          (on-enter event local-state))
-       :InputLabelProps {:shrink true}
-       :InputProps      {:endAdornment (form-password-adornment local-state)}})))
+      {:id           "password"
+       :key          "Swarmpit-login-password-input"
+       :label        "Password"
+       :variant      "outlined"
+       :error        (not (str/blank? error))
+       :helperText   (when (not (str/blank? error)) error)
+       :fullWidth    true
+       :required     true
+       :type         (if show-password?
+                       "text"
+                       "password")
+       :defaultValue value
+       :onChange     (fn [event]
+                       (swap! local-state assoc :password (-> event .-target .-value)))
+       :onKeyPress   (fn [event]
+                       (on-enter event local-state login?))
+       :InputProps   {:endAdornment (form-password-adornment local-state)}})))
 
 (defn- form-login [local-state]
-  (let [canSubmit? (:canSubmit @local-state)]
-    (comp/button
-      {:className "Swarmpit-login-form-submit"
-       :disabled  (not canSubmit?)
-       :type      "submit"
-       :variant   "contained"
-       :fullWidth true
-       :color     "primary"
-       :onClick   #(login-handler local-state)} "Sign in")))
+  (comp/button
+    {:className "Swarmpit-login-form-submit"
+     :type      "submit"
+     :size      "large"
+     :variant   "contained"
+     :fullWidth true
+     :color     "primary"
+     :onClick   #(login-handler local-state)} "Sign in"))
 
 (defn- form-create-admin [local-state]
-  (let [canSubmit? (:canSubmit @local-state)]
-    (comp/button
-      {:className "Swarmpit-login-form-submit"
-       :disabled  (not canSubmit?)
-       :type      "submit"
-       :variant   "contained"
-       :fullWidth true
-       :color     "primary"
-       :onClick   #(create-admin-handler local-state)} "Create admin")))
+  (comp/button
+    {:className "Swarmpit-login-form-submit"
+     :type      "submit"
+     :variant   "contained"
+     :fullWidth true
+     :color     "primary"
+     :onClick   #(create-admin-handler local-state)} "Create admin"))
 
 (rum/defcs form < (rum/local {:username     ""
                               :password     ""
                               :message      ""
-                              :canSubmit    true
+                              :canSubmit    false
                               :showPassword false} ::login)
                   rum/reactive [state]
   (let [local-state (::login state)
         initialized (state/react [:initialized])
+        version (state/react [:layout :version])
         username (:username @local-state)
         password (:password @local-state)
         message (:message @local-state)]
@@ -142,20 +140,24 @@
      [:div.Swarmpit-login-layout
       (comp/mui
         (comp/paper
-          {:className "Swarmpit-login-paper"}
+          {:className "Swarmpit-login-paper"
+           :elevation 0}
           (html
-            [:img {:src    "img/icon.svg"
-                   :width  "100%"}])
+            [:img {:src   "img/logo.svg"
+                   :class "Swarmpit-login-logo"
+                   :width "220px"}])
           (html
-            (progress/form (nil? initialized)
-                           {:height "200px"}
+            (progress/form
+              (nil? initialized)
+              {:height "200px"}
               (if initialized
                 [:div.Swarmpit-login-form
                  (form-username username local-state)
-                 (form-password password message local-state)
+                 (form-password password message local-state true)
                  (form-login local-state)]
                 [:div.Swarmpit-login-form
                  [:p "Create first admin account and sign in."]
                  (form-username username local-state)
-                 (form-password password message local-state)
-                 (form-create-admin local-state)])))))]]))
+                 (form-password password message local-state false)
+                 (form-create-admin local-state)])))))
+      (common/title-login-version version)]]))

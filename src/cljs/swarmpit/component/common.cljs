@@ -34,6 +34,10 @@
   (when version
     [:span.Swarmpit-title-version (str "v" (parse-version version))]))
 
+(rum/defc title-login-version < rum/static [version]
+  (when version
+    [:span.Swarmpit-login-version "Version: "(str "v" (parse-version version))]))
+
 (defn list-empty [title]
   (comp/typography
     {:key "empty-text"} (str "There are no " title " configured.")))
