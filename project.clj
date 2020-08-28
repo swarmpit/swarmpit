@@ -55,7 +55,7 @@
                  [org.yaml/snakeyaml "1.18"]
                  [org.flatland/ordered "1.5.9"]
                  [com.github.jnr/jnr-unixsocket "0.18"]]
-  :plugins [[lein-cljsbuild "1.1.7"]
+  :plugins [[lein-cljsbuild "1.1.8"]
             [lein-environ "1.1.0"]
             [lein-pprint "1.1.2"]
             [lein-cloverage "1.0.9"]]
@@ -115,13 +115,12 @@
   ;; Setting up nREPL for Figwheel and ClojureScript dev
   ;; Please see:
   ;; https://github.com/bhauman/lein-figwheel/wiki/Using-the-Figwheel-REPL-within-NRepl
-  :profiles {:dev     {:dependencies [[figwheel "0.5.17"]
-                                      [figwheel-sidecar "0.5.17"]
+  :profiles {:dev     {:dependencies [[figwheel "0.5.20"]
+                                      [figwheel-sidecar "0.5.20"]
                                       [cider/piggieback "0.4.1"]
-                                      [nrepl/nrepl "0.6.0"]
                                       [binaryage/devtools "0.9.10"]
                                       [criterium "0.4.4"]]
-                       :plugins      [[lein-figwheel "0.5.17"]
+                       :plugins      [[lein-figwheel "0.5.20"]
                                       [lein-doo "0.1.6"]]
                        :source-paths ["dev"]
                        :repl-options {:nrepl-middleware [cider.piggieback/wrap-cljs-repl]}}
