@@ -127,7 +127,6 @@
 (rum/defcs form < (rum/local {:username     ""
                               :password     ""
                               :message      ""
-                              :canSubmit    false
                               :showPassword false} ::login)
                   rum/reactive [state]
   (let [local-state (::login state)

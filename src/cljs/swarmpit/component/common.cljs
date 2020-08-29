@@ -36,7 +36,7 @@
 
 (rum/defc title-login-version < rum/static [version]
   (when version
-    [:span.Swarmpit-login-version "Version: "(str "v" (parse-version version))]))
+    [:span.Swarmpit-login-version "Version: " (parse-version version)]))
 
 (defn list-empty [title]
   (comp/typography

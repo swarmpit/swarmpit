@@ -37,8 +37,8 @@
                 (cmp/tooltip
                   {:title     (:tooltip header)
                    :placement "bottom"}
-                  (icon/help-outline {:className "Swarmpit-table-head-tooltip"
-                                      :fontSize  "small"}))))))
+                  (icon/info-outlined {:className "Swarmpit-table-head-tooltip"
+                                       :fontSize  "small"}))))))
         (:summary render-metadata)))))
 
 (defn table-body
