@@ -506,6 +506,7 @@
              :dockerhub (api/dockerhubs owner)
              :ecr (api/registries-ecr owner)
              :acr (api/registries-acr owner)
+             :github (api/registries-github owner)
              :gitlab (api/registries-gitlab owner))
            (resp-ok))
       (resp-error 400 (str "Unknown registry type [" registry "]")))))
@@ -520,6 +521,7 @@
              :dockerhub (api/dockerhub id)
              :ecr (api/registry-ecr id)
              :acr (api/registry-acr id)
+             :github (api/registry-github id)
              :gitlab (api/registry-gitlab id))
            (resp-ok))
       (resp-error 400 (str "Unknown registry type [" registry "]")))))
@@ -534,6 +536,7 @@
             :dockerhub (api/delete-dockerhub id)
             :ecr (api/delete-ecr-registry id)
             :acr (api/delete-acr-registry id)
+            :github (api/delete-github-registry id)
             :gitlab (api/delete-gitlab-registry id))
           (resp-ok))
       (resp-error 400 (str "Unknown registry type [" registry "]")))))
@@ -602,6 +605,17 @@
     (catch Exception e
       (resp-error 400 (get-in (ex-data e) [:body :error])))))
 
+(defmethod registry-add :github
+  [_ payload]
+  (try
+    (api/registry-github-info payload)
+    (let [response (api/create-github-registry payload)]
+      (if (some? response)
+        (resp-created (select-keys response [:id]))
+        (resp-error 400 "Github registry account already linked")))
+    (catch Exception e
+      (resp-error 400 (get-in (ex-data e) [:body :error])))))
+
 (defmethod registry-add :gitlab
   [_ payload]
   (try
@@ -659,6 +673,15 @@
   (try
     (api/registry-acr-info payload)
     (api/update-acr-registry id payload)
+    (resp-ok)
+    (catch Exception e
+      (resp-error 400 (get-in (ex-data e) [:body :error])))))
+
+(defmethod registry-edit :github
+  [_ payload id]
+  (try
+    (api/registry-github-info payload)
+    (api/update-github-registry id payload)
     (resp-ok)
     (catch Exception e
       (resp-error 400 (get-in (ex-data e) [:body :error])))))

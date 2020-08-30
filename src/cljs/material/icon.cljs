@@ -101,3 +101,4 @@
 (defn keyboard-arrow-left [& args] (create-mui-icon "KeyboardArrowLeft" args))
 (defn keyboard-arrow-right [& args] (create-mui-icon "KeyboardArrowRight" args))
 (defn supervisor-account [& args] (create-mui-icon "SupervisorAccount" args))
+(defn github [& args] (create-mui-icon "GitHub" args))

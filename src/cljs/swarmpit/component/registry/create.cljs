@@ -3,14 +3,13 @@
             [sablono.core :refer-macros [html]]
             [material.icon :as icon]
             [material.components :as comp]
-            [material.component.form :as form]
             [material.component.composite :as composite]
-            [swarmpit.component.common :as common]
             [swarmpit.component.mixin :as mixin]
             [swarmpit.component.state :as state]
             [swarmpit.component.registry-v2.create :as v2]
             [swarmpit.component.registry-ecr.create :as ecr]
             [swarmpit.component.registry-acr.create :as acr]
+            [swarmpit.component.registry-github.create :as github]
             [swarmpit.component.registry-gitlab.create :as gitlab]
             [swarmpit.component.registry-dockerhub.create :as dockerhub]))
 
@@ -35,9 +34,7 @@
 (defn- registry-type-form-item [value icon title]
   (comp/menu-item
     {:value value}
-    (comp/list-item-icon
-      {}
-      (comp/svg icon))
+    (comp/list-item-icon {} icon)
     (comp/list-item-text
       {:primary   title
        :className "Swarmpit-repo-registry-item"})))
@@ -60,12 +57,14 @@
                             "v2" (v2/reset-form)
                             "ecr" (ecr/reset-form)
                             "acr" (acr/reset-form)
+                            "github" (github/reset-form)
                             "gitlab" (gitlab/reset-form))))}
-    (registry-type-form-item "dockerhub" icon/docker-path "Dockerhub")
-    (registry-type-form-item "v2" icon/registries-path "Registry v2")
-    (registry-type-form-item "ecr" icon/amazon-path "Amazon ECR")
-    (registry-type-form-item "acr" icon/azure-path "Azure ACR")
-    (registry-type-form-item "gitlab" icon/gitlab-path "Gitlab registry")))
+    (registry-type-form-item "dockerhub" (comp/svg icon/docker-path) "Dockerhub")
+    (registry-type-form-item "v2" (comp/svg icon/registries-path) "Registry v2")
+    (registry-type-form-item "ecr" (comp/svg icon/amazon-path) "Amazon ECR")
+    (registry-type-form-item "acr" (comp/svg icon/azure-path) "Azure ACR")
+    (registry-type-form-item "github" (icon/github) "Github registry")
+    (registry-type-form-item "gitlab" (comp/svg icon/gitlab-path) "Gitlab registry")))
 
 (defn- registry-text [registry]
   (case registry
@@ -73,6 +72,7 @@
     "v2" v2/text
     "ecr" ecr/text
     "acr" acr/text
+    "github" github/text
     "gitlab" gitlab/text))
 
 (defn- registry-form [registry route]
@@ -81,6 +81,7 @@
     "v2" (v2/form route)
     "ecr" (ecr/form route)
     "acr" (acr/form route)
+    "github" (github/form route)
     "gitlab" (gitlab/form route)))
 
 (def registry-publish-text
@@ -116,6 +117,7 @@
           "v2" #(v2/create-registry-handler)
           "ecr" #(ecr/create-registry-handler)
           "acr" #(acr/create-registry-handler)
+          "github" #(github/create-registry-handler)
           "gitlab" #(gitlab/create-registry-handler))
         processing?)
       (comp/button

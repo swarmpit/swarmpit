@@ -429,6 +429,46 @@
        (rc/repositories)
        (rmi/->repositories)))
 
+;;; Registry Github API
+
+(defn registries-github
+  [owner]
+  (-> (cc/registries-github owner)
+      (cmi/->github-registries)))
+
+(defn registry-github
+  [registry-id]
+  (-> (cc/registry-github registry-id)
+      (cmi/->github-registry)))
+
+(defn registry-github->v2
+  [registry]
+  (-> registry
+      (assoc :password (:token registry))
+      (assoc :withAuth true)))
+
+(defn registry-github-info
+  [{:keys [_id token] :as registry}]
+  (let [old-passwd (:token (cc/registry-github _id))
+        github-v2 (registry-github->v2 registry)]
+    (if token
+      (rc/info github-v2)
+      (rc/info (assoc github-v2 :password old-passwd)))))
+
+(defn create-github-registry
+  [registry]
+  (cc/create-github-registry registry))
+
+(defn update-github-registry
+  [registry-id registry-delta]
+  (->> (cc/update-github-registry (cc/registry-github registry-id) registry-delta)
+       (cmi/->github-registry)))
+
+(defn delete-github-registry
+  [registry-id]
+  (->> (registry-github registry-id)
+       (cc/delete-github-registry)))
+
 ;;; Registry Gitlab API
 
 (defn registries-gitlab
@@ -585,7 +625,7 @@
           (cc/registries-acr owner)
           (cc/registries-gitlab owner)))
 
-(def supported-registry-types #{:dockerhub :v2 :ecr :acr :gitlab})
+(def supported-registry-types #{:dockerhub :v2 :ecr :acr :github :gitlab})
 
 (defn supported-registry-type? [type]
   (contains? supported-registry-types type))

@@ -30,6 +30,16 @@
        (map ->acr)
        (into [])))
 
+(defn ->github-registry
+  [registry]
+  (dissoc registry :token))
+
+(defn ->github-registries
+  [registries]
+  (->> registries
+       (map ->github-registry)
+       (into [])))
+
 (defn ->gitlab-registry
   [registry]
   (dissoc registry :token))
