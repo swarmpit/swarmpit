@@ -206,15 +206,13 @@
   ([]
    (volumes nil))
   ([label]
-   (let [usage (dc/df-memo)]
-     (-> (dc/volumes label)
-         (dmi/->volumes usage)))))
+   (-> (dc/volumes label)
+       (dmi/->volumes))))
 
 (defn volume
   [volume-name]
-  (let [usage (dc/df-memo)]
-    (-> (dc/volume volume-name)
-        (dmi/->volume usage))))
+  (-> (dc/volume volume-name)
+      (dmi/->volume)))
 
 (defn delete-volume
   [volume-name]
@@ -224,7 +222,7 @@
   [volume]
   (-> (dmo/->volume volume)
       (dc/create-volume)
-      (dmi/->volume nil)))
+      (dmi/->volume)))
 
 ;;; Dockerhub registry API
 

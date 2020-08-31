@@ -53,13 +53,13 @@
   {:primary   (fn [item] (:name item))
    :secondary (fn [item] (:value item))})
 
-(rum/defc form-general < rum/static [{:keys [id stack volumeName driver mountpoint size scope]}
+(rum/defc form-general < rum/static [{:keys [id stack volumeName driver mountpoint scope]}
                                      services]
   (comp/card
     {:className "Swarmpit-form-card"}
     (form/item-main "Driver" driver false)
     (form/item-main "Scope" scope)
-    (form/item-main "Space usage" (humanize/filesize size :binary false))
+    (form/item-main "Mountpoint" mountpoint)
     (when (and stack (not-empty services))
       (comp/box
         {}
