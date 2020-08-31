@@ -24,7 +24,9 @@
             [swarmpit.couchdb.client :as cc]
             [swarmpit.couchdb.mapper.inbound :as cmi]
             [swarmpit.couchdb.mapper.outbound :as cmo]
-            [swarmpit.gitlab.client :as gc]
+            [swarmpit.github.client :as ghc]
+            [swarmpit.github.mapper :as ghm]
+            [swarmpit.gitlab.client :as glc]
             [swarmpit.aws.client :as awsc]
             [swarmpit.agent.client :as sac]
             [clojure.core.memoize :as memo]
@@ -469,6 +471,30 @@
   (->> (registry-github registry-id)
        (cc/delete-github-registry)))
 
+(defn github-user-packages
+  [registry]
+  (-> (ghc/user-packages registry)
+      (ghm/->package-name :user)))
+
+(defn github-org-packages
+  [registry]
+  (flatten
+    (map
+      (fn [x]
+        (-> (ghc/org-packages registry (:login x))
+            (ghm/->package-name :organization)))
+      (ghc/orgs registry))))
+
+(defn registry-github-repositories
+  [registry-id]
+  (let [registry (cc/registry-github registry-id)]
+    (map (fn [p]
+           (into {:id   (hash p)
+                  :name p}))
+         (concat
+           (github-user-packages registry)
+           (github-org-packages registry)))))
+
 ;;; Registry Gitlab API
 
 (defn registries-gitlab
@@ -514,12 +540,12 @@
   (flatten
     (map
       (fn [x]
-        (gc/group-projects registry (:id x)))
-      (gc/groups registry))))
+        (glc/group-projects registry (:id x)))
+      (glc/groups registry))))
 
 (defn gitlab-membership-projects
   [registry]
-  (gc/projects registry))
+  (glc/projects registry))
 
 (defn gitlab-projects
   [registry]
@@ -537,7 +563,7 @@
   (let [registry (cc/registry-gitlab registry-id)]
     (->> (gitlab-projects-memo registry)
          (map (fn [x]
-                (gc/project-repositories registry (:id x))))
+                (glc/project-repositories registry (:id x))))
          (flatten)
          (map (fn [{:keys [path]}]
                 (into {:id   (hash path)
@@ -623,6 +649,7 @@
   (concat (cc/registries-v2 owner)
           (cc/registries-ecr owner)
           (cc/registries-acr owner)
+          (cc/registries-github owner)
           (cc/registries-gitlab owner)))
 
 (def supported-registry-types #{:dockerhub :v2 :ecr :acr :github :gitlab})
@@ -645,6 +672,7 @@
       (case (:type registry)
         "ecr" (registry-ecr->v2 registry)
         "acr" (registry-acr->v2 registry)
+        "github" (registry-github->v2 registry)
         "gitlab" (registry-gitlab->v2 registry)
         registry))))
 

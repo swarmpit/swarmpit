@@ -49,6 +49,15 @@
                    (doseq [item response]
                      (state/add-item item (conj state/form-state-cursor :registries))))}))
 
+(defn- github-registries-handler
+  []
+  (ajax/get
+    (routes/path-for-backend :registries {:registryType :github})
+    {:state      [:loading? :github]
+     :on-success (fn [{:keys [response]}]
+                   (doseq [item response]
+                     (state/add-item item (conj state/form-state-cursor :registries))))}))
+
 (defn- gitlab-registries-handler
   []
   (ajax/get
@@ -102,6 +111,7 @@
                                  :ecr       true
                                  :dockerhub true
                                  :acr       true
+                                 :github    true
                                  :gitlab    true}
                     :manual     false
                     :searching? false
@@ -123,6 +133,7 @@
       (ecrs-handler)
       (acrs-handler)
       (dockerhub-handler)
+      (github-registries-handler)
       (gitlab-registries-handler))))
 
 (defn- form-manual [value]
@@ -220,6 +231,17 @@
       {:primary   (:spName account)
        :className "Swarmpit-repo-registry-item"})))
 
+(defn github-reg [account index]
+  (comp/menu-item
+    {:key   (:username account)
+     :value index}
+    (comp/list-item-icon
+      {}
+      (icon/github))
+    (comp/list-item-text
+      {:primary   (:username account)
+       :className "Swarmpit-repo-registry-item"})))
+
 (defn gitlab-reg [account index]
   (comp/menu-item
     {:key   (:username account)
@@ -264,6 +286,7 @@
                "v2" (v2-reg i index)
                "ecr" (ecr-reg i index)
                "acr" (acr-reg i index)
+               "github" (github-reg i index)
                "gitlab" (gitlab-reg i index)))))))
 
 (defn- on-change-search [event active]
@@ -395,6 +418,7 @@
       (or (:v2 loading?)
           (:ecr loading?)
           (:acr loading?)
+          (:github loading?)
           (:gitlab loading?)
           (:dockerhub loading?))
       (form-repo))))

@@ -552,6 +552,7 @@
              :dockerhub (api/dockerhub-repositories id)
              :ecr (api/registry-ecr-repositories id)
              :acr (api/registry-acr-repositories id)
+             :github (api/registry-github-repositories id)
              :gitlab (api/registry-gitlab-repositories id))
            (resp-ok))
       (resp-error 400 (str "Unknown registry type " registry)))))

@@ -5,7 +5,7 @@
             [taoensso.timbre :as timbre]
             [clojure.string :as str]))
 
-(def sensitive-tokens [:password :secret :Authorization])
+(def sensitive-tokens [:password :secret :Authorization :Private-Token])
 
 (defn hide-sensitive-data [fragment-map]
   (update-in-if-present

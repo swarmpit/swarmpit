@@ -72,7 +72,7 @@
 
 (defn init-form-value
   []
-  (state/set-value {:githubUrl "https://github.com"
+  (state/set-value {:githubUrl "https://api.github.com"
                     :url       "https://docker.pkg.github.com"
                     :public    false
                     :username  ""
