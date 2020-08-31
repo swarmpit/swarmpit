@@ -1,0 +1,10 @@
+query UserOrganizations($login: String!) {
+    user(login: $login) {
+        organizations(first:100) {
+            nodes {
+                name
+                login
+            }
+        }
+    }
+}

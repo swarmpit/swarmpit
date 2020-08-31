@@ -1,0 +1,12 @@
+query OrgPackages($login: String!) {
+    organization(login:$login) {
+        packages(first:100, packageType:DOCKER) {
+            nodes {
+                name
+                repository {
+                    nameWithOwner
+                }
+            }
+        }
+    }
+}
