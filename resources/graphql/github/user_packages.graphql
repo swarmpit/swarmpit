@@ -2,9 +2,19 @@ query UserPackages($login: String!) {
     user(login: $login) {
         packages(first: 100, packageType: DOCKER) {
             nodes {
+                id
                 name
                 repository {
-                    nameWithOwner
+                    owner {
+                        login
+                    }
+                }
+                versions(first:10) {
+                    nodes {
+                        id
+                        version
+                        readme
+                    }
                 }
             }
         }

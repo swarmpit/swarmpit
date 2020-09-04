@@ -1,0 +1,5 @@
+mutation DeletePackage($id: String!) {
+    deletePackageVersion(input:{packageVersionId:$id}) {
+        success
+    }
+}
