@@ -3,6 +3,6 @@
 
 (defn ->package-name [response type]
   (let [nodes (get-in response [type :packages :nodes])]
-    (map #(str (get-in % [:repository :nameWithOwner])
+    (map #(str (get-in % [:repository :owner :login])
                "/"
                (:name %)) nodes)))

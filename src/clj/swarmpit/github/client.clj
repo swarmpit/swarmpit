@@ -5,7 +5,8 @@
 
 (defgraphql graphql-queries
             "graphql/github/user_packages.graphql"
-            "graphql/github/org_packages.graphql")
+            "graphql/github/org_packages.graphql"
+            "graphql/github/delete_package.graphql")
 
 (defn- graphql-response
   [result]
@@ -60,5 +61,19 @@
                   :api     "/graphql"
                   :options {:headers {:Authorization (str "bearer " (:token registry))}
                             :body    (:graphql query)}})
+        :body
+        (graphql-response))))
+
+(def delete-package-mutation (get-in query-map [:mutation :delete-package]))
+
+(defn delete-package
+  [registry id]
+  (let [mutation (delete-package-mutation {:id id})]
+    (-> (execute {:method  :POST
+                  :url     (:githubUrl registry)
+                  :api     "/graphql"
+                  :options {:headers {:Authorization (str "bearer " (:token registry))
+                                      :Accept        "application/vnd.github.package-deletes-preview+json"}
+                            :body    (:graphql mutation)}})
         :body
         (graphql-response))))
