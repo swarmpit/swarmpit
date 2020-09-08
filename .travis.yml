@@ -11,7 +11,7 @@ cache:
     - ~/.m2
     - ~/docker
 jdk:
-  - openjdk8
+  - openjdk11
 env:
   - DOCKER=test
   - DOCKER=stable
