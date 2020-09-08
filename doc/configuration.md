@@ -3,7 +3,7 @@
 Swarmpits behavior can be reconfigured via Environment Variables.
 
 ## `SWARMPIT_DOCKER_SOCK`
-Docker SOCK location used by docker client.
+Docker SOCK location used by docker client. In case of socket proxy use following format: `http://TCPENDPOINT:2375`
 Default is `/var/run/docker.sock`.
 
 ## `SWARMPIT_DOCKER_API`
