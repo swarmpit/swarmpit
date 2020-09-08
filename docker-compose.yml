@@ -10,6 +10,11 @@ services:
       - /var/run/docker.sock:/var/run/docker.sock:ro
     ports:
       - 888:8080
+    healthcheck:
+      test: curl -f https://localhost:8080 || exit 1
+      interval: 60s
+      timeout: 10s
+      retries: 3
     networks:
       - net
     deploy:
