@@ -11,7 +11,7 @@ services:
     ports:
       - 888:8080
     healthcheck:
-      test: curl -f https://localhost:8080 || exit 1
+      test: ["CMD", "curl", "-f", "http://localhost:8080"]
       interval: 60s
       timeout: 10s
       retries: 3
@@ -82,7 +82,6 @@ services:
 networks:
   net:
     driver: overlay
-    attachable: true
 
 volumes:
   db-data:
