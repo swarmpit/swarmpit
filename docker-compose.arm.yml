@@ -10,6 +10,11 @@ services:
       - /var/run/docker.sock:/var/run/docker.sock:ro
     ports:
       - 888:8080
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:8080"]
+      interval: 60s
+      timeout: 10s
+      retries: 3
     networks:
       - net
     deploy:
@@ -68,7 +73,6 @@ services:
 networks:
   net:
     driver: overlay
-    attachable: true
 
 volumes:
   db-data:

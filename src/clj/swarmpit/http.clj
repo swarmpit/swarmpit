@@ -2,7 +2,7 @@
   (:require [cheshire.core :refer [parse-string parse-stream generate-string]]
             [clj-http.client :as http]
             [taoensso.encore :as enc]
-            [taoensso.timbre :refer [error]]
+            [taoensso.timbre :refer [error debug]]
             [swarmpit.log :refer [pretty-print pretty-print-ex]])
   (:import (java.util.concurrent TimeoutException ExecutionException)
            (java.io IOException)
@@ -54,6 +54,17 @@
     (catch Exception _
       response-data)))
 
+(defn- log-success [{:keys [method url options scope] :as request} res]
+  (let [request-headers (:headers options)
+        request-body (:body options)]
+    (debug
+      (str
+        "Request execution OK! Scope: " scope
+        enc/system-newline "|> " (name method) " " url
+        enc/system-newline "|> Headers: " (pretty-print request-headers)
+        enc/system-newline "|> Payload: " (pretty-print request-body)
+        enc/system-newline "|< Response: "  (pretty-print res)))))
+
 (defn- log-error [{:keys [method url options scope] :as request} ex]
   (let [request-headers (:headers options)
         request-body (:body options)]
@@ -79,6 +90,7 @@
             response-headers (-> response :headers)
             response-status (-> response :status)
             response-body (ok-response response-body)]
+        ;(log-success request response-body)
         {:status  response-status
          :headers response-headers
          :body    response-body})
