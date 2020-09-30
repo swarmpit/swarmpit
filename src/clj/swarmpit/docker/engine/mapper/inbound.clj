@@ -74,21 +74,24 @@
 
 (defn ->node
   [node]
-  (array-map
-    :id (:ID node)
-    :version (get-in node [:Version :Index])
-    :nodeName (get-in node [:Description :Hostname])
-    :role (get-in node [:Spec :Role])
-    :availability (get-in node [:Spec :Availability])
-    :labels (map->name-value (get-in node [:Spec :Labels]))
-    :state (get-in node [:Status :State])
-    :address (get-in node [:Status :Addr])
-    :engine (get-in node [:Description :Engine :EngineVersion])
-    :arch (get-in node [:Description :Platform :Architecture])
-    :os (get-in node [:Description :Platform :OS])
-    :resources (->resources (get-in node [:Description :Resources]))
-    :plugins (->plugins node)
-    :leader (get-in node [:ManagerStatus :Leader])))
+  (let [role (get-in node [:Spec :Role])]
+    (array-map
+      :id (:ID node)
+      :version (get-in node [:Version :Index])
+      :nodeName (get-in node [:Description :Hostname])
+      :role role
+      :availability (get-in node [:Spec :Availability])
+      :labels (map->name-value (get-in node [:Spec :Labels]))
+      :state (get-in node [:Status :State])
+      :address (if (= "manager" role)
+                 (first (str/split (get-in node [:ManagerStatus :Addr]) #":"))
+                 (get-in node [:Status :Addr]))
+      :engine (get-in node [:Description :Engine :EngineVersion])
+      :arch (get-in node [:Description :Platform :Architecture])
+      :os (get-in node [:Description :Platform :OS])
+      :resources (->resources (get-in node [:Description :Resources]))
+      :plugins (->plugins node)
+      :leader (get-in node [:ManagerStatus :Leader]))))
 
 (defn ->nodes
   [nodes]
