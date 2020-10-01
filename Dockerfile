@@ -7,6 +7,8 @@ RUN apt-get update && \
     unzip /tmp/YourKit-JavaProfiler-2020.9-docker.zip -d /usr/local && \
     rm /tmp/YourKit-JavaProfiler-2020.9-docker.zip
 
+ENV LD_LIBRARY_PATH=/lib64
+
 ADD dev/script/install-docker-client.sh .
 RUN bash install-docker-client.sh
 
