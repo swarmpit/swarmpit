@@ -65,7 +65,7 @@ services:
 
 Run `visualvm` or `jconsole`
 
-1. File -> `Add JMX Connection...`
+1. Applications -> `Add JMX Connection...`
 2. Enter the `host` and `port` (e.g. `localhost:8849`).
 
 and you are set.
@@ -128,7 +128,7 @@ services:
 
 Run `YourKit-JavaProfiler-2020.9`
 
-1. File -> `Add Remote Application...`
+1. Monitor applications -> `Add Remote Application...`
 2. Choose simple discovery method with `port` (e.g. `889`).
 
 and you are set.
