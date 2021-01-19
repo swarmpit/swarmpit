@@ -36,6 +36,9 @@ services:
     networks:
       - net
     deploy:
+      placement:
+        constraints:
+          - node.role == manager
       resources:
         limits:
           cpus: '0.30'
@@ -51,6 +54,9 @@ services:
     networks:
       - net
     deploy:
+      placement:
+        constraints:
+          - node.role == manager
       resources:
         limits:
           cpus: '0.60'
