@@ -29,6 +29,6 @@
 (defn init []
   (let [start (.plusSeconds (Instant/now) 60)]
     (chime/chime-at
-      (chime/periodic-seq start (Duration/ofMinutes 1))
+      (chime/periodic-seq start (Duration/ofMinutes 5))
       (fn [time]
         (autoredeploy-job)))))
