@@ -27,7 +27,7 @@ services:
         constraints:
           - node.role == manager
   db:
-    image: treehouses/couchdb:2.3.0
+    image: treehouses/couchdb:2.3.1
     volumes:
       - db-data:/opt/couchdb/data
     networks:
