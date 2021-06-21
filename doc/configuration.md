@@ -29,3 +29,7 @@ Default is `nil`.
 ## `SWARMPIT_WORK_DIR`
 Swarmpit working directory location.
 Default is `/tmp`.
+
+## `SARMPIT_BASE_URL`
+Url path that Swarmpit will use. E.g.: `/swarmpit/`
+Default is `nil`.
