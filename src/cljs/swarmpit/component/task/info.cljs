@@ -145,7 +145,7 @@
       (comp/button
         {:size     "small"
          :color    "primary"
-         :disabled (not (contains? #{"json-file" "journald"} logdriver))
+         :disabled (not (contains? #{"json-file" "journald", "local"} logdriver))
          :href     (routes/path-for-frontend :task-info
                                              {:id id}
                                              {:log 1})}
