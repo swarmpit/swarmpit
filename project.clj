@@ -54,7 +54,7 @@
                  [com.cognitect.aws/sts "798.2.678.0"]
                  [org.yaml/snakeyaml "1.18"]
                  [org.flatland/ordered "1.5.9"]
-                 [com.github.jnr/jnr-unixsocket "0.18"]]
+                 [com.github.jnr/jnr-unixsocket "0.38.14"]]
   :plugins [[lein-cljsbuild "1.1.8"]
             [lein-environ "1.1.0"]
             [lein-pprint "1.1.2"]
