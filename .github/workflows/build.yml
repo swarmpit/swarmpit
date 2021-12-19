@@ -1,0 +1,87 @@
+name: Test, Build & Deploy
+
+on:
+  push:
+    branches:
+      - new-ci
+  pull_request:
+
+jobs:
+  clojure:
+    name: Test & Build Clojure
+    env:
+      DOCKER: stable
+    runs-on: ubuntu-latest
+    steps:
+      - name: checkout
+        uses: actions/checkout@v2
+      - name: install java
+        uses: actions/setup-java@v2
+        with:
+          distribution: 'zulu'
+          java-version: '11'
+      - name: install clojure tools
+        uses: DeLaGuardo/setup-clojure@3.7
+        with:
+          lein: latest
+      - run: ./init-db.sh
+        name: start DB
+        working-directory: dev/scripts
+      - run: ./init-influx.sh
+        name: start Influx
+        working-directory: dev/scripts
+      - run: ./init-influx.sh
+        name: start Agent
+        working-directory: dev/scripts
+      - run: ./init-dind.sh
+        name: start Docker in Docker
+        working-directory: dev/scripts
+      - run: lein deps
+      - run: lein test :all
+      - run: lein uberjar
+      - name: upload release jar
+        uses: actions/upload-artifact@v2
+        with:
+          name: swarmpit.jar
+          path: target
+  docker:
+    name: Build and push docker
+    runs-on: ubuntu-latest
+    needs: test-and-build
+    env:
+      SECRET: ${{ secrets.PKG_USER }}
+      PR: ${{ github.event.pull_request.number }}
+    steps:
+      - name: checkout
+        uses: actions/checkout@v2
+      - uses: actions/download-artifact@v2
+        name: download release jar
+        with:
+          name: swarmpit.jar
+          path: target
+      - name: set up QEMU
+        uses: docker/setup-qemu-action@v1
+      - name: set up Docker Buildx
+        uses: docker/setup-buildx-action@v1
+      - name: login to GHCR
+        if: env.SECRET != 0
+        uses: docker/login-action@v1
+        with:
+          registry: ghcr.io
+          username: ${{ secrets.PKG_USER }}
+          password: ${{ secrets.PKG_PWD }}
+      - name: login to DockerHub
+        if: env.SECRET != 0
+        uses: docker/login-action@v1
+        with:
+          username: ${{ secrets.DOCKERHUB_USER }}
+          password: ${{ secrets.DOCKERHUB_PASS }}
+      - name: build and push
+        uses: docker/build-push-action@v2
+        with:
+          context: .
+          push: ${{ env.SECRET != 0 }}
+          platforms: linux/amd64,linux/arm64,linux/arm/v7,linux/arm/v6
+          tags: |
+            ghcr.io/swarmpit/swarmpit:new-ci
+            swarmpit/swarmpit:new-ci
