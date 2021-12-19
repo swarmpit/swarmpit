@@ -33,7 +33,7 @@ jobs:
       - run: ./init-influx.sh
         name: start Agent
         working-directory: dev/script
-      - run: ./init-dind.sh
+      - run: ./start-dind.sh
         name: start Docker in Docker
         working-directory: dev/script
       - run: lein deps
