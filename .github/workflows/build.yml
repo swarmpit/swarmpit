@@ -47,7 +47,7 @@ jobs:
   docker:
     name: Build and push docker
     runs-on: ubuntu-latest
-    needs: test-and-build
+    needs: clojure
     env:
       SECRET: ${{ secrets.PKG_USER }}
       PR: ${{ github.event.pull_request.number }}
