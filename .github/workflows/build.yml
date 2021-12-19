@@ -43,7 +43,7 @@ jobs:
         uses: actions/upload-artifact@v2
         with:
           name: swarmpit.jar
-          path: target
+          path: target/swarmpit.jar
   docker:
     name: Build and push docker
     runs-on: ubuntu-latest
