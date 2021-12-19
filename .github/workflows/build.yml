@@ -26,16 +26,16 @@ jobs:
           lein: latest
       - run: ./init-db.sh
         name: start DB
-        working-directory: dev/scripts
+        working-directory: dev/script
       - run: ./init-influx.sh
         name: start Influx
-        working-directory: dev/scripts
+        working-directory: dev/script
       - run: ./init-influx.sh
         name: start Agent
-        working-directory: dev/scripts
+        working-directory: dev/script
       - run: ./init-dind.sh
         name: start Docker in Docker
-        working-directory: dev/scripts
+        working-directory: dev/script
       - run: lein deps
       - run: lein test :all
       - run: lein uberjar
