@@ -31,5 +31,4 @@
           {:maxWidth  "sm"
            :className "Swarmpit-container"}
           (form-password)
-          (if (storage/user?)
-            (form-api-access)))]])))
+            (form-api-access))]])))

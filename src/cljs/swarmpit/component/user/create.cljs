@@ -65,7 +65,7 @@
                      :key   "viewer-role"})
          :key     "viewer-role"
          :value   "viewer"
-         :label   "Viewer"})
+         :label   "View Only"})
       (comp/form-control-label
         {:control (comp/radio
                     {:name  "user-role"

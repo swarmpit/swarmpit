@@ -85,7 +85,7 @@
             {:pattern        #"^/api/registry/(dockerhub|v2|ecr|acr|gitlab)/[a-zA-Z0-9]*$"
              :request-method #{:get :delete :post}
              :handler        {:and [authenticated-access owner-access user-access]}}
-            {:pattern        #"^/api/.*/dashboard"
+            {:pattern        #"^/api/.*/dashboard$"
              :request-method #{:delete :post}
              :handler        {:and [authenticated-access]}} ;;Allow pin/unpin by authenticated
             {:pattern        #"^/api/.*"
