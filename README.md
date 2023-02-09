@@ -10,8 +10,8 @@ This fork of Swarmpit allows users to be created with a 'View only' role.
 
 As you would expect 'View only' users can not make any modifications except pinning/unpinning and changing their password. With the exception of secret values, they can view all information.
 
-<img src="https://raw.githubusercontent.com/NeilInnes/swarmpit_view_only/master/resources/public/CreateUser.png">
-<img src="https://raw.githubusercontent.com/NeilInnes/swarmpit_view_only/master/resources/public/UserList.png">
+<img src="https://raw.githubusercontent.com/NeilInnes/swarmpit_view_only/view_only_user/resources/public/CreateUser.png">
+<img src="https://raw.githubusercontent.com/NeilInnes/swarmpit_view_only/view_only_user/resources/public/UserList.png">
 
 Please follow the original project at: [https://github.com/swarmpit/swarmpit](https://github.com/swarmpit/swarmpit)
 
