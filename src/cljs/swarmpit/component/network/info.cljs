@@ -18,7 +18,8 @@
             [swarmpit.routes :as routes]
             [sablono.core :refer-macros [html]]
             [rum.core :as rum]
-            [clojure.string :as str]))
+            [clojure.string :as str]
+            [swarmpit.storage :as storage]))
 
 (enable-console-print!)
 
@@ -133,10 +134,11 @@
          (comp/grid
            {:container true
             :spacing   2}
-           (comp/grid
-             {:item true
-              :xs   12}
-             (toolbar/toolbar "Network" (:networkName network) form-actions))
+           (if (storage/user?)
+             (comp/grid
+               {:item true
+                :xs   12}
+               (toolbar/toolbar "Network" (:networkName network) form-actions)))
            (comp/grid
              {:item true
               :xs   12}

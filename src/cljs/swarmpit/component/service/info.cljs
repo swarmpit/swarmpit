@@ -28,7 +28,8 @@
             [swarmpit.ajax :as ajax]
             [swarmpit.routes :as routes]
             [sablono.core :refer-macros [html]]
-            [rum.core :as rum]))
+            [rum.core :as rum]
+            [swarmpit.storage :as storage]))
 
 (enable-console-print!)
 
@@ -166,6 +167,18 @@
              (reverse)
              (filter #(not (= "shutdown" (:state %)))))
         tasks/onclick-handler))))
+
+(defn form-pin-action
+  [service service-id pinned?]
+  (if pinned?
+    {:onClick #(detach-service-handler service-id)
+     :icon    (comp/svg icon/pin-path)
+     :group   false
+     :name    "Detach"}
+    {:onClick #(pin-service-handler service-id)
+     :icon    (comp/svg icon/pin-path)
+     :group   false
+     :name    "Pin"}))
 
 (defn form-actions
   [service service-id pinned?]
@@ -348,7 +361,12 @@
               (comp/grid
                 {:item true
                  :xs   12}
-                (toolbar/toolbar "Service" (:serviceName service) (form-actions service id pinned?)))
+                (toolbar/toolbar
+                  "Service"
+                 (:serviceName service)
+                 (if (storage/user?)
+                   (form-actions service id pinned?)
+                   [(form-pin-action service id pinned?)])))
               (comp/grid
                 {:item true
                  :sm   6

@@ -6,7 +6,8 @@
             [swarmpit.routes :as routes]
             [swarmpit.url :refer [dispatch!]]
             [sablono.core :refer-macros [html]]
-            [rum.core :as rum]))
+            [rum.core :as rum]
+            [swarmpit.storage :as storage]))
 
 (enable-console-print!)
 
@@ -24,14 +25,16 @@
     (comp/card-header
       {:className "Swarmpit-table-card-header"
        :title     (comp/typography {:variant "h6"} "Secrets")
-       :action    (comp/icon-button
-                    {:aria-label "Edit"
-                     :disabled   immutable?
-                     :href       (routes/path-for-frontend
-                                   :service-edit
-                                   {:id service-id}
-                                   {:section 2})}
-                    (comp/svg icon/edit-path))})
+       :action    (if (storage/user?)
+                    (comp/icon-button
+                      {:aria-label "Edit"
+                       :disabled   immutable?
+                       :href       (routes/path-for-frontend
+                                     :service-edit
+                                     {:id service-id}
+                                     {:section 2})}
+                      (comp/svg icon/edit-path))
+                    nil)})
     (if (empty? secrets)
       (comp/card-content
         {}
@@ -41,5 +44,7 @@
         (list/list
           render-metadata
           secrets
-          onclick-handler)))))
+          (if (storage/user?)
+            onclick-handler
+            nil))))))
 

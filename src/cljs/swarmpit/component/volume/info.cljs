@@ -17,7 +17,8 @@
             [swarmpit.routes :as routes]
             [sablono.core :refer-macros [html]]
             [clojure.contrib.humanize :as humanize]
-            [rum.core :as rum]))
+            [rum.core :as rum]
+            [swarmpit.storage :as storage]))
 
 (enable-console-print!)
 
@@ -117,10 +118,11 @@
          (comp/grid
            {:container true
             :spacing   2}
-           (comp/grid
-             {:item true
-              :xs   12}
-             (toolbar/toolbar "Volume" (:volumeName volume) form-actions))
+           (if (storage/user?)
+             (comp/grid
+               {:item true
+                :xs   12}
+               (toolbar/toolbar "Volume" (:volumeName volume) form-actions)))
            (comp/grid
              {:item true
               :xs   12}

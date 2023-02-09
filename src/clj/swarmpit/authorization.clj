@@ -3,6 +3,7 @@
             [buddy.auth.accessrules :refer [success error wrap-access-rules]]
             [swarmpit.handler :refer [resp-error]]
             [swarmpit.token :refer [admin?]]
+            [swarmpit.token :refer [user?]]
             [swarmpit.couchdb.client :as cc]))
 
 (defn- authenticated-access
@@ -24,6 +25,15 @@
       true
       (error {:code    403
               :message "Unauthorized admin access"}))))
+
+(defn- user-access
+  [{:keys [identity]}]
+  (let [username (get-in identity [:usr :username])
+        user (cc/user-by-username username)]
+    (if (user? user)
+      true
+      (error {:code    403
+              :message "Unauthorized user access"}))))
 
 (defn- owner-access
   [{:keys [path-params identity]}]

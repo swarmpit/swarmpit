@@ -3,7 +3,8 @@
             [material.components :as comp]
             [swarmpit.component.password :as password]
             [swarmpit.component.api-access :as api-access]
-            [sablono.core :refer-macros [html]]))
+            [sablono.core :refer-macros [html]]
+            [swarmpit.storage :as storage]))
 
 (enable-console-print!)
 
@@ -30,4 +31,5 @@
           {:maxWidth  "sm"
            :className "Swarmpit-container"}
           (form-password)
-          (form-api-access))]])))
+          (if (storage/user?)
+            (form-api-access)))]])))

@@ -13,7 +13,8 @@
             [swarmpit.url :refer [dispatch!]]
             [sablono.core :refer-macros [html]]
             [cljs.core :as core]
-            [rum.core :as rum]))
+            [rum.core :as rum]
+            [swarmpit.storage :as storage]))
 
 (enable-console-print!)
 
@@ -181,6 +182,10 @@
                    distributions
                    filtered-distributions
                    render-metadata
-                   onclick-handler
-                   toolbar-render-metadata))))
+                   (if (storage/user?)
+                     onclick-handler
+                     "")
+                   (if (storage/user?)
+                     toolbar-render-metadata
+                     "")))))
 

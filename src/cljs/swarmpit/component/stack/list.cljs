@@ -12,7 +12,8 @@
             [swarmpit.url :refer [dispatch!]]
             [sablono.core :refer-macros [html]]
             [rum.core :as rum]
-            [swarmpit.component.common :as common]))
+            [swarmpit.component.common :as common]
+            [swarmpit.storage :as storage]))
 
 (enable-console-print!)
 
@@ -106,4 +107,6 @@
                         (sort-by :stackName))
                    render-metadata
                    onclick-handler
-                   toolbar-render-metadata))))
+                   (if (storage/user?)
+                     toolbar-render-metadata
+                     "")))))

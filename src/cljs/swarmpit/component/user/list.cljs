@@ -20,8 +20,10 @@
                       :render-fn (fn [item] (:username item))}
                      {:name      "Email"
                       :render-fn (fn [item] (:email item))}
+                     {:name      "Role"
+                      :render-fn (fn [item] (:role item))}
                      {:name      "Is Admin"
-                      :render-fn (fn [item] (if (:role item) "yes" "no"))}]}
+                      :render-fn (fn [item] (if (= "admin" (:role item)) "yes" "no"))}]}
    :list  {:primary   (fn [item] (:username item))
            :secondary (fn [item] (:email item))}})
 
