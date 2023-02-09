@@ -451,10 +451,11 @@
           (comp/grid
             {:container true
              :spacing   2}
-            (comp/grid
-              {:item true
-               :xs   12}
-              (toolbar/toolbar "Stack" stack-name (form-actions stack-name stackfile)))
+            (if (storage/user?)
+              (comp/grid
+                {:item true
+                 :xs   12}
+                (toolbar/toolbar "Stack" stack-name (form-actions stack-name stackfile))))
             (form-general-grid stack-name stackfile item)
             (form-services-grid stack-name services)
             (form-networks-grid stack-name networks)

@@ -363,10 +363,10 @@
                  :xs   12}
                 (toolbar/toolbar
                   "Service"
-                 (:serviceName service)
-                 (if (storage/user?)
-                   (form-actions service id pinned?)
-                   [(form-pin-action service id pinned?)])))
+                  (:serviceName service)
+                  (if (storage/user?)
+                    (form-actions service id pinned?)
+                    [(form-pin-action service id pinned?)])))
               (comp/grid
                 {:item true
                  :sm   6
@@ -403,7 +403,12 @@
               (comp/grid
                 {:item true
                  :xs   12}
-                (toolbar/toolbar "Service" (:serviceName service) (form-actions service id pinned?)))
+                (toolbar/toolbar
+                 "Service"
+                 (:serviceName service)
+                 (if (storage/user?)
+                   (form-actions service id pinned?)
+                   [(form-pin-action service id pinned?)])))
               (form-settings-grid service tasks stats)
               (form-tasks-grid service tasks)
               (form-networks-grid networks id immutable?)
