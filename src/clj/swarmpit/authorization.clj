@@ -30,7 +30,7 @@
   [{:keys [identity]}]
   (let [username (get-in identity [:usr :username])
         user (cc/user-by-username username)]
-    (if (user? user)
+    (if (or (admin? user) (user? user))
       true
       (error {:code    403
               :message "Unauthorized user access"}))))
@@ -75,16 +75,26 @@
              :handler        {:and [authenticated-access admin-access]}}
             {:pattern        #"^/api/registry/(dockerhub|v2|ecr|acr|gitlab)/[a-zA-Z0-9]*/repositories$"
              :request-method :get
-             :handler        {:and [authenticated-access registry-access]}}
+             :handler        {:and [authenticated-access registry-access user-access]}}
             {:pattern        #"^/api/registry/(dockerhub|v2|ecr|acr|gitlab)/[a-zA-Z0-9]*/tags$"
              :request-method :get
-             :handler        {:and [authenticated-access registry-access]}}
+             :handler        {:and [authenticated-access registry-access user-access]}}
             {:pattern        #"^/api/registry/(dockerhub|v2|ecr|acr|gitlab)/[a-zA-Z0-9]*/ports$"
              :request-method :get
-             :handler        {:and [authenticated-access registry-access]}}
+             :handler        {:and [authenticated-access registry-access user-access]}}
             {:pattern        #"^/api/registry/(dockerhub|v2|ecr|acr|gitlab)/[a-zA-Z0-9]*$"
              :request-method #{:get :delete :post}
-             :handler        {:and [authenticated-access owner-access]}}
+             :handler        {:and [authenticated-access owner-access user-access]}}
+            {:pattern        #"^/api/.*/dashboard"
+             :request-method #{:delete :post}
+             :handler        {:and [authenticated-access]}} ;;Allow pin/unpin by authenticated
+            {:pattern        #"^/api/.*"
+             :request-method #{:delete :post}
+             :handler        {:and [authenticated-access user-access]}} ;;Restrict ALL delete/post to user level and higher
+            {:pattern #"^/api/secrets/$"
+             :handler {:and [authenticated-access user-access]}} ;;Restrict getting secrets to user level and higher
+            {:pattern #"^/api/secrets/.*$"
+             :handler {:and [authenticated-access user-access]}} ;;Restrict getting secrets to user level and higher
             {:pattern #"^/api/.*"
              :handler authenticated-access}])
 
