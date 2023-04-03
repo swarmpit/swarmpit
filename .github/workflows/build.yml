@@ -81,7 +81,7 @@ jobs:
         with:
           context: .
           push: ${{ env.SECRET != 0 }}
-          platforms: linux/amd64,linux/arm64,linux/arm/v7,linux/arm/v6
+          platforms: linux/amd64,linux/arm64/v8,linux/arm/v7,linux/arm/v5
           tags: |
             ghcr.io/swarmpit/swarmpit:new-ci
             swarmpit/swarmpit:new-ci
