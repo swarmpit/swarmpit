@@ -262,7 +262,8 @@
   [config]
   (-> (execute {:method  :POST
                 :api     "/configs/create"
-                :options {:body config}})
+                :options {:body config
+                          :headers {:Content-Type "application/json"}}})
       :body))
 
 ;; Node
