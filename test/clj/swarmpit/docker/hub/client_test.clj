@@ -7,5 +7,5 @@
 
   (testing "error"
     (is (thrown-with-msg?
-          ExceptionInfo #"Dockerhub error: User not found"
+          ExceptionInfo #"User not found"
           (info {:username (swarmpit.uuid/uuid)})))))
