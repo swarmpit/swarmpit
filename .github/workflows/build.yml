@@ -14,14 +14,14 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - name: checkout
-        uses: actions/checkout@v2
+        uses: actions/checkout@v3
       - name: install java
-        uses: actions/setup-java@v2
+        uses: actions/setup-java@v3
         with:
           distribution: 'zulu'
           java-version: '11'
       - name: install clojure tools
-        uses: DeLaGuardo/setup-clojure@3.7
+        uses: DeLaGuardo/setup-clojure@9.5
         with:
           lein: latest
       - run: ./init-db.sh
@@ -40,7 +40,7 @@ jobs:
       - run: lein test :all
       - run: lein uberjar
       - name: upload release jar
-        uses: actions/upload-artifact@v2
+        uses: actions/upload-artifact@v3
         with:
           name: swarmpit.jar
           path: target/swarmpit.jar
@@ -53,31 +53,31 @@ jobs:
       PR: ${{ github.event.pull_request.number }}
     steps:
       - name: checkout
-        uses: actions/checkout@v2
-      - uses: actions/download-artifact@v2
+        uses: actions/checkout@v3
+      - uses: actions/download-artifact@v3
         name: download release jar
         with:
           name: swarmpit.jar
           path: target
       - name: set up QEMU
-        uses: docker/setup-qemu-action@v1
+        uses: docker/setup-qemu-action@v2
       - name: set up Docker Buildx
-        uses: docker/setup-buildx-action@v1
+        uses: docker/setup-buildx-action@v2
       - name: login to GHCR
         if: env.SECRET != 0
-        uses: docker/login-action@v1
+        uses: docker/login-action@v2
         with:
           registry: ghcr.io
           username: ${{ secrets.PKG_USER }}
           password: ${{ secrets.PKG_PWD }}
       - name: login to DockerHub
         if: env.SECRET != 0
-        uses: docker/login-action@v1
+        uses: docker/login-action@v2
         with:
           username: ${{ secrets.DOCKERHUB_USER }}
           password: ${{ secrets.DOCKERHUB_PASS }}
       - name: build and push
-        uses: docker/build-push-action@v2
+        uses: docker/build-push-action@v4
         with:
           context: .
           push: ${{ env.SECRET != 0 }}
