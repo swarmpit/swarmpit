@@ -1,4 +1,4 @@
-FROM debian:buster-slim
+FROM debian:stable-slim
 
 RUN apt-get update && \
     mkdir -p /usr/share/man/man1 && \
