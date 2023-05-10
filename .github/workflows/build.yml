@@ -5,6 +5,7 @@ on:
     branches:
       - new-ci
   pull_request:
+  workflow_dispatch:
 
 jobs:
   clojure:
