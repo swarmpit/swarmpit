@@ -1,4 +1,4 @@
-# User Permissions
+# User Types
 
 # User & Admin Roles
 
@@ -10,6 +10,6 @@ As you would expect, 'View only' users can not make any modifications except pin
 With the exception of secret values (which are kept secret to full users and admins), they can view all information.
 
 <p align="center">
-    <img src="resources/public/CreateUser.png" width="50%" style="text-align: center">
-    <img src="resources/public/UserList.png" style="text-align: center">
+    <img src="https://raw.githubusercontent.com/swarmpit/swarmpit/master/resources/public/CreateUser.png" width="50%" style="text-align: center">
+    <img src="https://raw.githubusercontent.com/swarmpit/swarmpit/master/resources/public/UserList.png" style="text-align: center">
 </p>
