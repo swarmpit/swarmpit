@@ -2,7 +2,7 @@ version: '3.3'
 
 services:
   app:
-    image: swarmpit/swarmpit:new-ci
+    image: swarmpit/swarmpit:latest
     environment:
       - SWARMPIT_DB=http://db:5984
       - SWARMPIT_INFLUXDB=http://influxdb:8086

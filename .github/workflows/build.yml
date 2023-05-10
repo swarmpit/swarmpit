@@ -3,7 +3,7 @@ name: Test, Build & Deploy
 on:
   push:
     branches:
-      - new-ci
+      - master
   pull_request:
   workflow_dispatch:
 
@@ -83,4 +83,4 @@ jobs:
           context: .
           push: ${{ env.SECRET != 0 }}
           platforms: linux/amd64,linux/arm64/v8,linux/arm/v7,linux/arm/v5
-          tags: swarmpit/swarmpit:new-ci
+          tags: swarmpit/swarmpit:latest
