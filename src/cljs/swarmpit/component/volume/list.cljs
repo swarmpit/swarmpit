@@ -11,7 +11,8 @@
             [swarmpit.routes :as routes]
             [swarmpit.url :refer [dispatch!]]
             [sablono.core :refer-macros [html]]
-            [rum.core :as rum]))
+            [rum.core :as rum]
+            [swarmpit.storage :as storage]))
 
 (enable-console-print!)
 
@@ -73,4 +74,6 @@
                    filtered-items
                    render-metadata
                    onclick-handler
-                   toolbar-render-metadata))))
+                   (if (storage/user?)
+                     toolbar-render-metadata
+                     "")))))

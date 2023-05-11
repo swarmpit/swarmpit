@@ -17,7 +17,8 @@
             [swarmpit.base64 :as base64]
             [sablono.core :refer-macros [html]]
             [clojure.contrib.inflect :as inflect]
-            [rum.core :as rum]))
+            [rum.core :as rum]
+            [swarmpit.storage :as storage]))
 
 (enable-console-print!)
 
@@ -119,10 +120,11 @@
          (comp/grid
            {:container true
             :spacing   2}
-           (comp/grid
-             {:item true
-              :xs   12}
-             (toolbar/toolbar "Config" (:configName config) form-actions))
+           (if (storage/user?)
+             (comp/grid
+               {:item true
+                :xs   12}
+               (toolbar/toolbar "Config" (:configName config) form-actions)))
            (comp/grid
              {:item true
               :xs   12}

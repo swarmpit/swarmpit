@@ -18,6 +18,10 @@
   [user]
   (= "admin" (:role user)))
 
+(defn user?
+  [user]
+  (or (= "admin" (:role user)) (= "user" (:role user))))
+
 (defn token-value
   [token]
   (second (str/split token #" ")))

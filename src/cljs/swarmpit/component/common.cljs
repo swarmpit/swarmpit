@@ -106,10 +106,11 @@
         (comp/grid
           {:container true
            :spacing   2}
-          (comp/grid
-            {:item true
-             :xs   12}
-            (toolbar/list-toobar title items filtered-items toolbar-render-metadata))
+          (if (not= "" toolbar-render-metadata)
+            (comp/grid
+              {:item true
+               :xs   12}
+              (toolbar/list-toobar title items filtered-items toolbar-render-metadata)))
           (comp/grid
             {:item true
              :xs   12}

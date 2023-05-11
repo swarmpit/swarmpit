@@ -49,3 +49,7 @@
 (defn admin?
   []
   (token/admin? (get-in (claims) [:usr])))
+
+(defn user?
+  []
+  (token/user? (get-in (claims) [:usr])))

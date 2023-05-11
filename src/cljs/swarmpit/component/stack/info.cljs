@@ -26,7 +26,8 @@
             [clojure.contrib.inflect :as inflect]
             [clojure.contrib.humanize :as humanize]
             [sablono.core :refer-macros [html]]
-            [rum.core :as rum]))
+            [rum.core :as rum]
+            [swarmpit.storage :as storage]))
 
 (enable-console-print!)
 
@@ -337,7 +338,9 @@
         (list/list
           (:list secrets/render-metadata)
           (sort-by :secretName secrets)
-          secrets/onclick-handler)))))
+          (if (storage/user?)
+            secrets/onclick-handler
+            nil))))))
 
 (defn- init-form-state
   []
@@ -417,10 +420,11 @@
           (comp/grid
             {:container true
              :spacing   2}
-            (comp/grid
-              {:item true
-               :xs   12}
-              (toolbar/toolbar "Stack" stack-name (form-actions stack-name stackfile)))
+            (if (storage/user?)
+              (comp/grid
+                {:item true
+                 :xs   12}
+                (toolbar/toolbar "Stack" stack-name (form-actions stack-name stackfile))))
             (comp/grid
               {:item true
                :sm   6
@@ -447,10 +451,11 @@
           (comp/grid
             {:container true
              :spacing   2}
-            (comp/grid
-              {:item true
-               :xs   12}
-              (toolbar/toolbar "Stack" stack-name (form-actions stack-name stackfile)))
+            (if (storage/user?)
+              (comp/grid
+                {:item true
+                 :xs   12}
+                (toolbar/toolbar "Stack" stack-name (form-actions stack-name stackfile))))
             (form-general-grid stack-name stackfile item)
             (form-services-grid stack-name services)
             (form-networks-grid stack-name networks)

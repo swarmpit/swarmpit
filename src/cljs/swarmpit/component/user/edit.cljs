@@ -44,6 +44,14 @@
        :onChange #(state/update-value [:role] (-> % .-target .-value) state/form-value-cursor)}
       (comp/form-control-label
         {:control (comp/radio
+                    {:name  "viewer-role"
+                     :color "primary"
+                     :key   "viewer-role"})
+         :key     "viewer-role"
+         :value   "viewer"
+         :label   "View Only"})
+      (comp/form-control-label
+        {:control (comp/radio
                     {:name  "user-role"
                      :color "primary"
                      :key   "user-role"})
