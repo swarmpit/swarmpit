@@ -189,7 +189,7 @@
         (comp/button
           {:size     "small"
            :color    "primary"
-           :disabled (not (contains? #{"json-file" "journald", "local"} logdriver))
+           :disabled (not (contains? #{"json-file" "journald", "local", "loki"} logdriver))
            :href     (routes/path-for-frontend :service-info
                                                {:id (:serviceName service)}
                                                {:log 1})}
