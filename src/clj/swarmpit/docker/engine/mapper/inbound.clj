@@ -341,9 +341,9 @@
   [service-replicas-running service-replicas]
   (if (zero? service-replicas-running)
     "not running"
-    (if (= service-replicas-running service-replicas)
-      "running"
-      "partly running")))
+    (if (< service-replicas-running service-replicas)
+      "partly running"
+      "running")))
 
 (defn ->service-autoredeploy
   [service-labels]
