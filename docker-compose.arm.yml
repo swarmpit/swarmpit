@@ -33,6 +33,7 @@ services:
     networks:
       - net
     deploy:
+      endpoint_mode: dnsrr
       resources:
         limits:
           memory: 256M
