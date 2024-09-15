@@ -4,7 +4,7 @@ services:
   app:
     image: swarmpit/swarmpit:latest
     environment:
-      - SWARMPIT_DB=http://db:5984
+      - SWARMPIT_DB=http://couchdbadmin:changeme@db:5984
       - SWARMPIT_INFLUXDB=http://influxdb:8086
     volumes:
       - /var/run/docker.sock:/var/run/docker.sock:ro
@@ -30,7 +30,10 @@ services:
           - node.role == manager
 
   db:
-    image: couchdb:2.3.0
+    image: couchdb:3.3.3
+    environment:
+      - COUCHDB_USER=couchdbadmin
+      - COUCHDB_PASSWORD=changeme
     volumes:
       - db-data:/opt/couchdb/data
     networks:

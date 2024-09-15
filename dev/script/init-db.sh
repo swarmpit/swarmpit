@@ -12,5 +12,5 @@ then
     fi
 else
     echo "Creating swarmpit DB"
-    docker run -d -p 5984:5984 --name swarmpitdb couchdb:2.3.0
+    docker run -d -p 5984:5984 --name swarmpitdb couchdb:3.3.3
 fi
