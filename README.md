@@ -47,17 +47,49 @@ docker run -it --rm \
 ### Manual installation
 Deploy Swarmpit by using a compose file from our git repo with branch of corresponding version.
 
+#### CPU architecture x86 / amd64
+
+Download this repository via git
+
 ```
 git clone https://github.com/swarmpit/swarmpit -b master
+```
+
+**Optional**: Change the password of couchdbadmin in `docker-compose.yaml`
+
+```
+OLD_PASSWORD="changeme"; read -sp "Enter new password for couchdbadmin user: " NEW_PASSWORD; echo; [ -z "$NEW_PASSWORD" ] && { echo "Password cannot be empty."; exit 1; }; sed -i "s/$OLD_PASSWORD/$NEW_PASSWORD/g" swarmpit/docker-compose.yaml && echo "Password successfully updated."
+```
+
+Deploy swarmpit stack via docker
+
+```
 docker stack deploy -c swarmpit/docker-compose.yml swarmpit
 ```
 
+#### CPU architecture arm64
+
 For ARM based cluster use custom compose file.
+
+Download this repository via git
 
 ```
 git clone https://github.com/swarmpit/swarmpit -b master
+```
+
+**Optional**: Change the password of couchdbadmin in `docker-compose.arm.yaml`
+
+```
+OLD_PASSWORD="changeme"; read -sp "Enter new password for couchdbadmin user: " NEW_PASSWORD; echo; [ -z "$NEW_PASSWORD" ] && { echo "Password cannot be empty."; exit 1; }; sed -i "s/$OLD_PASSWORD/$NEW_PASSWORD/g" swarmpit/docker-compose.arm.yaml && echo "Password successfully updated."
+```
+
+Deploy swarmpit stack via docker
+
+```
 docker stack deploy -c swarmpit/docker-compose.arm.yml swarmpit
 ```
+
+---
 
 [This stack](docker-compose.yml) is a composition of 4 services:
 
