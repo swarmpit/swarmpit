@@ -2,12 +2,17 @@ version: '3.3'
 
 services:
   app:
-    image: swarmpit/swarmpit:latest
+    image: swarmpit/swarmpit:dev
     environment:
-      - SWARMPIT_DB=http://db:5984
+      - SWARMPIT_DB=http://admin:password@db:5984
       - SWARMPIT_INFLUXDB=http://influxdb:8086
+      - VIEWER_PASSWORD=viewerpass123
+      - SWARMPIT_INIT_USERS_CONFIG=/run/configs/users.yaml
     volumes:
       - /var/run/docker.sock:/var/run/docker.sock:ro
+      - ./users.yaml:/run/configs/users.yaml:ro
+    secrets:
+      - user_password_secret
     ports:
       - 888:8080
     healthcheck:
@@ -31,6 +36,9 @@ services:
 
   db:
     image: couchdb:2.3.0
+    environment:
+      - COUCHDB_USER=admin
+      - COUCHDB_PASSWORD=password
     volumes:
       - db-data:/opt/couchdb/data
     networks:
@@ -88,3 +96,7 @@ volumes:
     driver: local
   influx-data:
     driver: local
+
+secrets:
+  user_password_secret:
+    external: true
