@@ -6,12 +6,8 @@ services:
     environment:
       - SWARMPIT_DB=http://db:5984
       - SWARMPIT_INFLUXDB=http://influxdb:8086
-      - VIEWER_PASSWORD=viewerpass123
     volumes:
       - /var/run/docker.sock:/var/run/docker.sock:ro
-      - ./users.yaml:/run/configs/users.yaml:ro
-    secrets:
-      - user_password_secret
     ports:
       - 888:8080
     healthcheck:
@@ -83,7 +79,3 @@ volumes:
     driver: local
   influx-data:
     driver: local
-
-secrets:
-  user_password_secret:
-    external: true

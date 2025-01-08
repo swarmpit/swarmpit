@@ -11,7 +11,7 @@ users:
   - username: admin
     email: admin@example.com
     role: admin
-    password_hash: "$2a$10$RzUwGn1D4czuPqG62XGBa.Ltz4rsKxG7rXwVcdDIkIVJ7WqZlscwy"
+    password: admin123
 
   - username: viewer
     email: viewer@example.com
@@ -75,5 +75,5 @@ You can specify passwords in three ways:
 - Available roles are: admin, user, viewer
 - If no role is specified, "viewer" is used as default
 - The configuration file is optional - if not mounted, Swarmpit will work as before
-- Password priority: password_hash > password > password_env > password_secret
-- For production environments, using password_hash or password_secret is recommended 
+- Password priority: password_secret > password_env > password
+- For production environments, using password_secret is recommended

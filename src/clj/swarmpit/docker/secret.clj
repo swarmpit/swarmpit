@@ -13,4 +13,4 @@
         (slurp)
         (str/trim))
     (catch Exception _
-      nil))) 
+      nil)))

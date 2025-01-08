@@ -68,4 +68,4 @@
           (is true))
         (finally
           ; Clean up test file
-          (io/delete-file test-config true)))))) 
+          (io/delete-file test-config true))))))

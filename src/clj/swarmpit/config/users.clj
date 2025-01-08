@@ -68,4 +68,4 @@
                 password-secret (secret/get password-secret)
                 password-env (env (keyword (str/lower-case password-env)))
                 :else nil)
-     :role role})) 
+     :role role}))
