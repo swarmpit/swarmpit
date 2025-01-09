@@ -1,0 +1,10 @@
+users:
+  - username: admin
+    password: admin123
+    role: admin
+  - username: viewer
+    password_env: VIEWER_PASSWORD
+    role: viewer
+  - username: secretuser
+    password_secret: user_password_secret
+    role: user

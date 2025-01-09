@@ -25,7 +25,7 @@
   (cond
     password_hash password_hash
     password password
-    password_env (env (keyword (str/lower-case password_env)))
+    password_env (env (keyword password_env))
     password_secret (read-secret password_secret)
     :else nil))
 
@@ -66,6 +66,6 @@
      :password (cond
                 password password
                 password-secret (secret/get password-secret)
-                password-env (env (keyword (str/lower-case password-env)))
+                password-env (env (keyword password-env))
                 :else nil)
      :role role}))
