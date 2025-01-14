@@ -3,7 +3,7 @@
 
 (def default
   (atom {:docker-sock         "/var/run/docker.sock"
-         :docker-api          "1.30"
+         :docker-api          "1.41"
          :docker-http-timeout 5000
          :log-level           "info"
          :db-url              "http://localhost:5984"
