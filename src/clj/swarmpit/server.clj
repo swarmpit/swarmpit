@@ -11,6 +11,7 @@
             [swarmpit.setup :as setup]
             [swarmpit.database :as db]
             [swarmpit.agent :as agent]
+            [swarmpit.config.users :as users]
             [reitit.ring :as ring]
             [reitit.coercion.spec]
             [reitit.swagger :as swagger]
@@ -95,4 +96,5 @@
     (info "Swarmpit running on port" port))
   (agent/init)
   (setup/docker)
-  (setup/log))
+  (setup/log)
+  (users/init!))

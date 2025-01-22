@@ -195,8 +195,8 @@
   (let [repository (get-in service [:repository :name])
         tag (get-in service [:repository :tag])
         digest (get-in service [:repository :imageDigest])]
-    (if digest?
-      (str repository ":" tag "@" digest)
+    (if (and digest? digest)
+      (str repository "@" digest)
       (str repository ":" tag))))
 
 (defn ->service-links

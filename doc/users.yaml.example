@@ -1,0 +1,24 @@
+users:
+  - username: admin
+    email: admin@example.com
+    role: admin
+    # Password can be specified in several ways:
+    
+    # 1. Plain text (not recommended for production)
+    # password: adminpassword
+    
+    # 2. Environment variable
+    # password_env: ADMIN_PASSWORD
+    
+    # 3. Docker secret
+    # password_secret: admin_password_secret
+
+  - username: viewer
+    email: viewer@example.com
+    role: viewer
+    password_env: VIEWER_PASSWORD
+
+  - username: user
+    email: user@example.com
+    role: user
+    password_secret: user_password_secret
