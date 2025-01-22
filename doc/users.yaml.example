@@ -22,4 +22,3 @@ users:
     email: user@example.com
     role: user
     password_secret: user_password_secret
-    
