@@ -20,10 +20,10 @@
 
   (testing "parse user with env password"
     (with-redefs [environ.core/env (fn [name] 
-                                    (when (= name :test_password) 
+                                    (when (= name :VIEWER_PASSWORD) 
                                       "envpass123"))]
       (let [user {:username "test"
-                  :password_env "TEST_PASSWORD"
+                  :password_env "VIEWER_PASSWORD"
                   :role "viewer"}
             parsed (users/parse-user-config user)]
         (is (= "test" (:username parsed)))
