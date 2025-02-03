@@ -43,7 +43,7 @@ jobs:
       - run: lein test :all
       - run: lein uberjar
       - name: upload release jar
-        uses: actions/upload-artifact@v3
+        uses: actions/upload-artifact@v4
         with:
           name: swarmpit.jar
           path: target/swarmpit.jar
@@ -57,7 +57,7 @@ jobs:
     steps:
       - name: checkout
         uses: actions/checkout@v3
-      - uses: actions/download-artifact@v3
+      - uses: actions/download-artifact@v4
         name: download release jar
         with:
           name: swarmpit.jar
