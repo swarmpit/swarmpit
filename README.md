@@ -75,9 +75,15 @@ to shared-volume driver type of your choice. Alternatively, you can link db serv
 
 Swarmpit is published on port `888` by default.
 
-## Configuration
+## Environment Variables
 
 Refer to following [document](https://github.com/swarmpit/swarmpit/blob/master/doc/configuration.md) 
+
+## User Configuration
+
+By default Swarmpit offers you to configure first user using web interface. If you want to automate this process, you can use docker config to provide users.yaml file.
+
+Refer to following [document](https://github.com/swarmpit/swarmpit/blob/master/doc/USER_CONFIG.md) for details.
 
 ## User Types
 

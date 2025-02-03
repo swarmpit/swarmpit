@@ -24,6 +24,13 @@ users:
     password_secret: user_password_secret
 ```
 
+Configuration file can be stored as config and attached to the `swarmpit_app` like this:
+
+```
+docker config create swarmpit_users users.yaml
+docker service update --config-add source=swarmpit_users,target=/run/configs/users.yaml swarmpit_app
+```
+
 ## Password Configuration Methods
 
 You can specify passwords in three ways:
