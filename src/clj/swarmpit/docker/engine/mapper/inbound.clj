@@ -129,7 +129,7 @@
   (let [image (get-in task [:Spec :ContainerSpec :Image])
         image-info (str/split image #"@")
         image-name (first image-info)
-        image-digest (second image-info)
+        image-digest (if (> (count image-info) 1) (second image-info) nil)
         slot (:Slot task)
         id (:ID task)
         node-id (:NodeID task)
@@ -396,7 +396,7 @@
          image (get-in service-task-template [:ContainerSpec :Image])
          image-info (str/split image #"@")
          image-name (first image-info)
-         image-digest (second image-info)
+         image-digest (if (> (count image-info) 1) (second image-info) nil)
          healthcheck (get-in service-task-template [:ContainerSpec :Healthcheck])
          container-labels (get-in service-task-template [:ContainerSpec :Labels])]
      (array-map
