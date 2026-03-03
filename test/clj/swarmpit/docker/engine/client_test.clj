@@ -69,4 +69,4 @@
       (is (some? config))
       (delete-config (:ID config))
       (is (empty? (->> (configs)
-                       (filter #(= (:ID config) (:ID %))))))))
+                       (filter #(= (:ID config) (:ID %)))))))))
