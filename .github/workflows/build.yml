@@ -13,7 +13,7 @@ jobs:
   clojure:
     name: Test & Build Clojure
     env:
-      DOCKER: stable
+      DOCKER: "25.0.5"
     runs-on: ubuntu-latest
     steps:
       - name: checkout
