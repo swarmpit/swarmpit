@@ -7,7 +7,8 @@
                 :layout  {:mobileOpened       false
                           :mobileSearchOpened false
                           :menuAnchorEl       nil
-                          :mobileMoreAnchorEl nil}
+                          :mobileMoreAnchorEl nil
+                          :theme              "light"}
                 :dialog  {:open false}
                 :search  {:query ""}
                 :message {:text ""

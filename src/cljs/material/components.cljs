@@ -208,11 +208,16 @@
 
 ;; Dark theme props
 (def dark-theme-props
-  {:palette     {:primary   {:main         "#65519f"
-                             :light        "#957ed1"
-                             :dark         "#362870"
+  {:palette     {:type      "dark"
+                 :primary   {:main         "#b39ddb"
+                             :light        "#d1c4e9"
+                             :dark         "#7e57c2"
                              :contrastText "#fff"}
-                 :secondary {:main "#8B9F51"}}
+                 :secondary {:main "#aed581"}
+                 :background {:default "#121212"
+                              :paper   "#1e1e1e"}
+                 :text       {:primary   "rgba(255, 255, 255, 0.87)"
+                              :secondary "rgba(255, 255, 255, 0.60)"}}
    :overrides   theme-overrides
    :breakpoints theme-breakpoints})
 
@@ -222,14 +227,17 @@
 (def light-theme
   (create-mui-theme (clj->js light-theme-props)))
 
-(defn theme [theme]
-  (set! (-> js/document .-documentElement .-className) theme)
-  (case theme
+;; Global theme mode atom ("light" or "dark")
+(defonce theme-mode (atom "light"))
+
+(defn apply-theme [mode]
+  (set! (-> js/document .-documentElement .-className) mode)
+  (case mode
     "dark" dark-theme
     light-theme))
 
 (defn mui [component]
   (theme-provider
-    {:theme (theme "light")}
+    {:theme (apply-theme @theme-mode)}
     (css-baseline)
     component))

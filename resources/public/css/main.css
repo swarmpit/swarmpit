@@ -1449,3 +1449,231 @@ a {
         right: 0 !important;
     }
 }
+
+/**** DARK MODE ****/
+
+html.dark {
+    color-scheme: dark;
+}
+
+html.dark body {
+    background-color: #121212;
+    color: rgba(255, 255, 255, 0.87);
+}
+
+html.dark a {
+    color: #b39ddb;
+}
+
+html.dark .Swarmpit-context {
+    background-color: #121212;
+}
+
+html.dark .Swarmpit-appbar {
+    background: #1e1e1e !important;
+    color: rgba(255, 255, 255, 0.87) !important;
+}
+
+html.dark .Swarmpit-appbar-search {
+    background: rgba(255, 255, 255, 0.09);
+    color: rgba(255, 255, 255, 0.87);
+    border: 1px solid rgba(255, 255, 255, 0.23);
+}
+
+html.dark .Swarmpit-appbar-search:hover {
+    border: 1px solid transparent;
+    box-shadow: 0 1px 1px 0 rgba(255, 255, 255, 0.15),
+    0 1px 3px 1px rgba(255, 255, 255, 0.08);
+}
+
+html.dark .Swarmpit-appbar-search-mobile-input {
+    color: rgba(255, 255, 255, 0.87) !important;
+}
+
+html.dark .Swarmpit-appbar-search-mobile-close {
+    color: rgba(255, 255, 255, 0.87);
+}
+
+html.dark .Swarmpit-appbar-search-mobile-content {
+    background-color: #1e1e1e !important;
+}
+
+html.dark .Swarmpit-appbar-avatar-badge {
+    box-shadow: 0 0 0 2px #1e1e1e;
+}
+
+html.dark .Swarmpit-drawer-content {
+    background: #1e1e1e;
+}
+
+html.dark .Swarmpit-menu-title {
+    background: #1e1e1e;
+}
+
+html.dark .Swarmpit-drawer-item:hover > div,
+html.dark .Swarmpit-drawer-item:hover > div > h6 {
+    color: #b39ddb !important;
+}
+
+html.dark .Swarmpit-list-item-icon,
+html.dark .Swarmpit-drawer-item-icon,
+html.dark .Swarmpit-drawer-item-text > h6 {
+    color: rgba(255, 255, 255, 0.60) !important;
+}
+
+html.dark .Swarmpit-drawer-item-selected {
+    background-color: rgba(179, 157, 219, 0.15) !important;
+}
+
+html.dark .Swarmpit-drawer-item-icon-selected,
+html.dark .Swarmpit-drawer-item-text-selected > h6 {
+    color: #b39ddb !important;
+}
+
+html.dark .Swarmpit-drawer-footer-item-text {
+    color: rgba(255, 255, 255, 0.60);
+}
+
+html.dark .Swarmpit-new-tab {
+    color: rgba(255, 255, 255, 0.60);
+}
+
+html.dark .Swarmpit-new-tab:hover {
+    color: #b39ddb;
+}
+
+html.dark .Swarmpit-title-name,
+html.dark .Swarmpit-title-version,
+html.dark .Swarmpit-title > a:hover {
+    color: rgba(255, 255, 255, 0.87);
+}
+
+html.dark .Swarmpit-card {
+    border: 1px solid rgba(255, 255, 255, 0.12);
+}
+
+html.dark .Swarmpit-card-avatar {
+    background-color: #7e57c2 !important;
+}
+
+html.dark .Swarmpit-paper {
+    border: 1px solid rgba(255, 255, 255, 0.12);
+}
+
+html.dark .Swarmpit-table {
+    background-color: #1e1e1e;
+}
+
+html.dark .Swarmpit-table-row-cell {
+    border-top: 1px solid rgba(255, 255, 255, 0.12);
+}
+
+html.dark .Swarmpit-table-row-cell > a {
+    color: rgba(255, 255, 255, 0.87);
+}
+
+html.dark .Swarmpit-table-footer {
+    border-top: 1px solid rgba(255, 255, 255, 0.12);
+}
+
+html.dark .Swarmpit-table-cell-secondary,
+html.dark .Swarmpit-table-head-tooltip {
+    color: rgba(255, 255, 255, 0.50);
+}
+
+html.dark .Swarmpit-table-error-tooltip {
+    background-color: #1e1e1e;
+}
+
+html.dark .Swarmpit-form-item-name,
+html.dark .Swarmpit-form-card-icon {
+    color: rgba(255, 255, 255, 0.50);
+}
+
+html.dark .Swarmpit-form-context input[type="number"],
+html.dark .Swarmpit-form-context input[type="checkbox"],
+html.dark .Swarmpit-form-context input[type="radio"],
+html.dark .Swarmpit-form-context input[type="password"],
+html.dark .Swarmpit-form-context input[type="select"],
+html.dark .Swarmpit-form-context input[type="text"] {
+    background-color: #2c2c2c !important;
+}
+
+html.dark .Swarmpit-form-card {
+    border: 1px solid rgba(255, 255, 255, 0.12);
+}
+
+html.dark .Swarmpit-autocomplete > div {
+    background: #2c2c2c;
+}
+
+html.dark .Swarmpit-expansion-panel {
+    border: 1px solid rgba(255, 255, 255, 0.12);
+}
+
+html.dark .Swarmpit-expansion-panel-summary {
+    background-color: rgba(255, 255, 255, 0.05);
+    border-bottom: 1px solid rgba(255, 255, 255, 0.12);
+}
+
+html.dark .Swarmpit-codemirror {
+    border: 1px solid rgba(255, 255, 255, 0.23) !important;
+}
+
+html.dark .Swarmpit-codemirror-info {
+    border-top: 1px solid rgba(255, 255, 255, 0.12) !important;
+}
+
+html.dark .Swarmpit-login-paper {
+    border: 1px solid rgba(255, 255, 255, 0.12);
+}
+
+html.dark .Swarmpit-login-version {
+    color: rgba(255, 255, 255, 0.60);
+}
+
+html.dark .Swarmpit-login-text {
+    color: #b39ddb !important;
+}
+
+html.dark .Swarmpit-login-avatar {
+    background-color: #7e57c2;
+}
+
+html.dark .Swarmpit-fcard-header-icon {
+    background: #7e57c2;
+    box-shadow: 0 4px 20px 0 rgba(0, 0, 0, .3), 0 7px 10px -5px #7e57c2;
+}
+
+html.dark .Swarmpit-fcard-header-title {
+    background: #7e57c2;
+    box-shadow: 0 4px 20px 0 rgba(0, 0, 0, .3), 0 7px 10px -5px #7e57c2;
+}
+
+html.dark .Swarmpit-stepper-horizontal {
+    background-color: #121212 !important;
+}
+
+html.dark .Swarmpit-dashboard-section-title {
+    color: rgba(255, 255, 255, 0.87) !important;
+}
+
+html.dark .Swarmpit-dashboard-section-divider {
+    border-top: 1px solid rgba(255, 255, 255, 0.12);
+}
+
+html.dark .Swarmpit-progress-button {
+    color: #b39ddb;
+}
+
+html.dark .Swarmpit-service-list-port {
+    color: rgba(255, 255, 255, 0.40);
+}
+
+html.dark .Swarmpit-repo-registry-url {
+    color: rgba(255, 255, 255, 0.40);
+}
+
+html.dark .Swarmpit-drawer-category-text {
+    color: rgba(255, 255, 255, 0.40);
+}

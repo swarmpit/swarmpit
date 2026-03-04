@@ -269,9 +269,28 @@
              (reset! appbar-elevation 0)
              (reset! appbar-elevation 4))))) state)})
 
+(defn- toggle-theme! []
+  (let [current @comp/theme-mode
+        new-mode (if (= current "dark") "light" "dark")]
+    (reset! comp/theme-mode new-mode)
+    (storage/add "theme" new-mode)
+    (state/update-value [:theme] new-mode state/layout-cursor)))
+
+(rum/defc theme-toggle < rum/static [current-theme]
+  (comp/tooltip
+    {:title (if (= current-theme "dark") "Light mode" "Dark mode")}
+    (comp/icon-button
+      {:key        "theme-toggle-btn"
+       :color      "inherit"
+       :aria-label "Toggle dark mode"
+       :onClick    toggle-theme!}
+      (if (= current-theme "dark")
+        (icon/brightness-7 {})
+        (icon/brightness-4 {})))))
+
 (rum/defc appbar < rum/reactive
                    mixin-on-scroll [{:keys [title subtitle search-fn actions]}]
-  (let [{:keys [mobileSearchOpened menuAnchorEl mobileMoreAnchorEl version]} (state/react state/layout-cursor)
+  (let [{:keys [mobileSearchOpened menuAnchorEl mobileMoreAnchorEl version theme]} (state/react state/layout-cursor)
         elevation (rum/react appbar-elevation)]
     (comp/mui
       (html
@@ -306,6 +325,7 @@
              (html [:div.grow])
              (appbar-desktop-section search-fn actions title)
              (appbar-mobile-section search-fn actions)
+             (theme-toggle theme)
              (user-menu menuAnchorEl)))
          (mobile-actions-menu actions mobileMoreAnchorEl)
          (mobile-search search-fn title mobileSearchOpened)]))))
