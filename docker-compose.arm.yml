@@ -6,6 +6,7 @@ services:
     environment:
       - SWARMPIT_DB=http://db:5984
       - SWARMPIT_INFLUXDB=http://influxdb:8086
+      - SWARMPIT_DOCKER_API=1.44
     volumes:
       - /var/run/docker.sock:/var/run/docker.sock:ro
     ports:
