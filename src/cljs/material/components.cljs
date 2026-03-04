@@ -3,6 +3,7 @@
   (:require ["@material-ui/core"]
             ["react-window"]
             [cljsjs.recharts]
+            [rum.core :as rum]
             [sablono.core :refer-macros [html]]
             [material.factory :refer [create-mui-cmp create-element create-js-element]]))
 
@@ -236,8 +237,9 @@
     "dark" dark-theme
     light-theme))
 
-(defn mui [component]
-  (theme-provider
-    {:theme (apply-theme @theme-mode)}
-    (css-baseline)
-    component))
+(rum/defc mui < rum/reactive [component]
+  (let [mode (rum/react theme-mode)]
+    (theme-provider
+      {:theme (apply-theme mode)}
+      (css-baseline)
+      component)))

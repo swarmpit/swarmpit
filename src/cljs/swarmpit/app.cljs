@@ -7,7 +7,7 @@
             [material.components :as comp]))
 
 ;; Initialize theme from localStorage
-(let [saved-theme (or (storage/get "theme") "light")]
+(let [saved-theme (if (= (storage/get "theme") "dark") "dark" "light")]
   (reset! comp/theme-mode saved-theme)
   (state/update-value [:theme] saved-theme state/layout-cursor))
 
