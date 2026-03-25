@@ -971,8 +971,11 @@
         service (dmi/->service service-origin)
         repository-name (get-in service [:repository :name])
         repository-tag (get-in service [:repository :tag])
-        image-digest (repository-digest owner repository-name (or new-tag repository-tag))
-        image (str repository-name ":" (or new-tag repository-tag) "@" image-digest)]
+        effective-tag (standardize-repository-tag (or new-tag repository-tag))
+        image-digest (repository-digest owner repository-name effective-tag)
+        image (if (str/blank? image-digest)
+                (str repository-name ":" effective-tag)
+                (str repository-name "@" image-digest))]
     (dc/update-service
       (service-auth owner service)
       service-id
