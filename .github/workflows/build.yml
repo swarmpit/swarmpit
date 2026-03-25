@@ -13,7 +13,7 @@ jobs:
   clojure:
     name: Test & Build Clojure
     env:
-      DOCKER: stable
+      DOCKER: "25.0.5"
     runs-on: ubuntu-latest
     steps:
       - name: checkout
@@ -33,7 +33,7 @@ jobs:
       - run: ./init-influx.sh
         name: start Influx
         working-directory: dev/script
-      - run: ./init-influx.sh
+      - run: ./init-agent.sh
         name: start Agent
         working-directory: dev/script
       - run: ./start-dind.sh

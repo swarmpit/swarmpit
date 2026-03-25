@@ -2,6 +2,8 @@
 
 Lightweight mobile-friendly Docker Swarm management UI
 
+⚠️ **Status:** This UI is in maintenance mode. Click [here](https://github.com/swarmpit/swarmpit/issues/719) for details.
+
 [![version](https://img.shields.io/github/release-pre/swarmpit/swarmpit.svg)](https://github.com/swarmpit/swarmpit/releases) 
 [![gitter](https://badges.gitter.im/trezor/community.svg)](https://gitter.im/swarmpit_io/swarmpit)
 [![Test, Build & Deploy](https://github.com/swarmpit/swarmpit/actions/workflows/build.yml/badge.svg)](https://github.com/swarmpit/swarmpit/actions/workflows/build.yml)
