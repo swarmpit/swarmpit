@@ -19,7 +19,7 @@
 
 (def editor-id "compose")
 
-(def doc-compose-link "https://docs.docker.com/get-started/part3/#your-first-docker-composeyml-file")
+(def doc-compose-link "https://docs.docker.com/compose/how-tos/getting-started/")
 
 (defn form-name [value]
   (comp/text-field
@@ -71,6 +71,13 @@
      :margin          "normal"
      :InputLabelProps {:shrink true}
      :value           value}))
+
+(defn- form-skip-image-resolve [value]
+  (comp/form-control-label
+    {:control (comp/checkbox
+                {:checked  value
+                 :onChange #(state/update-value [:skipImageResolve] (-> % .-target .-checked) state/form-value-cursor)})
+     :label   "Skip image resolution"}))
 
 (defn- update-stack-handler
   [name]
@@ -124,8 +131,9 @@
 
 (defn- init-form-value
   [name]
-  (state/set-value {:name name
-                    :spec {:compose ""}} state/form-value-cursor))
+  (state/set-value {:name              name
+                    :spec              {:compose ""}
+                    :skipImageResolve  false} state/form-value-cursor))
 
 (def mixin-init-form
   (mixin/init-form
@@ -136,7 +144,7 @@
       (compose-handler name))))
 
 (rum/defc form-edit < rum/reactive
-                      mixin-init-editor [{:keys [name spec]}
+                      mixin-init-editor [{:keys [name spec skipImageResolve]}
                                          {:keys [processing? valid? last? previous?]}]
   (comp/mui
     (html
@@ -158,7 +166,8 @@
               {:className "Swarmpit-fcard-content"}
               (form-name name)
               (form-select name :stack-compose last? previous?)
-              (form-editor (:compose spec)))
+              (form-editor (:compose spec))
+              (form-skip-image-resolve skipImageResolve))
             (comp/card-actions
               {:className "Swarmpit-fcard-actions"}
               (composite/progress-button
