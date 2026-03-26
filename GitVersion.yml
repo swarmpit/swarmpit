@@ -4,6 +4,10 @@ branches:
     regex: ^master$
     tag: ''
     increment: Minor
+  develop:
+    regex: ^develop$
+    tag: beta
+    increment: Minor
   feature:
     regex: ^features?[/-]
     tag: alpha
