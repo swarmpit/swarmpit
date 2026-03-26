@@ -32,13 +32,14 @@
                        (str/split #","))))))))
 
 (defn- execute
-  [{:keys [method url options]}]
-  (execute-in-scope {:method        method
-                     :url           url
-                     :options       (merge {:insecure? true} options)
-                     :scope         "Registry"
-                     :timeout       5000
-                     :error-handler #(-> % :errors (first) :message)}))
+  [{:keys [method url options quiet-statuses]}]
+  (execute-in-scope {:method          method
+                     :url             url
+                     :options         (merge {:insecure? true} options)
+                     :scope           "Registry"
+                     :timeout         5000
+                     :error-handler   #(-> % :errors (first) :message)
+                     :quiet-statuses  quiet-statuses}))
 
 (defn- fallback-options
   [www-auth-url www-auth-params options]
@@ -52,7 +53,7 @@
         (assoc-in [:headers :Authorization] (token/bearer (:token token))))))
 
 (defn- execute-with-fallback
-  [{:keys [method url options] :as request}]
+  [{:keys [method url options quiet-statuses] :as request}]
   (try
     (execute request)
     (catch ExceptionInfo e
@@ -96,10 +97,11 @@
 
 (defn- request-manifest
   [registry repository-name repository-tag method type]
-  (let [response (execute-with-fallback {:method  method
-                                         :url     (build-url registry (str "/" repository-name "/manifests/" repository-tag))
-                                         :options {:headers (merge (basic-auth registry)
-                                                                   {:Accept type})}})
+  (let [response (execute-with-fallback {:method          method
+                                         :url             (build-url registry (str "/" repository-name "/manifests/" repository-tag))
+                                         :options         {:headers (merge (basic-auth registry)
+                                                                           {:Accept type})}
+                                         :quiet-statuses  #{404}})
         response-type (get-in response [:headers :content-type])]
     (when (= type response-type) response)))
 
