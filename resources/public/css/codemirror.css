@@ -452,17 +452,17 @@ span.CodeMirror-selectedtext {
 
 /* Dark mode CodeMirror */
 .dark .CodeMirror {
-    background: #1e1e1e;
-    color: #d4d4d4;
+    background: #1e1e1e !important;
+    color: #d4d4d4 !important;
 }
 
 .dark .CodeMirror-gutters {
-    background-color: #252526;
+    background-color: #252526 !important;
     border-right: 1px solid #333;
 }
 
 .dark .CodeMirror-linenumber {
-    color: #858585;
+    color: #858585 !important;
 }
 
 .dark .CodeMirror-cursor {

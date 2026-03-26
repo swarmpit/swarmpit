@@ -1533,6 +1533,14 @@ a {
     border-color: rgba(255, 255, 255, 0.23) !important;
 }
 
+.dark .Swarmpit-codemirror .MuiInputBase-root,
+.dark .Swarmpit-codemirror textarea,
+.dark .Swarmpit-codemirror-info .MuiInputBase-root,
+.dark .Swarmpit-codemirror-info textarea {
+    background-color: #1e1e1e !important;
+    color: #d4d4d4 !important;
+}
+
 .dark .Swarmpit-codemirror-info {
     border-top-color: rgba(255, 255, 255, 0.12) !important;
 }
