@@ -53,3 +53,13 @@
 (defn user?
   []
   (token/user? (get-in (claims) [:usr])))
+
+(defn get-theme
+  "Get saved theme preference from localStorage, or nil if not set."
+  []
+  (get "theme"))
+
+(defn set-theme
+  "Save theme preference to localStorage."
+  [theme]
+  (add "theme" theme))

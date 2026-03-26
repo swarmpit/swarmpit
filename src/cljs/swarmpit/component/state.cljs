@@ -16,7 +16,8 @@
                           :open false}
                 :form    {:id    nil
                           :state nil
-                          :value nil}}))
+                          :value nil}
+                :theme   "light"}))
 
 (defn react
   [cursor]

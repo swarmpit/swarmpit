@@ -101,3 +101,5 @@
 (defn keyboard-arrow-left [& args] (create-mui-icon "KeyboardArrowLeft" args))
 (defn keyboard-arrow-right [& args] (create-mui-icon "KeyboardArrowRight" args))
 (defn supervisor-account [& args] (create-mui-icon "SupervisorAccount" args))
+(defn brightness-4 [& args] (create-mui-icon "Brightness4" args))
+(defn brightness-7 [& args] (create-mui-icon "Brightness7" args))

@@ -306,6 +306,19 @@
              (html [:div.grow])
              (appbar-desktop-section search-fn actions title)
              (appbar-mobile-section search-fn actions)
+             (let [dark? (= @comp/theme-mode "dark")]
+               (comp/tooltip
+                 {:title (if dark? "Light mode" "Dark mode")}
+                 (comp/icon-button
+                   {:color   "inherit"
+                    :onClick (fn []
+                               (let [new-mode (if dark? "light" "dark")]
+                                 (reset! comp/theme-mode new-mode)
+                                 (state/set-value new-mode [:theme])
+                                 (storage/set-theme new-mode)))}
+                   (if dark?
+                     (icon/brightness-7 {})
+                     (icon/brightness-4 {})))))
              (user-menu menuAnchorEl)))
          (mobile-actions-menu actions mobileMoreAnchorEl)
          (mobile-search search-fn title mobileSearchOpened)]))))
