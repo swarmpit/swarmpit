@@ -78,12 +78,23 @@
         enc/system-newline "|< Data: " (pretty-print-ex (ex-data ex))))))
 
 (defn execute-in-scope
-  "Execute http request and parse result"
-  [{:keys [method url options scope timeout error-handler] :as request}]
+  "Execute http request and parse result.
+   Options:
+     :quiet-statuses - set of HTTP status codes to log at debug instead of error"
+  [{:keys [method url options scope timeout error-handler quiet-statuses] :as request}]
   (let [scope (or scope "HTTP")
         timeout (or timeout default-timeout)
+        quiet-statuses (or quiet-statuses #{})
         request-method (req-func method)
-        request-options (req-options options)]
+        request-options (req-options options)
+        log-error-or-debug (fn [request ex]
+                             (let [status (:status (ex-data ex))]
+                               (if (contains? quiet-statuses status)
+                                 (debug
+                                   (str
+                                     "Request returned expected status " status ". Scope: " scope
+                                     enc/system-newline "|> " (name method) " " url))
+                                 (log-error request ex))))]
     (try
       (let [response (with-timeout timeout (request-method url request-options))
             response-body (-> response :body)
@@ -103,7 +114,7 @@
                       :type   :http-client
                       :body   {:error error}}))))
       (catch ExceptionInfo exception
-        (log-error request exception)
+        (log-error-or-debug request exception)
         (throw
           (let [data (some-> exception (ex-data))
                 status (:status data)

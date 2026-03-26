@@ -4,12 +4,13 @@
 (def ^:private base-url "https://index.docker.io/v2")
 
 (defn- execute
-  [{:keys [method api options]}]
-  (execute-in-scope {:method        method
-                     :url           (str base-url api)
-                     :options       options
-                     :scope         "Docker registry"
-                     :error-handler #(-> % :errors (first) :message)}))
+  [{:keys [method api options quiet-statuses]}]
+  (execute-in-scope {:method          method
+                     :url             (str base-url api)
+                     :options         options
+                     :scope           "Docker registry"
+                     :error-handler   #(-> % :errors (first) :message)
+                     :quiet-statuses  quiet-statuses}))
 
 (defn tags
   [token repository-name]
@@ -20,10 +21,11 @@
 
 (defn- request-manifest
   [token repository-name repository-tag method type]
-  (let [response (execute {:method  method
-                           :api     (str "/" repository-name "/manifests/" repository-tag)
-                           :options {:headers {:Authorization (str "Bearer " token)
-                                               :Accept        type}}})
+  (let [response (execute {:method          method
+                           :api             (str "/" repository-name "/manifests/" repository-tag)
+                           :options         {:headers {:Authorization (str "Bearer " token)
+                                                       :Accept        type}}
+                           :quiet-statuses  #{404}})
         response-type (get-in response [:headers :content-type])]
     (when (= type response-type) response)))
 
