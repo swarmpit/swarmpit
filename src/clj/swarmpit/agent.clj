@@ -1,7 +1,7 @@
 (ns swarmpit.agent
   (:require [swarmpit.api :as api]
             [chime.core :as chime]
-            [taoensso.timbre :refer [info debug error]])
+            [taoensso.timbre :refer [info debug warn error]])
   (:import (clojure.lang ExceptionInfo)
            (java.time Instant Duration)))
 
@@ -24,7 +24,10 @@
               (api/redeploy-service nil id nil)
               (info "Service" id (str "(" name ")") "autoredeploy fired! DIGEST:" (str "[" current-digest "] -> [" latest-digest "]"))))
           (catch ExceptionInfo e
-            (error "Service" id (str "(" name ")") "autoredeploy failed!" (ex-data e))))))))
+            (let [status (:status (ex-data e))]
+              (if (= 404 status)
+                (debug "Service" id (str "(" name ")") "autoredeploy check: image not found in registry")
+                (error "Service" id (str "(" name ")") "autoredeploy failed!" (ex-data e))))))))))
 
 (defn init []
   (let [start (.plusSeconds (Instant/now) 60)]

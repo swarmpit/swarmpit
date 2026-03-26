@@ -5,12 +5,13 @@
             [cheshire.core :refer [generate-string]]))
 
 (defn- execute
-  [{:keys [method url api options]}]
-  (execute-in-scope {:method        method
-                     :url           (str url api)
-                     :options       options
-                     :scope         "Agent"
-                     :error-handler #(or (:detail %) %)}))
+  [{:keys [method url api options quiet-statuses]}]
+  (execute-in-scope {:method          method
+                     :url             (str url api)
+                     :options         options
+                     :scope           "Agent"
+                     :error-handler   #(or (:detail %) %)
+                     :quiet-statuses  quiet-statuses}))
 
 (defn info
   [agent-url]
@@ -21,17 +22,19 @@
 
 (defn logs
   [agent-url container-id since]
-  (try
-    (-> (execute {:method  :GET
-                  :api     (str "/logs/" container-id)
-                  :url     agent-url
-                  :options {:query-params
-                            (merge {}
-                                   (when since
-                                     {:since since}))}})
-        :body)
-    (catch Exception ex
-      (let [e (ex-data ex)]
-        (if (.contains [400 404] (:status e))
-          nil
-          (throw ex))))))
+  (when (not-empty container-id)
+    (try
+      (-> (execute {:method          :GET
+                    :api             (str "/logs/" container-id)
+                    :url             agent-url
+                    :quiet-statuses  #{400 404}
+                    :options         {:query-params
+                                      (merge {}
+                                             (when since
+                                               {:since since}))}})
+          :body)
+      (catch Exception ex
+        (let [e (ex-data ex)]
+          (if (.contains [400 404] (:status e))
+            nil
+            (throw ex)))))))
