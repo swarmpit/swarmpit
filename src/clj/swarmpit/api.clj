@@ -501,6 +501,53 @@
                 (into {:id   (hash path)
                        :name path}))))))
 
+;;; Registry GitHub GHCR API
+
+(defn registries-ghcr
+  [owner]
+  (-> (cc/registries-ghcr owner)
+      (cmi/->ghcr-registries)))
+
+(defn registry-ghcr
+  [registry-id]
+  (-> (cc/registry-ghcr registry-id)
+      (cmi/->ghcr-registry)))
+
+(defn registry-ghcr->v2
+  [registry]
+  (-> registry
+      (assoc :password (:token registry))
+      (assoc :withAuth true)))
+
+(defn registry-ghcr-info
+  [{:keys [_id token] :as registry}]
+  (let [old-passwd (:token (cc/registry-ghcr _id))
+        ghcr-v2 (registry-ghcr->v2 registry)]
+    (if token
+      (rc/info ghcr-v2)
+      (rc/info (assoc ghcr-v2 :password old-passwd)))))
+
+(defn create-ghcr-registry
+  [registry]
+  (cc/create-ghcr-registry registry))
+
+(defn update-ghcr-registry
+  [registry-id registry-delta]
+  (->> (cc/update-ghcr-registry (cc/registry-ghcr registry-id) registry-delta)
+       (cmi/->ghcr-registry)))
+
+(defn delete-ghcr-registry
+  [registry-id]
+  (->> (registry-ghcr registry-id)
+       (cc/delete-ghcr-registry)))
+
+(defn registry-ghcr-repositories
+  [registry-id]
+  (->> (cc/registry-ghcr registry-id)
+       (registry-ghcr->v2)
+       (rc/repositories)
+       (rmi/->repositories)))
+
 ;;; Stackfile API
 
 (defn stackfiles
@@ -581,9 +628,10 @@
   (concat (cc/registries-v2 owner)
           (cc/registries-ecr owner)
           (cc/registries-acr owner)
-          (cc/registries-gitlab owner)))
+          (cc/registries-gitlab owner)
+          (cc/registries-ghcr owner)))
 
-(def supported-registry-types #{:dockerhub :v2 :ecr :acr :gitlab})
+(def supported-registry-types #{:dockerhub :v2 :ecr :acr :gitlab :ghcr})
 
 (defn supported-registry-type? [type]
   (contains? supported-registry-types type))
@@ -604,6 +652,7 @@
         "ecr" (registry-ecr->v2 registry)
         "acr" (registry-acr->v2 registry)
         "gitlab" (registry-gitlab->v2 registry)
+        "ghcr" (registry-ghcr->v2 registry)
         registry))))
 
 (defn- registries-by-stackfile
@@ -1206,6 +1255,7 @@
         "ecr" (dcli/login "AWS" (registry-ecr-password distro) url)
         "acr" (dcli/login (:spId distro) (:spPassword distro) url)
         "gitlab" (dcli/login (:username distro) (:token distro) url)
+        "ghcr" (dcli/login (:username distro) (:token distro) url)
         (dcli/login username password url)))))
 
 (defn- deploy-opts

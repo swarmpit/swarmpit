@@ -506,7 +506,8 @@
              :dockerhub (api/dockerhubs owner)
              :ecr (api/registries-ecr owner)
              :acr (api/registries-acr owner)
-             :gitlab (api/registries-gitlab owner))
+             :gitlab (api/registries-gitlab owner)
+             :ghcr (api/registries-ghcr owner))
            (resp-ok))
       (resp-error 400 (str "Unknown registry type [" registry "]")))))
 
@@ -520,7 +521,8 @@
              :dockerhub (api/dockerhub id)
              :ecr (api/registry-ecr id)
              :acr (api/registry-acr id)
-             :gitlab (api/registry-gitlab id))
+             :gitlab (api/registry-gitlab id)
+             :ghcr (api/registry-ghcr id))
            (resp-ok))
       (resp-error 400 (str "Unknown registry type [" registry "]")))))
 
@@ -534,7 +536,8 @@
             :dockerhub (api/delete-dockerhub id)
             :ecr (api/delete-ecr-registry id)
             :acr (api/delete-acr-registry id)
-            :gitlab (api/delete-gitlab-registry id))
+            :gitlab (api/delete-gitlab-registry id)
+            :ghcr (api/delete-ghcr-registry id))
           (resp-ok))
       (resp-error 400 (str "Unknown registry type [" registry "]")))))
 
@@ -549,7 +552,8 @@
              :dockerhub (api/dockerhub-repositories id)
              :ecr (api/registry-ecr-repositories id)
              :acr (api/registry-acr-repositories id)
-             :gitlab (api/registry-gitlab-repositories id))
+             :gitlab (api/registry-gitlab-repositories id)
+             :ghcr (api/registry-ghcr-repositories id))
            (resp-ok))
       (resp-error 400 (str "Unknown registry type " registry)))))
 
@@ -559,14 +563,20 @@
 
 (defmethod registry-add :v2
   [_ payload]
-  (try
-    (api/registry-v2-info payload)
-    (let [response (api/create-v2-registry payload)]
-      (if (some? response)
-        (resp-created (select-keys response [:id]))
-        (resp-error 400 "Registry account already linked")))
-    (catch Exception e
-      (resp-error 400 (get-in (ex-data e) [:body :error])))))
+  (let [url (:url payload)]
+    (if (and (some? url)
+             (not (re-matches #"https?://.*" url)))
+      (resp-error 400 "Registry URL must start with http:// or https://")
+      (try
+        (api/registry-v2-info payload)
+        (let [response (api/create-v2-registry payload)]
+          (if (some? response)
+            (resp-created (select-keys response [:id]))
+            (resp-error 400 "Registry account already linked")))
+        (catch Exception e
+          (let [error-msg (or (get-in (ex-data e) [:body :error])
+                              (.getMessage e))]
+            (resp-error 400 (str error-msg ". Verify the URL includes the protocol (e.g. https://) and the registry is reachable."))))))))
 
 (defmethod registry-add :dockerhub
   [_ payload]
@@ -610,6 +620,17 @@
       (if (some? response)
         (resp-created (select-keys response [:id]))
         (resp-error 400 "Gitlab registry account already linked")))
+    (catch Exception e
+      (resp-error 400 (get-in (ex-data e) [:body :error])))))
+
+(defmethod registry-add :ghcr
+  [_ payload]
+  (try
+    (api/registry-ghcr-info payload)
+    (let [response (api/create-ghcr-registry payload)]
+      (if (some? response)
+        (resp-created (select-keys response [:id]))
+        (resp-error 400 "GitHub registry account already linked")))
     (catch Exception e
       (resp-error 400 (get-in (ex-data e) [:body :error])))))
 
@@ -668,6 +689,15 @@
   (try
     (api/registry-gitlab-info payload)
     (api/update-gitlab-registry id payload)
+    (resp-ok)
+    (catch Exception e
+      (resp-error 400 (get-in (ex-data e) [:body :error])))))
+
+(defmethod registry-edit :ghcr
+  [_ payload id]
+  (try
+    (api/registry-ghcr-info payload)
+    (api/update-ghcr-registry id payload)
     (resp-ok)
     (catch Exception e
       (resp-error 400 (get-in (ex-data e) [:body :error])))))

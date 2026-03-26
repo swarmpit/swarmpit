@@ -40,6 +40,16 @@
        (map ->gitlab-registry)
        (into [])))
 
+(defn ->ghcr-registry
+  [registry]
+  (dissoc registry :token))
+
+(defn ->ghcr-registries
+  [registries]
+  (->> registries
+       (map ->ghcr-registry)
+       (into [])))
+
 (defn ->user
   [user]
   (dissoc user :password))
