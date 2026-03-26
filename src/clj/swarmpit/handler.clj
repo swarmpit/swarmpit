@@ -559,14 +559,20 @@
 
 (defmethod registry-add :v2
   [_ payload]
-  (try
-    (api/registry-v2-info payload)
-    (let [response (api/create-v2-registry payload)]
-      (if (some? response)
-        (resp-created (select-keys response [:id]))
-        (resp-error 400 "Registry account already linked")))
-    (catch Exception e
-      (resp-error 400 (get-in (ex-data e) [:body :error])))))
+  (let [url (:url payload)]
+    (if (and (some? url)
+             (not (re-matches #"https?://.*" url)))
+      (resp-error 400 "Registry URL must start with http:// or https://")
+      (try
+        (api/registry-v2-info payload)
+        (let [response (api/create-v2-registry payload)]
+          (if (some? response)
+            (resp-created (select-keys response [:id]))
+            (resp-error 400 "Registry account already linked")))
+        (catch Exception e
+          (let [error-msg (or (get-in (ex-data e) [:body :error])
+                              (.getMessage e))]
+            (resp-error 400 (str error-msg ". Verify the URL includes the protocol (e.g. https://) and the registry is reachable."))))))))
 
 (defmethod registry-add :dockerhub
   [_ payload]
