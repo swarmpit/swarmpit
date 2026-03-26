@@ -975,7 +975,7 @@
         image-digest (repository-digest owner repository-name effective-tag)
         image (if (str/blank? image-digest)
                 (str repository-name ":" effective-tag)
-                (str repository-name "@" image-digest))]
+                (str repository-name ":" effective-tag "@" image-digest))]
     (dc/update-service
       (service-auth owner service)
       service-id
@@ -1208,12 +1208,17 @@
         "gitlab" (dcli/login (:username distro) (:token distro) url)
         (dcli/login username password url)))))
 
+(defn- deploy-opts
+  [{:keys [skipImageResolve]}]
+  (when skipImageResolve
+    {:skip-resolve-image true}))
+
 (defn create-stack
   "Create application stack and link stackfile"
   [owner {:keys [name spec] :as stackfile}]
   (let [stackfile-origin (cc/stackfile name)]
     (stack-login owner spec)
-    (dcli/stack-deploy name (:compose spec))
+    (dcli/stack-deploy name (:compose spec) (deploy-opts stackfile))
     (if (some? stackfile-origin)
       (cc/update-stackfile stackfile-origin stackfile)
       (cc/create-stackfile stackfile))))
@@ -1223,7 +1228,7 @@
   [owner {:keys [name spec] :as stackfile}]
   (let [stackfile-origin (cc/stackfile name)]
     (stack-login owner spec)
-    (dcli/stack-deploy name (:compose spec))
+    (dcli/stack-deploy name (:compose spec) (deploy-opts stackfile))
     (if (some? stackfile-origin)
       (cc/update-stackfile stackfile-origin {:spec         spec
                                              :previousSpec (:spec stackfile-origin)})

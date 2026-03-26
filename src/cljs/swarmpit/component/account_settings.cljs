@@ -33,8 +33,8 @@
                     {:checked  (= "dark" mode)
                      :onChange (fn [_]
                                  (let [new-mode (if (= "dark" mode) "light" "dark")]
-                                   (comp/set-theme-mode! new-mode)
-                                   (.reload js/window.location)))
+                                   (storage/set-theme new-mode)
+                                   (comp/set-theme-mode! new-mode)))
                      :color    "primary"})
          :label   "Dark mode"}))))
 

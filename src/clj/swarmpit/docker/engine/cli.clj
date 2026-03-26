@@ -22,8 +22,10 @@
   ["docker" "login" "--username" username "--password" password (or server "")])
 
 (defn- stack-deploy-cmd
-  [name file]
-  ["docker" "stack" "deploy" "--with-registry-auth" "--compose-file" file name])
+  [name file {:keys [skip-resolve-image]}]
+  (cond-> ["docker" "stack" "deploy" "--with-registry-auth" "--compose-file" file]
+    skip-resolve-image (conj "--resolve-image" "never")
+    true               (conj name)))
 
 (defn- stack-remove-cmd
   [name]
@@ -39,9 +41,9 @@
       (execute)))
 
 (defn stack-deploy
-  [name compose]
+  [name compose & [{:keys [skip-resolve-image] :as opts}]]
   (let [file (stack-file name)
-        cmd (stack-deploy-cmd name file)]
+        cmd (stack-deploy-cmd name file opts)]
     (try
       (make-parents file)
       (spit file compose)

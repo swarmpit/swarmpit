@@ -20,9 +20,9 @@
 
 (def editor-id "compose")
 
-(def doc-compose-link "https://docs.docker.com/get-started/part3/#your-first-docker-composeyml-file")
+(def doc-compose-link "https://docs.docker.com/compose/how-tos/getting-started/")
 
-(def doc-compose-ref-link "https://docs.docker.com/compose/compose-file")
+(def doc-compose-ref-link "https://docs.docker.com/reference/compose-file/")
 
 (defn- form-name [value]
   (comp/text-field
@@ -51,6 +51,13 @@
      :margin          "normal"
      :InputLabelProps {:shrink true}
      :value           value}))
+
+(defn- form-skip-image-resolve [value]
+  (comp/form-control-label
+    {:control (comp/checkbox
+                {:checked  value
+                 :onChange #(state/update-value [:skipImageResolve] (-> % .-target .-checked) state/form-value-cursor)})
+     :label   "Skip image resolution"}))
 
 (defn- compose-handler
   [service-name]
@@ -113,8 +120,9 @@
 
 (defn- init-form-value
   []
-  (state/set-value {:name ""
-                    :spec {:compose ""}} state/form-value-cursor))
+  (state/set-value {:name              ""
+                    :spec              {:compose ""}
+                    :skipImageResolve  false} state/form-value-cursor))
 
 (def mixin-init-form
   (mixin/init-form
@@ -125,7 +133,7 @@
 
 (rum/defc form-edit < rum/reactive
                       mixin-init-editor [{{:keys [from]} :params}]
-  (let [{:keys [spec name]} (state/react state/form-value-cursor)
+  (let [{:keys [spec name skipImageResolve]} (state/react state/form-value-cursor)
         {:keys [valid? processing? saving?]} (state/react state/form-state-cursor)]
     (comp/mui
       (html
@@ -150,7 +158,8 @@
                    :className "Swarmpit-fcard-message"}
                   "Group of interrelated services that are orchestrated and scaled together")
                 (form-name name)
-                (form-editor (:compose spec)))
+                (form-editor (:compose spec))
+                (form-skip-image-resolve skipImageResolve))
               (comp/card-actions
                 {:className "Swarmpit-fcard-actions"}
                 (composite/progress-button

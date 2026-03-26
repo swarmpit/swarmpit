@@ -220,8 +220,9 @@
                               :paper   "#2d2d2d"}}
    :typography  theme-typography
    :overrides   (merge theme-overrides
-                       {:MuiButton {:outlined {:borderColor "rgba(255,255,255,0.23)"
-                                               :color       "rgba(255,255,255,0.87)"}}})
+                       {:MuiCardHeader {:action {:color "rgb(189, 189, 189)"}}
+                        :MuiButton     {:outlined {:borderColor "rgba(255,255,255,0.23)"
+                                                   :color       "rgba(255,255,255,0.87)"}}})
    :breakpoints theme-breakpoints})
 
 (def dark-theme
@@ -230,25 +231,22 @@
 (def light-theme
   (create-mui-theme (clj->js light-theme-props)))
 
-(defonce theme-mode
-  (atom (or (.getItem js/localStorage "swarmpit-theme") "light")))
+(defonce theme-mode (atom "light"))
 
-(defn set-theme-mode! [mode]
-  (.setItem js/localStorage "swarmpit-theme" mode)
-  (reset! theme-mode mode))
-
-(defn current-theme-mode []
-  @theme-mode)
-
-(defn theme [mode]
+(defn set-theme! [mode]
   (set! (-> js/document .-documentElement .-className) mode)
   (case mode
     "dark" dark-theme
     light-theme))
 
+(defn current-theme-mode []
+  @theme-mode)
+
+(defn set-theme-mode! [mode]
+  (reset! theme-mode mode))
+
 (defn mui [component]
-  (let [mode @theme-mode]
-    (theme-provider
-      {:theme (theme mode)}
-      (css-baseline)
-      component)))
+  (theme-provider
+    {:theme (set-theme! @theme-mode)}
+    (css-baseline)
+    component))

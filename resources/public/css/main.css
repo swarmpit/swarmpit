@@ -1632,3 +1632,216 @@ a {
         right: 0 !important;
     }
 }
+
+/* ===== DARK MODE ===== */
+
+.dark .Swarmpit-context {
+    background-color: #121212;
+}
+
+.dark .Swarmpit-appbar {
+    background: #1e1e1e !important;
+    color: #e0e0e0 !important;
+}
+
+.dark .Swarmpit-appbar-search {
+    background: rgba(255, 255, 255, 0.09);
+    color: #e0e0e0;
+    border: 1px solid rgba(255, 255, 255, 0.3);
+}
+
+.dark .Swarmpit-appbar-search:hover {
+    border: 1px solid transparent;
+    box-shadow: 0 1px 1px 0 rgba(255, 255, 255, 0.1),
+    0 1px 3px 1px rgba(255, 255, 255, 0.05);
+}
+
+.dark .Swarmpit-appbar-search-mobile-input {
+    color: #e0e0e0 !important;
+}
+
+.dark .Swarmpit-appbar-search-mobile-close {
+    color: #e0e0e0;
+}
+
+.dark .Swarmpit-appbar-search-mobile-content {
+    background-color: #1e1e1e !important;
+}
+
+.dark .Swarmpit-appbar-avatar-badge {
+    box-shadow: 0 0 0 2px #1e1e1e;
+}
+
+.dark .Swarmpit-drawer-content {
+    background: #1e1e1e;
+}
+
+.dark .Swarmpit-menu-title {
+    background: #1e1e1e;
+}
+
+.dark .Swarmpit-drawer-item:hover > div,
+.dark .Swarmpit-drawer-item:hover > div > h6 {
+    color: #b39ddb !important;
+}
+
+.dark .Swarmpit-list-item-icon,
+.dark .Swarmpit-drawer-item-icon,
+.dark .Swarmpit-drawer-item-text > h6 {
+    color: rgb(189, 189, 189) !important;
+}
+
+.dark .Swarmpit-drawer-item-selected {
+    background-color: rgba(179, 157, 219, 0.15) !important;
+}
+
+.dark .Swarmpit-drawer-item-icon-selected,
+.dark .Swarmpit-drawer-item-text-selected > h6 {
+    color: #b39ddb !important;
+}
+
+.dark .Swarmpit-drawer-footer-item-text {
+    color: #bdbdbd;
+}
+
+.dark .Swarmpit-new-tab {
+    color: rgb(189, 189, 189);
+}
+
+.dark .Swarmpit-new-tab:hover {
+    color: #b39ddb;
+}
+
+.dark .Swarmpit-title-name,
+.dark .Swarmpit-title-version {
+    color: #e0e0e0;
+}
+
+.dark .Swarmpit-title > a:hover {
+    color: #e0e0e0;
+}
+
+.dark .Swarmpit-card {
+    border: 1px solid rgba(255, 255, 255, 0.12);
+}
+
+.dark .Swarmpit-card-avatar {
+    background-color: #b39ddb !important;
+}
+
+.dark .Swarmpit-paper {
+    border: 1px solid rgba(255, 255, 255, 0.12);
+}
+
+.dark .Swarmpit-table {
+    background-color: #1e1e1e;
+}
+
+.dark .Swarmpit-table-row-cell {
+    border-top: 1px solid rgba(255, 255, 255, 0.12);
+}
+
+.dark .Swarmpit-table-row-cell > a {
+    color: #e0e0e0;
+}
+
+.dark .Swarmpit-table-footer {
+    border-top: 1px solid rgba(255, 255, 255, 0.12);
+}
+
+.dark .Swarmpit-table-cell-secondary,
+.dark .Swarmpit-table-head-tooltip {
+    color: rgba(255, 255, 255, 0.7);
+}
+
+.dark .Swarmpit-table-error-tooltip {
+    background-color: #1e1e1e;
+}
+
+.dark .Swarmpit-autocomplete > div {
+    background: #1e1e1e;
+}
+
+.dark .Swarmpit-form-context input[type="number"],
+.dark .Swarmpit-form-context input[type="checkbox"],
+.dark .Swarmpit-form-context input[type="radio"],
+.dark .Swarmpit-form-context input[type="password"],
+.dark .Swarmpit-form-context input[type="select"],
+.dark .Swarmpit-form-context input[type="text"] {
+    background-color: #2c2c2c !important;
+}
+
+.dark .Swarmpit-form-card {
+    border: 1px solid rgba(255, 255, 255, 0.12);
+}
+
+.dark .Swarmpit-form-item-name {
+    color: rgba(255, 255, 255, 0.7);
+}
+
+.dark .Swarmpit-form-card-icon {
+    color: rgba(255, 255, 255, 0.7);
+}
+
+.dark .Swarmpit-login-paper {
+    border: 1px solid rgba(255, 255, 255, 0.12);
+}
+
+.dark .Swarmpit-login-avatar {
+    background-color: #b39ddb;
+}
+
+.dark .Swarmpit-login-text {
+    color: #b39ddb !important;
+}
+
+.dark .Swarmpit-login-version {
+    color: #bdbdbd;
+}
+
+.dark .Swarmpit-progress-button {
+    color: #b39ddb;
+}
+
+.dark .Swarmpit-stepper-horizontal {
+    background-color: #121212 !important;
+}
+
+.dark .Swarmpit-expansion-panel {
+    border: 1px solid rgba(255, 255, 255, 0.12);
+}
+
+.dark .Swarmpit-expansion-panel-summary {
+    background-color: rgba(255, 255, 255, 0.05);
+    border-bottom: 1px solid rgba(255, 255, 255, 0.12);
+}
+
+.dark .Swarmpit-fcard-header-icon,
+.dark .Swarmpit-fcard-header-title {
+    background: #b39ddb;
+    box-shadow: 0 4px 20px 0 rgba(0, 0, 0, 0.28), 0 7px 10px -5px #b39ddb;
+}
+
+.dark .Swarmpit-dashboard-section-title {
+    color: rgb(189, 189, 189) !important;
+}
+
+.dark .Swarmpit-dashboard-section-divider {
+    border-top: 1px solid rgba(255, 255, 255, 0.12);
+}
+
+.dark .Swarmpit-codemirror {
+    border: 1px solid rgba(255, 255, 255, 0.23) !important;
+}
+
+.dark .Swarmpit-codemirror-info {
+    border-top: 1px solid rgba(255, 255, 255, 0.12) !important;
+}
+
+.dark .Swarmpit-label-primary {
+    background-color: #b39ddb !important;
+}
+
+.dark a {
+    color: #b39ddb;
+}
