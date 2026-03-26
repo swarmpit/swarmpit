@@ -1,7 +1,6 @@
 (ns swarmpit.component.account-settings
   (:require [rum.core :as rum]
             [material.components :as comp]
-            [material.icon :as icon]
             [swarmpit.component.password :as password]
             [swarmpit.component.api-access :as api-access]
             [sablono.core :refer-macros [html]]
