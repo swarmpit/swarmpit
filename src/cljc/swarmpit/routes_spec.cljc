@@ -404,8 +404,9 @@
    :volumes   [mount]})
 
 (def stack-compose
-  {:name string?
-   :spec {:compose string?}})
+  {:name                          string?
+   :spec                          {:compose string?}
+   (ds/opt :skipImageResolve)     boolean?})
 
 (def stack-file
   {:name         string?
