@@ -208,12 +208,17 @@
 
 ;; Dark theme props
 (def dark-theme-props
-  {:palette     {:primary   {:main         "#65519f"
-                             :light        "#957ed1"
-                             :dark         "#362870"
+  {:palette     {:type      "dark"
+                 :primary   {:main         "#b39ddb"
+                             :light        "#e6ceff"
+                             :dark         "#65519f"
                              :contrastText "#fff"}
-                 :secondary {:main "#8B9F51"}}
-   :overrides   theme-overrides
+                 :secondary {:main "#8B9F51"}
+                 :background {:default "#121212"
+                              :paper   "#1e1e1e"}}
+   :typography  theme-typography
+   :overrides   (merge theme-overrides
+                       {:MuiCardHeader {:action {:color "rgb(189, 189, 189)"}}})
    :breakpoints theme-breakpoints})
 
 (def dark-theme
@@ -222,14 +227,16 @@
 (def light-theme
   (create-mui-theme (clj->js light-theme-props)))
 
-(defn theme [theme]
-  (set! (-> js/document .-documentElement .-className) theme)
-  (case theme
+(defonce theme-mode (atom "light"))
+
+(defn set-theme! [mode]
+  (set! (-> js/document .-documentElement .-className) mode)
+  (case mode
     "dark" dark-theme
     light-theme))
 
 (defn mui [component]
   (theme-provider
-    {:theme (theme "light")}
+    {:theme (set-theme! @theme-mode)}
     (css-baseline)
     component))
