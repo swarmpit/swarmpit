@@ -693,6 +693,7 @@ a {
     border-bottom: none !important;
     border-top: 1px solid rgba(224, 224, 224, 1);
     padding: 4px 16px 4px 16px !important;
+    font-size: 14px !important;
 }
 
 .Swarmpit-table-row-cell > a {

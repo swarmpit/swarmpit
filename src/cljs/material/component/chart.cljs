@@ -23,7 +23,8 @@
               :outerRadius       "100%"
               :startAngle        90
               :endAngle          -270
-              :fill              "#8884d8"}
+              :fill              "#8884d8"
+              :stroke            "none"}
              (map-indexed
                (fn [index item]
                  (comp/cell {:fill (:color item)

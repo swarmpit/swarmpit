@@ -104,7 +104,8 @@
   (->> name-value-coll
        (map #(hash-map (keyword (:name %)) (:value %)))
        (into (sorted-map))
-       (ordered-map)))
+       #?(:clj (into (ordered-map))
+          :cljs identity)))
 
 (defn map->name-value
   [map-col]

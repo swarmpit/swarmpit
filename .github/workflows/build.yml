@@ -2,9 +2,9 @@ name: Test, Build & Deploy
 
 on:
   push:
-    branches: [ 'master' ]
+    branches: [ 'master', 'develop' ]
   pull_request:
-    branches: [ 'master' ]
+    branches: [ 'develop' ]
 
   # Allows you to run this workflow manually from the Actions tab
   workflow_dispatch:
@@ -17,7 +17,16 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - name: checkout
-        uses: actions/checkout@v3
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+      - name: install GitVersion
+        uses: gittools/actions/gitversion/setup@v0.11.0
+        with:
+          versionSpec: '5.x'
+      - name: determine version
+        id: gitversion
+        uses: gittools/actions/gitversion/execute@v0.11.0
       - name: install java
         uses: actions/setup-java@v3
         with:
@@ -27,6 +36,8 @@ jobs:
         uses: DeLaGuardo/setup-clojure@9.5
         with:
           lein: latest
+      - name: set project version
+        run: sed -i "s/^(defproject swarmpit \".*\"/(defproject swarmpit \"${{ steps.gitversion.outputs.semVer }}\"/" project.clj
       - run: ./init-db.sh
         name: start DB
         working-directory: dev/script
@@ -59,7 +70,16 @@ jobs:
       PR: ${{ github.event.pull_request.number }}
     steps:
       - name: checkout
-        uses: actions/checkout@v3
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+      - name: install GitVersion
+        uses: gittools/actions/gitversion/setup@v0.11.0
+        with:
+          versionSpec: '5.x'
+      - name: determine version
+        id: gitversion
+        uses: gittools/actions/gitversion/execute@v0.11.0
       - uses: actions/download-artifact@v4
         name: download release jar
         with:
@@ -69,24 +89,24 @@ jobs:
         uses: docker/setup-qemu-action@v2
       - name: set up Docker Buildx
         uses: docker/setup-buildx-action@v2
-      - name: login to DockerHub
-        if: env.SECRET != 0
-        uses: docker/login-action@v2
-        with:
-          username: ${{ secrets.DOCKERHUB_USER }}
-          password: ${{ secrets.DOCKERHUB_PASS }}
       - name: login to GHCR
         uses: docker/login-action@v2
         with:
           registry: ghcr.io
           username: ${{ github.repository_owner }}
           password: ${{ secrets.GITHUB_TOKEN }}
+      - name: docker meta
+        id: meta
+        uses: docker/metadata-action@v5
+        with:
+          images: ghcr.io/changemakerstudios/swarmpit
+          tags: |
+            type=raw,value=${{ steps.gitversion.outputs.semVer }}
+            type=raw,value=latest,enable=${{ github.ref == 'refs/heads/master' }}
       - name: build and push
         uses: docker/build-push-action@v4
         with:
           context: .
           push: ${{ github.event_name != 'pull_request' }}
           platforms: linux/amd64,linux/arm64/v8,linux/arm/v7,linux/arm/v5
-          tags: |
-            jabencas/swarmpit:latest
-            ghcr.io/changemakerstudios/swarmpit:latest
+          tags: ${{ steps.meta.outputs.tags }}

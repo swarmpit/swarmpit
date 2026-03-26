@@ -3,6 +3,7 @@
   (:require [ring.middleware.json :refer [wrap-json-params wrap-json-response]]
             [ring.middleware.defaults :refer [wrap-defaults site-defaults]]
             [ring.middleware.resource :refer [wrap-resource]]
+            [ring.middleware.content-type :refer [wrap-content-type]]
             [ring.middleware.gzip :refer [wrap-gzip]]
             [swarmpit.authentication :refer [authentication-middleware]]
             [swarmpit.authorization :refer [authorization-middleware]]
@@ -26,6 +27,14 @@
             [expound.alpha :as e]
             [muuntaja.core :as m]
             [taoensso.timbre :refer [info]]))
+
+;; Ring 1.8.x is missing modern font MIME types — add them so browsers
+;; accept font files when X-Content-Type-Options: nosniff is set.
+(def extra-mime-types
+  {"woff2" "font/woff2"
+   "woff"  "font/woff"
+   "ttf"   "font/ttf"
+   "otf"   "font/otf"})
 
 (defn default-exception-handler
   "Default safe handler for any exception."
@@ -85,7 +94,10 @@
                   :operationsSorter "alpha"}})
       (-> (ring/create-default-handler)
           (wrap-resource "public")
-          (wrap-defaults (assoc-in site-defaults [:security :anti-forgery] false))
+          (wrap-content-type {:mime-types extra-mime-types})
+          (wrap-defaults (-> site-defaults
+                             (assoc-in [:security :anti-forgery] false)
+                             (assoc :static false)))
           wrap-gzip))))
 
 (defn -main [& [port]]
