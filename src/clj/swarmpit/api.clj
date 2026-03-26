@@ -975,7 +975,7 @@
         image-digest (repository-digest owner repository-name effective-tag)
         image (if (str/blank? image-digest)
                 (str repository-name ":" effective-tag)
-                (str repository-name "@" image-digest))]
+                (str repository-name ":" effective-tag "@" image-digest))]
     (dc/update-service
       (service-auth owner service)
       service-id
