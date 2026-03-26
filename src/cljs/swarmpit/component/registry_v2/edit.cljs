@@ -22,7 +22,7 @@
      :name            "name"
      :key             "name"
      :variant         "outlined"
-     :defaultValue    value
+     :value           value
      :required        true
      :disabled        true
      :margin          "normal"
@@ -35,7 +35,7 @@
      :name            "url"
      :key             "url"
      :variant         "outlined"
-     :defaultValue    value
+     :value           value
      :required        true
      :margin          "normal"
      :InputLabelProps {:shrink true}
@@ -66,7 +66,7 @@
      :name            "username"
      :key             "username"
      :variant         "outlined"
-     :defaultValue    value
+     :value           value
      :margin          "normal"
      :required        true
      :InputLabelProps {:shrink true}
@@ -80,7 +80,7 @@
      :type            (if show-password?
                         "text"
                         "password")
-     :defaultValue    value
+     :value           (or value "")
      :margin          "normal"
      :onChange        #(state/update-value [:password] (-> % .-target .-value) state/form-value-cursor)
      :InputLabelProps {:shrink true}

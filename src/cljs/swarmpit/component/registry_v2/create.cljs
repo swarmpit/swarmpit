@@ -20,7 +20,7 @@
      :fullWidth       true
      :key             "name"
      :variant         "outlined"
-     :defaultValue    name
+     :value           name
      :required        true
      :margin          "normal"
      :InputLabelProps {:shrink true}
@@ -32,10 +32,11 @@
      :fullWidth       true
      :key             "url"
      :variant         "outlined"
-     :defaultValue    url
+     :value           url
      :required        true
      :margin          "normal"
      :placeholder     "e.g. https://my.registry.io"
+     :helperText      "Full URL including protocol (https://)"
      :InputLabelProps {:shrink true}
      :onChange        #(state/update-value [:url] (-> % .-target .-value) state/form-value-cursor)}))
 
@@ -65,7 +66,7 @@
      :key             "username"
      :variant         "outlined"
      :margin          "normal"
-     :defaultValue    value
+     :value           value
      :required        true
      :InputLabelProps {:shrink true}
      :onChange        #(state/update-value [:username] (-> % .-target .-value) state/form-value-cursor)}))
@@ -80,7 +81,7 @@
      :type            (if show-password?
                         "text"
                         "password")
-     :defaultValue    value
+     :value           value
      :onChange        #(state/update-value [:password] (-> % .-target .-value) state/form-value-cursor)
      :InputLabelProps {:shrink true}
      :InputProps      {:className    "Swarmpit-form-input"
@@ -130,12 +131,14 @@
     (state/update-value [:valid?] (not
                                     (or
                                       (str/blank? name)
-                                      (str/blank? url))) state/form-state-cursor)
+                                      (str/blank? url)
+                                      (and withAuth (str/blank? username))
+                                      (and withAuth (str/blank? password)))) state/form-state-cursor)
 
     (comp/box
       {}
       (form-name name)
-      (form-url name)
+      (form-url url)
       (comp/grid
         {:container true}
         (comp/grid
