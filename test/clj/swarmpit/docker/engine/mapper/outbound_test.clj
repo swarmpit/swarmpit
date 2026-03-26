@@ -4,8 +4,8 @@
 
 (deftest ->service-image-test
   (let [service {:repository {:name "nginx" :tag "alpine" :imageDigest "sha256:abc"}}]
-    (testing "digest? true with digest uses digest form"
-      (is (= "nginx@sha256:abc" (->service-image service true))))
+    (testing "digest? true with digest uses tag+digest form"
+      (is (= "nginx:alpine@sha256:abc" (->service-image service true))))
 
     (testing "digest? false uses tag form"
       (is (= "nginx:alpine" (->service-image service false)))))
