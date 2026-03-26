@@ -89,4 +89,4 @@ jobs:
           platforms: linux/amd64,linux/arm64/v8,linux/arm/v7,linux/arm/v5
           tags: |
             jabencas/swarmpit:latest
-            ghcr.io/${{ github.repository }}:latest
+            ghcr.io/changemakerstudios/swarmpit:latest
