@@ -47,26 +47,27 @@
     {:key "nothing-match-text"} "Nothing matches this filter."))
 
 (rum/defc list-filters < rum/static [filterOpen? comp]
-  (comp/swipeable-drawer
-    {:anchor "right"
-     :open   filterOpen?}
-    (comp/box
-      {:className "Swarmpit-filter"}
+  (comp/mui
+    (comp/swipeable-drawer
+      {:anchor "right"
+       :open   filterOpen?}
       (comp/box
-        {:className "Swarmpit-filter-actions"}
+        {:className "Swarmpit-filter"}
+        (comp/box
+          {:className "Swarmpit-filter-actions"}
+          (comp/button
+            {:onClick   #(state/update-value [:filterOpen?] false state/form-state-cursor)
+             :startIcon (icon/close {})
+             :variant   "text"
+             :color     "default"} "Close"))
+        comp
+        (comp/box {:className "grow"})
         (comp/button
-          {:onClick   #(state/update-value [:filterOpen?] false state/form-state-cursor)
-           :startIcon (icon/close {})
-           :variant   "text"
-           :color     "default"} "Close"))
-      comp
-      (comp/box {:className "grow"})
-      (comp/button
-        {:onClick   #(state/update-value [:filter] nil state/form-state-cursor)
-         :startIcon (comp/svg icon/trash-path)
-         :fullWidth true
-         :variant   "contained"
-         :color     "default"} "Clear"))))
+          {:onClick   #(state/update-value [:filter] nil state/form-state-cursor)
+           :startIcon (comp/svg icon/trash-path)
+           :fullWidth true
+           :variant   "contained"
+           :color     "default"} "Clear")))))
 
 (rum/defc list < rum/reactive
   [title items filtered-items render-metadata onclick-handler toolbar-render-metadata]
