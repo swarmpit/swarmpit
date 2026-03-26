@@ -27,8 +27,6 @@ jobs:
       - name: determine version
         id: gitversion
         uses: gittools/actions/gitversion/execute@v0.11.0
-        with:
-          useConfigFile: true
       - name: install java
         uses: actions/setup-java@v3
         with:
@@ -82,8 +80,6 @@ jobs:
       - name: determine version
         id: gitversion
         uses: gittools/actions/gitversion/execute@v0.11.0
-        with:
-          useConfigFile: true
       - uses: actions/download-artifact@v4
         name: download release jar
         with:
