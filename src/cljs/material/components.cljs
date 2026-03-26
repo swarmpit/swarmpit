@@ -198,27 +198,31 @@
 
 ;; Light theme props
 (def light-theme-props
-  {:palette     {:primary   {:main         "#65519f"
+  {:palette     {:type      "light"
+                 :primary   {:main         "#65519f"
                              :light        "#957ed1"
                              :dark         "#362870"
                              :contrastText "#fff"}
                  :secondary {:main "#8B9F51"}}
+   :typography  theme-typography
    :overrides   theme-overrides
    :breakpoints theme-breakpoints})
 
 ;; Dark theme props
 (def dark-theme-props
-  {:palette     {:type      "dark"
-                 :primary   {:main         "#b39ddb"
-                             :light        "#e6ceff"
-                             :dark         "#65519f"
-                             :contrastText "#fff"}
-                 :secondary {:main "#8B9F51"}
-                 :background {:default "#121212"
-                              :paper   "#1e1e1e"}}
+  {:palette     {:type       "dark"
+                 :primary    {:main         "#957ed1"
+                              :light        "#c4b0e8"
+                              :dark         "#65519f"
+                              :contrastText "#fff"}
+                 :secondary  {:main "#8B9F51"}
+                 :background {:default "#1e1e1e"
+                              :paper   "#2d2d2d"}}
    :typography  theme-typography
    :overrides   (merge theme-overrides
-                       {:MuiCardHeader {:action {:color "rgb(189, 189, 189)"}}})
+                       {:MuiCardHeader {:action {:color "rgb(189, 189, 189)"}}
+                        :MuiButton     {:outlined {:borderColor "rgba(255,255,255,0.23)"
+                                                   :color       "rgba(255,255,255,0.87)"}}})
    :breakpoints theme-breakpoints})
 
 (def dark-theme
@@ -234,6 +238,12 @@
   (case mode
     "dark" dark-theme
     light-theme))
+
+(defn current-theme-mode []
+  @theme-mode)
+
+(defn set-theme-mode! [mode]
+  (reset! theme-mode mode))
 
 (defn mui [component]
   (theme-provider
