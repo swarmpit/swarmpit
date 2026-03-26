@@ -85,7 +85,7 @@
           (icon/expand-more))))
     (admin-menu open)
     (comp/link
-      {:href   "https://github.com/swarmpit/swarmpit/issues/new"
+      {:href   "https://github.com/ChangemakerStudios/swarmpit/issues"
        :color  "inherit"
        :target "_blank"}
       (comp/menu-item
