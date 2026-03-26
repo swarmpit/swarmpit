@@ -184,7 +184,7 @@
               {:name  "free"
                :value (- 100 usage)
                :hover (- limit value)
-               :color (if (= "dark" (comp/current-theme-mode)) "#555" "#ccc")}]]
+               :color (if (= "dark" (comp/current-theme-mode)) "#3a3a3a" "#ccc")}]]
     (if limit
       (chart/pie
         data
