@@ -1,0 +1,14 @@
+mode: Mainline
+branches:
+  master:
+    regex: ^master$
+    tag: ''
+    increment: Minor
+  feature:
+    regex: ^features?[/-]
+    tag: alpha
+    increment: Minor
+  pull-request:
+    regex: ^(pull|pull\-requests|pr)[/-]
+    tag: pr
+    increment: Inherit
