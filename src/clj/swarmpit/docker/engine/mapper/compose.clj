@@ -7,7 +7,6 @@
             [swarmpit.yaml :refer [->yaml]])
   (:refer-clojure :exclude [alias]))
 
-(def compose-version "3.3")
 
 (defn group
   [stack-name fn coll]
@@ -138,8 +137,7 @@
 (defn ->compose
   [stack]
   (let [name (:stackName stack)]
-    (-> {:version  compose-version
-         :services (group name service (->> stack :services (sort-by :serviceName) (vec)))
+    (-> {:services (group name service (->> stack :services (sort-by :serviceName) (vec)))
          :networks (group name network (:networks stack))
          :volumes  (group name volume (:volumes stack))
          :configs  (group name config (:configs stack))
