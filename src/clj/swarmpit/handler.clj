@@ -506,7 +506,8 @@
              :dockerhub (api/dockerhubs owner)
              :ecr (api/registries-ecr owner)
              :acr (api/registries-acr owner)
-             :gitlab (api/registries-gitlab owner))
+             :gitlab (api/registries-gitlab owner)
+             :ghcr (api/registries-ghcr owner))
            (resp-ok))
       (resp-error 400 (str "Unknown registry type [" registry "]")))))
 
@@ -520,7 +521,8 @@
              :dockerhub (api/dockerhub id)
              :ecr (api/registry-ecr id)
              :acr (api/registry-acr id)
-             :gitlab (api/registry-gitlab id))
+             :gitlab (api/registry-gitlab id)
+             :ghcr (api/registry-ghcr id))
            (resp-ok))
       (resp-error 400 (str "Unknown registry type [" registry "]")))))
 
@@ -534,7 +536,8 @@
             :dockerhub (api/delete-dockerhub id)
             :ecr (api/delete-ecr-registry id)
             :acr (api/delete-acr-registry id)
-            :gitlab (api/delete-gitlab-registry id))
+            :gitlab (api/delete-gitlab-registry id)
+            :ghcr (api/delete-ghcr-registry id))
           (resp-ok))
       (resp-error 400 (str "Unknown registry type [" registry "]")))))
 
@@ -549,7 +552,8 @@
              :dockerhub (api/dockerhub-repositories id)
              :ecr (api/registry-ecr-repositories id)
              :acr (api/registry-acr-repositories id)
-             :gitlab (api/registry-gitlab-repositories id))
+             :gitlab (api/registry-gitlab-repositories id)
+             :ghcr (api/registry-ghcr-repositories id))
            (resp-ok))
       (resp-error 400 (str "Unknown registry type " registry)))))
 
@@ -613,6 +617,17 @@
     (catch Exception e
       (resp-error 400 (get-in (ex-data e) [:body :error])))))
 
+(defmethod registry-add :ghcr
+  [_ payload]
+  (try
+    (api/registry-ghcr-info payload)
+    (let [response (api/create-ghcr-registry payload)]
+      (if (some? response)
+        (resp-created (select-keys response [:id]))
+        (resp-error 400 "GitHub registry account already linked")))
+    (catch Exception e
+      (resp-error 400 (get-in (ex-data e) [:body :error])))))
+
 (defn registry-create
   [{{:keys [path body]} :parameters
     {:keys [usr]}       :identity}]
@@ -668,6 +683,15 @@
   (try
     (api/registry-gitlab-info payload)
     (api/update-gitlab-registry id payload)
+    (resp-ok)
+    (catch Exception e
+      (resp-error 400 (get-in (ex-data e) [:body :error])))))
+
+(defmethod registry-edit :ghcr
+  [_ payload id]
+  (try
+    (api/registry-ghcr-info payload)
+    (api/update-ghcr-registry id payload)
     (resp-ok)
     (catch Exception e
       (resp-error 400 (get-in (ex-data e) [:body :error])))))

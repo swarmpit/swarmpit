@@ -290,6 +290,36 @@
   [registry]
   (delete-doc registry))
 
+;; Registry GitHub GHCR
+
+(defn registries-ghcr
+  [owner]
+  (if (nil? owner)
+    (find-docs "ghcr")
+    (find-docs {"$or" [{:owner {"$eq" owner}}
+                       {:public {"$eq" true}}]} "ghcr")))
+
+(defn registry-ghcr
+  ([id]
+   (get-doc id))
+  ([username owner]
+   (find-doc {:username username
+              :owner    owner} "ghcr")))
+
+(defn create-ghcr-registry
+  [registry]
+  (-> (assoc registry :type "ghcr")
+      (create-doc)))
+
+(defn update-ghcr-registry
+  [registry delta]
+  (let [allowed-delta (dissoc delta :_id :_rev :name)]
+    (update-doc registry allowed-delta)))
+
+(defn delete-ghcr-registry
+  [registry]
+  (delete-doc registry))
+
 ;; User
 
 (defn users
@@ -303,7 +333,7 @@
 (defn user-registries
   [username]
   (find-cross-docs
-    {"$and" [{:type {"$in" ["dockerhub" "v2" "ecr" "acr" "gitlab"]}}
+    {"$and" [{:type {"$in" ["dockerhub" "v2" "ecr" "acr" "gitlab" "ghcr"]}}
              {:owner {"$eq" username}}]}))
 
 (defn user-by-username

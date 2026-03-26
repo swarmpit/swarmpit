@@ -24,6 +24,7 @@
 (def azure-icon (comp/svg {:className "Swarmpit-list-item-icon"} icon/azure-path))
 (def google-icon (comp/svg {:className "Swarmpit-list-item-icon"} icon/google-path))
 (def gitlab-icon (comp/svg {:className "Swarmpit-list-item-icon"} icon/gitlab-path))
+(def github-icon (comp/svg {:className "Swarmpit-list-item-icon"} icon/github-path))
 
 (defn icon-type [item]
   (comp/tooltip
@@ -32,14 +33,16 @@
                   "v2" "registry v2"
                   "ecr" "amazon ecr"
                   "acr" "azure acr"
-                  "gitlab" "gitlab registry")
+                  "gitlab" "gitlab registry"
+                  "ghcr" "github ghcr")
      :placement "left"}
     (case (:type item)
       "dockerhub" hub-icon
       "v2" reg-icon
       "ecr" amazon-icon
       "acr" azure-icon
-      "gitlab" gitlab-icon)))
+      "gitlab" gitlab-icon
+      "ghcr" github-icon)))
 
 (def render-metadata
   {:table {:summary [{:name      "Name"
@@ -104,6 +107,15 @@
                    (when origin?
                      (state/update-value [:items :gitlab] response state/form-value-cursor)))}))
 
+(defn- registries-ghcr-handler
+  []
+  (ajax/get
+    (routes/path-for-backend :registries {:registryType :ghcr})
+    {:state      [:loading? :ghcr]
+     :on-success (fn [{:keys [response origin?]}]
+                   (when origin?
+                     (state/update-value [:items :ghcr] response state/form-value-cursor)))}))
+
 (defn form-search-fn
   [event]
   (state/update-value [:query] (-> event .-target .-value) state/search-cursor))
@@ -133,13 +145,19 @@
   (map #(merge (select-keys % [:_id :url :type :public :owner])
                {:name (:username %)}) reg-gitlab-accounts))
 
+(defn ghcr-to-distribution
+  [reg-ghcr-accounts]
+  (map #(merge (select-keys % [:_id :url :type :public :owner])
+               {:name (:username %)}) reg-ghcr-accounts))
+
 (defn- init-form-state
   []
   (state/set-value {:loading? {:dockerhub false
                                :v2        false
                                :ecr       false
                                :acr       false
-                               :gitlab    false}} state/form-state-cursor))
+                               :gitlab    false
+                               :ghcr      false}} state/form-state-cursor))
 
 (def mixin-init-form
   (mixin/init-form
@@ -149,7 +167,8 @@
       (registries-v2-handler)
       (registries-ecr-handler)
       (registries-acr-handler)
-      (registries-gitlab-handler))))
+      (registries-gitlab-handler)
+      (registries-ghcr-handler))))
 
 (def toolbar-render-metadata
   [{:name     "Link registry"
@@ -169,7 +188,8 @@
                               (v2-to-distribution (:v2 items))
                               (ecr-to-distribution (:ecr items))
                               (acr-to-distribution (:acr items))
-                              (gitlab-to-distribution (:gitlab items)))
+                              (gitlab-to-distribution (:gitlab items))
+                              (ghcr-to-distribution (:ghcr items)))
         filtered-distributions (-> (core/filter #(= (:owner %) (storage/user)) distributions)
                                    (list-util/filter query))]
     (progress/form
@@ -177,7 +197,8 @@
            (:v2 loading?)
            (:ecr loading?)
            (:acr loading?)
-           (:gitlab loading?))
+           (:gitlab loading?)
+           (:ghcr loading?))
       (common/list "Registries"
                    distributions
                    filtered-distributions
