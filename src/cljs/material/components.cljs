@@ -198,22 +198,30 @@
 
 ;; Light theme props
 (def light-theme-props
-  {:palette     {:primary   {:main         "#65519f"
+  {:palette     {:type      "light"
+                 :primary   {:main         "#65519f"
                              :light        "#957ed1"
                              :dark         "#362870"
                              :contrastText "#fff"}
                  :secondary {:main "#8B9F51"}}
+   :typography  theme-typography
    :overrides   theme-overrides
    :breakpoints theme-breakpoints})
 
 ;; Dark theme props
 (def dark-theme-props
-  {:palette     {:primary   {:main         "#65519f"
-                             :light        "#957ed1"
-                             :dark         "#362870"
-                             :contrastText "#fff"}
-                 :secondary {:main "#8B9F51"}}
-   :overrides   theme-overrides
+  {:palette     {:type       "dark"
+                 :primary    {:main         "#957ed1"
+                              :light        "#c4b0e8"
+                              :dark         "#65519f"
+                              :contrastText "#fff"}
+                 :secondary  {:main "#8B9F51"}
+                 :background {:default "#1e1e1e"
+                              :paper   "#2d2d2d"}}
+   :typography  theme-typography
+   :overrides   (merge theme-overrides
+                       {:MuiButton {:outlined {:borderColor "rgba(255,255,255,0.23)"
+                                               :color       "rgba(255,255,255,0.87)"}}})
    :breakpoints theme-breakpoints})
 
 (def dark-theme
@@ -222,14 +230,25 @@
 (def light-theme
   (create-mui-theme (clj->js light-theme-props)))
 
-(defn theme [theme]
-  (set! (-> js/document .-documentElement .-className) theme)
-  (case theme
+(defonce theme-mode
+  (atom (or (.getItem js/localStorage "swarmpit-theme") "light")))
+
+(defn set-theme-mode! [mode]
+  (.setItem js/localStorage "swarmpit-theme" mode)
+  (reset! theme-mode mode))
+
+(defn current-theme-mode []
+  @theme-mode)
+
+(defn theme [mode]
+  (set! (-> js/document .-documentElement .-className) mode)
+  (case mode
     "dark" dark-theme
     light-theme))
 
 (defn mui [component]
-  (theme-provider
-    {:theme (theme "light")}
-    (css-baseline)
-    component))
+  (let [mode @theme-mode]
+    (theme-provider
+      {:theme (theme mode)}
+      (css-baseline)
+      component)))

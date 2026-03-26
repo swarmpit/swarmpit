@@ -2,6 +2,9 @@
   (:require [material.components :as comp]
             [sablono.core :refer-macros [html]]))
 
+(defn- label-fill []
+  (if (= "dark" (comp/current-theme-mode)) "#e0e0e0" "#333"))
+
 (defn pie [data label className id tooltip]
   (let [hashd (hash data)]
     (html
@@ -27,7 +30,8 @@
                              :key  (str "pie-cell-" id "-" index)})) data)
              (comp/re-label
                (merge {:width    30
-                       :position "center"}
+                       :position "center"
+                       :fill     (label-fill)}
                       (when (= "Loading" label)
                         {:fill "#ccc"})) label))
            (when tooltip
