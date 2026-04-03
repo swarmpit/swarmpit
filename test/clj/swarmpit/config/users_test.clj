@@ -8,7 +8,7 @@
 
 (use-fixtures :once db-init-fixture)
 
-(deftest parse-user-config-test
+(deftest ^:integration parse-user-config-test
   (testing "parse user with plain password"
     (let [user {:username "test"
                 :password "pass123"
@@ -46,7 +46,7 @@
           parsed (users/parse-user-config user)]
       (is (= "viewer" (:role parsed))))))
 
-(deftest init-users-test
+(deftest ^:integration init-users-test
   (testing "no config file"
     (with-redefs [io/file (constantly (io/file "non-existent.yaml"))]
       (is (nil? (users/init!)))))
