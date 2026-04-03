@@ -1,6 +1,7 @@
 (ns swarmpit.docker.engine.http-test
   (:refer-clojure :exclude [get])
   (:require [clojure.test :refer :all]
+            [clj-http.conn-mgr :as conn-mgr]
             [swarmpit.test :refer :all]
             [swarmpit.docker.engine.http :refer :all])
   (:import (clojure.lang ExceptionInfo)))
@@ -31,7 +32,9 @@
   (testing "connection refused"
     (is (thrown-with-msg?
           ExceptionInfo #"Connection refused"
-          (with-redefs [swarmpit.config/config {:docker-sock "http://localhost:23095"}]
+          (with-redefs [swarmpit.config/config       {:docker-sock "http://localhost:23095"}
+                        swarmpit.docker.engine.http/get-conn-manager
+                        (fn [] (conn-mgr/make-regular-conn-manager {}))]
             (-> (execute {:method :GET
                           :api    "/version"})
                 :body)))))
@@ -39,7 +42,9 @@
   (testing "invalid address"
     (is (thrown-with-msg?
           ExceptionInfo #"Docker failure: not-existing-dns:"
-          (with-redefs [swarmpit.config/config {:docker-sock "http://not-existing-dns"}]
+          (with-redefs [swarmpit.config/config       {:docker-sock "http://not-existing-dns"}
+                        swarmpit.docker.engine.http/get-conn-manager
+                        (fn [] (conn-mgr/make-regular-conn-manager {}))]
             (-> (execute {:method :GET
                           :api    "/version"})
                 :body)))))
@@ -47,8 +52,10 @@
   (testing "timeout"
     (is (thrown?
           ExceptionInfo #"Docker error: Request timeout"
-          (with-redefs [swarmpit.config/config {:docker-sock         "http://localhost:12375"
-                                                :docker-http-timeout 0}]
+          (with-redefs [swarmpit.config/config       {:docker-sock         "http://localhost:12375"
+                                                      :docker-http-timeout 0}
+                        swarmpit.docker.engine.http/get-conn-manager
+                        (fn [] (conn-mgr/make-regular-conn-manager {}))]
             (-> (execute {:method :GET
                           :api    "/services"})
                 :body)))))
@@ -56,7 +63,9 @@
   (testing "invalid socket"
     (is (thrown-with-msg?
           ExceptionInfo #"Docker failure: No such file or directory"
-          (with-redefs [swarmpit.config/config {:docker-sock "/not/existing/socket.sock"}]
+          (with-redefs [swarmpit.config/config       {:docker-sock "/not/existing/socket.sock"}
+                        swarmpit.docker.engine.http/get-conn-manager
+                        (fn [] (make-conn-manager))]
             (-> (execute {:method :GET
                           :api    "/version"})
                 :body))))))
