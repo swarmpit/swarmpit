@@ -1,6 +1,7 @@
 services:
   app:
-    image: swarmpit/swarmpit:latest
+    image: ghcr.io/changemakerstudios/swarmpit:latest
+    build: .
     environment:
       - SWARMPIT_DB=http://db:5984
       - SWARMPIT_INFLUXDB=http://influxdb:8086
