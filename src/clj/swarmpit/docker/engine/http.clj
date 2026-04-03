@@ -6,7 +6,7 @@
             [swarmpit.utils :refer [parse-int]])
   (:import (org.apache.http.config RegistryBuilder)
            (swarmpit.socket UnixSocketFactory)
-           (org.apache.http.impl.conn BasicHttpClientConnectionManager)))
+           (org.apache.http.impl.conn PoolingHttpClientConnectionManager)))
 
 (defn- http?
   [] (not (nil? (re-matches #"^https?:\/\/.*" (config :docker-sock)))))
@@ -17,15 +17,25 @@
       (.register "http" (UnixSocketFactory/createUnixSocketFactory (config :docker-sock)))
       (.build)))
 
-(defn- make-unix-conn-manager
+(defn- make-pooling-unix-conn-manager
   []
-  (BasicHttpClientConnectionManager. (unix-scheme)))
+  (doto (PoolingHttpClientConnectionManager. (unix-scheme))
+    (.setMaxTotal 20)
+    (.setDefaultMaxPerRoute 20)))
 
-(defn- make-conn-manager
+(defn make-conn-manager
   []
   (if (http?)
-    (conn-mgr/make-regular-conn-manager {})
-    (make-unix-conn-manager)))
+    (conn-mgr/make-reusable-conn-manager {:timeout 10 :threads 20 :default-per-route 20})
+    (make-pooling-unix-conn-manager)))
+
+(defonce ^:private shared-conn-manager (delay (make-conn-manager)))
+
+(defn get-conn-manager
+  "Returns shared connection manager. Exists as a function so tests
+   can with-redefs to supply a fresh manager for different configs."
+  []
+  @shared-conn-manager)
 
 (defn- url
   [uri]
@@ -39,7 +49,7 @@
   [{:keys [method api options]}]
   (execute-in-scope {:method        method
                      :url           (url api)
-                     :options       (merge {:connection-manager (make-conn-manager)
+                     :options       (merge {:connection-manager (get-conn-manager)
                                             :retry-handler      (fn [& _] false)} options)
                      :scope         "Docker"
                      :timeout       (parse-int (config :docker-http-timeout))
