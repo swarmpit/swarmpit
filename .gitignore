@@ -21,3 +21,4 @@ pom.xml.asc
 .idea
 *.iml
 *.local.json
+.claude/worktrees
