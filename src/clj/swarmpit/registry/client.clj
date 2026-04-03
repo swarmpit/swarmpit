@@ -41,16 +41,24 @@
                      :error-handler   #(-> % :errors (first) :message)
                      :quiet-statuses  quiet-statuses}))
 
+(defn- repository-scope-from-url
+  "Extract repository scope from Docker V2 API URL.
+   GHCR returns a generic placeholder scope in www-authenticate headers,
+   so we derive the correct scope from the actual request URL."
+  [url]
+  (when-let [[_ repo] (re-find #"/v2/(.+?)(?:/(?:tags|manifests|blobs)/)" url)]
+    (str "repository:" repo ":pull")))
+
 (defn- fallback-options
   [www-auth-url www-auth-params options]
   (let [query-params (merge {:client_id "swarmpit"} www-auth-params)
-        options (assoc-in options [:query-params] query-params)
-        token (-> (execute {:method  :GET
-                            :url     www-auth-url
-                            :options options})
-                  :body)]
-    (-> options
-        (assoc-in [:headers :Authorization] (token/bearer (:token token))))))
+        token-options (assoc options :query-params query-params)
+        token-body (-> (execute {:method  :GET
+                                 :url     www-auth-url
+                                 :options token-options})
+                       :body)
+        bearer-token (or (:token token-body) (:access_token token-body))]
+    (assoc-in options [:headers :Authorization] (token/bearer bearer-token))))
 
 (defn- execute-with-fallback
   [{:keys [method url options quiet-statuses] :as request}]
@@ -61,7 +69,10 @@
             headers (:headers (ex-data e))
             www-auth-header (authenticate-header headers)
             www-auth-url (:realm www-auth-header)
-            www-auth-params (dissoc www-auth-header :realm)]
+            www-auth-params (dissoc www-auth-header :realm)
+            url-scope (repository-scope-from-url url)
+            www-auth-params (cond-> www-auth-params
+                              url-scope (assoc :scope url-scope))]
         (if (and (= status 401)
                  (some? www-auth-url)
                  (ip/is-valid-url www-auth-url))
