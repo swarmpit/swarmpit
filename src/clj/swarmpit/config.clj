@@ -4,7 +4,7 @@
 (def default
   (atom {:docker-sock         "/var/run/docker.sock"
          :docker-api          "1.44"
-         :docker-http-timeout 5000
+         :docker-http-timeout 15000
          :log-level           "info"
          :db-url              "http://localhost:5984"
          :influxdb-url        nil
