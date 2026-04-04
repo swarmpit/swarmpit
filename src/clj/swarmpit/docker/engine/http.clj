@@ -23,15 +23,15 @@
                           (.setSoTimeout 30000)
                           (.build))]
     (doto (PoolingHttpClientConnectionManager. (unix-scheme))
-      (.setMaxTotal 20)
-      (.setDefaultMaxPerRoute 20)
+      (.setMaxTotal 50)
+      (.setDefaultMaxPerRoute 50)
       (.setValidateAfterInactivity 1000)
       (.setDefaultSocketConfig socket-config))))
 
 (defn make-conn-manager
   []
   (if (http?)
-    (conn-mgr/make-reusable-conn-manager {:timeout 10 :threads 20 :default-per-route 20})
+    (conn-mgr/make-reusable-conn-manager {:timeout 10 :threads 50 :default-per-route 50})
     (make-pooling-unix-conn-manager)))
 
 (defonce ^:private shared-conn-manager (delay (make-conn-manager)))
@@ -57,9 +57,9 @@
                        :url           (url api)
                        :options       (merge {:connection-manager          (get-conn-manager)
                                               :connection-request-timeout  timeout-ms
-                                              :socket-timeout              (max timeout-ms 30000)
+                                              :socket-timeout              timeout-ms
                                               :connection-timeout          (max timeout-ms 5000)
                                               :retry-handler               (fn [& _] false)} options)
                        :scope         "Docker"
-                       :timeout       timeout-ms
+                       :timeout       (+ timeout-ms 5000)
                        :error-handler :message})))
