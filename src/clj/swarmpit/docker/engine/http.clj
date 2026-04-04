@@ -4,7 +4,7 @@
             [cheshire.core :refer [parse-string generate-string]]
             [swarmpit.config :refer [config]]
             [swarmpit.utils :refer [parse-int]])
-  (:import (org.apache.http.config RegistryBuilder)
+  (:import (org.apache.http.config RegistryBuilder SocketConfig)
            (swarmpit.socket UnixSocketFactory)
            (org.apache.http.impl.conn PoolingHttpClientConnectionManager)))
 
@@ -19,9 +19,14 @@
 
 (defn- make-pooling-unix-conn-manager
   []
-  (doto (PoolingHttpClientConnectionManager. (unix-scheme))
-    (.setMaxTotal 20)
-    (.setDefaultMaxPerRoute 20)))
+  (let [socket-config (-> (SocketConfig/custom)
+                          (.setSoTimeout 30000)
+                          (.build))]
+    (doto (PoolingHttpClientConnectionManager. (unix-scheme))
+      (.setMaxTotal 20)
+      (.setDefaultMaxPerRoute 20)
+      (.setValidateAfterInactivity 1000)
+      (.setDefaultSocketConfig socket-config))))
 
 (defn make-conn-manager
   []
@@ -47,10 +52,14 @@
 
 (defn execute
   [{:keys [method api options]}]
-  (execute-in-scope {:method        method
-                     :url           (url api)
-                     :options       (merge {:connection-manager (get-conn-manager)
-                                            :retry-handler      (fn [& _] false)} options)
-                     :scope         "Docker"
-                     :timeout       (parse-int (config :docker-http-timeout))
-                     :error-handler :message}))
+  (let [timeout-ms (parse-int (config :docker-http-timeout))]
+    (execute-in-scope {:method        method
+                       :url           (url api)
+                       :options       (merge {:connection-manager          (get-conn-manager)
+                                              :connection-request-timeout  timeout-ms
+                                              :socket-timeout              (max timeout-ms 30000)
+                                              :connection-timeout          (max timeout-ms 5000)
+                                              :retry-handler               (fn [& _] false)} options)
+                       :scope         "Docker"
+                       :timeout       timeout-ms
+                       :error-handler :message})))

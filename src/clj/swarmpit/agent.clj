@@ -10,7 +10,7 @@
   (when-let [services (try
                         (->> (api/services)
                              (filter #(get-in % [:deployment :autoredeploy]))
-                             (filter #(not (= "updating" get-in % [:status :update]))))
+                             (filter #(not= "updating" (get-in % [:status :update]))))
                         (catch Exception e
                           (error "Autoredeploy: failed to fetch services" (.getMessage e))
                           nil))]
