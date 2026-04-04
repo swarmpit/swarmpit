@@ -52,7 +52,7 @@
 
 (defn execute
   [{:keys [method api options]}]
-  (let [timeout-ms (parse-int (config :docker-http-timeout))]
+  (let [timeout-ms (or (parse-int (config :docker-http-timeout)) 5000)]
     (execute-in-scope {:method        method
                        :url           (url api)
                        :options       (merge {:connection-manager          (get-conn-manager)
