@@ -6,7 +6,7 @@
             [swarmpit.utils :refer [parse-int]])
   (:import (org.apache.http.config RegistryBuilder SocketConfig)
            (swarmpit.socket UnixSocketFactory)
-           (org.apache.http.impl.conn PoolingHttpClientConnectionManager)))
+           (org.apache.http.impl.conn BasicHttpClientConnectionManager)))
 
 (defn- http?
   [] (not (nil? (re-matches #"^https?:\/\/.*" (config :docker-sock)))))
@@ -17,30 +17,26 @@
       (.register "http" (UnixSocketFactory/createUnixSocketFactory (config :docker-sock)))
       (.build)))
 
-(defn- make-pooling-unix-conn-manager
+(defn- make-unix-conn-manager
   []
   (let [socket-config (-> (SocketConfig/custom)
                           (.setSoTimeout 30000)
                           (.build))]
-    (doto (PoolingHttpClientConnectionManager. (unix-scheme))
-      (.setMaxTotal 50)
-      (.setDefaultMaxPerRoute 50)
-      (.setValidateAfterInactivity 1000)
-      (.setDefaultSocketConfig socket-config))))
+    (doto (BasicHttpClientConnectionManager. (unix-scheme))
+      (.setSocketConfig socket-config))))
 
 (defn make-conn-manager
   []
   (if (http?)
-    (conn-mgr/make-reusable-conn-manager {:timeout 10 :threads 50 :default-per-route 50})
-    (make-pooling-unix-conn-manager)))
-
-(defonce ^:private shared-conn-manager (delay (make-conn-manager)))
+    (conn-mgr/make-regular-conn-manager {})
+    (make-unix-conn-manager)))
 
 (defn get-conn-manager
-  "Returns shared connection manager. Exists as a function so tests
-   can with-redefs to supply a fresh manager for different configs."
+  "Creates a fresh per-request connection manager.
+   Per-request managers avoid pool exhaustion when future-cancel
+   doesn't properly close Unix sockets on timeout."
   []
-  @shared-conn-manager)
+  (make-conn-manager))
 
 (defn- url
   [uri]
@@ -52,7 +48,7 @@
 
 (defn execute
   [{:keys [method api options]}]
-  (let [timeout-ms (or (parse-int (config :docker-http-timeout)) 5000)]
+  (let [timeout-ms (or (parse-int (config :docker-http-timeout)) 15000)]
     (execute-in-scope {:method        method
                        :url           (url api)
                        :options       (merge {:connection-manager          (get-conn-manager)
