@@ -48,14 +48,18 @@
 
 (defn execute
   [{:keys [method api options]}]
-  (let [timeout-ms (or (parse-int (config :docker-http-timeout)) 15000)]
-    (execute-in-scope {:method        method
-                       :url           (url api)
-                       :options       (merge {:connection-manager          (get-conn-manager)
-                                              :connection-request-timeout  timeout-ms
-                                              :socket-timeout              timeout-ms
-                                              :connection-timeout          (max timeout-ms 5000)
-                                              :retry-handler               (fn [& _] false)} options)
-                       :scope         "Docker"
-                       :timeout       (+ timeout-ms 5000)
-                       :error-handler :message})))
+  (let [timeout-ms (or (parse-int (config :docker-http-timeout)) 15000)
+        cm (get-conn-manager)]
+    (try
+      (execute-in-scope {:method        method
+                         :url           (url api)
+                         :options       (merge {:connection-manager          cm
+                                                :connection-request-timeout  timeout-ms
+                                                :socket-timeout              timeout-ms
+                                                :connection-timeout          (max timeout-ms 5000)
+                                                :retry-handler               (fn [& _] false)} options)
+                         :scope         "Docker"
+                         :timeout       (+ timeout-ms 5000)
+                         :error-handler :message})
+      (finally
+        (.shutdown cm)))))
