@@ -25,7 +25,7 @@
                                                      (:tag repository))]
             (when (not= current-digest
                         latest-digest)
-              (api/redeploy-service nil id nil)
+              (api/redeploy-service nil id nil latest-digest)
               (info "Service" id (str "(" name ")") "autoredeploy fired! DIGEST:" (str "[" current-digest "] -> [" latest-digest "]"))))
           (catch ExceptionInfo e
             (let [status (:status (ex-data e))]

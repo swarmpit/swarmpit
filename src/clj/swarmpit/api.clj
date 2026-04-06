@@ -1015,24 +1015,26 @@
                        (merge-service service-origin service-delta))))
 
 (defn redeploy-service
-  [owner service-id new-tag]
-  (let [service-origin (dc/service service-id)
-        service (dmi/->service service-origin)
-        repository-name (get-in service [:repository :name])
-        repository-tag (get-in service [:repository :tag])
-        effective-tag (standardize-repository-tag (or new-tag repository-tag))
-        image-digest (repository-digest owner repository-name effective-tag)
-        image (if (str/blank? image-digest)
-                (str repository-name ":" effective-tag)
-                (str repository-name ":" effective-tag "@" image-digest))]
-    (dc/update-service
-      (service-auth owner service)
-      service-id
-      (get-in service-origin [:Version :Index])
-      (-> service-origin
-          :Spec
-          (update-in [:TaskTemplate :ForceUpdate] inc)
-          (assoc-in [:TaskTemplate :ContainerSpec :Image] image)))))
+  ([owner service-id new-tag]
+   (redeploy-service owner service-id new-tag nil))
+  ([owner service-id new-tag digest]
+   (let [service-origin (dc/service service-id)
+         service (dmi/->service service-origin)
+         repository-name (get-in service [:repository :name])
+         repository-tag (get-in service [:repository :tag])
+         effective-tag (standardize-repository-tag (or new-tag repository-tag))
+         image-digest (or digest (repository-digest owner repository-name effective-tag))
+         image (if (str/blank? image-digest)
+                 (str repository-name ":" effective-tag)
+                 (str repository-name ":" effective-tag "@" image-digest))]
+     (dc/update-service
+       (service-auth owner service)
+       service-id
+       (get-in service-origin [:Version :Index])
+       (-> service-origin
+           :Spec
+           (update-in [:TaskTemplate :ForceUpdate] inc)
+           (assoc-in [:TaskTemplate :ContainerSpec :Image] image))))))
 
 (defn rollback-service
   [owner service-id]
