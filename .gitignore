@@ -22,3 +22,7 @@ pom.xml.asc
 *.iml
 *.local.json
 .claude/worktrees
+node_modules/
+.vs/
+bin/
+obj/
