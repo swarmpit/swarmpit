@@ -115,8 +115,9 @@
     :variant "outlined"
     :name    "Delete"}])
 
-(rum/defc form-stats < rum/static [item]
-  (let [cpu-usage (get-in item [:stats :cpu :usedPercentage])
+(rum/defc form-stats < rum/reactive [item]
+  (let [_ (rum/react comp/theme-mode)
+        cpu-usage (get-in item [:stats :cpu :usedPercentage])
         cpu-limit (get-in item [:stats :cpu :cores])
         disk (get-in item [:stats :disk :used])
         disk-usage (get-in item [:stats :disk :usedPercentage])

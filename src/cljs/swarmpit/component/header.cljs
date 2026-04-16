@@ -269,24 +269,46 @@
              (reset! appbar-elevation 0)
              (reset! appbar-elevation 4))))) state)})
 
-(defn- toggle-theme! []
-  (let [current @comp/theme-mode
-        new-mode (if (= current "dark") "light" "dark")]
-    (reset! comp/theme-mode new-mode)
-    (storage/add "theme" new-mode)
-    (state/update-value [:theme] new-mode state/layout-cursor)))
+(defn- system-dark? []
+  (and (exists? js/window.matchMedia)
+       (.-matches (.matchMedia js/window "(prefers-color-scheme: dark)"))))
 
-(rum/defc theme-toggle < rum/static [current-theme]
-  (comp/tooltip
-    {:title (if (= current-theme "dark") "Light mode" "Dark mode")}
-    (comp/icon-button
-      {:key        "theme-toggle-btn"
-       :color      "inherit"
-       :aria-label "Toggle dark mode"
-       :onClick    toggle-theme!}
-      (if (= current-theme "dark")
-        (icon/brightness-7 {})
-        (icon/brightness-4 {})))))
+(defn- resolve-theme [pref]
+  (if (= pref "auto")
+    (if (system-dark?) "dark" "light")
+    pref))
+
+(defn- toggle-theme! []
+  (let [current (or (storage/get "theme") "auto")
+        next-pref (case current
+                    "light" "dark"
+                    "dark" "auto"
+                    "auto" "light"
+                    "light")
+        resolved (resolve-theme next-pref)]
+    (if (= next-pref "auto")
+      (storage/remove "theme")
+      (storage/add "theme" next-pref))
+    (reset! comp/theme-mode resolved)
+    (state/update-value [:theme] resolved state/layout-cursor)))
+
+(rum/defc theme-toggle < rum/reactive []
+  (let [_ (rum/react comp/theme-mode)
+        pref (or (storage/get "theme") "auto")]
+    (comp/tooltip
+      {:title (case pref
+                "light" "Light mode"
+                "dark" "Dark mode"
+                "Auto mode")}
+      (comp/icon-button
+        {:key        "theme-toggle-btn"
+         :color      "inherit"
+         :aria-label "Toggle theme"
+         :onClick    toggle-theme!}
+        (case pref
+          "light" (icon/brightness-7 {})
+          "dark" (comp/svg {} icon/dark-mode-path)
+          (comp/svg {} icon/contrast-path))))))
 
 (rum/defc appbar < rum/reactive
                    mixin-on-scroll [{:keys [title subtitle search-fn actions]}]
@@ -325,7 +347,7 @@
              (html [:div.grow])
              (appbar-desktop-section search-fn actions title)
              (appbar-mobile-section search-fn actions)
-             (theme-toggle theme)
+             (theme-toggle)
              (user-menu menuAnchorEl)))
          (mobile-actions-menu actions mobileMoreAnchorEl)
          (mobile-search search-fn title mobileSearchOpened)]))))

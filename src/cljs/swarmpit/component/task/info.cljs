@@ -157,17 +157,19 @@
     (task-cpu-plot ts))
   state)
 
-(rum/defc form-cpu-stats < rum/static
+(rum/defc form-cpu-stats < rum/reactive
                            {:did-mount    form-cpu-stats-callback
+                            :did-update   form-cpu-stats-callback
                             :will-unmount (fn [state] (plot/purge plot-cpu-id) state)}
   [task-ts]
-  (comp/card
-    (if (empty? task-ts)
-      {:className "Swarmpit-card hide"}
-      {:className "Swarmpit-card"})
-    (comp/card-content
-      {:className "Swarmpit-table-card-content"}
-      (html [:div {:id plot-cpu-id}]))))
+  (let [_ (rum/react comp/theme-mode)]
+    (comp/card
+      (if (empty? task-ts)
+        {:className "Swarmpit-card hide"}
+        {:className "Swarmpit-card"})
+      (comp/card-content
+        {:className "Swarmpit-table-card-content"}
+        (html [:div {:id plot-cpu-id}])))))
 
 (defn form-ram-stats-callback
   [state]
@@ -175,17 +177,19 @@
     (task-ram-plot ts))
   state)
 
-(rum/defc form-ram-stats < rum/static
+(rum/defc form-ram-stats < rum/reactive
                            {:did-mount    form-ram-stats-callback
+                            :did-update   form-ram-stats-callback
                             :will-unmount (fn [state] (plot/purge plot-ram-id) state)}
   [task-ts]
-  (comp/card
-    (if (empty? task-ts)
-      {:className "Swarmpit-card hide"}
-      {:className "Swarmpit-card"})
-    (comp/card-content
-      {:className "Swarmpit-table-card-content"}
-      (html [:div {:id plot-ram-id}]))))
+  (let [_ (rum/react comp/theme-mode)]
+    (comp/card
+      (if (empty? task-ts)
+        {:className "Swarmpit-card hide"}
+        {:className "Swarmpit-card"})
+      (comp/card-content
+        {:className "Swarmpit-table-card-content"}
+        (html [:div {:id plot-ram-id}])))))
 
 (rum/defc form-info < rum/static [{:keys [task task-ts] :as item} log]
   (comp/mui

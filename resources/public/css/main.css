@@ -1457,7 +1457,7 @@ html.dark {
 }
 
 html.dark body {
-    background-color: #121212;
+    background-color: #000000;
     color: rgba(255, 255, 255, 0.87);
 }
 
@@ -1466,11 +1466,11 @@ html.dark a {
 }
 
 html.dark .Swarmpit-context {
-    background-color: #121212;
+    background-color: #000000;
 }
 
 html.dark .Swarmpit-appbar {
-    background: #1e1e1e !important;
+    background: #000000 !important;
     color: rgba(255, 255, 255, 0.87) !important;
 }
 
@@ -1495,19 +1495,19 @@ html.dark .Swarmpit-appbar-search-mobile-close {
 }
 
 html.dark .Swarmpit-appbar-search-mobile-content {
-    background-color: #1e1e1e !important;
+    background-color: #000000 !important;
 }
 
 html.dark .Swarmpit-appbar-avatar-badge {
-    box-shadow: 0 0 0 2px #1e1e1e;
+    box-shadow: 0 0 0 2px #000000;
 }
 
 html.dark .Swarmpit-drawer-content {
-    background: #1e1e1e;
+    background: #000000;
 }
 
 html.dark .Swarmpit-menu-title {
-    background: #1e1e1e;
+    background: #000000;
 }
 
 html.dark .Swarmpit-drawer-item:hover > div,
@@ -1651,7 +1651,7 @@ html.dark .Swarmpit-fcard-header-title {
 }
 
 html.dark .Swarmpit-stepper-horizontal {
-    background-color: #121212 !important;
+    background-color: #000000 !important;
 }
 
 html.dark .Swarmpit-dashboard-section-title {
@@ -1666,6 +1666,48 @@ html.dark .Swarmpit-progress-button {
     color: #b39ddb;
 }
 
+html.dark .Swarmpit-stat-skeleton::after {
+    background-image: linear-gradient(
+            90deg,
+            rgba(26, 26, 26, 0) 0,
+            rgba(26, 26, 26, 0.3) 20%,
+            rgba(26, 26, 26, 0.6) 60%,
+            rgba(26, 26, 26, 0)
+    );
+}
+
+html.dark .MuiCircularProgress-colorPrimary {
+    color: #b39ddb;
+}
+
+html.dark .MuiLinearProgress-colorPrimary {
+    background-color: rgba(255, 255, 255, 0.1);
+}
+
+html.dark .MuiLinearProgress-barColorPrimary {
+    background-color: #b39ddb;
+}
+
+.Swarmpit-theme-switch {
+    margin-left: 8px;
+    margin-right: 8px;
+}
+
+.Swarmpit-theme-switch .MuiToggleButton-root {
+    color: rgba(255, 255, 255, 0.5);
+    border-color: rgba(255, 255, 255, 0.2);
+    padding: 4px 8px;
+}
+
+.Swarmpit-theme-switch .MuiToggleButton-root.Mui-selected {
+    color: #fff;
+    background-color: rgba(255, 255, 255, 0.15);
+}
+
+.Swarmpit-theme-switch .MuiToggleButton-root:hover {
+    background-color: rgba(255, 255, 255, 0.08);
+}
+
 html.dark .Swarmpit-service-list-port {
     color: rgba(255, 255, 255, 0.40);
 }
@@ -1676,4 +1718,142 @@ html.dark .Swarmpit-repo-registry-url {
 
 html.dark .Swarmpit-drawer-category-text {
     color: rgba(255, 255, 255, 0.40);
+}
+
+html.dark .Swarmpit-label {
+    color: #fff !important;
+}
+
+html.dark .Swarmpit-label-green {
+    background-color: #1b5e20 !important;
+}
+
+html.dark .Swarmpit-label-red {
+    background-color: #c62828 !important;
+}
+
+html.dark .Swarmpit-label-yellow {
+    background-color: #e65100 !important;
+}
+
+html.dark .Swarmpit-label-blue {
+    background-color: #1a3a7a !important;
+}
+
+html.dark .Swarmpit-label-primary {
+    background-color: #7e57c2 !important;
+}
+
+html.dark .Swarmpit-label-grey,
+html.dark .Swarmpit-label-info {
+    background-color: #546e7a !important;
+}
+
+html.dark .Swarmpit-label-pulsing {
+    background-color: #e65100 !important;
+}
+
+html.dark .Swarmpit-dashboard-chip {
+    color: rgba(255, 255, 255, 0.87);
+}
+
+html.dark .MuiButton-outlined {
+    border-color: rgba(255, 255, 255, 0.23);
+    color: rgba(255, 255, 255, 0.87);
+}
+
+html.dark .MuiButton-contained.MuiButton-colorDefault {
+    background-color: #424242;
+    color: rgba(255, 255, 255, 0.87);
+}
+
+
+html.dark .MuiInputBase-root {
+    color: rgba(255, 255, 255, 0.87);
+}
+
+html.dark .MuiOutlinedInput-root {
+    background-color: #2c2c2c;
+}
+
+html.dark .MuiOutlinedInput-notchedOutline {
+    border-color: rgba(255, 255, 255, 0.23);
+}
+
+html.dark .MuiOutlinedInput-root:hover .MuiOutlinedInput-notchedOutline {
+    border-color: rgba(255, 255, 255, 0.5);
+}
+
+html.dark .MuiOutlinedInput-root.Mui-focused .MuiOutlinedInput-notchedOutline {
+    border-color: #b39ddb;
+}
+
+html.dark .MuiInput-underline:before {
+    border-bottom-color: rgba(255, 255, 255, 0.23);
+}
+
+html.dark .MuiInput-underline:hover:not(.Mui-disabled):before {
+    border-bottom-color: rgba(255, 255, 255, 0.5);
+}
+
+html.dark .MuiInput-underline:after {
+    border-bottom-color: #b39ddb;
+}
+
+html.dark .MuiFilledInput-root {
+    background-color: #2c2c2c;
+}
+
+html.dark .MuiFilledInput-root:hover {
+    background-color: #353535;
+}
+
+html.dark .MuiFilledInput-root.Mui-focused {
+    background-color: #353535;
+}
+
+html.dark .MuiSelect-icon {
+    color: rgba(255, 255, 255, 0.5);
+}
+
+html.dark .MuiSelect-select:focus {
+    background-color: #2c2c2c;
+}
+
+html.dark .MuiInputLabel-root {
+    color: rgba(255, 255, 255, 0.5);
+}
+
+html.dark .MuiInputLabel-root.Mui-focused {
+    color: #b39ddb;
+}
+
+html.dark .MuiChip-root {
+    background-color: #424242;
+    color: rgba(255, 255, 255, 0.87);
+}
+
+html.dark .MuiChip-deleteIcon {
+    color: rgba(255, 255, 255, 0.4);
+}
+
+html.dark .MuiChip-deleteIcon:hover {
+    color: rgba(255, 255, 255, 0.7);
+}
+
+html.dark .MuiMenu-paper,
+html.dark .MuiPopover-paper {
+    background-color: #2d2d2d;
+}
+
+html.dark .MuiMenuItem-root:hover {
+    background-color: rgba(255, 255, 255, 0.08);
+}
+
+html.dark .MuiListItem-root.Mui-selected {
+    background-color: rgba(179, 157, 219, 0.15);
+}
+
+html.dark .MuiFormHelperText-root {
+    color: rgba(255, 255, 255, 0.5);
 }

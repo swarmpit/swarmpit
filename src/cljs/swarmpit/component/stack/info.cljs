@@ -179,8 +179,9 @@
     :variant "outlined"
     :name    "Delete"}])
 
-(rum/defc form-services-graph < rum/static [services]
-  (let [data (->> services
+(rum/defc form-services-graph < rum/reactive [services]
+  (let [_ (rum/react comp/theme-mode)
+        data (->> services
                   (map (fn [service]
                          (if (= "running" (:state service))
                            {:name  (:serviceName service)
@@ -216,8 +217,9 @@
     #(when (not (utils/in-stack? stack-name %))
        (html [:span.Swarmpit-table-status (label/base "external" "info")]))))
 
-(rum/defc form-stats [services tasks stats]
-  (let [cpu (reduce + (map #(get-in % [:stats :cpu]) tasks))
+(rum/defc form-stats < rum/reactive [services tasks stats]
+  (let [_ (rum/react comp/theme-mode)
+        cpu (reduce + (map #(get-in % [:stats :cpu]) tasks))
         cpu-total (get-in stats [:cpu :cores])
         memory (reduce + (map #(get-in % [:stats :memory]) tasks))
         memory-total (get-in stats [:memory :total])]

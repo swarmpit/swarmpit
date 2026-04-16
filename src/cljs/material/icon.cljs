@@ -103,3 +103,5 @@
 (defn supervisor-account [& args] (create-mui-icon "SupervisorAccount" args))
 (defn brightness-4 [& args] (create-mui-icon "Brightness4" args))
 (defn brightness-7 [& args] (create-mui-icon "Brightness7" args))
+(def dark-mode-path "M9.37 5.51C9.19 6.15 9.1 6.82 9.1 7.5c0 4.08 3.32 7.4 7.4 7.4.68 0 1.35-.09 1.99-.27C17.45 17.19 14.93 19 12 19c-3.86 0-7-3.14-7-7 0-2.93 1.81-5.45 4.37-6.49z")
+(def contrast-path "M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm0 18V4c4.41 0 8 3.59 8 8s-3.59 8-8 8z")
