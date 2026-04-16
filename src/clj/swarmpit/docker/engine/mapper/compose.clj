@@ -36,12 +36,21 @@
 (defn targetable
   [source-key target-key item]
   (->> item
-       (map #(let [{name   source-key
-                    target target-key} %]
-               (if (= name target)
-                 name
-                 {:source name
-                  :target target})))))
+       (map (fn [m]
+              (let [source (get m source-key)
+                    target (get m target-key)
+                    uid    (:uid m)
+                    gid    (:gid m)
+                    mode   (:mode m)
+                    long?  (or (some? uid) (some? gid) (some? mode)
+                               (and target (not= source target)))]
+                (if long?
+                  (cond-> (ordered-map :source source)
+                    (and target (not= source target)) (assoc :target target)
+                    (some? uid)                       (assoc :uid uid)
+                    (some? gid)                       (assoc :gid gid)
+                    (some? mode)                      (assoc :mode mode))
+                  source))))))
 
 (defn resource
   [{:keys [cpu memory]}]

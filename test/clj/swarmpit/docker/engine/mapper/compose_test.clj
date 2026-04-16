@@ -67,3 +67,32 @@
                                         :host "/data"
                                         :containerPath "/data"
                                         :readOnly true}]})))))
+
+(deftest secrets-short-when-source-equals-target
+  (is (= ["db_password"]
+         (:secrets (rendered {:secrets [{:secretName "db_password"
+                                         :secretTarget "db_password"}]})))))
+
+(deftest secrets-long-with-custom-target
+  (let [[s] (:secrets (rendered {:secrets [{:secretName "db_password"
+                                            :secretTarget "/run/secrets/db"}]}))]
+    (is (= "db_password" (:source s)))
+    (is (= "/run/secrets/db" (:target s)))))
+
+(deftest secrets-long-with-mode
+  (let [[s] (:secrets (rendered {:secrets [{:secretName "db_password"
+                                            :secretTarget "db_password"
+                                            :uid "103" :gid "103" :mode 0440}]}))]
+    (is (= "db_password" (:source s)))
+    (is (not (contains? s :target)))
+    (is (= "103" (:uid s)))
+    (is (= "103" (:gid s)))
+    (is (= 0440 (:mode s)))))
+
+(deftest configs-long-with-mode
+  (let [[c] (:configs (rendered {:configs [{:configName "my_config"
+                                            :configTarget "/redis_config"
+                                            :mode 0440}]}))]
+    (is (= "my_config" (:source c)))
+    (is (= "/redis_config" (:target c)))
+    (is (= 0440 (:mode c)))))
