@@ -94,6 +94,8 @@
 
 (def docker-api-cursor [:docker :api])
 
+(def docker-engine-cursor [:docker :engine])
+
 (def layout-cursor [:layout])
 
 (def search-cursor [:search])

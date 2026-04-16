@@ -318,6 +318,15 @@
                 :api    "/version"})
       :body))
 
+(defn ping
+  "Calls Docker's unversioned /_ping endpoint. Response headers include
+   Api-Version (daemon's max API version) and Api-Minimum-Version (daemon's
+   minimum supported). Used for API version negotiation at startup."
+  []
+  (execute {:method       :GET
+            :api          "/_ping"
+            :unversioned? true}))
+
 (defn swarm
   []
   (-> (execute {:method :GET
