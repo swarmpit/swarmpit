@@ -96,3 +96,11 @@
     (is (= "my_config" (:source c)))
     (is (= "/redis_config" (:target c)))
     (is (= 0440 (:mode c)))))
+
+(deftest command-as-array-preserved
+  (is (= ["python" "-u" "app.py"]
+         (:command (rendered {:command ["python" "-u" "app.py"]})))))
+
+(deftest command-as-string-preserved
+  (is (= "redis-server --appendonly yes"
+         (:command (rendered {:command "redis-server --appendonly yes"})))))
