@@ -112,8 +112,10 @@
                                                                            {:Accept type})}
                                          :quiet-statuses  #{404}})
         response-type (get-in response [:headers :content-type])
+        normalized-content-type (when response-type
+                                  (-> response-type str/trim (str/split #";") first str/trim str/lower-case))
         accepted-types (get compatible-types type #{type})]
-    (when (contains? accepted-types response-type) response)))
+    (when (contains? accepted-types normalized-content-type) response)))
 
 (defn manifest
   [registry repository-name repository-tag]
