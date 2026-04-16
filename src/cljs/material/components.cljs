@@ -3,6 +3,7 @@
   (:require ["@material-ui/core"]
             ["react-window"]
             [cljsjs.recharts]
+            [rum.core :as rum]
             [sablono.core :refer-macros [html]]
             [material.factory :refer [create-mui-cmp create-element create-js-element]]))
 
@@ -208,11 +209,16 @@
 
 ;; Dark theme props
 (def dark-theme-props
-  {:palette     {:primary   {:main         "#65519f"
+  {:palette     {:type      "dark"
+                 :primary   {:main         "#65519f"
                              :light        "#957ed1"
                              :dark         "#362870"
                              :contrastText "#fff"}
-                 :secondary {:main "#8B9F51"}}
+                 :secondary {:main "#aed581"}
+                 :background {:default "#000000"
+                              :paper   "#1a1a1a"}
+                 :text       {:primary   "rgba(255, 255, 255, 0.87)"
+                              :secondary "rgba(255, 255, 255, 0.60)"}}
    :overrides   theme-overrides
    :breakpoints theme-breakpoints})
 
@@ -222,14 +228,21 @@
 (def light-theme
   (create-mui-theme (clj->js light-theme-props)))
 
-(defn theme [theme]
-  (set! (-> js/document .-documentElement .-className) theme)
-  (case theme
+;; Global theme mode atom ("light" or "dark")
+(defonce theme-mode (atom "light"))
+
+(defn apply-theme [mode]
+  (set! (-> js/document .-documentElement .-className) mode)
+  (case mode
     "dark" dark-theme
     light-theme))
 
-(defn mui [component]
-  (theme-provider
-    {:theme (theme "light")}
-    (css-baseline)
-    component))
+(defn current-theme-mode []
+  @theme-mode)
+
+(rum/defc mui < rum/reactive [component]
+  (let [mode (rum/react theme-mode)]
+    (theme-provider
+      {:theme (apply-theme mode)}
+      (css-baseline)
+      component)))

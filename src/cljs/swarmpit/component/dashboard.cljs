@@ -178,8 +178,9 @@
         (resource-chip "manager" (count (filter #(= "manager" (:role %)) nodes)))
         (resource-chip "worker" (count (filter #(= "worker" (:role %)) nodes)))]])))
 
-(rum/defc dashboard-memory < rum/static [{:keys [usage used total] :as memory}]
-  (comp/paper
+(rum/defc dashboard-memory < rum/reactive [{:keys [usage used total] :as memory}]
+  (let [_ (rum/react comp/theme-mode)]
+    (comp/paper
     {:elevation 0
      :className "Swarmpit-paper Swarmpit-dashboard-paper"}
     (html
@@ -200,10 +201,11 @@
            :usage usage
            :type  :memory}
           (str (common/render-capacity total true) " ram")
-          "graph-memory")]])))
+          "graph-memory")]]))))
 
-(rum/defc dashboard-disk < rum/static [{:keys [usage used total] :as disk}]
-  (comp/paper
+(rum/defc dashboard-disk < rum/reactive [{:keys [usage used total] :as disk}]
+  (let [_ (rum/react comp/theme-mode)]
+    (comp/paper
     {:elevation 0
      :className "Swarmpit-paper Swarmpit-dashboard-paper"}
     (html
@@ -224,10 +226,11 @@
            :usage usage
            :type  :disk}
           (str (common/render-capacity total false) " size")
-          "graph-disk")]])))
+          "graph-disk")]]))))
 
-(rum/defc dashboard-cpu < rum/static [{:keys [usage cores] :as cpu}]
-  (let [used (* cores (/ usage 100))]
+(rum/defc dashboard-cpu < rum/reactive [{:keys [usage cores] :as cpu}]
+  (let [_ (rum/react comp/theme-mode)
+        used (* cores (/ usage 100))]
     (comp/paper
       {:elevation 0
        :className "Swarmpit-paper Swarmpit-dashboard-paper"}
@@ -257,18 +260,19 @@
     (node-ram-plot ts))
   state)
 
-(rum/defc dashboard-node-ram-stats < rum/static
+(rum/defc dashboard-node-ram-stats < rum/reactive
                                      {:did-mount    dashboard-node-ram-callback
                                       :did-update   dashboard-node-ram-callback
                                       :will-unmount (fn [state] (plot/purge plot-node-ram-id) state)}
   [nodes-ts]
-  (comp/card
-    (if (empty? nodes-ts)
-      {:className "Swarmpit-card hide"}
-      {:className "Swarmpit-card"})
-    (comp/card-content
-      {:className "Swarmpit-table-card-content"}
-      (html [:div {:id plot-node-ram-id}]))))
+  (let [_ (rum/react comp/theme-mode)]
+    (comp/card
+      (if (empty? nodes-ts)
+        {:className "Swarmpit-card hide"}
+        {:className "Swarmpit-card"})
+      (comp/card-content
+        {:className "Swarmpit-table-card-content"}
+        (html [:div {:id plot-node-ram-id}])))))
 
 (defn dashboard-node-cpu-callback
   [state]
@@ -276,18 +280,19 @@
     (node-cpu-plot ts))
   state)
 
-(rum/defc dashboard-node-cpu-stats < rum/static
+(rum/defc dashboard-node-cpu-stats < rum/reactive
                                      {:did-mount    dashboard-node-cpu-callback
                                       :did-update   dashboard-node-cpu-callback
                                       :will-unmount (fn [state] (plot/purge plot-node-cpu-id) state)}
   [nodes-ts]
-  (comp/card
-    (if (empty? nodes-ts)
-      {:className "Swarmpit-card hide"}
-      {:className "Swarmpit-card"})
-    (comp/card-content
-      {:className "Swarmpit-table-card-content"}
-      (html [:div {:id plot-node-cpu-id}]))))
+  (let [_ (rum/react comp/theme-mode)]
+    (comp/card
+      (if (empty? nodes-ts)
+        {:className "Swarmpit-card hide"}
+        {:className "Swarmpit-card"})
+      (comp/card-content
+        {:className "Swarmpit-table-card-content"}
+        (html [:div {:id plot-node-cpu-id}])))))
 
 (defn dashboard-service-ram-callback
   [state]
@@ -295,36 +300,38 @@
     (service-ram-plot ts))
   state)
 
-(rum/defc dashboard-service-ram-stats < rum/static
+(rum/defc dashboard-service-ram-stats < rum/reactive
                                         {:did-mount    dashboard-service-ram-callback
                                          :did-update   dashboard-service-ram-callback
                                          :will-unmount (fn [state] (plot/purge plot-service-ram-id) state)}
   [services-memory-ts]
-  (comp/card
-    (if (empty? services-memory-ts)
-      {:className "Swarmpit-card hide"}
-      {:className "Swarmpit-card"})
-    (comp/card-content
-      {:className "Swarmpit-table-card-content"}
-      (html [:div {:id plot-service-ram-id}]))))
+  (let [_ (rum/react comp/theme-mode)]
+    (comp/card
+      (if (empty? services-memory-ts)
+        {:className "Swarmpit-card hide"}
+        {:className "Swarmpit-card"})
+      (comp/card-content
+        {:className "Swarmpit-table-card-content"}
+        (html [:div {:id plot-service-ram-id}])))))
 
 (defn dashboard-service-cpu-callback
   [state]
   (let [ts (first (:rum/args state))]
     (service-cpu-plot ts)) state)
 
-(rum/defc dashboard-service-cpu-stats < rum/static
+(rum/defc dashboard-service-cpu-stats < rum/reactive
                                         {:did-mount    dashboard-service-cpu-callback
                                          :did-update   dashboard-service-cpu-callback
                                          :will-unmount (fn [state] (plot/purge plot-service-cpu-id) state)}
   [services-cpu-ts]
-  (comp/card
-    (if (empty? services-cpu-ts)
-      {:className "Swarmpit-card hide"}
-      {:className "Swarmpit-card"})
-    (comp/card-content
-      {:className "Swarmpit-table-card-content"}
-      (html [:div {:id plot-service-cpu-id}]))))
+  (let [_ (rum/react comp/theme-mode)]
+    (comp/card
+      (if (empty? services-cpu-ts)
+        {:className "Swarmpit-card hide"}
+        {:className "Swarmpit-card"})
+      (comp/card-content
+        {:className "Swarmpit-table-card-content"}
+        (html [:div {:id plot-service-cpu-id}])))))
 
 (rum/defc form-info < rum/static
   [{:keys [stats

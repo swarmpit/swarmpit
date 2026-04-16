@@ -36,8 +36,9 @@
        (label/base "active" "green")
        (label/base (:availability item) "grey"))]))
 
-(rum/defc node-stats < rum/static [item index]
-  (let [cpu-usage (get-in item [:stats :cpu :usedPercentage])
+(rum/defc node-stats < rum/reactive [item index]
+  (let [_ (rum/react comp/theme-mode)
+        cpu-usage (get-in item [:stats :cpu :usedPercentage])
         cpu-limit (get-in item [:stats :cpu :cores])
         disk (get-in item [:stats :disk :used])
         disk-usage (get-in item [:stats :disk :usedPercentage])
