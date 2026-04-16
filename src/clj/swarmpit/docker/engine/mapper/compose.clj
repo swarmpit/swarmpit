@@ -73,7 +73,17 @@
      :tty (-> service :tty)
      :environment (-> service :variables (name-value->sorted-map))
      :ports (->> service :ports
-                 (map #(str (:hostPort %) ":" (:containerPort %) (when (= "udp" (:protocol %)) "/udp"))))
+                 (map (fn [p]
+                        (let [protocol (:protocol p)
+                              mode (:mode p)
+                              non-tcp? (and protocol (not= "tcp" protocol))
+                              non-ingress? (and mode (not= "ingress" mode))]
+                          (if (or non-tcp? non-ingress?)
+                            (cond-> (ordered-map :target (:containerPort p)
+                                                 :published (:hostPort p))
+                              non-tcp?     (assoc :protocol protocol)
+                              non-ingress? (assoc :mode mode))
+                            (str (:hostPort p) ":" (:containerPort p)))))))
      :volumes (->> service :mounts
                    (map #(str (alias :host stack-name %) ":" (:containerPath %) (when (:readOnly %) ":ro"))))
      :networks (->> service :networks (map #(alias :networkName stack-name %)))
