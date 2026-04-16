@@ -85,7 +85,12 @@
                               non-ingress? (assoc :mode mode))
                             (str (:hostPort p) ":" (:containerPort p)))))))
      :volumes (->> service :mounts
-                   (map #(str (alias :host stack-name %) ":" (:containerPath %) (when (:readOnly %) ":ro"))))
+                   (map (fn [m]
+                          (if (= "tmpfs" (:type m))
+                            (cond-> (ordered-map :type "tmpfs"
+                                                 :target (:containerPath m))
+                              (:readOnly m) (assoc :read_only true))
+                            (str (alias :host stack-name m) ":" (:containerPath m) (when (:readOnly m) ":ro"))))))
      :networks (->> service :networks (map #(alias :networkName stack-name %)))
      :secrets (->> service :secrets (targetable :secretName :secretTarget))
      :configs (->> service :configs (targetable :configName :configTarget))

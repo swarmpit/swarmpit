@@ -41,3 +41,29 @@
                                         :protocol "udp" :mode "host"}]}))]
     (is (= "udp" (:protocol p)))
     (is (= "host" (:mode p)))))
+
+(deftest volumes-tmpfs-long-syntax
+  (let [[v] (:volumes (rendered {:mounts [{:type "tmpfs"
+                                           :containerPath "/var/cache/nginx"}]}))]
+    (is (= "tmpfs" (:type v)))
+    (is (= "/var/cache/nginx" (:target v)))
+    (is (not (contains? v :read_only)))))
+
+(deftest volumes-tmpfs-read-only
+  (let [[v] (:volumes (rendered {:mounts [{:type "tmpfs"
+                                           :containerPath "/run"
+                                           :readOnly true}]}))]
+    (is (true? (:read_only v)))))
+
+(deftest volumes-bind-keeps-short-syntax
+  (is (= ["/data:/data"]
+         (:volumes (rendered {:mounts [{:type "bind"
+                                        :host "/data"
+                                        :containerPath "/data"}]})))))
+
+(deftest volumes-bind-ro-keeps-short-syntax
+  (is (= ["/data:/data:ro"]
+         (:volumes (rendered {:mounts [{:type "bind"
+                                        :host "/data"
+                                        :containerPath "/data"
+                                        :readOnly true}]})))))
