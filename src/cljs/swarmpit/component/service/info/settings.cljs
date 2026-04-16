@@ -119,8 +119,9 @@
        (* 1024 1024)
        (count running-tasks))))
 
-(rum/defc form-stats [running-tasks desired-tasks stats limit]
-  (let [cpu (reduce + (map #(get-in % [:stats :cpu]) running-tasks))
+(rum/defc form-stats < rum/reactive [running-tasks desired-tasks stats limit]
+  (let [_ (rum/react comp/theme-mode)
+        cpu (reduce + (map #(get-in % [:stats :cpu]) running-tasks))
         cpu-limit (calculate-cpu-limit running-tasks stats limit)
         memory (reduce + (map #(get-in % [:stats :memory]) running-tasks))
         memory-limit (calculate-memory-limit running-tasks stats limit)]

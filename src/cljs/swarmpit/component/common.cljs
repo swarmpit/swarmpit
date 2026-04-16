@@ -1,7 +1,7 @@
 (ns swarmpit.component.common
   (:refer-clojure :exclude [list])
   (:require [material.icon :as icon]
-            [material.components :as comp]
+            [material.components :as comp :refer [current-theme-mode]]
             [material.component.chart :as chart]
             [material.component.list.basic :as list]
             [swarmpit.component.state :as state]
@@ -163,28 +163,31 @@
     "-"))
 
 (defn resource-used [usage value]
-  (cond
-    (< usage 75) {:name  "used"
-                  :value usage
-                  :hover value
-                  :color "#52B359"}
-    (> usage 90) {:name  "used"
-                  :value usage
-                  :hover value
-                  :color "#d32f2f"}
-    :else {:name  "used"
-           :value usage
-           :hover value
-           :color "#ffa000"}))
+  (let [dark? (= "dark" (current-theme-mode))]
+    (cond
+      (< usage 75) {:name  "used"
+                    :value usage
+                    :hover value
+                    :color (if dark? "#1b5e20" "#52B359")}
+      (> usage 90) {:name  "used"
+                    :value usage
+                    :hover value
+                    :color (if dark? "#c62828" "#d32f2f")}
+      :else {:name  "used"
+             :value usage
+             :hover value
+             :color (if dark? "#e65100" "#ffa000")})))
 
-(rum/defc resource-pie < rum/static
+(rum/defc resource-pie < rum/reactive
   [{:keys [usage value limit type]} label id]
-  (let [usage (or usage (* (/ value limit) 100))
+  (let [mode (rum/react comp/theme-mode)
+        usage (or usage (* (/ value limit) 100))
+        dark? (= "dark" mode)
         data [(resource-used usage value)
               {:name  "free"
                :value (- 100 usage)
                :hover (- limit value)
-               :color "#ccc"}]]
+               :color (if dark? "#3a3a3a" "#ccc")}]]
     (if limit
       (chart/pie
         data
@@ -200,18 +203,19 @@
                           hover-value)))})
       (chart/pie
         [{:value 100
-          :color "#ccc"}]
+          :color (if dark? "#3a3a3a" "#ccc")}]
         "Loading"
         "Swarmpit-stat-skeleton"
         id
         nil))))
 
-(rum/defc resource-pie-empty < rum/static
+(rum/defc resource-pie-empty < rum/reactive
   [id]
-  (chart/pie
-    [{:value 100
-      :color "#ccc"}]
-    "-"
-    "Swarmpit-stat-graph"
-    id
-    nil))
+  (let [dark? (= "dark" (rum/react comp/theme-mode))]
+    (chart/pie
+      [{:value 100
+        :color (if dark? "#3a3a3a" "#ccc")}]
+      "-"
+      "Swarmpit-stat-graph"
+      id
+      nil)))

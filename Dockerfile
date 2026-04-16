@@ -1,4 +1,4 @@
-FROM debian:stable-slim
+FROM debian:bookworm-slim
 
 RUN apt-get update && \
     mkdir -p /usr/share/man/man1 && \
