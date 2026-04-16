@@ -39,20 +39,20 @@
   (make-conn-manager))
 
 (defn- url
-  [uri]
+  [uri unversioned?]
   (let [server (if (http?)
                  (config :docker-sock)
                  "http://localhost")
-        api (str "/v" (config :docker-api))]
+        api (if unversioned? "" (str "/v" (config :docker-api)))]
     (str server api uri)))
 
 (defn execute
-  [{:keys [method api options]}]
+  [{:keys [method api options unversioned?]}]
   (let [timeout-ms (or (parse-int (config :docker-http-timeout)) 15000)
         cm (get-conn-manager)]
     (try
       (execute-in-scope {:method        method
-                         :url           (url api)
+                         :url           (url api unversioned?)
                          :options       (merge {:connection-manager          cm
                                                 :connection-request-timeout  timeout-ms
                                                 :socket-timeout              timeout-ms
