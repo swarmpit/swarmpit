@@ -1510,6 +1510,12 @@ html.dark .Swarmpit-menu-title {
     background: #000000;
 }
 
+html.dark .Swarmpit-menu-title img,
+html.dark .Swarmpit-desktop-title img,
+html.dark .Swarmpit-login-logo {
+    filter: brightness(1.5);
+}
+
 html.dark .Swarmpit-drawer-item:hover > div,
 html.dark .Swarmpit-drawer-item:hover > div > h6 {
     color: #b39ddb !important;
