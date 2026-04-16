@@ -4,7 +4,6 @@
             [swarmpit.docker.engine.client :as dc]
             [taoensso.timbre :as timbre :refer [info warn]]))
 
-(def ^:private supported-min "1.30")
 (def ^:private supported-max "1.44")
 
 (defn- parse-api
@@ -13,16 +12,13 @@
     (try (Double/parseDouble s) (catch Exception _ nil))))
 
 (defn- negotiate-api
-  "Pick an API version that both swarmpit and the daemon understand.
-   daemon-max / daemon-min come from /_ping headers."
-  [daemon-max daemon-min]
-  (let [our-min (parse-api supported-min)
-        our-max (parse-api supported-max)
+  "Pick the newest API version both swarmpit and the daemon understand.
+   No lower bound — below 1.30 some features (Docker configs) are gated off
+   elsewhere in the code, but core swarm/service management still works."
+  [daemon-max]
+  (let [our-max (parse-api supported-max)
         dmax (or (parse-api daemon-max) our-max)
-        dmin (or (parse-api daemon-min) our-min)
-        top (min our-max dmax)
-        floor (max our-min dmin)
-        chosen (max floor top)]
+        chosen (min our-max dmax)]
     (String/format java.util.Locale/ROOT "%.2f" (into-array Object [chosen]))))
 
 (defn docker
@@ -34,11 +30,11 @@
             daemon-max (or (:api-version headers) (:Api-Version headers))
             daemon-min (or (:api-minimum-version headers) (:Api-Minimum-Version headers))]
         (when-not env-override
-          (let [negotiated (negotiate-api daemon-max daemon-min)]
+          (let [negotiated (negotiate-api daemon-max)]
             (swap! cfg/default assoc :docker-api negotiated)
             (info "Docker API negotiated:" negotiated
                   (str "(daemon " daemon-min "–" daemon-max
-                       ", swarmpit " supported-min "–" supported-max ")")))))
+                       ", swarmpit max " supported-max ")")))))
       (catch Exception e
         (warn "Docker API autodetect failed, keeping configured value:" (.getMessage e))))
     (try
