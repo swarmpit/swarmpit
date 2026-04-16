@@ -104,3 +104,32 @@
 (deftest command-as-string-preserved
   (is (= "redis-server --appendonly yes"
          (:command (rendered {:command "redis-server --appendonly yes"})))))
+
+(deftest hostname-preserved
+  (is (= "rabbit-{{.Task.Slot}}"
+         (:hostname (rendered {:hostname "rabbit-{{.Task.Slot}}"})))))
+
+(deftest entrypoint-preserved
+  (is (= ["python" "-u"]
+         (:entrypoint (rendered {:entrypoint ["python" "-u"]})))))
+
+(deftest entrypoint-and-command-independent
+  (let [r (rendered {:entrypoint ["python"] :command ["app.py"]})]
+    (is (= ["python"] (:entrypoint r)))
+    (is (= ["app.py"] (:command r)))))
+
+(deftest isolation-preserved
+  (is (= "hyperv" (:isolation (rendered {:isolation "hyperv"})))))
+
+(deftest sysctls-preserved
+  (is (= {:net.ipv6.conf.lo.disable_ipv6 "0"
+          :net.ipv6.conf.all.disable_ipv6 "0"}
+         (:sysctls (rendered {:sysctls [{:name "net.ipv6.conf.lo.disable_ipv6" :value "0"}
+                                        {:name "net.ipv6.conf.all.disable_ipv6" :value "0"}]})))))
+
+(deftest max-replicas-per-node-preserved
+  (is (= 1 (get-in (rendered {:deployment {:update        {:parallelism 1 :delay 0 :order "stop-first" :failureAction "pause"}
+                                           :restartPolicy {:condition "any" :delay 5 :window 0 :attempts 0}
+                                           :placement     []
+                                           :maxReplicas   1}})
+                   [:deploy :placement :max_replicas_per_node]))))

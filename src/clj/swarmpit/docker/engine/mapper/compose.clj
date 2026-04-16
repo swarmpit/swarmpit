@@ -68,7 +68,11 @@
   {(keyword (alias :serviceName (or stack-name (:stack service)) service))
    (ordered-map
      :image (-> service :repository :image)
+     :entrypoint (some->> service :entrypoint)
      :command (some->> service :command)
+     :hostname (-> service :hostname)
+     :isolation (-> service :isolation)
+     :sysctls (->> service :sysctls (name-value->map))
      :labels (->> service :containerLabels (name-value->map))
      :user (-> service :user)
      :working_dir (-> service :dir)
@@ -125,7 +129,8 @@
                                      :delay        "5s"
                                      :window       "0s"
                                      :max_attempts 0}))
-              :placement      {:constraints (->> service :deployment :placement (map :rule))}
+              :placement      {:constraints          (->> service :deployment :placement (map :rule))
+                               :max_replicas_per_node (get-in service [:deployment :maxReplicas])}
               :resources      {:reservations (-> service :resources :reservation resource)
                                :limits       (-> service :resources :limit resource)}})})
 

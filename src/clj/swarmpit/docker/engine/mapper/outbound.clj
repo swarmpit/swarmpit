@@ -245,7 +245,11 @@
                                     :Mounts      (->service-mounts service)
                                     :Secrets     (:secrets service)
                                     :Configs     (:configs service)
+                                    :Command     (:entrypoint service)
                                     :Args        (:command service)
+                                    :Hostname    (:hostname service)
+                                    :Isolation   (:isolation service)
+                                    :Sysctls     (->> service :sysctls (name-value->map))
                                     :TTY         (:tty service)
                                     :Healthcheck (->service-healthcheck (:healthcheck service))
                                     :Env         (->service-variables service)
@@ -255,7 +259,8 @@
                     :Resources     {:Limits       (->service-resource (get-in service [:resources :limit]))
                                     :Reservations (->service-resource (get-in service [:resources :reservation]))}
                     :RestartPolicy (->service-restart-policy service)
-                    :Placement     {:Constraints (->service-placement-contraints service)}
+                    :Placement     {:Constraints (->service-placement-contraints service)
+                                    :MaxReplicas (get-in service [:deployment :maxReplicas])}
                     :ForceUpdate   (get-in service [:deployment :forceUpdate])
                     :Networks      (->service-networks service)}
    :Mode           (->service-mode service)
