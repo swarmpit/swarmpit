@@ -175,6 +175,10 @@
    :labels          [name-value]
    :containerLabels [name-value]
    :command         [string?]
+   (ds/opt :entrypoint) [string?]
+   (ds/opt :hostname)   string?
+   (ds/opt :isolation)  string?
+   (ds/opt :sysctls)    [name-value]
    :stack           string?
    :agent           boolean?
    :links           [name-value]
@@ -198,6 +202,7 @@
                      :rollback        deploy
                      :rollbackAllowed boolean?
                      :autoredeploy    boolean?
+                     (ds/opt :maxReplicas) number?
                      :placement       [{:rule string?}]}})
 
 (def service-stats
@@ -230,7 +235,11 @@
    :hosts             [name-value]
    :variables         [name-value]
    :labels            [name-value]
-   (ds/opt :command)  [string?]
+   (ds/opt :command)     [string?]
+   (ds/opt :entrypoint)  [string?]
+   (ds/opt :hostname)    string?
+   (ds/opt :isolation)   string?
+   (ds/opt :sysctls)     [name-value]
    :logdriver         {:name string?
                        :opts [name-value]}
    :resources         {:reservation resources
@@ -242,6 +251,7 @@
                                        :attempts        number?}
                        :rollback      deploy
                        :autoredeploy  boolean?
+                       (ds/opt :maxReplicas) number?
                        :placement     [{:rule string?}]}})
 
 (def service-update
@@ -273,6 +283,10 @@
    :labels                   [name-value]
    (ds/opt :containerLabels) [name-value]
    (ds/opt :command)         [string?]
+   (ds/opt :entrypoint)      [string?]
+   (ds/opt :hostname)        string?
+   (ds/opt :isolation)       string?
+   (ds/opt :sysctls)         [name-value]
    (ds/opt :stack)           string?
    (ds/opt :agent)           boolean?
    (ds/opt :immutable)       boolean?
@@ -295,6 +309,7 @@
                                               :attempts        number?}
                               :rollback      deploy
                               :autoredeploy  boolean?
+                              (ds/opt :maxReplicas) number?
                               :placement     [{:rule string?}]}})
 
 (def service-logs

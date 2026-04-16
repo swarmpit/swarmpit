@@ -47,6 +47,7 @@
    :stack
    :agent
    :command
+   :entrypoint
    :tty
    :user
    :dir
