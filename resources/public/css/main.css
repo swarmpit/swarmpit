@@ -1726,6 +1726,27 @@ html.dark .Swarmpit-label {
 
 html.dark .Swarmpit-label-green {
     background-color: #1b5e20 !important;
+    color: #fff !important;
+}
+
+html.dark .MuiSnackbarContent-root.Swarmpit-label-green {
+    background-color: #1b5e20 !important;
+    color: #fff !important;
+}
+
+html.dark .MuiSnackbarContent-root.Swarmpit-label-green .MuiSnackbarContent-message,
+html.dark .MuiSnackbarContent-root.Swarmpit-label-green .MuiIconButton-root {
+    color: #fff !important;
+}
+
+html.dark .MuiSnackbarContent-root.Swarmpit-label-red {
+    background-color: #b71c1c !important;
+    color: #fff !important;
+}
+
+html.dark .MuiSnackbarContent-root.Swarmpit-label-red .MuiSnackbarContent-message,
+html.dark .MuiSnackbarContent-root.Swarmpit-label-red .MuiIconButton-root {
+    color: #fff !important;
 }
 
 html.dark .Swarmpit-label-red {
