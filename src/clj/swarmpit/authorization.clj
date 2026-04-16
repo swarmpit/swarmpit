@@ -54,6 +54,11 @@
       (error {:code    403
               :message "Unauthorized registry access"}))))
 
+(def ^:private registry-types "dockerhub|v2|ecr|acr|gitlab|ghcr")
+
+(defn- registry-pattern [suffix]
+  (re-pattern (str "^/api/registry/(" registry-types ")/[a-zA-Z0-9]*" suffix)))
+
 (def rules [{:pattern #"^/login$"
              :handler any-access}
             {:pattern #"^/events"
@@ -73,16 +78,16 @@
             {:pattern        #"^/api/nodes/[a-zA-Z0-9]*$"
              :request-method #{:delete :post}
              :handler        {:and [authenticated-access admin-access]}}
-            {:pattern        #"^/api/registry/(dockerhub|v2|ecr|acr|gitlab|ghcr)/[a-zA-Z0-9]*/repositories$"
+            {:pattern        (registry-pattern "/repositories$")
              :request-method :get
              :handler        {:and [authenticated-access registry-access user-access]}}
-            {:pattern        #"^/api/registry/(dockerhub|v2|ecr|acr|gitlab|ghcr)/[a-zA-Z0-9]*/tags$"
+            {:pattern        (registry-pattern "/tags$")
              :request-method :get
              :handler        {:and [authenticated-access registry-access user-access]}}
-            {:pattern        #"^/api/registry/(dockerhub|v2|ecr|acr|gitlab|ghcr)/[a-zA-Z0-9]*/ports$"
+            {:pattern        (registry-pattern "/ports$")
              :request-method :get
              :handler        {:and [authenticated-access registry-access user-access]}}
-            {:pattern        #"^/api/registry/(dockerhub|v2|ecr|acr|gitlab|ghcr)/[a-zA-Z0-9]*$"
+            {:pattern        (registry-pattern "$")
              :request-method #{:get :delete :post}
              :handler        {:and [authenticated-access owner-access user-access]}}
             {:pattern        #"^/api/.*/dashboard$"
