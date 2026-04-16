@@ -525,9 +525,9 @@
 (defn ->service-tasks-by-container
   [service-tasks]
   (into {}
-        (map
-          #(hash-map
-             (get-in % [:Status :ContainerStatus :ContainerID])
-             {:node (:NodeID %)
-              :task (:ID %)})
+        (keep
+          #(let [container-id (get-in % [:Status :ContainerStatus :ContainerID])]
+             (when container-id
+               {container-id {:node (:NodeID %)
+                              :task (:ID %)}}))
           service-tasks)))

@@ -196,7 +196,7 @@
         tag (get-in service [:repository :tag])
         digest (get-in service [:repository :imageDigest])]
     (if (and digest? (not (str/blank? digest)))
-      (str repository "@" digest)
+      (str repository ":" tag "@" digest)
       (str repository ":" tag))))
 
 (defn ->service-links
