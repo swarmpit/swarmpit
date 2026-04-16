@@ -54,7 +54,7 @@
 (defn- execute-with-fallback
   [{:keys [method url options] :as request}]
   (try
-    (execute request)
+    (execute (update request :quiet-statuses (fnil conj #{}) 401))
     (catch ExceptionInfo e
       (let [status (:status (ex-data e))
             headers (:headers (ex-data e))
@@ -94,14 +94,26 @@
          :options {:headers (basic-auth registry)}})
       :body))
 
+(def ^:private compatible-types
+  {"application/vnd.docker.distribution.manifest.list.v2+json"
+   #{"application/vnd.docker.distribution.manifest.list.v2+json"
+     "application/vnd.oci.image.index.v1+json"}
+   "application/vnd.docker.distribution.manifest.v2+json"
+   #{"application/vnd.docker.distribution.manifest.v2+json"
+     "application/vnd.oci.image.manifest.v1+json"}
+   "application/vnd.docker.distribution.manifest.v1+prettyjws"
+   #{"application/vnd.docker.distribution.manifest.v1+prettyjws"}})
+
 (defn- request-manifest
   [registry repository-name repository-tag method type]
-  (let [response (execute-with-fallback {:method  method
-                                         :url     (build-url registry (str "/" repository-name "/manifests/" repository-tag))
-                                         :options {:headers (merge (basic-auth registry)
-                                                                   {:Accept type})}})
-        response-type (get-in response [:headers :content-type])]
-    (when (= type response-type) response)))
+  (let [response (execute-with-fallback {:method          method
+                                         :url             (build-url registry (str "/" repository-name "/manifests/" repository-tag))
+                                         :options         {:headers (merge (basic-auth registry)
+                                                                           {:Accept type})}
+                                         :quiet-statuses  #{404}})
+        response-type (get-in response [:headers :content-type])
+        accepted-types (get compatible-types type #{type})]
+    (when (contains? accepted-types response-type) response)))
 
 (defn manifest
   [registry repository-name repository-tag]
