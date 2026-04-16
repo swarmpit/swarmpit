@@ -77,7 +77,7 @@
     {:control (comp/checkbox
                 {:checked  value
                  :onChange #(state/update-value [:skipImageResolve] (-> % .-target .-checked) state/form-value-cursor)})
-     :label   "Skip image resolution"}))
+     :label   "without image resolution"}))
 
 (defn- update-stack-handler
   [name]
@@ -131,9 +131,9 @@
 
 (defn- init-form-value
   [name]
-  (state/set-value {:name              name
-                    :spec              {:compose ""}
-                    :skipImageResolve  false} state/form-value-cursor))
+  (state/set-value {:name             name
+                    :spec             {:compose ""}
+                    :skipImageResolve false} state/form-value-cursor))
 
 (def mixin-init-form
   (mixin/init-form
@@ -166,8 +166,7 @@
               {:className "Swarmpit-fcard-content"}
               (form-name name)
               (form-select name :stack-compose last? previous?)
-              (form-editor (:compose spec))
-              (form-skip-image-resolve skipImageResolve))
+              (form-editor (:compose spec)))
             (comp/card-actions
               {:className "Swarmpit-fcard-actions"}
               (composite/progress-button
@@ -175,7 +174,8 @@
                 #(update-stack-handler name)
                 processing?
                 false
-                {:startIcon (comp/svg {} icon/rocket-path)}))))]])))
+                {:startIcon (comp/svg {} icon/rocket-path)})
+              (form-skip-image-resolve skipImageResolve))))]])))
 
 (rum/defc form < rum/reactive
                  mixin-init-form [_]

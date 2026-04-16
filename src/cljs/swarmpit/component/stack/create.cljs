@@ -52,13 +52,6 @@
      :InputLabelProps {:shrink true}
      :value           value}))
 
-(defn- form-skip-image-resolve [value]
-  (comp/form-control-label
-    {:control (comp/checkbox
-                {:checked  value
-                 :onChange #(state/update-value [:skipImageResolve] (-> % .-target .-checked) state/form-value-cursor)})
-     :label   "Skip image resolution"}))
-
 (defn- compose-handler
   [service-name]
   (when service-name
@@ -70,6 +63,13 @@
        :on-error   (fn [_]
                      (message/error
                        (str "Failed to generate compose file from service " service-name)))})))
+
+(defn- form-skip-image-resolve [value]
+  (comp/form-control-label
+    {:control (comp/checkbox
+                {:checked  value
+                 :onChange #(state/update-value [:skipImageResolve] (-> % .-target .-checked) state/form-value-cursor)})
+     :label   "without image resolution"}))
 
 (defn- create-stack-handler
   []
@@ -120,9 +120,9 @@
 
 (defn- init-form-value
   []
-  (state/set-value {:name              ""
-                    :spec              {:compose ""}
-                    :skipImageResolve  false} state/form-value-cursor))
+  (state/set-value {:name             ""
+                    :spec             {:compose ""}
+                    :skipImageResolve false} state/form-value-cursor))
 
 (def mixin-init-form
   (mixin/init-form
@@ -158,8 +158,7 @@
                    :className "Swarmpit-fcard-message"}
                   "Group of interrelated services that are orchestrated and scaled together")
                 (form-name name)
-                (form-editor (:compose spec))
-                (form-skip-image-resolve skipImageResolve))
+                (form-editor (:compose spec)))
               (comp/card-actions
                 {:className "Swarmpit-fcard-actions"}
                 (composite/progress-button
@@ -168,6 +167,7 @@
                   processing?
                   saving?
                   {:startIcon (comp/svg {} icon/rocket-path)})
+                (form-skip-image-resolve skipImageResolve)
                 (composite/progress-button
                   "Save"
                   save-stack-handler
