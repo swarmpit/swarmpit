@@ -62,19 +62,43 @@
                    (state/set-value
                      (if (= :stack-previous handler)
                        (set/rename-keys response {:previousSpec :spec}) response) state/form-value-cursor)
-                   (state/update-value [:previous?] (:previousSpec response) state/form-state-cursor))}))
+                   (state/update-value [:previous?] (:previousSpec response) state/form-state-cursor)
+                   (state/update-value [:history]
+                                       (vec (reverse (:history response)))
+                                       state/form-state-cursor))}))
+
+(defn- baseline-handler
+  "Fetch the current engine state separately so the editor can diff against it
+   even when the selected source is 'last deployed' or 'previous'."
+  [name]
+  (ajax/get
+    (routes/path-for-backend :stack-compose {:name name})
+    {:on-success (fn [{:keys [response]}]
+                   (state/update-value [:baseline]
+                                       (get-in response [:spec :compose])
+                                       state/form-state-cursor)
+                   (compose/refresh-diff!))
+     :on-error   (fn [_])}))
 
 (def mixin-init-editor
   {:did-mount
    (fn [state]
      (let [editor (editor/yaml editor-id)]
-       (.on editor "change" (fn [cm] (state/update-value [:spec :compose] (-> cm .getValue) state/form-value-cursor))))
+       (state/update-value [:editor] editor state/form-state-cursor)
+       (.on editor "change"
+            (fn [cm]
+              (state/update-value [:spec :compose] (-> cm .getValue) state/form-value-cursor)
+              (compose/refresh-diff!))))
      state)})
 
 (defn- init-form-state
   []
   (state/set-value {:valid?      false
                     :previous?   false
+                    :history     []
+                    :editor      nil
+                    :baseline    nil
+                    :source      nil
                     :loading?    true
                     :processing? false} state/form-state-cursor))
 
@@ -88,11 +112,12 @@
     (fn [{{:keys [name]} :params :keys [handler]}]
       (init-form-state)
       (init-form-value name)
-      (stackfile-handler name handler))))
+      (stackfile-handler name handler)
+      (baseline-handler name))))
 
 (rum/defc form-edit < mixin-init-editor [{:keys [name spec]}
                                          select
-                                         {:keys [processing? valid? previous?]}]
+                                         {:keys [processing? valid? previous? history source]}]
   (comp/mui
     (html
       [:div.Swarmpit-form
@@ -112,7 +137,7 @@
             (comp/card-content
               {:className "Swarmpit-fcard-content"}
               (compose/form-name name)
-              (compose/form-select name select true previous?)
+              (compose/form-select name select true previous? history source)
               (form-editor (:compose spec)))
             (comp/card-actions
               {:className "Swarmpit-fcard-actions"}

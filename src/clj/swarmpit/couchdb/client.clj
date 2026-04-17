@@ -358,7 +358,7 @@
 
 (defn update-stackfile
   [stackfile delta]
-  (let [allowed-delta (select-keys delta [:spec :previousSpec])]
+  (let [allowed-delta (select-keys delta [:spec :previousSpec :history])]
     (update-doc stackfile allowed-delta)))
 
 (defn delete-stackfile
