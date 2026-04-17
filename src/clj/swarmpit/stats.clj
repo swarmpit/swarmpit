@@ -54,11 +54,14 @@
   "Store stats in influxDB as timeseries"
   [{:keys [id tasks] :as stats}]
   (when (influx-configured?)
-    (let [host-tags (m/->host-tags id)]
-      (influx/write-host-points host-tags stats)
-      (doseq [{:keys [name] :as task-stats} tasks]
-        (when-let [task-tags (m/->task-tags name id)]
-          (influx/write-task-points task-tags task-stats))))))
+    (try
+      (let [host-tags (m/->host-tags id)]
+        (influx/write-host-points host-tags stats)
+        (doseq [{:keys [name] :as task-stats} tasks]
+          (when-let [task-tags (m/->task-tags name id)]
+            (influx/write-task-points task-tags task-stats))))
+      (catch Exception e
+        (log/debug "InfluxDB write failed:" (.getMessage e))))))
 
 (defn node
   "Get latest node stats from local cache"
