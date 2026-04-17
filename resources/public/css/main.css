@@ -710,6 +710,12 @@ html.dark .Swarmpit-login-instance {
     padding: 0 !important;
 }
 
+.Swarmpit-mounts {
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+}
+
 .Swarmpit-table-cell {
     padding: 4px 56px 4px 4px !important;
 }

@@ -7,7 +7,6 @@
             [swarmpit.yaml :refer [->yaml]])
   (:refer-clojure :exclude [alias]))
 
-(def compose-version "3.3")
 
 (defn group
   [stack-name fn coll]
@@ -37,12 +36,21 @@
 (defn targetable
   [source-key target-key item]
   (->> item
-       (map #(let [{name   source-key
-                    target target-key} %]
-               (if (= name target)
-                 name
-                 {:source name
-                  :target target})))))
+       (map (fn [m]
+              (let [source (get m source-key)
+                    target (get m target-key)
+                    uid    (:uid m)
+                    gid    (:gid m)
+                    mode   (:mode m)
+                    long?  (or (some? uid) (some? gid) (some? mode)
+                               (and target (not= source target)))]
+                (if long?
+                  (cond-> (ordered-map :source source)
+                    (and target (not= source target)) (assoc :target target)
+                    (some? uid)                       (assoc :uid uid)
+                    (some? gid)                       (assoc :gid gid)
+                    (some? mode)                      (assoc :mode mode))
+                  source))))))
 
 (defn resource
   [{:keys [cpu memory]}]
@@ -60,7 +68,11 @@
   {(keyword (alias :serviceName (or stack-name (:stack service)) service))
    (ordered-map
      :image (-> service :repository :image)
+     :entrypoint (some->> service :entrypoint)
      :command (some->> service :command)
+     :hostname (-> service :hostname)
+     :isolation (-> service :isolation)
+     :sysctls (->> service :sysctls (name-value->map))
      :labels (->> service :containerLabels (name-value->map))
      :user (-> service :user)
      :working_dir (-> service :dir)
@@ -74,9 +86,24 @@
      :tty (-> service :tty)
      :environment (-> service :variables (name-value->sorted-map))
      :ports (->> service :ports
-                 (map #(str (:hostPort %) ":" (:containerPort %) (when (= "udp" (:protocol %)) "/udp"))))
+                 (map (fn [p]
+                        (let [protocol (:protocol p)
+                              mode (:mode p)
+                              non-tcp? (and protocol (not= "tcp" protocol))
+                              non-ingress? (and mode (not= "ingress" mode))]
+                          (if (or non-tcp? non-ingress?)
+                            (cond-> (ordered-map :target (:containerPort p)
+                                                 :published (:hostPort p))
+                              non-tcp?     (assoc :protocol protocol)
+                              non-ingress? (assoc :mode mode))
+                            (str (:hostPort p) ":" (:containerPort p)))))))
      :volumes (->> service :mounts
-                   (map #(str (alias :host stack-name %) ":" (:containerPath %) (when (:readOnly %) ":ro"))))
+                   (map (fn [m]
+                          (if (= "tmpfs" (:type m))
+                            (cond-> (ordered-map :type "tmpfs"
+                                                 :target (:containerPath m))
+                              (:readOnly m) (assoc :read_only true))
+                            (str (alias :host stack-name m) ":" (:containerPath m) (when (:readOnly m) ":ro"))))))
      :networks (->> service :networks (map #(alias :networkName stack-name %)))
      :secrets (->> service :secrets (targetable :secretName :secretTarget))
      :configs (->> service :configs (targetable :configName :configTarget))
@@ -102,7 +129,8 @@
                                      :delay        "5s"
                                      :window       "0s"
                                      :max_attempts 0}))
-              :placement      {:constraints (->> service :deployment :placement (map :rule))}
+              :placement      {:constraints          (->> service :deployment :placement (map :rule))
+                               :max_replicas_per_node (get-in service [:deployment :maxReplicas])}
               :resources      {:reservations (-> service :resources :reservation resource)
                                :limits       (-> service :resources :limit resource)}})})
 
@@ -138,8 +166,7 @@
 (defn ->compose
   [stack]
   (let [name (:stackName stack)]
-    (-> {:version  compose-version
-         :services (group name service (->> stack :services (sort-by :serviceName) (vec)))
+    (-> {:services (group name service (->> stack :services (sort-by :serviceName) (vec)))
          :networks (group name network (:networks stack))
          :volumes  (group name volume (:volumes stack))
          :configs  (group name config (:configs stack))

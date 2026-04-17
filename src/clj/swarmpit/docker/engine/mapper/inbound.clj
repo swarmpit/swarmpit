@@ -433,6 +433,10 @@
        :labels (->service-labels service-labels)
        :containerLabels (->service-container-labels container-labels)
        :command (get-in service-task-template [:ContainerSpec :Args])
+       :entrypoint (get-in service-task-template [:ContainerSpec :Command])
+       :hostname (get-in service-task-template [:ContainerSpec :Hostname])
+       :isolation (get-in service-task-template [:ContainerSpec :Isolation])
+       :sysctls (map->name-value (get-in service-task-template [:ContainerSpec :Sysctls]))
        :user (get-in service-task-template [:ContainerSpec :User])
        :dir (get-in service-task-template [:ContainerSpec :Dir])
        :tty (get-in service-task-template [:ContainerSpec :TTY])
@@ -446,7 +450,8 @@
                     :rollback        (->service-deployment-rollback service-spec)
                     :rollbackAllowed (some? (:PreviousSpec service))
                     :autoredeploy    (->service-autoredeploy service-labels)
-                    :placement       (->service-placement-constraints service-spec)}))))
+                    :placement       (->service-placement-constraints service-spec)
+                    :maxReplicas     (get-in service-spec [:TaskTemplate :Placement :MaxReplicas])}))))
 
 (defn ->services
   [services tasks networks info]

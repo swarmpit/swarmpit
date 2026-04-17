@@ -153,6 +153,23 @@
                         (let [value (-> event .-target .-value)]
                           (state/update-value [:command] (when (< 0 (count value)) (parse-cmd value)) form-value-cursor)))}))
 
+(defn- form-entrypoint [value]
+  (comp/text-field
+    {:key             "entrypoint"
+     :label           "Entrypoint"
+     :variant         "outlined"
+     :helperText      "Overrides the image ENTRYPOINT. Command above is passed as arguments."
+     :fullWidth       true
+     :multiline       true
+     :margin          "normal"
+     :defaultValue    value
+     :InputProps      {:style     {:fontFamily "monospace"}
+                       :className "Swarmpit-form-input"}
+     :InputLabelProps {:shrink true}
+     :onChange        (fn [event]
+                        (let [value (-> event .-target .-value)]
+                          (state/update-value [:entrypoint] (when (< 0 (count value)) (parse-cmd value)) form-value-cursor)))}))
+
 (defn tags-handler
   [repository]
   (ajax/get
@@ -163,7 +180,7 @@
      :on-error   (fn [_])}))
 
 (rum/defc form < rum/reactive [update-form?]
-  (let [{:keys [repository serviceName mode replicas command]} (state/react form-value-cursor)
+  (let [{:keys [repository serviceName mode replicas command entrypoint]} (state/react form-value-cursor)
         {:keys [tags]} (state/react form-state-cursor)]
     (comp/grid
       {:container true
@@ -192,6 +209,10 @@
         (form-mode mode update-form?)
         (when (= "replicated" mode)
           (form-replicas replicas)))
+      (comp/grid
+        {:item true
+         :xs   12}
+        (form-entrypoint (str/join "\n" entrypoint)))
       (comp/grid
         {:item true
          :xs   12}
