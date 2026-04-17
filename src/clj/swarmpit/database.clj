@@ -69,12 +69,14 @@
 (defn init-influx
   []
   (when (influx-configured?)
-    (do
+    (try
       (wait-for-db 100 influx-ready? "InfluxDB")
       (create-influx-database)
       (setup-influx-database)
       (info "InfluxDB RP:" (ic/retention-policy-summary))
-      (info "InfluxDB CQ:" (ic/continuous-query-summary)))))
+      (info "InfluxDB CQ:" (ic/continuous-query-summary))
+      (catch Exception e
+        (error "InfluxDB init failed, stats disabled:" (.getMessage e))))))
 
 (defn init
   []
