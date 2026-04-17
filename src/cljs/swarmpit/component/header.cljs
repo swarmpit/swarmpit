@@ -313,6 +313,7 @@
 (rum/defc appbar < rum/reactive
                    mixin-on-scroll [{:keys [title subtitle search-fn actions]}]
   (let [{:keys [mobileSearchOpened menuAnchorEl mobileMoreAnchorEl version theme]} (state/react state/layout-cursor)
+        instance-name (state/react state/instance-name-cursor)
         elevation (rum/react appbar-elevation)]
     (comp/mui
       (html
@@ -328,8 +329,7 @@
               :disableGutters false}
              (html
                [:div.Swarmpit-desktop-title
-                (common/title-logo)
-                (common/title-version version)])
+                (common/title-logo instance-name)])
              (comp/icon-button
                {:key        "appbar-menu-btn"
                 :color      "inherit"

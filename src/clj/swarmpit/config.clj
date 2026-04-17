@@ -10,6 +10,7 @@
          :influxdb-url        nil
          :agent-url           nil
          :work-dir            "/tmp"
+         :instance-name       nil
          :password-hashing    {:alg        :pbkdf2+sha512
                                :iterations 200000}}))
 
@@ -21,7 +22,8 @@
         :db-url              (env :swarmpit-db)
         :influxdb-url        (env :swarmpit-influxdb)
         :agent-url           (env :swarmpit-agent-url)
-        :work-dir            (env :swarmpit-workdir)}
+        :work-dir            (env :swarmpit-workdir)
+        :instance-name       (env :swarmpit-instance-name)}
        (into {} (remove #(nil? (val %))))))
 
 (def ^:private dynamic (atom {}))

@@ -23,12 +23,28 @@
          (take 7)
          (apply str))))
 
-(rum/defc title-logo < rum/static []
-  [:a {:target "_blank"
-       :href   swarmpit-home-page}
-   [:img {:src    "img/logo.svg"
-          :height "50"
-          :width  "200"}]])
+(defn- instance-font-size [name]
+  (let [len (count name)]
+    (cond
+      (<= len 8)  "1.5rem"
+      (<= len 12) "1.25rem"
+      (<= len 16) "1rem"
+      :else       "0.85rem")))
+
+(rum/defc title-logo < rum/static [instance-name]
+  [:a.Swarmpit-title-link {:target "_blank"
+                           :href   swarmpit-home-page}
+   (if (and instance-name (not (clojure.string/blank? instance-name)))
+     [:span.Swarmpit-title-custom
+      [:img {:src    "img/icon.svg"
+             :height "50"
+             :width  "50"}]
+      [:span.Swarmpit-title-instance
+       {:style {:fontSize (instance-font-size instance-name)}}
+       instance-name]]
+     [:img {:src    "img/logo.svg"
+            :height "50"
+            :width  "200"}])])
 
 (rum/defc title-version < rum/static [version]
   (when version
