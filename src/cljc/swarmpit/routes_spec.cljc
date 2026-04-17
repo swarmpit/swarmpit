@@ -224,7 +224,7 @@
                         :mode          string?
                         :hostPort      number?}]
    :mounts            [{:containerPath string?
-                        :host          string?
+                        (ds/opt :host) string?
                         :type          string?
                         :readOnly      boolean?}]
    :networks          [{:networkName string?}]
@@ -266,7 +266,7 @@
                                :mode          string?
                                :hostPort      number?}]
    :mounts                   [{:containerPath          string?
-                               :host                   string?
+                               (ds/opt :host)          string?
                                :type                   string?
                                :readOnly               boolean?
                                (ds/opt :volumeOptions) {(ds/opt :labels) map?
