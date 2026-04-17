@@ -57,21 +57,21 @@
     :route   "configs"
     :domain  :config}])
 
-(defn footer [docker-api docker-engine]
+(defn footer [docker-api docker-engine version]
   (comp/box
     {:className "Swarmpit-drawer-footer"}
     (comp/divider {:className "Swarmpit-drawer-divider"})
-    (comp/list-item
-      {:disabled  true
-       :dense     true
-       :className "Swarmpit-drawer-item"}
-      (comp/list-item-text
-        {:className "Swarmpit-drawer-footer-item-text"
-         :primary   (comp/typography {:variant "subtitle2"} "Docker")
-         :secondary (comp/typography
-                      {:variant "caption"}
-                      (str (when docker-engine (str "engine " docker-engine " · "))
-                           "API v" docker-api))}))
+    (comp/box
+      {:className "Swarmpit-drawer-footer-versions"}
+      (when version
+        (comp/typography
+          {:variant "caption" :display "block"}
+          (str "swarmpit " (common/parse-version version))))
+      (when (or docker-engine docker-api)
+        (comp/typography
+          {:variant "caption" :display "block"}
+          (str (when docker-engine (str "engine " docker-engine " "))
+               (when docker-api (str "API " docker-api))))))
     (comp/list-item
       {:button        true
        :component     "a"
@@ -130,14 +130,13 @@
                {:className "Swarmpit-drawer-item-text-selected"}
                {:className "Swarmpit-drawer-item-text"})))))
 
-(rum/defc drawer-content < rum/static [version page-domain docker-api docker-engine]
+(rum/defc drawer-content < rum/static [version page-domain docker-api docker-engine instance-name]
   [:div.Swarmpit-drawer-content
    (comp/box
      {:className "Swarmpit-toolbar"}
      (comp/box
        {:className "Swarmpit-menu-title"}
-       (common/title-logo)
-       (common/title-version version)))
+       (common/title-logo instance-name)))
    (comp/box
      {}
      (map
@@ -150,12 +149,13 @@
              name)))
        (filter-menu docker-api)))
    (comp/box {:className "grow"})
-   (footer docker-api docker-engine)])
+   (footer docker-api docker-engine version)])
 
 (rum/defc drawer < rum/reactive [page-domain]
   (let [{:keys [mobileOpened version]} (state/react state/layout-cursor)
         docker-api (state/react state/docker-api-cursor)
-        docker-engine (state/react state/docker-engine-cursor)]
+        docker-engine (state/react state/docker-engine-cursor)
+        instance-name (state/react state/instance-name-cursor)]
     (comp/mui
       (html
         [:div
@@ -168,7 +168,7 @@
               :variant    "temporary"
               :onClose    #(state/update-value [:mobileOpened] false state/layout-cursor)
               :ModalProps {:keepMounted true}}
-             (drawer-content version page-domain docker-api docker-engine)))
+             (drawer-content version page-domain docker-api docker-engine instance-name)))
          (comp/hidden
            {:mdDown         true
             :implementation "css"}
@@ -176,4 +176,4 @@
              {:className "Swarmpit-drawer"
               :open      true
               :variant   "permanent"}
-             (drawer-content version page-domain docker-api docker-engine)))]))))
+             (drawer-content version page-domain docker-api docker-engine instance-name)))]))))

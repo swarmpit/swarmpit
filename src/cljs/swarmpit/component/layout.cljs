@@ -24,8 +24,11 @@
 
 (defn- document-title
   [page-title]
-  (set! (-> js/document .-title)
-        (str page-title " :: swarmpit")))
+  (let [instance-name (state/get-value state/instance-name-cursor)]
+    (set! (-> js/document .-title)
+          (if (and instance-name (not (clojure.string/blank? instance-name)))
+            (str instance-name " :: " page-title " :: swarmpit")
+            (str page-title " :: swarmpit")))))
 
 (defn version-handler
   []

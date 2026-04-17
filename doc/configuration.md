@@ -29,3 +29,7 @@ Default is `nil`.
 ## `SWARMPIT_WORK_DIR`
 Swarmpit working directory location.
 Default is `/tmp`.
+
+## `SWARMPIT_INSTANCE_NAME`
+Custom name shown in place of the swarmpit logo in the sidebar and top bar, and prepended to the browser tab title as `{instance_name} :: {page} :: swarmpit`. Useful when running multiple swarmpit instances against different clusters so you can tell them apart at a glance.
+Default is `nil` (shows the swarmpit logo).

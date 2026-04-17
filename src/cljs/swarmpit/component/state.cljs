@@ -96,6 +96,8 @@
 
 (def docker-engine-cursor [:docker :engine])
 
+(def instance-name-cursor [:instanceName])
+
 (def layout-cursor [:layout])
 
 (def search-cursor [:search])

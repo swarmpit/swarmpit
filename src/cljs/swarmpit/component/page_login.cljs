@@ -132,6 +132,7 @@
   (let [local-state (::login state)
         initialized (state/react [:initialized])
         version (state/react [:layout :version])
+        instance-name (state/react state/instance-name-cursor)
         username (:username @local-state)
         password (:password @local-state)
         message (:message @local-state)]
@@ -142,9 +143,15 @@
           {:className "Swarmpit-login-paper"
            :elevation 0}
           (html
-            [:img {:src   "img/logo.svg"
-                   :class "Swarmpit-login-logo"
-                   :width "220px"}])
+            (if (and instance-name (not (clojure.string/blank? instance-name)))
+              [:div.Swarmpit-login-custom
+               [:img {:src   "img/icon.svg"
+                      :class "Swarmpit-login-logo"
+                      :width "80px"}]
+               [:span.Swarmpit-login-instance instance-name]]
+              [:img {:src   "img/logo.svg"
+                     :class "Swarmpit-login-logo"
+                     :width "220px"}]))
           (html
             (progress/form
               (nil? initialized)
