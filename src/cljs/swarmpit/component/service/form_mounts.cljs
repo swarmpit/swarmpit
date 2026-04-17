@@ -92,7 +92,10 @@
        :value "bind"} "bind")
     (comp/menu-item
       {:key   "volume"
-       :value "volume"} "volume")))
+       :value "volume"} "volume")
+    (comp/menu-item
+      {:key   "tmpfs"
+       :value "tmpfs"} "tmpfs")))
 
 (defn- form-readonly [value index]
   (comp/checkbox
@@ -112,8 +115,9 @@
    {:name      "Host"
     :key       [:host]
     :render-fn (fn [value item index]
-                 (if (= "bind" (:type item))
-                   (form-host-bind value index)
+                 (case (:type item)
+                   "bind"  (form-host-bind value index)
+                   "tmpfs" nil
                    (form-host-volume value index volume-list)))}
    {:name      "Read only"
     :key       [:readOnly]
