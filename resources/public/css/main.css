@@ -117,7 +117,7 @@ a {
 .Swarmpit-card {
     box-shadow: none !important;
     border: 1px solid rgba(0, 0, 0, 0.12);
-    border-radius: 12px !important;
+    border-radius: 14px !important;
 }
 
 .Swarmpit-card-avatar {
@@ -187,7 +187,7 @@ a {
 
 .Swarmpit-paper {
     border: 1px solid #DFE3E8;
-    border-radius: 12px;
+    border-radius: 14px;
     padding: 24px;
 }
 
@@ -223,7 +223,7 @@ a {
 
 .Swarmpit-dashboard-paper {
     height: 100%;
-    border-radius: 12px !important;
+    border-radius: 14px !important;
 }
 
 .Swarmpit-dashboard-chip {
@@ -850,7 +850,7 @@ html.dark .Swarmpit-login-instance {
 .Swarmpit-fcard {
     margin-top: 16px;
     overflow: visible !important;
-    border-radius: 12px !important;
+    border-radius: 14px !important;
 }
 
 .Swarmpit-fcard-header {
@@ -986,7 +986,7 @@ html.dark .Swarmpit-login-instance {
 .Swarmpit-form-card {
     box-shadow: none !important;
     border: 1px solid rgba(0, 0, 0, 0.12);
-    border-radius: 12px !important;
+    border-radius: 14px !important;
 }
 
 .Swarmpit-form-card-single {
