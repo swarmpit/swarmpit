@@ -26,4 +26,13 @@
   [slt]
   (cache/lookup @cache slt))
 
+(defn consume!
+  "Validate the SLT and invalidate it. Returns the associated user on
+   success, nil if the token is unknown/expired/already consumed."
+  [slt]
+  (when (and slt (cache/has? @cache slt))
+    (let [u (cache/lookup @cache slt)]
+      (swap! cache cache/evict slt)
+      u)))
+
 

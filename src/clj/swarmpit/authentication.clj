@@ -3,7 +3,8 @@
   (:require [buddy.auth.backends.token :refer [jws-backend]]
             [buddy.auth.middleware :refer [authentication-request]]
             [swarmpit.handler :refer [resp-unauthorized]]
-            [swarmpit.couchdb.client :as cc]))
+            [swarmpit.couchdb.client :as cc]
+            [swarmpit.token.blacklist :as blacklist]))
 
 (defn- authfn
   [{:keys [iss jti usr] :as identity}]
@@ -11,7 +12,9 @@
     (if user
       (if (= "swarmpit-api" iss)
         (when-not (= jti (-> user :api-token :jti))
-          (throw (ex-info "Token discarded" {:cause :discarded}))))
+          (throw (ex-info "Token discarded" {:cause :discarded})))
+        (when (blacklist/revoked? jti)
+          (throw (ex-info "Token revoked" {:cause :revoked}))))
       (throw (ex-info "Token rejected" {:cause :rejected})))
     identity))
 
@@ -35,7 +38,8 @@
                         :exp "Token expired"
                         :signature "Token invalid"
                         :discarded "Token discarded" ;; User API token removed
+                        :revoked "Token revoked" ;; Login token revoked via logout
                         :rejected "Token rejected" ;; User does not exist
-                        (Throwable->map ex))]
+                        "Token invalid")]
             (-> (resp-unauthorized error)
                 (assoc :headers {"X-Backend-Server" "swarmpit"}))))))))

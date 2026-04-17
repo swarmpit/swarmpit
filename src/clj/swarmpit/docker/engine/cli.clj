@@ -4,6 +4,17 @@
             [cheshire.core :refer [parse-string]]
             [swarmpit.config :refer [config]]))
 
+(def ^:private stack-name-pattern #"^[a-zA-Z0-9][a-zA-Z0-9_-]{0,62}$")
+
+(defn- validate-stack-name!
+  [name]
+  (when-not (and (string? name) (re-matches stack-name-pattern name))
+    (throw
+      (ex-info (str "Invalid stack name: " (pr-str name))
+               {:status 400
+                :type   :docker-cli
+                :body   {:error "stack name must match [a-zA-Z0-9][a-zA-Z0-9_-]{0,62}"}}))))
+
 (defn- execute
   "Execute docker command and parse result"
   [cmd]
@@ -42,6 +53,7 @@
 
 (defn stack-deploy
   [name compose & [{:keys [skip-resolve-image] :as opts}]]
+  (validate-stack-name! name)
   (let [file (stack-file name)
         cmd (stack-deploy-cmd name file opts)]
     (try
@@ -53,5 +65,6 @@
 
 (defn stack-remove
   [name]
+  (validate-stack-name! name)
   (let [cmd (stack-remove-cmd name)]
     (execute cmd)))

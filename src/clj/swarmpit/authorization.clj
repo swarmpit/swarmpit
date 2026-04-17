@@ -61,12 +61,18 @@
 
 (def rules [{:pattern #"^/login$"
              :handler any-access}
-            {:pattern #"^/events"
-             :handler any-access}
+            {:pattern        #"^/events$"
+             :request-method :get
+             :handler        any-access}
+            {:pattern        #"^/events$"
+             :request-method :post
+             :handler        authenticated-access}
             {:pattern #"^/version$"
              :handler any-access}
             {:pattern #"^/initialize$"
              :handler any-access}
+            {:pattern #"^/logout$"
+             :handler authenticated-access}
             {:pattern #"^/slt"
              :handler authenticated-access}
             {:pattern #"^/api/swagger.json"

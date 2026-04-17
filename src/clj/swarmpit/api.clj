@@ -31,6 +31,7 @@
             [clojure.tools.logging :as log]
             [clojure.string :as str]
             [cemerick.url :refer [url]]
+            [clj-time.core :as t]
             [swarmpit.token :as token]))
 
 ;;; User API
@@ -101,12 +102,28 @@
                               #(change-password user password))
       user)))
 
+(defn- api-token-expiry
+  "Returns the :exp claim for new API tokens based on :api-token-expiry-days
+   config. nil (the default) yields non-expiring tokens for backwards
+   compatibility; set SWARMPIT_API_TOKEN_EXPIRY_DAYS to limit their lifetime."
+  []
+  (let [days-str (cfg/config :api-token-expiry-days)
+        days (when days-str (try (Integer/parseInt (str days-str)) (catch Exception _ nil)))]
+    (when (and days (pos? days))
+      (t/plus (t/now) (t/days days)))))
+
 (defn generate-api-token
   [user]
   (let [jti (swarmpit.uuid/uuid)
-        token (token/generate-jwt user {:exp nil :jti jti :iss "swarmpit-api"})]
-    (cc/set-api-token user {:jti jti :mask (subs token (- (count token) 5))})
-    {:token token}))
+        exp (api-token-expiry)
+        token (token/generate-jwt user {:exp exp
+                                        :jti jti
+                                        :iss "swarmpit-api"})]
+    (cc/set-api-token user (cond-> {:jti  jti
+                                    :mask (subs token (- (count token) 5))}
+                             exp (assoc :expiresAt (str exp))))
+    (cond-> {:token token}
+      exp (assoc :expiresAt (str exp)))))
 
 (defn remove-api-token
   [user]
