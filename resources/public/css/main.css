@@ -145,6 +145,37 @@ a {
     z-index: 1;
 }
 
+.Swarmpit-popper .MuiPaper-root,
+.MuiMenu-paper,
+.MuiPopover-paper,
+.MuiAutocomplete-paper {
+    border-radius: 14px !important;
+    border: 1px solid rgba(0, 0, 0, 0.12);
+}
+
+html.dark .Swarmpit-popper .MuiPaper-root,
+html.dark .MuiMenu-paper,
+html.dark .MuiPopover-paper,
+html.dark .MuiAutocomplete-paper {
+    border-color: rgba(255, 255, 255, 0.12);
+}
+
+.MuiButtonGroup-contained,
+.MuiButtonGroup-outlined,
+.MuiButtonGroup-text {
+    border-radius: 14px !important;
+}
+
+.MuiButtonGroup-root > .MuiButton-root:first-child {
+    border-top-left-radius: 14px !important;
+    border-bottom-left-radius: 14px !important;
+}
+
+.MuiButtonGroup-root > .MuiButton-root:last-child {
+    border-top-right-radius: 14px !important;
+    border-bottom-right-radius: 14px !important;
+}
+
 .Swarmpit-popover {
     padding: 1em 2em;
 }
@@ -589,6 +620,9 @@ a {
     font-weight: 400;
     font-family: "Roboto", "Helvetica", "Arial", sans-serif;
     line-height: 1.375em;
+    display: block;
+    text-align: center;
+    margin-top: 12px;
 }
 
 .Swarmpit-login-logo {
@@ -633,7 +667,7 @@ html.dark .Swarmpit-login-instance {
     align-items: center;
     padding: 42px 42px 36px;
     border: 1px solid #eaeced;
-    border-radius: 14px;
+    border-radius: 18px !important;
 }
 
 .Swarmpit-login-avatar {
@@ -1795,7 +1829,12 @@ html.dark .Swarmpit-repo-registry-url {
 }
 
 html.dark .Swarmpit-drawer-category-text {
-    color: rgba(255, 255, 255, 0.40);
+    color: rgba(255, 255, 255, 0.75) !important;
+    opacity: 1 !important;
+}
+
+html.dark .Swarmpit-drawer-category.Mui-disabled {
+    opacity: 1 !important;
 }
 
 html.dark .Swarmpit-label {
@@ -1864,6 +1903,33 @@ html.dark .MuiButton-outlined {
 html.dark .MuiButton-contained.MuiButton-colorDefault {
     background-color: #424242;
     color: rgba(255, 255, 255, 0.87);
+}
+
+html.dark .MuiButton-textPrimary {
+    color: #b39ddb;
+}
+
+html.dark .MuiButton-textPrimary:hover {
+    background-color: rgba(179, 157, 219, 0.08);
+}
+
+html.dark .MuiButton-outlinedPrimary {
+    color: #b39ddb;
+    border-color: rgba(179, 157, 219, 0.5);
+}
+
+html.dark .MuiButton-outlinedPrimary:hover {
+    color: #b39ddb;
+    border-color: #b39ddb;
+    background-color: rgba(179, 157, 219, 0.08);
+}
+
+html.dark .MuiTab-textColorPrimary.Mui-selected {
+    color: #b39ddb;
+}
+
+html.dark .MuiTabs-indicator {
+    background-color: #b39ddb;
 }
 
 
@@ -1941,8 +2007,13 @@ html.dark .MuiChip-deleteIcon:hover {
 }
 
 html.dark .MuiMenu-paper,
-html.dark .MuiPopover-paper {
+html.dark .MuiPopover-paper,
+html.dark .MuiAutocomplete-paper {
     background-color: #2d2d2d;
+}
+
+html.dark .MuiDrawer-paper {
+    background-color: #1e1e1e;
 }
 
 html.dark .MuiMenuItem-root:hover {
