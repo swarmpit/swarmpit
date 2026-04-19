@@ -123,7 +123,9 @@
                                       ;; override ancient jna 3.2.2 (x86-only) pulled in transitively
                                       ;; by figwheel-sidecar → hawk → barbary-watchservice; needed
                                       ;; for apple silicon
-                                      [net.java.dev.jna/jna "5.14.0"]]
+                                      [net.java.dev.jna/jna "5.14.0"]
+                                      ;; clj-kondo hooks for rum (defc/defcs/defcc)
+                                      [io.github.clj-kondo/config-rum-rum "1.0.0"]]
                        :plugins      [[lein-figwheel "0.5.20"]
                                       [lein-doo "0.1.6"]]
                        :source-paths ["dev"]
