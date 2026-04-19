@@ -134,7 +134,7 @@
           username (:username user)
           password (:password user)]
       (cond
-        (> 4 (count username)) (resp-error 400 "User must be at least 4 characters long.")
+        (> 3 (count username)) (resp-error 400 "User must be at least 3 characters long.")
         (> 8 (count password)) (resp-error 400 "Password must be at least 8 characters long.")
         :else (let [response (api/create-user user)]
                 (if (some? response)
@@ -175,7 +175,7 @@
 (defn user-create
   [{{:keys [body]} :parameters}]
   (let [payload (assoc body :type "user")]
-    (validate-parameters! (> (count (:username payload)) 3) "Username must be at least 4 characters long")
+    (validate-parameters! (>= (count (:username payload)) 3) "Username must be at least 3 characters long")
     (validate-parameters! (> (count (:password payload)) 3) "Password must be at least 4 characters long")
     (let [response (api/create-user payload)]
       (if (some? response)

@@ -56,64 +56,125 @@
       (comp/list-item-text
         {:primary "Users"}))))
 
+(defn- system-dark? []
+  (and (exists? js/window.matchMedia)
+       (.-matches (.matchMedia js/window "(prefers-color-scheme: dark)"))))
+
+(defn- resolve-theme [pref]
+  (if (= pref "auto")
+    (if (system-dark?) "dark" "light")
+    pref))
+
+(defn- set-theme! [pref]
+  (let [resolved (resolve-theme pref)]
+    (if (= pref "auto")
+      (storage/remove "theme")
+      (storage/add "theme" pref))
+    (reset! comp/theme-mode resolved)
+    (state/update-value [:theme] resolved state/layout-cursor)))
+
+(defn- theme-icon [pref]
+  (case pref
+    "light" (icon/brightness-7 {:fontSize "small"})
+    "dark"  (comp/svg {:fontSize "small"} icon/dark-mode-path)
+    (comp/svg {:fontSize "small"} icon/contrast-path)))
+
+(defn- theme-submenu [open]
+  (comp/collapse
+    {:in            @open
+     :timeout       "auto"
+     :unmountOnExit true}
+    (map
+      (fn [[pref label]]
+        (comp/menu-item
+          {:key      (str "theme-" pref)
+           :className      "nested"
+           :disablePadding true
+           :button   true
+           :onClick  (fn []
+                       (set-theme! pref)
+                       (state/update-value [:menuAnchorEl] nil state/layout-cursor))}
+          (comp/list-item-icon
+            {:className "Swarmpit-appbar-menu-icon"}
+            (theme-icon pref))
+          (comp/list-item-text
+            {:primary label})))
+      [["light" "Light"]
+       ["dark"  "Dark"]
+       ["auto"  "Auto"]])))
+
 (rum/defcs menu < rum/static
                   (rum/local false :admin/open)
-  [{open :admin/open}]
-  (comp/menu-list
-    {:disablePadding true}
-    (comp/menu-item
-      {:button  true
-       :onClick (fn []
-                  (state/update-value [:menuAnchorEl] nil state/layout-cursor)
-                  (dispatch!
-                    (routes/path-for-frontend :account-settings)))}
-      (comp/list-item-icon
-        {:className "Swarmpit-appbar-menu-icon"}
-        (icon/settings {:fontSize "small"}))
-      (comp/list-item-text
-        {:primary "Settings"}))
-    (when (storage/admin?)
+                  (rum/local false :theme/open)
+  [{admin-open :admin/open theme-open :theme/open}]
+  (let [pref (or (storage/get "theme") "auto")]
+    (comp/menu-list
+      {:disablePadding true}
       (comp/menu-item
         {:button  true
-         :onClick #(reset! open (not @open))}
+         :onClick (fn []
+                    (state/update-value [:menuAnchorEl] nil state/layout-cursor)
+                    (dispatch!
+                      (routes/path-for-frontend :account-settings)))}
         (comp/list-item-icon
           {:className "Swarmpit-appbar-menu-icon"}
-          (icon/supervisor-account {:fontSize "small"}))
+          (icon/settings {:fontSize "small"}))
         (comp/list-item-text
-          {:primary "Admin"})
-        (if @open
-          (icon/expand-less)
-          (icon/expand-more))))
-    (admin-menu open)
-    (comp/link
-      {:href   "https://github.com/swarmpit/swarmpit/issues/new"
-       :color  "inherit"
-       :target "_blank"}
+          {:primary "Settings"}))
       (comp/menu-item
-        {:button true}
+        {:button  true
+         :onClick #(reset! theme-open (not @theme-open))}
         (comp/list-item-icon
           {:className "Swarmpit-appbar-menu-icon"}
-          (icon/error-out {:fontSize "small"}))
+          (theme-icon pref))
         (comp/list-item-text
-          {:primary "Report issue"})))
-    (comp/divider)
-    (comp/menu-item
-      {:button  true
-       :onClick (fn []
-                  (ajax/post
-                    (routes/path-for-backend :logout)
-                    {:on-success (fn [_])
-                     :on-error   (fn [_])})
-                  (storage/remove "token")
-                  (eventsource/close!)
-                  (state/update-value [:menuAnchorEl] nil state/layout-cursor)
-                  (dispatch!
-                    (routes/path-for-frontend :login)))}
-      (comp/list-item-icon
-        {:className "Swarmpit-appbar-menu-icon"}
-        (icon/exit {:fontSize "small"}))
-      (comp/list-item-text
-        {:primary "Sign out"}))))
+          {:primary "Theme"})
+        (if @theme-open
+          (icon/expand-less)
+          (icon/expand-more)))
+      (theme-submenu theme-open)
+      (when (storage/admin?)
+        (comp/menu-item
+          {:button  true
+           :onClick #(reset! admin-open (not @admin-open))}
+          (comp/list-item-icon
+            {:className "Swarmpit-appbar-menu-icon"}
+            (icon/supervisor-account {:fontSize "small"}))
+          (comp/list-item-text
+            {:primary "Admin"})
+          (if @admin-open
+            (icon/expand-less)
+            (icon/expand-more))))
+      (admin-menu admin-open)
+      (comp/link
+        {:href   "https://github.com/swarmpit/swarmpit/issues/new"
+         :color  "inherit"
+         :target "_blank"}
+        (comp/menu-item
+          {:button true}
+          (comp/list-item-icon
+            {:className "Swarmpit-appbar-menu-icon"}
+            (icon/error-out {:fontSize "small"}))
+          (comp/list-item-text
+            {:primary "Report issue"})))
+      (comp/divider)
+      (comp/menu-item
+        {:button  true
+         :onClick (fn []
+                    (ajax/post
+                      (routes/path-for-backend :logout)
+                      {:on-success (fn [_])
+                       :on-error   (fn [_])})
+                    (storage/remove "token")
+                    (eventsource/close!)
+                    (state/update-value [:menuAnchorEl] nil state/layout-cursor)
+                    (dispatch!
+                      (routes/path-for-frontend :login)))}
+        (comp/list-item-icon
+          {:className "Swarmpit-appbar-menu-icon"}
+          (icon/exit {:fontSize "small"}))
+        (comp/list-item-text
+          {:primary "Sign out"})))))
 
 (defn badge [username]
   (when username
@@ -274,47 +335,6 @@
              (reset! appbar-elevation 0)
              (reset! appbar-elevation 4))))) state)})
 
-(defn- system-dark? []
-  (and (exists? js/window.matchMedia)
-       (.-matches (.matchMedia js/window "(prefers-color-scheme: dark)"))))
-
-(defn- resolve-theme [pref]
-  (if (= pref "auto")
-    (if (system-dark?) "dark" "light")
-    pref))
-
-(defn- toggle-theme! []
-  (let [current (or (storage/get "theme") "auto")
-        next-pref (case current
-                    "light" "dark"
-                    "dark" "auto"
-                    "auto" "light"
-                    "light")
-        resolved (resolve-theme next-pref)]
-    (if (= next-pref "auto")
-      (storage/remove "theme")
-      (storage/add "theme" next-pref))
-    (reset! comp/theme-mode resolved)
-    (state/update-value [:theme] resolved state/layout-cursor)))
-
-(rum/defc theme-toggle < rum/reactive []
-  (let [_ (rum/react comp/theme-mode)
-        pref (or (storage/get "theme") "auto")]
-    (comp/tooltip
-      {:title (case pref
-                "light" "Light mode"
-                "dark" "Dark mode"
-                "Auto mode")}
-      (comp/icon-button
-        {:key        "theme-toggle-btn"
-         :color      "inherit"
-         :aria-label "Toggle theme"
-         :onClick    toggle-theme!}
-        (case pref
-          "light" (icon/brightness-7 {})
-          "dark" (comp/svg {} icon/dark-mode-path)
-          (comp/svg {} icon/contrast-path))))))
-
 (rum/defc appbar < rum/reactive
                    mixin-on-scroll [{:keys [title subtitle search-fn actions]}]
   (let [{:keys [mobileSearchOpened menuAnchorEl mobileMoreAnchorEl version theme]} (state/react state/layout-cursor)
@@ -352,7 +372,6 @@
              (html [:div.grow])
              (appbar-desktop-section search-fn actions title)
              (appbar-mobile-section search-fn actions)
-             (theme-toggle)
              (user-menu menuAnchorEl)))
          (mobile-actions-menu actions mobileMoreAnchorEl)
          (mobile-search search-fn title mobileSearchOpened)]))))

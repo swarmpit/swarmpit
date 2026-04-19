@@ -74,7 +74,7 @@
           {:onClick   #(state/update-value [:filterOpen?] false state/form-state-cursor)
            :startIcon (icon/close {})
            :variant   "text"
-           :color     "default"} "Close"))
+           :color     "primary"} "Close"))
       comp
       (comp/box {:className "grow"})
       (comp/button
