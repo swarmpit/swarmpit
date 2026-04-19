@@ -1,0 +1,4 @@
+{:source-paths #{"src/clj" "src/cljs" "src/cljc" "test/clj" "test/cljc" "dev"}
+ :source-paths-ignore-regex ["resources/public/js/out.*"
+                             "target.*"
+                             "classes.*"]}
