@@ -21,7 +21,7 @@ else
     docker run -d \
       --publish 8888:8080 \
       --name swarmpitagent \
-      --env DOCKER_API_VERSION=1.40 \
+      --env DOCKER_API_VERSION=1.44 \
       --env EVENT_ENDPOINT=http://${HOST_IP}:3449/events \
       --env HEALTH_CHECK_ENDPOINT=http://${HOST_IP}:3449/version \
       --volume /var/run/docker.sock:/var/run/docker.sock \
