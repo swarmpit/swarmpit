@@ -1,6 +1,7 @@
 {:lint-as {rum.core/defc  clojure.core/defn
            rum.core/defcs clojure.core/defn
            rum.core/defcc clojure.core/defn}
+ :linters {:refer-all {:level :off}}
  :output  {:exclude-files ["resources/public/js/out"
                            "target"
                            "classes"]}}
