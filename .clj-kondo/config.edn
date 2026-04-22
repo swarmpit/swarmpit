@@ -1,0 +1,6 @@
+{:lint-as {net.cgrand.enlive-html/deftemplate clojure.core/defn}
+ :linters {:refer-all         {:level :off}
+           :unresolved-symbol {:exclude [(org.httpkit.server/with-channel)]}}
+ :output  {:exclude-files ["resources/public/js/out"
+                           "target"
+                           "classes"]}}

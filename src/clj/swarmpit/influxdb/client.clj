@@ -185,15 +185,16 @@
 
 (defn read-service-stats
   [services]
-  (let [cond (->> services
-                  (map #(str "service = '" % "'"))
-                  (str/join " OR "))]
-    (read-doc
-      (str
-        "SELECT cpu, memory
-          FROM swarmpit.a_day.downsampled_services
-          WHERE " cond "
-          GROUP BY service"))))
+  (when (seq services)
+    (let [cond (->> services
+                    (map #(str "service = '" % "'"))
+                    (str/join " OR "))]
+      (read-doc
+        (str
+          "SELECT cpu, memory
+            FROM swarmpit.a_day.downsampled_services
+            WHERE " cond "
+            GROUP BY service")))))
 
 (defn read-max-usage-service-stats
   []

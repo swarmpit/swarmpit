@@ -54,7 +54,7 @@
                  [com.cognitect.aws/sts "798.2.678.0"]
                  [org.yaml/snakeyaml "1.33"]
                  [org.flatland/ordered "1.5.9"]
-                 [com.github.jnr/jnr-unixsocket "0.38.14"]]
+                 [com.github.jnr/jnr-unixsocket "0.38.22"]]
   :plugins [[lein-cljsbuild "1.1.8"]
             [lein-environ "1.1.0"]
             [lein-pprint "1.1.2"]
@@ -119,7 +119,13 @@
                                       [figwheel-sidecar "0.5.20"]
                                       [cider/piggieback "0.4.1"]
                                       [binaryage/devtools "0.9.10"]
-                                      [criterium "0.4.4"]]
+                                      [criterium "0.4.4"]
+                                      ;; override ancient jna 3.2.2 (x86-only) pulled in transitively
+                                      ;; by figwheel-sidecar → hawk → barbary-watchservice; needed
+                                      ;; for apple silicon
+                                      [net.java.dev.jna/jna "5.14.0"]
+                                      ;; clj-kondo hooks for rum (defc/defcs/defcc)
+                                      [io.github.clj-kondo/config-rum-rum "1.0.0"]]
                        :plugins      [[lein-figwheel "0.5.20"]
                                       [lein-doo "0.1.6"]]
                        :source-paths ["dev"]
