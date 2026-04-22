@@ -47,6 +47,11 @@
      :post (array-map
              :no-doc true
              #?@(:clj [:handler handler/login]))}]
+   ["/logout"
+    {:name :logout
+     :post (array-map
+             :no-doc true
+             #?@(:clj [:handler handler/logout]))}]
    ["/slt"
     {:name :slt
      :get  (array-map

@@ -1,6 +1,7 @@
 (ns swarmpit.component.header
   (:require [material.components :as comp]
             [material.icon :as icon]
+            [swarmpit.ajax :as ajax]
             [swarmpit.routes :as routes]
             [swarmpit.storage :as storage]
             [swarmpit.event.source :as eventsource]
@@ -160,6 +161,10 @@
       (comp/menu-item
         {:button  true
          :onClick (fn []
+                    (ajax/post
+                      (routes/path-for-backend :logout)
+                      {:on-success (fn [_])
+                       :on-error   (fn [_])})
                     (storage/remove "token")
                     (eventsource/close!)
                     (state/update-value [:menuAnchorEl] nil state/layout-cursor)

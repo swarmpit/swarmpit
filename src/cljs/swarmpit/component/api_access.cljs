@@ -61,26 +61,41 @@
                        :style    {:fontFamily "monospace"}}
      :InputLabelProps {:shrink true}}))
 
+(defn- format-expiry [iso]
+  (try
+    (.toLocaleString (js/Date. iso))
+    (catch :default _ iso)))
+
+(defn- expiry-line [api-token]
+  (comp/typography
+    {:key       "expiry"
+     :className "Swarmpit-fcard-message"
+     :variant   "caption"}
+    (if-let [exp (:expiresAt api-token)]
+      (str "Expires: " (format-expiry exp))
+      "This token does not expire.")))
+
 (defn old-token-form [api-token]
   [(comp/typography {:key       "info"
                      :className "Swarmpit-fcard-message"
                      :variant   "body2"}
                     ["Token for this user was already created. If you lost your token, please generate new one and "
                      "the former token will be revoked."])
-   (form-token (str "Bearer ..." (:mask api-token)))])
+   (form-token (str "Bearer ..." (:mask api-token)))
+   (expiry-line api-token)])
 
 (defn new-token-form [token]
   [(comp/typography {:key       "notice"
                      :className "Swarmpit-fcard-message"
                      :variant   "body2"} "Copy your token and store it safely, value will be displayed only once.")
-   (form-token (:token token))])
+   (form-token (:token token))
+   (expiry-line token)])
 
 (defn no-token-form []
   [(comp/typography {:key       "notoken"
                      :className "Swarmpit-fcard-message"
                      :variant   "body2"}
-                    "Your user doesn't have any API token."
-                    "New token doesn't expire, but it can be revoked or regenenerated.")])
+                    "Your user doesn't have any API token. A new token can be revoked or regenerated at any time.")])
 
 (rum/defc form < rum/reactive
                  mixin-init-form []

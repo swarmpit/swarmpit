@@ -34,3 +34,7 @@ figwheel_server.log
 # emacs / os scratch
 \#*\#
 .\#*
+.settings
+.idea
+*.iml
+/.notes/

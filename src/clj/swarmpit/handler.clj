@@ -5,6 +5,7 @@
             [swarmpit.api :as api]
             [swarmpit.slt :as slt]
             [swarmpit.token :as token]
+            [swarmpit.token.blacklist :as blacklist]
             [swarmpit.stats :as stats]
             [swarmpit.version :as version]))
 
@@ -86,6 +87,14 @@
         (if (nil? user)
           (resp-unauthorized "The username or password you entered is incorrect.")
           (resp-ok {:token (token/generate-jwt user)}))))))
+
+;; Logout handler — revokes the JTI of the login JWT presented on this call
+
+(defn logout
+  [{{:keys [jti iss]} :identity}]
+  (when (and jti (not= iss "swarmpit-api"))
+    (blacklist/revoke! jti))
+  (resp-ok))
 
 ;; Password handler
 
