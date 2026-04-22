@@ -10,16 +10,15 @@
 
 (defn events
   [{:keys [parameters] :as request}]
-  (let [slt (get-in parameters [:query :slt])]
-    (if (slt/valid? slt)
-      (let [user (slt/user slt)
-            request (assoc-in request [:identity] user)]
+  (let [slt (get-in parameters [:query :slt])
+        user (slt/consume! slt)]
+    (if user
+      (let [request (assoc-in request [:identity] user)]
         (with-channel request channel
                       (send! channel {:status  200
-                                      :headers {"Content-Type"                "text/event-stream"
-                                                "Access-Control-Allow-Origin" "*"
-                                                "Cache-Control"               "no-cache"
-                                                "Connection"                  "keep-alive"}
+                                      :headers {"Content-Type"  "text/event-stream"
+                                                "Cache-Control" "no-cache"
+                                                "Connection"    "keep-alive"}
                                       :body    ":ok\n\n"} false)
                       (swap! channel/hub assoc channel request)
                       (on-close channel (fn [_]

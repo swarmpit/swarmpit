@@ -1,22 +1,40 @@
+# build artifacts
 *.class
 *.jar
 !/repo/**/*.jar
-/.lein-*
-/.cljs_rhino_repl/
-/.nrepl-port
-/.repl
-/checkouts/
 /classes/
-/lib/
-log
+/target/
 /out/
 /resources/public/js/**
-/target/
-figwheel_server.log
 pom.xml
 pom.xml.asc
+
+# lein / repl
+/.lein-*
+/.nrepl-port
+/.repl
+/.cljs_rhino_repl/
+/checkouts/
+/lib/
+
+# editor / tooling — keep config, drop caches
+/.calva
+/.clj-kondo/*
+!/.clj-kondo/config.edn
+/.lsp/*
+!/.lsp/config.edn
+.settings
+.idea
+*.iml
+
+# logs
+log
+figwheel_server.log
+
+# emacs / os scratch
 \#*\#
 .\#*
 .settings
 .idea
 *.iml
+/.notes/

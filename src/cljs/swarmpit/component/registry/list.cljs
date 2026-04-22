@@ -13,8 +13,7 @@
             [swarmpit.url :refer [dispatch!]]
             [sablono.core :refer-macros [html]]
             [cljs.core :as core]
-            [rum.core :as rum]
-            [swarmpit.storage :as storage]))
+            [rum.core :as rum]))
 
 (enable-console-print!)
 

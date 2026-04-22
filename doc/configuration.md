@@ -30,6 +30,10 @@ Default is `nil`.
 Swarmpit working directory location.
 Default is `/tmp`.
 
+## `SWARMPIT_API_TOKEN_EXPIRY_DAYS`
+Lifetime in days for personal API tokens generated in the UI. `nil` (the default) keeps the legacy behaviour where API tokens never expire. Set to a positive integer (e.g. `90`) to force rotation.
+Default is `nil`.
+
 ## `SWARMPIT_INSTANCE_NAME`
 Custom name shown in place of the swarmpit logo in the sidebar and top bar, and prepended to the browser tab title as `{instance_name} :: {page} :: swarmpit`. Useful when running multiple swarmpit instances against different clusters so you can tell them apart at a glance.
 Default is `nil` (shows the swarmpit logo).
