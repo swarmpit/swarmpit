@@ -123,13 +123,6 @@ Swarmpit is written purely in Clojure and utilizes React on front-end. CouchDB i
 
 Everything about building, issue reporting and setting up development environment can be found in [CONTRIBUTING.md](CONTRIBUTING.md)
 
-## Demo
-
-[![Try in PWD](https://cdn.rawgit.com/play-with-docker/stacks/cff22438/assets/images/button.png)](http://play-with-docker.com?stack=https://raw.githubusercontent.com/swarmpit/swarmpit/master/docker-compose.yml) 
-
-Deploys Swarmpit to play-with-docker sandbox. Please wait few moments till application is up and running before accessing
-port 888. Initialization might take a few seconds.
-
 ## Contributors
 
 ### Code Contributors
