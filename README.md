@@ -17,7 +17,7 @@ Swarmpit doesn't compromise your privacy as it is completely self-hosted and wil
 
 More details about future and past releases can be found in [ROADMAP.md](ROADMAP.md)
 
-<img src="https://raw.githubusercontent.com/swarmpit/swarmpit/master/resources/public/imac.png">
+<img src="https://swarmpit.io/img/bg.png">
 
 
 [![opencollective](https://opencollective.com/swarmpit/tiers/backers.svg?avatarHeight=50)](https://opencollective.com/swarmpit)
