@@ -3,7 +3,6 @@
 Lightweight AI-friendly Docker Swarm management
 
 [![version](https://img.shields.io/github/release-pre/swarmpit/swarmpit.svg)](https://github.com/swarmpit/swarmpit/releases) 
-[![gitter](https://badges.gitter.im/trezor/community.svg)](https://gitter.im/swarmpit_io/swarmpit)
 [![Test, Build & Deploy](https://github.com/swarmpit/swarmpit/actions/workflows/build.yml/badge.svg)](https://github.com/swarmpit/swarmpit/actions/workflows/build.yml)
 [![PRs Welcome](https://img.shields.io/badge/PRs-welcome-brightgreen.svg)](https://github.com/swarmpit/swarmpit/pulls)
 [![Financial Contributors on Open Collective](https://opencollective.com/swarmpit/all/badge.svg?label=financial+contributors)](https://opencollective.com/swarmpit) 
