@@ -1293,6 +1293,99 @@ html.dark .Swarmpit-login-instance {
     border: 1px solid rgba(0, 0, 0, 0.23) !important;
 }
 
+.cm-diff-changed {
+    background-color: rgba(46, 160, 67, 0.22);
+}
+
+html.dark .cm-diff-changed {
+    background-color: rgba(63, 185, 80, 0.18);
+}
+
+.CodeMirror-gutter.cm-diff-gutter {
+    width: 14px;
+}
+
+.cm-diff-deleted-marker {
+    position: relative;
+    display: inline-block;
+    width: 14px;
+    text-align: center;
+    line-height: 1;
+    font-weight: bold;
+    color: #d32f2f;
+    cursor: pointer;
+    user-select: none;
+}
+
+.cm-diff-deleted-marker:hover {
+    background-color: rgba(244, 67, 54, 0.20);
+}
+
+.cm-diff-deleted-marker::before,
+.cm-diff-deleted-marker::after {
+    position: absolute;
+    z-index: 1300;
+    display: none;
+    pointer-events: none;
+}
+
+.cm-diff-deleted-marker::before {
+    content: attr(data-count) " line(s) deleted · click to restore";
+    left: 22px;
+    top: -22px;
+    padding: 3px 8px;
+    background: #d32f2f;
+    color: #fff;
+    font-family: "Roboto", "Helvetica", "Arial", sans-serif;
+    font-size: 10px;
+    font-weight: 500;
+    border-radius: 3px;
+    white-space: nowrap;
+}
+
+.cm-diff-deleted-marker::after {
+    content: attr(data-tooltip);
+    left: 22px;
+    top: 0;
+    padding: 8px 12px;
+    min-width: 320px;
+    max-width: 800px;
+    max-height: 360px;
+    overflow: hidden;
+    background: #263238;
+    color: #ffebee;
+    font-family: "SF Mono", "Consolas", "Monaco", "Courier New", monospace;
+    font-size: 12px;
+    line-height: 1.45;
+    font-weight: normal;
+    white-space: pre;
+    tab-size: 2;
+    -moz-tab-size: 2;
+    border-left: 3px solid #d32f2f;
+    border-radius: 4px;
+    box-shadow: 0 6px 18px rgba(0, 0, 0, 0.40);
+    text-align: left;
+    text-decoration: none;
+}
+
+.cm-diff-deleted-marker:hover::before,
+.cm-diff-deleted-marker:hover::after {
+    display: block;
+}
+
+html.dark .cm-diff-deleted-marker {
+    color: #ff867c;
+}
+
+html.dark .cm-diff-deleted-marker:hover {
+    background-color: rgba(244, 67, 54, 0.25);
+}
+
+html.dark .cm-diff-deleted-marker::after {
+    background: #1a1a1a;
+    color: #ffcdd2;
+}
+
 .Swarmpit-codemirror > div {
     padding: 0 !important;
 }

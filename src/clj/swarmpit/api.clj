@@ -1177,6 +1177,47 @@
            (->compose)
            (->yaml)))
 
+(def ^:private max-history 20)
+
+(defn append-history!
+  "Append an entry describing what just changed in the given stack.
+   Reconstructs the live compose via stack-compose, dedups against the
+   previous entry, caps at max-history. Silently skips when no stackfile
+   exists (e.g. services deployed outside swarmpit) or when the state is
+   unchanged vs the last entry."
+  [stack-name {:keys [by trigger]}]
+  (when stack-name
+    (when-let [stackfile-origin (cc/stackfile stack-name)]
+      (try
+        (when-let [compose (stack-compose stack-name)]
+          (let [history (or (:history stackfile-origin) [])
+                last-compose (some-> history last :spec :compose)]
+            (when (not= compose last-compose)
+              (let [entry {:at      (str (java.time.Instant/now))
+                           :by      (or by "system")
+                           :trigger trigger
+                           :spec    {:compose compose}}
+                    new-history (->> (conj history entry)
+                                     (take-last max-history)
+                                     (vec))]
+                (cc/update-stackfile stackfile-origin {:history new-history})))))
+        (catch Exception e
+          (log/warn "Failed to append stack history for" stack-name ":" (.getMessage e)))))))
+
+(defn- service-stack-name
+  "Derive stack name from a live service spec, or nil if the service
+   isn't part of a swarm stack."
+  [service-id]
+  (try
+    (get-in (dc/service service-id) [:Spec :Labels :com.docker.stack.namespace])
+    (catch Exception _ nil)))
+
+(defn- service-name-of
+  [service-id]
+  (try
+    (get-in (dc/service service-id) [:Spec :Name])
+    (catch Exception _ nil)))
+
 (defn deployed-stacks
   []
   (->> (dissoc (group-by :stack (services)) nil)

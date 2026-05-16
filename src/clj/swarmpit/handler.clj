@@ -236,11 +236,20 @@
     (->> (api/create-service owner body)
          (resp-created))))
 
+(defn- record-service-history!
+  [service-id owner kind]
+  (api/append-history!
+    (#'api/service-stack-name service-id)
+    {:by      owner
+     :trigger {:kind    kind
+               :service (#'api/service-name-of service-id)}}))
+
 (defn service-update
   [{{:keys [body path]} :parameters
     {:keys [usr]}       :identity}]
   (let [owner (:username usr)]
     (api/update-service owner (:id path) body)
+    (record-service-history! (:id path) owner "service-update")
     (resp-ok)))
 
 (defn service-redeploy
@@ -248,6 +257,7 @@
     {:keys [usr]}        :identity}]
   (let [owner (:username usr)]
     (api/redeploy-service owner (:id path) (:tag query))
+    (record-service-history! (:id path) owner "service-redeploy")
     (resp-accepted)))
 
 (defn service-rollback
@@ -255,6 +265,7 @@
     {:keys [usr]}  :identity}]
   (let [owner (:username usr)]
     (api/rollback-service owner (:id path))
+    (record-service-history! (:id path) owner "service-rollback")
     (resp-accepted)))
 
 (defn service-stop
@@ -736,6 +747,7 @@
     (if (some? (api/stack (:name body)))
       (resp-error 400 "Stack already exist.")
       (do (api/create-stack owner body)
+          (api/append-history! (:name body) {:by owner :trigger {:kind "stack-create"}})
           (resp-created)))))
 
 (defn stack-update
@@ -746,6 +758,7 @@
               (:name body))
       (resp-error 400 "Stack invalid.")
       (do (api/update-stack owner body)
+          (api/append-history! (:name body) {:by owner :trigger {:kind "stack-update"}})
           (resp-ok)))))
 
 (defn stack-redeploy
@@ -753,6 +766,7 @@
     {:keys [usr]}  :identity}]
   (let [owner (:username usr)]
     (api/redeploy-stack owner (:name path))
+    (api/append-history! (:name path) {:by owner :trigger {:kind "stack-redeploy"}})
     (resp-ok)))
 
 (defn stack-rollback
@@ -760,6 +774,7 @@
     {:keys [usr]}  :identity}]
   (let [owner (:username usr)]
     (api/rollback-stack owner (:name path))
+    (api/append-history! (:name path) {:by owner :trigger {:kind "stack-rollback"}})
     (resp-ok)))
 
 (defn stack-delete

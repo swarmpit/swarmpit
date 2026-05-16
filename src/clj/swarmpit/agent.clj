@@ -13,6 +13,7 @@
     (doseq [service services]
       (let [id (:id service)
             name (:serviceName service)
+            stack (:stack service)
             repository (:repository service)]
         (try
           (let [current-digest (:imageDigest repository)
@@ -22,6 +23,9 @@
             (when (not= current-digest
                         latest-digest)
               (api/redeploy-service nil id nil latest-digest)
+              (api/append-history! stack {:by      "agent"
+                                          :trigger {:kind    "auto-redeploy"
+                                                    :service name}})
               (info "Service" id (str "(" name ")") "autoredeploy fired! DIGEST:" (str "[" current-digest "] -> [" latest-digest "]"))))
           (catch ExceptionInfo e
             (error "Service" id (str "(" name ")") "autoredeploy failed!" (ex-data e))))))))

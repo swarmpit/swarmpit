@@ -23,7 +23,7 @@
 
 (defn yaml
   [editor-id]
-  (default editor-id {:gutters ["CodeMirror-lint-markers"]
+  (default editor-id {:gutters ["CodeMirror-lint-markers" "cm-diff-gutter"]
                       :lint    true
                       :mode    "yaml"}))
 
