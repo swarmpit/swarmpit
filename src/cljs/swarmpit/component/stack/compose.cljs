@@ -162,7 +162,10 @@
       (clear-diff-gutters! editor)
       (when (and baseline (not (empty? baseline)))
         (let [cur   (vec (for [i (range n)] (.getLine editor i)))
-              base  (clojure.string/split-lines baseline)
+              ;; -1 keeps the trailing empty string, which CodeMirror also has
+              ;; as its last line — split-lines drops it and every diff then
+              ;; reports a phantom change on the final line
+              base  (vec (clojure.string/split baseline #"\n" -1))
               {:keys [added chunks]} (lcs-script base cur)
               store (aget editor "__diffDeletions")]
           (doseq [i added]
