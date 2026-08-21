@@ -3,7 +3,7 @@
             [clojure.spec.alpha :as s]
             [spec-tools.data-spec :as ds]
             [swarmpit.routes-spec :as spec]
-            [swarmpit.utils :refer [->nano nano-> max-nano-seconds]]
+            [swarmpit.utils :refer [->nano nano-> max-nano-seconds max-mib]]
             [swarmpit.docker.engine.mapper.inbound :as inbound]
             [swarmpit.docker.engine.mapper.outbound :as outbound]))
 
@@ -49,6 +49,32 @@
 
   (testing "negative durations are rejected"
     (is (not (s/valid? healthcheck-spec {:interval -1})))))
+
+(def ^:private resources-spec (ds/spec ::resources spec/resources))
+
+(deftest resources-spec-test
+  (testing "ordinary limits are accepted"
+    (is (s/valid? resources-spec {:cpu 0 :memory 0}))
+    (is (s/valid? resources-spec {:cpu 0.5 :memory 512}))
+    (is (s/valid? resources-spec {:cpu 2 :memory 1024})))
+
+  (testing "cpu is bounded by the NanoCPUs conversion (#740)"
+    (is (s/valid? resources-spec {:cpu max-nano-seconds :memory 1}))
+    (is (not (s/valid? resources-spec {:cpu (inc max-nano-seconds) :memory 1}))))
+
+  (testing "memory is bounded by the MiB to bytes conversion (#740)"
+    (is (s/valid? resources-spec {:cpu 1 :memory max-mib}))
+    (is (not (s/valid? resources-spec {:cpu 1 :memory (inc max-mib)}))))
+
+  (testing "negative limits are rejected"
+    (is (not (s/valid? resources-spec {:cpu -1 :memory 1})))
+    (is (not (s/valid? resources-spec {:cpu 1 :memory -1}))))
+
+  (testing "an out-of-range cpu no longer reaches the long cast that 500s"
+    (is (thrown? IllegalArgumentException
+                 (outbound/->service-resource {:cpu (inc max-nano-seconds) :memory 1})))
+    (is (= {:NanoCPUs 500000000 :MemoryBytes 536870912}
+           (outbound/->service-resource {:cpu 0.5 :memory 512})))))
 
 (deftest healthcheck-roundtrip-test
   (let [domain {:test        ["CMD" "true"]

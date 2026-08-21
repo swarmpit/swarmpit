@@ -46,6 +46,33 @@
       #(do (is (nil? (stats/not-ready-reason)))
            (is (true? (stats/ready?)))))))
 
+(deftest cluster-test
+  (with-redefs [stats/hosts-resources (constantly {})
+                stats/cluster-cpus (constantly 8)]
+    (testing "averages across the active nodes that reported"
+      (with-state ["node1"] [node-stats]
+        #(let [{:keys [cpu memory disk]} (stats/cluster)]
+           (is (= 10 (:usage cpu)))
+           (is (= 20 (:usage memory)))
+           (is (= 200 (:used memory)))
+           (is (= 1000 (:total memory)))
+           (is (= 30 (:usage disk))))))
+
+    (testing "two nodes are averaged, not summed, for usage"
+      (with-state ["node1" "node2"]
+                  [node-stats (assoc node-stats :id "node2"
+                                                :cpu {:usedPercentage 30})]
+        #(let [{:keys [cpu memory]} (stats/cluster)]
+           (is (= 20 (:usage cpu)))
+           (is (= 400 (:used memory))))))
+
+    (testing "no active node with stats yields zeroes instead of dividing by zero"
+      (with-state ["node2"] [node-stats]
+        #(let [{:keys [cpu memory disk]} (stats/cluster)]
+           (is (= 0 (:usage cpu)))
+           (is (= 0 (:usage memory)))
+           (is (= 0 (:usage disk))))))))
+
 (deftest store-to-cache-test
   (testing "a push without a node id is ignored rather than cached under nil"
     (with-state ["node1"] []

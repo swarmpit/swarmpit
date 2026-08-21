@@ -19,15 +19,9 @@
             repository (:repository service)]
         (try
           (let [current-digest (:imageDigest repository)
-                ;; same normalisation redeploy-service applies, otherwise
-                ;; untagged images 404 on every poll
                 tag (api/standardize-repository-tag (:tag repository))
                 latest-digest (api/repository-digest nil (:name repository) tag)]
             (cond
-              ;; An unresolvable upstream digest compared unequal on every poll,
-              ;; so the service got force-redeployed once a minute forever and
-              ;; its spec version never settled long enough to accept an api
-              ;; update. Do nothing until we can actually read a digest.
               (str/blank? latest-digest)
               (debug "Service" id (str "(" name ")") "autoredeploy skipped, upstream digest unresolved")
 

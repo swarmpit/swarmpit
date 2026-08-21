@@ -21,16 +21,13 @@
   true)
 
 (defn- agent-token
-  "Agent token off the request. Authorization middleware runs before the
-   parameters middleware, so :query-params is not populated yet."
   [{:keys [headers query-string]}]
   (or (get headers "x-swarmpit-agent-token")
       (let [params (codec/form-decode (or query-string ""))]
         (when (map? params) (get params "token")))))
 
 (defn- agent-access
-  "Stats/event ingestion. Released agents send no credentials at all, so this
-   stays open unless SWARMPIT_AGENT_TOKEN is configured."
+  "Agent event push. Open unless SWARMPIT_AGENT_TOKEN is configured."
   [request]
   (let [expected (config :agent-token)]
     (cond

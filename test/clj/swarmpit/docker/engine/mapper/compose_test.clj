@@ -133,3 +133,31 @@
                                            :placement     []
                                            :maxReplicas   1}})
                    [:deploy :placement :max_replicas_per_node]))))
+
+(deftest healthcheck-absent-renders-nothing
+  (is (nil? (:healthcheck (rendered {})))))
+
+(deftest healthcheck-durations-get-a-seconds-suffix
+  (is (= {:test         ["CMD" "true"]
+          :interval     "30s"
+          :timeout      "5s"
+          :start_period "120s"
+          :retries      3}
+         (into {} (:healthcheck (rendered {:healthcheck {:test        ["CMD" "true"]
+                                                         :interval    30
+                                                         :timeout     5
+                                                         :startPeriod 120
+                                                         :retries     3}}))))))
+
+(deftest healthcheck-omits-nil-durations-instead-of-rendering-bare-s
+  (let [r (:healthcheck (rendered {:healthcheck {:test ["CMD" "true"] :retries 3}}))]
+    (is (= ["CMD" "true"] (:test r)))
+    (is (= 3 (:retries r)))
+    (is (nil? (:interval r)))
+    (is (nil? (:timeout r)))
+    (is (nil? (:start_period r)))))
+
+(deftest healthcheck-keeps-compose-key-names
+  (let [r (:healthcheck (rendered {:healthcheck {:startPeriod 10}}))]
+    (is (= "10s" (:start_period r)))
+    (is (not (contains? r :startPeriod)))))

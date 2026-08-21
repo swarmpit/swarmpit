@@ -41,8 +41,7 @@
     :else (message/error (str (or (:error body) body "Server request failed")))))
 
 (defn- request-headers
-  "Merge caller headers over the stored auth token, dropping blank values so we
-   never put a literal `null` on the wire (breaks forward-auth proxies, #737)."
+  "Caller headers over the stored auth token, minus any blank value."
   [request]
   (->> (merge {"Authorization" (storage/auth-token)} (:headers request))
        (remove #(str/blank? (val %)))

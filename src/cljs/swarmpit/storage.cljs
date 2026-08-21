@@ -34,8 +34,7 @@
   (.removeItem storage key))
 
 (defn auth-token
-  "Get auth token from browser's localStorage. Nil when missing or blank.
-   `.setItem` stringifies, so a previously stored nil reads back as \"null\"."
+  "Get auth token from browser's localStorage. Nil unless usable."
   []
   (let [value (get "token")]
     (when-not (or (str/blank? value)

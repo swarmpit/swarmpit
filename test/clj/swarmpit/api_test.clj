@@ -4,6 +4,8 @@
             [swarmpit.api :as api :refer :all]
             [swarmpit.config :as cfg]
             [swarmpit.docker.engine.client :as dc]
+            [swarmpit.docker.engine.cli :as dcli]
+            [swarmpit.couchdb.client :as cc]
             [swarmpit.couchdb.mapper.outbound :refer [->password]]))
 
 (deftest password-check-test
@@ -85,4 +87,85 @@
 
   (testing "unpinned service with no resolvable digest stays unpinned"
     (is (= "nginx:1.2"
-           (redeployed-image {:current-digest nil :resolved-digest nil})))))
+           (redeployed-image {:current-digest nil :resolved-digest nil}))))
+
+  (testing "an absent ForceUpdate counter starts at 1 instead of NPEing"
+    (let [forced (atom nil)]
+      (with-redefs [dc/service (constantly {:Spec    {:Name "app"
+                                                      :Mode {:Replicated {:Replicas 1}}
+                                                      :TaskTemplate {:ContainerSpec {:Image "nginx:1.2"}}}
+                                            :Version {:Index 7}})
+                    dc/update-service (fn [_ _ _ s] (reset! forced (get-in s [:TaskTemplate :ForceUpdate])))
+                    api/repository-digest (constantly "sha256:bbb")]
+        (api/redeploy-service nil "svc1" nil nil))
+      (is (= 1 @forced)))))
+
+(deftest delete-stackfile-test
+  (testing "a missing doc is a no-op rather than DELETE /swarmpit/"
+    (let [deleted (atom [])]
+      (with-redefs [cc/stackfile (constantly nil)
+                    cc/delete-stackfile #(swap! deleted conj %)]
+        (is (nil? (api/delete-stackfile "external-stack"))))
+      (is (empty? @deleted))))
+
+  (testing "an existing doc is deleted"
+    (let [doc {:_id "abc" :_rev "1-x" :name "web"}
+          deleted (atom [])]
+      (with-redefs [cc/stackfile (constantly doc)
+                    cc/delete-stackfile #(swap! deleted conj %)]
+        (api/delete-stackfile "web"))
+      (is (= [doc] @deleted)))))
+
+(deftest deactivate-stack-test
+  (testing "a stack swarmpit deployed keeps its stored stackfile untouched (#741)"
+    (let [created (atom [])]
+      (with-redefs [cc/stackfile (constantly {:name "web" :spec {:compose "existing"}})
+                    api/stack-compose (fn [_] (throw (ex-info "must not be called" {})))
+                    api/create-stackfile #(swap! created conj %)
+                    dcli/stack-remove (constantly {:result "removed"})]
+        (is (= {:result "removed"} (api/deactivate-stack "web"))))
+      (is (empty? @created))))
+
+  (testing "a stack without a stackfile is snapshotted from live state first (#741)"
+    (let [events (atom [])]
+      (with-redefs [cc/stackfile (constantly nil)
+                    api/stack-compose (fn [_] "services:\n  web: {}\n")
+                    api/create-stackfile #(swap! events conj [:created %])
+                    dcli/stack-remove (fn [n] (swap! events conj [:removed n]) {:result "removed"})]
+        (api/deactivate-stack "web"))
+      (is (= [[:created {:name "web" :spec {:compose "services:\n  web: {}\n"}}]
+              [:removed "web"]]
+             @events)
+          "the snapshot must happen before the stack is removed")))
+
+  (testing "an unrenderable stack is still removed"
+    (let [removed (atom nil)]
+      (with-redefs [cc/stackfile (constantly nil)
+                    api/stack-compose (constantly nil)
+                    api/create-stackfile (fn [_] (throw (ex-info "must not be called" {})))
+                    dcli/stack-remove (fn [n] (reset! removed n) {:result "removed"})]
+        (api/deactivate-stack "web"))
+      (is (= "web" @removed)))))
+
+(deftest deployed-stacks-timestamps-test
+  (let [svc (fn [stack name created updated]
+              {:stack stack :serviceName name :createdAt created :updatedAt updated
+               :networks [] :mounts [] :configs [] :secrets []})]
+
+    (testing "stack times span the oldest create and newest update (#705)"
+      (with-redefs [api/services (constantly [(svc "web" "a" "2026-01-02T10:00:00Z" "2026-03-01T10:00:00Z")
+                                              (svc "web" "b" "2026-01-01T10:00:00Z" "2026-02-01T10:00:00Z")])]
+        (let [{:keys [createdAt updatedAt]} (first (api/deployed-stacks))]
+          (is (= "2026-01-01T10:00:00Z" createdAt))
+          (is (= "2026-03-01T10:00:00Z" updatedAt)))))
+
+    (testing "stacks are not conflated with each other"
+      (with-redefs [api/services (constantly [(svc "web" "a" "2026-01-01T10:00:00Z" "2026-01-01T10:00:00Z")
+                                              (svc "api" "b" "2026-05-01T10:00:00Z" "2026-05-01T10:00:00Z")])]
+        (let [by-name (into {} (map (juxt :stackName :createdAt) (api/deployed-stacks)))]
+          (is (= {"web" "2026-01-01T10:00:00Z"
+                  "api" "2026-05-01T10:00:00Z"} by-name)))))
+
+    (testing "services without a stack label are not a stack"
+      (with-redefs [api/services (constantly [(svc nil "loose" "2026-01-01T10:00:00Z" "2026-01-01T10:00:00Z")])]
+        (is (empty? (api/deployed-stacks)))))))

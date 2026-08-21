@@ -42,15 +42,14 @@
   (some? (config :influxdb-url)))
 
 (defn cached-active-hosts
-  "Cached agent stats belonging to nodes that are currently active"
+  "Cached stats of currently active nodes"
   []
   (let [active (active-hosts)]
     (filter #(contains? active (:id %)) (vals @cache))))
 
 (defn not-ready-reason
-  "Which readiness precondition fails, nil when statistics can be served"
+  "Failing readiness precondition, nil when statistics can be served"
   []
-  ;; cache first: it needs no docker call, so a broken socket still answers 400
   (cond
     (empty? @cache) :no-agent-data
     (empty? (active-hosts)) :no-active-nodes

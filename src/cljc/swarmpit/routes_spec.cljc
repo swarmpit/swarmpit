@@ -5,8 +5,6 @@
 
 ;; Parts
 
-;; Docker stores durations as int64 nanoseconds and cpu as int64 NanoCPUs, so a
-;; value above these bounds overflows during conversion and used to 500 (#740).
 (s/def ::duration-seconds (s/and number? #(not (neg? %)) #(<= % max-nano-seconds)))
 (s/def ::cpu-units (s/and number? #(not (neg? %)) #(<= % max-nano-seconds)))
 (s/def ::memory-mib (s/and number? #(not (neg? %)) #(<= % max-mib)))

@@ -534,8 +534,6 @@
 
 (defn delete-stackfile
   [stack-name]
-  ;; without the guard a missing doc turns into DELETE /swarmpit/, which couch
-  ;; answers with bad_request (or would read as "drop the database")
   (when-let [stackfile (cc/stackfile stack-name)]
     (cc/delete-stackfile stackfile)))
 
@@ -995,8 +993,6 @@
          current-digest (get-in service [:repository :imageDigest])
          effective-tag (standardize-repository-tag (or new-tag repository-tag))
          resolved-digest (or digest (repository-digest owner repository-name effective-tag))
-         ;; keep the existing pin when the registry lookup comes back empty,
-         ;; otherwise a failed lookup silently un-pins the service (#738)
          image-digest (if (str/blank? resolved-digest)
                         (when (= effective-tag repository-tag) current-digest)
                         resolved-digest)
@@ -1186,7 +1182,6 @@
            (->yaml)))
 
 (defn- stack-timestamp
-  "Oldest/newest timestamp across the stack services, nil when none carry one"
   [services k pick]
   (->> services
        (keep k)
@@ -1292,9 +1287,7 @@
   (dcli/stack-remove stack-name))
 
 (defn deactivate-stack
-  "Remove the stack from docker but keep a stackfile so it can be activated
-   again. Stacks swarmpit didn't deploy have none, so snapshot the live compose
-   first - otherwise deactivate would just be a delete (#741)."
+  "Remove the stack from docker, keeping a stackfile so it stays re-activatable."
   [stack-name]
   (when (nil? (stackfile stack-name))
     (when-let [compose (stack-compose stack-name)]
