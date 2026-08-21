@@ -41,6 +41,15 @@
    (ds/opt :node-dashboard)    [string?]
    (ds/opt :service-dashboard) [string?]})
 
+(def password-change
+  {:password                       string?
+   :new-password                   string?
+   (ds/opt :confirm-password)      string?})
+
+(def api-token
+  {:token              string?
+   (ds/opt :expiresAt) string?})
+
 (def stats
   {:hosts  number?
    :cpu    {:usage number?}
