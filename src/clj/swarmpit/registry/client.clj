@@ -109,7 +109,7 @@
   (let [response (execute-with-fallback {:method          method
                                          :url             (build-url registry (str "/" repository-name "/manifests/" repository-tag))
                                          :options         {:headers (merge (basic-auth registry)
-                                                                           {:Accept type})}
+                                                                           {:Accept (str/join ", " (get compatible-types type #{type}))})}
                                          :quiet-statuses  #{404}})
         response-type (get-in response [:headers :content-type])
         normalized-content-type (when response-type

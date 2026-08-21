@@ -62,10 +62,7 @@
                    (state/set-value
                      (if (= :stack-previous handler)
                        (set/rename-keys response {:previousSpec :spec}) response) state/form-value-cursor)
-                   (state/update-value [:previous?] (:previousSpec response) state/form-state-cursor)
-                   (state/update-value [:history]
-                                       (vec (reverse (:history response)))
-                                       state/form-state-cursor))}))
+                   (state/update-value [:previous?] (:previousSpec response) state/form-state-cursor))}))
 
 (defn- baseline-handler
   "Fetch the current engine state separately so the editor can diff against it
@@ -113,6 +110,7 @@
       (init-form-state)
       (init-form-value name)
       (stackfile-handler name handler)
+      (compose/history-handler name)
       (baseline-handler name))))
 
 (rum/defc form-edit < mixin-init-editor [{:keys [name spec]}

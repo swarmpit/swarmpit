@@ -3,7 +3,6 @@
 Lightweight AI-friendly Docker Swarm management
 
 [![version](https://img.shields.io/github/release-pre/swarmpit/swarmpit.svg)](https://github.com/swarmpit/swarmpit/releases) 
-[![gitter](https://badges.gitter.im/trezor/community.svg)](https://gitter.im/swarmpit_io/swarmpit)
 [![Test, Build & Deploy](https://github.com/swarmpit/swarmpit/actions/workflows/build.yml/badge.svg)](https://github.com/swarmpit/swarmpit/actions/workflows/build.yml)
 [![PRs Welcome](https://img.shields.io/badge/PRs-welcome-brightgreen.svg)](https://github.com/swarmpit/swarmpit/pulls)
 [![Financial Contributors on Open Collective](https://opencollective.com/swarmpit/all/badge.svg?label=financial+contributors)](https://opencollective.com/swarmpit) 
@@ -18,7 +17,7 @@ Swarmpit doesn't compromise your privacy as it is completely self-hosted and wil
 
 More details about future and past releases can be found in [ROADMAP.md](ROADMAP.md)
 
-<img src="https://raw.githubusercontent.com/swarmpit/swarmpit/master/resources/public/imac.png">
+<img src="https://swarmpit.io/img/bg.png">
 
 
 [![opencollective](https://opencollective.com/swarmpit/tiers/backers.svg?avatarHeight=50)](https://opencollective.com/swarmpit)
@@ -123,13 +122,6 @@ Refer to following [document](https://github.com/swarmpit/swarmpit/blob/master/d
 Swarmpit is written purely in Clojure and utilizes React on front-end. CouchDB is used to persist application data & InfluxDB for cluster statistics.
 
 Everything about building, issue reporting and setting up development environment can be found in [CONTRIBUTING.md](CONTRIBUTING.md)
-
-## Demo
-
-[![Try in PWD](https://cdn.rawgit.com/play-with-docker/stacks/cff22438/assets/images/button.png)](http://play-with-docker.com?stack=https://raw.githubusercontent.com/swarmpit/swarmpit/master/docker-compose.yml) 
-
-Deploys Swarmpit to play-with-docker sandbox. Please wait few moments till application is up and running before accessing
-port 888. Initialization might take a few seconds.
 
 ## Contributors
 

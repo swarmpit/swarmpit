@@ -534,8 +534,8 @@
 
 (defn delete-stackfile
   [stack-name]
-  (-> (cc/stackfile stack-name)
-      (cc/delete-stackfile)))
+  (when-let [stackfile (cc/stackfile stack-name)]
+    (cc/delete-stackfile stackfile)))
 
 (defn- stackfile-json
   [stackfile-spec]
@@ -931,7 +931,7 @@
   [service]
   (assoc-in service [:secrets] (dmo/->service-secrets service (secrets))))
 
-(defn- standardize-repository-tag
+(defn standardize-repository-tag
   [repository-tag]
   (if (str/blank? repository-tag)
     "latest"
@@ -990,8 +990,12 @@
          service (dmi/->service service-origin)
          repository-name (get-in service [:repository :name])
          repository-tag (get-in service [:repository :tag])
+         current-digest (get-in service [:repository :imageDigest])
          effective-tag (standardize-repository-tag (or new-tag repository-tag))
-         image-digest (or digest (repository-digest owner repository-name effective-tag))
+         resolved-digest (or digest (repository-digest owner repository-name effective-tag))
+         image-digest (if (str/blank? resolved-digest)
+                        (when (= effective-tag repository-tag) current-digest)
+                        resolved-digest)
          image (if (str/blank? image-digest)
                  (str repository-name ":" effective-tag)
                  (str repository-name ":" effective-tag "@" image-digest))]
@@ -1001,7 +1005,7 @@
        (get-in service-origin [:Version :Index])
        (-> service-origin
            :Spec
-           (update-in [:TaskTemplate :ForceUpdate] inc)
+           (update-in [:TaskTemplate :ForceUpdate] (fnil inc 0))
            (assoc-in [:TaskTemplate :ContainerSpec :Image] image))))))
 
 (defn rollback-service
@@ -1177,14 +1181,20 @@
            (->compose)
            (->yaml)))
 
-(def ^:private max-history 20)
+(defn- stack-timestamp
+  [services k pick]
+  (->> services
+       (keep k)
+       (sort)
+       (pick)))
+
+(defn stack-history
+  [stack-name]
+  (vec (:history (cc/stackfile stack-name))))
 
 (defn append-history!
-  "Append an entry describing what just changed in the given stack.
-   Reconstructs the live compose via stack-compose, dedups against the
-   previous entry, caps at max-history. Silently skips when no stackfile
-   exists (e.g. services deployed outside swarmpit) or when the state is
-   unchanged vs the last entry."
+  "Append an entry describing what just changed in the given stack. Skips when
+   the stack has no stackfile or the compose is unchanged since the last entry."
   [stack-name {:keys [by trigger]}]
   (when stack-name
     (when-let [stackfile-origin (cc/stackfile stack-name)]
@@ -1196,23 +1206,19 @@
               (let [entry {:at      (str (java.time.Instant/now))
                            :by      (or by "system")
                            :trigger trigger
-                           :spec    {:compose compose}}
-                    new-history (->> (conj history entry)
-                                     (take-last max-history)
-                                     (vec))]
-                (cc/update-stackfile stackfile-origin {:history new-history})))))
+                           :spec    {:compose compose}}]
+                (cc/update-stackfile stackfile-origin {:history (conj history entry)})))))
         (catch Exception e
           (log/warn "Failed to append stack history for" stack-name ":" (.getMessage e)))))))
 
-(defn- service-stack-name
-  "Derive stack name from a live service spec, or nil if the service
-   isn't part of a swarm stack."
+(defn service-stack-name
+  "Stack name from a live service spec, or nil when the service isn't in a stack."
   [service-id]
   (try
     (get-in (dc/service service-id) [:Spec :Labels :com.docker.stack.namespace])
     (catch Exception _ nil)))
 
-(defn- service-name-of
+(defn service-name-of
   [service-id]
   (try
     (get-in (dc/service service-id) [:Spec :Name])
@@ -1236,6 +1242,8 @@
                   (when (not-empty stack-services)
                     {:stackName stack-name
                      :state     "deployed"
+                     :createdAt (stack-timestamp stack-services :createdAt first)
+                     :updatedAt (stack-timestamp stack-services :updatedAt last)
                      :services  stack-services
                      :networks  (distinct-resources stack-networks)
                      :volumes   (distinct-resources stack-volumes)
@@ -1313,3 +1321,12 @@
 (defn delete-stack
   [stack-name]
   (dcli/stack-remove stack-name))
+
+(defn deactivate-stack
+  "Remove the stack from docker, keeping a stackfile so it stays re-activatable."
+  [stack-name]
+  (when (nil? (stackfile stack-name))
+    (when-let [compose (stack-compose stack-name)]
+      (create-stackfile {:name stack-name
+                         :spec {:compose compose}})))
+  (delete-stack stack-name))

@@ -1,21 +1,34 @@
 (ns swarmpit.routes-spec
-  (:require [spec-tools.data-spec :as ds]))
+  (:require [clojure.spec.alpha :as s]
+            [spec-tools.data-spec :as ds]
+            [swarmpit.utils :refer [max-nano-seconds max-mib]]))
 
 ;; Parts
+
+(s/def ::duration-seconds (s/and number? #(not (neg? %)) #(<= % max-nano-seconds)))
+(s/def ::cpu-units (s/and number? #(not (neg? %)) #(<= % max-nano-seconds)))
+(s/def ::memory-mib (s/and number? #(not (neg? %)) #(<= % max-mib)))
 
 (def name-value
   {:name  string?
    :value string?})
 
 (def resources
-  {:cpu    number?
-   :memory number?})
+  {:cpu    ::cpu-units
+   :memory ::memory-mib})
 
 (def deploy
   {:parallelism   number?
-   :delay         number?
+   :delay         ::duration-seconds
    :order         string?
    :failureAction string?})
+
+(def healthcheck
+  {(ds/opt :test)        [string?]
+   (ds/opt :interval)    ::duration-seconds
+   (ds/opt :timeout)     ::duration-seconds
+   (ds/opt :startPeriod) ::duration-seconds
+   (ds/opt :retries)     number?})
 
 ;; Apis
 
@@ -27,6 +40,15 @@
    :email                      string?
    (ds/opt :node-dashboard)    [string?]
    (ds/opt :service-dashboard) [string?]})
+
+(def password-change
+  {:password                       string?
+   :new-password                   string?
+   (ds/opt :confirm-password)      string?})
+
+(def api-token
+  {:token              string?
+   (ds/opt :expiresAt) string?})
 
 (def stats
   {:hosts  number?
@@ -185,10 +207,7 @@
    :user            string?
    :dir             string?
    :tty             boolean?
-   :healthcheck     {:test     [string?]
-                     :interval number?
-                     :timeout  number?
-                     :retries  number?}
+   :healthcheck     healthcheck
    :logdriver       {:name string?
                      :opts [name-value]}
    :resources       {:reservation resources
@@ -202,7 +221,7 @@
                      :rollback        deploy
                      :rollbackAllowed boolean?
                      :autoredeploy    boolean?
-                     (ds/opt :maxReplicas) number?
+                     (ds/opt :maxReplicas) (ds/maybe number?)
                      :placement       [{:rule string?}]}})
 
 (def service-stats
@@ -244,14 +263,15 @@
                        :opts [name-value]}
    :resources         {:reservation resources
                        :limit       resources}
+   (ds/opt :healthcheck) healthcheck
    :deployment        {:update        deploy
                        :restartPolicy {:condition       string?
-                                       :delay           number?
-                                       (ds/opt :window) number?
+                                       :delay           ::duration-seconds
+                                       (ds/opt :window) ::duration-seconds
                                        :attempts        number?}
                        :rollback      deploy
                        :autoredeploy  boolean?
-                       (ds/opt :maxReplicas) number?
+                       (ds/opt :maxReplicas) (ds/maybe number?)
                        :placement     [{:rule string?}]}})
 
 (def service-update
@@ -294,22 +314,19 @@
    (ds/opt :user)            string?
    (ds/opt :dir)             string?
    (ds/opt :tty)             boolean?
-   (ds/opt :healthcheck)     {:test     [string?]
-                              :interval number?
-                              :timeout  number?
-                              :retries  number?}
+   (ds/opt :healthcheck)     healthcheck
    :logdriver                {:name string?
                               :opts [name-value]}
    :resources                {:reservation resources
                               :limit       resources}
    :deployment               {:update        deploy
                               :restartPolicy {:condition       string?
-                                              :delay           number?
-                                              (ds/opt :window) number?
+                                              :delay           ::duration-seconds
+                                              (ds/opt :window) ::duration-seconds
                                               :attempts        number?}
                               :rollback      deploy
                               :autoredeploy  boolean?
-                              (ds/opt :maxReplicas) number?
+                              (ds/opt :maxReplicas) (ds/maybe number?)
                               :placement     [{:rule string?}]}})
 
 (def service-logs
@@ -410,13 +427,15 @@
    :_rev                       string?})
 
 (def stack
-  {:configs   [config-mount]
-   :secrets   [secret-mount]
-   :networks  [network]
-   :services  [service]
-   :stackFile boolean?
-   :stackName string?
-   :volumes   [mount]})
+  {:configs            [config-mount]
+   :secrets            [secret-mount]
+   :networks           [network]
+   :services           [service]
+   :stackFile          boolean?
+   :stackName          string?
+   (ds/opt :createdAt) string?
+   (ds/opt :updatedAt) string?
+   :volumes            [mount]})
 
 (def stack-compose
   {:name                          string?
@@ -430,3 +449,11 @@
    :type         string?
    :_id          string?
    :_rev         string?})
+
+(def stack-history-entry
+  {:at                   string?
+   :by                   string?
+   (ds/opt :trigger)     {(ds/opt :kind)    string?
+                          (ds/opt :service) string?
+                          (ds/opt :digest)  string?}
+   :spec                 {:compose string?}})

@@ -28,7 +28,8 @@
     {:headers    (login-headers local-state)
      :on-success (fn [{:keys [response]}]
                    (reset! local-state nil)
-                   (storage/add "token" (:token response))
+                   (when-some [token (:token response)]
+                     (storage/add "token" token))
                    (let [redirect-location (state/get-value [:redirect-location])]
                      (state/set-value nil [:redirect-location])
                      (dispatch!

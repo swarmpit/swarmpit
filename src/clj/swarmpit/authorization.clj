@@ -1,6 +1,9 @@
 (ns swarmpit.authorization
   (:require [buddy.auth :refer [authenticated?]]
             [buddy.auth.accessrules :refer [success error wrap-access-rules]]
+            [clojure.tools.logging :as log]
+            [ring.util.codec :as codec]
+            [swarmpit.config :refer [config]]
             [swarmpit.handler :refer [resp-error]]
             [swarmpit.token :refer [admin?]]
             [swarmpit.token :refer [user?]]
@@ -16,6 +19,26 @@
 (defn- any-access
   [_]
   true)
+
+(defn- agent-token
+  [{:keys [headers query-string]}]
+  (or (get headers "x-swarmpit-agent-token")
+      (let [params (codec/form-decode (or query-string ""))]
+        (when (map? params) (get params "token")))))
+
+(defn- agent-access
+  "Agent event push. Open unless SWARMPIT_AGENT_TOKEN is configured."
+  [request]
+  (let [expected (config :agent-token)]
+    (cond
+      (authenticated? request) true
+      (nil? expected) true
+      (= expected (agent-token request)) true
+      :else (do
+              (log/warn "Rejected event push from" (:remote-addr request)
+                        "- missing or invalid agent token")
+              (error {:code    401
+                      :message "Authentication failed"})))))
 
 (defn- admin-access
   [{:keys [identity]}]
@@ -66,7 +89,7 @@
              :handler        any-access}
             {:pattern        #"^/events$"
              :request-method :post
-             :handler        authenticated-access}
+             :handler        agent-access}
             {:pattern #"^/version$"
              :handler any-access}
             {:pattern #"^/initialize$"

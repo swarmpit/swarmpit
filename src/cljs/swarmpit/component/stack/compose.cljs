@@ -177,9 +177,27 @@
               (.setGutterMarker editor anchor "cm-diff-gutter"
                                 (deletion-marker lines)))))))))
 
-(defn refresh-diff! []
-  (let [state (state/get-value state/form-state-cursor)]
-    (apply-diff! (:editor state) (:baseline state))))
+(defonce ^:private diff-timer (atom nil))
+(defonce ^:private diff-last (atom nil))
+
+(defn- run-diff! []
+  (let [state (state/get-value state/form-state-cursor)
+        editor (:editor state)
+        baseline (:baseline state)
+        signature [(some-> editor (.getValue)) baseline]]
+    ;; skip when neither the buffer nor the baseline moved since the last run
+    (when (not= signature @diff-last)
+      (reset! diff-last signature)
+      (apply-diff! editor baseline))))
+
+(defn refresh-diff!
+  "Debounced — lcs-script is O(lines²) and this is wired to every keystroke."
+  []
+  (when-let [t @diff-timer] (js/clearTimeout t))
+  (reset! diff-timer
+          (js/setTimeout
+            (fn [] (reset! diff-timer nil) (run-diff!))
+            200)))
 
 (defn- load-history-entry! [idx history]
   (let [entry (nth history idx nil)
@@ -296,14 +314,18 @@
     (routes/path-for-backend :stack-file {:name name})
     {:on-success (fn [{:keys [response]}]
                    (when (:spec response) (state/update-value [:last?] true state/form-state-cursor))
-                   (when (:previousSpec response) (state/update-value [:previous?] true state/form-state-cursor))
-                   (state/update-value [:history]
-                                       (vec (reverse (:history response)))
-                                       state/form-state-cursor))
+                   (when (:previousSpec response) (state/update-value [:previous?] true state/form-state-cursor)))
      :on-error   (fn [_]
                    (state/update-value [:last?] false state/form-state-cursor)
-                   (state/update-value [:previous?] false state/form-state-cursor)
-                   (state/update-value [:history] [] state/form-state-cursor))}))
+                   (state/update-value [:previous?] false state/form-state-cursor))}))
+
+(defn history-handler
+  [name]
+  (ajax/get
+    (routes/path-for-backend :stack-history {:name name})
+    {:on-success (fn [{:keys [response]}]
+                   (state/update-value [:history] (vec (reverse response)) state/form-state-cursor))
+     :on-error   (fn [_] (state/update-value [:history] [] state/form-state-cursor))}))
 
 (defn- init-form-state
   []
@@ -329,6 +351,7 @@
       (init-form-state)
       (init-form-value name)
       (stackfile-handler name)
+      (history-handler name)
       (compose-handler name))))
 
 (rum/defc form-edit < rum/reactive

@@ -140,6 +140,15 @@
   []
   (find-doc {} "secret"))
 
+(def ^:private secret-cache (atom nil))
+
+(defn secret
+  "Token signing secret. Written once at boot and never updated, so a successful
+   read is cached rather than queried on every request."
+  []
+  (or @secret-cache
+      (reset! secret-cache (:secret (get-secret)))))
+
 ;; Registry Dockerhub
 
 (defn dockerhubs

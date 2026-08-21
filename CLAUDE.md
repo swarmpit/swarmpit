@@ -133,6 +133,6 @@ see `doc/configuration.md`. commonly touched:
 
 ## ci / release
 
-- `.github/workflows/build.yml`: on push/PR to master. PRs from the same repo push `swarmpit/swarmpit:pr-<n>` to docker hub; master pushes `:latest`. PRs from forks build-only (no secrets). multi-arch build (amd64/arm64/armv7/armv5).
+- `.github/workflows/build.yml`: on push/PR to master. PRs from the same repo push `swarmpit/swarmpit:pr-<n>` to docker hub; master pushes `:latest`. PRs from forks build-only (no secrets). multi-arch build (amd64/arm64/armv7).
 - `.github/workflows/release.yml`: triggered by version tag (`1.11`, `1.11.0`). builds, pushes `swarmpit/swarmpit:<tag>`, creates github release with jar.
 - uberjar is the ci artifact; docker stage only copies it and sets the entrypoint.

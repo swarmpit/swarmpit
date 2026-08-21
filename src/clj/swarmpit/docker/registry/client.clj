@@ -1,5 +1,6 @@
 (ns swarmpit.docker.registry.client
-  (:require [swarmpit.http :refer :all]))
+  (:require [clojure.string :as str]
+            [swarmpit.http :refer :all]))
 
 (def ^:private base-url "https://index.docker.io/v2")
 
@@ -18,14 +19,27 @@
                 :options {:headers {:Authorization (str "Bearer " token)}}})
       :body))
 
+(def ^:private compatible-types
+  {"application/vnd.docker.distribution.manifest.list.v2+json"
+   #{"application/vnd.docker.distribution.manifest.list.v2+json"
+     "application/vnd.oci.image.index.v1+json"}
+   "application/vnd.docker.distribution.manifest.v2+json"
+   #{"application/vnd.docker.distribution.manifest.v2+json"
+     "application/vnd.oci.image.manifest.v1+json"}
+   "application/vnd.docker.distribution.manifest.v1+prettyjws"
+   #{"application/vnd.docker.distribution.manifest.v1+prettyjws"}})
+
 (defn- request-manifest
   [token repository-name repository-tag method type]
   (let [response (execute {:method  method
                            :api     (str "/" repository-name "/manifests/" repository-tag)
                            :options {:headers {:Authorization (str "Bearer " token)
-                                               :Accept        type}}})
-        response-type (get-in response [:headers :content-type])]
-    (when (= type response-type) response)))
+                                               :Accept        (str/join ", " (get compatible-types type #{type}))}}})
+        response-type (get-in response [:headers :content-type])
+        normalized-content-type (when response-type
+                                  (-> response-type str/trim (str/split #";") first str/trim str/lower-case))
+        accepted-types (get compatible-types type #{type})]
+    (when (contains? accepted-types normalized-content-type) response)))
 
 (defn manifest
   [token repository-name repository-tag]
