@@ -166,7 +166,8 @@
       :post    (array-map
                  :summary "Create stack"
                  :parameters {:header {:authorization string?}
-                              :body   spec/stack-compose}
+                              :body   spec/stack-compose
+                              :query  {(ds/opt :comment) string?}}
                  :responses {201 {:body        nil
                                   :description "Success"}}
                  #?@(:clj [:handler handler/stack-create]))}]
@@ -177,7 +178,8 @@
                  :summary "Edit stack"
                  :parameters {:header {:authorization string?}
                               :path   {:name string?}
-                              :body   spec/stack-compose}
+                              :body   spec/stack-compose
+                              :query  {(ds/opt :comment) string?}}
                  :responses {200 {:body        nil
                                   :description "Success"}}
                  #?@(:clj [:handler handler/stack-update]))
@@ -213,6 +215,16 @@
                  :responses {200 {:body        nil
                                   :description "Success"}}
                  #?@(:clj [:handler handler/stack-file-delete]))}]
+    ["/stacks/:name/history"
+     {:name    :stack-history
+      :swagger {:tags ["stack"]}
+      :get     (array-map
+                 :summary "Stack compose history, oldest first"
+                 :parameters {:header {:authorization string?}
+                              :path   {:name string?}}
+                 :responses {200 {:body        [spec/stack-history-entry]
+                                  :description "Success"}}
+                 #?@(:clj [:handler handler/stack-history]))}]
     ["/stacks/:name/compose"
      {:name    :stack-compose
       :swagger {:tags ["stack"]}
@@ -289,7 +301,8 @@
       :post    (array-map
                  :summary "Redeploy stack"
                  :parameters {:header {:authorization string?}
-                              :path   {:name string?}}
+                              :path   {:name string?}
+                              :query  {(ds/opt :comment) string?}}
                  :responses {200 {:body        nil
                                   :description "Success"}}
                  #?@(:clj [:handler handler/stack-redeploy]))}]
@@ -299,7 +312,8 @@
       :post    (array-map
                  :summary "Rollback stack"
                  :parameters {:header {:authorization string?}
-                              :path   {:name string?}}
+                              :path   {:name string?}
+                              :query  {(ds/opt :comment) string?}}
                  :responses {200 {:body        nil
                                   :description "Success"}}
                  #?@(:clj [:handler handler/stack-rollback]))}]
@@ -704,7 +718,8 @@
                  :summary "Edit service"
                  :parameters {:header {:authorization string?}
                               :path   {:id string?}
-                              :body   spec/service-update}
+                              :body   spec/service-update
+                              :query  {(ds/opt :comment) string?}}
                  :responses {200 {:body        nil
                                   :description "Success"}}
                  #?@(:clj [:handler handler/service-update]))
@@ -764,7 +779,8 @@
                  :description "Redeploy service with newest image version or different tag if specified"
                  :parameters {:header {:authorization string?}
                               :path   {:id string?}
-                              :query  {(ds/opt :tag) string?}}
+                              :query  {(ds/opt :comment) string?
+                                       (ds/opt :tag) string?}}
                  :responses {202 {:body        nil
                                   :description "Success"}}
                  #?@(:clj [:handler handler/service-redeploy]))}]
@@ -774,7 +790,8 @@
       :post    (array-map
                  :summary "Rollback service"
                  :parameters {:header {:authorization string?}
-                              :path   {:id string?}}
+                              :path   {:id string?}
+                              :query  {(ds/opt :comment) string?}}
                  :responses {202 {:body        nil
                                   :description "Success"}}
                  #?@(:clj [:handler handler/service-rollback]))}]

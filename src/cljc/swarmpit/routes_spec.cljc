@@ -449,3 +449,12 @@
    :type         string?
    :_id          string?
    :_rev         string?})
+
+(def stack-history-entry
+  {:at                   string?
+   :by                   string?
+   (ds/opt :comment)     string?
+   (ds/opt :trigger)     {(ds/opt :kind)    string?
+                          (ds/opt :service) string?
+                          (ds/opt :digest)  string?}
+   :spec                 {:compose string?}})

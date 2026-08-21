@@ -1188,6 +1188,53 @@
        (sort)
        (pick)))
 
+(defn stack-history
+  [stack-name]
+  (vec (:history (cc/stackfile stack-name))))
+
+(def ^:private max-comment-length 120)
+
+(defn- sanitize-comment
+  "Comments render in a single dropdown row, so keep them short and one-line."
+  [comment]
+  (when-let [c (some-> comment str/trim (str/replace #"\s+" " ") not-empty)]
+    (if (> (count c) max-comment-length)
+      (str (subs c 0 (dec max-comment-length)) "…")
+      c)))
+
+(defn append-history!
+  "Append an entry describing what just changed in the given stack. Skips when
+   the stack has no stackfile or the compose is unchanged since the last entry."
+  [stack-name {:keys [by trigger comment]}]
+  (when stack-name
+    (when-let [stackfile-origin (cc/stackfile stack-name)]
+      (try
+        (when-let [compose (stack-compose stack-name)]
+          (let [history (or (:history stackfile-origin) [])
+                last-compose (some-> history last :spec :compose)]
+            (when (not= compose last-compose)
+              (let [entry (cond-> {:at      (str (java.time.Instant/now))
+                                   :by      (or by "system")
+                                   :trigger trigger
+                                   :spec    {:compose compose}}
+                            (sanitize-comment comment) (assoc :comment (sanitize-comment comment)))]
+                (cc/update-stackfile stackfile-origin {:history (conj history entry)})))))
+        (catch Exception e
+          (log/warn "Failed to append stack history for" stack-name ":" (.getMessage e)))))))
+
+(defn service-stack-name
+  "Stack name from a live service spec, or nil when the service isn't in a stack."
+  [service-id]
+  (try
+    (get-in (dc/service service-id) [:Spec :Labels :com.docker.stack.namespace])
+    (catch Exception _ nil)))
+
+(defn service-name-of
+  [service-id]
+  (try
+    (get-in (dc/service service-id) [:Spec :Name])
+    (catch Exception _ nil)))
+
 (defn deployed-stacks
   []
   (->> (dissoc (group-by :stack (services)) nil)
