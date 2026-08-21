@@ -168,11 +168,10 @@
     :icon     (comp/svg icon/rollback-path)
     :group    true
     :name     "Rollback"}
-   {:onClick  #(deactivate-stack-handler stack-name)
-    :disabled (not (some? stackfile))
-    :icon     (icon/stop {})
-    :group    true
-    :name     "Deactivate"}
+   {:onClick #(deactivate-stack-handler stack-name)
+    :icon    (icon/stop {})
+    :group   true
+    :name    "Deactivate"}
    {:onClick #(state/update-value [:open] true dialog/dialog-cursor)
     :icon    (comp/svg icon/trash-path)
     :color   "default"

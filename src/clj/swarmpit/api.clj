@@ -534,8 +534,8 @@
 
 (defn delete-stackfile
   [stack-name]
-  (-> (cc/stackfile stack-name)
-      (cc/delete-stackfile)))
+  (when-let [stackfile (cc/stackfile stack-name)]
+    (cc/delete-stackfile stackfile)))
 
 (defn- stackfile-json
   [stackfile-spec]
@@ -931,7 +931,7 @@
   [service]
   (assoc-in service [:secrets] (dmo/->service-secrets service (secrets))))
 
-(defn- standardize-repository-tag
+(defn standardize-repository-tag
   [repository-tag]
   (if (str/blank? repository-tag)
     "latest"
@@ -990,8 +990,12 @@
          service (dmi/->service service-origin)
          repository-name (get-in service [:repository :name])
          repository-tag (get-in service [:repository :tag])
+         current-digest (get-in service [:repository :imageDigest])
          effective-tag (standardize-repository-tag (or new-tag repository-tag))
-         image-digest (or digest (repository-digest owner repository-name effective-tag))
+         resolved-digest (or digest (repository-digest owner repository-name effective-tag))
+         image-digest (if (str/blank? resolved-digest)
+                        (when (= effective-tag repository-tag) current-digest)
+                        resolved-digest)
          image (if (str/blank? image-digest)
                  (str repository-name ":" effective-tag)
                  (str repository-name ":" effective-tag "@" image-digest))]
@@ -1001,7 +1005,7 @@
        (get-in service-origin [:Version :Index])
        (-> service-origin
            :Spec
-           (update-in [:TaskTemplate :ForceUpdate] inc)
+           (update-in [:TaskTemplate :ForceUpdate] (fnil inc 0))
            (assoc-in [:TaskTemplate :ContainerSpec :Image] image))))))
 
 (defn rollback-service
@@ -1177,6 +1181,13 @@
            (->compose)
            (->yaml)))
 
+(defn- stack-timestamp
+  [services k pick]
+  (->> services
+       (keep k)
+       (sort)
+       (pick)))
+
 (defn deployed-stacks
   []
   (->> (dissoc (group-by :stack (services)) nil)
@@ -1195,6 +1206,8 @@
                   (when (not-empty stack-services)
                     {:stackName stack-name
                      :state     "deployed"
+                     :createdAt (stack-timestamp stack-services :createdAt first)
+                     :updatedAt (stack-timestamp stack-services :updatedAt last)
                      :services  stack-services
                      :networks  (distinct-resources stack-networks)
                      :volumes   (distinct-resources stack-volumes)
@@ -1272,3 +1285,12 @@
 (defn delete-stack
   [stack-name]
   (dcli/stack-remove stack-name))
+
+(defn deactivate-stack
+  "Remove the stack from docker, keeping a stackfile so it stays re-activatable."
+  [stack-name]
+  (when (nil? (stackfile stack-name))
+    (when-let [compose (stack-compose stack-name)]
+      (create-stackfile {:name stack-name
+                         :spec {:compose compose}})))
+  (delete-stack stack-name))

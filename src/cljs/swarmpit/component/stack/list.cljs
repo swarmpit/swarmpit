@@ -1,6 +1,7 @@
 (ns swarmpit.component.stack.list
   (:require [material.icon :as icon]
             [material.components :as comp]
+            [material.component.form :as form]
             [material.component.list.basic :as list]
             [material.component.list.util :as list-util]
             [material.component.label :as label]
@@ -9,6 +10,7 @@
             [swarmpit.component.progress :as progress]
             [swarmpit.ajax :as ajax]
             [swarmpit.routes :as routes]
+            [swarmpit.time :as time]
             [swarmpit.url :refer [dispatch!]]
             [sablono.core :refer-macros [html]]
             [rum.core :as rum]
@@ -24,6 +26,16 @@
        "deployed" (label/base state "green")
        "inactive" (label/base state "info"))]))
 
+(defn- render-date [date]
+  (if (time/valid? date)
+    (form/item-date date)
+    "-"))
+
+(defn- render-date-text [date]
+  (if (time/valid? date)
+    (time/humanize date)
+    "-"))
+
 (def render-metadata
   {:table {:summary [{:name      "Name"
                       :render-fn (fn [item] (:stackName item))}
@@ -37,10 +49,15 @@
                       :render-fn (fn [item] (get-in item [:stackStats :configs]))}
                      {:name      "Secrets"
                       :render-fn (fn [item] (get-in item [:stackStats :secrets]))}
+                     {:name      "Last update"
+                      :render-fn (fn [item] (render-date (:updatedAt item)))}
+                     {:name      "Created"
+                      :render-fn (fn [item] (render-date (:createdAt item)))}
                      {:name      ""
                       :status    true
                       :render-fn (fn [item] (render-status item))}]}
    :list  {:primary   (fn [item] (:stackName item))
+           :secondary (fn [item] (render-date-text (:updatedAt item)))
            :status-fn (fn [item] (render-status item))}})
 
 (defn onclick-handler
@@ -55,6 +72,8 @@
           :stackName (:stackName %)
           :state (:state %)
           :stackFile (:stackFile %)
+          :createdAt (:createdAt %)
+          :updatedAt (:updatedAt %)
           :stackStats {:services (count (:services %))
                        :networks (count (:networks %))
                        :volumes  (count (:volumes %))

@@ -1,6 +1,7 @@
 (ns swarmpit.storage
   (:refer-clojure :exclude [get remove])
   (:require [swarmpit.token :as token]
+            [clojure.string :as str]
             [cognitect.transit :as t]))
 
 (def storage (.-localStorage js/window))
@@ -31,6 +32,14 @@
   "Remove value from browser's localStorage by given `key`"
   [key]
   (.removeItem storage key))
+
+(defn auth-token
+  "Get auth token from browser's localStorage. Nil unless usable."
+  []
+  (let [value (get "token")]
+    (when-not (or (str/blank? value)
+                  (contains? #{"null" "undefined"} value))
+      value)))
 
 (defn claims
   []

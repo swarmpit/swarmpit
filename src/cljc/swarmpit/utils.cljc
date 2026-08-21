@@ -114,13 +114,24 @@
                      :value (val l)}))
        (into [])))
 
+(def nano-factor 1000000000)
+
+;; Docker durations are int64 nanoseconds, memory int64 bytes.
+(def max-nano-seconds 9223372036)
+(def max-mib 8796093022207)
+
 (defn ->nano
   [number]
-  (when number (* number 1000000000)))
+  (when number
+    #?(:clj  (*' number nano-factor)
+       :cljs (* number nano-factor))))
 
 (defn nano->
   [number]
-  (when number (/ number 1000000000)))
+  (when number
+    #?(:clj  (let [seconds (/ number nano-factor)]
+               (if (ratio? seconds) (double seconds) seconds))
+       :cljs (/ number nano-factor))))
 
 (def ^:private pows [[100 "googol"]
                      [33 "d"]

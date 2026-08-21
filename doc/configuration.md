@@ -34,6 +34,10 @@ Default is `/tmp`.
 Lifetime in days for personal API tokens generated in the UI. `nil` (the default) keeps the legacy behaviour where API tokens never expire. Set to a positive integer (e.g. `90`) to force rotation.
 Default is `nil`.
 
+## `SWARMPIT_AGENT_TOKEN`
+Shared secret required on `POST /events`, the endpoint the swarmpit agent pushes node statistics and docker events to. `nil` (the default) accepts unauthenticated pushes, which is what released agents send. When set, point your agents at `EVENT_ENDPOINT=http://app:8080/events?token=<secret>`, or have them send an `X-Swarmpit-Agent-Token` header; pushes without a matching token get a 401 and statistics stop working.
+Default is `nil`.
+
 ## `SWARMPIT_INSTANCE_NAME`
 Custom name shown in place of the swarmpit logo in the sidebar and top bar, and prepended to the browser tab title as `{instance_name} :: {page} :: swarmpit`. Useful when running multiple swarmpit instances against different clusters so you can tell them apart at a glance.
 Default is `nil` (shows the swarmpit logo).
