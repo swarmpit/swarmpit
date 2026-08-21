@@ -2,7 +2,8 @@
   (:import (clojure.lang ExceptionInfo))
   (:require [buddy.auth.backends.token :refer [jws-backend]]
             [buddy.auth.middleware :refer [authentication-request]]
-            [swarmpit.handler :refer [resp-unauthorized]]
+            [clojure.tools.logging :as log]
+            [swarmpit.handler :refer [resp-error resp-unauthorized]]
             [swarmpit.couchdb.client :as cc]
             [swarmpit.token.blacklist :as blacklist]))
 
@@ -26,20 +27,30 @@
      :token-name "Bearer"
      :on-error   (fn [_ ex] (throw ex))}))
 
+(defn- signing-secret
+  []
+  (try
+    (cc/secret)
+    (catch Exception ex
+      (log/warn "Token secret unreachable:" (.getMessage ex))
+      nil)))
+
 (defn authentication-middleware
   [handler]
   (fn [request]
-    (let [secret (:secret (cc/get-secret))
-          auth-backend (authentication-backend secret)]
-      (try
-        (handler (authentication-request request auth-backend))
-        (catch ExceptionInfo ex
-          (let [error (case (:cause (ex-data ex))
-                        :exp "Token expired"
-                        :signature "Token invalid"
-                        :discarded "Token discarded" ;; User API token removed
-                        :revoked "Token revoked" ;; Login token revoked via logout
-                        :rejected "Token rejected" ;; User does not exist
-                        "Token invalid")]
-            (-> (resp-unauthorized error)
-                (assoc :headers {"X-Backend-Server" "swarmpit"}))))))))
+    (if-let [secret (signing-secret)]
+      (let [auth-backend (authentication-backend secret)]
+        (try
+          (handler (authentication-request request auth-backend))
+          (catch ExceptionInfo ex
+            (let [error (case (:cause (ex-data ex))
+                          :exp "Token expired"
+                          :signature "Token invalid"
+                          :discarded "Token discarded" ;; User API token removed
+                          :revoked "Token revoked" ;; Login token revoked via logout
+                          :rejected "Token rejected" ;; User does not exist
+                          "Token invalid")]
+              (-> (resp-unauthorized error)
+                  (assoc :headers {"X-Backend-Server" "swarmpit"}))))))
+      (-> (resp-error 503 "Database unavailable")
+          (assoc :headers {"X-Backend-Server" "swarmpit"})))))

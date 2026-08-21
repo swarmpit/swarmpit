@@ -55,14 +55,14 @@
      ([user]
       (generate-jwt user (claim user)))
      ([user options]
-      (let [jwt (jwt/sign (claim user options) (:secret (cc/get-secret)))]
+      (let [jwt (jwt/sign (claim user options) (cc/secret))]
         (bearer jwt)))))
 
 #?(:clj
    (defn verify-jwt
      [token]
      (-> (token-value token)
-         (jwt/unsign (:secret (cc/get-secret))))))
+         (jwt/unsign (cc/secret)))))
 
 #?(:clj
    (defn user
