@@ -9,6 +9,7 @@
          :db-url              "http://localhost:5984"
          :influxdb-url        nil
          :agent-url           nil
+         :agent-token         nil
          :work-dir            "/tmp"
          :instance-name       nil
          :api-token-expiry-days nil
@@ -23,6 +24,7 @@
         :db-url              (env :swarmpit-db)
         :influxdb-url        (env :swarmpit-influxdb)
         :agent-url           (env :swarmpit-agent-url)
+        :agent-token         (env :swarmpit-agent-token)
         :work-dir            (env :swarmpit-workdir)
         :instance-name       (env :swarmpit-instance-name)
         :api-token-expiry-days (env :swarmpit-api-token-expiry-days)}

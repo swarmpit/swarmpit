@@ -114,13 +114,29 @@
                      :value (val l)}))
        (into [])))
 
+(def nano-factor 1000000000)
+
+;; Largest whole number of seconds that still fits an int64 nanosecond value,
+;; i.e. (quot Long/MAX_VALUE nano-factor). Docker durations are int64 nanos.
+(def max-nano-seconds 9223372036)
+
+;; Same idea for memory: largest MiB value that still fits int64 bytes.
+(def max-mib 8796093022207)
+
 (defn ->nano
   [number]
-  (when number (* number 1000000000)))
+  ;; clj *' promotes instead of throwing "integer overflow" on absurd input
+  ;; (#740); values above max-nano-seconds are rejected by the request spec.
+  (when number
+    #?(:clj  (*' number nano-factor)
+       :cljs (* number nano-factor))))
 
 (defn nano->
   [number]
-  (when number (/ number 1000000000)))
+  (when number
+    #?(:clj  (let [seconds (/ number nano-factor)]
+               (if (ratio? seconds) (double seconds) seconds))
+       :cljs (/ number nano-factor))))
 
 (def ^:private pows [[100 "googol"]
                      [33 "d"]

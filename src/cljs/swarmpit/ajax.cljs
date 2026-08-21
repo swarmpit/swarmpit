@@ -7,6 +7,7 @@
             [swarmpit.storage :as storage]
             [swarmpit.component.state :as state]
             [swarmpit.component.message :as message]
+            [clojure.string :as str]
             [clojure.walk :refer [keywordize-keys]]))
 
 (defn- login-redirect
@@ -39,6 +40,14 @@
     (= 504 status) (message/error "Server request failed. Gateway Timeout")
     :else (message/error (str (or (:error body) body "Server request failed")))))
 
+(defn- request-headers
+  "Merge caller headers over the stored auth token, dropping blank values so we
+   never put a literal `null` on the wire (breaks forward-auth proxies, #737)."
+  [request]
+  (->> (merge {"Authorization" (storage/auth-token)} (:headers request))
+       (remove #(str/blank? (val %)))
+       (into {})))
+
 (defn- command
   "Customized ajax command:
 
@@ -62,7 +71,7 @@
     {:response-format {:read        identity
                        :description "raw"}
      :params          (:params request)
-     :headers         (merge {"Authorization" (storage/get "token")} (:headers request))
+     :headers         (request-headers request)
      :finally         (command-state request form-id true)
      :handler         (fn [xhrio]
                         (command-state request form-id false)

@@ -78,11 +78,14 @@
      :working_dir (-> service :dir)
      :extra_hosts (->> service :hosts
                        (map #(str (:name %) ":" (:value %))))
-     :healthcheck (let [healthcheck (-> service :healthcheck)]
-                    (when healthcheck
-                      (merge healthcheck
-                             {:interval (str (:interval healthcheck) "s")}
-                             {:timeout (str (:timeout healthcheck) "s")})))
+     :healthcheck (when-let [{:keys [test interval timeout startPeriod retries]} (-> service :healthcheck)]
+                    (let [duration #(when % (str % "s"))]
+                      (ordered-map
+                        :test test
+                        :interval (duration interval)
+                        :timeout (duration timeout)
+                        :start_period (duration startPeriod)
+                        :retries retries)))
      :tty (-> service :tty)
      :environment (-> service :variables (name-value->sorted-map))
      :ports (->> service :ports

@@ -451,12 +451,17 @@
 
 ;; Statistics
 
+(def ^:private stats-not-ready
+  {:no-active-nodes  "Statistics not ready: no active swarm nodes"
+   :no-agent-data    "Statistics not ready: no stats received from swarmpit agent yet, check that the agent is running on your nodes and can POST to /events"
+   :stale-agent-data "Statistics not ready: cached agent stats don't match any active swarm node"})
+
 (defn stats
   [_]
-  (if (stats/ready?)
+  (if-let [reason (stats/not-ready-reason)]
+    (resp-error 400 (get stats-not-ready reason "Statistics not ready"))
     (->> (stats/cluster)
-         (resp-ok))
-    (resp-error 400 "Statistics not ready")))
+         (resp-ok))))
 
 ;; Placement handler
 
@@ -773,7 +778,7 @@
 
 (defn stack-deactivate
   [{{:keys [path]} :parameters}]
-  (let [{:keys [result]} (api/delete-stack (:name path))]
+  (let [{:keys [result]} (api/deactivate-stack (:name path))]
     (if (nil? (api/stack (:name path)))
       (resp-ok)
       (resp-error 400 result))))
