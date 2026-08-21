@@ -61,10 +61,13 @@
         :else          (str (quot s 31536000) "y ago")))
     (catch :default _ iso)))
 
-(defn- history-label [{:keys [at by trigger]}]
+(defn- history-label [{:keys [at by trigger comment]}]
   (let [{:keys [kind service]} trigger]
     (str (humanize-kind kind)
-         (when service (str " · " service))
+         ;; a comment says more than the service name, so it wins the slot
+         (cond
+           (not (empty? comment)) (str " · " comment)
+           service (str " · " service))
          " · " (relative-time at)
          " · " by)))
 

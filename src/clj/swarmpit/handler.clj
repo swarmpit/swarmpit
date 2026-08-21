@@ -237,19 +237,20 @@
          (resp-created))))
 
 (defn- record-service-history!
-  [service-id owner kind]
+  [service-id owner kind comment]
   (api/append-history!
-    (#'api/service-stack-name service-id)
+    (api/service-stack-name service-id)
     {:by      owner
+     :comment comment
      :trigger {:kind    kind
-               :service (#'api/service-name-of service-id)}}))
+               :service (api/service-name-of service-id)}}))
 
 (defn service-update
-  [{{:keys [body path]} :parameters
-    {:keys [usr]}       :identity}]
+  [{{:keys [body path query]} :parameters
+    {:keys [usr]}             :identity}]
   (let [owner (:username usr)]
     (api/update-service owner (:id path) body)
-    (record-service-history! (:id path) owner "service-update")
+    (record-service-history! (:id path) owner "service-update" (:comment query))
     (resp-ok)))
 
 (defn service-redeploy
@@ -257,15 +258,15 @@
     {:keys [usr]}        :identity}]
   (let [owner (:username usr)]
     (api/redeploy-service owner (:id path) (:tag query))
-    (record-service-history! (:id path) owner "service-redeploy")
+    (record-service-history! (:id path) owner "service-redeploy" (:comment query))
     (resp-accepted)))
 
 (defn service-rollback
-  [{{:keys [path]} :parameters
-    {:keys [usr]}  :identity}]
+  [{{:keys [path query]} :parameters
+    {:keys [usr]}        :identity}]
   (let [owner (:username usr)]
     (api/rollback-service owner (:id path))
-    (record-service-history! (:id path) owner "service-rollback")
+    (record-service-history! (:id path) owner "service-rollback" (:comment query))
     (resp-accepted)))
 
 (defn service-stop
@@ -746,40 +747,40 @@
        (resp-ok)))
 
 (defn stack-create
-  [{{:keys [body]} :parameters
-    {:keys [usr]}  :identity}]
+  [{{:keys [body query]} :parameters
+    {:keys [usr]}        :identity}]
   (let [owner (:username usr)]
     (if (some? (api/stack (:name body)))
       (resp-error 400 "Stack already exist.")
       (do (api/create-stack owner body)
-          (api/append-history! (:name body) {:by owner :trigger {:kind "stack-create"}})
+          (api/append-history! (:name body) {:by owner :comment (:comment query) :trigger {:kind "stack-create"}})
           (resp-created)))))
 
 (defn stack-update
-  [{{:keys [body path]} :parameters
-    {:keys [usr]}       :identity}]
+  [{{:keys [body path query]} :parameters
+    {:keys [usr]}             :identity}]
   (let [owner (:username usr)]
     (if (not= (:name path)
               (:name body))
       (resp-error 400 "Stack invalid.")
       (do (api/update-stack owner body)
-          (api/append-history! (:name body) {:by owner :trigger {:kind "stack-update"}})
+          (api/append-history! (:name body) {:by owner :comment (:comment query) :trigger {:kind "stack-update"}})
           (resp-ok)))))
 
 (defn stack-redeploy
-  [{{:keys [path]} :parameters
-    {:keys [usr]}  :identity}]
+  [{{:keys [path query]} :parameters
+    {:keys [usr]}        :identity}]
   (let [owner (:username usr)]
     (api/redeploy-stack owner (:name path))
-    (api/append-history! (:name path) {:by owner :trigger {:kind "stack-redeploy"}})
+    (api/append-history! (:name path) {:by owner :comment (:comment query) :trigger {:kind "stack-redeploy"}})
     (resp-ok)))
 
 (defn stack-rollback
-  [{{:keys [path]} :parameters
-    {:keys [usr]}  :identity}]
+  [{{:keys [path query]} :parameters
+    {:keys [usr]}        :identity}]
   (let [owner (:username usr)]
     (api/rollback-stack owner (:name path))
-    (api/append-history! (:name path) {:by owner :trigger {:kind "stack-rollback"}})
+    (api/append-history! (:name path) {:by owner :comment (:comment query) :trigger {:kind "stack-rollback"}})
     (resp-ok)))
 
 (defn stack-delete

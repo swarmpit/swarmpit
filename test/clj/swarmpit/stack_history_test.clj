@@ -1,6 +1,7 @@
 (ns swarmpit.stack-history-test
   (:require [clojure.test :refer :all]
             [clojure.java.io :as io]
+            [clojure.string]
             [cheshire.core :as json]
             [swarmpit.api :as api]
             [swarmpit.couchdb.client :as cc]
@@ -42,17 +43,39 @@
             (is (= "version: '3'" (get-in entry [:spec :compose])))
             (is (string? (:at entry))))))
 
+      (testing "records an optional comment, collapsed to one line"
+        (with-redefs [api/stack-compose (constantly "compose-with-comment")]
+          (api/append-history! "app" {:by      "bob"
+                                      :comment "  bump alpine\n  to 3.20  "
+                                      :trigger {:kind "stack-update"}})
+          (is (= "bump alpine to 3.20" (:comment (last (:history @saved)))))))
+
+      (testing "omits the comment key when blank"
+        (with-redefs [api/stack-compose (constantly "compose-blank-comment")]
+          (api/append-history! "app" {:by "bob" :comment "   " :trigger {:kind "stack-update"}})
+          (is (not (contains? (last (:history @saved)) :comment)))))
+
+      (testing "truncates a comment too long for the row"
+        (with-redefs [api/stack-compose (constantly "compose-long-comment")]
+          (api/append-history! "app" {:by      "bob"
+                                      :comment (apply str (repeat 300 "x"))
+                                      :trigger {:kind "stack-update"}})
+          (let [c (:comment (last (:history @saved)))]
+            (is (= 120 (count c)))
+            (is (clojure.string/ends-with? c "…")))))
+
       (testing "skips when the compose is unchanged"
         (reset! saved nil)
-        (with-redefs [api/stack-compose (constantly "version: '3'")]
+        (with-redefs [api/stack-compose (constantly "compose-long-comment")]
           (api/append-history! "app" {:by "bob" :trigger {:kind "stack-redeploy"}})
           (is (nil? @saved))))
 
       (testing "keeps every entry — no arbitrary cap"
+        (reset! stackfile {:name "app" :history []})
         (doseq [i (range 30)]
           (with-redefs [api/stack-compose (constantly (str "compose-" i))]
             (api/append-history! "app" {:by "bob" :trigger {:kind "stack-update"}})))
-        (is (= 31 (count (:history @stackfile)))))
+        (is (= 30 (count (:history @stackfile)))))
 
       (testing "a failing write is logged, not propagated"
         (with-redefs [api/stack-compose (fn [_] (throw (ex-info "boom" {})))]
