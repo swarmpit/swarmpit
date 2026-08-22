@@ -125,6 +125,8 @@
 (defn digest
   [registry repository-name repository-tag]
   (-> (or (request-manifest registry repository-name repository-tag :HEAD
+                            "application/vnd.oci.image.index.v1+json")
+          (request-manifest registry repository-name repository-tag :HEAD
                             "application/vnd.docker.distribution.manifest.list.v2+json")
           (request-manifest registry repository-name repository-tag :HEAD
                             "application/vnd.docker.distribution.manifest.v2+json"))
