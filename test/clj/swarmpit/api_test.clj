@@ -5,6 +5,7 @@
             [swarmpit.config :as cfg]
             [swarmpit.docker.engine.client :as dc]
             [swarmpit.docker.engine.cli :as dcli]
+            [swarmpit.http :as http]
             [swarmpit.couchdb.client :as cc]
             [swarmpit.couchdb.mapper.outbound :refer [->password]]))
 
@@ -99,6 +100,65 @@
                     api/repository-digest (constantly "sha256:bbb")]
         (api/redeploy-service nil "svc1" nil nil))
       (is (= 1 @forced)))))
+
+(defn- fake-ghcr
+  "ghcr.io token flow: 401 challenge, anonymous pull token, digest with that token."
+  [requests public?]
+  (fn [{:keys [url options] :as request}]
+    (swap! requests conj request)
+    (cond
+      (and public? (= "https://ghcr.io/token" url))
+      {:status 200 :body {:token "anon"}}
+
+      (and public? (= "Bearer anon" (get-in options [:headers :Authorization])))
+      {:status  200
+       :headers {:content-type          "application/vnd.oci.image.index.v1+json"
+                 :docker-content-digest "sha256:bbb"}}
+
+      :else
+      (throw (ex-info "Registry error: unauthorized"
+                      {:status  401
+                       :type    :http-client
+                       :headers {:www-authenticate "Bearer realm=\"https://ghcr.io/token\",service=\"ghcr.io\",scope=\"repository:acme/app:pull\""}
+                       :body    {:error "unauthorized"}})))))
+
+(defn- redeploy-unlinked
+  [public?]
+  (let [requests (atom [])
+        update (atom nil)]
+    (with-redefs [api/supported-registries (constantly [])
+                  http/execute-in-scope (fake-ghcr requests public?)
+                  dc/service (constantly {:Spec    {:Name         "app"
+                                                    :Mode         {:Replicated {:Replicas 1}}
+                                                    :TaskTemplate {:ContainerSpec {:Image "ghcr.io/acme/app:latest@sha256:aaa"}}}
+                                          :Version {:Index 7}})
+                  dc/update-service (fn [auth _ _ s]
+                                      (reset! update {:auth  auth
+                                                      :image (get-in s [:TaskTemplate :ContainerSpec :Image])}))]
+      (api/redeploy-service nil "svc1" nil))
+    (assoc @update :requests @requests)))
+
+(deftest unlinked-registry-test
+  (testing "a public image on an unlinked registry resolves its digest anonymously"
+    (let [{:keys [auth image requests]} (redeploy-unlinked true)
+          token-request (first (filter #(= "https://ghcr.io/token" (:url %)) requests))]
+      (is (= "ghcr.io/acme/app:latest@sha256:bbb" image))
+      (is (nil? auth))
+      (is (= "repository:acme/app:pull" (get-in token-request [:options :query-params :scope])))
+      (is (nil? (get-in token-request [:options :headers :Authorization])))))
+
+  (testing "an unresolvable image on an unlinked registry keeps its pin instead of failing with 401"
+    (let [{:keys [auth image]} (redeploy-unlinked false)]
+      (is (= "ghcr.io/acme/app:latest@sha256:aaa" image))
+      (is (nil? auth))))
+
+  (testing "a linked registry still hands its credentials to docker"
+    (with-redefs [api/supported-registries (constantly [{:type     "v2"
+                                                         :url      "https://ghcr.io"
+                                                         :username "bot"
+                                                         :password "pat"}])]
+      (is (= {:username "bot" :password "pat" :serveraddress "https://ghcr.io"}
+             (#'api/service-auth nil {:repository {:name "ghcr.io/acme/app"}}))))))
 
 (deftest delete-stackfile-test
   (testing "a missing doc is a no-op rather than DELETE /swarmpit/"
