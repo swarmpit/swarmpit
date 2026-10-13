@@ -1,5 +1,31 @@
 (ns swarmpit.docker.engine.log
-  (:require [clojure.string :refer [blank? trim split split-lines join]]))
+  (:require [clojure.string :refer [blank? trim split split-lines join]])
+  (:import (java.io ByteArrayOutputStream)
+           (java.nio ByteBuffer)
+           (java.nio.charset StandardCharsets)))
+
+(defn parse-container-log
+  [^bytes data tty?]
+  (if tty?
+    (String. data StandardCharsets/UTF_8)
+    (let [input (ByteBuffer/wrap data)
+          output (ByteArrayOutputStream.)
+          invalid! #(throw (ex-info "Invalid Docker log stream"
+                                   {:type :api :status 502
+                                    :body {:error "Invalid Docker log stream"}}))]
+      (while (.hasRemaining input)
+        (when (< (.remaining input) 8) (invalid!))
+        (let [stream (.get input)
+              padding [(.get input) (.get input) (.get input)]
+              length (.getInt input)]
+          (when (or (not (contains? #{0 1 2} stream))
+                    (not= [0 0 0] padding)
+                    (neg? length)
+                    (> length (.remaining input)))
+            (invalid!))
+          (.write output data (.position input) length)
+          (.position input (+ (.position input) length))))
+      (.toString output "UTF-8"))))
 
 (defn parse-log-line
   [line]

@@ -9,6 +9,7 @@
             [swarmpit.component.message :as message]
             [swarmpit.component.progress :as progress]
             [swarmpit.component.task.list :as tasks]
+            [swarmpit.component.container.list :as containers]
             [swarmpit.component.dialog :as dialog]
             [swarmpit.component.toolbar :as toolbar]
             [swarmpit.component.common :as common]
@@ -44,13 +45,31 @@
     {:on-success (fn [{:keys [response]}]
                    (state/update-value [:tasks] response state/form-value-cursor))}))
 
+(defn- node-containers-handler
+  []
+  (when-not (state/get-value (conj state/form-state-cursor :containers-loading?))
+    (ajax/get
+      (routes/path-for-backend :containers)
+      {:state [:containers-loading?]
+       :on-success (fn [{:keys [response origin?]}]
+                     (when origin?
+                       (let [node-id (get-in (state/get-value state/form-value-cursor) [:node :id])]
+                         (state/update-value [:containers]
+                                             (->> response
+                                                  (filter #(and (= node-id (:nodeId %)) (not (:managed %))))
+                                                  (sort-by :containerName)
+                                                  vec)
+                                             state/form-value-cursor))))})))
+
 (defn- node-handler
   [node-id]
   (ajax/get
     (routes/path-for-backend :node {:id node-id})
     {:state      [:loading?]
-     :on-success (fn [{:keys [response]}]
-                   (state/update-value [:node] response state/form-value-cursor))}))
+     :on-success (fn [{:keys [response origin?]}]
+                   (when origin?
+                     (state/update-value [:node] response state/form-value-cursor)
+                     (when (:containersAvailable response) (node-containers-handler))))}))
 
 (defn- delete-node-handler
   [node-id]
@@ -244,6 +263,12 @@
   (state/set-value {:pinned?  false
                     :loading? true} state/form-state-cursor))
 
+(def mixin-refresh-containers
+  (mixin/refresh-form
+    (fn [_]
+      (when (get-in (state/get-value state/form-value-cursor) [:node :containersAvailable])
+        (node-containers-handler))) 5000))
+
 (def mixin-init-form
   (mixin/init-form
     (fn [{{:keys [id]} :params}]
@@ -276,7 +301,20 @@
      :xs   12}
     (form-tasks tasks)))
 
-(rum/defc form-info < rum/static [id {:keys [node tasks]} pinned?]
+(rum/defc form-container-grid < rum/static [items]
+  (let [metadata (update-in containers/render-metadata [:table :summary]
+                            #(vec (remove (fn [column] (= "Node" (:name column))) %)))]
+    (comp/grid {:item true :xs 12}
+      (comp/card {:className "Swarmpit-card"}
+        (comp/card-header {:className "Swarmpit-table-card-header"
+                           :title (comp/typography {:variant "h6"} "Containers")})
+        (cond
+          (nil? items) (comp/linear-progress {})
+          (empty? items) (comp/card-content {} (form/item-info "No standalone containers."))
+          :else (comp/card-content {:className "Swarmpit-table-card-content"}
+                  (list/responsive metadata items containers/onclick-handler)))))))
+
+(rum/defc form-info < rum/static [id {:keys [node tasks containers]} pinned?]
   (comp/mui
     (html
       [:div.Swarmpit-form
@@ -319,7 +357,8 @@
               (comp/grid
                 {:container true
                  :spacing   2}
-                (form-task-grid tasks)))))
+                (form-task-grid tasks)
+                (when (:containersAvailable node) (form-container-grid containers))))))
         (comp/hidden
           {:smUp           true
            :implementation "js"}
@@ -337,6 +376,7 @@
                   [(form-pin-action id pinned? false)])))
             (form-general-grid node pinned?)
             (form-task-grid tasks)
+            (when (:containersAvailable node) (form-container-grid containers))
             (form-plugins-grid
               (->> node :plugins :networks)
               (->> node :plugins :volumes))
@@ -344,6 +384,7 @@
 
 (rum/defc form < rum/reactive
                  mixin-init-form
+                 mixin-refresh-containers
                  mixin/subscribe-form [{{:keys [id]} :params}]
   (let [state (state/react state/form-state-cursor)
         item (state/react state/form-value-cursor)]

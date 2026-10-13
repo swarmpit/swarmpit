@@ -51,6 +51,7 @@
          :aria-label "split button"}
         (comp/button
           {:startIcon (:icon main-action)
+           :disabled  (:disabled main-action)
            :onClick   (:onClick main-action)}
           (:name main-action))
         (comp/button
@@ -103,6 +104,7 @@
                          :variant   (or (:variant action) "contained")
                          :key       (str "toolbar-button-" index)
                          :startIcon (:icon action)
+                         :disabled  (:disabled action)
                          :onClick   (:onClick action)}
                         (when (not= (dec (count single-actions)) index)
                           {:className "Swarmpit-form-toolbar-btn"}))

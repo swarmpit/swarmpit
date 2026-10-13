@@ -123,6 +123,50 @@
                  :responses {200 {:body        spec/stats
                                   :description "Success"}}
                  #?@(:clj [:handler handler/stats]))}]
+    ["/containers"
+     {:name    :containers
+      :swagger {:tags ["container"]}
+      :get     (array-map
+                 :summary "Containers on the connected Docker host, including stopped containers"
+                 :parameters {:header {:authorization string?}}
+                 :responses {200 {:body [spec/container-summary] :description "Success"}}
+                 #?@(:clj [:handler handler/containers]))}]
+    ["/containers/:id"
+     {:name    :container
+      :swagger {:tags ["container"]}
+      :get     (array-map
+                 :summary "Host container details"
+                 :parameters {:header {:authorization string?}
+                              :path {:id ::spec/container-id}}
+                 :responses {200 {:body spec/container :description "Success"}}
+                 #?@(:clj [:handler handler/container]))
+      :delete  (array-map
+                 :summary "Remove a stopped standalone container, preserving its volumes"
+                 :parameters {:header {:authorization string?}
+                              :path {:id ::spec/container-id}}
+                 :responses {200 {:body nil :description "Success"}
+                             409 {:body {:error string?} :description "Container is running or managed by Swarm"}}
+                 #?@(:clj [:handler handler/container-delete]))}]
+    ["/containers/:id/logs"
+     {:name    :container-logs
+      :swagger {:tags ["container"]}
+      :get     (array-map
+                 :summary "Host container stdout and stderr logs"
+                 :parameters {:header {:authorization string?}
+                              :path {:id ::spec/container-id}
+                              :query {(ds/opt :tail) ::spec/container-log-tail}}
+                 :responses {200 {:body {:logs string?} :description "Success"}}
+                 #?@(:clj [:handler handler/container-logs]))}]
+    ["/containers/:id/:action"
+     {:name    :container-action
+      :swagger {:tags ["container"]}
+      :post    (array-map
+                 :summary "Start, stop, restart, pause or unpause a standalone host container"
+                 :parameters {:header {:authorization string?}
+                              :path {:id ::spec/container-id :action ::spec/container-action}}
+                 :responses {200 {:body nil :description "Success"}
+                             409 {:body {:error string?} :description "Container is managed by Swarm"}}
+                 #?@(:clj [:handler handler/container-action]))}]
     ;; Task
     ["/tasks"
      {:name    :tasks
@@ -942,6 +986,8 @@
    ["/nodes" :node-list]
    ["/nodes/:id" :node-info]
    ["/nodes/:id/edit" :node-edit]
+   ["/containers" :container-list]
+   ["/containers/:id" :container-info]
    ;; Task
    ["/tasks" :task-list]
    ["/tasks/:id" :task-info]

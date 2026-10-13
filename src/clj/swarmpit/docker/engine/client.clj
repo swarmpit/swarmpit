@@ -23,6 +23,42 @@
 
 (def df-memo (memo/ttl df :ttl/threshold 10000))
 
+(defn containers
+  []
+  (:body (execute {:method  :GET
+                   :api     "/containers/json"
+                   :options {:query-params {:all true}}})))
+
+(defn container
+  [id]
+  (:body (execute {:method :GET
+                   :api    (str "/containers/" id "/json")})))
+
+(defn container-action
+  [id action]
+  (:body (execute (merge {:method :POST
+                          :api    (str "/containers/" id "/" action)}
+                         (when (contains? #{"stop" "restart"} action)
+                           {:timeout 20000
+                            :options {:query-params {:t 10}}})))))
+
+(defn delete-container
+  [id]
+  (:body (execute {:method  :DELETE
+                   :api     (str "/containers/" id)
+                   :options {:query-params {:force false :v false}}})))
+
+(defn container-logs
+  [id tail]
+  (:body (execute {:method  :GET
+                   :api     (str "/containers/" id "/logs")
+                   :options {:as :byte-array
+                             :query-params {:stdout     true
+                                            :stderr     true
+                                            :timestamps true
+                                            :follow     false
+                                            :tail       tail}}})))
+
 ;; Service
 
 (defn services

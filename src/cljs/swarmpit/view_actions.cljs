@@ -9,9 +9,18 @@
             [swarmpit.component.config.list :as config-list]
             [swarmpit.component.node.list :as node-list]
             [swarmpit.component.task.list :as task-list]
+            [swarmpit.component.container.list :as container-list]
             [swarmpit.component.user.list :as user-list]))
 
 (defmulti render (fn [route] (:handler route)))
+
+(defmethod render :container-list
+  [_]
+  {:title "Containers" :search-fn container-list/form-search-fn})
+
+(defmethod render :container-info
+  [_]
+  {:title "Containers"})
 
 (defmethod render :default
   [_])

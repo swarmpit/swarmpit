@@ -24,6 +24,59 @@
 (def agent-label :swarmpit.agent)
 (def link-label "swarmpit.service.link.")
 
+(defn- container-owner
+  [labels]
+  {:managed (boolean (or (:com.docker.swarm.service.id labels)
+                         (:com.docker.swarm.task.id labels)))
+   :serviceId (:com.docker.swarm.service.id labels)
+   :serviceName (:com.docker.swarm.service.name labels)
+   :taskId (:com.docker.swarm.task.id labels)
+   :project (:com.docker.compose.project labels)})
+
+(defn ->container-summary
+  [container]
+  (merge {:id            (:Id container)
+          :containerName (str/replace (or (first (:Names container)) (:Id container)) #"^/" "")
+          :image         (:Image container)
+          :state         (:State container)
+          :status        (:Status container)}
+         (container-owner (:Labels container))))
+
+(defn ->container
+  [container]
+  (let [{:keys [Config HostConfig State NetworkSettings]} container]
+    (merge {:id            (:Id container)
+            :containerName (str/replace (or (:Name container) (:Id container)) #"^/" "")
+            :image         (:Image Config)
+            :state         (:Status State)
+            :status        (:Status State)
+            :createdAt     (:Created container)
+            :startedAt     (:StartedAt State)
+            :finishedAt    (:FinishedAt State)
+            :exitCode      (:ExitCode State)
+            :error         (:Error State)
+            :health        (get-in State [:Health :Status])
+            :restartPolicy (get-in HostConfig [:RestartPolicy :Name])
+            :command       (vec (cons (:Path container) (:Args container)))
+            :mounts        (mapv (fn [mount]
+                                  {:source     (:Source mount)
+                                   :volumeName (:Name mount)
+                                   :target     (:Destination mount)
+                                   :type       (:Type mount)
+                                   :readOnly   (false? (:RW mount))}) (:Mounts container))
+            :networks      (mapv (fn [[network settings]]
+                                  {:networkName (name network)
+                                   :id          (:NetworkID settings)
+                                   :address     (:IPAddress settings)}) (:Networks NetworkSettings))
+            :ports         (vec (mapcat (fn [[port bindings]]
+                                          (if (seq bindings)
+                                            (map (fn [binding]
+                                                   {:containerPort (subs (str port) 1)
+                                                    :hostIp        (:HostIp binding)
+                                                    :hostPort      (:HostPort binding)}) bindings)
+                                            [{:containerPort (subs (str port) 1)}])) (:Ports NetworkSettings)))}
+           (container-owner (:Labels Config)))))
+
 (defn ->image-ports
   [image-config]
   (let [ports (:ExposedPorts image-config)]

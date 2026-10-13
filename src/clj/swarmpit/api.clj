@@ -34,6 +34,48 @@
             [clj-time.core :as t]
             [swarmpit.token :as token]))
 
+(defn- container-host
+  []
+  (let [info (dc/info)]
+    {:nodeId   (not-empty (get-in info [:Swarm :NodeID]))
+     :nodeName (:Name info)}))
+
+(defn containers
+  []
+  (let [host (container-host)]
+    (mapv #(merge (dmi/->container-summary %) host) (dc/containers))))
+
+(defn container
+  [id]
+  (merge (dmi/->container (dc/container id)) (container-host)))
+
+(defn- standalone-container
+  [id]
+  (let [container (dc/container id)]
+    (when (:managed (dmi/->container container))
+      (throw (ex-info "Manage Swarm containers through their service"
+                      {:type :api :status 409
+                       :body {:error "Manage Swarm containers through their service"}})))
+    container))
+
+(defn container-action
+  [id action]
+  (when-not (contains? #{"start" "stop" "restart" "pause" "unpause"} action)
+    (throw (ex-info "Unsupported container action"
+                    {:type :api :status 400
+                     :body {:error "Unsupported container action"}})))
+  (dc/container-action (:Id (standalone-container id)) action))
+
+(defn delete-container
+  [id]
+  (dc/delete-container (:Id (standalone-container id))))
+
+(defn container-logs
+  [id tail]
+  (let [container (dc/container id)]
+    {:logs (dl/parse-container-log (dc/container-logs (:Id container) tail)
+                                   (get-in container [:Config :Tty]))}))
+
 ;;; User API
 
 (defn users
@@ -1049,9 +1091,8 @@
 
 (defn node
   [node-id]
-  (-> (dc/node node-id)
-      (dmi/->node)
-      (node-stats)))
+  (let [node (-> (dc/node node-id) (dmi/->node) (node-stats))]
+    (assoc node :containersAvailable (= (:id node) (get-in (dc/info) [:Swarm :NodeID])))))
 
 (defn update-node
   [node]

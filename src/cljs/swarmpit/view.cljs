@@ -35,6 +35,8 @@
             [swarmpit.component.node.edit :as node-edit]
             [swarmpit.component.task.list :as task-list]
             [swarmpit.component.task.info :as task-info]
+            [swarmpit.component.container.list :as container-list]
+            [swarmpit.component.container.info :as container-info]
             [swarmpit.component.user.list :as user-list]
             [swarmpit.component.user.info :as user-info]
             [swarmpit.component.user.create :as user-create]
@@ -51,6 +53,14 @@
             [swarmpit.component.registry-dockerhub.edit :as reg-dockerhub-edit]))
 
 (defmulti dispatch (fn [route] (:handler route)))
+
+(defmethod dispatch :container-list
+  [route]
+  (container-list/form route))
+
+(defmethod dispatch :container-info
+  [route]
+  (container-info/form route))
 
 (defmethod dispatch :index
   [route]

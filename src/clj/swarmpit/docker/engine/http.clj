@@ -47,8 +47,8 @@
     (str server api uri)))
 
 (defn execute
-  [{:keys [method api options unversioned?]}]
-  (let [timeout-ms (or (parse-int (config :docker-http-timeout)) 15000)
+  [{:keys [method api options unversioned? timeout]}]
+  (let [timeout-ms (or timeout (parse-int (config :docker-http-timeout)) 15000)
         cm (get-conn-manager)]
     (try
       (execute-in-scope {:method        method

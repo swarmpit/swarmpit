@@ -60,6 +60,41 @@
             :used  number?
             :total number?}})
 
+(s/def ::container-id (s/and string? #(re-matches #"[a-f0-9]{12,64}" %)))
+(s/def ::container-action #{"start" "stop" "restart" "pause" "unpause"})
+(s/def ::container-log-tail (s/and int? #(<= 1 % 5000)))
+
+(def container-summary
+  {:id            string?
+   :containerName string?
+   :image         string?
+   :state         string?
+   :status        string?
+   :managed       boolean?
+   :serviceId     (s/nilable string?)
+   :serviceName   (s/nilable string?)
+   :taskId        (s/nilable string?)
+   :nodeId        (s/nilable string?)
+   :nodeName      (s/nilable string?)
+   :project       (s/nilable string?)})
+
+(def container
+  (merge container-summary
+         {:createdAt     string?
+          :startedAt     string?
+          :finishedAt    string?
+          :exitCode      int?
+          :error         string?
+          :health        (s/nilable string?)
+          :restartPolicy string?
+          :command       [string?]
+          :mounts        [{:source string? :target string? :type string? :readOnly boolean?
+                           :volumeName (s/nilable string?)}]
+          :networks      [{:id (s/nilable string?) :networkName string? :address string?}]
+          :ports         [{:containerPort string?
+                           (ds/opt :hostIp) string?
+                           (ds/opt :hostPort) string?}]}))
+
 (def task
   {:id           string?
    :taskName     string?
@@ -352,6 +387,7 @@
 
 (def node
   {:id           string?
+   (ds/opt :containersAvailable) boolean?
    :version      number?
    :nodeName     string?
    :role         string?
