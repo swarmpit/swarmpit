@@ -34,6 +34,41 @@
             [clj-time.core :as t]
             [swarmpit.token :as token]))
 
+(defn containers
+  []
+  (mapv dmi/->container-summary (dc/containers)))
+
+(defn container
+  [id]
+  (dmi/->container (dc/container id)))
+
+(defn- standalone-container
+  [id]
+  (let [container (dc/container id)]
+    (when (:managed (dmi/->container container))
+      (throw (ex-info "Manage Swarm containers through their service"
+                      {:type :api :status 409
+                       :body {:error "Manage Swarm containers through their service"}})))
+    container))
+
+(defn container-action
+  [id action]
+  (when-not (contains? #{"start" "stop" "restart" "pause" "unpause"} action)
+    (throw (ex-info "Unsupported container action"
+                    {:type :api :status 400
+                     :body {:error "Unsupported container action"}})))
+  (dc/container-action (:Id (standalone-container id)) action))
+
+(defn delete-container
+  [id]
+  (dc/delete-container (:Id (standalone-container id))))
+
+(defn container-logs
+  [id tail]
+  (let [container (dc/container id)]
+    {:logs (dl/parse-container-log (dc/container-logs (:Id container) tail)
+                                   (get-in container [:Config :Tty]))}))
+
 ;;; User API
 
 (defn users

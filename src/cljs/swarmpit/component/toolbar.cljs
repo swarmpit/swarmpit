@@ -103,6 +103,7 @@
                          :variant   (or (:variant action) "contained")
                          :key       (str "toolbar-button-" index)
                          :startIcon (:icon action)
+                         :disabled  (:disabled action)
                          :onClick   (:onClick action)}
                         (when (not= (dec (count single-actions)) index)
                           {:className "Swarmpit-form-toolbar-btn"}))

@@ -54,6 +54,28 @@
                 :type   :api
                 :body   {:error error}}))))
 
+(defn containers
+  [_]
+  (resp-ok (api/containers)))
+
+(defn container
+  [{{:keys [path]} :parameters}]
+  (resp-ok (api/container (:id path))))
+
+(defn container-action
+  [{{:keys [path]} :parameters}]
+  (api/container-action (:id path) (:action path))
+  (resp-ok))
+
+(defn container-delete
+  [{{:keys [path]} :parameters}]
+  (api/delete-container (:id path))
+  (resp-ok))
+
+(defn container-logs
+  [{{:keys [path query]} :parameters}]
+  (resp-ok (api/container-logs (:id path) (or (:tail query) 200))))
+
 ;; Index handler
 
 (defn index

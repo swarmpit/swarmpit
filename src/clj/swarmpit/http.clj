@@ -39,9 +39,11 @@
 
 (defn- error-response
   [response-data error-handler]
-  (let [error-handler (or error-handler :error)]
+  (let [error-handler (or error-handler :error)
+        body (:body response-data)
+        body (if (bytes? body) (String. ^bytes body "UTF-8") body)]
     (try
-      (-> (:body response-data)
+      (-> body
           (parse-string true)
           (error-handler))
       (catch Exception _

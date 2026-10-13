@@ -79,6 +79,14 @@ to shared-volume driver type of your choice. Alternatively, you can link db serv
 
 Swarmpit is published on port `888` by default.
 
+## Host containers
+
+The **Containers** view lists running and stopped containers on the Docker host connected to Swarmpit. It includes standalone, Docker Compose and Swarm containers, with details and stdout/stderr logs.
+
+Users and administrators can start, stop, restart, pause, resume and remove standalone or Compose containers. Removal requires a stopped container and preserves its volumes. Swarm containers link to their service for lifecycle changes. Guests have read-only access.
+
+This view uses the configured Docker socket (`SWARMPIT_DOCKER_SOCK`); it does not list containers on other Swarm nodes. The same operations are available under `/api/containers` and documented in `/api-docs`.
+
 ## Environment Variables
 
 Refer to following [document](https://github.com/swarmpit/swarmpit/blob/master/doc/configuration.md) 

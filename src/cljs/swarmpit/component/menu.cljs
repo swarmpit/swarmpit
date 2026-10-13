@@ -33,6 +33,10 @@
     :handler :task-list
     :domain  :task}
    {:name "INFRASTRUCTURE"}
+   {:name    "Containers"
+    :icon    (comp/svg icon/tasks-path)
+    :handler :container-list
+    :domain  :container}
    {:name    "Networks"
     :icon    (comp/svg icon/networks-path)
     :handler :network-list
