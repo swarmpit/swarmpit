@@ -605,23 +605,27 @@
 (defn supported-registry-type? [type]
   (contains? supported-registry-types type))
 
+(defn- find-registry-by-url
+  "Return registry account matching given url or nil if none is linked"
+  [owner registry-address]
+  (when-let [registry (->> (supported-registries owner)
+                           (filter #(.contains (:url %) registry-address))
+                           (first))]
+    (case (:type registry)
+      "ecr" (registry-ecr->v2 registry)
+      "acr" (registry-acr->v2 registry)
+      "gitlab" (registry-gitlab->v2 registry)
+      registry)))
+
 (defn- registry-by-url
   "Return registry account matching given url"
   [owner registry-address]
-  (let [registry (->> (supported-registries owner)
-                      (filter #(.contains (:url %) registry-address))
-                      (first))]
-    (if (nil? registry)
+  (or (find-registry-by-url owner registry-address)
       (throw
         (ex-info "Registry error: No matching registry linked with Swarmpit"
                  {:status 401
                   :type   :api
-                  :body   {:error (str "No matching registry ( " registry-address " ) linked with Swarmpit")}}))
-      (case (:type registry)
-        "ecr" (registry-ecr->v2 registry)
-        "acr" (registry-acr->v2 registry)
-        "gitlab" (registry-gitlab->v2 registry)
-        registry))))
+                  :body   {:error (str "No matching registry ( " registry-address " ) linked with Swarmpit")}}))))
 
 (defn- registries-by-stackfile
   "Return registry accounts for given stackfile spec"
@@ -706,12 +710,20 @@
 
 ;;; Repository Digest API
 
+(defn- anonymous-repository-digest
+  [registry-address repository-name repository-tag]
+  (try
+    (rc/digest {:url (str "https://" registry-address)} repository-name repository-tag)
+    (catch Exception _ nil)))
+
 (defn- registry-repository-digest
   [owner repository-name repository-tag]
   (let [registry-address (du/distribution-id repository-name)
         repository-name (du/registry-repository repository-name registry-address)]
-    (-> (registry-by-url owner registry-address)
-        (rc/digest repository-name repository-tag))))
+    (if-let [registry (find-registry-by-url owner registry-address)]
+      (rc/digest registry repository-name repository-tag)
+      ;; unlinked registry (e.g. public ghcr.io), try an anonymous pull token like docker does
+      (anonymous-repository-digest registry-address repository-name repository-tag))))
 
 (defn- dockerhub-repository-digest
   [owner repository-name repository-tag]
@@ -957,7 +969,7 @@
       (cond
         (du/library? repository-name) nil
         (du/dockerhub? repository-name) (dockerhub-by-namespace owner distribution-id)
-        :else (registry-by-url owner distribution-id)))))
+        :else (find-registry-by-url owner distribution-id)))))
 
 (defn create-service
   [owner service]
