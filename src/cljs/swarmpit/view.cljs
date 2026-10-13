@@ -48,7 +48,8 @@
             [swarmpit.component.registry-acr.info :as reg-acr-info]
             [swarmpit.component.registry-acr.edit :as reg-acr-edit]
             [swarmpit.component.registry-dockerhub.info :as reg-dockerhub-info]
-            [swarmpit.component.registry-dockerhub.edit :as reg-dockerhub-edit]))
+            [swarmpit.component.registry-dockerhub.edit :as reg-dockerhub-edit]
+            [rum.core :as rum]))
 
 (defmulti dispatch (fn [route] (:handler route)))
 
@@ -124,15 +125,15 @@
 
 (defmethod dispatch :stack-last
   [route]
-  (stack-edit/form-last route))
+  (rum/with-key (stack-edit/form-last route) (get-in route [:params :name])))
 
 (defmethod dispatch :stack-previous
   [route]
-  (stack-edit/form-previous route))
+  (rum/with-key (stack-edit/form-previous route) (get-in route [:params :name])))
 
 (defmethod dispatch :stack-compose
   [route]
-  (stack-compose/form route))
+  (rum/with-key (stack-compose/form route) (get-in route [:params :name])))
 
 (defmethod dispatch :stack-activate
   [route]

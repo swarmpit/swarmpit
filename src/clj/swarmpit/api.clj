@@ -1188,6 +1188,62 @@
        (sort)
        (pick)))
 
+(defn stack-history
+  [stack-name]
+  (vec (:history (cc/stackfile stack-name))))
+
+(def ^:private max-comment-length 120)
+
+(defn- sanitize-comment
+  "Comments render in a single dropdown row, so keep them short and one-line."
+  [comment]
+  (when-let [c (some-> comment str/trim (str/replace #"\s+" " ") not-empty)]
+    (if (> (count c) max-comment-length)
+      (str (subs c 0 (dec max-comment-length)) "…")
+      c)))
+
+(defn append-history!
+  "Append an entry describing what just changed in the given stack. Skips when
+   the stack has no stackfile or the compose is unchanged since the last entry."
+  [stack-name {:keys [by trigger comment]}]
+  (when stack-name
+    (try
+      (when-let [stackfile-origin (cc/stackfile stack-name)]
+        (when-let [compose (stack-compose stack-name)]
+          (let [comment (sanitize-comment comment)
+                entry (cond-> {:at      (str (java.time.Instant/now))
+                               :by      (or by "system")
+                               :trigger trigger
+                               :spec    {:compose compose}}
+                        comment (assoc :comment comment))]
+            (loop [stackfile stackfile-origin, attempt 0]
+              (when stackfile
+                (let [history (vec (:history stackfile))]
+                  (when (not= compose (get-in (peek history) [:spec :compose]))
+                    (let [result (try
+                                   (cc/update-stackfile stackfile {:history (conj history entry)})
+                                   (catch Exception e
+                                     (if (and (= 409 (:status (ex-data e))) (< attempt 2))
+                                       ::retry
+                                       (throw e))))]
+                      (when (= ::retry result)
+                        (recur (cc/stackfile stack-name) (inc attempt)))))))))))
+      (catch Exception e
+        (log/warn "Failed to append stack history for" stack-name ":" (.getMessage e))))))
+
+(defn service-stack-name
+  "Stack name from a live service spec, or nil when the service isn't in a stack."
+  [service-id]
+  (try
+    (get-in (dc/service service-id) [:Spec :Labels :com.docker.stack.namespace])
+    (catch Exception _ nil)))
+
+(defn service-name-of
+  [service-id]
+  (try
+    (get-in (dc/service service-id) [:Spec :Name])
+    (catch Exception _ nil)))
+
 (defn deployed-stacks
   []
   (->> (dissoc (group-by :stack (services)) nil)
