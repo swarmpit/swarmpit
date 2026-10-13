@@ -9,6 +9,7 @@
             [swarmpit.component.message :as message]
             [swarmpit.component.progress :as progress]
             [swarmpit.component.common :as common]
+            [swarmpit.compose-diff :as diff]
             [swarmpit.ajax :as ajax]
             [swarmpit.routes :as routes]
             [swarmpit.url :refer [dispatch!]]
@@ -118,18 +119,14 @@
       (.setGutterMarker editor i "cm-diff-gutter" nil))
     (aset editor "__diffDeletions" (array))))
 
-(defn- restore-deletion! [editor handle chunk-size lines]
-  (let [line   (.getLineNumber editor handle)
-        joined (clojure.string/join "\n" lines)]
-    (if (pos? chunk-size)
-      (.replaceRange editor
-                     (str joined "\n")
-                     #js {:line (- line (dec chunk-size)) :ch 0}
-                     #js {:line (inc line) :ch 0})
-      (.replaceRange editor
-                     (str "\n" joined)
-                     #js {:line line :ch (.-length (or (.getLine editor line) ""))}
-                     #js {:line line :ch (.-length (or (.getLine editor line) ""))}))))
+(defn- restore-deletion! [editor entry]
+  (when-let [line (.getLineNumber editor (aget entry "handle"))]
+    (let [current (vec (for [i (range (.lineCount editor))] (.getLine editor i)))
+          {:keys [from to text]} (diff/restoration current
+                                   {:b-start (+ line (aget entry "startOffset"))
+                                    :b-end   (+ line (aget entry "endOffset"))
+                                    :lines   (aget entry "lines")})]
+      (.replaceRange editor text (clj->js from) (clj->js to)))))
 
 (defn- ensure-gutter-click! [editor]
   (when-not (aget editor "__diffGutterBound")
@@ -141,10 +138,7 @@
                                       (when (= line (.getLineNumber cm (aget e "handle")))
                                         e))
                                     (aget cm "__diffDeletions"))]
-               (restore-deletion! cm
-                                  (aget entry "handle")
-                                  (aget entry "chunkSize")
-                                  (aget entry "lines"))))))))
+               (restore-deletion! cm entry)))))))
 
 (defn- deletion-marker [lines]
   (let [node (.createElement js/document "div")
@@ -177,9 +171,10 @@
             (let [size   (- b-end b-start)
                   anchor (max 0 (min (dec n) (if (pos? size) (dec b-end) (dec b-start))))
                   handle (.getLineHandle editor anchor)]
-              (.push store #js {:handle    handle
-                                :chunkSize size
-                                :lines     (clj->js lines)})
+              (.push store #js {:handle      handle
+                                :startOffset (- b-start anchor)
+                                :endOffset   (- b-end anchor)
+                                :lines       lines})
               (.setGutterMarker editor anchor "cm-diff-gutter"
                                 (deletion-marker lines)))))))))
 
