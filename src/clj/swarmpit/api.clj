@@ -34,13 +34,20 @@
             [clj-time.core :as t]
             [swarmpit.token :as token]))
 
+(defn- container-host
+  []
+  (let [info (dc/info)]
+    {:nodeId   (not-empty (get-in info [:Swarm :NodeID]))
+     :nodeName (:Name info)}))
+
 (defn containers
   []
-  (mapv dmi/->container-summary (dc/containers)))
+  (let [host (container-host)]
+    (mapv #(merge (dmi/->container-summary %) host) (dc/containers))))
 
 (defn container
   [id]
-  (dmi/->container (dc/container id)))
+  (merge (dmi/->container (dc/container id)) (container-host)))
 
 (defn- standalone-container
   [id]
@@ -1084,9 +1091,8 @@
 
 (defn node
   [node-id]
-  (-> (dc/node node-id)
-      (dmi/->node)
-      (node-stats)))
+  (let [node (-> (dc/node node-id) (dmi/->node) (node-stats))]
+    (assoc node :containersAvailable (= (:id node) (get-in (dc/info) [:Swarm :NodeID])))))
 
 (defn update-node
   [node]

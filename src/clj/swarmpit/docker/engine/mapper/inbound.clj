@@ -30,6 +30,7 @@
                          (:com.docker.swarm.task.id labels)))
    :serviceId (:com.docker.swarm.service.id labels)
    :serviceName (:com.docker.swarm.service.name labels)
+   :taskId (:com.docker.swarm.task.id labels)
    :project (:com.docker.compose.project labels)})
 
 (defn ->container-summary
@@ -58,12 +59,14 @@
             :restartPolicy (get-in HostConfig [:RestartPolicy :Name])
             :command       (vec (cons (:Path container) (:Args container)))
             :mounts        (mapv (fn [mount]
-                                  {:source   (:Source mount)
-                                   :target   (:Destination mount)
-                                   :type     (:Type mount)
-                                   :readOnly (false? (:RW mount))}) (:Mounts container))
+                                  {:source     (:Source mount)
+                                   :volumeName (:Name mount)
+                                   :target     (:Destination mount)
+                                   :type       (:Type mount)
+                                   :readOnly   (false? (:RW mount))}) (:Mounts container))
             :networks      (mapv (fn [[network settings]]
                                   {:networkName (name network)
+                                   :id          (:NetworkID settings)
                                    :address     (:IPAddress settings)}) (:Networks NetworkSettings))
             :ports         (vec (mapcat (fn [[port bindings]]
                                           (if (seq bindings)

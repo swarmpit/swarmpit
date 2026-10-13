@@ -1,6 +1,5 @@
 (ns swarmpit.component.container.list
   (:require [material.components :as comp]
-            [material.component.form :as form]
             [material.component.label :as label]
             [material.component.list.util :as list-util]
             [swarmpit.component.common :as common]
@@ -9,13 +8,19 @@
             [swarmpit.component.progress :as progress]
             [swarmpit.ajax :as ajax]
             [swarmpit.routes :as routes]
+            [sablono.core :refer-macros [html]]
             [rum.core :as rum]))
 
 (defn owner
   [{:keys [managed project]}]
   (cond managed "Swarm"
-        project (str "Compose: " project)
+        project "Compose"
         :else "Standalone"))
+
+(defn resource-link
+  [text route params]
+  (comp/link {:href (routes/path-for-frontend route params)
+              :onClick #(.stopPropagation %)} text))
 
 (defn container-state
   [{:keys [state]}]
@@ -27,14 +32,29 @@
                      "grey")))
 
 (def render-metadata
-  {:table {:summary [{:name "Name" :render-fn (fn [item _] (:containerName item))}
-                     {:name "Image" :render-fn (fn [item _] (:image item))}
-                     {:name "Managed by" :render-fn (fn [item _] (owner item))}
-                     {:name "Status" :render-fn (fn [item _] (:status item))}
-                     {:name "State" :render-fn (fn [item _] (container-state item))}]}
+  {:table {:summary [{:name "Container"
+                      :render-fn (fn [item]
+                                   (html [:div
+                                          [:div (:containerName item)]
+                                          [:div.Swarmpit-table-cell-secondary (:image item)]]))}
+                     {:name "Node"
+                      :render-fn (fn [{:keys [nodeId nodeName]}]
+                                   (if nodeId (resource-link nodeName :node-info {:id nodeId}) nodeName))}
+                     {:name "Application"
+                      :render-fn (fn [{:keys [serviceId serviceName project] :as item}]
+                                   (if serviceId
+                                     (resource-link (or serviceName serviceId) :service-info {:id serviceId})
+                                     (or project (owner item))))}
+                     {:name "" :status true
+                      :render-fn (fn [item]
+                                   (comp/tooltip {:title (or (:status item) "")}
+                                     (container-state item)))}]}
    :list {:primary :containerName
-          :secondary (fn [item] (str (:image item) " · " (owner item)))
+          :secondary :image
           :status-fn container-state}})
+
+(defn onclick-handler [item]
+  (routes/path-for-frontend :container-info {:id (:id item)}))
 
 (defn- containers-handler
   []
@@ -66,12 +86,7 @@
         {:keys [loading?]} (state/react state/form-state-cursor)
         {:keys [query]} (state/react state/search-cursor)
         filtered-items (sort-by :containerName (list-util/filter items query))]
-    [:div
-     (comp/box {:style {:padding "16px 24px 0"}}
-       (form/item-info "Containers on the Docker host connected to Swarmpit, including stopped containers. Swarm containers are managed through their services."))
-     (progress/form
-       loading?
-       (when (some? items)
-         (common/list "Containers" items filtered-items render-metadata
-                      #(routes/path-for-frontend :container-info {:id (:id %)})
-                      [{:name "Refresh" :onClick containers-handler :variant "outlined"}])))]))
+    (progress/form
+      loading?
+      (when (some? items)
+        (common/list "Containers" items filtered-items render-metadata onclick-handler [])))))

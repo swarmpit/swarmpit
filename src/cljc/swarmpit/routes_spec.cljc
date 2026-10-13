@@ -73,6 +73,9 @@
    :managed       boolean?
    :serviceId     (s/nilable string?)
    :serviceName   (s/nilable string?)
+   :taskId        (s/nilable string?)
+   :nodeId        (s/nilable string?)
+   :nodeName      (s/nilable string?)
    :project       (s/nilable string?)})
 
 (def container
@@ -85,8 +88,9 @@
           :health        (s/nilable string?)
           :restartPolicy string?
           :command       [string?]
-          :mounts        [{:source string? :target string? :type string? :readOnly boolean?}]
-          :networks      [{:networkName string? :address string?}]
+          :mounts        [{:source string? :target string? :type string? :readOnly boolean?
+                           :volumeName (s/nilable string?)}]
+          :networks      [{:id (s/nilable string?) :networkName string? :address string?}]
           :ports         [{:containerPort string?
                            (ds/opt :hostIp) string?
                            (ds/opt :hostPort) string?}]}))
@@ -383,6 +387,7 @@
 
 (def node
   {:id           string?
+   (ds/opt :containersAvailable) boolean?
    :version      number?
    :nodeName     string?
    :role         string?

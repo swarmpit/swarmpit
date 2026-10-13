@@ -40,12 +40,14 @@
 
 (deftest container-mapping
   (testing "stopped, standalone and Compose containers retain their identity"
-    (with-redefs [dc/containers (constantly [{:Id id :Names ["/web"] :Image "alpine:3.20"
+    (with-redefs [dc/info (constantly {:Name "manager" :Swarm {:NodeID "local-node"}})
+                  dc/containers (constantly [{:Id id :Names ["/web"] :Image "alpine:3.20"
                                             :State "exited" :Status "Exited (17)" :Labels nil}
                                            {:Id "second" :Names ["/project-web-1"] :Labels {:com.docker.compose.project "project"}}])]
       (let [[standalone compose] (api/containers)]
         (is (= {:id id :containerName "web" :image "alpine:3.20" :state "exited"
-                :status "Exited (17)" :managed false :project nil :serviceId nil :serviceName nil}
+                :status "Exited (17)" :managed false :project nil :serviceId nil :serviceName nil
+                :taskId nil :nodeId "local-node" :nodeName "manager"}
                standalone))
         (is (= "project" (:project compose)))
         (is (false? (:managed compose))))))
@@ -54,8 +56,8 @@
       (is (= "web" (:containerName mapped)))
       (is (= 17 (:exitCode mapped)))
       (is (= ["/bin/sh" "-c" "sleep 3600"] (:command mapped)))
-      (is (= [{:source "/tmp/data" :target "/data" :type "bind" :readOnly true}] (:mounts mapped)))
-      (is (= [{:networkName "bridge" :address "172.17.0.2"}] (:networks mapped)))
+      (is (= [{:source "/tmp/data" :target "/data" :type "bind" :readOnly true :volumeName nil}] (:mounts mapped)))
+      (is (= [{:id nil :networkName "bridge" :address "172.17.0.2"}] (:networks mapped)))
       (is (= [{:containerPort "80/tcp" :hostIp "0.0.0.0" :hostPort "8080"}
               {:containerPort "90/udp"}] (:ports mapped)))
       (is (not (contains? mapped :Config)))
@@ -64,6 +66,28 @@
     (is (= id (:containerName (mapper/->container-summary {:Id id}))))
     (is (= [] (:mounts (mapper/->container (dissoc container :Mounts)))))
     (is (= [] (:networks (mapper/->container (assoc container :NetworkSettings nil)))))))
+
+(deftest container-resource-links
+  (let [mapped (mapper/->container
+                 (-> container
+                     (assoc-in [:Config :Labels] {:com.docker.swarm.service.id "service"
+                                                  :com.docker.swarm.service.name "web"
+                                                  :com.docker.swarm.task.id "task"})
+                     (assoc-in [:NetworkSettings :Networks :bridge :NetworkID] "network")
+                     (assoc :Mounts [{:Type "volume" :Name "data" :Source "/var/lib/docker/volumes/data/_data"
+                                      :Destination "/data" :RW true}])))]
+    (is (= "service" (:serviceId mapped)))
+    (is (= "task" (:taskId mapped)))
+    (is (= "network" (get-in mapped [:networks 0 :id])))
+    (is (= "data" (get-in mapped [:mounts 0 :volumeName])))))
+
+(deftest connected-node-container-scope
+  (with-redefs [dc/info (constantly {:Name "manager" :Swarm {:NodeID "local-node"}})
+                dc/node (fn [id] {:ID (if (= "manager" id) "local-node" id)})
+                api/node-stats identity]
+    (is (true? (:containersAvailable (api/node "local-node"))))
+    (is (true? (:containersAvailable (api/node "manager"))))
+    (is (false? (:containersAvailable (api/node "worker"))))))
 
 (deftest swarm-container-lifecycle-is-rejected
   (doseq [labels [{:com.docker.swarm.service.id "service"}
@@ -145,7 +169,8 @@
                             role (assoc "authorization" (token/generate-jwt {:username "tester" :role role})))})))
 
 (deftest container-routes-enforce-roles-and-inputs
-  (with-redefs [dc/containers (constantly [])
+  (with-redefs [dc/info (constantly {:Name "manager" :Swarm {:NodeID "local-node"}})
+                dc/containers (constantly [])
                 dc/container (constantly container)
                 dc/container-logs (fn [_ _] (frame 1 "hello\n"))
                 dc/container-action (fn [_ _])

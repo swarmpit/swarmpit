@@ -1,6 +1,9 @@
 (ns swarmpit.component.container.info
   (:require [clojure.string :as str]
             [material.components :as comp]
+            [material.icon :as icon]
+            [material.component.label :as label]
+            [material.component.list.basic :as list]
             [material.component.form :as form]
             [swarmpit.component.container.list :as containers]
             [swarmpit.component.dialog :as dialog]
@@ -54,7 +57,7 @@
                     (when origin?
                       (if delete?
                         (do (dispatch! (routes/path-for-frontend :container-list))
-                            (message/info "Container removed. Volumes have been preserved."))
+                            (message/info "Container removed."))
                         (container-handler id))))})))
 
 (defn- confirm-action
@@ -64,75 +67,117 @@
   (state/update-value [:open] true dialog/dialog-cursor))
 
 (defn- actions
-  [{:keys [id state managed]} processing?]
-  (let [action (fn [value title]
-                 {:name title :disabled processing?
-                  :onClick #(confirm-action value title)})]
-    (concat
-      (when (and (storage/user?) (not managed))
-        (case state
-          ("created" "exited") [(action "start" "Start") (action "delete" "Delete")]
-          "running" [(action "stop" "Stop") (action "restart" "Restart") (action "pause" "Pause")]
-          "paused" [(action "unpause" "Resume")]
-          "restarting" [(action "stop" "Stop")]
-          "dead" [(action "delete" "Delete")]
-          []))
-      [{:name "Refresh" :variant "outlined" :onClick #(container-handler id)}])))
+  [{:keys [state managed]} processing?]
+  (when (and (storage/user?) (not managed))
+    (let [action (fn [value title icon]
+                   {:name title :icon icon :disabled processing?
+                    :onClick #(confirm-action value title)})
+          start (action "start" "Start" (icon/play {}))
+          stop (action "stop" "Stop" (icon/stop {}))
+          delete (assoc (action "delete" "Delete" (comp/svg icon/trash-path))
+                        :variant "outlined" :color "default")]
+      (case state
+        ("created" "exited") [start delete]
+        "running" [(assoc (action "restart" "Restart" (icon/sync {})) :main true :group true)
+                   (assoc stop :group true)
+                   (assoc (action "pause" "Pause" (icon/pause {})) :group true)]
+        "paused" [(action "unpause" "Resume" (icon/play {}))]
+        "restarting" [stop]
+        "dead" [delete]
+        []))))
 
-(defn- format-port
-  [{:keys [containerPort hostIp hostPort]}]
-  (if hostPort
+(defn- published-port [{:keys [hostIp hostPort]}]
+  (when hostPort
     (str (if (str/includes? (or hostIp "") ":") (str "[" hostIp "]") hostIp)
-         ":" hostPort " → " containerPort)
-    containerPort))
+         ":" hostPort)))
 
-(rum/defc details < rum/static [{:keys [id image state createdAt startedAt finishedAt exitCode
-                                      error health restartPolicy command mounts networks ports] :as container}]
+(def ports-metadata
+  {:table {:summary [{:name "Container port" :render-fn :containerPort}
+                     {:name "Host port" :render-fn published-port}]}
+   :list {:primary :containerPort :secondary published-port}})
+
+(def networks-metadata
+  {:table {:summary [{:name "Network" :render-fn :networkName}
+                     {:name "Address" :render-fn :address}]}
+   :list {:primary :networkName :secondary :address}})
+
+(def mounts-metadata
+  {:table {:summary [{:name "Container path" :render-fn :target}
+                     {:name "Source" :render-fn #(or (:volumeName %) (:source %))}
+                     {:name "Type" :render-fn :type}
+                     {:name "Read only" :render-fn #(when (:readOnly %) "yes")}]}
+   :list {:primary :target :secondary #(or (:volumeName %) (:source %))}})
+
+(rum/defc resource-card < rum/static [title items metadata onclick]
+  (when (seq items)
+    (comp/grid {:item true :xs 12}
+      (comp/card {:className "Swarmpit-card"}
+        (comp/card-header {:className "Swarmpit-table-card-header"
+                           :title (comp/typography {:variant "h6"} title)})
+        (comp/card-content {:className "Swarmpit-table-card-content"}
+          (list/responsive metadata items onclick))))))
+
+(rum/defc details < rum/static [{:keys [id image state createdAt startedAt finishedAt exitCode error
+                                      health restartPolicy command nodeId nodeName serviceId taskId project]
+                               :as container}]
   (comp/card
     {:className "Swarmpit-form-card"}
+    (comp/card-header
+      {:subheader (form/item-labels
+                    [(containers/container-state container)
+                     (label/base (containers/owner container) "info")
+                     (when health
+                       (label/base health (case health "healthy" "green" "unhealthy" "red" "yellow")))])})
+    (when (seq error)
+      (comp/card-content {} (form/error-message error)))
     (form/item-main "ID" id false)
     (form/item-main "Image" image)
-    (form/item-main "State" (containers/container-state container))
-    (when health (form/item-main "Health" health))
-    (form/item-main "Managed by" (containers/owner container))
+    (when nodeName
+      (form/item-main "Node" (if nodeId (containers/resource-link nodeName :node-info {:id nodeId}) nodeName)))
+    (when project (form/item-main "Project" project))
     (form/item-main "Created" (form/item-date createdAt))
-    (when (not= "0001-01-01T00:00:00Z" startedAt)
+    (when (and startedAt (not= "0001-01-01T00:00:00Z" startedAt))
       (form/item-main "Started" (form/item-date startedAt)))
     (when (contains? #{"exited" "dead"} state)
       (comp/box {}
         (form/item-main "Finished" (form/item-date finishedAt))
         (form/item-main "Exit code" exitCode)))
-    (when (seq error) (form/item-main "Error" error))
     (form/item-main "Restart policy" (or (not-empty restartPolicy) "no"))
-    (form/item-main "Command" (str/join " " command))
-    (form/item-main "Ports" (str/join ", " (map format-port ports)))
-    (form/item-main "Networks" (str/join ", " (map #(str (:networkName %) " " (:address %)) networks)))
-    (form/item-main "Mounts"
-      (html [:div
-             (for [{:keys [source target type readOnly]} mounts]
-               [:div {:key target}
-                (str source " → " target " (" type (when readOnly ", read only") ")")])]))))
+    (when (seq command) (form/item-main "Command" (str/join " " command)))
+    (comp/divider {})
+    (comp/card-actions
+      {:style {:flexWrap "wrap"}}
+      (when serviceId
+        (comp/button {:size "small" :color "primary"
+                       :href (routes/path-for-frontend :service-info {:id serviceId})} "See service"))
+      (when taskId
+        (comp/button {:size "small" :color "primary"
+                       :href (routes/path-for-frontend :task-info {:id taskId})} "See task"))
+      (comp/button
+        {:size "small" :color "primary"
+         :onClick (fn []
+                    (state/update-value [:logs-open?] true state/form-state-cursor)
+                    (logs-handler id))}
+        "View log"))))
 
-(rum/defc logs < rum/static [id content {:keys [logs-open? logs-loading? logs-error]}]
-  (comp/card
-    {:className "Swarmpit-card"}
-    (comp/card-header
-      {:title "Logs"
-       :subheader "Last 200 lines of stdout and stderr"
-       :action (comp/button
-                 {:color "primary"
-                  :onClick (fn []
-                             (state/update-value [:logs-open?] (not logs-open?) state/form-state-cursor)
-                             (when-not logs-open? (logs-handler id)))}
-                 (if logs-open? "Hide logs" "Show logs"))})
-    (when logs-open?
-      (comp/card-content
-        {}
-        (when logs-error (form/error-message logs-error))
-        (when (and logs-loading? (nil? content)) (comp/linear-progress {}))
-        (html [:pre {:style {:maxHeight "480px" :overflow "auto" :whiteSpace "pre-wrap"
-                            :overflowWrap "anywhere" :margin 0}}
-               (or (not-empty content) (when-not logs-loading? "No logs available."))])))))
+(rum/defc logs < rum/static [name content {:keys [logs-open? logs-loading? logs-error]}]
+  (let [close #(state/update-value [:logs-open?] false state/form-state-cursor)]
+    (comp/dialog
+      {:fullScreen true :open (true? logs-open?) :onClose close
+       :aria-labelledby "container-log-title"}
+      (comp/app-bar {:color "primary" :className "Swarmpit-log-appbar"}
+        (comp/toolbar {}
+          (comp/icon-button {:color "inherit" :aria-label "Close logs" :onClick close} (icon/close {}))
+          (comp/typography {:variant "h6" :className "Swarmpit-log-title" :noWrap true} "Container")
+          (comp/typography {:id "container-log-title" :variant "h6" :noWrap true} name)))
+      (when (and logs-loading? (nil? content))
+        (comp/linear-progress {:className "Swarmpit-log-progress"}))
+      (html
+        [:div.Swarmpit-log {:style {:overflowWrap "anywhere"}}
+         [:div.Swarmpit-toolbar]
+         (if logs-error
+           (form/error-message logs-error)
+           [:div (or (not-empty content) (when-not logs-loading? "No logs available."))])]))))
 
 (def mixin-init-form
   (mixin/init-form
@@ -152,29 +197,28 @@
 (rum/defc form < rum/reactive mixin-init-form mixin-refresh-form [_]
   (let [{:keys [container] log-content :logs} (state/react state/form-value-cursor)
         {:keys [loading? processing? action action-title] :as form-state} (state/react state/form-state-cursor)
-        {:keys [id containerName managed serviceId serviceName]} container]
+        {:keys [id containerName mounts networks ports]} container
+        resources? (some seq [mounts networks ports])]
     (progress/form
       loading?
       (when container
         (comp/mui
           (html
             [:div.Swarmpit-form
-             (dialog/confirm-dialog
-               #(action-handler id action)
-               (str action-title " container " containerName "?"
-                    (when (= "delete" action) " Its writable layer will be removed. Volumes will be preserved."))
-               action-title)
-             (comp/container
-               {:maxWidth "md" :className "Swarmpit-container"}
-               (comp/grid
-                 {:container true :spacing 2}
-                 (comp/grid {:item true :xs 12}
-                   (toolbar/toolbar "Host container" containerName (actions container processing?)))
-                 (when managed
-                   (comp/grid {:item true :xs 12}
-                     (form/item-info "This container is managed by Swarm. Use its service to make changes.")
-                     (when serviceId
-                       (comp/button {:color "primary" :href (routes/path-for-frontend :service-info {:id serviceId})}
-                         (str "See service " serviceName)))))
-                 (comp/grid {:item true :xs 12} (details container))
-                 (comp/grid {:item true :xs 12} (logs id log-content form-state))))]))))))
+             (dialog/confirm-dialog #(action-handler id action)
+                                    (str action-title " container " containerName "?") action-title)
+             (logs containerName log-content form-state)
+             [:div.Swarmpit-form-toolbar
+              (comp/grid
+                {:container true :spacing 2}
+                (comp/grid {:item true :xs 12}
+                  (toolbar/toolbar "Container" containerName (actions container processing?)))
+                (comp/grid {:item true :xs 12 :md (if resources? 5 12)} (details container))
+                (when resources?
+                  (comp/grid {:item true :xs 12 :md 7}
+                    (comp/grid {:container true :spacing 2}
+                      (resource-card "Ports" ports ports-metadata nil)
+                      (resource-card "Networks" networks networks-metadata
+                        #(when (:id %) (routes/path-for-frontend :network-info {:id (:id %)})))
+                      (resource-card "Mounts" mounts mounts-metadata
+                        #(when (:volumeName %) (routes/path-for-frontend :volume-info {:name (:volumeName %)})))))))]]))))))

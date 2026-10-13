@@ -95,6 +95,8 @@
 (defn image [& args] (create-mui-icon "Image" args))
 (defn dashboard [& args] (create-mui-icon "Dashboard" args))
 (defn stop [& args] (create-mui-icon "Stop" args))
+(defn play [& args] (create-mui-icon "PlayArrow" args))
+(defn pause [& args] (create-mui-icon "Pause" args))
 (defn save [& args] (create-mui-icon "Save" args))
 (defn arrow-dropdown [& args] (create-mui-icon "ArrowDropDown" args))
 (defn exit [& args] (create-mui-icon "ExitToApp" args))
