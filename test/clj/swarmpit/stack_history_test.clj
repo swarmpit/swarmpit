@@ -77,7 +77,7 @@
             (api/append-history! "app" {:by "bob" :trigger {:kind "stack-update"}})))
         (is (= 30 (count (:history @stackfile)))))
 
-      (testing "a failing write is logged, not propagated"
+      (testing "a failing snapshot is logged, not propagated"
         (with-redefs [api/stack-compose (fn [_] (throw (ex-info "boom" {})))]
           (is (nil? (api/append-history! "app" {:by "bob" :trigger {:kind "stack-update"}})))))))
 
@@ -89,3 +89,48 @@
   (testing "skips when there is no stack name"
     (with-redefs [cc/stackfile (fn [& _] (throw (AssertionError. "must not read")))]
       (is (nil? (api/append-history! nil {:by "bob" :trigger {:kind "stack-update"}}))))))
+
+(deftest history-failure-does-not-fail-a-deployment
+  (doseq [failure [:read :snapshot :write]]
+    (testing (name failure)
+      (let [deployed (atom false)
+            fail #(throw (ex-info "history unavailable" {:status 503}))]
+        (with-redefs [api/update-stack (fn [& _] (reset! deployed true))
+                      cc/stackfile (fn [_] (if (= failure :read) (fail) {:history []}))
+                      api/stack-compose (fn [_] (if (= failure :snapshot) (fail) "new compose"))
+                      cc/update-stackfile (fn [& _] (fail))]
+          (is (= 200 (:status (handler/stack-update
+                               {:parameters {:path {:name "app"}
+                                             :body {:name "app" :spec {:compose "new compose"}}}
+                                :identity {:usr {:username "tester"}}}))))
+          (is @deployed))))))
+
+(deftest concurrent-history-writes
+  (doseq [concurrent-compose ["another change" "new compose"]]
+    (testing concurrent-compose
+      (let [other {:spec {:compose concurrent-compose}}
+            stackfile (atom {:_rev "1" :history []})
+            writes (atom 0)]
+        (with-redefs [cc/stackfile (fn [_] @stackfile)
+                      api/stack-compose (constantly "new compose")
+                      cc/update-stackfile
+                      (fn [origin delta]
+                        (if (= 1 (swap! writes inc))
+                          (do
+                            (reset! stackfile {:_rev "2" :spec {:compose "latest saved file"} :history [other]})
+                            (throw (ex-info "conflict" {:status 409})))
+                          (reset! stackfile (merge origin delta))))]
+          (api/append-history! "app" {:by "tester" :trigger {:kind "stack-update"}})
+          (is (= "latest saved file" (get-in @stackfile [:spec :compose])))
+          (is (= other (first (:history @stackfile))))
+          (is (= "new compose" (get-in (last (:history @stackfile)) [:spec :compose])))
+          (is (= (if (= concurrent-compose "new compose") 1 2) @writes))))))
+  (testing "repeated conflicts stop retrying without failing the deployment"
+    (let [writes (atom 0)]
+      (with-redefs [cc/stackfile (constantly {:history []})
+                    api/stack-compose (constantly "new compose")
+                    cc/update-stackfile (fn [& _]
+                                          (swap! writes inc)
+                                          (throw (ex-info "conflict" {:status 409})))]
+        (is (nil? (api/append-history! "app" {})))
+        (is (= 3 @writes))))))

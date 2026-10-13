@@ -1,15 +1,12 @@
 (ns swarmpit.component.stack.edit
   (:require [material.icon :as icon]
             [material.components :as comp]
-            [material.component.form :as form]
             [material.component.composite :as composite]
-            [swarmpit.component.editor :as editor]
             [swarmpit.component.state :as state]
             [swarmpit.component.mixin :as mixin]
             [swarmpit.component.message :as message]
             [swarmpit.component.progress :as progress]
             [swarmpit.component.stack.compose :as compose]
-            [swarmpit.component.common :as common]
             [swarmpit.ajax :as ajax]
             [swarmpit.routes :as routes]
             [swarmpit.url :refer [dispatch!]]
@@ -58,11 +55,13 @@
   (ajax/get
     (routes/path-for-backend :stack-file {:name name})
     {:state      [:loading?]
-     :on-success (fn [{:keys [response]}]
-                   (state/set-value
-                     (if (= :stack-previous handler)
-                       (set/rename-keys response {:previousSpec :spec}) response) state/form-value-cursor)
-                   (state/update-value [:previous?] (:previousSpec response) state/form-state-cursor))}))
+     :on-success (fn [{:keys [response origin?]}]
+                   (when origin?
+                     (let [stackfile (if (= :stack-previous handler)
+                                       (set/rename-keys response {:previousSpec :spec}) response)]
+                       (state/set-value stackfile state/form-value-cursor)
+                       (state/update-value [:source-compose] (get-in stackfile [:spec :compose]) state/form-state-cursor)
+                       (state/update-value [:previous?] (:previousSpec response) state/form-state-cursor))))}))
 
 (defn- baseline-handler
   "Fetch the current engine state separately so the editor can diff against it
@@ -70,23 +69,13 @@
   [name]
   (ajax/get
     (routes/path-for-backend :stack-compose {:name name})
-    {:on-success (fn [{:keys [response]}]
-                   (state/update-value [:baseline]
-                                       (get-in response [:spec :compose])
-                                       state/form-state-cursor)
-                   (compose/refresh-diff!))
+    {:on-success (fn [{:keys [response origin?]}]
+                   (when origin?
+                     (state/update-value [:baseline]
+                                         (get-in response [:spec :compose])
+                                         state/form-state-cursor)
+                     (compose/refresh-diff!)))
      :on-error   (fn [_])}))
-
-(def mixin-init-editor
-  {:did-mount
-   (fn [state]
-     (let [editor (editor/yaml editor-id)]
-       (state/update-value [:editor] editor state/form-state-cursor)
-       (.on editor "change"
-            (fn [cm]
-              (state/update-value [:spec :compose] (-> cm .getValue) state/form-value-cursor)
-              (compose/refresh-diff!))))
-     state)})
 
 (defn- init-form-state
   []
@@ -113,7 +102,7 @@
       (compose/history-handler name)
       (baseline-handler name))))
 
-(rum/defc form-edit < mixin-init-editor [{:keys [name spec]}
+(rum/defc form-edit < compose/mixin-init-editor [{:keys [name spec]}
                                          select
                                          {:keys [processing? valid? previous? history source]}]
   (comp/mui

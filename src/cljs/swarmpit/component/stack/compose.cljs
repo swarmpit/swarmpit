@@ -1,14 +1,12 @@
 (ns swarmpit.component.stack.compose
   (:require [material.icon :as icon]
             [material.components :as comp]
-            [material.component.form :as form]
             [material.component.composite :as composite]
             [swarmpit.component.editor :as editor]
             [swarmpit.component.state :as state]
             [swarmpit.component.mixin :as mixin]
             [swarmpit.component.message :as message]
             [swarmpit.component.progress :as progress]
-            [swarmpit.component.common :as common]
             [swarmpit.compose-diff :as diff]
             [swarmpit.ajax :as ajax]
             [swarmpit.routes :as routes]
@@ -54,6 +52,7 @@
           now  (.getTime (js/Date.))
           s    (max 0 (quot (- now past) 1000))]
       (cond
+        (js/isNaN past) "Unknown time"
         (< s 60)       "just now"
         (< s 3600)     (str (quot s 60) "m ago")
         (< s 86400)    (str (quot s 3600) "h ago")
@@ -64,54 +63,16 @@
 
 (defn- history-label [{:keys [at by trigger comment]}]
   (let [{:keys [kind service]} trigger]
-    (str (humanize-kind kind)
-         ;; a comment says more than the service name, so it wins the slot
-         (cond
-           (not (empty? comment)) (str " · " comment)
-           service (str " · " service))
-         " · " (relative-time at)
-         " · " by)))
-
-(defn- lcs-script [a b]
-  (let [m  (count a)
-        nk (inc (count b))
-        dp (reduce
-             (fn [dp i]
-               (conj dp (reduce
-                          (fn [r j]
-                            (conj r (if (= (nth a (dec i)) (nth b (dec j)))
-                                      (inc (get-in dp [(dec i) (dec j)]))
-                                      (max (get-in dp [(dec i) j]) (peek r)))))
-                          [0] (range 1 nk))))
-             [(vec (repeat nk 0))] (range 1 (inc m)))
-        ops (loop [i m, j (dec nk), ops ()]
-              (cond
-                (and (pos? i) (pos? j) (= (nth a (dec i)) (nth b (dec j))))
-                (recur (dec i) (dec j) (conj ops [:keep]))
-                (and (pos? i) (or (zero? j) (>= (get-in dp [(dec i) j]) (get-in dp [i (dec j)]))))
-                (recur (dec i) j (conj ops [:del (nth a (dec i))]))
-                (pos? j) (recur i (dec j) (conj ops [:add]))
-                :else ops))]
-    (reduce
-      (fn [{:keys [bi chunk-start chunk-lines] :as s} [op text]]
-        (case op
-          :keep (-> (if (seq chunk-lines)
-                      (update s :chunks conj
-                              {:b-start (or chunk-start bi)
-                               :b-end   bi
-                               :lines   chunk-lines})
-                      s)
-                    (assoc :chunk-start nil :chunk-lines [])
-                    (update :bi inc))
-          :add  (-> s
-                    (update :added conj bi)
-                    (assoc :chunk-start (or chunk-start bi))
-                    (update :bi inc))
-          :del  (-> s
-                    (assoc :chunk-start (or chunk-start bi))
-                    (update :chunk-lines conj text))))
-      {:added #{} :chunks [] :bi 0 :chunk-start nil :chunk-lines []}
-      (concat ops [[:keep]]))))
+    (html
+      [:div.Swarmpit-compose-history
+       {:title (str (humanize-kind kind) " · " at " · " by
+                    (when service (str " · " service))
+                    (when (seq comment) (str " · " comment)))}
+       [:div.Swarmpit-compose-history-title
+        (or (not-empty comment)
+            (str (humanize-kind kind) (when service (str " · " service))))]
+       [:div.Swarmpit-compose-history-meta
+        (str (relative-time at) " · " (or by "system"))]])))
 
 (defn- clear-diff-gutters! [editor]
   (let [n (.lineCount editor)]
@@ -128,25 +89,37 @@
                                     :lines   (aget entry "lines")})]
       (.replaceRange editor text (clj->js from) (clj->js to)))))
 
+(defn- restore-line! [editor line]
+  (.operation editor
+              (fn []
+                (doseq [entry (reverse (filter #(= line (.getLineNumber editor (aget % "handle")))
+                                              (aget editor "__diffDeletions")))]
+                  (restore-deletion! editor entry)))))
+
 (defn- ensure-gutter-click! [editor]
   (when-not (aget editor "__diffGutterBound")
     (aset editor "__diffGutterBound" true)
     (.on editor "gutterClick"
          (fn [cm line gutter _event]
            (when (= gutter "cm-diff-gutter")
-             (when-let [entry (some (fn [e]
-                                      (when (= line (.getLineNumber cm (aget e "handle")))
-                                        e))
-                                    (aget cm "__diffDeletions"))]
-               (restore-deletion! cm entry)))))))
+             (restore-line! cm line))))))
 
-(defn- deletion-marker [lines]
+(defn- deletion-marker [editor handle lines]
   (let [node (.createElement js/document "div")
         joined (clojure.string/join "\n" lines)]
     (set! (.-className node) "cm-diff-deleted-marker")
     (set! (.-textContent node) "−")
     (.setAttribute node "data-tooltip" joined)
     (.setAttribute node "data-count" (count lines))
+    (.setAttribute node "role" "button")
+    (.setAttribute node "tabindex" "0")
+    (.setAttribute node "aria-label" (str "Restore " (count lines) " lines from current state"))
+    (.addEventListener node "keydown"
+                       (fn [event]
+                         (when (contains? #{"Enter" " "} (.-key event))
+                           (.preventDefault event)
+                           (when-let [line (.getLineNumber editor handle)]
+                             (restore-line! editor line)))))
     node))
 
 (defn- apply-diff!
@@ -163,50 +136,44 @@
               ;; as its last line — split-lines drops it and every diff then
               ;; reports a phantom change on the final line
               base  (vec (clojure.string/split baseline #"\n" -1))
-              {:keys [added chunks]} (lcs-script base cur)
+              {:keys [added chunks]} (diff/changes base cur)
               store (aget editor "__diffDeletions")]
           (doseq [i added]
             (.addLineClass editor i "background" "cm-diff-changed"))
-          (doseq [{:keys [b-start b-end lines]} chunks]
-            (let [size   (- b-end b-start)
-                  anchor (max 0 (min (dec n) (if (pos? size) (dec b-end) (dec b-start))))
-                  handle (.getLineHandle editor anchor)]
-              (.push store #js {:handle      handle
-                                :startOffset (- b-start anchor)
-                                :endOffset   (- b-end anchor)
-                                :lines       lines})
+          (doseq [[anchor changes] (group-by #(max 0 (min (dec n) (dec (:b-end %)))) chunks)]
+            (let [handle (.getLineHandle editor anchor)]
+              (doseq [{:keys [b-start b-end lines]} changes]
+                (.push store #js {:handle      handle
+                                 :startOffset (- b-start anchor)
+                                 :endOffset   (- b-end anchor)
+                                 :lines       lines}))
               (.setGutterMarker editor anchor "cm-diff-gutter"
-                                (deletion-marker lines)))))))))
-
-(defonce ^:private diff-timer (atom nil))
-(defonce ^:private diff-last (atom nil))
-
-(defn- run-diff! []
-  (let [state (state/get-value state/form-state-cursor)
-        editor (:editor state)
-        baseline (:baseline state)
-        signature [(some-> editor (.getValue)) baseline]]
-    ;; skip when neither the buffer nor the baseline moved since the last run
-    (when (not= signature @diff-last)
-      (reset! diff-last signature)
-      (apply-diff! editor baseline))))
+                                (deletion-marker editor handle (mapcat :lines changes))))))))))
 
 (defn refresh-diff!
-  "Debounced — lcs-script is O(lines²) and this is wired to every keystroke."
   []
-  (when-let [t @diff-timer] (js/clearTimeout t))
-  (reset! diff-timer
-          (js/setTimeout
-            (fn [] (reset! diff-timer nil) (run-diff!))
-            200)))
+  (let [{:keys [editor baseline]} (state/get-value state/form-state-cursor)]
+    (when editor
+      (js/clearTimeout (aget editor "__diffTimer"))
+      (aset editor "__diffTimer"
+            (js/setTimeout
+              (fn []
+                (let [signature [(.getValue editor) baseline]]
+                  (when (not= signature (aget editor "__diffLast"))
+                    (.operation editor #(apply-diff! editor baseline))
+                    (aset editor "__diffLast" signature))))
+              200)))))
+
+(defn- load-compose! [source compose]
+  (when-let [editor (state/get-value (conj state/form-state-cursor :editor))]
+    (when (some? compose)
+      (state/update-value [:source] source state/form-state-cursor)
+      (.setValue editor compose))))
 
 (defn- load-history-entry! [idx history]
   (let [entry (nth history idx nil)
-        editor (state/get-value (conj state/form-state-cursor :editor))
         compose (get-in entry [:spec :compose])]
-    (when (and editor compose)
-      (state/update-value [:source] (str "history-" idx) state/form-state-cursor)
-      (.setValue editor compose))))
+    (load-compose! (str "history-" idx) compose)))
 
 (defn- ->str [x]
   (cond
@@ -224,25 +191,30 @@
        {:fullWidth       true
         :key             "compose-select"
         :label           "Compose file"
-        :helperText      "Compose file source"
         :select          true
         :value           current
         :variant         "outlined"
         :margin          "normal"
         :InputLabelProps {:shrink true}
+        :SelectProps     {:MenuProps {:classes {:paper "Swarmpit-compose-source-menu"}}}
         :onChange        (fn [e]
                            (let [v (-> e .-target .-value)]
-                             (if (clojure.string/starts-with? v "history-")
+                             (cond
+                               (clojure.string/starts-with? v "history-")
                                (load-history-entry! (js/parseInt (subs v 8)) history)
-                               (dispatch! (routes/path-for-frontend (keyword v) {:name name})))))}
+
+                               (= v (->str value))
+                               (load-compose! v (state/get-value (conj state/form-state-cursor :source-compose)))
+
+                               :else (dispatch! (routes/path-for-frontend (keyword v) {:name name})))))}
        (comp/menu-item {:key "current"  :value "stack-compose"}  "Current engine state")
        (comp/menu-item {:key "last"     :value "stack-last"
                         :disabled (not last?)} "Last deployed")
        (comp/menu-item {:key "previous" :value "stack-previous"
-                        :disabled (not previous?)} "Previously deployed (rollback)")
+                        :disabled (not previous?)} "Previously deployed")
        (when (seq history)
          (comp/menu-item {:key "history-header" :value "history-header"
-                          :disabled true} "— History —"))
+                          :disabled true} "History"))
        (map-indexed
          (fn [idx entry]
            (comp/menu-item {:key (str "history-" idx) :value (str "history-" idx)}
@@ -291,42 +263,55 @@
   (ajax/get
     (routes/path-for-backend :stack-compose {:name name})
     {:state      [:loading?]
-     :on-success (fn [{:keys [response]}]
-                   (state/set-value response state/form-value-cursor)
-                   (state/update-value [:baseline]
-                                       (get-in response [:spec :compose])
-                                       state/form-state-cursor)
-                   (refresh-diff!))}))
+     :on-success (fn [{:keys [response origin?]}]
+                   (when origin?
+                     (state/set-value response state/form-value-cursor)
+                     (state/update-value [:source-compose] (get-in response [:spec :compose]) state/form-state-cursor)
+                     (state/update-value [:baseline]
+                                         (get-in response [:spec :compose])
+                                         state/form-state-cursor)
+                     (refresh-diff!)))}))
 
 (def mixin-init-editor
   {:did-mount
    (fn [state]
      (let [editor (editor/yaml editor-id)]
+       (.setOption editor "gutters" #js ["CodeMirror-lint-markers" "cm-diff-gutter"])
        (state/update-value [:editor] editor state/form-state-cursor)
        (.on editor "change"
             (fn [cm]
+              (aset cm "__diffLast" nil)
               (state/update-value [:spec :compose] (-> cm .getValue) state/form-value-cursor)
-              (refresh-diff!))))
+              (refresh-diff!)))
+       (refresh-diff!)
+       (assoc state ::editor editor)))
+   :will-unmount
+   (fn [state]
+     (when-let [editor (::editor state)]
+       (js/clearTimeout (aget editor "__diffTimer"))
+       (.toTextArea ^js editor))
      state)})
 
 (defn stackfile-handler
   [name]
   (ajax/get
     (routes/path-for-backend :stack-file {:name name})
-    {:on-success (fn [{:keys [response]}]
-                   (when (:spec response) (state/update-value [:last?] true state/form-state-cursor))
-                   (when (:previousSpec response) (state/update-value [:previous?] true state/form-state-cursor)))
-     :on-error   (fn [_]
-                   (state/update-value [:last?] false state/form-state-cursor)
-                   (state/update-value [:previous?] false state/form-state-cursor))}))
+    {:on-success (fn [{:keys [response origin?]}]
+                   (when origin?
+                     (when (:spec response) (state/update-value [:last?] true state/form-state-cursor))
+                     (when (:previousSpec response) (state/update-value [:previous?] true state/form-state-cursor))))
+     :on-error   (fn [{:keys [origin?]}]
+                   (when origin?
+                     (state/update-value [:last?] false state/form-state-cursor)
+                     (state/update-value [:previous?] false state/form-state-cursor)))}))
 
 (defn history-handler
   [name]
   (ajax/get
     (routes/path-for-backend :stack-history {:name name})
-    {:on-success (fn [{:keys [response]}]
-                   (state/update-value [:history] (vec (reverse response)) state/form-state-cursor))
-     :on-error   (fn [_] (state/update-value [:history] [] state/form-state-cursor))}))
+    {:on-success (fn [{:keys [response origin?]}]
+                   (when origin?
+                     (state/update-value [:history] (vec (reverse response)) state/form-state-cursor)))}))
 
 (defn- init-form-state
   []

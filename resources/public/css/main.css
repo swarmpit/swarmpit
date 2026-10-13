@@ -1293,6 +1293,27 @@ html.dark .Swarmpit-login-instance {
     border: 1px solid rgba(0, 0, 0, 0.23) !important;
 }
 
+.Swarmpit-compose-history {
+    min-width: 0;
+    width: 100%;
+}
+
+.Swarmpit-compose-history-title {
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+}
+
+.Swarmpit-compose-history-meta {
+    font-size: 12px;
+    opacity: 0.7;
+}
+
+.Swarmpit-compose-source-menu .Swarmpit-compose-history-title {
+    white-space: normal;
+    overflow-wrap: anywhere;
+}
+
 .cm-diff-changed {
     background-color: rgba(46, 160, 67, 0.22);
 }
@@ -1317,7 +1338,8 @@ html.dark .cm-diff-changed {
     user-select: none;
 }
 
-.cm-diff-deleted-marker:hover {
+.cm-diff-deleted-marker:hover,
+.cm-diff-deleted-marker:focus {
     background-color: rgba(244, 67, 54, 0.20);
 }
 
@@ -1369,7 +1391,9 @@ html.dark .cm-diff-changed {
 }
 
 .cm-diff-deleted-marker:hover::before,
-.cm-diff-deleted-marker:hover::after {
+.cm-diff-deleted-marker:hover::after,
+.cm-diff-deleted-marker:focus::before,
+.cm-diff-deleted-marker:focus::after {
     display: block;
 }
 
@@ -1377,7 +1401,8 @@ html.dark .cm-diff-deleted-marker {
     color: #ff867c;
 }
 
-html.dark .cm-diff-deleted-marker:hover {
+html.dark .cm-diff-deleted-marker:hover,
+html.dark .cm-diff-deleted-marker:focus {
     background-color: rgba(244, 67, 54, 0.25);
 }
 

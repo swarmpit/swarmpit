@@ -1207,20 +1207,29 @@
    the stack has no stackfile or the compose is unchanged since the last entry."
   [stack-name {:keys [by trigger comment]}]
   (when stack-name
-    (when-let [stackfile-origin (cc/stackfile stack-name)]
-      (try
+    (try
+      (when-let [stackfile-origin (cc/stackfile stack-name)]
         (when-let [compose (stack-compose stack-name)]
-          (let [history (or (:history stackfile-origin) [])
-                last-compose (some-> history last :spec :compose)]
-            (when (not= compose last-compose)
-              (let [entry (cond-> {:at      (str (java.time.Instant/now))
-                                   :by      (or by "system")
-                                   :trigger trigger
-                                   :spec    {:compose compose}}
-                            (sanitize-comment comment) (assoc :comment (sanitize-comment comment)))]
-                (cc/update-stackfile stackfile-origin {:history (conj history entry)})))))
-        (catch Exception e
-          (log/warn "Failed to append stack history for" stack-name ":" (.getMessage e)))))))
+          (let [comment (sanitize-comment comment)
+                entry (cond-> {:at      (str (java.time.Instant/now))
+                               :by      (or by "system")
+                               :trigger trigger
+                               :spec    {:compose compose}}
+                        comment (assoc :comment comment))]
+            (loop [stackfile stackfile-origin, attempt 0]
+              (when stackfile
+                (let [history (vec (:history stackfile))]
+                  (when (not= compose (get-in (peek history) [:spec :compose]))
+                    (let [result (try
+                                   (cc/update-stackfile stackfile {:history (conj history entry)})
+                                   (catch Exception e
+                                     (if (and (= 409 (:status (ex-data e))) (< attempt 2))
+                                       ::retry
+                                       (throw e))))]
+                      (when (= ::retry result)
+                        (recur (cc/stackfile stack-name) (inc attempt)))))))))))
+      (catch Exception e
+        (log/warn "Failed to append stack history for" stack-name ":" (.getMessage e))))))
 
 (defn service-stack-name
   "Stack name from a live service spec, or nil when the service isn't in a stack."
