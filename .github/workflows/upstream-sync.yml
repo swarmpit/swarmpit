@@ -1,0 +1,86 @@
+name: Propose upstream update
+on:
+  schedule:
+    - cron: "17 7 * * 1"
+  workflow_dispatch:
+permissions:
+  contents: read
+concurrency:
+  group: upstream-sync
+  cancel-in-progress: false
+jobs:
+  prepare:
+    # Scheduled workflows must exist on the default branch. See docs/UPSTREAM_UPDATES.md.
+    if: github.repository != 'swarmpit/swarmpit'
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
+    outputs:
+      changed: ${{ steps.prepare.outputs.changed }}
+      branch: ${{ steps.prepare.outputs.branch }}
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: react-ui
+          fetch-depth: 0
+      - name: Prepare an immutable update branch
+        id: prepare
+        shell: bash
+        run: |
+          set -euo pipefail
+          git remote add upstream https://github.com/swarmpit/swarmpit.git
+          git fetch upstream master
+          if git merge-base --is-ancestor upstream/master HEAD; then
+            echo 'changed=false' >> "$GITHUB_OUTPUT"
+            exit 0
+          fi
+          bash scripts/check-upstream.sh HEAD upstream/master
+          base=$(git rev-parse --short=12 HEAD)
+          upstream=$(git rev-parse --short=12 upstream/master)
+          branch="updates/upstream-$upstream-$base"
+          git config user.name 'github-actions[bot]'
+          git config user.email '41898282+github-actions[bot]@users.noreply.github.com'
+          if git ls-remote --exit-code --heads origin "$branch" >/dev/null; then
+            git fetch origin "$branch"
+            git checkout -B "$branch" FETCH_HEAD
+          else
+            git checkout -b "$branch"
+            git merge --no-ff --no-edit upstream/master
+            git push origin "HEAD:refs/heads/$branch"
+          fi
+          echo 'changed=true' >> "$GITHUB_OUTPUT"
+          echo "branch=$branch" >> "$GITHUB_OUTPUT"
+      - name: Report conflicts without discarding changes
+        if: failure()
+        run: echo 'Upstream update could not be prepared. Inspect the merge-check output and follow docs/UPSTREAM_UPDATES.md. No automatic merge or deployment occurred.' >> "$GITHUB_STEP_SUMMARY"
+  verify:
+    needs: prepare
+    if: needs.prepare.outputs.changed == 'true'
+    uses: ./.github/workflows/react-ui.yml
+    with:
+      ref: ${{ needs.prepare.outputs.branch }}
+    permissions:
+      contents: read
+  propose:
+    needs: [prepare, verify]
+    if: needs.prepare.outputs.changed == 'true'
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+      pull-requests: write
+    env:
+      GH_TOKEN: ${{ github.token }}
+      GH_REPO: ${{ github.repository }}
+      UPDATE_BRANCH: ${{ needs.prepare.outputs.branch }}
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: react-ui
+          persist-credentials: false
+      - name: Open a reviewable update PR
+        shell: bash
+        run: |
+          set -euo pipefail
+          existing=$(gh pr list --base react-ui --head "$UPDATE_BRANCH" --state open --json number --jq 'length')
+          if [ "$existing" != 0 ]; then exit 0; fi
+          gh pr create --base react-ui --head "$UPDATE_BRANCH" --title 'chore(upstream): merge Swarmpit updates' --body-file .github/upstream-pr-body.md

@@ -1,0 +1,6 @@
+.git
+frontend/node_modules
+resources/public/react
+target
+.superpowers
+.DS_Store

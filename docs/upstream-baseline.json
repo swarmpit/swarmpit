@@ -1,0 +1,8 @@
+{
+  "repository": "https://github.com/swarmpit/swarmpit",
+  "branch": "master",
+  "commit": "65b2c99ffbf07ca986c3a5f4f5bd98ceecf8a8b9",
+  "recordedOn": "2026-11-05",
+  "customBranch": "react-ui",
+  "verification": "Frontend migration in progress; see UI_PARITY.md for actual runtime evidence."
+}
