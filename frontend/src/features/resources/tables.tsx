@@ -45,7 +45,6 @@ export function ServicesTable({ rows }: { rows: Service[] }) {
             </span>
           ),
         },
-        { label: "State", render: (s) => <Status value={serviceDisplayState(s)} /> },
         {
           label: "Tasks",
           render: (s) =>
@@ -66,6 +65,7 @@ export function ServicesTable({ rows }: { rows: Service[] }) {
           label: "Stack",
           render: (s) => (s.stack ? link("stacks", s.stack, s.stack) : "—"),
         },
+        { label: "State", fixed: true, render: (s) => <Status value={serviceDisplayState(s)} /> },
       ]}
     />
   );
@@ -138,7 +138,7 @@ export function TasksTable({ rows }: { rows: Task[] }) {
             <span className="text-destructive">{t.status?.error}</span>
           ),
         },
-        { label: "State", render: (t) => <Status value={t.state} /> },
+        { label: "State", fixed: true, render: (t) => <Status value={t.state} /> },
       ]}
     />
   );
@@ -154,17 +154,18 @@ export function StacksTable({ rows }: { rows: Stack[] }) {
           label: "Stack",
           render: (s) => link("stacks", s.stackName, s.stackName),
         },
+        { label: "Services", render: (s) => s.services?.length || 0 },
+        { label: "Networks", render: (s) => s.networks?.length || 0 },
+        { label: "Updated", render: (s) => date(s.updatedAt) },
         {
           label: "State",
+          fixed: true,
           render: (s) => (
             <Status
               value={s.state || (s.services?.length ? "deployed" : "inactive")}
             />
           ),
         },
-        { label: "Services", render: (s) => s.services?.length || 0 },
-        { label: "Networks", render: (s) => s.networks?.length || 0 },
-        { label: "Updated", render: (s) => date(s.updatedAt) },
       ]}
     />
   );

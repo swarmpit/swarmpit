@@ -403,6 +403,7 @@ export function Status({ value }: { value?: string }) {
   );
 }
 const alphabeticalOrder = new Intl.Collator(undefined, { sensitivity: "base", numeric: true });
+const fixedColumnClass = "sticky right-0 z-10 w-px bg-card shadow-[-1px_0_0_var(--border)] transition-colors group-hover/row:bg-muted";
 
 export function ResourceTable<T>({
   rows,
@@ -412,7 +413,7 @@ export function ResourceTable<T>({
   empty,
 }: {
   rows: readonly T[];
-  columns: { label: string; render: (row: T) => ReactNode }[];
+  columns: { label: string; render: (row: T) => ReactNode; fixed?: boolean }[];
   search?: (row: T) => string;
   sortBy: (row: T) => string | number;
   empty?: string;
@@ -442,17 +443,17 @@ export function ResourceTable<T>({
         <div className="overflow-hidden rounded-xl border bg-card">
           <Table>
             <TableHeader>
-              <TableRow>
+              <TableRow className="group/row hover:bg-muted">
                 {columns.map((col) => (
-                  <TableHead key={col.label}>{col.label}</TableHead>
+                  <TableHead key={col.label} className={col.fixed ? fixedColumnClass : undefined}>{col.label}</TableHead>
                 ))}
               </TableRow>
             </TableHeader>
             <TableBody>
               {sorted.map((row, i) => (
-                <TableRow key={i}>
+                <TableRow key={i} className="group/row hover:bg-muted">
                   {columns.map((col) => (
-                    <TableCell key={col.label}>{col.render(row)}</TableCell>
+                    <TableCell key={col.label} className={col.fixed ? fixedColumnClass : undefined}>{col.render(row)}</TableCell>
                   ))}
                 </TableRow>
               ))}

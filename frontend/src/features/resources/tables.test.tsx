@@ -90,7 +90,7 @@ it.each([
 it("retains service columns and shows every published port with its protocol", () => {
   mount([service(), service({ id: "s2", serviceName: "internal", ports: [] })]);
   expect(screen.getAllByRole("columnheader").map((cell) => cell.textContent)).toEqual([
-    "Service", "Image", "State", "Tasks", "Ports", "Mode", "Stack",
+    "Service", "Image", "Tasks", "Ports", "Mode", "Stack", "State",
   ]);
   const web = within(screen.getByRole("row", { name: /web/ }));
   expect(web.getByText("8080 [tcp]")).toBeInTheDocument();
