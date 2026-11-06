@@ -27,6 +27,12 @@ jobs:
         uses: DeLaGuardo/setup-clojure@9.5
         with:
           lein: latest
+      - name: configure test database credentials
+        run: |
+          test_db_password=$(openssl rand -hex 32)
+          echo "::add-mask::$test_db_password"
+          echo "SWARMPIT_DB_USERNAME=swarmpit-ci" >> "$GITHUB_ENV"
+          echo "SWARMPIT_DB_PASSWORD=$test_db_password" >> "$GITHUB_ENV"
       - run: ./init-db.sh
         name: start DB
         working-directory: dev/script

@@ -19,6 +19,10 @@ Install local dependencies
 lein deps
 ```
 
+Before creating a new development database, export `SWARMPIT_DB_USERNAME` and
+`SWARMPIT_DB_PASSWORD` as described in the [CouchDB development setup](doc/COUCHDB_UPGRADE.md#development).
+Keep those values for later starts against that database.
+
 Start a REPL session
 
 ```
