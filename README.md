@@ -24,7 +24,7 @@ More details about future and past releases can be found in [ROADMAP.md](ROADMAP
 
 ## Installation
 
-The only dependency for Swarmpit deployment is Docker with Swarm initialized, we are supporting Docker 1.13 and newer. Linux hosts on x86 and ARM architectures are supported as well.
+The only dependency for Swarmpit deployment is Docker with Swarm initialized, the reference stack requires Docker 17.06 or newer (Swarm configs). Linux hosts on x86 and ARM architectures are supported as well.
 
 ### Package installer
 Installer is your guide to setup Swarmpit platform. For more details see the [installer](https://github.com/swarmpit/installer)
@@ -51,12 +51,22 @@ docker run -it --rm \
 ### Manual installation
 Deploy Swarmpit by using a compose file from our git repo with branch of corresponding version.
 
+The reference stacks use authenticated CouchDB 3.5.3. **Existing installations:
+follow the [backup and upgrade guide](doc/COUCHDB_UPGRADE.md) before deploying.**
+On a Swarm manager, create the shared password secret first:
+
+```sh
+openssl rand -hex 32 | docker secret create swarmpit_db_password -
+```
+
 ```
 git clone https://github.com/swarmpit/swarmpit -b master
 docker stack deploy -c swarmpit/docker-compose.yml swarmpit
 ```
 
-For ARM based cluster use custom compose file.
+For ARM64 based clusters use the custom compose file. CouchDB's current official
+image requires AMD64 or ARM64; see the [upgrade guide](doc/COUCHDB_UPGRADE.md)
+for ARMv7 deployments.
 
 ```
 git clone https://github.com/swarmpit/swarmpit -b master

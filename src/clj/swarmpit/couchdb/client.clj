@@ -2,14 +2,26 @@
   (:require [swarmpit.http :refer :all]
             [cheshire.core :refer [generate-string]]
             [swarmpit.config :refer [config]]
+            [swarmpit.docker.secret :as secret]
             [clojure.string :as str]))
+
+(defn- credentials
+  []
+  (let [username (config :db-username)
+        secret-name (config :db-password-secret)
+        password (if secret-name (secret/get secret-name) (config :db-password))]
+    (when (or username secret-name password)
+      (when (or (str/blank? username) (str/blank? password))
+        (throw (ex-info "CouchDB credentials require a username and a non-empty password or readable password secret" {})))
+      [username password])))
 
 (defn- execute
   [{:keys [method api options]}]
-  (let [url (str (config :db-url) api)]
+  (let [url (str (config :db-url) api)
+        auth (credentials)]
     (execute-in-scope {:method  method
                        :url     url
-                       :options options
+                       :options (cond-> options auth (assoc :basic-auth auth))
                        :scope   "DB"})))
 
 (defn get-doc

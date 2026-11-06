@@ -3,9 +3,13 @@ services:
     image: swarmpit/swarmpit:latest
     environment:
       - SWARMPIT_DB=http://db:5984
+      - SWARMPIT_DB_USERNAME=swarmpit
+      - SWARMPIT_DB_PASSWORD_SECRET=swarmpit_db_password
       - SWARMPIT_INFLUXDB=http://influxdb:8086
     volumes:
       - /var/run/docker.sock:/var/run/docker.sock:ro
+    secrets:
+      - swarmpit_db_password
     ports:
       - 888:8080
     healthcheck:
@@ -28,7 +32,25 @@ services:
           - node.role == manager
 
   db:
-    image: couchdb:2.3.0
+    image: couchdb:3.5.3
+    environment:
+      - COUCHDB_USER=swarmpit
+      # Bound Erlang scheduler allocation independently of the host CPU count.
+      - ERL_FLAGS=+S 2:2
+    entrypoint: ["/bin/sh", "-ec"]
+    command:
+      - |
+        export COUCHDB_PASSWORD="$$(cat /run/secrets/swarmpit_db_password)"
+        test -n "$$COUCHDB_PASSWORD" || { echo "CouchDB password secret is empty" >&2; exit 1; }
+        exec tini -- /docker-entrypoint.sh /opt/couchdb/bin/couchdb
+    secrets:
+      - swarmpit_db_password
+    configs:
+      - source: couchdb_config
+        target: /opt/couchdb/etc/local.d/10-swarmpit.ini
+        uid: "5984"
+        gid: "5984"
+        mode: 0644
     volumes:
       - db-data:/opt/couchdb/data
     networks:
@@ -37,10 +59,10 @@ services:
       resources:
         limits:
           cpus: '0.30'
-          memory: 256M
+          memory: 512M
         reservations:
           cpus: '0.15'
-          memory: 128M
+          memory: 256M
 
   influxdb:
     image: influxdb:1.8
@@ -76,6 +98,14 @@ services:
         reservations:
           cpus: '0.05'
           memory: 32M
+
+configs:
+  couchdb_config:
+    file: ./couchdb.ini
+
+secrets:
+  swarmpit_db_password:
+    external: true
 
 networks:
   net:

@@ -7,6 +7,9 @@
          :docker-http-timeout 5000
          :log-level           "info"
          :db-url              "http://localhost:5984"
+         :db-username         nil
+         :db-password         nil
+         :db-password-secret  nil
          :influxdb-url        nil
          :agent-url           nil
          :agent-token         nil
@@ -22,6 +25,9 @@
         :docker-http-timeout (env :swarmpit-docker-http-timeout)
         :log-level           (env :swarmpit-log-level)
         :db-url              (env :swarmpit-db)
+        :db-username         (env :swarmpit-db-username)
+        :db-password         (env :swarmpit-db-password)
+        :db-password-secret  (env :swarmpit-db-password-secret)
         :influxdb-url        (env :swarmpit-influxdb)
         :agent-url           (env :swarmpit-agent-url)
         :agent-token         (env :swarmpit-agent-token)
