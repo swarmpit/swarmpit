@@ -30,6 +30,12 @@ and call function `(fig-start)`, which will start db and agent containers follow
 In order to use REPL on frontend side call additionally `(cljs-repl)`. Both `(fig-start)` & `(cljs-repl)` are
 part of dev [`User`](dev/user.clj) namespace.
 
+## Frontend tests
+
+Run `lein cljsbuild once test`, then open `test/cljs/log.html` in a browser.
+The page shows the test summary; the console includes assertion details.
+These tests exercise the shared service/task log viewer without a backend.
+
 ## Build
 
 Whole application can be build to `jar` file 
