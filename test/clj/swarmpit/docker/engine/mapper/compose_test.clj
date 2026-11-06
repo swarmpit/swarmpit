@@ -1,6 +1,8 @@
 (ns swarmpit.docker.engine.mapper.compose-test
   (:require [clojure.test :refer :all]
-            [swarmpit.docker.engine.mapper.compose :refer [service]]))
+            [swarmpit.docker.engine.mapper.compose :as compose :refer [service]]
+            [swarmpit.docker.engine.mapper.inbound :as inbound]
+            [swarmpit.yaml :as yaml]))
 
 (defn- svc [overrides]
   (merge {:serviceName "web"
@@ -16,6 +18,39 @@
 
 (defn- rendered [overrides]
   (-> (service nil (svc overrides)) :web))
+
+(deftest network-aliases-survive-engine-to-compose-round-trip
+  (let [networks [{:Id "internal" :Name "app_net"
+                   :Labels {:com.docker.stack.namespace "app"} :Driver "overlay"}
+                  {:Id "external" :Name "shared" :Driver "overlay"}]
+        attachments [{:Target "internal" :Aliases ["app_web" "web.local"]}
+                     {:Target "external" :Aliases ["public.web.local"]}]
+        service-networks (inbound/->service-networks
+                           {:Spec {:TaskTemplate {:Networks attachments}}} networks [])
+        rendered (-> {:stackName "app"
+                      :services [(svc {:serviceName "app_web" :stack "app"
+                                       :networks service-networks})]
+                      :networks service-networks}
+                     compose/->compose yaml/->yaml yaml/->json)]
+    (is (= {:net {:aliases ["app_web" "web.local"]}
+            :shared {:aliases ["public.web.local"]}}
+           (get-in rendered [:services :web :networks])))
+    (is (= "overlay" (get-in rendered [:networks :net :driver])))
+    (is (true? (get-in rendered [:networks :shared :external])))))
+
+(deftest networks-without-aliases-keep-short-syntax
+  (is (= ["net" "shared"]
+         (get-in (service "app" (svc {:networks [{:networkName "app_net" :stack "app"}
+                                                {:networkName "shared" :serviceAliases []}]}))
+                 [:web :networks]))))
+
+(deftest mixed-network-attachments-remain-valid-compose
+  (let [r (-> {:stackName "app"
+               :services [(svc {:networks [{:networkName "shared" :serviceAliases ["web.local"]}
+                                           {:networkName "plain"}]})]}
+              compose/->compose yaml/->yaml yaml/->json)]
+    (is (= {:shared {:aliases ["web.local"]} :plain nil}
+           (get-in r [:services :web :networks])))))
 
 (deftest ports-short-syntax-for-plain-tcp-ingress
   (is (= ["8080:80"]

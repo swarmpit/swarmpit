@@ -17,6 +17,24 @@ Default is `5000`.
 ## `SWARMPIT_DB`
 Swarmpit database (CouchDB) url. 
 Default is `http://localhost:5984`.
+Keep credentials out of the URL; use the settings below for authenticated CouchDB.
+See [deployment and upgrade instructions](COUCHDB_UPGRADE.md).
+
+## `SWARMPIT_DB_USERNAME`
+CouchDB administrator username. Set together with a password or password secret.
+Default is `nil` (legacy unauthenticated connection).
+
+## `SWARMPIT_DB_PASSWORD`
+CouchDB password, supplied separately from the URL through HTTP Basic authentication.
+Prefer a Docker secret in production. Default is `nil`.
+
+## `SWARMPIT_DB_PASSWORD_SECRET`
+Name of a Docker secret mounted at `/run/secrets/<name>`, read using the existing
+Docker secret helper, which trims surrounding whitespace. Use a single-line
+password without surrounding whitespace (the reference setup generates hex).
+Takes precedence over `SWARMPIT_DB_PASSWORD`; a missing or
+empty secret fails authentication setup instead of falling back to that password.
+Default is `nil`.
 
 ## `SWARMPIT_INFLUXDB`
 Swarmpit statistics database (InfluxDB) url. If `nil` statistics are disabled. 

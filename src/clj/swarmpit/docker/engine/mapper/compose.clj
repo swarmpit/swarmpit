@@ -63,10 +63,21 @@
        (filter #(= (% defaults) (% map)))
        (apply dissoc map)))
 
+(defn- service-networks
+  [stack-name networks]
+  (if (some (comp seq :serviceAliases) networks)
+    (into (ordered-map)
+          (map (fn [network]
+                 [(keyword (alias :networkName stack-name network))
+                  (when (seq (:serviceAliases network))
+                    {:aliases (:serviceAliases network)})]))
+          networks)
+    (map #(alias :networkName stack-name %) networks)))
+
 (defn service
   [stack-name service]
   {(keyword (alias :serviceName (or stack-name (:stack service)) service))
-   (ordered-map
+   (cond-> (clean (ordered-map
      :image (-> service :repository :image)
      :entrypoint (some->> service :entrypoint)
      :command (some->> service :command)
@@ -107,7 +118,6 @@
                                                  :target (:containerPath m))
                               (:readOnly m) (assoc :read_only true))
                             (str (alias :host stack-name m) ":" (:containerPath m) (when (:readOnly m) ":ro"))))))
-     :networks (->> service :networks (map #(alias :networkName stack-name %)))
      :secrets (->> service :secrets (targetable :secretName :secretTarget))
      :configs (->> service :configs (targetable :configName :configTarget))
      :logging {:driver  (-> service :logdriver :name)
@@ -135,7 +145,9 @@
               :placement      {:constraints          (->> service :deployment :placement (map :rule))
                                :max_replicas_per_node (get-in service [:deployment :maxReplicas])}
               :resources      {:reservations (-> service :resources :reservation resource)
-                               :limits       (-> service :resources :limit resource)}})})
+                               :limits       (-> service :resources :limit resource)}}))
+     ;; Cleanup must not remove alias-free attachments from the network map.
+     (seq (:networks service)) (assoc :networks (service-networks stack-name (:networks service))))})
 
 (defn network
   [stack-name net]
@@ -169,9 +181,9 @@
 (defn ->compose
   [stack]
   (let [name (:stackName stack)]
-    (-> {:services (group name service (->> stack :services (sort-by :serviceName) (vec)))
-         :networks (group name network (:networks stack))
+    (-> {:networks (group name network (:networks stack))
          :volumes  (group name volume (:volumes stack))
          :configs  (group name config (:configs stack))
          :secrets  (group name secret (:secrets stack))}
-        (clean))))
+        (clean)
+        (assoc :services (group name service (sort-by :serviceName (:services stack)))))))
