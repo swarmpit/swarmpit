@@ -979,10 +979,14 @@
          (dc/create-service (service-auth owner service))) {:ID :id}))
 
 (defn- merge-service
-  [service-origin service-delta]
-  (-> (merge-data service-origin service-delta)
-      (assoc-in [:Labels] (:Labels service-delta))
-      (assoc-in [:TaskTemplate :LogDriver :Options] (get-in service-delta [:TaskTemplate :LogDriver :Options]))))
+  [service-origin service-delta service]
+  (cond-> (-> (merge-data service-origin service-delta)
+              (assoc-in [:Labels] (:Labels service-delta))
+              (assoc-in [:TaskTemplate :LogDriver :Options] (get-in service-delta [:TaskTemplate :LogDriver :Options])))
+    (contains? service :containerLabels)
+    (assoc-in [:TaskTemplate :ContainerSpec :Labels] (get-in service-delta [:TaskTemplate :ContainerSpec :Labels]))
+    (contains? service :sysctls)
+    (assoc-in [:TaskTemplate :ContainerSpec :Sysctls] (get-in service-delta [:TaskTemplate :ContainerSpec :Sysctls]))))
 
 (defn update-service
   [owner service-id service]
@@ -992,7 +996,7 @@
     (dc/update-service (service-auth owner service)
                        service-id
                        (:version service)
-                       (merge-service service-origin service-delta))))
+                       (merge-service service-origin service-delta service))))
 
 (defn redeploy-service
   ([owner service-id new-tag]

@@ -1,6 +1,32 @@
 # React UI parity and verification ledger
 
-Baseline: upstream/master 65b2c99ffbf07ca986c3a5f4f5bd98ceecf8a8b9. Verified locally on 2026-11-05. Read this with AGENTS.md and UPSTREAM_UPDATES.md. Implementation and live verification are different; preserve the evidence and limits below when updating this ledger.
+Baseline: upstream/master 65b2c99ffbf07ca986c3a5f4f5bd98ceecf8a8b9. Latest verification: 2026-11-06. Read this with AGENTS.md and UPSTREAM_UPDATES.md. Implementation and live verification are different; preserve the evidence and limits below when updating this ledger.
+
+## Latest independent review and validation — 2026-11-06
+
+A fresh independent reviewer compared the entire React branch with upstream/master, including the connected legacy pages, request specs, handlers and mappers. All five confirmed findings were fixed:
+
+- Keep the prebuilt target/swarmpit.jar in the Docker context so the original Dockerfile remains buildable.
+- Replace explicitly submitted containerLabels/sysctls maps on service updates, including removals; preserve omitted fields for older clients, mapper-generated stack metadata and unrelated Docker fields.
+- Serialize config/secret file reads and disable switching back to text during reads/submission. Deferred-read regressions cover success, failure, recovery and exact binary payloads.
+- Restore named clickable service links with safe URL protocols and opener isolation.
+- Gate service and task logs through the shared supported-driver predicate, including legacy log=1 links.
+
+An independent re-review identified the pending-upload text-switch edge, which was also fixed. No other actionable blocker was reported. CI now covers pull requests to upstream master, and CONTRIBUTING.md documents optional React development/builds.
+
+Fresh verification of these fixes:
+
+- Frontend: 237 tests passed, one opt-in integration test skipped in the default suite; strict TypeScript and production build passed.
+- Real integration: separately enabled and passed in 53.40 seconds against fresh CouchDB and a single-node Docker-in-Docker Swarm with no host socket. All ten lifecycle phases passed: setup/auth/roles, parsed SSE snapshots/fresh tokens, resource CRUD, advanced service edits, container-label/sysctl replacement and clearing, service/stack actions and logout revocation. The initialization assertion waits for the existing one-second /version memoization.
+- Backend: lein check passed; full lein test passed with 86 tests, 370 assertions and no failures/errors against disposable CouchDB.
+- Helpers: all seven upstream-checker/review-seed tests passed. Both new workflows passed actionlint locally.
+- Packaging: Dockerfile.react and the original Dockerfile both built successfully. React image swarmpit-react:check is sha256:2951d04a0e1b959a73858d62c595b8912bf5c7e203ba2d25dad81e390988107c. HTTP checks confirmed React root/direct entry/assets, the query-selected classic entry and the original image's default classic entry/bundle.
+- Local review: the guarded startup helper refreshed the app at http://127.0.0.1:58019 to the fixed image and updated its real agent callback. Initialized/statistics capabilities and original CouchDB/nested-Swarm container identities were checked; review data volumes remain intact.
+- No production Swarm or data was used. Disposable validation containers/network are removed after verification; the separate local review environment remains available.
+
+Current limits: this pass did not add a fresh browser interaction/screenshot audit, cloud/private-registry credentials or multi-node testing. Earlier browser and real review-agent/InfluxDB evidence is recorded below. Admin node mutations, own-password and API-token actions still lack real integration-suite coverage. Hosted workflows have only local validation until GitHub runs them. Existing Clojure reflection warnings and the Vite main-chunk size warning remain. These results do not establish exhaustive feature parity.
+
+The sections below preserve earlier implementation and verification evidence; their test counts and absence-of-agent notes describe their original stage, not this latest run.
 
 ## Local review additions
 
@@ -16,7 +42,7 @@ Current graph controls include the original last-hour default, longer range pres
 
 UI icon controls now use Hugeicons with named free-icon imports and the official renderer, preserving labels, sizes, selected indicators and reduced-motion spinners. Shadcn is configured for Hugeicons and the unused Lucide dependency is removed. Source and component checks cover shell/menu/select/dialog, forms, charts and resource controls; this is an icon-family migration, not a new functionality-parity claim.
 
-## Implemented feature coverage
+## Initial port feature coverage and historical verification
 
 | Area | React implementation | Verification |
 | --- | --- | --- |
@@ -35,7 +61,7 @@ UI icon controls now use Hugeicons with named free-icon imports and the official
 | Packaging | Dockerfile.react bundles both UIs; SWARMPIT_UI selects default; original Dockerfile/default stay classic; classpath /react/ assets and query rollback | Image built; actual root React/direct React/classic fallback, hashed JS/CSS and icon requests pass. Missing assets covered by backend 503 tests |
 | Upstream updates | Root agent instructions, exact manual procedure, baseline, non-mutating checker, scheduled/manual PR proposal and explicit reusable verification | Four Git fixture tests and current baseline no-op pass; workflows pass actionlint. Hosted Actions not activated/run |
 
-## Final proof
+## Initial port proof (historical)
 
 - Frontend: 86 tests passed; one opt-in real integration test skipped in the default suite. Strict TypeScript and production Vite build pass.
 - Opt-in real integration: separately enabled and passed, one full lifecycle test with ten phases, 67.56 seconds, against a fresh isolated Docker-in-Docker Swarm and CouchDB. Covers setup/auth/roles, consumed/fresh SSE tokens, parsed live snapshots, network/volume/config/secret operations, service lifecycle, stack lifecycle and logout revocation. Uses the same upstream API backend; final UI entry changes were subsequently checked in the final packaged image.
@@ -46,7 +72,7 @@ UI icon controls now use Hugeicons with named free-icon imports and the official
 - Review: independent full review findings were addressed; an independent scoped re-review found no actionable residual defect in those fixes.
 - Existing upstream Clojure reflection warnings remain. Vite reports the main JS chunk slightly over 500 kB (about 158 kB gzip); no functional build errors.
 
-## Remaining runtime/activation limits
+## Initial port runtime/activation limits (historical)
 
 - No real browser interaction/accessibility audit, private/cloud registry credentials, live InfluxDB, or actual Swarm agent deployment was used. Current metrics, logs and optional-absence handling have source-based and component-test evidence; agent/native backend behavior is retained.
 - Admin node changes, own-password and API-token actions were not exercised in the real Swarm suite; relevant backend behavior remains upstream and UI tests cover the forms/requests.

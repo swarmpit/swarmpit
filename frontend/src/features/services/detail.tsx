@@ -4,6 +4,7 @@ import { useApi } from "@/lib/queries";
 import { segment, url } from "@/lib/api";
 import type { Service, Compose, LogLine, Task, Timeseries } from "@/lib/types";
 import { date } from "@/lib/format";
+import { supportsLogs } from "./logs";
 import {
   Page,
   Section,
@@ -52,8 +53,10 @@ function ServiceContent({
   const { me, version } = useSession();
   const navigate = useNavigate();
   const [params, setParams] = useSearchParams();
-  const tab =
+  const logsSupported = supportsLogs(s.logdriver.name);
+  const requestedTab =
     params.get("log") === "1" ? "logs" : params.get("tab") || "overview";
+  const tab = requestedTab === "logs" && !logsSupported ? "overview" : requestedTab;
   const setTab = (value: string) => {
     const next = new URLSearchParams(params);
     next.delete("log");
@@ -139,7 +142,7 @@ function ServiceContent({
           <TabsTrigger value="overview"><HugeiconsIcon icon={DashboardSquare01Icon} strokeWidth={2} aria-hidden="true" className="size-4 shrink-0" />Overview</TabsTrigger>
           <TabsTrigger value="configuration"><HugeiconsIcon icon={Settings01Icon} strokeWidth={2} aria-hidden="true" className="size-4 shrink-0" />Configuration</TabsTrigger>
           <TabsTrigger value="tasks"><HugeiconsIcon icon={Task01Icon} strokeWidth={2} aria-hidden="true" className="size-4 shrink-0" />Tasks</TabsTrigger>
-          <TabsTrigger value="logs"><HugeiconsIcon icon={File01Icon} strokeWidth={2} aria-hidden="true" className="size-4 shrink-0" />Logs</TabsTrigger>
+          <TabsTrigger value="logs" disabled={!logsSupported}><HugeiconsIcon icon={File01Icon} strokeWidth={2} aria-hidden="true" className="size-4 shrink-0" />Logs</TabsTrigger>
           <TabsTrigger value="compose"><HugeiconsIcon icon={CodeIcon} strokeWidth={2} aria-hidden="true" className="size-4 shrink-0" />Compose</TabsTrigger>
           <TabsTrigger value="metrics"><HugeiconsIcon icon={ChartLineData01Icon} strokeWidth={2} aria-hidden="true" className="size-4 shrink-0" />Metrics</TabsTrigger>
         </TabsList>
@@ -349,13 +352,32 @@ function ServiceContent({
               ["Container labels", s.containerLabels],
               ["Extra hosts", s.hosts],
               ["Kernel parameters", s.sysctls],
-              ["Links", s.links],
             ] as const
           ).map(([title, value]) => (
             <Section key={title} title={title}>
               <PairValues value={value} />
             </Section>
           ))}
+          <Section title="Links">
+            {s.links?.length ? (
+              <div className="space-y-2">
+                {s.links.map((link, index) => (
+                  <div key={index} className="flex flex-wrap gap-2 text-sm">
+                    {safeServiceLink(link.value) ? (
+                      <a className="underline" href={link.value} target="_blank" rel="noopener noreferrer">
+                        {link.name.replaceAll("_", " ")}
+                      </a>
+                    ) : (
+                      <span>{link.name.replaceAll("_", " ")}</span>
+                    )}
+                    <span className="break-all text-muted-foreground">{link.value}</span>
+                  </div>
+                ))}
+              </div>
+            ) : (
+              <Empty>No entries.</Empty>
+            )}
+          </Section>
           <Section title="Resources">
             <Properties
               values={{
@@ -419,7 +441,7 @@ function ServiceContent({
           <RelatedTasks path={path + "/tasks"} />
         </TabsContent>
         <TabsContent value="logs">
-          <ServiceLogs id={s.id} />
+          {logsSupported && <ServiceLogs id={s.id} />}
         </TabsContent>
         <TabsContent value="compose">
           <ServiceCompose id={s.id} />
@@ -437,6 +459,15 @@ function ServiceContent({
       </Tabs>
     </Page>
   );
+}
+function safeServiceLink(value: string) {
+  try {
+    return ["http:", "https:", "mailto:", "tel:", "ftp:", "ftps:"].includes(
+      new URL(value, window.location.href).protocol,
+    );
+  } catch {
+    return false;
+  }
 }
 function ServiceCompose({ id }: { id: string }) {
   const query = useApi<Compose>("/api/services/" + segment(id) + "/compose");

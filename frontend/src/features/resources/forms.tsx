@@ -250,6 +250,7 @@ export function ContentForm({ kind }: { kind: "secrets" | "configs" }) {
           <Field
             label="Upload file (optional)"
             type="file"
+            disabled={command.isPending || reading}
             onChange={async (e) => {
               const input = e.target.files?.[0];
               setError(null);
@@ -278,6 +279,7 @@ export function ContentForm({ kind }: { kind: "secrets" | "configs" }) {
               <button
                 type="button"
                 className="inline-flex items-center gap-2 underline"
+                disabled={command.isPending || reading}
                 onClick={() => setFile(null)}
               >
                 <HugeiconsIcon icon={TextIcon} strokeWidth={2} aria-hidden="true" className="size-4 shrink-0" />

@@ -264,7 +264,13 @@ describe.skipIf(!enabled)("disposable real Swarmpit backend", () => {
       await request("/api/me", { status: 401 });
       await post("/initialize", admin, "");
       adminToken = await login(admin);
-      expect((await read<Version>("/version")).initialized).toBe(true);
+      // The upstream version endpoint memoizes admin existence for one second.
+      await poll(
+        "initialized version status",
+        () => read<Version>("/version"),
+        (version) => version.initialized === true,
+        5000,
+      );
       expect((await read<Me>("/api/me")).username).toBe(admin.username);
       expect((await read<Me>("/api/me")).role).toBe("admin");
       await request("/api/me", { token: "Bearer " + adminToken, status: 401 });
@@ -452,6 +458,11 @@ describe.skipIf(!enabled)("disposable real Swarmpit backend", () => {
         { name: "INTEGRATION_MESSAGE", value: "hello with spaces" },
       ];
       service.labels = [{ name: "integration-owner", value: prefix }];
+      service.containerLabels = [{ name: "remove-on-edit", value: "old" }];
+      service.sysctls = [
+        { name: "net.ipv4.tcp_syncookies", value: "1" },
+        { name: "net.ipv4.tcp_fin_timeout", value: "60" },
+      ];
       service.networks = [{ networkName }];
       service.mounts = [
         {
@@ -526,6 +537,7 @@ describe.skipIf(!enabled)("disposable real Swarmpit backend", () => {
       running.variables.push({ name: "AFTER_EDIT", value: "preserved" });
       running.labels.push({ name: "updated-service", value: "yes" });
       running.containerLabels = [{ name: "container-only", value: "separate" }];
+      running.sysctls = [{ name: "net.ipv4.tcp_syncookies", value: "0" }];
       running.networks = [
         { networkName, serviceAliases: ["integration-alias"] },
       ];
@@ -544,10 +556,11 @@ describe.skipIf(!enabled)("disposable real Swarmpit backend", () => {
         name: "AFTER_EDIT",
         value: "preserved",
       });
-      expect(edited.containerLabels).toContainEqual({
+      expect(edited.containerLabels).toEqual([{
         name: "container-only",
         value: "separate",
-      });
+      }]);
+      expect(edited.sysctls).toEqual([{ name: "net.ipv4.tcp_syncookies", value: "0" }]);
       expect(edited.labels).toContainEqual({
         name: "updated-service",
         value: "yes",
@@ -560,6 +573,16 @@ describe.skipIf(!enabled)("disposable real Swarmpit backend", () => {
       expect(edited.deployment.maxReplicas).toBe(1);
       expect(edited.command).toEqual(service.command);
       expect(edited.entrypoint).toEqual(service.entrypoint);
+      await post(servicePath, servicePayload({
+        ...edited, containerLabels: [], sysctls: [],
+      }, true));
+      const cleared = await poll(
+        "container label and kernel parameter removal",
+        () => read<Service>(servicePath),
+        (s) => s.version > edited.version,
+      );
+      expect(cleared.containerLabels).toEqual([]);
+      expect(cleared.sysctls).toEqual([]);
       await stream((await read<{ slt: string }>("/slt")).slt, created.id);
       mark(
         "running service create/list/detail/tasks/networks/logs/compose, live snapshot and advanced edit roundtrip",

@@ -33,6 +33,7 @@ import { ServicesTable, TasksTable } from "./tables";
 import { Live } from "./lists";
 import { TimeseriesChart } from "@/features/dashboard/chart";
 import { ServiceLogs } from "@/features/services/detail";
+import { supportsLogs } from "@/features/services/logs";
 import { NetworkMap } from "./network-map";
 import { NodeResourceCharts } from "./node-cards";
 export function RelatedServices({ path }: { path: string }) {
@@ -389,9 +390,7 @@ function TaskContent({ task: t }: { task: Task }) {
     "/api/tasks/" + segment(t.taskName) + "/ts",
     !!version?.statistics,
   );
-  const logsSupported = ["json-file", "journald", "local", "loki"].includes(
-    t.logdriver || "",
-  );
+  const logsSupported = supportsLogs(t.logdriver);
   const logOpen = search.get("log") === "1" && logsSupported;
   function showLogs(open: boolean) {
     setSearch((current) => {

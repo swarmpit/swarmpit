@@ -101,6 +101,61 @@
         (api/redeploy-service nil "svc1" nil nil))
       (is (= 1 @forced)))))
 
+(deftest update-service-container-maps-test
+  (let [origin {:Name "app"
+                :TaskTemplate {:Runtime "container"
+                               :ContainerSpec {:Image "nginx:1.2"
+                                               :Labels {:keep "old" :remove "gone"
+                                                        :com.docker.stack.namespace "demo"}
+                                               :Sysctls {:net.ipv4.tcp_syncookies "1"
+                                                         :net.ipv4.ip_forward "0"}
+                                               :StopGracePeriod 30000000000}}
+                :EndpointSpec {:Mode "dnsrr"}}
+        request {:serviceName "app" :repository {:name "nginx" :tag "1.2"}
+                 :stack "demo" :version 7}]
+    (with-redefs [dc/service (constantly {:Spec origin :Version {:Index 7}})
+                  api/secrets (constantly [])
+                  api/configs (constantly [])
+                  api/repository-digest (constantly nil)]
+      (doseq [[description fields labels sysctls]
+              [["explicit empty collections clear user maps but retain generated stack metadata"
+                {:containerLabels [] :sysctls []}
+                {:com.docker.stack.namespace "demo"} {}]
+               ["subsets remove omitted keys and update retained values"
+                {:containerLabels [{:name "keep" :value "updated"}]
+                 :sysctls [{:name "net.ipv4.tcp_syncookies" :value "0"}]}
+                {:keep "updated" :com.docker.stack.namespace "demo"}
+                {:net.ipv4.tcp_syncookies "0"}]
+               ["renames remove the old keys"
+                {:containerLabels [{:name "renamed" :value "new"}]
+                 :sysctls [{:name "net.ipv4.tcp_timestamps" :value "0"}]}
+                {:renamed "new" :com.docker.stack.namespace "demo"}
+                {:net.ipv4.tcp_timestamps "0"}]
+               ["older clients omitting both optional fields preserve existing maps"
+                {}
+                {:keep "old" :remove "gone" :com.docker.stack.namespace "demo"}
+                {:net.ipv4.tcp_syncookies "1" :net.ipv4.ip_forward "0"}]
+               ["clearing labels preserves omitted sysctls"
+                {:containerLabels []}
+                {:com.docker.stack.namespace "demo"}
+                {:net.ipv4.tcp_syncookies "1" :net.ipv4.ip_forward "0"}]
+               ["clearing sysctls preserves omitted labels"
+                {:sysctls []}
+                {:keep "old" :remove "gone" :com.docker.stack.namespace "demo"} {}]]]
+        (testing description
+          (let [update (atom nil)]
+            (with-redefs [dc/update-service (fn [auth id version spec]
+                                             (reset! update {:auth auth :id id
+                                                             :version version :spec spec}))]
+              (api/update-service nil "svc1" (merge request fields)))
+            (is (= {:auth nil :id "svc1" :version 7}
+                   (dissoc @update :spec)))
+            (is (= labels (get-in @update [:spec :TaskTemplate :ContainerSpec :Labels])))
+            (is (= sysctls (get-in @update [:spec :TaskTemplate :ContainerSpec :Sysctls])))
+            (is (= 30000000000 (get-in @update [:spec :TaskTemplate :ContainerSpec :StopGracePeriod])))
+            (is (= "container" (get-in @update [:spec :TaskTemplate :Runtime])))
+            (is (= "dnsrr" (get-in @update [:spec :EndpointSpec :Mode])))))))))
+
 (defn- fake-ghcr
   "ghcr.io token flow: 401 challenge, anonymous pull token, digest with that token."
   [requests public?]

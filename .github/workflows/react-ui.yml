@@ -1,9 +1,9 @@
 name: React UI verification
 on:
   push:
-    branches: [react-ui, "updates/upstream-*"]
+    branches: [master, react-ui, "updates/upstream-*"]
   pull_request:
-    branches: [react-ui]
+    branches: [master, react-ui]
   workflow_dispatch:
   workflow_call:
     inputs:
@@ -34,7 +34,7 @@ jobs:
         working-directory: frontend
       - run: npm run build
         working-directory: frontend
-      - run: node --test scripts/upstream-update.test.mjs
+      - run: node --test scripts/upstream-update.test.mjs dev/review/seed.test.mjs
   backend:
     runs-on: ubuntu-latest
     services:
