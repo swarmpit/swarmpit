@@ -1,0 +1,13 @@
+<!doctype html>
+<html lang="en">
+<meta charset="utf-8">
+<title>Log viewer tests</title>
+<body>
+<p>See the browser console for assertion details.</p>
+<pre id="result">Running…</pre>
+<script src="../../target/log-test.js"></script>
+<script>
+  document.getElementById("result").textContent = JSON.stringify(window.cljsTestResult, null, 2);
+</script>
+</body>
+</html>

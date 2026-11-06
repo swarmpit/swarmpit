@@ -124,8 +124,11 @@
                                   (last)
                                   :timestamp)))))))
 
-(rum/defc line < rum/static [item index show-taskId]
+(rum/defc line < rum/static [item index show-taskId timestamp]
   [:div
+   (when (and timestamp (not (string/blank? (:timestamp item))))
+     [:time.log-info {:dateTime (:timestamp item)}
+      (str (:timestamp item) " ")])
    (when show-taskId
      [:a.log-info {:href (routes/path-for-frontend :task-info
                                                    {:id (:task item)}
@@ -185,7 +188,17 @@
                    (state/update-value [:autoscroll] (not autoscroll) form-state-cursor))}
        (icon/scroll-down))]))
 
-(rum/defc form-logs < rum/static [{:keys [initialized error]} logs filtered-logs show-taskId]
+(rum/defc form-timestamp < rum/static [timestamp]
+  (comp/tooltip
+    {:title "Show timestamps"}
+    (comp/icon-button
+      {:aria-label   "Show timestamps"
+       :aria-pressed (boolean timestamp)
+       :color        (if timestamp "secondary" "inherit")
+       :onClick      #(state/update-value [:timestamp] (not timestamp) form-state-cursor)}
+      (icon/access-time))))
+
+(rum/defc form-logs < rum/static [{:keys [initialized error timestamp]} logs filtered-logs show-taskId]
   (html
     [:div
      (cond
@@ -194,7 +207,7 @@
        (not initialized) [:span ""]
        :else (->> filtered-logs
                   (take-last 500)
-                  (map #(rum/with-key (line % (:key %) show-taskId) (:key %)))))]))
+                  (map #(rum/with-key (line % (:key %) show-taskId timestamp) (:key %)))))]))
 
 (rum/defc form < rum/reactive
                  mixin-refresh-form
@@ -271,7 +284,7 @@
        :action           (mobile-search-action)})))
 
 (rum/defc dialog < rum/reactive [serviceId taskId open?]
-  (let [{:keys [initialized error filter mobileSearchOpened]} (state/react form-state-cursor)]
+  (let [{:keys [initialized error filter mobileSearchOpened timestamp]} (state/react form-state-cursor)]
     (comp/dialog
       {:fullScreen      true
        :open            open?
@@ -305,6 +318,7 @@
               (str serviceId "." (subs taskId 0 5))
               serviceId))
           (html [:div.grow])
+          (form-timestamp timestamp)
           (comp/box
             {:className "Swarmpit-appbar-section-desktop"}
             (search-input filter))

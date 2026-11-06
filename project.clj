@@ -92,6 +92,13 @@
                                ;; https://github.com/binaryage/cljs-devtools
                                :preloads             [devtools.preload]}}
 
+               {:id           "test"
+                :source-paths ["src/cljs" "src/cljc" "test/cljs"]
+                :compiler     {:main          swarmpit.component.service.log-test
+                               :output-to     "target/log-test.js"
+                               :output-dir    "target/log-test-out"
+                               :optimizations :whitespace}}
+
                ;; This next build is a compressed minified build for
                ;; production. You can build this with:
                ;; lein cljsbuild once min
