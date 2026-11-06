@@ -1,14 +1,18 @@
-import type { ReactNode } from "react";
+import { useState, type ReactNode } from "react";
 import { Link } from "react-router";
 import { useApi } from "@/lib/queries";
 import { useLive } from "@/lib/live";
-import { Page, Loading, ErrorMessage } from "@/components/common";
+import { Page, Loading, ErrorMessage, Choice, Empty } from "@/components/common";
+import { Input } from "@/components/ui/input";
+import { NodeCards, NodeCardsLoading } from "./node-cards";
 import { Button } from "@/components/ui/button";
-import { Plus, Radio } from "lucide-react";
+import { HugeiconsIcon } from "@hugeicons/react";
+import { Add01Icon, LiveStreaming02Icon, Loading03Icon, Search01Icon, WifiOff01Icon } from "@hugeicons/core-free-icons";
+import { Badge } from "@/components/ui/badge";
+import { cn } from "@/lib/utils";
 import { useSession } from "@/features/session/session";
 import {
   ServicesTable,
-  NodesTable,
   TasksTable,
   StacksTable,
   NetworksTable,
@@ -36,23 +40,34 @@ export function Live({
   params?: Record<string, string>;
 }) {
   const status = useLive(handler, params);
+  const connected = status === "live";
+  const label = connected ? "Live" : status === "reconnecting" ? "Reconnecting…" : "Connecting…";
   return (
-    <span
+    <Badge
+      variant="outline"
       role="status"
-      className="flex items-center gap-1.5 text-xs text-muted-foreground"
+      aria-label={connected ? "Live updates connected" : "Live updates " + status}
+      aria-live="polite"
+      aria-atomic="true"
+      title={connected ? "Changes appear automatically" : "Waiting for the live connection"}
+      className={cn(
+        "h-7 gap-1.5 rounded-md px-2 text-xs font-medium",
+        connected
+          ? "border-success/20 bg-success/5 text-success-foreground"
+          : "border-warning/20 bg-warning/5 text-warning-foreground",
+      )}
     >
-      <Radio
-        className={
-          "size-3 " +
-          (status === "live" ? "text-emerald-500" : "text-amber-500")
-        }
-      />
-      {status === "live"
-        ? "Live"
-        : status === "reconnecting"
-          ? "Reconnecting…"
-          : "Connecting…"}
-    </span>
+      <span aria-hidden="true" className="flex size-3.5 shrink-0 items-center justify-center">
+        {connected ? (
+          <HugeiconsIcon icon={LiveStreaming02Icon} strokeWidth={2} aria-hidden="true" className="size-3.5" />
+        ) : status === "reconnecting" ? (
+          <HugeiconsIcon icon={WifiOff01Icon} strokeWidth={2} aria-hidden="true" className="size-3.5" />
+        ) : (
+          <HugeiconsIcon icon={Loading03Icon} strokeWidth={2} aria-hidden="true" className="size-3.5 animate-spin motion-reduce:animate-none" />
+        )}
+      </span>
+      <span>{label}</span>
+    </Badge>
   );
 }
 function List<T>({
@@ -86,7 +101,7 @@ function List<T>({
           {create && canCreate && (
             <Button asChild>
               <Link to={create}>
-                <Plus className="size-4" />
+                <HugeiconsIcon icon={Add01Icon} strokeWidth={2} aria-hidden="true" className="size-4" />
                 Create{" "}
                 {title === "Services"
                   ? "service"
@@ -98,7 +113,11 @@ function List<T>({
       }
     >
       <ErrorMessage error={query.error} />
-      {query.isPending ? <Loading /> : query.data ? children(query.data) : null}
+      {query.isPending ? (
+        <Loading variant="table" />
+      ) : query.data ? (
+        children(query.data)
+      ) : null}
     </Page>
   );
 }
@@ -112,11 +131,41 @@ export const ServicesList = () => (
     {(rows) => <ServicesTable rows={rows} />}
   </List>
 );
-export const NodesList = () => (
-  <List<Node> title="Nodes" path="/api/nodes" handler="node-list">
-    {(rows) => <NodesTable rows={rows} />}
-  </List>
-);
+export function NodesList() {
+  const query = useApi<Node[]>("/api/nodes");
+  const [search, setSearch] = useState("");
+  const [role, setRole] = useState("");
+  const filtered = (query.data || []).filter((node) =>
+    (!role || node.role === role) &&
+    [node.nodeName, node.role, node.address, node.state, node.availability, node.os, node.engine]
+      .join(" ").toLowerCase().includes(search.toLowerCase()),
+  );
+  return (
+    <Page title="Nodes"
+      description={query.data ? query.data.length + " nodes in your swarm" : "Manage your swarm resources"}
+      actions={<Live handler="node-list" />}>
+      <ErrorMessage error={query.error} />
+      <div className="flex flex-wrap items-end gap-3">
+        <div className="relative w-full max-w-sm">
+          <HugeiconsIcon icon={Search01Icon} strokeWidth={2} aria-hidden="true" className="absolute left-3 top-3 size-4 text-muted-foreground" />
+          <Input aria-label="Filter nodes" placeholder="Filter nodes…" value={search}
+            onChange={(event) => setSearch(event.target.value)} className="pl-9" />
+        </div>
+        <div className="w-40">
+          <Choice label="Role" value={role} onChange={setRole} options={["", "manager", "worker"]} />
+        </div>
+      </div>
+      {query.isPending ? <NodeCardsLoading /> : query.data ? (
+        filtered.length ? (
+          <section aria-label="Node resources">
+            <h2 className="sr-only">Node resources</h2>
+            <NodeCards rows={filtered} />
+          </section>
+        ) : <Empty>{query.data.length ? "No matching nodes." : "No nodes found."}</Empty>
+      ) : null}
+    </Page>
+  );
+}
 export const TasksList = () => (
   <List<Task> title="Tasks" path="/api/tasks" handler="task-list">
     {(rows) => <TasksTable rows={rows} />}

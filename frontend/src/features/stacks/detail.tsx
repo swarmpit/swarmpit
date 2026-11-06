@@ -1,4 +1,11 @@
 import { useState, type ReactNode } from "react";
+import { HugeiconsIcon } from "@hugeicons/react";
+import {
+  ArrowReloadHorizontalIcon, ArrowTurnBackwardIcon, Clock01Icon, CubeIcon,
+  DashboardSquare01Icon, Delete02Icon, Download01Icon, File01Icon,
+  FloppyDiskIcon, HardDriveIcon, Key01Icon, NetworkIcon, PencilEdit01Icon,
+  PlayCircleIcon, SourceCodeIcon, StopCircleIcon, Task01Icon,
+} from "@hugeicons/core-free-icons";
 import { Link, useNavigate, useParams } from "react-router";
 import { segment, url } from "@/lib/api";
 import { useApi } from "@/lib/queries";
@@ -23,9 +30,9 @@ import {
   Properties,
   Section,
   Status,
-  TextField,
 } from "@/components/common";
 import { Button } from "@/components/ui/button";
+import { Skeleton } from "@/components/ui/skeleton";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { useSession } from "@/features/session/session";
 import {
@@ -41,6 +48,7 @@ import {
 } from "@/features/resources/tables";
 import { Live } from "@/features/resources/lists";
 import { historyLabel, missingStackfile } from "./compose";
+import { CodeField } from "@/components/code-field";
 
 export function StackDetail() {
   const { name = "" } = useParams();
@@ -55,15 +63,15 @@ function StackPage({ name }: { name: string }) {
   const [comment, setComment] = useState("");
   const navigate = useNavigate();
   const stack = stacks.data?.find((s) => s.stackName === name);
-  if (stacks.isPending) return <Loading />;
-  if (!stack)
+  const pending = stacks.isPending;
+  if (!stack && !pending)
     return (
       <Page title={name}>
         <ErrorMessage error={stacks.error || new Error("Stack not found.")} />
       </Page>
     );
   const inactive =
-    stack.state === "inactive" || (!stack.state && !stack.services?.length);
+    !!stack && (stack.state === "inactive" || (!stack.state && !stack.services?.length));
   const editable = !!me && me.role !== "viewer";
   const root = "/stacks/" + segment(name);
   const stored = missingStackfile(file.error) ? undefined : file.data;
@@ -72,11 +80,12 @@ function StackPage({ name }: { name: string }) {
     <Page
       title={name}
       description="Stack"
-      actions={
+      actions={pending ? <Skeleton className="h-9 w-44" /> : (
         <>
           {!inactive && <Live handler="stack-info" params={{ name }} />}
           <Button asChild variant="outline">
             <Link to={root + (inactive ? "/activate" : "/compose")}>
+              <HugeiconsIcon icon={editable ? (inactive ? PlayCircleIcon : PencilEdit01Icon) : SourceCodeIcon} strokeWidth={2} aria-hidden="true" className="size-4 shrink-0" />
               {editable
                 ? inactive
                   ? "Activate stack"
@@ -85,40 +94,51 @@ function StackPage({ name }: { name: string }) {
             </Link>
           </Button>
         </>
-      }
+      )}
     >
       <ErrorMessage error={stacks.error} />
       <ErrorMessage error={fileError} />
       <Tabs defaultValue="overview">
         <TabsList className="h-auto max-w-full flex-wrap justify-start">
           {[
-            "Overview",
-            "Services",
-            "Tasks",
-            "Networks",
-            "Volumes",
-            "Configs",
-            "Secrets",
-            "Compose",
-            "History",
-          ].map((tab) => (
-            <TabsTrigger key={tab} value={tab.toLowerCase()}>
-              {tab}
+            { label: "Overview", icon: DashboardSquare01Icon },
+            { label: "Services", icon: CubeIcon },
+            { label: "Tasks", icon: Task01Icon },
+            { label: "Networks", icon: NetworkIcon },
+            { label: "Volumes", icon: HardDriveIcon },
+            { label: "Configs", icon: File01Icon },
+            { label: "Secrets", icon: Key01Icon },
+            { label: "Compose", icon: SourceCodeIcon },
+            { label: "History", icon: Clock01Icon },
+          ].map(({ label, icon }) => (
+            <TabsTrigger key={label} value={label.toLowerCase()} disabled={pending}>
+              <HugeiconsIcon icon={icon} strokeWidth={2} aria-hidden="true" className="size-4 shrink-0" />
+              {label}
             </TabsTrigger>
           ))}
         </TabsList>
         <TabsContent value="overview" className="space-y-6">
+          {pending ? <StackOverviewSkeleton editable={editable} /> : stack && <>
           <Section title="Stack details">
             <Properties
               values={{
                 State: <Status value={inactive ? "inactive" : "active"} />,
-                "Stored compose": file.isPending
-                  ? "Loading…"
-                  : stored
-                    ? "Available"
-                    : fileError
-                      ? "Unavailable"
-                      : "Not saved",
+                "Stored compose": file.isPending ? (
+                  <div
+                    role="status"
+                    aria-label="Loading stored compose"
+                    aria-busy="true"
+                  >
+                    <span className="sr-only">Loading stored compose…</span>
+                    <Skeleton className="h-5 w-24" />
+                  </div>
+                ) : stored ? (
+                  "Available"
+                ) : fileError ? (
+                  "Unavailable"
+                ) : (
+                  "Not saved"
+                ),
                 Services: stack.services?.length || 0,
                 Networks: stack.networks?.length || 0,
                 Volumes: stack.volumes?.length || 0,
@@ -150,6 +170,7 @@ function StackPage({ name }: { name: string }) {
               <div className="flex flex-wrap items-start gap-3">
                 {inactive ? (
                   <Action
+                    icon={Delete02Icon}
                     label="Delete stackfile"
                     path={path + "/file"}
                     method="DELETE"
@@ -161,6 +182,7 @@ function StackPage({ name }: { name: string }) {
                 ) : (
                   <>
                     <Action
+                      icon={ArrowReloadHorizontalIcon}
                       label="Redeploy"
                       path={url(path + "/redeploy", {
                         comment: comment || undefined,
@@ -169,6 +191,7 @@ function StackPage({ name }: { name: string }) {
                       confirm="Redeploy this stack using the stored compose file?"
                     />
                     <Action
+                      icon={ArrowTurnBackwardIcon}
                       label="Rollback"
                       path={url(path + "/rollback", {
                         comment: comment || undefined,
@@ -177,6 +200,7 @@ function StackPage({ name }: { name: string }) {
                       confirm="Deploy the previous compose version and swap it with the last deployed version?"
                     />
                     <Action
+                      icon={StopCircleIcon}
                       label="Deactivate"
                       path={path + "/deactivate"}
                       destructive
@@ -184,6 +208,7 @@ function StackPage({ name }: { name: string }) {
                       onSuccess={() => navigate("/stacks")}
                     />
                     <Action
+                      icon={Delete02Icon}
                       label="Delete stack"
                       path={path}
                       method="DELETE"
@@ -193,6 +218,7 @@ function StackPage({ name }: { name: string }) {
                     />
                     {stored && (
                       <Action
+                        icon={Delete02Icon}
                         label="Delete stackfile"
                         path={path + "/file"}
                         method="DELETE"
@@ -205,6 +231,7 @@ function StackPage({ name }: { name: string }) {
               </div>
             </Section>
           )}
+          </>}
         </TabsContent>
         <TabsContent value="services">
           {inactive ? (
@@ -222,35 +249,47 @@ function StackPage({ name }: { name: string }) {
         </TabsContent>
         <TabsContent value="networks">
           <Related inactive={inactive}>
-            <DetailLoader<Network[]> path={path + "/networks"}>
+            <DetailLoader<Network[]>
+              path={path + "/networks"}
+              loadingVariant="table"
+            >
               {(rows) => <NetworksTable rows={rows} />}
             </DetailLoader>
           </Related>
         </TabsContent>
         <TabsContent value="volumes">
           <Related inactive={inactive}>
-            <DetailLoader<Volume[]> path={path + "/volumes"}>
+            <DetailLoader<Volume[]>
+              path={path + "/volumes"}
+              loadingVariant="table"
+            >
               {(rows) => <VolumesTable rows={rows} />}
             </DetailLoader>
           </Related>
         </TabsContent>
         <TabsContent value="configs">
           <Related inactive={inactive}>
-            <DetailLoader<Config[]> path={path + "/configs"}>
+            <DetailLoader<Config[]>
+              path={path + "/configs"}
+              loadingVariant="table"
+            >
               {(rows) => <ConfigsTable rows={rows} />}
             </DetailLoader>
           </Related>
         </TabsContent>
         <TabsContent value="secrets">
           <Related inactive={inactive}>
-            <DetailLoader<Secret[]> path={path + "/secrets"}>
+            <DetailLoader<Secret[]>
+              path={path + "/secrets"}
+              loadingVariant="table"
+            >
               {(rows) => <SecretsTable rows={rows} />}
             </DetailLoader>
           </Related>
         </TabsContent>
         <TabsContent value="compose">
           {file.isPending ? (
-            <Loading />
+            <StackComposeSkeleton />
           ) : (
             <ComposeView
               name={name}
@@ -265,6 +304,36 @@ function StackPage({ name }: { name: string }) {
         </TabsContent>
       </Tabs>
     </Page>
+  );
+}
+
+function StackOverviewSkeleton({ editable }: { editable: boolean }) {
+  return (
+    <div role="status" aria-label="Loading stack details" aria-busy="true" className="space-y-6">
+      <span className="sr-only">Loading stack details…</span>
+      <Section title="Stack details">
+        <Properties values={Object.fromEntries(
+          ["State", "Stored compose", "Services", "Networks", "Volumes", "Configs", "Secrets", "Created", "Updated"]
+            .map((label) => [label, <Skeleton key={label} className="h-5 w-24" />]),
+        )} />
+      </Section>
+      <Section title="Resource usage">
+        <Properties values={Object.fromEntries(
+          ["Running tasks", "CPU usage", "Memory usage"]
+            .map((label) => [label, <Skeleton key={label} className="h-5 w-40" />]),
+        )} />
+      </Section>
+      {editable && <Section title="Stack operations">
+        <div aria-hidden="true" className="space-y-2">
+          <Skeleton className="h-3.5 w-28" />
+          <Skeleton className="h-9 w-full" />
+          <Skeleton className="h-4 w-72 max-w-full" />
+        </div>
+        <div className="flex flex-wrap gap-3">
+          {Array.from({ length: 5 }, (_, index) => <Skeleton key={index} className="h-9 w-28" />)}
+        </div>
+      </Section>}
+    </div>
   );
 }
 
@@ -300,14 +369,32 @@ function StackMetrics({ stack, path }: { stack: Stack; path: string }) {
       <Properties
         values={{
           "Running tasks": running + " / " + desired,
-          "CPU usage": measured.length
+          "CPU usage": tasks.isPending || stats.isPending ? (
+            <div
+              role="status"
+              aria-label="Loading CPU usage"
+              aria-busy="true"
+            >
+              <span className="sr-only">Loading CPU usage…</span>
+              <Skeleton className="h-5 w-40" />
+            </div>
+          ) : measured.length
             ? cpu.toFixed(2) +
               " vCPU" +
               (stats.data?.cpu?.cores === undefined
                 ? ""
                 : " / " + stats.data.cpu.cores + " cluster vCPU")
             : "Unavailable",
-          "Memory usage": measured.length
+          "Memory usage": tasks.isPending || stats.isPending ? (
+            <div
+              role="status"
+              aria-label="Loading memory usage"
+              aria-busy="true"
+            >
+              <span className="sr-only">Loading memory usage…</span>
+              <Skeleton className="h-5 w-40" />
+            </div>
+          ) : measured.length
             ? bytes(memory) +
               (stats.data?.memory?.total === undefined
                 ? ""
@@ -345,6 +432,20 @@ function Related({
     </div>
   );
 }
+function StackComposeSkeleton() {
+  return (
+    <Section title="Compose">
+      <div role="status" aria-label="Loading compose YAML" aria-busy="true" className="space-y-4">
+        <span className="sr-only">Loading compose YAML…</span>
+        <div aria-hidden="true" className="space-y-2">
+          <Skeleton className="h-3.5 w-28" />
+          <Skeleton className="h-[37.125rem] w-full" />
+        </div>
+        <Skeleton className="h-9 w-40" />
+      </div>
+    </Section>
+  );
+}
 function ComposeView({
   name,
   stored,
@@ -364,7 +465,7 @@ function ComposeView({
   const { me } = useSession();
   const compose = stored?.spec.compose ?? engine.data?.spec.compose;
   if (fileError) return <ErrorMessage error={fileError} />;
-  if (!stored && !inactive && engine.isPending) return <Loading />;
+  if (!stored && !inactive && engine.isPending) return <StackComposeSkeleton />;
   return (
     <Section title={stored ? "Stored compose" : "Reconstructed compose"}>
       <ErrorMessage error={engine.error} />
@@ -378,7 +479,7 @@ function ComposeView({
               cannot recover YAML comments or original syntax.
             </p>
           )}
-          <TextField label="Compose YAML" value={compose} readOnly rows={24} />
+          <CodeField label="Compose YAML" value={compose} readOnly rows={24} showSyntaxSelector={false} />
           <div className="flex flex-wrap gap-3">
             <Button asChild variant="outline">
               <a
@@ -387,11 +488,13 @@ function ComposeView({
                 }
                 download={name + ".yml"}
               >
+                <HugeiconsIcon icon={Download01Icon} strokeWidth={2} aria-hidden="true" className="size-4 shrink-0" />
                 Download compose
               </a>
             </Button>
             {!stored && me && me.role !== "viewer" && (
               <Action
+                icon={FloppyDiskIcon}
                 label="Save stackfile"
                 path={path + "/file"}
                 body={{ name, spec: { compose } }}
@@ -428,6 +531,7 @@ function StackHistory({ name, editable }: { name: string; editable: boolean }) {
                 className="h-auto w-full justify-start whitespace-normal py-3 text-left"
                 onClick={() => setSelected(index)}
               >
+                <HugeiconsIcon icon={Clock01Icon} strokeWidth={2} aria-hidden="true" className="size-4 shrink-0" />
                 {historyLabel(item)}
               </Button>
             ))}
@@ -445,8 +549,9 @@ function StackHistory({ name, editable }: { name: string; editable: boolean }) {
               Digest: entry.trigger?.digest,
             }}
           />
-          <TextField
+          <CodeField
             label="Historical compose"
+            showSyntaxSelector={false}
             value={entry.spec.compose}
             readOnly
             rows={20}
@@ -455,6 +560,7 @@ function StackHistory({ name, editable }: { name: string; editable: boolean }) {
             <Link
               to={"/stacks/" + segment(name) + "/compose?history=" + selected}
             >
+              <HugeiconsIcon icon={editable ? PencilEdit01Icon : SourceCodeIcon} strokeWidth={2} aria-hidden="true" className="size-4 shrink-0" />
               {editable ? "Edit this version" : "View this version"}
             </Link>
           </Button>

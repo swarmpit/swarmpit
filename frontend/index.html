@@ -3,7 +3,24 @@
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <meta name="theme-color" content="#171717" />
+    <meta name="theme-color" content="#fafafa" />
+    <script>
+      (() => {
+        let theme;
+        try { theme = localStorage.getItem("swarmpit.theme"); } catch {}
+        let dark = theme === "dark";
+        if (theme !== "light" && theme !== "dark") {
+          try { dark = matchMedia("(prefers-color-scheme: dark)").matches; } catch {}
+        }
+        document.documentElement.classList.toggle("dark", dark);
+        document.querySelector('meta[name="theme-color"]').content = dark ? "#000" : "#fafafa";
+      })();
+    </script>
+    <style>
+      html { background: #fafafa; color: #212121; color-scheme: light; }
+      html.dark { background: #000; color: #dedede; color-scheme: dark; }
+      body { margin: 0; }
+    </style>
     <title>Swarmpit</title>
   </head>
   <body>

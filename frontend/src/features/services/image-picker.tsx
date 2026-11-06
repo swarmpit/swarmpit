@@ -1,4 +1,4 @@
-import { useId, useState } from "react";
+import { Fragment, useId, useState } from "react";
 import { useNavigate } from "react-router";
 import { useApi } from "@/lib/queries";
 import { segment, url } from "@/lib/api";
@@ -12,7 +12,16 @@ import {
   ResourceTable,
 } from "@/components/common";
 import { Button } from "@/components/ui/button";
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select";
 import { useSession } from "@/features/session/session";
+import { HugeiconsIcon } from "@hugeicons/react";
+import { ArrowLeft02Icon, ArrowRight02Icon, CubeIcon, Search01Icon, Settings01Icon } from "@hugeicons/core-free-icons";
 
 interface Repository {
   name: string;
@@ -22,21 +31,66 @@ interface Repository {
   official?: boolean;
   private?: boolean;
 }
-function RegistryOptions({ type }: { type: string }) {
-  const query = useApi<Registry[]>("/api/registry/" + type);
+function RegistrySelect({
+  id,
+  value,
+  onValueChange,
+}: {
+  id: string;
+  value: string;
+  onValueChange: (value: string) => void;
+}) {
+  // Keep provider queries active while the menu is closed.
+  const sources = {
+    dockerhub: useApi<Registry[]>("/api/registry/dockerhub"),
+    v2: useApi<Registry[]>("/api/registry/v2"),
+    ecr: useApi<Registry[]>("/api/registry/ecr"),
+    acr: useApi<Registry[]>("/api/registry/acr"),
+    gitlab: useApi<Registry[]>("/api/registry/gitlab"),
+  };
+  const options = registryTypes.flatMap((type) =>
+    (sources[type].data || []).map((r) => ({
+      value: type + "/" + r._id,
+      label:
+        type + " · " + (r.name || r.username || String(r.user || r.spName || r._id)),
+    })),
+  );
+  const selectedLabel =
+    value === "public"
+      ? "Public Docker Hub"
+      : options.find((option) => option.value === value)?.label || value;
   return (
-    <>
-      {query.error && (
-        <option disabled>
-          {type} unavailable: {query.error.message}
-        </option>
-      )}
-      {query.data?.map((r) => (
-        <option key={r._id} value={type + "/" + r._id}>
-          {type} · {r.name || r.username || String(r.user || r.spName || r._id)}
-        </option>
-      ))}
-    </>
+    <Select value={value} onValueChange={onValueChange}>
+      <SelectTrigger id={id} className="w-full">
+        <SelectValue>{selectedLabel}</SelectValue>
+      </SelectTrigger>
+      <SelectContent>
+        <SelectItem value="public">Public Docker Hub</SelectItem>
+        {registryTypes.map((type) => {
+          const query = sources[type];
+          return (
+            <Fragment key={type}>
+              {query.error ? (
+                <SelectItem value={type + ":error"} disabled>
+                  {type} unavailable: {query.error.message}
+                </SelectItem>
+              ) : query.isPending && query.isFetching ? (
+                <SelectItem value={type + ":loading"} disabled>
+                  Loading {type} registries…
+                </SelectItem>
+              ) : null}
+              {options
+                .filter((option) => option.value.startsWith(type + "/"))
+                .map((option) => (
+                  <SelectItem key={option.value} value={option.value}>
+                    {option.label}
+                  </SelectItem>
+                ))}
+            </Fragment>
+          );
+        })}
+      </SelectContent>
+    </Select>
   );
 }
 function RepositoryResults({
@@ -84,11 +138,13 @@ function RepositoryResults({
   return (
     <>
       <ErrorMessage error={query.error || accounts.error} />
-      {query.isFetching || (!publicSource && accounts.isPending) ? (
-        <Loading />
+      {(query.isPending && query.isFetching) ||
+      (!publicSource && accounts.isPending) ? (
+        <Loading variant="table" />
       ) : (
         <ResourceTable
           rows={filtered}
+          sortBy={(repository) => repository.name || ""}
           columns={[
             {
               label: "Repository",
@@ -102,6 +158,7 @@ function RepositoryResults({
                   }
                   onClick={() => choose(r.name)}
                 >
+                  <HugeiconsIcon icon={CubeIcon} strokeWidth={2} aria-hidden="true" className="size-4 shrink-0" />
                   {r.name}
                   {r.official ? " · official" : ""}
                   {r.private ? " · private" : ""}
@@ -161,7 +218,7 @@ export function ImagePicker() {
               onChange={(e) => setRepository(e.target.value)}
             />
           </div>
-          <Button type="submit">Configure service</Button>
+          <Button type="submit"><HugeiconsIcon icon={Settings01Icon} strokeWidth={2} aria-hidden="true" className="size-4 shrink-0" />Configure service</Button>
         </form>
       </Section>
       <Section title="Browse images">
@@ -170,20 +227,14 @@ export function ImagePicker() {
             <label className="text-sm font-medium" htmlFor={id}>
               Registry
             </label>
-            <select
+            <RegistrySelect
               id={id}
-              className="h-9 w-full rounded-md border bg-background px-3 text-sm"
               value={registry}
-              onChange={(e) => {
-                setRegistry(e.target.value);
+              onValueChange={(value) => {
+                setRegistry(value);
                 setPage(1);
               }}
-            >
-              <option value="public">Public Docker Hub</option>
-              {registryTypes.map((type) => (
-                <RegistryOptions key={type} type={type} />
-              ))}
-            </select>
+            />
           </div>
           <form
             onSubmit={(e) => {
@@ -201,6 +252,7 @@ export function ImagePicker() {
               />
             </div>
             <Button type="submit" variant="outline">
+              <HugeiconsIcon icon={Search01Icon} strokeWidth={2} aria-hidden="true" className="size-4 shrink-0" />
               Search
             </Button>
           </form>
@@ -219,10 +271,12 @@ export function ImagePicker() {
               disabled={page === 1}
               onClick={() => setPage(page - 1)}
             >
+              <HugeiconsIcon icon={ArrowLeft02Icon} strokeWidth={2} aria-hidden="true" className="size-4 shrink-0" />
               Previous
             </Button>
             <span className="text-sm">Page {page}</span>
             <Button variant="outline" onClick={() => setPage(page + 1)}>
+              <HugeiconsIcon icon={ArrowRight02Icon} strokeWidth={2} aria-hidden="true" className="size-4 shrink-0" />
               Next
             </Button>
           </div>

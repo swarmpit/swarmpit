@@ -17,7 +17,10 @@ import {
 } from "@/components/common";
 import { useSession } from "@/features/session/session";
 import { canWrite, canAdmin, contentPayload } from "./payload";
+import { HugeiconsIcon } from "@hugeicons/react";
+import { Add01Icon, ArrowReloadHorizontalIcon, Loading03Icon, TextIcon } from "@hugeicons/core-free-icons";
 import { Button } from "@/components/ui/button";
+import { ConfigValueField } from "@/components/config-value-field";
 export function Forbidden() {
   return (
     <Page title="Access restricted">
@@ -135,7 +138,7 @@ export function NetworkForm() {
           />
         </Section>
         <ErrorMessage error={command.error} />
-        <Submit pending={command.isPending}>Create network</Submit>
+        <Submit pending={command.isPending} icon={Add01Icon}>Create network</Submit>
       </form>
     </Page>
   );
@@ -192,7 +195,7 @@ export function VolumeForm() {
           />
         </Section>
         <ErrorMessage error={command.error} />
-        <Submit pending={command.isPending}>Create volume</Submit>
+        <Submit pending={command.isPending} icon={Add01Icon}>Create volume</Submit>
       </form>
     </Page>
   );
@@ -217,6 +220,13 @@ export function ContentForm({ kind }: { kind: "secrets" | "configs" }) {
         onSubmit={(e) => {
           e.preventDefault();
           if (command.isPending || reading) return;
+          if (kind === "configs") {
+            if (!file && !contents.length) {
+              setError(new Error("Config value is required."));
+              return;
+            }
+            setError(null);
+          }
           command.mutate({
             path: "/api/" + kind,
             body: file
@@ -267,12 +277,20 @@ export function ContentForm({ kind }: { kind: "secrets" | "configs" }) {
               <span>{file.name} selected</span>
               <button
                 type="button"
-                className="underline"
+                className="inline-flex items-center gap-2 underline"
                 onClick={() => setFile(null)}
               >
+                <HugeiconsIcon icon={TextIcon} strokeWidth={2} aria-hidden="true" className="size-4 shrink-0" />
                 Use text instead
               </button>
             </div>
+          ) : kind === "configs" ? (
+            <ConfigValueField
+              value={contents}
+              onChange={setContents}
+              required
+              disabled={command.isPending || reading}
+            />
           ) : (
             <TextField
               label="Contents"
@@ -289,7 +307,7 @@ export function ContentForm({ kind }: { kind: "secrets" | "configs" }) {
           )}
         </Section>
         <ErrorMessage error={error || command.error} />
-        <Submit pending={command.isPending || reading}>
+        <Submit pending={command.isPending || reading} icon={Add01Icon}>
           Create {singular}
         </Submit>
       </form>
@@ -371,6 +389,7 @@ function NodeEditor({
           disabled={command.isPending || reloading}
           onClick={() => void reloadValues()}
         >
+          <HugeiconsIcon icon={reloading ? Loading03Icon : ArrowReloadHorizontalIcon} strokeWidth={2} aria-hidden="true" className={reloading ? "size-4 shrink-0 animate-spin motion-reduce:animate-none" : "size-4 shrink-0"} />
           {reloading ? "Reloading…" : "Reload server values"}
         </Button>
       }
@@ -391,12 +410,14 @@ function NodeEditor({
             <Field label="Node name" value={value.nodeName} disabled />
             <Choice
               label="Role"
+              disabled={reloading}
               options={["worker", "manager"]}
               value={value.role}
               onChange={(role) => set({ ...value, role })}
             />
             <Choice
               label="Availability"
+              disabled={reloading}
               options={["active", "pause", "drain"]}
               value={value.availability}
               onChange={(availability) => set({ ...value, availability })}

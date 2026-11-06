@@ -1,3 +1,5 @@
+import { HugeiconsIcon } from "@hugeicons/react";
+import { Delete02Icon, FloppyDiskIcon, PencilEdit01Icon, UserAdd01Icon } from "@hugeicons/core-free-icons";
 import { useState } from "react";
 import { Link, useNavigate, useParams } from "react-router";
 import { useApi, useCommand } from "@/lib/queries";
@@ -41,10 +43,11 @@ export function UserDetail() {
       actions={
         <>
           <Button variant="outline" asChild>
-            <Link to={"/users/" + segment(id) + "/edit"}>Edit user</Link>
+            <Link to={"/users/" + segment(id) + "/edit"}><HugeiconsIcon icon={PencilEdit01Icon} strokeWidth={2} aria-hidden="true" className="size-4 shrink-0" />Edit user</Link>
           </Button>
           <Action
             label="Delete user"
+            icon={Delete02Icon}
             path={path}
             method="DELETE"
             destructive
@@ -172,7 +175,7 @@ function UserEditor({ existing }: { existing?: User }) {
             Administrators can also manage users and nodes.
           </p>
           <ErrorMessage error={command.error} />
-          <Submit pending={command.isPending}>
+          <Submit pending={command.isPending} icon={existing ? FloppyDiskIcon : UserAdd01Icon}>
             {existing ? "Save changes" : "Create user"}
           </Submit>
         </form>

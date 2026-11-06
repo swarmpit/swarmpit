@@ -13,7 +13,6 @@ import {
   ErrorMessage,
   Loading,
   Status,
-  TextField,
   Field,
   Choice,
   Toggle,
@@ -21,11 +20,19 @@ import {
   Empty,
 } from "@/components/common";
 import { Button } from "@/components/ui/button";
+import { Skeleton } from "@/components/ui/skeleton";
+import { CodeField } from "@/components/code-field";
 import { Tabs, TabsList, TabsTrigger, TabsContent } from "@/components/ui/tabs";
 import { DetailLoader, RelatedTasks } from "@/features/resources/detail";
 import { Live } from "@/features/resources/lists";
 import { TimeseriesChart } from "@/features/dashboard/chart";
 import { useSession } from "@/features/session/session";
+import { HugeiconsIcon } from "@hugeicons/react";
+import {
+  ArrowReloadHorizontalIcon, ArrowTurnBackwardIcon, ChartLineData01Icon, CodeIcon,
+  DashboardSquare01Icon, Delete02Icon, Download01Icon, File01Icon, Layers01Icon,
+  PencilEdit01Icon, PinIcon, PinOffIcon, Settings01Icon, StopCircleIcon, Task01Icon,
+} from "@hugeicons/core-free-icons";
 
 export function ServiceDetail() {
   const { id = "" } = useParams();
@@ -72,6 +79,7 @@ function ServiceContent({
         <>
           <Live handler="service-info" params={{ id: routeId }} />
           <Action
+            icon={me?.["service-dashboard"]?.includes(s.id) ? PinOffIcon : PinIcon}
             label={
               me?.["service-dashboard"]?.includes(s.id)
                 ? "Unpin"
@@ -86,25 +94,29 @@ function ServiceContent({
             <>
               {s.immutable ? (
                 <Button variant="outline" disabled>
+                  <HugeiconsIcon icon={PencilEdit01Icon} strokeWidth={2} aria-hidden="true" className="size-4 shrink-0" />
                   Edit
                 </Button>
               ) : (
                 <Button variant="outline" asChild>
-                  <Link to={"/services/" + segment(s.id) + "/edit"}>Edit</Link>
+                  <Link to={"/services/" + segment(s.id) + "/edit"}><HugeiconsIcon icon={PencilEdit01Icon} strokeWidth={2} aria-hidden="true" className="size-4 shrink-0" />Edit</Link>
                 </Button>
               )}
               <Button variant="outline" asChild>
                 <Link to={url("/stacks/create", { from: s.id })}>
+                  <HugeiconsIcon icon={Layers01Icon} strokeWidth={2} aria-hidden="true" className="size-4 shrink-0" />
                   Create stack from service
                 </Link>
               </Button>
               <Action
+                icon={StopCircleIcon}
                 label="Stop"
                 path={path + "/stop"}
                 destructive
                 disabled={s.mode === "global" || s.state === "not running"}
               />
               <Action
+                icon={Delete02Icon}
                 label="Delete"
                 path={path}
                 method="DELETE"
@@ -124,12 +136,12 @@ function ServiceContent({
       )}
       <Tabs value={tab} onValueChange={setTab}>
         <TabsList className="flex h-auto flex-wrap">
-          <TabsTrigger value="overview">Overview</TabsTrigger>
-          <TabsTrigger value="configuration">Configuration</TabsTrigger>
-          <TabsTrigger value="tasks">Tasks</TabsTrigger>
-          <TabsTrigger value="logs">Logs</TabsTrigger>
-          <TabsTrigger value="compose">Compose</TabsTrigger>
-          <TabsTrigger value="metrics">Metrics</TabsTrigger>
+          <TabsTrigger value="overview"><HugeiconsIcon icon={DashboardSquare01Icon} strokeWidth={2} aria-hidden="true" className="size-4 shrink-0" />Overview</TabsTrigger>
+          <TabsTrigger value="configuration"><HugeiconsIcon icon={Settings01Icon} strokeWidth={2} aria-hidden="true" className="size-4 shrink-0" />Configuration</TabsTrigger>
+          <TabsTrigger value="tasks"><HugeiconsIcon icon={Task01Icon} strokeWidth={2} aria-hidden="true" className="size-4 shrink-0" />Tasks</TabsTrigger>
+          <TabsTrigger value="logs"><HugeiconsIcon icon={File01Icon} strokeWidth={2} aria-hidden="true" className="size-4 shrink-0" />Logs</TabsTrigger>
+          <TabsTrigger value="compose"><HugeiconsIcon icon={CodeIcon} strokeWidth={2} aria-hidden="true" className="size-4 shrink-0" />Compose</TabsTrigger>
+          <TabsTrigger value="metrics"><HugeiconsIcon icon={ChartLineData01Icon} strokeWidth={2} aria-hidden="true" className="size-4 shrink-0" />Metrics</TabsTrigger>
         </TabsList>
         <TabsContent value="overview" className="space-y-6">
           <Section title="Service">
@@ -185,6 +197,7 @@ function ServiceContent({
               <ErrorMessage error={tags.error} />
               <div className="flex flex-wrap gap-3">
                 <Action
+                  icon={ArrowReloadHorizontalIcon}
                   label="Redeploy"
                   path={url(path + "/redeploy", {
                     tag: tag || undefined,
@@ -193,6 +206,7 @@ function ServiceContent({
                   confirm="Replace running tasks with the selected image version?"
                 />
                 <Action
+                  icon={ArrowTurnBackwardIcon}
                   label="Rollback"
                   path={url(path + "/rollback", {
                     comment: comment || undefined,
@@ -221,6 +235,7 @@ function ServiceContent({
           <Section title="Published ports">
             <ResourceTable
               rows={s.ports}
+              sortBy={(port) => port.hostPort}
               columns={[
                 { label: "Published", render: (p) => p.hostPort },
                 { label: "Container", render: (p) => p.containerPort },
@@ -232,6 +247,7 @@ function ServiceContent({
           <Section title="Networks">
             <ResourceTable
               rows={s.networks}
+              sortBy={(network) => network.networkName || ""}
               columns={[
                 {
                   label: "Network",
@@ -254,6 +270,7 @@ function ServiceContent({
           <Section title="Mounts">
             <ResourceTable
               rows={s.mounts}
+              sortBy={(mount) => mount.type || ""}
               columns={[
                 { label: "Type", render: (m) => m.type },
                 { label: "Source", render: (m) => m.host || "Anonymous" },
@@ -272,6 +289,7 @@ function ServiceContent({
           <Section title="Secrets">
             <ResourceTable
               rows={s.secrets}
+              sortBy={(secret) => secret.secretName || ""}
               columns={[
                 {
                   label: "Secret",
@@ -299,6 +317,7 @@ function ServiceContent({
           <Section title="Configs">
             <ResourceTable
               rows={s.configs}
+              sortBy={(config) => config.configName || ""}
               columns={[
                 {
                   label: "Config",
@@ -425,13 +444,18 @@ function ServiceCompose({ id }: { id: string }) {
     <Section title="Compose">
       <ErrorMessage error={query.error} />
       {query.isPending ? (
-        <Loading />
+        <div role="status" aria-label="Loading generated compose" aria-busy="true" className="space-y-2">
+          <span className="sr-only">Loading generated compose…</span>
+          <Skeleton aria-hidden="true" className="h-3.5 w-28" />
+          <Skeleton aria-hidden="true" className="h-[38.625rem] w-full" />
+        </div>
       ) : (
-        <TextField
+        <CodeField
           label="Generated compose"
           value={query.data?.spec.compose || ""}
           readOnly
           rows={25}
+          showSyntaxSelector={false}
         />
       )}
     </Section>
@@ -486,6 +510,7 @@ export function ServiceLogs({
       <div className="flex items-center gap-4">
         <Toggle label="Follow logs" checked={follow} onChange={setFollow} />
         <Button variant="outline" onClick={() => void query.refetch()}>
+          <HugeiconsIcon icon={ArrowReloadHorizontalIcon} strokeWidth={2} aria-hidden="true" className="size-4 shrink-0" />
           Refresh
         </Button>
         <Button
@@ -508,6 +533,7 @@ export function ServiceLogs({
             URL.revokeObjectURL(blob);
           }}
         >
+          <HugeiconsIcon icon={Download01Icon} strokeWidth={2} aria-hidden="true" className="size-4 shrink-0" />
           Download logs
         </Button>
       </div>
@@ -539,7 +565,7 @@ function ServiceMetrics({ id }: { id: string }) {
     <div className="space-y-6">
       <ErrorMessage error={tasks.error} />
       {tasks.isPending ? (
-        <Loading />
+        <Loading variant="chart" />
       ) : (tasks.data || []).length ? (
         (tasks.data || []).map((t) => <TaskMetrics key={t.id} task={t} />)
       ) : (
@@ -560,12 +586,14 @@ function TaskMetrics({ task }: { task: Task }) {
       <ErrorMessage error={query.error} />
       <TimeseriesChart
         title="CPU usage"
+        pending={query.isPending}
         series={query.data ? [query.data] : []}
         metric="cpu"
         cpuUnit="vcpu"
       />
       <TimeseriesChart
         title="Memory usage"
+        pending={query.isPending}
         series={query.data ? [query.data] : []}
         metric="memory"
         memoryUnit="mib"

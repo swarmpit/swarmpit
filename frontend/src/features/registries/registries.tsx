@@ -1,3 +1,5 @@
+import { HugeiconsIcon } from "@hugeicons/react";
+import { Add01Icon, Cancel01Icon, CubeIcon, Delete02Icon, FloppyDiskIcon, LinkSquare01Icon, PencilEdit01Icon, Search01Icon } from "@hugeicons/core-free-icons";
 import { useState } from "react";
 import { Link, useNavigate, useParams } from "react-router";
 import { useApi, useCommand } from "@/lib/queries";
@@ -76,7 +78,7 @@ export function RegistriesList() {
       actions={
         canWrite(me?.role) && (
           <Button asChild>
-            <Link to="/registries/create">Link registry</Link>
+            <Link to="/registries/create"><HugeiconsIcon icon={LinkSquare01Icon} strokeWidth={2} aria-hidden="true" className="size-4 shrink-0" />Link registry</Link>
           </Button>
         )
       }
@@ -85,10 +87,11 @@ export function RegistriesList() {
         <ErrorMessage key={registryTypes[i]} error={query.error} />
       ))}
       {queries.some((q) => q.isPending) ? (
-        <Loading />
+        <Loading variant="table" />
       ) : (
         <ResourceTable
           rows={rows}
+          sortBy={name}
           search={(r) => [name(r), address(r), r.owner, r.type].join(" ")}
           columns={[
             {
@@ -115,6 +118,7 @@ export function RegistriesList() {
                     size="sm"
                     onClick={() => setBrowsing(r)}
                   >
+                    <HugeiconsIcon icon={Search01Icon} strokeWidth={2} aria-hidden="true" className="size-4 shrink-0" />
                     Browse {name(r)}
                   </Button>
                 ) : (
@@ -127,6 +131,7 @@ export function RegistriesList() {
       {browsing && (
         <Section title={"Repositories · " + name(browsing)}>
           <Button variant="ghost" onClick={() => setBrowsing(undefined)}>
+            <HugeiconsIcon icon={Cancel01Icon} strokeWidth={2} aria-hidden="true" className="size-4 shrink-0" />
             Close repositories
           </Button>
           <Repositories key={registryId(browsing)} registry={browsing} />
@@ -163,10 +168,11 @@ export function RegistryDetail() {
         managed && (
           <>
             <Button variant="outline" asChild>
-              <Link to={registryRoute(type, id) + "/edit"}>Edit registry</Link>
+              <Link to={registryRoute(type, id) + "/edit"}><HugeiconsIcon icon={PencilEdit01Icon} strokeWidth={2} aria-hidden="true" className="size-4 shrink-0" />Edit registry</Link>
             </Button>
             <Action
               label="Delete registry"
+              icon={Delete02Icon}
               path={registryPath(type, id)}
               method="DELETE"
               destructive
@@ -250,11 +256,12 @@ function Repositories({ registry }: { registry: Registry }) {
     <div className="space-y-4">
       <ErrorMessage error={query.error} />
       {query.isPending ? (
-        <Loading />
+        <Loading variant="table" />
       ) : (
         query.data && (
           <ResourceTable
             rows={query.data}
+            sortBy={(repository) => repository.name || ""}
             search={(r) => r.name}
             columns={[
               {
@@ -265,6 +272,7 @@ function Repositories({ registry }: { registry: Registry }) {
                     className="p-0"
                     onClick={() => setSelected(r.name)}
                   >
+                    <HugeiconsIcon icon={CubeIcon} strokeWidth={2} aria-hidden="true" className="size-4 shrink-0" />
                     {r.name}
                   </Button>
                 ),
@@ -335,6 +343,7 @@ function RepositoryTags({ image }: { image: string }) {
                 tag,
               })}
             >
+              <HugeiconsIcon icon={Add01Icon} strokeWidth={2} aria-hidden="true" className="size-4 shrink-0" />
               Create service
             </Link>
           </Button>
@@ -600,7 +609,7 @@ function RegistryEditor({
           repositories.
         </p>
         <ErrorMessage error={command.error} />
-        <Submit pending={command.isPending}>
+        <Submit pending={command.isPending} icon={existing ? FloppyDiskIcon : LinkSquare01Icon}>
           {existing ? "Save changes" : "Link registry"}
         </Submit>
       </form>

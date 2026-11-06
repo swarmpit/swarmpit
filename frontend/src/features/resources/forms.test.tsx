@@ -10,6 +10,7 @@ import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { MemoryRouter, Route, Routes } from "react-router";
 import type { Node } from "@/lib/types";
 import { NodeForm } from "./forms";
+import { selectOption } from "@/test-utils";
 vi.mock("@/features/session/session", () => ({
   useSession: () => ({ me: { username: "admin", role: "admin" } }),
 }));
@@ -89,9 +90,7 @@ function mount() {
 }
 async function editDraft() {
   await screen.findByLabelText("Availability");
-  fireEvent.change(screen.getByLabelText("Availability"), {
-    target: { value: "drain" },
-  });
+  await selectOption("Availability", "drain");
   fireEvent.change(screen.getByLabelText("Value"), {
     target: { value: "draft" },
   });
@@ -111,7 +110,7 @@ it("keeps dirty node fields and the original optimistic version through backgrou
   const client = mount();
   await editDraft();
   await backgroundRefresh(client);
-  expect(screen.getByLabelText("Availability")).toHaveValue("drain");
+  expect(screen.getByLabelText("Availability")).toHaveTextContent("drain");
   expect(screen.getByLabelText("Value")).toHaveValue("draft");
   fireEvent.click(screen.getByRole("button", { name: "Save changes" }));
   expect(await screen.findByRole("alert")).toHaveTextContent(
@@ -150,8 +149,8 @@ it("recovers from a conflict by fetching fresh fields and version only after con
   expect(window.confirm).toHaveBeenCalledWith(
     expect.stringMatching(/discard.*unsaved/i),
   );
-  expect(screen.getByLabelText("Availability")).toHaveValue("active");
-  expect(screen.getByLabelText("Role")).toHaveValue("manager");
+  expect(screen.getByLabelText("Availability")).toHaveTextContent("active");
+  expect(screen.getByLabelText("Role")).toHaveTextContent("manager");
   expect(screen.queryByText("update out of sequence")).not.toBeInTheDocument();
   expect(reads).toBe(3);
   fireEvent.click(screen.getByRole("button", { name: "Save changes" }));
@@ -171,12 +170,41 @@ it("cancelling reload keeps the draft and original version without another fetch
   vi.mocked(window.confirm).mockReturnValue(false);
   fireEvent.click(screen.getByRole("button", { name: "Reload server values" }));
   expect(reads).toBe(2);
-  expect(screen.getByLabelText("Availability")).toHaveValue("drain");
+  expect(screen.getByLabelText("Availability")).toHaveTextContent("drain");
   expect(screen.getByLabelText("Value")).toHaveValue("draft");
   fireEvent.click(screen.getByRole("button", { name: "Save changes" }));
   await screen.findByText("update out of sequence");
   expect(writes[0]?.version).toBe(3);
 });
+it("disables node choices while confirmed server values are reloading", async () => {
+  mount();
+  await editDraft();
+  let finishReload!: (response: Response) => void;
+  vi.mocked(fetch).mockReturnValueOnce(
+    new Promise<Response>((resolve) => {
+      finishReload = resolve;
+    }),
+  );
+  fireEvent.click(screen.getByRole("button", { name: "Reload server values" }));
+  const availability = screen.getByLabelText("Availability");
+  const role = screen.getByLabelText("Role");
+  expect(availability).toBeDisabled();
+  expect(role).toBeDisabled();
+  fireEvent.keyDown(availability, { key: "ArrowDown" });
+  fireEvent.keyDown(role, { key: "ArrowDown" });
+  expect(screen.queryByRole("listbox")).not.toBeInTheDocument();
+  await act(async () => {
+    finishReload(
+      new Response(JSON.stringify({ ...initial, role: "manager" }), {
+        status: 200,
+      }),
+    );
+  });
+  await waitFor(() => expect(role).toHaveTextContent("manager"));
+  expect(role).toBeEnabled();
+  expect(availability).toBeEnabled();
+});
+
 it("preserves the draft and displays a failed confirmed reload", async () => {
   mount();
   await editDraft();
@@ -185,7 +213,7 @@ it("preserves the draft and displays a failed confirmed reload", async () => {
   expect(await screen.findByRole("alert")).toHaveTextContent(
     "Cannot reload node",
   );
-  expect(screen.getByLabelText("Availability")).toHaveValue("drain");
+  expect(screen.getByLabelText("Availability")).toHaveTextContent("drain");
   expect(screen.getByLabelText("Value")).toHaveValue("draft");
   expect(
     screen.getByRole("button", { name: "Reload server values" }),

@@ -1,5 +1,5 @@
 import { beforeEach, afterEach, expect, it, vi } from "vitest";
-import { render, screen, fireEvent, within } from "@testing-library/react";
+import { act, render, screen, fireEvent, within } from "@testing-library/react";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { MemoryRouter, Route, Routes, useLocation } from "react-router";
 import type { Node, Task } from "@/lib/types";
@@ -11,13 +11,6 @@ vi.mock("@/features/session/session", () => ({
   }),
 }));
 vi.mock("@/lib/events", () => ({ connectEvents: () => () => {} }));
-vi.mock("@/features/services/detail", () => ({
-  ServiceLogs: ({ id, initialTask }: { id: string; initialTask?: string }) => (
-    <div role="log" aria-label={"Logs for " + initialTask}>
-      {id}:{initialTask}
-    </div>
-  ),
-}));
 const baseNode: Node = {
   id: "n1",
   version: 3,
@@ -74,6 +67,11 @@ beforeEach(() => {
         return new Response(JSON.stringify(node), { status: 200 });
       if (path === "/api/tasks/t1")
         return new Response(JSON.stringify(task), { status: 200 });
+      if (path === "/api/services/app/logs?since=15m")
+        return new Response(JSON.stringify([
+          { task: "t1", line: "Selected task output" },
+          { task: "t2", line: "Other task output" },
+        ]), { status: 200 });
       throw new Error("Unexpected request: " + path);
     }),
   );
@@ -112,13 +110,14 @@ it("shows node current CPU, memory and disk units independently of historical me
   mount("nodes");
   await screen.findByRole("heading", { name: "worker-1" });
   const usage = currentUsage();
-  expect(usage.getByText("1.00 / 4.00 vCPU")).toBeInTheDocument();
+  expect(usage.getByRole("application", { name: "worker-1 CPU usage breakdown" })).toBeInTheDocument();
+  expect(usage.getByRole("application", { name: "worker-1 Memory usage breakdown" })).toBeInTheDocument();
+  expect(usage.getByRole("application", { name: "worker-1 Storage usage breakdown" })).toBeInTheDocument();
+  expect(usage.getByText("1 vCPU / 4 vCPU")).toBeInTheDocument();
+  expect(usage.getByText("1.0 GiB / 2.0 GiB")).toBeInTheDocument();
+  expect(usage.getByText("3.2 GB / 4.3 GB")).toBeInTheDocument();
   expect(usage.getByText("25.0%")).toBeInTheDocument();
-  expect(usage.getByText("1.0 GiB")).toBeInTheDocument();
-  expect(usage.getByText("2.0 GiB")).toBeInTheDocument();
   expect(usage.getByText("50.0%")).toBeInTheDocument();
-  expect(usage.getByText("3.0 GiB")).toBeInTheDocument();
-  expect(usage.getByText("4.0 GiB")).toBeInTheDocument();
   expect(usage.getByText("75.0%")).toBeInTheDocument();
   expect(screen.getByText("overlay, bridge")).toBeInTheDocument();
   expect(screen.getByText("local")).toBeInTheDocument();
@@ -140,7 +139,7 @@ it("hides stale current usage for a down node", async () => {
   node = { ...node, state: "down" };
   mount("nodes");
   await screen.findByRole("heading", { name: "worker-1" });
-  expect(screen.queryByText("1.00 / 4.00 vCPU")).not.toBeInTheDocument();
+  expect(currentUsage().queryByRole("application")).not.toBeInTheDocument();
   expect(
     screen.getByText("Current resource statistics are not available."),
   ).toBeInTheDocument();
@@ -174,10 +173,15 @@ it("omits stale task usage after the task stops running", async () => {
   ).not.toBeInTheDocument();
   expect(screen.queryByText("0.50 / 2.00 vCPU")).not.toBeInTheDocument();
 });
-it("honors legacy log=1 with the exact task ID and keeps task overview navigation", async () => {
+it("opens legacy log=1 in a separate task Logs tab and restores Overview without losing other query values", async () => {
   mount("tasks", "?log=1&keep=yes");
-  const logs = await screen.findByRole("log", { name: "Logs for t1" });
-  expect(logs).toHaveTextContent("app:t1");
+  expect(await screen.findByText("Selected task output")).toBeInTheDocument();
+  expect(screen.queryByText("Other task output")).not.toBeInTheDocument();
+  expect(screen.getByRole("combobox", { name: "Task" })).toHaveTextContent("t1");
+  expect(screen.getByRole("tab", { name: "Logs" })).toHaveAttribute("aria-selected", "true");
+  expect(screen.queryByRole("heading", { name: "Task details" })).not.toBeInTheDocument();
+  fireEvent.mouseDown(screen.getByRole("tab", { name: "Overview" }), { button: 0, ctrlKey: false });
+  expect(await screen.findByRole("heading", { name: "Task details" })).toBeInTheDocument();
   expect(screen.getByRole("link", { name: "app" })).toHaveAttribute(
     "href",
     "/services/app",
@@ -186,18 +190,37 @@ it("honors legacy log=1 with the exact task ID and keeps task overview navigatio
     "href",
     "/nodes/n1",
   );
-  fireEvent.click(screen.getByRole("button", { name: "Close logs" }));
-  expect(screen.queryByRole("log")).not.toBeInTheDocument();
+  expect(screen.queryByRole("heading", { name: "Service logs" })).not.toBeInTheDocument();
   expect(screen.getByLabelText("Current query")).toHaveTextContent("?keep=yes");
-  fireEvent.click(screen.getByRole("button", { name: "View logs" }));
-  expect(
-    await screen.findByRole("log", { name: "Logs for t1" }),
-  ).toHaveTextContent("app:t1");
+  fireEvent.keyDown(screen.getByRole("tab", { name: "Logs" }), { key: "Enter" });
+  expect(await screen.findByText("Selected task output")).toBeInTheDocument();
   expect(screen.getByLabelText("Current query")).toHaveTextContent("log=1");
 });
 it("disables the log control for drivers unsupported by the legacy log view", async () => {
   task = { ...baseTask, logdriver: "syslog" };
-  mount("tasks");
+  mount("tasks", "?log=1");
   await screen.findByRole("heading", { name: "app.1" });
-  expect(screen.getByRole("button", { name: "View logs" })).toBeDisabled();
+  expect(screen.getByRole("tab", { name: "Logs" })).toBeDisabled();
+  expect(screen.getByRole("tab", { name: "Overview" })).toHaveAttribute("aria-selected", "true");
+  expect(screen.queryByRole("heading", { name: "Service logs" })).not.toBeInTheDocument();
+});
+it("cancels a pending task log request when returning to Overview", async () => {
+  let signal: AbortSignal | undefined;
+  const originalFetch = fetch;
+  vi.stubGlobal("fetch", vi.fn((path: string, init?: RequestInit) => {
+    if (path.startsWith("/api/services/app/logs")) {
+      signal = init?.signal || undefined;
+      return new Promise<Response>((_, reject) => {
+        signal?.addEventListener("abort", () => reject(new DOMException("Aborted", "AbortError")));
+      });
+    }
+    return originalFetch(path, init);
+  }));
+  mount("tasks", "?log=1");
+  await screen.findByRole("heading", { name: "Service logs" });
+  expect(signal?.aborted).toBe(false);
+  await act(async () => {
+    fireEvent.keyDown(screen.getByRole("tab", { name: "Overview" }), { key: "Enter" });
+  });
+  expect(signal?.aborted).toBe(true);
 });

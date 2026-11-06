@@ -16,5 +16,5 @@ it("keeps task log view scoped to its exact task ID", () => {
   render(<ServiceLogs id="service" initialTask="task-a" />);
   expect(screen.getByText("Selected task output")).toBeInTheDocument();
   expect(screen.queryByText("Other task output")).not.toBeInTheDocument();
-  expect(screen.getByLabelText("Task")).toHaveValue("task-a");
+  expect(screen.getByLabelText("Task")).toHaveTextContent("task-a");
 });

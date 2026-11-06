@@ -46,7 +46,7 @@ export function App() {
       <Route path="/login" element={<Login />} />
       <Route
         element={
-          <RequireSession>
+          <RequireSession fallback={<Shell pending />}>
             <Shell />
           </RequireSession>
         }

@@ -1,5 +1,8 @@
 import { useMemo } from "react";
+import { ArrowTurnBackwardIcon } from "@hugeicons/core-free-icons";
+import { HugeiconsIcon } from "@hugeicons/react";
 import { Button } from "@/components/ui/button";
+import { CodeField } from "@/components/code-field";
 import { composeChanges, restoreCompose } from "./compose";
 
 export function ComposeComparison({
@@ -38,25 +41,32 @@ export function ComposeComparison({
                 variant="outline"
                 onClick={() => onRestore(restoreCompose(current, change))}
               >
+                <HugeiconsIcon icon={ArrowTurnBackwardIcon} strokeWidth={2} aria-hidden="true" className="size-4 shrink-0" />
                 Restore engine lines at {change.start + 1}
               </Button>
             )}
           </div>
           {change.before.length > 0 && (
-            <pre
-              className="overflow-x-auto bg-destructive/5 p-3 text-xs leading-5 text-destructive"
-              aria-label="Engine lines removed or replaced"
-            >
-              {change.before.map((line) => "− " + line).join("\n")}
-            </pre>
+            <div className="border-l-2 border-destructive bg-destructive/5 p-3">
+              <CodeField
+                label="Engine lines removed or replaced"
+                value={change.before.join("\n")}
+                readOnly
+                rows={Math.min(12, Math.max(2, change.before.length))}
+                showSyntaxSelector={false}
+              />
+            </div>
           )}
           {change.after.length > 0 && (
-            <pre
-              className="overflow-x-auto bg-emerald-500/5 p-3 text-xs leading-5 text-emerald-700 dark:text-emerald-400"
-              aria-label="Draft lines added or changed"
-            >
-              {change.after.map((line) => "+ " + line).join("\n")}
-            </pre>
+            <div className="border-l-2 border-success bg-success/5 p-3">
+              <CodeField
+                label="Draft lines added or changed"
+                value={change.after.join("\n")}
+                readOnly
+                rows={Math.min(12, Math.max(2, change.after.length))}
+                showSyntaxSelector={false}
+              />
+            </div>
           )}
         </div>
       ))}

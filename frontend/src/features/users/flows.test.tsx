@@ -11,6 +11,7 @@ import { MemoryRouter, Routes, Route } from "react-router";
 import { UserForm, UserDetail } from "./users";
 import { RegistryForm, RegistriesList } from "../registries/registries";
 import { Account } from "../session/account";
+import { selectOption } from "@/test-utils";
 const identity = vi.hoisted(() => ({
   username: "admin",
   email: "admin@example.com",
@@ -99,9 +100,7 @@ it("keeps dirty user fields during refresh and submits backend metadata without 
     await new Promise((resolve) => setTimeout(resolve, 0));
   });
   expect(email).toHaveValue("edited@example.com");
-  fireEvent.change(screen.getByLabelText("Role"), {
-    target: { value: "user" },
-  });
+  await selectOption("Role", "user");
   fireEvent.click(screen.getByRole("button", { name: "Save changes" }));
   await screen.findByText("User saved");
   expect(calls.find((c) => c.method === "POST")).toMatchObject({
@@ -133,9 +132,7 @@ it("does not fetch admin user details for viewers", () => {
 });
 it("creates ECR with the accessKey field and handles an id response", async () => {
   mount(<RegistryForm />, "/registries/create", "/registries/create");
-  fireEvent.change(screen.getByLabelText("Registry type"), {
-    target: { value: "ecr" },
-  });
+  await selectOption("Registry type", "ecr");
   fireEvent.change(screen.getByLabelText("Access key ID"), {
     target: { value: "key-id" },
   });

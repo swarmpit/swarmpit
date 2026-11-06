@@ -1,4 +1,4 @@
-import { fireEvent, render, screen, waitFor } from "@testing-library/react";
+import { act, fireEvent, render, screen, waitFor } from "@testing-library/react";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { MemoryRouter, Route, Routes } from "react-router";
 import { beforeEach, describe, expect, it, vi } from "vitest";
@@ -8,6 +8,15 @@ const session = vi.hoisted(() => ({
   me: { username: "operator", role: "user" },
 }));
 vi.mock("@/features/session/session", () => ({ useSession: () => session }));
+vi.mock("@/components/code-field", () => ({
+  CodeField: ({ label, value, onChange, readOnly, disabled, required, rows, showSyntaxSelector }: {
+    label?: string; value: string; onChange?: (value: string) => void;
+    readOnly?: boolean; disabled?: boolean; required?: boolean; rows?: number; showSyntaxSelector?: boolean;
+  }) => <textarea aria-label={label} value={value} onChange={(event) => onChange?.(event.target.value)}
+    readOnly={readOnly} disabled={disabled} required={required} rows={rows}
+    data-syntax-selector={String(showSyntaxSelector)} />,
+}));
+
 vi.mock("@/features/resources/lists", () => ({
   Live: () => <span>Live</span>,
 }));
@@ -102,6 +111,27 @@ beforeEach(() => {
   );
 });
 describe("stack details and lifecycle", () => {
+  it("keeps the stack header and tabs mounted while initial details load", async () => {
+    let finish!: () => void;
+    const ready = new Promise<void>((resolve) => { finish = resolve; });
+    const originalFetch = fetch;
+    vi.stubGlobal("fetch", vi.fn(async (...args: Parameters<typeof fetch>) => {
+      if (String(args[0]) === "/api/stacks") await ready;
+      return originalFetch(...args);
+    }));
+    renderDetail();
+    const heading = screen.getByRole("heading", { name: "example" });
+    const tabs = screen.getByRole("tablist");
+    expect(screen.getByRole("status", { name: "Loading stack details" })).toBeInTheDocument();
+    expect(screen.getByRole("heading", { name: "Stack details" })).toBeInTheDocument();
+    expect(screen.getByRole("tab", { name: "Services" })).toBeDisabled();
+    await act(async () => { finish(); });
+    await waitFor(() => expect(screen.getByRole("tab", { name: "Services" })).toBeEnabled());
+    expect(screen.getByRole("heading", { name: "example" })).toBe(heading);
+    expect(screen.getByRole("tablist")).toBe(tabs);
+    expect(screen.queryByRole("status", { name: "Loading stack details" })).not.toBeInTheDocument();
+  });
+
   it("derives inactive details from the list and offers activation and saved-file deletion", async () => {
     responses["/api/stacks"] = {
       body: [{ stackName: "example", state: "inactive" }],
@@ -157,7 +187,7 @@ describe("stack details and lifecycle", () => {
 
   it("shows related resources from their own backend endpoint", async () => {
     renderDetail();
-    await screen.findByRole("heading", { name: "example" });
+    await waitFor(() => expect(screen.getByRole("tab", { name: "Networks" })).toBeEnabled());
     fireEvent.mouseDown(screen.getByRole("tab", { name: "Networks" }), {
       button: 0,
       ctrlKey: false,
@@ -169,7 +199,7 @@ describe("stack details and lifecycle", () => {
 
   it("shows history compose without changing the saved version", async () => {
     renderDetail();
-    await screen.findByRole("heading", { name: "example" });
+    await waitFor(() => expect(screen.getByRole("tab", { name: "History" })).toBeEnabled());
     fireEvent.mouseDown(screen.getByRole("tab", { name: "History" }), {
       button: 0,
       ctrlKey: false,
@@ -181,10 +211,83 @@ describe("stack details and lifecycle", () => {
     expect(screen.getByLabelText("Historical compose")).toHaveValue(
       "# historic\nservices: {}\n",
     );
+    expect(screen.getByLabelText("Historical compose")).toHaveAttribute("readonly");
+    expect(screen.getByLabelText("Historical compose")).toHaveAttribute("data-syntax-selector", "false");
     expect(
       screen.getByRole("link", { name: "Edit this version" }),
     ).toHaveAttribute("href", "/stacks/example/compose?history=0");
     expect(requests.filter((r) => r.init?.method === "POST")).toHaveLength(0);
+  });
+
+  it("shows skeletons for pending compose and resource metrics before displaying real values", async () => {
+    responses["/api/stacks/example/tasks"] = {
+      body: [{ stats: { cpu: 0.5, memory: 134217728 } }],
+    };
+    responses["/api/stats"] = {
+      body: { cpu: { cores: 4 }, memory: { total: 1073741824 } },
+    };
+    let finish!: () => void;
+    const ready = new Promise<void>((resolve) => {
+      finish = resolve;
+    });
+    const originalFetch = fetch;
+    vi.stubGlobal(
+      "fetch",
+      vi.fn(async (...args: Parameters<typeof fetch>) => {
+        if (
+          ["/api/stacks/example/file", "/api/stacks/example/tasks", "/api/stats"].includes(
+            String(args[0]),
+          )
+        ) {
+          await ready;
+        }
+        return originalFetch(...args);
+      }),
+    );
+    renderDetail();
+    await screen.findByRole("status", { name: "Loading CPU usage" });
+    for (const label of [
+      "Loading stored compose",
+      "Loading CPU usage",
+      "Loading memory usage",
+    ]) {
+      expect(screen.getByRole("status", { name: label })).toHaveAttribute(
+        "aria-busy",
+        "true",
+      );
+    }
+    expect(screen.queryByText("Unavailable")).not.toBeInTheDocument();
+    await act(async () => {
+      finish();
+    });
+    expect(
+      await screen.findByText("0.50 vCPU / 4 cluster vCPU"),
+    ).toBeInTheDocument();
+    expect(
+      screen.getByText("128.0 MiB / 1.0 GiB cluster memory"),
+    ).toBeInTheDocument();
+    expect(screen.getByText("Available")).toBeInTheDocument();
+    expect(
+      screen.queryByRole("status", { name: "Loading CPU usage" }),
+    ).not.toBeInTheDocument();
+  });
+
+  it("reserves the compose editor layout while the stored file is pending", async () => {
+    let finish!: () => void;
+    const ready = new Promise<void>((resolve) => { finish = resolve; });
+    const originalFetch = fetch;
+    vi.stubGlobal("fetch", vi.fn(async (...args: Parameters<typeof fetch>) => {
+      if (String(args[0]) === "/api/stacks/example/file") await ready;
+      return originalFetch(...args);
+    }));
+    renderDetail();
+    await waitFor(() => expect(screen.getByRole("tab", { name: "Compose" })).toBeEnabled());
+    fireEvent.keyDown(screen.getByRole("tab", { name: "Compose" }), { key: "Enter" });
+    expect(screen.getByRole("status", { name: "Loading compose YAML" })).toBeInTheDocument();
+    await act(async () => { finish(); });
+    expect(await screen.findByLabelText("Compose YAML")).toHaveValue("# stored\nservices: {}\n");
+    expect(screen.getByLabelText("Compose YAML")).toHaveAttribute("readonly");
+    expect(screen.queryByRole("status", { name: "Loading compose YAML" })).not.toBeInTheDocument();
   });
 
   it("keeps operations available when optional resource metrics are unavailable", async () => {
@@ -203,7 +306,7 @@ describe("stack details and lifecycle", () => {
   it("hides lifecycle mutations for viewers", async () => {
     session.me.role = "viewer";
     renderDetail();
-    await screen.findByRole("heading", { name: "example" });
+    await waitFor(() => expect(screen.getByRole("tab", { name: "Overview" })).toBeEnabled());
     expect(
       screen.queryByRole("button", { name: "Redeploy" }),
     ).not.toBeInTheDocument();

@@ -12,6 +12,8 @@ import { Input } from "./ui/input";
 import { Label } from "./ui/label";
 import { Textarea } from "./ui/textarea";
 import { Badge } from "./ui/badge";
+import { Skeleton } from "./ui/skeleton";
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "./ui/select";
 import {
   Table,
   TableBody,
@@ -29,7 +31,13 @@ import {
   DialogFooter,
 } from "./ui/dialog";
 import type { Pair } from "@/lib/types";
-import { Loader2, Plus, Trash2, Search } from "lucide-react";
+import { HugeiconsIcon, type IconSvgElement } from "@hugeicons/react";
+import {
+  Add01Icon, ArrowReloadHorizontalIcon, ArrowTurnBackwardIcon, Cancel01Icon, CancelCircleIcon,
+  CheckmarkCircle02Icon, Clock01Icon, CrownIcon, Delete02Icon, FloppyDiskIcon, HelpCircleIcon,
+  Loading03Icon, PackageDeliveredIcon, PauseCircleIcon, PlayCircleIcon,
+  PowerServiceIcon, Search01Icon, StopCircleIcon, WifiOff01Icon,
+} from "@hugeicons/core-free-icons";
 
 export function ErrorMessage({ error }: { error: unknown }) {
   return error ? (
@@ -44,14 +52,51 @@ export function ErrorMessage({ error }: { error: unknown }) {
     </div>
   ) : null;
 }
-export function Loading() {
+export function Loading({
+  variant = "content",
+  label = "Loading…",
+}: {
+  variant?: "content" | "table" | "chart";
+  label?: string;
+}) {
   return (
-    <div
-      role="status"
-      className="flex items-center gap-2 py-12 text-muted-foreground"
-    >
-      <Loader2 className="size-4 animate-spin" />
-      Loading…
+    <div role="status" aria-label={label} aria-busy="true" className="w-full">
+      <span className="sr-only">{label}</span>
+      <div aria-hidden="true">
+        {variant === "table" ? (
+          <div className="space-y-4">
+            <Skeleton className="h-9 w-64 max-w-full" />
+            <div className="overflow-hidden rounded-xl border bg-card">
+              {Array.from({ length: 6 }, (_, row) => (
+                <div key={row} className="grid grid-cols-4 gap-4 border-b p-4 last:border-b-0">
+                  {Array.from({ length: 4 }, (_, column) => (
+                    <Skeleton key={column} className={column === 0 ? "h-4 w-3/4" : "h-4 w-full"} />
+                  ))}
+                </div>
+              ))}
+            </div>
+          </div>
+        ) : variant === "chart" ? (
+          <div className="flex h-64 flex-col gap-3">
+            <Skeleton className="min-h-0 w-full flex-1" />
+            <div className="flex justify-between">
+              <Skeleton className="h-3 w-12" />
+              <Skeleton className="h-3 w-12" />
+              <Skeleton className="h-3 w-12" />
+            </div>
+          </div>
+        ) : (
+          <div className="space-y-4 rounded-xl border bg-card p-5">
+            <Skeleton className="h-5 w-48 max-w-full" />
+            <div className="grid gap-4 sm:grid-cols-2">
+              <Skeleton className="h-10 w-full" />
+              <Skeleton className="h-10 w-full" />
+            </div>
+            <Skeleton className="h-4 w-3/4" />
+            <Skeleton className="h-24 w-full" />
+          </div>
+        )}
+      </div>
     </div>
   );
 }
@@ -176,22 +221,27 @@ export function Choice({
   disabled?: boolean;
 }) {
   const id = useId();
+  // Radix reserves empty item values; encode all options so Default still returns "".
+  const prefix = "choice:";
   return (
     <div className="space-y-2">
       <Label htmlFor={id}>{label}</Label>
-      <select
-        id={id}
-        value={value}
-        onChange={(e) => onChange(e.target.value)}
+      <Select
+        value={prefix + value}
+        onValueChange={(next) => onChange(next.slice(prefix.length))}
         disabled={disabled}
-        className="h-9 w-full rounded-md border border-input bg-background px-3 text-sm"
       >
-        {options.map((v) => (
-          <option key={v} value={v}>
-            {v || "Default"}
-          </option>
-        ))}
-      </select>
+        <SelectTrigger id={id} className="w-full min-w-0">
+          <SelectValue className="min-w-0 truncate">{value || "Default"}</SelectValue>
+        </SelectTrigger>
+        <SelectContent>
+          {options.map((option) => (
+            <SelectItem key={option} value={prefix + option}>
+              {option || "Default"}
+            </SelectItem>
+          ))}
+        </SelectContent>
+      </Select>
     </div>
   );
 }
@@ -273,7 +323,7 @@ export function Repeat<T>({
           size="sm"
           onClick={() => onChange([...value, add()])}
         >
-          <Plus className="size-3" />
+          <HugeiconsIcon icon={Add01Icon} strokeWidth={2} aria-hidden="true" className="size-3" />
           Add
         </Button>
       </div>
@@ -291,13 +341,39 @@ export function Repeat<T>({
             aria-label={"Remove " + title + " row " + (i + 1)}
             onClick={() => onChange(value.filter((_, j) => i !== j))}
           >
-            <Trash2 className="size-4" />
+            <HugeiconsIcon icon={Delete02Icon} strokeWidth={2} aria-hidden="true" className="size-4" />
           </Button>
         </div>
       ))}
     </div>
   );
 }
+const statusIcons = new Map<string, typeof HelpCircleIcon>([
+  ["running", PlayCircleIcon],
+  ["ready", CheckmarkCircle02Icon],
+  ["active", PlayCircleIcon],
+  ["leader", CrownIcon],
+  ["completed", CheckmarkCircle02Icon],
+  ["failed", CancelCircleIcon],
+  ["rejected", CancelCircleIcon],
+  ["error", CancelCircleIcon],
+  ["shutdown", PowerServiceIcon],
+  ["down", WifiOff01Icon],
+  ["updating", ArrowReloadHorizontalIcon],
+  ["rollback", ArrowTurnBackwardIcon],
+  ["pending", Clock01Icon],
+  ["new", Clock01Icon],
+  ["assigned", Clock01Icon],
+  ["accepted", CheckmarkCircle02Icon],
+  ["starting", Loading03Icon],
+  ["preparing", Loading03Icon],
+  ["drain", ArrowTurnBackwardIcon],
+  ["pause", PauseCircleIcon],
+  ["paused", PauseCircleIcon],
+  ["deployed", PackageDeliveredIcon],
+  ["inactive", StopCircleIcon],
+]);
+
 export function Status({ value }: { value?: string }) {
   const good = ["running", "ready", "active", "leader", "completed"].includes(
     value || "",
@@ -310,25 +386,35 @@ export function Status({ value }: { value?: string }) {
       variant="outline"
       className={
         good
-          ? "border-emerald-500/25 bg-emerald-500/10 text-emerald-700 dark:text-emerald-400"
+          ? "border-success/25 bg-success/10 text-success-foreground"
           : bad
             ? "border-destructive/25 text-destructive"
             : "text-muted-foreground"
       }
     >
+      <HugeiconsIcon
+        icon={statusIcons.get(value || "") ?? HelpCircleIcon}
+        strokeWidth={2}
+        aria-hidden="true"
+        className="size-3 shrink-0"
+      />
       {value || "unknown"}
     </Badge>
   );
 }
+const alphabeticalOrder = new Intl.Collator(undefined, { sensitivity: "base", numeric: true });
+
 export function ResourceTable<T>({
   rows,
   columns,
   search,
+  sortBy,
   empty,
 }: {
-  rows: T[];
+  rows: readonly T[];
   columns: { label: string; render: (row: T) => ReactNode }[];
   search?: (row: T) => string;
+  sortBy: (row: T) => string | number;
   empty?: string;
 }) {
   const [filter, setFilter] = useState("");
@@ -337,11 +423,12 @@ export function ResourceTable<T>({
         search(row).toLowerCase().includes(filter.toLowerCase()),
       )
     : rows;
+  const sorted = [...filtered].sort((a, b) => alphabeticalOrder.compare(String(sortBy(a)), String(sortBy(b))));
   return (
     <div className="space-y-4">
       {search && (
         <div className="relative max-w-sm">
-          <Search className="absolute left-3 top-3 size-4 text-muted-foreground" />
+          <HugeiconsIcon icon={Search01Icon} strokeWidth={2} aria-hidden="true" className="absolute left-3 top-3 size-4 text-muted-foreground" />
           <Input
             aria-label="Filter resources"
             placeholder="Filter resources…"
@@ -351,7 +438,7 @@ export function ResourceTable<T>({
           />
         </div>
       )}
-      {filtered.length ? (
+      {sorted.length ? (
         <div className="overflow-hidden rounded-xl border bg-card">
           <Table>
             <TableHeader>
@@ -362,7 +449,7 @@ export function ResourceTable<T>({
               </TableRow>
             </TableHeader>
             <TableBody>
-              {filtered.map((row, i) => (
+              {sorted.map((row, i) => (
                 <TableRow key={i}>
                   {columns.map((col) => (
                     <TableCell key={col.label}>{col.render(row)}</TableCell>
@@ -422,6 +509,7 @@ export function PairValues({ value }: { value?: Pair[] }) {
 }
 export function Action({
   label,
+  icon,
   path,
   method = "POST",
   body,
@@ -431,6 +519,7 @@ export function Action({
   disabled,
 }: {
   label: string;
+  icon: IconSvgElement;
   path: string;
   method?: string;
   body?: unknown;
@@ -455,7 +544,7 @@ export function Action({
         disabled={disabled || command.isPending}
         onClick={() => (destructive || confirm ? setOpen(true) : run())}
       >
-        {command.isPending && <Loader2 className="size-4 animate-spin" />}
+        <HugeiconsIcon icon={command.isPending ? Loading03Icon : icon} strokeWidth={2} aria-hidden="true" className={command.isPending ? "size-4 shrink-0 animate-spin motion-reduce:animate-none" : "size-4 shrink-0"} />
         {label}
       </Button>
       {!open && <ErrorMessage error={command.error} />}
@@ -481,6 +570,7 @@ export function Action({
               onClick={() => setOpen(false)}
               disabled={command.isPending}
             >
+              <HugeiconsIcon icon={Cancel01Icon} strokeWidth={2} aria-hidden="true" className="size-4 shrink-0" />
               Cancel
             </Button>
             <Button
@@ -489,6 +579,7 @@ export function Action({
               onClick={run}
               disabled={command.isPending}
             >
+              <HugeiconsIcon icon={command.isPending ? Loading03Icon : icon} strokeWidth={2} aria-hidden="true" className={command.isPending ? "size-4 shrink-0 animate-spin motion-reduce:animate-none" : "size-4 shrink-0"} />
               {command.isPending ? "Working…" : label}
             </Button>
           </DialogFooter>
@@ -499,14 +590,16 @@ export function Action({
 }
 export function Submit({
   pending,
+  icon = FloppyDiskIcon,
   children = "Save changes",
 }: {
   pending: boolean;
+  icon?: IconSvgElement;
   children?: ReactNode;
 }) {
   return (
     <Button type="submit" disabled={pending}>
-      {pending && <Loader2 className="size-4 animate-spin" />}
+      <HugeiconsIcon icon={pending ? Loading03Icon : icon} strokeWidth={2} aria-hidden="true" className={pending ? "size-4 shrink-0 animate-spin motion-reduce:animate-none" : "size-4 shrink-0"} />
       {pending ? "Working…" : children}
     </Button>
   );

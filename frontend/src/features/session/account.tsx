@@ -1,3 +1,5 @@
+import { HugeiconsIcon } from "@hugeicons/react";
+import { ArrowReloadHorizontalIcon, Cancel01Icon, Delete02Icon, Key01Icon, Loading03Icon, ViewOffIcon } from "@hugeicons/core-free-icons";
 import { useState } from "react";
 import { useQueryClient } from "@tanstack/react-query";
 import { api } from "@/lib/api";
@@ -117,7 +119,7 @@ function Password() {
         />
         <ErrorMessage error={validation || command.error} />
         {notice && <p role="status">{notice}</p>}
-        <Submit pending={command.isPending}>Change password</Submit>
+        <Submit pending={command.isPending} icon={Key01Icon}>Change password</Submit>
       </form>
     </Section>
   );
@@ -179,6 +181,7 @@ function ApiAccess() {
                     })
                   }
                 >
+                  <HugeiconsIcon icon={ViewOffIcon} strokeWidth={2} aria-hidden="true" className="size-4 shrink-0" />
                   Hide token
                 </Button>
               )}
@@ -194,6 +197,7 @@ function ApiAccess() {
               disabled={pending}
               onClick={() => (token ? setDialog("replace") : void run("POST"))}
             >
+              <HugeiconsIcon icon={pending ? Loading03Icon : token ? ArrowReloadHorizontalIcon : Key01Icon} strokeWidth={2} aria-hidden="true" className={pending ? "size-4 shrink-0 animate-spin motion-reduce:animate-none" : "size-4 shrink-0"} />
               {pending
                 ? "Working…"
                 : token
@@ -206,6 +210,7 @@ function ApiAccess() {
                 variant="destructive"
                 onClick={() => setDialog("revoke")}
               >
+                <HugeiconsIcon icon={Delete02Icon} strokeWidth={2} aria-hidden="true" className="size-4 shrink-0" />
                 Revoke API token
               </Button>
             )}
@@ -236,6 +241,7 @@ function ApiAccess() {
                   disabled={pending}
                   onClick={() => setDialog(null)}
                 >
+                  <HugeiconsIcon icon={Cancel01Icon} strokeWidth={2} aria-hidden="true" className="size-4 shrink-0" />
                   Cancel
                 </Button>
                 <Button
@@ -245,6 +251,7 @@ function ApiAccess() {
                     void run(dialog === "replace" ? "POST" : "DELETE")
                   }
                 >
+                  <HugeiconsIcon icon={pending ? Loading03Icon : dialog === "replace" ? ArrowReloadHorizontalIcon : Delete02Icon} strokeWidth={2} aria-hidden="true" className={pending ? "size-4 shrink-0 animate-spin motion-reduce:animate-none" : "size-4 shrink-0"} />
                   {pending
                     ? "Working…"
                     : dialog === "replace"

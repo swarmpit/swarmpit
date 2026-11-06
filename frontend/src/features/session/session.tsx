@@ -1,3 +1,5 @@
+import { HugeiconsIcon } from "@hugeicons/react";
+import { LinkSquare01Icon, Login01Icon, UserAdd01Icon } from "@hugeicons/core-free-icons";
 import {
   createContext,
   useContext,
@@ -24,6 +26,7 @@ import {
   Submit,
 } from "@/components/common";
 import { Button } from "@/components/ui/button";
+import { Skeleton } from "@/components/ui/skeleton";
 
 interface Session {
   me?: Me;
@@ -150,7 +153,7 @@ export function useSession() {
   if (!value) throw new Error("SessionProvider missing");
   return value;
 }
-export function RequireSession({ children }: { children: ReactNode }) {
+export function RequireSession({ children, fallback = <Loading /> }: { children: ReactNode; fallback?: ReactNode }) {
   const session = useSession();
   const location = useLocation();
   if (!session.token)
@@ -161,7 +164,7 @@ export function RequireSession({ children }: { children: ReactNode }) {
         replace
       />
     );
-  if (session.loading) return <Loading />;
+  if (session.loading) return fallback;
   if (session.error) return <ErrorMessage error={session.error} />;
   return children;
 }
@@ -197,7 +200,16 @@ export function Login() {
           }
         >
           {session.loading && !session.version ? (
-            <Loading />
+            <div role="status" aria-label="Sign-in form loading" aria-busy="true" className="space-y-4">
+              <span className="sr-only">Loading sign-in form…</span>
+              {[0, 1].map((field) => (
+                <div key={field} aria-hidden="true" className="space-y-2">
+                  <Skeleton className="h-3.5 w-20" />
+                  <Skeleton className="h-9 w-full" />
+                </div>
+              ))}
+              <Skeleton className="h-9 w-20" />
+            </div>
           ) : (
             <form
               className="space-y-4"
@@ -238,7 +250,7 @@ export function Login() {
                   {session.notice}
                 </p>
               )}
-              <Submit pending={pending || session.loading}>
+              <Submit pending={pending || session.loading} icon={initialize ? UserAdd01Icon : Login01Icon}>
                 {initialize ? "Create account & sign in" : "Sign in"}
               </Submit>
             </form>
@@ -248,7 +260,7 @@ export function Login() {
           Docker Swarm management · {session.version?.version || ""}
         </p>
         <Button variant="link" asChild className="mx-auto flex">
-          <a href="/?ui=classic">Open classic UI</a>
+          <a href="/?ui=classic"><HugeiconsIcon icon={LinkSquare01Icon} strokeWidth={2} aria-hidden="true" className="size-4 shrink-0" />Open classic UI</a>
         </Button>
       </div>
     </div>

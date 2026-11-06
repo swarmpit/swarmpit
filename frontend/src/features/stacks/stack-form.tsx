@@ -1,4 +1,9 @@
-import { useEffect, useId, useRef, useState, type FormEvent } from "react";
+import { useEffect, useId, useRef, useState, type FormEvent, type ReactNode } from "react";
+import { HugeiconsIcon } from "@hugeicons/react";
+import {
+  Cancel01Icon, ComputerIcon, Delete02Icon, Exchange01Icon, FloppyDiskIcon,
+  PencilEdit01Icon, PlayCircleIcon, Rocket01Icon, SourceCodeIcon,
+} from "@hugeicons/core-free-icons";
 import { Link, useLocation, useNavigate, useParams } from "react-router";
 import { api, segment, url } from "@/lib/api";
 import { useApi, useCommand } from "@/lib/queries";
@@ -11,11 +16,18 @@ import {
   Page,
   Section,
   Submit,
-  TextField,
   Toggle,
 } from "@/components/common";
 import { Button } from "@/components/ui/button";
+import { Skeleton } from "@/components/ui/skeleton";
 import { Label } from "@/components/ui/label";
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select";
 import {
   Dialog,
   DialogContent,
@@ -27,6 +39,7 @@ import {
 import { useSession } from "@/features/session/session";
 import { historyLabel, missingStackfile } from "./compose";
 import { ComposeComparison } from "./compose-comparison";
+import { CodeField } from "@/components/code-field";
 
 export function StackForm() {
   const location = useLocation();
@@ -39,6 +52,7 @@ function StackFormLoader() {
   const params = new URLSearchParams(location.search);
   const from = params.get("from") || "";
   const create = !name;
+  const { me } = useSession();
   const activate = location.pathname.endsWith("/activate");
   const requested = location.pathname.endsWith("/previous")
     ? "previous"
@@ -57,10 +71,21 @@ function StackFormLoader() {
     "/api/services/" + segment(from) + "/compose",
     create && !!from,
   );
+  const title = create ? "Create stack" : activate ? "Activate stack" : "Edit stack";
+  const page = (children: ReactNode) => (
+    <Page
+      title={title}
+      description="Compose YAML is sent unchanged, including comments and interpolation."
+      actions={<Button variant="outline" asChild>
+        <Link to={create ? "/stacks" : "/stacks/" + segment(name)}><HugeiconsIcon icon={Cancel01Icon} strokeWidth={2} aria-hidden="true" className="size-4 shrink-0" />Cancel</Link>
+      </Button>}
+    >{children}</Page>
+  );
+  const loading = () => page(<StackEditorSkeleton create={create} editable={!!me && me.role !== "viewer"} />);
   if (create) {
-    if (from && imported.isPending) return <Loading />;
-    if (from && imported.error) return <ErrorMessage error={imported.error} />;
-    return (
+    if (from && imported.isPending) return loading();
+    if (from && imported.error) return page(<ErrorMessage error={imported.error} />);
+    return page(
       <StackEditor
         initial={{
           name: "",
@@ -77,14 +102,14 @@ function StackFormLoader() {
     (absent && fallback.isFetching && !fallback.data) ||
     (requested.startsWith("history-") && history.isPending)
   )
-    return <Loading />;
+    return loading();
   const error = absent
     ? activate || requested !== "stored"
       ? new Error("This stack has no stored compose version.")
       : fallback.error
     : file.error;
   if (error && !file.data && !fallback.data)
-    return <ErrorMessage error={error} />;
+    return page(<ErrorMessage error={error} />);
   const stored = file.data;
   const initial =
     requested === "previous"
@@ -93,8 +118,8 @@ function StackFormLoader() {
         ? history.data?.[Number(requested.slice(8))]?.spec.compose
         : (stored?.spec.compose ?? fallback.data?.spec.compose);
   if (initial === undefined)
-    return (
-      <Page title={name}>
+    return page(
+      <>
         <ErrorMessage
           error={
             history.error ||
@@ -103,12 +128,13 @@ function StackFormLoader() {
         />
         <Button asChild variant="outline">
           <Link to={"/stacks/" + segment(name) + "/compose"}>
+            <HugeiconsIcon icon={SourceCodeIcon} strokeWidth={2} aria-hidden="true" className="size-4 shrink-0" />
             Open stored compose
           </Link>
         </Button>
-      </Page>
+      </>
     );
-  return (
+  return page(
     <StackEditor
       initial={{
         name,
@@ -124,6 +150,39 @@ function StackFormLoader() {
       }
       activate={activate}
     />
+  );
+}
+
+function StackEditorSkeleton({ create, editable }: { create: boolean; editable: boolean }) {
+  return (
+    <div role="status" aria-label="Loading stack compose" aria-busy="true" className="space-y-6">
+      <span className="sr-only">Loading stack compose…</span>
+      <Section title="Compose configuration">
+        <div aria-hidden="true" className="space-y-4">
+          {Array.from({ length: 1 + Number(!create) + Number(editable) }, (_, index) => (
+            <div key={index} className="space-y-2">
+              <Skeleton className="h-3.5 w-28" />
+              <Skeleton className="h-9 w-full" />
+            </div>
+          ))}
+          <div className="space-y-2">
+            <Skeleton className="h-3.5 w-28" />
+            <Skeleton className="h-[37.125rem] w-full" />
+            <Skeleton className="h-4 w-96 max-w-full" />
+          </div>
+          {editable && <>
+            <Skeleton className="h-5 w-40" />
+            <div className="space-y-2">
+              <Skeleton className="h-3.5 w-28" />
+              <Skeleton className="h-9 w-full" />
+              <Skeleton className="h-4 w-80 max-w-full" />
+            </div>
+          </>}
+        </div>
+      </Section>
+      {!create && <Section title="Compare with engine state"><Skeleton className="h-5 w-52" /></Section>}
+      {editable && <Skeleton className="h-9 w-24" />}
+    </div>
   );
 }
 
@@ -257,23 +316,8 @@ function StackEditor({
       body: { name, spec: { compose }, skipImageResolve },
     });
   }
-  const title = create
-    ? "Create stack"
-    : activate
-      ? "Activate stack"
-      : "Edit stack";
   return (
-    <Page
-      title={title}
-      description="Compose YAML is sent unchanged, including comments and interpolation."
-      actions={
-        <Button variant="outline" asChild>
-          <Link to={create ? "/stacks" : "/stacks/" + segment(name)}>
-            Cancel
-          </Link>
-        </Button>
-      }
-    >
+    <>
       <form onSubmit={submit}>
         <fieldset disabled={busy} className="space-y-6">
           <Section title="Compose configuration">
@@ -287,34 +331,37 @@ function StackEditor({
             {!create && (
               <div className="space-y-2">
                 <Label htmlFor={sourceId}>Compose source</Label>
-                <select
-                  id={sourceId}
+                <Select
                   value={source}
                   disabled={busy}
-                  onChange={(e) => chooseSource(e.target.value)}
-                  className="h-9 w-full rounded-md border bg-background px-3 text-sm"
+                  onValueChange={chooseSource}
                 >
-                  <option value="stored" disabled={!stored?.spec}>
-                    Stored / last deployed
-                  </option>
-                  <option value="engine">
-                    Current engine state (reconstructed)
-                  </option>
-                  <option value="previous" disabled={!stored?.previousSpec}>
-                    Previously deployed
-                  </option>
-                  {source === "upload" && (
-                    <option value="upload">Uploaded file</option>
-                  )}
-                  {history
-                    .map((entry, index) => ({ entry, index }))
-                    .reverse()
-                    .map(({ entry, index }) => (
-                      <option key={index} value={"history-" + index}>
-                        {historyLabel(entry)}
-                      </option>
-                    ))}
-                </select>
+                  <SelectTrigger id={sourceId} className="w-full">
+                    <SelectValue />
+                  </SelectTrigger>
+                  <SelectContent>
+                    <SelectItem value="stored" disabled={!stored?.spec}>
+                      Stored / last deployed
+                    </SelectItem>
+                    <SelectItem value="engine">
+                      Current engine state (reconstructed)
+                    </SelectItem>
+                    <SelectItem value="previous" disabled={!stored?.previousSpec}>
+                      Previously deployed
+                    </SelectItem>
+                    {source === "upload" && (
+                      <SelectItem value="upload">Uploaded file</SelectItem>
+                    )}
+                    {history
+                      .map((entry, index) => ({ entry, index }))
+                      .reverse()
+                      .map(({ entry, index }) => (
+                        <SelectItem key={index} value={"history-" + index}>
+                          {historyLabel(entry)}
+                        </SelectItem>
+                      ))}
+                  </SelectContent>
+                </Select>
                 <ErrorMessage error={historyError} />
               </div>
             )}
@@ -339,8 +386,10 @@ function StackEditor({
                 Loading compose source…
               </p>
             )}
-            <TextField
+            <CodeField
               label="Compose YAML"
+              showSyntaxSelector={false}
+              disabled={busy}
               value={compose}
               onChange={setCompose}
               rows={24}
@@ -384,8 +433,9 @@ function StackEditor({
                   ) : (
                     baseline.data && (
                       <>
-                        <TextField
+                        <CodeField
                           label="Current engine compose"
+                          showSyntaxSelector={false}
                           value={baseline.data.spec.compose}
                           readOnly
                           rows={18}
@@ -402,6 +452,7 @@ function StackEditor({
                             disabled={busy}
                             onClick={() => chooseSource("engine")}
                           >
+                            <HugeiconsIcon icon={ComputerIcon} strokeWidth={2} aria-hidden="true" className="size-4 shrink-0" />
                             Use current engine compose
                           </Button>
                         )}
@@ -415,7 +466,7 @@ function StackEditor({
           <ErrorMessage error={error || command.error} />
           {editable && (
             <div className="flex flex-wrap items-center gap-3">
-              <Submit pending={busy}>
+              <Submit pending={busy} icon={activate ? PlayCircleIcon : Rocket01Icon}>
                 {activate ? "Activate stack" : "Deploy"}
               </Submit>
               {create && (
@@ -426,6 +477,7 @@ function StackEditor({
                   variant="outline"
                   disabled={busy}
                 >
+                  <HugeiconsIcon icon={FloppyDiskIcon} strokeWidth={2} aria-hidden="true" className="size-4 shrink-0" />
                   Save stackfile
                 </Button>
               )}
@@ -435,6 +487,7 @@ function StackEditor({
       </form>
       {editable && activate && stored && (
         <Action
+          icon={Delete02Icon}
           label="Delete stackfile"
           path={path + "/file"}
           method="DELETE"
@@ -459,12 +512,13 @@ function StackEditor({
           </DialogHeader>
           <DialogFooter>
             <Button variant="outline" onClick={() => setPendingSource(null)}>
+              <HugeiconsIcon icon={PencilEdit01Icon} strokeWidth={2} aria-hidden="true" className="size-4 shrink-0" />
               Keep editing
             </Button>
-            <Button onClick={confirmSource}>Replace draft</Button>
+            <Button onClick={confirmSource}><HugeiconsIcon icon={Exchange01Icon} strokeWidth={2} aria-hidden="true" className="size-4 shrink-0" />Replace draft</Button>
           </DialogFooter>
         </DialogContent>
       </Dialog>
-    </Page>
+    </>
   );
 }

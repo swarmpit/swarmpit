@@ -25,6 +25,8 @@ import {
 import { Button } from "@/components/ui/button";
 import { useSession } from "@/features/session/session";
 import { defaultService, editableService, servicePayload } from "./payload";
+import { HugeiconsIcon } from "@hugeicons/react";
+import { Add01Icon, Cancel01Icon, Loading03Icon, PlugSocketIcon, Rocket01Icon } from "@hugeicons/core-free-icons";
 
 function Arguments({
   label,
@@ -259,6 +261,7 @@ export function ServiceEditor({
                 : "/services/create/wizard/image"
             }
           >
+            <HugeiconsIcon icon={Cancel01Icon} strokeWidth={2} aria-hidden="true" className="size-4 shrink-0" />
             Cancel
           </Link>
         </Button>
@@ -433,6 +436,7 @@ export function ServiceEditor({
             disabled={portsPending || !s.repository.name}
             onClick={() => void suggestedPorts()}
           >
+            <HugeiconsIcon icon={portsPending ? Loading03Icon : PlugSocketIcon} strokeWidth={2} aria-hidden="true" className={"size-4 shrink-0" + (portsPending ? " animate-spin motion-reduce:animate-none" : "")} />
             {portsPending
               ? "Loading exposed ports…"
               : "Add image exposed ports"}
@@ -893,7 +897,7 @@ export function ServiceEditor({
           </Section>
         )}
         <ErrorMessage error={error || command.error} />
-        <Submit pending={command.isPending}>
+        <Submit pending={command.isPending} icon={editing ? Rocket01Icon : Add01Icon}>
           {editing ? "Deploy changes" : "Create service"}
         </Submit>
       </form>

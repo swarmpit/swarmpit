@@ -248,7 +248,7 @@ export interface LogLine {
 }
 export interface Stats {
   hosts: number;
-  cpu: { usage: number };
+  cpu: { usage: number; cores: number };
   memory: { usage: number; used: number; total: number };
   disk: { usage: number; used: number; total: number };
 }
@@ -257,8 +257,8 @@ export interface Timeseries {
   service?: string;
   task?: string;
   time: string[];
-  cpu?: number[];
-  memory?: number[];
+  cpu?: (number | null)[];
+  memory?: (number | null)[];
 }
 export type RegistryType = "dockerhub" | "v2" | "ecr" | "acr" | "gitlab";
 export const registryTypes: RegistryType[] = [

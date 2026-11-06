@@ -1,3 +1,5 @@
+import { HugeiconsIcon } from "@hugeicons/react";
+import { ChartLineData01Icon, DashboardSquare01Icon, Delete02Icon, File01Icon, PencilEdit01Icon, PinIcon, PinOffIcon, Task01Icon } from "@hugeicons/core-free-icons";
 import type { ReactNode } from "react";
 import { useNavigate, useParams, useSearchParams, Link } from "react-router";
 import { useApi } from "@/lib/queries";
@@ -12,9 +14,9 @@ import {
   Loading,
   ErrorMessage,
   Status,
-  TextField,
 } from "@/components/common";
 import { Button } from "@/components/ui/button";
+import { ConfigValueField } from "@/components/config-value-field";
 import { Tabs, TabsList, TabsTrigger, TabsContent } from "@/components/ui/tabs";
 import { useSession } from "@/features/session/session";
 import type {
@@ -31,13 +33,15 @@ import { ServicesTable, TasksTable } from "./tables";
 import { Live } from "./lists";
 import { TimeseriesChart } from "@/features/dashboard/chart";
 import { ServiceLogs } from "@/features/services/detail";
+import { NetworkMap } from "./network-map";
+import { NodeResourceCharts } from "./node-cards";
 export function RelatedServices({ path }: { path: string }) {
   const query = useApi<Service[]>(path);
   return (
     <>
       <ErrorMessage error={query.error} />
       {query.isPending ? (
-        <Loading />
+        <Loading variant="table" />
       ) : (
         <ServicesTable rows={query.data || []} />
       )}
@@ -49,28 +53,39 @@ export function RelatedTasks({ path }: { path: string }) {
   return (
     <>
       <ErrorMessage error={query.error} />
-      {query.isPending ? <Loading /> : <TasksTable rows={query.data || []} />}
+      {query.isPending ? (
+        <Loading variant="table" />
+      ) : (
+        <TasksTable rows={query.data || []} />
+      )}
     </>
   );
 }
 export function DetailLoader<T>({
   path,
   children,
+  loadingVariant = "content",
 }: {
   path: string;
   children: (data: T) => ReactNode;
+  loadingVariant?: "content" | "table";
 }) {
   const query = useApi<T>(path);
   return (
     <>
       <ErrorMessage error={query.error} />
-      {query.isPending ? <Loading /> : query.data ? children(query.data) : null}
+      {query.isPending ? (
+        <Loading variant={loadingVariant} />
+      ) : query.data ? (
+        children(query.data)
+      ) : null}
     </>
   );
 }
 export function NetworkDetail() {
   const { id = "" } = useParams();
   const path = "/api/networks/" + segment(id);
+  const services = useApi<Service[]>(path + "/services");
   const { me } = useSession();
   const nav = useNavigate();
   return (
@@ -83,6 +98,7 @@ export function NetworkDetail() {
             me?.role !== "viewer" && (
               <Action
                 label="Delete network"
+                icon={Delete02Icon}
                 destructive
                 path={path}
                 method="DELETE"
@@ -108,8 +124,12 @@ export function NetworkDetail() {
             />
             <PairValues value={n.options} />
           </Section>
+          <Section title="Network topology">
+            <ErrorMessage error={services.error} />
+            {services.isPending ? <Loading variant="chart" label="Network topology loading" /> : services.data && <NetworkMap key={n.id} network={n} services={services.data} />}
+          </Section>
           <Section title="Services">
-            <RelatedServices path={path + "/services"} />
+            {services.isPending ? <Loading variant="table" /> : services.data && <ServicesTable rows={services.data} />}
           </Section>
         </Page>
       )}
@@ -131,6 +151,7 @@ export function VolumeDetail() {
             me?.role !== "viewer" && (
               <Action
                 label="Delete volume"
+                icon={Delete02Icon}
                 destructive
                 path={path}
                 method="DELETE"
@@ -175,6 +196,7 @@ export function SecretDetail() {
             me?.role !== "viewer" && (
               <Action
                 label="Delete secret"
+                icon={Delete02Icon}
                 destructive
                 path={path}
                 method="DELETE"
@@ -219,6 +241,7 @@ export function ConfigDetail() {
             me?.role !== "viewer" && (
               <Action
                 label="Delete config"
+                icon={Delete02Icon}
                 destructive
                 path={path}
                 method="DELETE"
@@ -236,11 +259,7 @@ export function ConfigDetail() {
                 Version: c.version,
               }}
             />
-            <TextField
-              label="Contents"
-              value={decodeText(c.data || "")}
-              readOnly
-            />
+            <ConfigValueField value={decodeText(c.data || "")} readOnly />
           </Section>
           <Section title="Services">
             <RelatedServices path={path + "/services"} />
@@ -266,6 +285,7 @@ export function NodeDetail() {
             <>
               <Live handler="node-info" params={{ id }} />
               <Action
+                icon={me?.["node-dashboard"]?.includes(n.id) ? PinOffIcon : PinIcon}
                 label={
                   me?.["node-dashboard"]?.includes(n.id)
                     ? "Unpin"
@@ -279,10 +299,11 @@ export function NodeDetail() {
               {me?.role === "admin" && (
                 <>
                   <Button asChild variant="outline">
-                    <Link to={"/nodes/" + segment(id) + "/edit"}>Edit</Link>
+                    <Link to={"/nodes/" + segment(id) + "/edit"}><HugeiconsIcon icon={PencilEdit01Icon} strokeWidth={2} aria-hidden="true" className="size-4 shrink-0" />Edit</Link>
                   </Button>
                   <Action
                     label="Remove node"
+                    icon={Delete02Icon}
                     destructive
                     method="DELETE"
                     path={path}
@@ -295,9 +316,9 @@ export function NodeDetail() {
         >
           <Tabs defaultValue="overview">
             <TabsList>
-              <TabsTrigger value="overview">Overview</TabsTrigger>
-              <TabsTrigger value="tasks">Tasks</TabsTrigger>
-              <TabsTrigger value="metrics">Metrics</TabsTrigger>
+              <TabsTrigger value="overview"><HugeiconsIcon icon={DashboardSquare01Icon} strokeWidth={2} aria-hidden="true" className="size-4 shrink-0" />Overview</TabsTrigger>
+              <TabsTrigger value="tasks"><HugeiconsIcon icon={Task01Icon} strokeWidth={2} aria-hidden="true" className="size-4 shrink-0" />Tasks</TabsTrigger>
+              <TabsTrigger value="metrics"><HugeiconsIcon icon={ChartLineData01Icon} strokeWidth={2} aria-hidden="true" className="size-4 shrink-0" />Metrics</TabsTrigger>
             </TabsList>
             <TabsContent value="overview" className="space-y-6">
               <Section title="Node details">
@@ -340,6 +361,7 @@ export function NodeDetail() {
               <ErrorMessage error={series.error} />
               <TimeseriesChart
                 title="CPU and memory usage"
+                pending={series.isPending && !!version?.statistics}
                 series={(series.data || []).filter(
                   (s) => s.name === n.nodeName,
                 )}
@@ -367,10 +389,10 @@ function TaskContent({ task: t }: { task: Task }) {
     "/api/tasks/" + segment(t.taskName) + "/ts",
     !!version?.statistics,
   );
-  const logOpen = search.get("log") === "1";
   const logsSupported = ["json-file", "journald", "local", "loki"].includes(
     t.logdriver || "",
   );
+  const logOpen = search.get("log") === "1" && logsSupported;
   function showLogs(open: boolean) {
     setSearch((current) => {
       const next = new URLSearchParams(current);
@@ -383,67 +405,55 @@ function TaskContent({ task: t }: { task: Task }) {
     <Page
       title={t.taskName || t.id}
       description="Task"
-      actions={
-        <>
-          <Live handler="task-info" params={{ serviceName: t.serviceName }} />
-          <Button
-            type="button"
-            variant="outline"
-            disabled={!logsSupported}
-            onClick={() => showLogs(true)}
-          >
-            View logs
-          </Button>
-        </>
-      }
+      actions={<Live handler="task-info" params={{ serviceName: t.serviceName }} />}
     >
-      <Section title="Task details">
-        <Properties
-          values={{
-            ID: t.id,
-            State: <Status value={t.state} />,
-            Desired: t.desiredState,
-            Service: (
-              <Link
-                to={"/services/" + segment(t.serviceName)}
-                className="underline"
-              >
-                {t.serviceName}
-              </Link>
-            ),
-            Node: (
-              <Link to={"/nodes/" + segment(t.nodeId)} className="underline">
-                {t.nodeName}
-              </Link>
-            ),
-            Image: t.repository?.image,
-            "Image digest": t.repository?.imageDigest,
-            Created: date(t.createdAt),
-            Updated: date(t.updatedAt),
-            Error: t.status?.error || "None",
-          }}
-        />
-      </Section>
-      <TaskUsage task={t} />
-      {logOpen && (
-        <div className="space-y-3">
-          <Button
-            type="button"
-            variant="outline"
-            onClick={() => showLogs(false)}
-          >
-            Close logs
-          </Button>
-          <ServiceLogs key={t.id} id={t.serviceName} initialTask={t.id} />
-        </div>
-      )}
-      <ErrorMessage error={series.error} />
-      <TimeseriesChart
-        title="Resource usage"
-        series={series.data ? [series.data] : []}
-        memoryUnit="mib"
-        cpuUnit="vcpu"
-      />
+      <Tabs value={logOpen ? "logs" : "overview"} onValueChange={(value) => showLogs(value === "logs")}>
+        <TabsList aria-label="Task sections">
+          <TabsTrigger value="overview"><HugeiconsIcon icon={DashboardSquare01Icon} strokeWidth={2} aria-hidden="true" className="size-4 shrink-0" />Overview</TabsTrigger>
+          <TabsTrigger value="logs" disabled={!logsSupported}><HugeiconsIcon icon={File01Icon} strokeWidth={2} aria-hidden="true" className="size-4 shrink-0" />Logs</TabsTrigger>
+        </TabsList>
+        <TabsContent value="overview" className="space-y-6">
+          <Section title="Task details">
+            <Properties
+              values={{
+                ID: t.id,
+                State: <Status value={t.state} />,
+                Desired: t.desiredState,
+                Service: (
+                  <Link
+                    to={"/services/" + segment(t.serviceName)}
+                    className="underline"
+                  >
+                    {t.serviceName}
+                  </Link>
+                ),
+                Node: (
+                  <Link to={"/nodes/" + segment(t.nodeId)} className="underline">
+                    {t.nodeName}
+                  </Link>
+                ),
+                Image: t.repository?.image,
+                "Image digest": t.repository?.imageDigest,
+                Created: date(t.createdAt),
+                Updated: date(t.updatedAt),
+                Error: t.status?.error || "None",
+              }}
+            />
+          </Section>
+          <TaskUsage task={t} />
+          <ErrorMessage error={series.error} />
+          <TimeseriesChart
+            title="Resource usage"
+            pending={series.isPending && !!version?.statistics}
+            series={series.data ? [series.data] : []}
+            memoryUnit="mib"
+            cpuUnit="vcpu"
+          />
+        </TabsContent>
+        <TabsContent value="logs">
+          {logsSupported && <ServiceLogs key={t.id} id={t.serviceName} initialTask={t.id} />}
+        </TabsContent>
+      </Tabs>
     </Page>
   );
 }
@@ -454,27 +464,11 @@ function vcpu(value?: number) {
   return value == null ? "—" : value.toFixed(2);
 }
 function NodeUsage({ node }: { node: Node }) {
-  const stats = node.state === "down" ? null : node.stats;
-  const cpu = stats?.cpu;
-  const usedCpu =
-    cpu?.cores != null && cpu.usedPercentage != null
-      ? (cpu.cores * cpu.usedPercentage) / 100
-      : undefined;
+  const stats = node.state === "ready" ? node.stats : null;
   return (
     <Section title="Current usage">
       {stats && (stats.cpu || stats.memory || stats.disk) ? (
-        <Properties
-          values={{
-            "CPU usage": percentage(cpu?.usedPercentage),
-            CPU: vcpu(usedCpu) + " / " + vcpu(cpu?.cores) + " vCPU",
-            "Memory usage": percentage(stats.memory?.usedPercentage),
-            "Memory used": bytes(stats.memory?.used),
-            "Memory total": bytes(stats.memory?.total),
-            "Disk usage": percentage(stats.disk?.usedPercentage),
-            "Disk used": bytes(stats.disk?.used),
-            "Disk total": bytes(stats.disk?.total),
-          }}
-        />
+        <NodeResourceCharts node={node} />
       ) : (
         <p className="text-sm text-muted-foreground">
           Current resource statistics are not available.
