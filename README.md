@@ -2,6 +2,12 @@
 
 Lightweight AI-friendly Docker Swarm management
 
+## React UI fork
+
+This fork preserves Swarmpit's backend and adds a React/TypeScript UI with Tailwind CSS 4, shadcn/ui and TanStack Query. Build and run instructions: [frontend/README.md](frontend/README.md). Future agents must start with [AGENTS.md](AGENTS.md) and follow [docs/UPSTREAM_UPDATES.md](docs/UPSTREAM_UPDATES.md) when upstream changes. Verification status and remaining runtime checks are recorded in [docs/UI_PARITY.md](docs/UI_PARITY.md).
+
+The original project documentation follows.
+
 [![version](https://img.shields.io/github/release-pre/swarmpit/swarmpit.svg)](https://github.com/swarmpit/swarmpit/releases) 
 [![Test, Build & Deploy](https://github.com/swarmpit/swarmpit/actions/workflows/build.yml/badge.svg)](https://github.com/swarmpit/swarmpit/actions/workflows/build.yml)
 [![PRs Welcome](https://img.shields.io/badge/PRs-welcome-brightgreen.svg)](https://github.com/swarmpit/swarmpit/pulls)

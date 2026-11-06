@@ -1,0 +1,28 @@
+# React assets and the original UI are bundled into the same application.
+FROM node:24-bookworm-slim AS frontend
+WORKDIR /source/frontend
+COPY frontend/package.json frontend/package-lock.json ./
+RUN npm ci
+COPY frontend/ ./
+RUN npm run build
+
+FROM clojure:temurin-17-lein AS build
+WORKDIR /source
+COPY project.clj ./
+COPY repo ./repo
+RUN lein deps
+COPY src ./src
+COPY resources ./resources
+COPY --from=frontend /source/resources/public/react ./resources/public/react
+RUN lein uberjar
+
+FROM debian:bookworm-slim
+RUN apt-get update && mkdir -p /usr/share/man/man1 && apt-get install -y --no-install-recommends ca-certificates curl openjdk-17-jre-headless libjffi-java && rm -rf /var/lib/apt/lists/*
+COPY dev/script/install-docker-client.sh /tmp/install-docker-client.sh
+RUN bash /tmp/install-docker-client.sh && rm /tmp/install-docker-client.sh
+WORKDIR /usr/src/app
+COPY --from=build /source/target/swarmpit.jar ./swarmpit.jar
+HEALTHCHECK CMD curl --fail -s http://localhost:8080/version || exit 1
+ENV SWARMPIT_UI=react
+EXPOSE 8080
+CMD ["java", "-jar", "swarmpit.jar"]

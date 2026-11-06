@@ -1,0 +1,159 @@
+@import "tailwindcss";
+@custom-variant dark (&:is(.dark *));
+@theme inline {
+  --color-background: var(--background);
+  --color-foreground: var(--foreground);
+  --color-card: var(--card);
+  --color-card-foreground: var(--foreground);
+  --color-popover: var(--card);
+  --color-popover-foreground: var(--foreground);
+  --color-primary: var(--primary);
+  --color-primary-foreground: var(--primary-foreground);
+  --color-primary-light: var(--primary-light);
+  --color-primary-dark: var(--primary-dark);
+  --color-secondary: var(--secondary);
+  --color-secondary-foreground: var(--secondary-foreground);
+  --color-muted: var(--muted);
+  --color-muted-foreground: var(--muted-foreground);
+  --color-accent: var(--accent);
+  --color-accent-foreground: var(--accent-foreground);
+  --color-destructive: var(--destructive);
+  --color-destructive-foreground: var(--destructive-foreground);
+  --color-success: var(--success);
+  --color-success-foreground: var(--success-foreground);
+  --color-warning: var(--warning);
+  --color-warning-foreground: var(--warning-foreground);
+  --color-info: var(--info);
+  --color-border: var(--border);
+  --color-input: var(--border);
+  --color-ring: var(--ring);
+  --color-chart-1: var(--chart-1);
+  --color-chart-2: var(--chart-2);
+  --color-chart-3: var(--chart-3);
+  --color-chart-4: var(--chart-4);
+  --color-chart-5: var(--chart-5);
+  --radius-sm: 0.375rem;
+  --radius-md: 0.5rem;
+  --radius-lg: 0.75rem;
+  --radius-xl: 1rem;
+  --color-sidebar-ring: var(--sidebar-ring);
+  --color-sidebar-border: var(--sidebar-border);
+  --color-sidebar-accent-foreground: var(--sidebar-accent-foreground);
+  --color-sidebar-accent: var(--sidebar-accent);
+  --color-sidebar-primary-foreground: var(--sidebar-primary-foreground);
+  --color-sidebar-primary: var(--sidebar-primary);
+  --color-sidebar-foreground: var(--sidebar-foreground);
+  --color-sidebar: var(--sidebar);
+}
+:root {
+  color-scheme: light;
+  /* Match the legacy Material theme and status palette. */
+  --background: #fafafa;
+  --foreground: #212121;
+  --card: #fff;
+  --primary: #65519f;
+  --primary-light: #957ed1;
+  --primary-dark: #362870;
+  --primary-foreground: #fff;
+  --secondary: #8b9f51;
+  --secondary-foreground: #212121;
+  --muted: #f5f5f5;
+  --muted-foreground: #5f6368;
+  --accent: #eee8f7;
+  --accent-foreground: #362870;
+  --border: #dfe3e8;
+  --ring: #65519f;
+  --destructive: #d32f2f;
+  --destructive-foreground: #fff;
+  --success: #43a047;
+  --success-foreground: #1b5e20;
+  --warning: #ffa000;
+  --warning-foreground: #a54b00;
+  --info: #22459f;
+  --chart-1: var(--primary);
+  --chart-2: color-mix(in srgb, var(--secondary) 85%, var(--foreground));
+  --chart-3: var(--primary-light);
+  --chart-4: var(--primary-dark);
+  --chart-5: color-mix(in srgb, var(--secondary) 60%, var(--primary-dark));
+  font-family:
+    Inter,
+    ui-sans-serif,
+    system-ui,
+    -apple-system,
+    BlinkMacSystemFont,
+    "Segoe UI",
+    sans-serif;
+  --sidebar: var(--background);
+  --sidebar-foreground: var(--foreground);
+  --sidebar-primary: var(--primary);
+  --sidebar-primary-foreground: var(--primary-foreground);
+  --sidebar-accent: var(--accent);
+  --sidebar-accent-foreground: var(--accent-foreground);
+  --sidebar-border: var(--border);
+  --sidebar-ring: var(--ring);
+}
+.dark {
+  color-scheme: dark;
+  --background: #000;
+  --foreground: #dedede;
+  --card: #1a1a1a;
+  /* Legacy dark links use this lighter purple to remain readable. */
+  --primary: #b39ddb;
+  --primary-foreground: #1a1a1a;
+  --secondary: #aed581;
+  --secondary-foreground: #1a1a1a;
+  --muted: #2c2c2c;
+  --muted-foreground: #aaa;
+  --accent: #362870;
+  --accent-foreground: #eee8f7;
+  --border: #424242;
+  --ring: #b39ddb;
+  --destructive: #ff867c;
+  --destructive-foreground: #1a1a1a;
+  --success: #52b359;
+  --success-foreground: #52b359;
+  --warning: #ffa000;
+  --warning-foreground: #ffb74d;
+  --info: #90caf9;
+  --chart-1: var(--primary);
+  --chart-2: var(--secondary);
+  --chart-3: var(--primary-light);
+  --chart-4: color-mix(in srgb, var(--primary) 55%, var(--card));
+  --chart-5: color-mix(in srgb, var(--secondary) 65%, var(--card));
+  --sidebar: var(--background);
+  --sidebar-foreground: var(--foreground);
+  --sidebar-primary: var(--primary);
+  --sidebar-primary-foreground: var(--primary-foreground);
+  --sidebar-accent: var(--accent);
+  --sidebar-accent-foreground: var(--accent-foreground);
+  --sidebar-border: var(--border);
+  --sidebar-ring: var(--ring);
+}
+@layer base {
+  html,
+  body {
+    overscroll-behavior: none;
+  }
+  * {
+    @apply border-border;
+  }
+  body {
+    @apply m-0 bg-background text-foreground antialiased;
+  }
+  button,
+  a,
+  input,
+  select,
+  textarea {
+    @apply outline-ring;
+  }
+  :focus-visible {
+    outline-width: 2px;
+    outline-style: solid;
+    outline-offset: 3px;
+  }
+  button:not(:disabled),
+  select {
+    cursor: pointer;
+  }
+}

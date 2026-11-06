@@ -38,3 +38,8 @@ figwheel_server.log
 .idea
 *.iml
 /.notes/
+
+# React UI build and local tooling
+/frontend/node_modules/
+/resources/public/react/
+/.superpowers/

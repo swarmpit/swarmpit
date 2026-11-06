@@ -44,6 +44,28 @@ and then packed into Docker image
 docker build -t swarmpit .
 ```
 
+### Optional React frontend
+
+The React UI lives in `frontend/` and uses the same backend APIs as the classic
+UI. Use Node.js 24 for frontend development. With the backend running on
+http://127.0.0.1:8080, start the frontend in a separate terminal:
+
+```sh
+npm --prefix frontend ci
+npm --prefix frontend run dev
+```
+
+Before submitting React changes, run the frontend tests, typecheck and build
+described in [frontend/README.md](frontend/README.md), along with the existing
+backend checks when changing API or packaging behavior.
+
+Build the optional image with
+`docker build -f Dockerfile.react -t swarmpit-react:local .`. It bundles both
+interfaces and defaults to React. The original Dockerfile still uses the
+prebuilt JAR and defaults to the classic UI. See
+[frontend/README.md](frontend/README.md#package-and-use) for selection and rollback
+instructions.
+
 ### Custom cljsjs packages
 
 In case of outdated dependency feel free to build new version locally 

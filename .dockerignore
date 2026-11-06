@@ -1,0 +1,7 @@
+.git
+frontend/node_modules
+resources/public/react
+target/*
+!target/swarmpit.jar
+.superpowers
+.DS_Store

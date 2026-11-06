@@ -1,8 +1,10 @@
 (ns swarmpit.handler
-  (:require [clojure.walk :refer [keywordize-keys]]
+  (:require [clojure.java.io :as io]
+            [clojure.walk :refer [keywordize-keys]]
             [clojure.tools.logging :as log]
             [net.cgrand.enlive-html :as html :refer [deftemplate]]
             [swarmpit.api :as api]
+            [swarmpit.config :as cfg]
             [swarmpit.slt :as slt]
             [swarmpit.token :as token]
             [swarmpit.token.blacklist :as blacklist]
@@ -57,10 +59,22 @@
 ;; Index handler
 
 (defn index
-  [_]
-  {:status  200
-   :headers {"Content-Type" "text/html"}
-   :body    (apply str (index-page (:revision (version/info))))})
+  [request]
+  (if (and (= "react" (cfg/config :ui))
+           (not= "classic" (get-in request [:query-params "ui"])))
+    (if-let [resource (io/resource "public/react/index.html")]
+      {:status  200
+       :headers {"Content-Type" "text/html; charset=utf-8"}
+       :body    (slurp resource :encoding "UTF-8")}
+      {:status  503
+       :headers {"Content-Type" "text/html; charset=utf-8"}
+       :body    (str "<!doctype html><html><head><title>React UI unavailable</title></head><body>"
+                     "<h1>React UI unavailable</h1>"
+                     "<p>The frontend asset public/react/index.html was not packaged. Build the React frontend before selecting SWARMPIT_UI=react.</p>"
+                     "<p><a href=\"/?ui=classic\">Open classic UI</a></p></body></html>")})
+    {:status  200
+     :headers {"Content-Type" "text/html"}
+     :body    (apply str (index-page (:revision (version/info))))}))
 
 ;; Version handler
 
