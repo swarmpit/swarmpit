@@ -32,13 +32,22 @@
                        (str/split #","))))))))
 
 (defn- execute
-  [{:keys [method url options]}]
-  (execute-in-scope {:method        method
-                     :url           url
-                     :options       (merge {:insecure? true} options)
-                     :scope         "Registry"
-                     :timeout       5000
-                     :error-handler #(-> % :errors (first) :message)}))
+  [{:keys [method url options quiet-statuses]}]
+  (try
+    (execute-in-scope {:method        method
+                       :url           url
+                       :options       (merge {:insecure? true} options)
+                       :scope         "Registry"
+                       :timeout       5000
+                       :error-handler #(-> % :errors (first) :message)})
+    (catch ExceptionInfo e
+      (let [data (ex-data e)
+            status (:status data)]
+        (if (contains? (or quiet-statuses #{}) status)
+          {:status  status
+           :headers (:headers data)
+           :body    (:body data)}
+          (throw e))))))
 
 (defn- fallback-options
   [www-auth-url www-auth-params options]
@@ -54,7 +63,7 @@
 (defn- execute-with-fallback
   [{:keys [method url options] :as request}]
   (try
-    (execute (update request :quiet-statuses (fnil conj #{}) 401))
+    (execute request)
     (catch ExceptionInfo e
       (let [status (:status (ex-data e))
             headers (:headers (ex-data e))
